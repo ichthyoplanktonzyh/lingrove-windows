@@ -4,6 +4,7 @@ using Cotabby.App.Emoji;
 using Cotabby.App.Macros;
 using Cotabby.App.Overlay;
 using Cotabby.App.Settings;
+using Cotabby.App.UI;
 using Cotabby.Core.Focus;
 using Cotabby.Core.Input;
 using Cotabby.Core.Insertion;
@@ -112,6 +113,8 @@ public sealed class AppHost : IAsyncDisposable
         sc.AddSingleton<OpenAICompatibleApiClient>(_ => new OpenAICompatibleApiClient());
         sc.AddSingleton<IOpenAICompatibleCredentialStore>(_ => new DpapiOpenAICompatibleCredentialStore());
         sc.AddSingleton<ILearningSentenceTokenizer, IcuLearningSentenceTokenizer>();
+        sc.AddSingleton<ILearningEvidenceSentenceTokenizer, IcuLearningEvidenceSentenceTokenizer>();
+        sc.AddSingleton<LearningExplanationInputFactory>();
         // Recognition and dictionary cards share one store. Bundle resolution checks availability;
         // resource parsing/indexing and ICU calls remain lazy and run on the service worker.
         sc.AddSingleton<ILearningLexicalText, IcuLearningLexicalText>();
@@ -180,7 +183,10 @@ public sealed class AppHost : IAsyncDisposable
             _services.GetService<ILearningLanguageDetector>(),
             batterySaverOn: () => PowerStatus.IsBatterySaverOn,
             unitRecognizer: _services.GetRequiredService<ILearningUnitRecognizing>(),
-            dictionaryProvider: _services.GetRequiredService<ILearningDictionaryProviding>());
+            dictionaryProvider: _services.GetRequiredService<ILearningDictionaryProviding>(),
+            explanationService: LearningExplanation.Service,
+            explanationInputs: _services.GetRequiredService<LearningExplanationInputFactory>(),
+            configureExplanation: () => SettingsWindow.ShowLearning(this));
 
         SystemEvents.PowerModeChanged += OnPowerModeChanged;
         ApplySettings();

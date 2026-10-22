@@ -17,6 +17,7 @@
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.cs" Link="Production\AppSettings.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Explanation.cs" Link="Production\AppSettings.Explanation.cs" />
     <Compile Include="..\..\src\Cotabby.App\Learning\LearningExplanationController.cs" Link="Production\LearningExplanationController.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Learning\LearningExplanationCardPolicy.cs" Link="Production\LearningExplanationCardPolicy.cs" />
     <ProjectReference Include="..\..\src\Cotabby.Core\Cotabby.Core.csproj" />
     <ProjectReference Include="..\..\src\Cotabby.Inference\Cotabby.Inference.csproj" />
   </ItemGroup>

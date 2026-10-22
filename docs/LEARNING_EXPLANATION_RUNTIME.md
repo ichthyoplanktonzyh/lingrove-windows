@@ -3,10 +3,10 @@
 This slice adapts the pinned Mac implementation at
 `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`. AppHost now instantiates one local explanation
 controller/service with its **own** lazy runtime. Settings UI can select an installed model, a
-role-appropriate template, response language and per-model context/output limits. An interactive
-explanation session/card and settings test action remain unwired; selecting a model does not run it.
-The [portable session library](LEARNING_EXPLANATION_SESSION.md) now owns target/refresh/cancellation
-state, while its WPF adapter is still a separate step.
+role-appropriate template, response language and per-model context/output limits. The
+[writing sentence card](LEARNING_EXPLANATION_CARD.md) now borrows the
+[portable session](LEARNING_EXPLANATION_SESSION.md) for explicit generation/refresh/stop. The
+settings test action remains unwired; selecting a model does not run it.
 
 ## Source mapping
 
@@ -53,7 +53,7 @@ requests, facades and outstanding release tasks before disposing the explanation
 thread guards replace MainActor sequencing; no UIA/editor/window objects enter this owner. Saved
 results can still be viewed without generating, as in the Mac service. Telemetry, endpoint settings/
 consent/credentials, automatic power model switching, GPU controls, notebook persistence, settings
-sample test, sampling-override editor, explanation session/card and the remaining capture origins
+sample test, sampling-override editor, unit/component explanation and the remaining capture origins
 are separate work. Sampler preferences are persisted and honored, but currently edited only through
 settings data; the UI keeps recommended sampling by default. The empty model picker item clears
 only that role's selection, retaining downloaded files and saved per-model preferences.

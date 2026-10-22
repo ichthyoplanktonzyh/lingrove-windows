@@ -103,8 +103,9 @@ disturb another. Keep Apple Intelligence unavailable on Windows and select suppo
 **Current implementation slice:** a dedicated CPU learning runtime, local/endpoint routing, exact
 token planning, automatic/manual templates, explicit catalog downloads/imports and per-model
 settings are mapped in [LEARNING_LOCAL_RUNTIME.md](LEARNING_LOCAL_RUNTIME.md). Portable and fake
-tests establish selected policies and lifetime invariants; native model execution, GPU routing,
-idle eviction and power-specific profiles remain open.
+tests establish selected policies and lifetime invariants. Release on disable/pause/provider changes
+has policy and fake-driven drain/reload coverage. Native model execution and GPU routing remain
+unverified; prewarm, idle eviction and power-specific profiles remain open.
 
 **Gate:** local inference works on native x64 CPU; Vulkan is separately tested on supported hardware
 and remains optional. Endpoint requests are bounded, identify the selected task and destination,

@@ -11,12 +11,22 @@ namespace Cotabby.Inference.LanguageLearning.Local;
 public interface ILearningLocalRuntime : IAsyncDisposable
 {
     /// <summary>
+    /// Records retirement synchronously, then drains native work on a worker without closing the
+    /// runtime. This call must not run cancellation callbacks or native disposal on the caller.
+    /// A later request can open a new operation; an older queued unload cannot free its allocation.
+    /// </summary>
+    Task UnloadAsync();
+
+    /// <summary>
     /// Opens an exclusive operation lease for one immutable model configuration. The lease stays
     /// active through prompt planning and generation, and must be disposed even on a cache hit.
+    /// Caller and facade-owner tokens stay distinct so admission can inspect both direct flags
+    /// even when asynchronous cancellation has not yet invoked linked-token callbacks.
     /// </summary>
     Task<ILearningLocalOperation> BeginOperationAsync(
         LearningLocalModelConfiguration configuration,
-        CancellationToken ct);
+        CancellationToken ct,
+        CancellationToken ownerCancellation = default);
 }
 
 /// <summary>

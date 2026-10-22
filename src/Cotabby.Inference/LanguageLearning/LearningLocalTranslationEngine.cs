@@ -67,15 +67,23 @@ public sealed class LearningLocalTranslationEngine :
         try
         {
             using var linked = CancellationTokenSource.CreateLinkedTokenSource(ct, lifetimeToken);
-            linked.Token.ThrowIfCancellationRequested();
+            void ThrowIfCancelled()
+            {
+                ct.ThrowIfCancellationRequested();
+                lifetimeToken.ThrowIfCancellationRequested();
+                linked.Token.ThrowIfCancellationRequested();
+            }
+            ThrowIfCancelled();
             if (string.IsNullOrWhiteSpace(_configuration.ModelPath))
                 throw new LearningTranslationException(LearningTranslationFailure.LocalModelNotConfigured);
             if (options is null || options.Style is null)
                 throw new LearningTranslationException(LearningTranslationFailure.InvalidOptions);
 
-            var activeOperation = await _runtime.BeginOperationAsync(_configuration, linked.Token).ConfigureAwait(false);
+            // Preserve the direct capture and facade-owner tokens through admission. CancelAsync
+            // retires their flags immediately, before linked-token callbacks may have run.
+            var activeOperation = await _runtime.BeginOperationAsync(_configuration, ct, lifetimeToken).ConfigureAwait(false);
             operation = activeOperation;
-            linked.Token.ThrowIfCancellationRequested();
+            ThrowIfCancelled();
             lock (_gate)
             {
                 _operation = activeOperation;
@@ -93,12 +101,12 @@ public sealed class LearningLocalTranslationEngine :
 
             int CountExactPromptTokens(string renderedPrompt)
             {
-                linked.Token.ThrowIfCancellationRequested();
+                ThrowIfCancelled();
                 var segments = LearningLocalPrompt.GetSegments(profile.Template, renderedPrompt);
                 var prefix = activeOperation.TokenizeTrusted(segments.TrustedPrefix);
-                linked.Token.ThrowIfCancellationRequested();
+                ThrowIfCancelled();
                 var body = activeOperation.TokenizeLiteral(segments.LiteralBody);
-                linked.Token.ThrowIfCancellationRequested();
+                ThrowIfCancelled();
                 var suffix = activeOperation.TokenizeTrusted(segments.TrustedSuffix);
 
                 var tokenPlan = new LLamaToken[prefix.Count + body.Count + suffix.Count];
@@ -119,7 +127,7 @@ public sealed class LearningLocalTranslationEngine :
                 CountExactPromptTokens);
             request = request with { Options = options };
 
-            linked.Token.ThrowIfCancellationRequested();
+            ThrowIfCancelled();
             if (promptTokens is null)
                 throw new LearningTranslationException(LearningTranslationFailure.InvalidOptions);
 
@@ -141,7 +149,7 @@ public sealed class LearningLocalTranslationEngine :
                 _prepared = prepared;
             }
 
-            linked.Token.ThrowIfCancellationRequested();
+            ThrowIfCancelled();
             return request;
         }
         catch (LearningLocalRuntimeException error)
@@ -202,6 +210,8 @@ public sealed class LearningLocalTranslationEngine :
             ? null
             : delta =>
             {
+                ct.ThrowIfCancellationRequested();
+                lifetimeToken.ThrowIfCancellationRequested();
                 linked.Token.ThrowIfCancellationRequested();
                 try
                 {

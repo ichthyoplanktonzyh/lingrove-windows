@@ -21,6 +21,13 @@ Windows paths are relative to `src/`, and tests mirror the responsibility under 
 | `Services/LanguageLearning/LearningModelController.swift`, `LearningTranslationStyleIntegrationTests.swift` | `LearningLocalTranslationEngine.cs`: frozen configuration, planned request identity, effective style and generation; endpoint planner also suppresses dormant TranslateGemma style |
 | `Services/LanguageLearning/LearningModelCollection.swift`, `UI/Settings/Panes/Engine/LearningModelConfigurationView.swift`, `UI/Settings/ModelManagement/DownloadableModelCatalogView.swift` | `App/Learning/LearningModelCatalogManager.cs`, `App/UI/Settings/Panes/LearningLocalModels.cs`: installed models, explicit catalog Get/import, template/context selection and cancellation |
 
+The resource-release follow-up also ports
+`Support/Runtime/LocalRuntimeResidencyPolicy.swift` / `Models/Runtime/LocalRuntimeResidency.swift`
+and their `LocalRuntimeResidencyPolicyTests.swift` cases to
+`Core/Support/Runtime/LocalRuntimeResidencyPolicy.cs`. The Mac collection/controller and
+`LearningModelResidencyTests.swift` define the release, cancellation and subsequent reload behavior;
+Windows adapts their ownership through the preview controller and `ILearningLocalRuntime.UnloadAsync`.
+
 ## Ownership and data flow
 
 `AppHost` constructs the long-lived learning runtime and model-file manager independently of the
@@ -54,6 +61,25 @@ translation output policy separately enforces its 12,000-byte result bound. Shut
 cancels work and waits for any synchronous native call to return before freeing context, then weights.
 There is no timeout that frees a still-running native allocation.
 
+Disabling translation or the app, a manual/battery-saver pause, switching to Endpoint, or changing
+native model/context requirements also requests a nonterminal release. Style/sampler changes cancel
+the preview while retaining compatible weights. Release intent is recorded atomically with settings
+publication/capture admission, then cancellation and native disposal run off the UI thread. Retirement
+epochs reject older queued or loading requests, and returning decode work checks retirement before
+its next sample or delta. Only a successfully created current lease advances a separate admission
+version, so failed/cancelled queued work cannot suppress release, and an old delayed release cannot
+free a newer request's allocation. The next eligible request can reload; endpoint work remains
+independent of local release.
+
+`LearningRequestLifetime` adapts the Mac controller's claim/invalidate authority to one direct
+cancellation token. The controller retires it with intent/settings publication; the engine facade
+owns its final drain/disposal. .NET [CancelAsync](https://learn.microsoft.com/en-us/dotnet/api/system.threading.cancellationtokensource.cancelasync)
+sets the token flag synchronously while callbacks run asynchronously. Caller and facade-owner tokens
+therefore stay distinct through native admission rather than relying on delayed linked callbacks.
+UIA validation also rechecks current settings and active-capture identity around the OS read.
+The existing capture monitor also observes battery saver if the OS status event is absent; while no
+capture is active, that fallback cannot detect a missing event.
+
 ## Settings and model files
 
 Fresh installs select Local with no model and no prewarm. Legacy endpoint opt-in migrates to Endpoint;
@@ -83,9 +109,10 @@ options in memory; they do not write the user's settings file.
 Native x64 CPU loading, quantization/operator support, model quality/latency, WPF interaction and
 concurrent autocomplete behavior remain unverified. GPU offload is not exposed for this learning
 slice. Model-specific sampler overrides are stored and honored, but advanced sampler controls,
-power-specific model profiles, external-folder discovery, transfer pause/resume, idle unloading and
-prompt/KV reuse are deferred Mac adaptations. Loaded learning weights remain resident until a model
-allocation change or shutdown. Cache hits still run local planning first and can open the model.
+power-specific model profiles, external-folder discovery, transfer pause/resume, idle unloading, warmup and
+prompt/KV reuse are deferred Mac adaptations. The pure Warm decision currently retains a compatible
+allocation after manual use; it does not prewarm on settings load. Native memory is released on the
+eligibility/provider/allocation transitions above and shutdown. Cache hits still run local planning first and can open the model.
 
 This does not complete the runtime or Windows-host phase. Reading/selection capture, acknowledged
 replacement, automatic learning triggers, explanation, dictionaries, vocabulary, Anki and speech

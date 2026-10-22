@@ -325,43 +325,34 @@ public sealed class LearningLocalRuntimeTests
         var runtime = new LearningLocalRuntime(new FakeSessionFactory(session));
         var operation = await runtime.BeginOperationAsync(Configuration, CancellationToken.None);
         Task<string> generation = operation.GenerateAsync(Tokens(1), Sampling, 2, null, CancellationToken.None);
-        Task? leaseDisposal = null;
         Task<ILearningLocalOperation>? nextOperation = null;
-        bool barrierAssertionsPassed = false;
-
         try
         {
             await decodeStarted.Task.WaitAsync(TestTimeout);
-            leaseDisposal = operation.DisposeAsync().AsTask();
+            var leaseDisposal = operation.DisposeAsync().AsTask();
             nextOperation = runtime.BeginOperationAsync(Configuration, CancellationToken.None);
-
             Assert.False(leaseDisposal.IsCompleted);
             Assert.False(nextOperation.IsCompleted);
             Assert.False(session.WasDisposed);
-            barrierAssertionsPassed = true;
+            releaseDecode.TrySetResult(true);
+
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => generation.WaitAsync(TestTimeout));
+            await leaseDisposal.WaitAsync(TestTimeout);
+            var next = await nextOperation.WaitAsync(TestTimeout);
+            Assert.False(session.WasDisposed);
+            await next.DisposeAsync().AsTask().WaitAsync(TestTimeout);
         }
         finally
         {
             releaseDecode.TrySetResult(true);
-            if (!barrierAssertionsPassed)
+            try { await generation.WaitAsync(TestTimeout); } catch { }
+            await operation.DisposeAsync().AsTask().WaitAsync(TestTimeout);
+            await runtime.DisposeAsync().AsTask().WaitAsync(TestTimeout);
+            if (nextOperation is not null)
             {
-                leaseDisposal ??= operation.DisposeAsync().AsTask();
-                try { await generation.WaitAsync(TestTimeout); }
-                catch (Exception) { }
-                try { await leaseDisposal.WaitAsync(TestTimeout); }
-                catch (Exception) { }
-                try { await runtime.DisposeAsync().AsTask().WaitAsync(TestTimeout); }
-                catch (Exception) { }
+                try { await nextOperation.WaitAsync(TestTimeout); } catch { }
             }
         }
-
-        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => generation.WaitAsync(TestTimeout));
-        await leaseDisposal!.WaitAsync(TestTimeout);
-        var next = await nextOperation!.WaitAsync(TestTimeout);
-        Assert.False(session.WasDisposed);
-
-        await next.DisposeAsync().AsTask().WaitAsync(TestTimeout);
-        await runtime.DisposeAsync().AsTask().WaitAsync(TestTimeout);
         Assert.True(session.WasDisposed);
     }
 
@@ -381,6 +372,337 @@ public sealed class LearningLocalRuntimeTests
         Assert.Same(callbackError, thrown);
         Assert.Equal(2, session.ClearMemoryCount);
         Assert.True(Assert.Single(session.Samplers).WasDisposed);
+    }
+
+    [Fact]
+    public async Task UnloadReleasesIdleWeightsAndAllowsTheNextRequestToReload()
+    {
+        var first = new FakeNativeSession();
+        var second = new FakeNativeSession();
+        var factory = new FakeSessionFactory(first, second);
+        await using var runtime = new LearningLocalRuntime(factory);
+        await using (var operation = await runtime.BeginOperationAsync(Configuration, CancellationToken.None)) { }
+
+        await runtime.UnloadAsync().WaitAsync(TestTimeout);
+        Assert.True(first.WasDisposed);
+        await using (var operation = await runtime.BeginOperationAsync(Configuration, CancellationToken.None))
+        {
+            Assert.Equal(2, factory.LoadCount);
+            Assert.False(second.WasDisposed);
+        }
+    }
+
+    [Fact]
+    public async Task UnloadRetiresQueuedAdmissionBeforeItCanPrepareAnotherModel()
+    {
+        var session = new FakeNativeSession();
+        var factory = new FakeSessionFactory(session);
+        var runtime = new LearningLocalRuntime(factory);
+        var operation = await runtime.BeginOperationAsync(Configuration, CancellationToken.None);
+        try
+        {
+            var queued = runtime.BeginOperationAsync(
+                new LearningLocalModelConfiguration("other.gguf"), CancellationToken.None);
+            Assert.False(queued.IsCompleted);
+            var unload = runtime.UnloadAsync();
+
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => queued.WaitAsync(TestTimeout));
+            await unload.WaitAsync(TestTimeout);
+            Assert.True(session.WasDisposed);
+            Assert.Equal(1, factory.LoadCount);
+        }
+        finally
+        {
+            await operation.DisposeAsync().AsTask().WaitAsync(TestTimeout);
+            await runtime.DisposeAsync().AsTask().WaitAsync(TestTimeout);
+        }
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task ReleaseDuringNativeLoadRefusesTheRetiredLeaseAndReleasesTheLoadedSession(bool shutdown)
+    {
+        var session = new FakeNativeSession();
+        var factory = new GatedLoadFactory(session);
+        var runtime = new LearningLocalRuntime(factory);
+        var begin = runtime.BeginOperationAsync(Configuration, CancellationToken.None);
+        try
+        {
+            await factory.Entered.Task.WaitAsync(TestTimeout);
+            var unload = shutdown ? runtime.DisposeAsync().AsTask() : runtime.UnloadAsync();
+            Assert.False(unload.IsCompleted);
+            factory.Continue.TrySetResult();
+
+            if (shutdown)
+            {
+                var failure = await Assert.ThrowsAsync<LearningLocalRuntimeException>(() => begin.WaitAsync(TestTimeout));
+                Assert.Equal(LearningLocalRuntimeFailure.RuntimeDisposed, failure.Failure);
+            }
+            else
+                await Assert.ThrowsAnyAsync<OperationCanceledException>(() => begin.WaitAsync(TestTimeout));
+            await unload.WaitAsync(TestTimeout);
+            Assert.True(session.WasDisposed);
+        }
+        finally
+        {
+            factory.Continue.TrySetResult();
+            await runtime.DisposeAsync().AsTask().WaitAsync(TestTimeout);
+        }
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task UnloadDrainsDecodeAndCannotFreeANewerAdmission(bool admitNewRequest)
+    {
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var resume = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var session = new FakeNativeSession
+        {
+            OnPromptBatch = _ =>
+            {
+                entered.TrySetResult();
+                resume.Task.GetAwaiter().GetResult();
+            },
+        };
+        var factory = new FakeSessionFactory(session);
+        var runtime = new LearningLocalRuntime(factory);
+        var operation = await runtime.BeginOperationAsync(Configuration, CancellationToken.None);
+        var generation = operation.GenerateAsync(Tokens(1), Sampling, 2, null, CancellationToken.None);
+        Task<ILearningLocalOperation>? next = null;
+        try
+        {
+            await entered.Task.WaitAsync(TestTimeout);
+            var unload = runtime.UnloadAsync();
+            if (admitNewRequest)
+                next = runtime.BeginOperationAsync(Configuration, CancellationToken.None);
+            Assert.False(unload.IsCompleted);
+            Assert.False(session.WasDisposed);
+            resume.TrySetResult();
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => generation.WaitAsync(TestTimeout));
+
+            if (next is not null)
+            {
+                var newer = await next.WaitAsync(TestTimeout);
+                try
+                {
+                    Assert.False(session.WasDisposed);
+                    Assert.Equal(1, factory.LoadCount);
+                    Assert.Single(newer.TokenizeLiteral("still owned by the new request"));
+                }
+                finally { await newer.DisposeAsync().AsTask().WaitAsync(TestTimeout); }
+            }
+            await unload.WaitAsync(TestTimeout);
+            Assert.Equal(!admitNewRequest, session.WasDisposed);
+        }
+        finally
+        {
+            resume.TrySetResult();
+            try { await generation.WaitAsync(TestTimeout); } catch { }
+            await operation.DisposeAsync().AsTask().WaitAsync(TestTimeout);
+            await runtime.DisposeAsync().AsTask().WaitAsync(TestTimeout);
+        }
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task FailedOrCancelledNewAdmissionDoesNotInvalidateAPendingUnload(bool failMetadata)
+    {
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var resume = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var session = new FakeNativeSession
+        {
+            OnPromptBatch = _ => { entered.TrySetResult(); resume.Task.GetAwaiter().GetResult(); },
+        };
+        var runtime = new LearningLocalRuntime(new FakeSessionFactory(session));
+        var operation = await runtime.BeginOperationAsync(Configuration, CancellationToken.None);
+        var generation = operation.GenerateAsync(Tokens(1), Sampling, 2, null, CancellationToken.None);
+        using var cancellation = new CancellationTokenSource();
+        try
+        {
+            await entered.Task.WaitAsync(TestTimeout);
+            var unload = runtime.UnloadAsync();
+            var next = runtime.BeginOperationAsync(Configuration, cancellation.Token);
+            if (failMetadata)
+            {
+                session.FailMetadataReads = true;
+                resume.TrySetResult();
+                await Assert.ThrowsAsync<InvalidOperationException>(() => next.WaitAsync(TestTimeout));
+            }
+            else
+            {
+                cancellation.Cancel();
+                await Assert.ThrowsAnyAsync<OperationCanceledException>(() => next.WaitAsync(TestTimeout));
+                resume.TrySetResult();
+            }
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => generation.WaitAsync(TestTimeout));
+            await unload.WaitAsync(TestTimeout);
+            Assert.True(session.WasDisposed);
+        }
+        finally
+        {
+            resume.TrySetResult();
+            try { await generation.WaitAsync(TestTimeout); } catch { }
+            await operation.DisposeAsync().AsTask().WaitAsync(TestTimeout);
+            await runtime.DisposeAsync().AsTask().WaitAsync(TestTimeout);
+        }
+    }
+
+    [Fact]
+    public async Task ConcurrentReleaseAndShutdownDisposeTheNativeAllocationExactlyOnce()
+    {
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var resume = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var session = new FakeNativeSession
+        {
+            OnPromptBatch = _ => { entered.TrySetResult(); resume.Task.GetAwaiter().GetResult(); },
+        };
+        var runtime = new LearningLocalRuntime(new FakeSessionFactory(session));
+        var operation = await runtime.BeginOperationAsync(Configuration, CancellationToken.None);
+        var generation = operation.GenerateAsync(Tokens(1), Sampling, 2, null, CancellationToken.None);
+        try
+        {
+            await entered.Task.WaitAsync(TestTimeout);
+            var first = runtime.UnloadAsync();
+            var second = runtime.UnloadAsync();
+            var shutdown = runtime.DisposeAsync().AsTask();
+            Assert.False(first.IsCompleted);
+            Assert.False(second.IsCompleted);
+            Assert.False(shutdown.IsCompleted);
+            Assert.Equal(0, session.DisposeCount);
+            resume.TrySetResult();
+            await Task.WhenAll(first, second, shutdown).WaitAsync(TestTimeout);
+
+            Assert.Equal(1, session.DisposeCount);
+            await runtime.UnloadAsync().WaitAsync(TestTimeout);
+            Assert.Equal(1, session.DisposeCount);
+            var failure = await Assert.ThrowsAsync<LearningLocalRuntimeException>(() =>
+                runtime.BeginOperationAsync(Configuration, CancellationToken.None).WaitAsync(TestTimeout));
+            Assert.Equal(LearningLocalRuntimeFailure.RuntimeDisposed, failure.Failure);
+        }
+        finally
+        {
+            resume.TrySetResult();
+            try { await generation.WaitAsync(TestTimeout); } catch { }
+            await operation.DisposeAsync().AsTask().WaitAsync(TestTimeout);
+            await runtime.DisposeAsync().AsTask().WaitAsync(TestTimeout);
+        }
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task DirectCancellationFlagRejectsLoadedLeaseBeforeLinkedCallbacksRun(bool ownerToken)
+    {
+        var session = new FakeNativeSession();
+        var factory = new GatedLoadFactory(session);
+        var runtime = new LearningLocalRuntime(factory);
+        using var cancellation = new CancellationTokenSource();
+        var begin = runtime.BeginOperationAsync(Configuration,
+            ownerToken ? CancellationToken.None : cancellation.Token,
+            ownerToken ? cancellation.Token : CancellationToken.None);
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var resume = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        Task? cancelling = null;
+        CancellationTokenRegistration registration = default;
+        try
+        {
+            await factory.Entered.Task.WaitAsync(TestTimeout);
+            // Register last so the callback stack blocks before propagating cancellation to the
+            // runtime's linked token. The direct caller/owner flag is already cancelled meanwhile.
+            registration = cancellation.Token.Register(() =>
+            {
+                entered.TrySetResult();
+                resume.Task.GetAwaiter().GetResult();
+            });
+            cancelling = cancellation.CancelAsync();
+            await entered.Task.WaitAsync(TestTimeout);
+            Assert.False(cancelling.IsCompleted);
+            factory.Continue.TrySetResult();
+            try
+            {
+                await Assert.ThrowsAnyAsync<OperationCanceledException>(() => begin.WaitAsync(TestTimeout));
+                await runtime.UnloadAsync().WaitAsync(TestTimeout);
+                Assert.True(session.WasDisposed);
+            }
+            finally { resume.TrySetResult(); }
+        }
+        finally
+        {
+            resume.TrySetResult();
+            factory.Continue.TrySetResult();
+            registration.Dispose();
+            if (cancelling is not null) await cancelling.WaitAsync(TestTimeout);
+            await runtime.DisposeAsync().AsTask().WaitAsync(TestTimeout);
+        }
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task ActiveDecodeChecksDirectCancellationBeforeSamplingWhileCallbacksAreBlocked(bool ownerToken)
+    {
+        var decoded = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var resumeDecode = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var callbackEntered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var resumeCallback = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var session = new FakeNativeSession
+        {
+            OnPromptBatch = _ => { decoded.TrySetResult(); resumeDecode.Task.GetAwaiter().GetResult(); },
+        };
+        var runtime = new LearningLocalRuntime(new FakeSessionFactory(session));
+        using var cancellation = new CancellationTokenSource();
+        var operation = await runtime.BeginOperationAsync(Configuration,
+            ownerToken ? CancellationToken.None : cancellation.Token,
+            ownerToken ? cancellation.Token : CancellationToken.None);
+        var deltas = new List<string>();
+        var generation = operation.GenerateAsync(Tokens(1), Sampling, 2, deltas.Add, CancellationToken.None);
+        CancellationTokenRegistration registration = default;
+        Task? cancelling = null;
+        try
+        {
+            await decoded.Task.WaitAsync(TestTimeout);
+            registration = cancellation.Token.Register(() =>
+            {
+                callbackEntered.TrySetResult();
+                resumeCallback.Task.GetAwaiter().GetResult();
+            });
+            cancelling = cancellation.CancelAsync();
+            await callbackEntered.Task.WaitAsync(TestTimeout);
+            resumeDecode.TrySetResult();
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => generation.WaitAsync(TestTimeout));
+            Assert.False(cancelling.IsCompleted);
+            Assert.Empty(session.Samplers);
+            Assert.Empty(deltas);
+        }
+        finally
+        {
+            resumeDecode.TrySetResult();
+            resumeCallback.TrySetResult();
+            registration.Dispose();
+            if (cancelling is not null) await cancelling.WaitAsync(TestTimeout);
+            try { await generation.WaitAsync(TestTimeout); } catch { }
+            await operation.DisposeAsync().AsTask().WaitAsync(TestTimeout);
+            await runtime.DisposeAsync().AsTask().WaitAsync(TestTimeout);
+        }
+    }
+
+    private sealed class GatedLoadFactory(FakeNativeSession session) : ILearningLocalNativeSessionFactory
+    {
+        public TaskCompletionSource Entered { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        public TaskCompletionSource Continue { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        public async Task<ILearningLocalNativeSession> LoadAsync(
+            LearningLocalModelConfiguration configuration, CancellationToken ct)
+        {
+            Entered.TrySetResult();
+            // A native load can remain inside an uncancellable synchronous call. Runtime retirement
+            // must reject its returned lease even when the requesting token itself was not cancelled.
+            await Continue.Task;
+            return session;
+        }
     }
 
     private static IReadOnlyList<LLamaToken> Tokens(int count) =>
@@ -416,6 +738,7 @@ public sealed class LearningLocalRuntimeTests
             get
             {
                 ThrowIfDisposed();
+                if (FailMetadataReads) throw new InvalidOperationException("Synthetic metadata failure.");
                 MetadataReadCount++;
                 return _metadata;
             }
@@ -441,9 +764,11 @@ public sealed class LearningLocalRuntimeTests
         public Action<(int Offset, int Count, bool RequestLogits)>? AfterPromptBatch { get; set; }
         public Action<(int Offset, int Count, bool RequestLogits)>? OnPromptBatch { get; set; }
         public int ClearMemoryCount { get; private set; }
+        public bool FailMetadataReads { get; set; }
         public int MetadataReadCount { get; private set; }
         public int ContextWindowReadCount { get; private set; }
         public bool WasDisposed { get; private set; }
+        public int DisposeCount { get; private set; }
 
         public void EnqueueSampleScript(params LLamaToken[] tokens) => _sampleScripts.Enqueue(tokens);
 
@@ -502,7 +827,11 @@ public sealed class LearningLocalRuntimeTests
             return sampler;
         }
 
-        public void Dispose() => WasDisposed = true;
+        public void Dispose()
+        {
+            DisposeCount++;
+            WasDisposed = true;
+        }
 
         private void ThrowIfDisposed() => ObjectDisposedException.ThrowIf(WasDisposed, this);
     }

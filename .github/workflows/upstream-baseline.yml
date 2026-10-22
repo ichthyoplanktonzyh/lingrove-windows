@@ -1,0 +1,44 @@
+name: Upstream baseline
+
+# Recheck the original fork only when its recorded baseline changes. Ordinary
+# feature PRs use ci.yml; this job is not a second build of the evolving product.
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/upstream-baseline.yml'
+      - 'docs/BASELINE.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: upstream-baseline-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+  DOTNET_NOLOGO: '1'
+  COTABBY_CLIPBOARD_TEST: '0'
+
+jobs:
+  upstream:
+    name: Original Windows fork on .NET 9
+    runs-on: windows-2022
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: b1e4031c70aca1be21aae2c57b138fde5fc22bb1
+          persist-credentials: false
+      - uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
+        with:
+          dotnet-version: '9.0.x'
+      - name: Restore original solution
+        run: dotnet restore Cotabby.sln
+      - name: Compile original solution
+        run: dotnet build Cotabby.sln --configuration Release --no-restore
+      - name: Run original core tests
+        run: dotnet test tests/Cotabby.Core.Tests/Cotabby.Core.Tests.csproj --configuration Release --no-build --no-restore
+      - name: Run original inference and adapter tests
+        run: dotnet test tests/Cotabby.Inference.Tests/Cotabby.Inference.Tests.csproj --configuration Release --no-build --no-restore --filter 'FullyQualifiedName!~ClipboardTextReaderTests'

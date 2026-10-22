@@ -1,4 +1,5 @@
 using System.Net.Http;
+using Cotabby.App.Learning;
 using Cotabby.App.Emoji;
 using Cotabby.App.Macros;
 using Cotabby.App.Overlay;
@@ -6,10 +7,12 @@ using Cotabby.App.Settings;
 using Cotabby.Core.Focus;
 using Cotabby.Core.Input;
 using Cotabby.Core.Insertion;
+using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Models;
 using Cotabby.Core.Spelling;
 using Cotabby.Core.Suggestions;
 using Cotabby.Inference;
+using Cotabby.Inference.LanguageLearning;
 using Cotabby.Inference.OpenAICompatible;
 using Cotabby.Win32.Clipboard;
 using Cotabby.Win32.Focus;
@@ -44,6 +47,8 @@ public sealed class AppHost : IAsyncDisposable
     private readonly ILogger _logger;
     private readonly GhostOverlayWindow _macroPreview;
     private readonly SymSpellCorrector _spelling;
+    private readonly HttpClient _learningHttpClient;
+    private int _learningCredentialRevision;
 
     public SuggestionCoordinator Coordinator { get; }
     public LlamaRuntimeManager Runtime { get; }
@@ -56,6 +61,8 @@ public sealed class AppHost : IAsyncDisposable
     public OpenAICompatibleSuggestionEngine Endpoint { get; }
     public OpenAICompatibleApiClient EndpointClient { get; }
     public IOpenAICompatibleCredentialStore EndpointCredentials { get; }
+    public IOpenAICompatibleCredentialStore LearningEndpointCredentials { get; }
+    internal LearningPreviewController LearningPreview { get; }
 
     /// <summary>Raised on the UI thread after settings were applied or a model was loaded, so open windows and the tray can refresh.</summary>
     public event Action? SettingsApplied;
@@ -67,6 +74,12 @@ public sealed class AppHost : IAsyncDisposable
         _ui = ui;
         Overlay = overlay;
         _macroPreview = macroPreview;
+        // Learning has its own caller-owned HTTP pool. It never borrows the autocomplete client's
+        // redirects, timeout, server state, or credentials, and it is not used until a manual request.
+        _learningHttpClient = OpenAICompatibleLearningTranslationEngine.CreateHttpClient();
+        LearningEndpointCredentials = new DpapiOpenAICompatibleCredentialStore(System.IO.Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "Cotabby", "learning-endpoint-credential.bin"));
 
         var sc = new ServiceCollection();
         sc.AddLogging(b =>
@@ -93,6 +106,7 @@ public sealed class AppHost : IAsyncDisposable
         sc.AddSingleton<LlamaSuggestionEngine>();
         sc.AddSingleton<OpenAICompatibleApiClient>(_ => new OpenAICompatibleApiClient());
         sc.AddSingleton<IOpenAICompatibleCredentialStore>(_ => new DpapiOpenAICompatibleCredentialStore());
+        sc.AddSingleton<ILearningSentenceTokenizer, IcuLearningSentenceTokenizer>();
         _services = sc.BuildServiceProvider();
 
         SettingsStore = _services.GetRequiredService<SettingsStore>();
@@ -135,6 +149,11 @@ public sealed class AppHost : IAsyncDisposable
         EmojiPicker.CanCapture = Macros.CanCapture = Coordinator.IsAvailableIn;
         EmojiPicker.CommitKeyFor = Macros.CommitKeyFor = Coordinator.AcceptWordKeyFor;
         Coordinator.Metrics.Restore(Settings.WordsAccepted);
+        LearningPreview = new LearningPreviewController(
+            _hook, focus, overlay.Dispatcher,
+            _services.GetRequiredService<ILearningSentenceTokenizer>(),
+            _learningHttpClient, LearningEndpointCredentials,
+            loggers.CreateLogger<LearningPreviewController>());
 
         ApplySettings();
     }
@@ -150,6 +169,13 @@ public sealed class AppHost : IAsyncDisposable
         ApplySettings();
         Settings.WordsAccepted = Coordinator.Metrics.WordsAccepted;
         SettingsStore.Save(Settings);
+    }
+
+    /// <summary>Invalidates only an active learning request after its separate DPAPI key changes.</summary>
+    public void LearningCredentialsChanged()
+    {
+        _learningCredentialRevision++;
+        LearningPreview.ApplySettings(Settings, _learningCredentialRevision);
     }
 
     /// <summary>Restores every preference to its default. The chosen model and onboarding state stay.</summary>
@@ -178,6 +204,7 @@ public sealed class AppHost : IAsyncDisposable
         EmojiPicker.PreferredSkinTone = Settings.EmojiSkinTone;
         EmojiPicker.PreferredGender = Settings.EmojiGender;
         Macros.Enabled = Settings.MacrosEnabled;
+        LearningPreview.ApplySettings(Settings, _learningCredentialRevision);
         Overlay.ApplyAppearance(Settings);
         _macroPreview.ApplyAppearance(Settings);
         LaunchAtLogin.Set(Settings.LaunchAtLogin);
@@ -278,12 +305,14 @@ public sealed class AppHost : IAsyncDisposable
         SettingsStore.Save(Settings);
         _hook.KeyEvent -= OnGlobalToggleKey;
         SystemEvents.PowerModeChanged -= OnPowerModeChanged;
+        await LearningPreview.DisposeAsync().ConfigureAwait(false);
         EmojiPicker.Dispose();
         Macros.Dispose();
         _spelling.Dispose();
         await Coordinator.DisposeAsync().ConfigureAwait(false);
         await Runtime.DisposeAsync().ConfigureAwait(false);
         EndpointClient.Dispose();
+        _learningHttpClient.Dispose();
         await _services.DisposeAsync().ConfigureAwait(false);
     }
 }

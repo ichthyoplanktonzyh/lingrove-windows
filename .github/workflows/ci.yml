@@ -61,10 +61,16 @@ jobs:
           repository: ichthyoplanktonzyh/lingrove
           ref: 43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f
           path: .mac-baseline
-          sparse-checkout: Cotabby/Support
+          sparse-checkout: |
+            Cotabby/Support
+            Cotabby/Models/Context
+            Cotabby/Models/LanguageLearning
+            Cotabby/Services/LanguageLearning
           persist-credentials: false
       - name: Verify the same corpus against committed Swift policies
         run: python3 scripts/verify-macos-parity.py --mac-repo .mac-baseline
+      - name: Verify learning corpus against committed Mac contracts
+        run: python3 scripts/verify-learning-macos-parity.py --mac-repo .mac-baseline
 
   # Routine CI stops after validation. Packaging, artifact uploads and releases
   # are deliberately absent; distribution is a separately authorized task.

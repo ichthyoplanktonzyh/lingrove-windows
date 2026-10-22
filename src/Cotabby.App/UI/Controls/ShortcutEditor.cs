@@ -17,7 +17,11 @@ internal sealed class GlobalShortcut
     public static GlobalShortcut Toggle { get; } =
         new("Toggle Cotabby", KeyBinding.Unbound, s => s.GlobalToggle, (s, key) => s.GlobalToggle = key);
 
-    private static readonly GlobalShortcut[] All = [AcceptWord, AcceptAll, Toggle];
+    public static GlobalShortcut LearningTranslation { get; } =
+        new("Translate Current Sentence", new KeyBinding(0x54, KeyModifiers.Alt, "Alt+T"),
+            s => s.LearningTranslationShortcut, (s, key) => s.LearningTranslationShortcut = key);
+
+    private static readonly GlobalShortcut[] All = [AcceptWord, AcceptAll, Toggle, LearningTranslation];
 
     private readonly Func<AppSettings, KeyBinding> _get;
 
@@ -50,12 +54,33 @@ internal sealed class GlobalShortcut
     }
 
     /// <summary>The name of another shortcut already on this key, or null when the key is free.</summary>
-    public string? Conflict(AppSettings settings, KeyBinding candidate) => All
-        .FirstOrDefault(other => other != this
+    public string? Conflict(AppSettings settings, KeyBinding candidate)
+    {
+        if (!candidate.IsBound) return null;
+
+        var global = All.FirstOrDefault(other => other != this
             && other.Binding(settings) is var taken
             && taken.VirtualKey == candidate.VirtualKey
-            && taken.Modifiers == candidate.Modifiers)
-        ?.Name;
+            && taken.Modifiers == candidate.Modifiers);
+        if (global is not null) return global.Name;
+
+        // The learning chord is global, so it must also yield to an accept shortcut a user
+        // assigned only in one app. This keeps the existing per-app recorder a visible conflict
+        // boundary instead of letting the translation hook consume that app's established key.
+        if (this == LearningTranslation)
+        {
+            foreach (var app in settings.ShortcutOverrides)
+            {
+                if (Matches(app.AcceptWord) || Matches(app.AcceptAll)) return $"{app.ProcessName} shortcut";
+            }
+        }
+
+        return null;
+
+        bool Matches(KeyBinding? binding) => binding is { IsBound: true } key
+            && key.VirtualKey == candidate.VirtualKey
+            && key.Modifiers == candidate.Modifiers;
+    }
 }
 
 /// <summary>A key recorder for a global shortcut with its Reset and Clear buttons.</summary>

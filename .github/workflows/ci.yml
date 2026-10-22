@@ -40,6 +40,8 @@ jobs:
         run: dotnet test tests/Cotabby.Core.Tests/Cotabby.Core.Tests.csproj --configuration Release --no-build --no-restore
       - name: Test inference transport and Windows adapters
         run: dotnet test tests/Cotabby.Inference.Tests/Cotabby.Inference.Tests.csproj --configuration Release --no-build --no-restore --filter 'FullyQualifiedName!~ClipboardTextReaderTests'
+      - name: Test portable app settings and task ownership
+        run: dotnet test tests/Cotabby.App.Tests/Cotabby.App.Tests.csproj --configuration Release --no-build --no-restore
 
   portable-core:
     name: Portable core and Swift parity on macOS ARM64
@@ -55,6 +57,8 @@ jobs:
           global-json-file: global.json
       - name: Test portable core and parity fixtures
         run: dotnet test tests/Cotabby.Core.Tests/Cotabby.Core.Tests.csproj --configuration Release
+      - name: Test portable app settings and task ownership
+        run: dotnet test tests/Cotabby.App.Tests/Cotabby.App.Tests.csproj --configuration Release
       - name: Read the pinned macOS reference
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:

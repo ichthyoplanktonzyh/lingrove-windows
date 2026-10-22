@@ -125,8 +125,9 @@ complete-output parsing and model capability/metadata gates have [Mac-backed pur
 The local explanation provider now joins that gate with actual token budgeting and complete-output
 validation. A writing-only capture adapter now projects completed preview/unit/component targets
 into frozen explanation inputs with exact original occurrences and context receipts. The library
-service now owns saved-first lookup and the bounded complete-record cache. The next slice must
-compose independent app runtime/settings with that service before adding a session/card. Original,
+service now owns saved-first lookup and the bounded complete-record cache. AppHost now composes
+independent local runtime/settings with that service and its on-demand/60-second idle policy. The
+next slice adds the session/card with captured-document freshness checks. Original,
 selected-text and reading captures, endpoint transport and durable records remain later work.
 
 **Gate:** shared policy fixtures pass; Windows host tests cover selection changes, IME composition,

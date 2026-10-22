@@ -1,6 +1,7 @@
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using Microsoft.Win32;
 using Cotabby.App.Learning;
 using Cotabby.App.UI.Controls;
@@ -17,14 +18,17 @@ namespace Cotabby.App.UI.Settings.Panes;
 /// <remarks>
 /// The installed list is read on a worker because a folder may contain multi-gigabyte files and
 /// many user imports. Choosing a file changes only learning settings; weights are opened later by
-/// the learning runtime after the user requests a translation.
+/// its role's runtime after an explicit request. Translation and explanation reuse file-transfer
+/// infrastructure and this view, while selections, context and output preferences remain separate.
 /// </remarks>
 internal sealed class LearningLocalModels : StackPanel
 {
     private readonly SettingsContext _context;
+    private readonly LearningModelRole _role;
     private readonly ComboBox _installed = new() { MinWidth = 260 };
     private readonly ComboBox _template = new() { MinWidth = 260 };
     private readonly TextBox _contextTokens = new() { Width = 78, TextAlignment = TextAlignment.Right };
+    private readonly TextBox _outputTokens = new() { Width = 78, TextAlignment = TextAlignment.Right };
     private readonly TextBlock _installedStatus = Ui.Text("", "Caption");
     private readonly Button _cancelTransfer;
     private readonly StackPanel _catalog = new();
@@ -32,27 +36,40 @@ internal sealed class LearningLocalModels : StackPanel
     private LearningInstalledModel[] _models = [];
     private CancellationTokenSource? _activeTransfer;
     private string _contextModelBeingEdited = string.Empty;
+    private string _outputModelBeingEdited = string.Empty;
     private bool _refreshing;
     private bool _busy;
     private int _refreshGeneration;
 
-    public LearningLocalModels(SettingsContext context)
+    public LearningLocalModels(SettingsContext context, LearningModelRole role = LearningModelRole.Translation)
     {
         _context = context;
+        _role = role;
         Margin = new Thickness(0, 4, 0, 0);
         _cancelTransfer = Ui.Button("Cancel", CancelActiveTransfer);
         _installed.Styled("Combo");
         _template.Styled("Combo");
         _contextTokens.Styled("Input");
-        _template.ItemsSource = Enum.GetValues<LearningChatTemplate>()
+        _template.ItemsSource = LearningChatTemplatePolicy.AvailableFor(role)
             .Select(template => new TemplateChoice(template, template.Label())).ToArray();
         _template.DisplayMemberPath = "Label";
         _template.SelectedValuePath = "Value";
         _installed.SelectedValuePath = "Value";
+        _installed.ItemContainerStyle = new Style(typeof(ComboBoxItem), _installed.ItemContainerStyle)
+        {
+            Setters = { new Setter(IsEnabledProperty, new Binding(nameof(ModelChoice.IsSelectable))) },
+        };
 
         Children.Add(SettingLine("Installed model", _installed, Ui.Button("Refresh", RefreshInstalledAsync)));
         Children.Add(SettingLine("Instruction template", _template));
         Children.Add(SettingLine("Context tokens", _contextTokens));
+        if (role == LearningModelRole.Explanation)
+        {
+            _outputTokens.Styled("Input");
+            Children.Add(SettingLine("Output tokens", _outputTokens));
+            _outputTokens.GotKeyboardFocus += (_, _) => _outputModelBeingEdited = SelectedModel;
+            _outputTokens.OnCommit(CommitOutputTokens);
+        }
         Children.Add(Ui.Across(_installedStatus, _cancelTransfer));
 
         var folderActions = Ui.Across(
@@ -62,7 +79,9 @@ internal sealed class LearningLocalModels : StackPanel
         Children.Add(folderActions);
 
         var deferredNote = Ui.Text(
-            "Local translation runs on the CPU and uses each model family's recommended generation settings. Use Add Your Own to import a GGUF into this folder.",
+            role == LearningModelRole.Translation
+                ? "Local translation runs on the CPU and uses each model family's recommended generation settings. Use Add Your Own to import a GGUF into this folder."
+                : "AI explanation uses its own general instruction model. It loads on request and releases memory after a minute of inactivity.",
             "Caption");
         deferredNote.TextWrapping = TextWrapping.Wrap;
         deferredNote.Margin = new Thickness(0, 4, 0, 8);
@@ -76,12 +95,18 @@ internal sealed class LearningLocalModels : StackPanel
 
         _installed.SelectionChanged += OnInstalledSelectionChanged;
         _template.SelectionChanged += OnTemplateSelectionChanged;
-        _contextTokens.GotKeyboardFocus += (_, _) => _contextModelBeingEdited = _context.Settings.LearningLocalModel;
+        _contextTokens.GotKeyboardFocus += (_, _) => _contextModelBeingEdited = SelectedModel;
         _contextTokens.OnCommit(CommitContextTokens);
         _context.OnRefresh(UpdateControls);
         _context.Closed += CancelTransfers;
         RefreshInstalledAsync();
     }
+
+    private string SelectedModel => _role == LearningModelRole.Translation
+        ? _context.Settings.LearningLocalModel : _context.Settings.LearningExplanationLocalModel;
+    private LearningChatTemplate SelectedTemplate => _role == LearningModelRole.Translation
+        ? _context.Settings.LearningLocalTemplate : _context.Settings.LearningExplanationLocalTemplate;
+    private IReadOnlyList<LearningDownloadableModel> Catalog => LearningRuntimeCatalog.ModelsFor(_role);
 
     private static FrameworkElement SettingLine(string title, params FrameworkElement[] controls)
     {
@@ -102,7 +127,7 @@ internal sealed class LearningLocalModels : StackPanel
     private void BuildCatalog()
     {
         _catalog.Children.Clear();
-        foreach (var model in LearningRuntimeCatalog.TranslationModels)
+        foreach (var model in Catalog)
         {
             var status = Ui.Text($"{model.ApproximateSizeInGigabytes:0.00} GB", "Caption");
             status.TextWrapping = TextWrapping.Wrap;
@@ -132,25 +157,34 @@ internal sealed class LearningLocalModels : StackPanel
         {
             var settings = _context.Settings;
             _installed.Items.Clear();
-            if (!string.IsNullOrEmpty(settings.LearningLocalModel)
-                && !_models.Any(model => string.Equals(model.Filename, settings.LearningLocalModel, StringComparison.OrdinalIgnoreCase)))
+            // Mac's empty picker sentinel clears only the role selection, retaining installed
+            // files and per-model preferences for later reuse.
+            _installed.Items.Add(new ModelChoice("", "Choose a model", true));
+            var modelName = SelectedModel;
+            if (!string.IsNullOrEmpty(modelName)
+                && !_models.Any(model => string.Equals(model.Filename, modelName, StringComparison.OrdinalIgnoreCase)))
             {
-                _installed.Items.Add(new ModelChoice(settings.LearningLocalModel, $"{settings.LearningLocalModel} (file unavailable)"));
+                _installed.Items.Add(Choice(modelName, $"{modelName} (file unavailable)"));
             }
             foreach (var model in _models)
-                _installed.Items.Add(new ModelChoice(model.Filename, $"{model.DisplayName} · {model.SizeBytes / 1_000_000_000d:0.0} GB"));
-            _installed.SelectedValue = settings.LearningLocalModel;
-            _template.SelectedValue = Enum.IsDefined(settings.LearningLocalTemplate)
-                ? settings.LearningLocalTemplate
+                _installed.Items.Add(Choice(model.Filename, $"{model.DisplayName} · {model.SizeBytes / 1_000_000_000d:0.0} GB"));
+            _installed.SelectedValue = modelName;
+            _template.SelectedValue = Enum.IsDefined(SelectedTemplate)
+                ? SelectedTemplate
                 : LearningChatTemplate.Automatic;
 
-            var context = settings.EffectiveLearningLocalContextTokens(settings.LearningLocalModel);
+            var context = _role == LearningModelRole.Translation ? settings.EffectiveLearningLocalContextTokens(modelName)
+                : settings.EffectiveLearningExplanationContextTokens(modelName);
             if (!_contextTokens.IsKeyboardFocused)
                 _contextTokens.Text = context.ToString(System.Globalization.CultureInfo.CurrentCulture);
+            if (!_outputTokens.IsKeyboardFocused)
+                _outputTokens.Text = LearningExplanationModelPolicy.ResolveOutputTokens(
+                    settings.EffectiveLearningExplanationGenerationProfile(modelName).MaximumOutputTokens).ToString(System.Globalization.CultureInfo.CurrentCulture);
 
             _installed.IsEnabled = !_busy;
             _template.IsEnabled = !_busy;
             _contextTokens.IsEnabled = !_busy;
+            _outputTokens.IsEnabled = !_busy && !string.IsNullOrEmpty(modelName);
             _cancelTransfer.IsEnabled = _busy;
             UpdateCatalogActions();
         }
@@ -167,8 +201,8 @@ internal sealed class LearningLocalModels : StackPanel
         {
             if (border.Child is not Grid { Children.Count: 2 } grid || grid.Children[1] is not Button button) continue;
             var index = _catalog.Children.IndexOf(border);
-            if (index < 0 || index >= LearningRuntimeCatalog.TranslationModels.Count) continue;
-            var model = LearningRuntimeCatalog.TranslationModels[index];
+            if (index < 0 || index >= Catalog.Count) continue;
+            var model = Catalog[index];
             bool isInstalled = installed.Contains(model.Filename);
             button.IsEnabled = !_busy && !isInstalled;
             button.Content = isInstalled ? "Installed" : "Get";
@@ -178,15 +212,23 @@ internal sealed class LearningLocalModels : StackPanel
     private void OnInstalledSelectionChanged(object sender, SelectionChangedEventArgs args)
     {
         if (_refreshing || _installed.SelectedValue is not string filename
-            || string.Equals(filename, _context.Settings.LearningLocalModel, StringComparison.Ordinal)) return;
-        _context.Change(settings => settings.LearningLocalModel = filename);
+            || string.Equals(filename, SelectedModel, StringComparison.Ordinal)) return;
+        _context.Change(settings =>
+        {
+            if (_role == LearningModelRole.Translation) settings.LearningLocalModel = filename;
+            else settings.LearningExplanationLocalModel = filename;
+        });
     }
 
     private void OnTemplateSelectionChanged(object sender, SelectionChangedEventArgs args)
     {
         if (_refreshing || _template.SelectedValue is not LearningChatTemplate template
-            || template == _context.Settings.LearningLocalTemplate) return;
-        _context.Change(settings => settings.LearningLocalTemplate = template);
+            || template == SelectedTemplate) return;
+        _context.Change(settings =>
+        {
+            if (_role == LearningModelRole.Translation) settings.LearningLocalTemplate = template;
+            else settings.LearningExplanationLocalTemplate = template;
+        });
     }
 
     private void CommitContextTokens(string text)
@@ -207,8 +249,30 @@ internal sealed class LearningLocalModels : StackPanel
         tokens = Math.Clamp(tokens, 1_024, ModelContextBudget.MaximumLocalTokens);
         _context.Change(settings =>
         {
-            settings.LearningLocalContextTokensByModel ??= new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-            settings.LearningLocalContextTokensByModel[filename] = tokens;
+            if (_role == LearningModelRole.Translation)
+            {
+                settings.LearningLocalContextTokensByModel ??= new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+                settings.LearningLocalContextTokensByModel[filename] = tokens;
+            }
+            else
+            {
+                settings.LearningExplanationLocalContextTokensByModel ??= new(StringComparer.OrdinalIgnoreCase);
+                settings.LearningExplanationLocalContextTokensByModel[filename] = tokens;
+            }
+        });
+    }
+
+    private void CommitOutputTokens(string text)
+    {
+        if (_refreshing || string.IsNullOrEmpty(_outputModelBeingEdited) || !int.TryParse(text, out int tokens))
+        { UpdateControls(); return; }
+        var filename = _outputModelBeingEdited;
+        var profile = _context.Settings.EffectiveLearningExplanationGenerationProfile(filename);
+        _context.Change(settings =>
+        {
+            settings.LearningExplanationLocalGenerationProfiles ??= new(StringComparer.OrdinalIgnoreCase);
+            settings.LearningExplanationLocalGenerationProfiles[filename] = profile with
+            { MaximumOutputTokens = LearningExplanationModelPolicy.ResolveOutputTokens(tokens) };
         });
     }
 
@@ -222,7 +286,7 @@ internal sealed class LearningLocalModels : StackPanel
             if (_lifetime.IsCancellationRequested || generation != Volatile.Read(ref _refreshGeneration)) return;
             _models = models.ToArray();
             UpdateControls();
-            _installedStatus.Text = $"{_models.Length} installed GGUF model(s). Weights load only when a manual translation starts.";
+            _installedStatus.Text = $"{_models.Length} installed GGUF model(s). Weights load only on request.";
         }
         catch (OperationCanceledException) when (_lifetime.IsCancellationRequested)
         {
@@ -350,7 +414,10 @@ internal sealed class LearningLocalModels : StackPanel
         catch (ObjectDisposedException) { }
     }
 
-    private sealed record ModelChoice(string Value, string Label)
+    private ModelChoice Choice(string value, string label) => new(value, label, _role != LearningModelRole.Explanation
+        || LearningExplanationModelPolicy.SupportsGeneralInstructions(value, LearningChatTemplate.Automatic));
+
+    private sealed record ModelChoice(string Value, string Label, bool IsSelectable)
     {
         public override string ToString() => Label;
     }

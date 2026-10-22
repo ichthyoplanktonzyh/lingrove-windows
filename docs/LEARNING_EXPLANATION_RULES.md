@@ -2,7 +2,8 @@
 
 This port adapts the stable Mac explanation rules and a local provider at
 `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`. The Windows app has no explanation trigger yet;
-app settings/runtime/session/card wiring remains unported. Translation and autocomplete runtime
+independent local app settings/runtime ownership is mapped in [the runtime note](LEARNING_EXPLANATION_RUNTIME.md).
+Session/card wiring remains unported. Translation and autocomplete runtime
 ownership are unchanged.
 
 ## Source mapping and ownership
@@ -209,8 +210,8 @@ generic selection capture API.
 
 ## Library explanation service
 
-`LearningExplanationService` adapts the original explicit service orchestration. The future
-composition root supplies an explanation-only engine factory and committed profile/response-language
+`LearningExplanationService` adapts the original explicit service orchestration. The app
+composition root now supplies an explanation-only local engine factory and committed profile/response-language
 snapshots. Each generated record has its own UUID, frozen input, response language, complete parsed
 result, model name and creation instant. Provider addresses and credentials do not enter a record.
 The record is currently an in-memory value: no durable schema, Codable date compatibility, store,
@@ -265,10 +266,9 @@ currently records no telemetry.
 
 ## Next adapter gates
 
-Still unported: the remaining capture origins and notebook construction, app ownership/settings for the new
-independent local explanation provider/service, endpoint transport,
+Still unported: the remaining capture origins and notebook construction, explanation endpoint transport,
 durable record ownership/persistence, request cancellation/stale-result session handling and the explanation
-card. The translation model must not be borrowed to simulate this feature. App composition must
-give the local provider independent configuration/runtime ownership, or report it unavailable.
+card. The [app-owned local provider](LEARNING_EXPLANATION_RUNTIME.md) has independent configuration/runtime
+ownership; it reports unavailable rather than borrowing translation's selected model.
 Native WPF/UIA/IME/model
 execution and model-backed explanation quality are not established by these pure tests.

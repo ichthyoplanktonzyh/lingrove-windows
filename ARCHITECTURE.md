@@ -159,9 +159,10 @@ The explanation library has its own single-request local provider, library servi
 The factory projects an immutable completed preview/unit/component into target text, exact UTF-16
 occurrences and a local context receipt; it owns no live editor or durable notebook. Its full sentence
 evidence tokenizer retains separator spaces separately from the existing trimmed caret tokenizer.
-The service owns per-request facades and a bounded complete-record cache. An app-owned independent
-explanation runtime/settings projection and stale-result session/card wiring
-are still required before this becomes an interactive feature. See [the explanation map](docs/LEARNING_EXPLANATION_RULES.md).
+The service owns per-request facades and a bounded complete-record cache. AppHost now owns its
+independent local settings/runtime controller, which loads on request and releases after 60 idle
+seconds. Stale-result session/card wiring is still required before this becomes an interactive
+feature. See [the explanation map](docs/LEARNING_EXPLANATION_RULES.md) and [app ownership](docs/LEARNING_EXPLANATION_RUNTIME.md).
 
 Explicit replacement and a combined autocomplete/learning host walkthrough are follow-up slices
 after captured ranges, IME and editor acknowledgement are verified. Broader model residency/power controls, dictionary, notebook, Anki, speech and history work follows the scoped preview port.

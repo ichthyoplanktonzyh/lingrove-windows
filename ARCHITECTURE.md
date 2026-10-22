@@ -5,6 +5,29 @@ during migration. The repository currently contains an inherited autocomplete im
 language-learning components described as future flows are architectural targets, not shipped
 Windows behavior.
 
+## Architecture authority
+
+The stable macOS Lingrove implementation is the architecture and behavior reference for this port.
+The Windows work adapts the existing macOS work; it does not independently redesign Lingrove's product,
+interaction model, or business rules. The pinned reference is
+`43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`; compare committed source and tests rather than a dirty
+working checkout. The project/layer map below translates existing responsibilities into C# and
+Windows technology, and the future-flow descriptions identify migration targets rather than new
+product proposals.
+
+Preserve the Mac domain values, settings semantics, request scope, prompts and budgets, task/runtime
+ownership, cancellation, stale-result checks, and privacy behavior. Port pure rules and their
+regression cases first. Replace platform implementations where needed: AX observation with UIA,
+AppKit/SwiftUI presentation with WPF/Win32, and Apple-only inference with a supported Windows
+provider. A different framework does not by itself justify a different user flow.
+
+Each migrated subsystem must trace its Windows files and tests to the Mac source/test paths at the
+reference revision. Document unavoidable platform differences and unimplemented behavior alongside
+the evidence in [PARITY.md](docs/PARITY.md) or the stage record. Architecture skills support reading
+that existing design and implementing these adapters; they do not supply an alternative product
+architecture. A fake engine belongs in tests, while the app must use a real configured provider or
+report that the provider is unavailable.
+
 ## Product loops
 
 Autocomplete and language learning are equally core product capabilities. Autocomplete observes an
@@ -113,12 +136,13 @@ committed typing / explicit selection / explicit region capture
   -> optional save to local vocabulary store -> notebook / Anki export or connection
 ```
 
-The first Windows learning slice should stay narrow and exercise both core product loops end to
-end: show a sentence-translation preview with a deterministic fake engine, then allow an explicit
-replacement only after the captured field and selection still match. Pair that with accepting an
-autocomplete suggestion in the same host field. A manually configured endpoint may be used during
-host validation, but fixture and CI runs must use the fake and send no text over the network. Broader
-dictionary, notebook, Anki, speech, and history work follows this vertical slice.
+The current Windows learning slice ports the Mac manual current-sentence preview: explicit trigger,
+captured sentence, task-owned translation and a read-only result. Production uses a real configured
+provider or reports that it is unavailable; deterministic fake engines exercise the same interfaces
+only in tests. This slice establishes the minimum independent translation settings and cancellation.
+Explicit replacement and a combined autocomplete/learning host walkthrough are follow-up slices
+after captured ranges, IME and editor acknowledgement are verified. Broader runtime routing,
+dictionary, notebook, Anki, speech and history work follows the scoped preview port.
 
 Do not reuse the suggestion coordinator's active session or a single global llama sequence for
 learning or text-to-speech. A task runtime owns its model/profile and cancellation; switching a model

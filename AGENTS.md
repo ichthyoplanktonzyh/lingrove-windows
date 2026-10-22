@@ -13,6 +13,28 @@ binary names, settings locations, and storage identifiers stable unless a specif
 designed and documented. Lingrove branding in documentation does not mean the Windows runtime has
 been rebranded or that its data is compatible with the macOS app.
 
+## Migration principle: adapt the stable macOS product
+
+**Windows 版本是稳定 macOS 成果的适配与移植，不是重新发明产品、交互或业务架构。**
+
+- Treat the pinned macOS implementation and its tests as the behavior reference. Read the relevant
+  Mac subsystem before implementing its Windows counterpart; preserve its responsibilities, data
+  contracts, defaults, user flow, prompting, budgets, cancellation, and privacy semantics.
+- Port deterministic rules and regression cases directly into C# where possible. Do not invent a
+  simpler replacement rule, change expected results to fit the Windows fork, or redesign a workflow
+  merely because the implementation language or UI framework differs.
+- Adapt the platform-dependent implementation: Accessibility/AppKit/SwiftUI become Windows UIA,
+  Win32 and WPF, and unavailable Apple-specific providers require a Windows-supported counterpart.
+  Keep the Mac module's responsibility and observable behavior wherever the platform permits.
+- Record each migrated module's Mac source/test paths and reference revision, its Windows mapping,
+  necessary platform differences, and remaining verification in the parity or stage documentation.
+  A platform limitation is an explicit gap, not permission to silently change the product contract.
+- Use architecture/design skills to understand the existing Mac design and place necessary Windows
+  adapters. Their use does not authorize a new product design or a replacement business architecture.
+  Product redesign belongs to separately scoped work, outside ordinary porting.
+- A round may implement a documented subset of the Mac feature. Keep the remaining behavior visible
+  as incomplete; do not substitute fake production output or describe the subset as full parity.
+
 ## Before editing
 
 - Read this file and the relevant subsystem documentation before changing behavior.
@@ -112,3 +134,12 @@ Windows host even when portable tests pass.
 
 Report exact validation commands and outcomes. A passing compile is not proof of native UI behavior,
 and a passing `build-for-testing` equivalent is not the same as executing tests.
+
+## Completing a development round
+
+The maintainer has authorized merging each completed round into `main` after independent review and
+the required checks pass. Create a scoped PR, resolve review findings, verify CI for its final head,
+and merge it without asking for another approval. Use GPT-6 Luna with maximum reasoning for delegated
+implementation, independent review, and test work. Continue to exclude installers, downloadable build
+artifacts and releases from routine rounds. A virtual machine is not a prerequisite for portable
+logic, WPF compile checks or fake-driven tests; native desktop behavior still needs a Windows host.

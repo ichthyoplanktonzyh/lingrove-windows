@@ -17,6 +17,12 @@
   <ItemGroup>
     <Using Include="Xunit" />
     <Compile Include="..\Shared\LearningLexicalCorpus.cs" Link="Shared\LearningLexicalCorpus.cs" />
+    <!-- This platform file boundary uses only managed IO; compile the actual source to exercise
+         bounded resource reads on both OS runners without loading WPF or native ICU. -->
+    <Compile Include="..\..\src\Cotabby.Win32\LanguageLearning\BundledLearningLexiconResourceSource.cs"
+             Link="Platform\BundledLearningLexiconResourceSource.cs" />
+    <None Include="..\..\resources\LearningLexicon\learning-expressions*"
+          Link="Resources\LearningLexicon\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

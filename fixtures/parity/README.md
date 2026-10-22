@@ -200,3 +200,9 @@ ICU adapter. Windows tests compare all native Unicode facts and 31 English/Spani
 `nativeWordParity` is a predeclared evidence scope: the mixed-script and CJK cases retain Mac word
 observations without claiming that ICU globally reproduces NLTokenizer. See
 [the scoped adaptation record](../../docs/LEARNING_LEXICAL_RULES.md) for ownership, mappings and gaps.
+
+The verifier additionally checks all three bundled `resources/LearningLexicon/learning-expressions*`
+files against their pinned Mac Git bytes. The complete actual Mac Codable resource model must
+round-trip every entry, sense and attribution field without changing the JSON value. This integrity
+check performs no source-data download or refresh; [the resource/store slice](../../docs/LEARNING_OFFLINE_LEXICON.md)
+documents loading and platform evidence separately from lexical policy observations.

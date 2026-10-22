@@ -19,6 +19,7 @@ using Cotabby.Win32.Clipboard;
 using Cotabby.Win32.Focus;
 using Cotabby.Win32.Input;
 using Cotabby.Win32.Insertion;
+using Cotabby.Win32.LanguageLearning;
 using Cotabby.Win32.Power;
 using Cotabby.Win32.Security;
 using Cotabby.Win32.Spelling;
@@ -110,6 +111,13 @@ public sealed class AppHost : IAsyncDisposable
         sc.AddSingleton<OpenAICompatibleApiClient>(_ => new OpenAICompatibleApiClient());
         sc.AddSingleton<IOpenAICompatibleCredentialStore>(_ => new DpapiOpenAICompatibleCredentialStore());
         sc.AddSingleton<ILearningSentenceTokenizer, IcuLearningSentenceTokenizer>();
+        // One lazy store will be shared by recognition and dictionary cards. Registration does
+        // no file IO or ICU work; each first request loads the pinned local resource on its worker.
+        sc.AddSingleton<ILearningLexicalText, IcuLearningLexicalText>();
+        sc.AddSingleton<ILearningLexiconResourceSource>(_ =>
+            BundledLearningLexiconResourceSource.FromBundleDirectory(AppContext.BaseDirectory));
+        sc.AddSingleton<LearningLexiconService>();
+        sc.AddSingleton<ILearningUnitRecognizing>(services => services.GetRequiredService<LearningLexiconService>());
         // Translation owns a separate lazy runtime and native context; this singleton is only
         // created at startup, and its implementation does not load weights until a manual request.
         sc.AddSingleton<ILearningLocalRuntime, LearningLocalRuntime>();

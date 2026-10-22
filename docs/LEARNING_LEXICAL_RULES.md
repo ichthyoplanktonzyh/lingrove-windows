@@ -2,8 +2,9 @@
 
 This slice adapts stable Mac Lingrove at `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`.
 It supplies the explicit lexical index, occurrence values and Windows text primitives needed by a
-later dictionary/card integration. It does not yet install a lexicon resource, register an App
-recognition service, add clickable words to the preview, or provide a system/MDX/online dictionary.
+later dictionary/card integration. The [subsequent resource/store slice](LEARNING_OFFLINE_LEXICON.md)
+adds the pinned lexicon and shared lazy service. Clickable preview words and system/MDX/online
+dictionaries remain unported.
 The existing translation flow remains unchanged.
 
 ## Source and responsibility mapping
@@ -16,8 +17,8 @@ The existing translation flow remains unchanged.
 | `Cotabby/Support/LanguageLearning/LearningUnitPolicy.swift` | `LearningUnitPolicy.cs`: grapheme whitespace/newline handling and exact hit testing; `ILearningLexicalText.cs`: platform casing/word/character contracts |
 | Swift Character properties and Mac `NLTokenizer(unit: .word)` used by that policy | `Win32/Text/IcuLearningLexicalText.cs`: full root-locale scalar Unicode casing, binary Alphabetic/Uppercase properties and ICU word breaking |
 
-The Mac lexicon service owns lazy resource loading and per-language indices. Its Windows service,
-resource packaging, lookup routing, dictionary sessions and WPF presentation remain later work.
+The Mac lexicon service owns lazy resource loading and per-language indices. Its Windows service and
+pinned resource are now adapted separately; lookup routing, dictionary sessions and WPF remain later work.
 Windows paths above are relative to `src/`; tests mirror those responsibilities under `tests/`.
 
 ## Preserved index behavior
@@ -91,6 +92,6 @@ mixed-script/CJK/casing-context cases still exercise native Unicode facts and ex
 keeping their Mac segmentation as a reference rather than a universal Windows promise.
 
 Tests also cover invalid native ranges, malformed UTF-16, unavailable APIs and detached source
-collections. They do not exercise a Windows editor, WPF word hit geometry, lexicon-file loading,
+collections. These lexical policy cases do not exercise a Windows editor, WPF word hit geometry, lexicon-file loading,
 dictionary content quality, lookup integration or model behavior. No resource/model download,
 installer, artifact upload or release is part of this slice.

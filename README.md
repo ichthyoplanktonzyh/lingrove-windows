@@ -29,6 +29,10 @@ speech remain migration work, and native Windows interaction and model execution
 names still say Cotabby; Lingrove branding in this documentation does not claim that the app binary,
 settings, or stored data have been rebranded or made compatible with macOS.
 
+The [offline lexical index and lazy bundled store](docs/LEARNING_OFFLINE_LEXICON.md) now adapt the
+same pinned Mac resource and attribution. They are registered for later card integration; clickable
+lookup, system/imported dictionaries and dictionary presentation remain incomplete.
+
 The first foundation milestone is documentation, build-and-test CI, and shared behavior fixtures. It
 does not add a Windows installer, downloadable build, artifact upload, release workflow, or model
 download to CI. See the [baseline](docs/BASELINE.md) for what source exists and what remains
@@ -64,6 +68,7 @@ src/Cotabby.Core/      Portable values, policies, autocomplete orchestration
 src/Cotabby.Inference/ Local llama.cpp/LLamaSharp and endpoint adapters
 src/Cotabby.Win32/     UI Automation, keyboard, insertion, clipboard and Windows services
 tests/                 xUnit portable and inference tests
+resources/             Pinned learning data, source attribution and provenance
 ```
 
 The existing `Cotabby` identifiers are retained through the migration. Read [AGENTS.md](AGENTS.md)

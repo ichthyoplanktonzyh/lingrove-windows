@@ -8,6 +8,20 @@ The NuGet packages this port links against (LLamaSharp and its llama.cpp backend
 H.NotifyIcon, Microsoft.Extensions) are credited in the README and in Settings, About.
 The gemoji license is bundled next to the emoji data in `src/Cotabby.Core/Resources/Emoji/`.
 
+## Learning expression data
+
+`resources/LearningLexicon/learning-expressions.json` is the unchanged Mac Lingrove expression
+subset from commit `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`, version `kaikki-2026-10-03-v1`.
+Attribution: Wiktionary contributors; extraction by Tatu Ylonen and Wiktextract contributors / Kaikki;
+subset selection and packaging by Cotabby contributors. The data is distributed under CC BY-SA 4.0,
+separately from the application source license. Definitions are in English and coverage varies.
+
+The unchanged [data NOTICE](resources/LearningLexicon/learning-expressions.NOTICE.md) and
+[provenance](resources/LearningLexicon/learning-expressions.provenance.json) accompany the JSON
+in ordinary application output. Entry source URLs and source-owned senses/labels are retained.
+The applicable [CC BY-SA 4.0 license](https://creativecommons.org/licenses/by-sa/4.0/) and
+[legal text](https://creativecommons.org/licenses/by-sa/4.0/legalcode.en) are linked in that NOTICE.
+
 ## SymSpell
 
 The inline autocorrect feature uses a C# port of SymSpell (Wolf Garbe's

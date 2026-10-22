@@ -70,8 +70,9 @@ The current `.github/workflows/ci.yml` is the .NET 10 target workflow:
   JSON corpus. The script extracts committed pure policies; it does not build the macOS app or
   involve UI Automation, inference, or model downloads.
 
-The separate `.github/workflows/upstream-baseline.yml` is a historical checkpoint. It runs only
-when that workflow or this baseline document changes, or on manual dispatch. It checks out the
+The separate `.github/workflows/upstream-baseline.yml` is a historical checkpoint. The original
+fork was checked during foundation setup; future runs use manual dispatch rather than gating
+ordinary PRs with superseded upstream tests. It checks out the
 original fork commit `b1e4031c70aca1be21aae2c57b138fde5fc22bb1`, uses .NET 9 on Windows x64, and runs
 the original build, Core tests, and non-interactive Inference tests. It does not validate the current
 .NET 10 changes.
@@ -94,6 +95,12 @@ Recorded results for 2026-10-22:
   existing packages under .NET 10; it does not establish native model runtime compatibility.
 - No native Windows desktop, UI Automation, insertion, IME, or GPU validation has been performed.
   No model-backed smoke project was run.
+- A later hosted rerun exposed an inherited cancellation test's scheduler assumption: a 20 ms
+  delay was not guaranteed to resume before a 200 ms debounce. The current tests use explicit
+  start/cancellation barriers and infinite pending debounce, adding a pending-replacement case.
+  Local follow-up validation passed all 1,573 Core tests; the in-flight cancellation test passed
+  50 consecutive Release runs. Production behavior is unchanged. Current hosted results are in
+  the PR checks, separately from the historical run pinned above.
 
 These results establish automated source-level evidence for the named suites only. They do not mark
 the full app or native host behavior verified in [PARITY.md](PARITY.md).

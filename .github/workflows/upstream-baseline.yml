@@ -1,12 +1,9 @@
 name: Upstream baseline
 
-# Recheck the original fork only when its recorded baseline changes. Ordinary
-# feature PRs use ci.yml; this job is not a second build of the evolving product.
+# The original fork was checked during foundation setup (see docs/BASELINE.md).
+# Future rechecks are explicit: old upstream tests must not gate evolving PRs,
+# especially after a portability or timing assertion has been repaired locally.
 on:
-  pull_request:
-    paths:
-      - '.github/workflows/upstream-baseline.yml'
-      - 'docs/BASELINE.md'
   workflow_dispatch:
 
 permissions:

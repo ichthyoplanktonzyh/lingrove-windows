@@ -99,9 +99,9 @@ CI job ownership is explicit:
 | Workflow | What it validates | What it does not do |
 | --- | --- | --- |
 | [`ci.yml`](.github/workflows/ci.yml) | Current .NET 10 tree: Windows x64 full build and unit tests; macOS 26 Core tests and the same JSON cases against pinned Swift policies | Does not run model smoke tools, download model weights, upload artifacts, package, or release |
-| [`upstream-baseline.yml`](.github/workflows/upstream-baseline.yml) | Original fork commit `b1e4031c70aca1be21aae2c57b138fde5fc22bb1` on .NET 9; triggered by baseline-doc/workflow changes or manual dispatch | Does not validate current .NET 10 code or native app behavior |
+| [`upstream-baseline.yml`](.github/workflows/upstream-baseline.yml) | Manual recheck of original fork commit `b1e4031c70aca1be21aae2c57b138fde5fc22bb1` on .NET 9 | Does not gate current .NET 10 PRs or validate native app behavior |
 
-The first .NET 10 workflow run is still pending. Previously recorded baseline and local test results,
+Current workflow results are available in the pull request checks. Recorded hosted and local results,
 with the native validation limits, are in [BASELINE.md](docs/BASELINE.md).
 
 ## License and attribution

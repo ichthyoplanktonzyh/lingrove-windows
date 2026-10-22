@@ -98,8 +98,9 @@ The current `.github/workflows/ci.yml` has two validation jobs: Windows x64 rest
 full solution, then runs Core and Inference tests; macOS 26 runs the Core tests and the Swift parity
 verifier against a sparse checkout of the pinned macOS source. The separate
 `.github/workflows/upstream-baseline.yml` checks the original Windows fork at commit
-`b1e4031c70aca1be21aae2c57b138fde5fc22bb1` with .NET 9 when the baseline workflow/docs change or by
-manual dispatch. Its result is evidence about that old snapshot, not the current .NET 10 tree.
+`b1e4031c70aca1be21aae2c57b138fde5fc22bb1` with .NET 9 on manual dispatch. Its initial setup run is
+recorded in the baseline note. It does not gate ordinary PRs; its result describes that old snapshot,
+not the current .NET 10 tree.
 
 CI is for dependency restore, compiling, and tests. It must not download GGUF model weights, create
 installers or other downloadable packages, upload build artifacts, publish packages, or create a

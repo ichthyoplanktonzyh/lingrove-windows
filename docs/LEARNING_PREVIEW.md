@@ -62,13 +62,13 @@ malformed UTF-16 source because Swift strings cannot represent those invalid val
   Partial rendering uses cached focus evidence plus a 400 ms off-thread UIA freshness monitor;
   mouse-only host changes may therefore retire a provisional prefix with that polling delay. Native
   focus and selection timing remains a host-validation requirement, not a verified guarantee.
-- The current production translation provider is a separately selected OpenAI-compatible chat endpoint,
-  matching the Mac learning transport rather than adding autocomplete's completions mode.
-  It has its own URL/model/settings, HTTP client and DPAPI-protected credential file. No endpoint is
-  used before explicit task-specific opt-in and no model is prewarmed on settings load. The
-  autocomplete base model, mutable native runtime and endpoint credentials are not borrowed for
-  translation. A dedicated local learning runtime is a later port, so an unconfigured provider
-  reports unavailable rather than falling back or producing fake output.
+- Production routes only to the selected learning provider: a dedicated local CPU runtime or an
+  explicitly opted-in OpenAI-compatible chat endpoint. Local is the fresh default with no model
+  selected, and reports unavailable until the user imports or downloads and selects a file. Neither
+  settings load nor backend switching prewarms a model. The endpoint retains its own URL/model,
+  HTTP client and DPAPI credential. Autocomplete's runtime and credentials are never borrowed.
+  The [local-runtime record](LEARNING_LOCAL_RUNTIME.md) maps templates, exact-token planning,
+  model-file operations, persistence and remaining native validation to the Mac source.
 - Preview is read-only in this round. Editor replacement, notebook, dictionaries, speech and
   automatic learning triggers remain explicit gaps; they are not replaced by new product flows.
 - Streamed deltas now follow the Mac output policy: the first nonblank safe prefix publishes
@@ -79,7 +79,9 @@ malformed UTF-16 source because Swift strings cannot represent those invalid val
   before the next insertion at capacity. The key retains exact source, resolved direction, effective
   style/model/context and an opaque provider-profile scope. Translation configuration/credential or
   owner invalidation clears cached values; ordinary typing only retires the current capture. Cache
-  hits still require current capture/settings checks before display. Partial, failed and stale work
+  hits still require current capture/settings checks before display. Local planning and exact token
+  validation happen before cache lookup, so a cache hit can open the selected local model; its
+  operation lease is then released without generation. Partial, failed and stale work
   never populate the cache, including a late completion after cache invalidation.
 - Enabled source choices now use the Mac ordered-set semantics, retaining the legacy singular
   Windows setting when the new list is absent. An explicit empty list remains empty. Filtering out

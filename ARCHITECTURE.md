@@ -124,7 +124,8 @@ open before language learning can depend on this path. See [the safety record](d
 ## Learning flow and independent runtimes
 
 The original Windows baseline had no learning subsystem. The current manual-preview port supplies
-learning contracts, request orchestration, a task-owned endpoint adapter and a read-only WPF panel.
+learning contracts, request orchestration, a dedicated local runtime, a task-owned endpoint adapter
+and a read-only WPF panel.
 The preview supports bounded safe streaming prefixes and the Mac completed-result cache policy.
 Enabled-source settings and deterministic confidence ranking are ported; a Windows statistical
 recognizer is still unavailable, so multiple eligible sources fail closed rather than using
@@ -148,9 +149,14 @@ The current Windows learning slice ports the Mac manual current-sentence preview
 captured sentence, task-owned translation and a read-only result. Production uses a real configured
 provider or reports that it is unavailable; deterministic fake engines exercise the same interfaces
 only in tests. This slice establishes the minimum independent translation settings and cancellation.
+Local request planning resolves actual model metadata, tokenizes trusted framing separately from
+literal source, and validates the actual context allocation before cache lookup or generation. The
+short-lived engine facade owns one exclusive operation lease; AppHost owns and drains the reusable
+learning runtime and explicit model-file manager. The learning backend selector never falls back
+from a local error to a network service. See [the runtime map](docs/LEARNING_LOCAL_RUNTIME.md).
+
 Explicit replacement and a combined autocomplete/learning host walkthrough are follow-up slices
-after captured ranges, IME and editor acknowledgement are verified. Broader runtime routing,
-dictionary, notebook, Anki, speech and history work follows the scoped preview port.
+after captured ranges, IME and editor acknowledgement are verified. Broader model residency/power controls, dictionary, notebook, Anki, speech and history work follows the scoped preview port.
 
 Do not reuse the suggestion coordinator's active session or a single global llama sequence for
 learning or text-to-speech. A task runtime owns its model/profile and cancellation; switching a model

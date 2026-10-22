@@ -7,15 +7,19 @@ namespace Cotabby.Inference.LanguageLearning;
 
 /// <summary>
 /// A translation-only adapter for one explicitly configured OpenAI-compatible endpoint. The
-/// validated endpoint and credential store are fixed for this engine's lifetime; the app can make
-/// a new engine when learning endpoint settings change without touching autocomplete state.
+/// validated endpoint and credential store are fixed for this engine's lifetime. Its planner applies
+/// endpoint-model capabilities to the captured settings, then the transport sends only that frozen
+/// request; autocomplete settings, prompts, and clients stay independent.
 /// </summary>
 /// <remarks>
 /// The engine sends the frozen learning prompt and full output reservation, then returns only a
 /// response the server marked complete. It never reads editor state, rebuilds prompt policy, or
 /// borrows the suggestion client, credentials, normalization, or mutable llama runtime.
 /// </remarks>
-public sealed class OpenAICompatibleLearningTranslationEngine : ILearningTranslationEngine, IDisposable
+public sealed class OpenAICompatibleLearningTranslationEngine :
+    ILearningTranslationEngine,
+    ILearningTranslationRequestPlanner,
+    IDisposable
 {
     private static readonly UTF8Encoding StrictUtf8 = new(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
 
@@ -65,6 +69,33 @@ public sealed class OpenAICompatibleLearningTranslationEngine : ILearningTransla
     {
         Timeout = Timeout.InfiniteTimeSpan,
     };
+
+    /// <inheritdoc />
+    public Task<LearningTranslationRequest> PlanAsync(
+        string requestId,
+        string source,
+        LearningTranslationOptions options,
+        CancellationToken ct)
+    {
+        ObjectDisposedException.ThrowIf(Volatile.Read(ref _disposed) != 0, this);
+        ct.ThrowIfCancellationRequested();
+        if (options is null || options.ModelName is null || options.Style is null)
+            throw new LearningTranslationException(LearningTranslationFailure.InvalidOptions);
+        if (_configuration.ModelName.Length == 0)
+            throw new LearningTranslationEndpointException(LearningTranslationEndpointFailure.InvalidRequest);
+        if (!string.Equals(options.ModelName, _configuration.ModelName, StringComparison.Ordinal))
+            throw new LearningTranslationEndpointException(LearningTranslationEndpointFailure.ModelMismatch);
+
+        // TranslateGemma has a fixed translation contract and cannot consume saved style text.
+        // Use a natural style only to render this request; keep the captured settings untouched so
+        // coordinator state, cache keys, and stale-request comparisons retain the user's snapshot.
+        var family = LearningTranslationPrompt.ForEndpointModel(options.ModelName);
+        var planningOptions = family == LearningTranslationPrompt.Family.TranslateGemma
+            ? options with { Style = new LearningTranslationStyle() }
+            : options;
+        var request = LearningTranslationRequestFactory.Create(requestId, source, planningOptions);
+        return Task.FromResult(request with { Options = options });
+    }
 
     /// <inheritdoc />
     public Task<string> TranslateAsync(LearningTranslationRequest request, CancellationToken ct) =>

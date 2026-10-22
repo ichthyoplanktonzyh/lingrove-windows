@@ -13,6 +13,7 @@ using Cotabby.Core.Spelling;
 using Cotabby.Core.Suggestions;
 using Cotabby.Inference;
 using Cotabby.Inference.LanguageLearning;
+using Cotabby.Inference.LanguageLearning.Local;
 using Cotabby.Inference.OpenAICompatible;
 using Cotabby.Win32.Clipboard;
 using Cotabby.Win32.Focus;
@@ -62,6 +63,7 @@ public sealed class AppHost : IAsyncDisposable
     public OpenAICompatibleApiClient EndpointClient { get; }
     public IOpenAICompatibleCredentialStore EndpointCredentials { get; }
     public IOpenAICompatibleCredentialStore LearningEndpointCredentials { get; }
+    internal LearningModelCatalogManager LearningModels { get; }
     internal LearningPreviewController LearningPreview { get; }
 
     /// <summary>Raised on the UI thread after settings were applied or a model was loaded, so open windows and the tray can refresh.</summary>
@@ -77,6 +79,7 @@ public sealed class AppHost : IAsyncDisposable
         // Learning has its own caller-owned HTTP pool. It never borrows the autocomplete client's
         // redirects, timeout, server state, or credentials, and it is not used until a manual request.
         _learningHttpClient = OpenAICompatibleLearningTranslationEngine.CreateHttpClient();
+        LearningModels = new LearningModelCatalogManager();
         LearningEndpointCredentials = new DpapiOpenAICompatibleCredentialStore(System.IO.Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "Cotabby", "learning-endpoint-credential.bin"));
@@ -107,6 +110,9 @@ public sealed class AppHost : IAsyncDisposable
         sc.AddSingleton<OpenAICompatibleApiClient>(_ => new OpenAICompatibleApiClient());
         sc.AddSingleton<IOpenAICompatibleCredentialStore>(_ => new DpapiOpenAICompatibleCredentialStore());
         sc.AddSingleton<ILearningSentenceTokenizer, IcuLearningSentenceTokenizer>();
+        // Translation owns a separate lazy runtime and native context; this singleton is only
+        // created at startup, and its implementation does not load weights until a manual request.
+        sc.AddSingleton<ILearningLocalRuntime, LearningLocalRuntime>();
         _services = sc.BuildServiceProvider();
 
         SettingsStore = _services.GetRequiredService<SettingsStore>();
@@ -151,6 +157,7 @@ public sealed class AppHost : IAsyncDisposable
         LearningPreview = new LearningPreviewController(
             _hook, focus, overlay.Dispatcher,
             _services.GetRequiredService<ILearningSentenceTokenizer>(),
+            _services.GetRequiredService<ILearningLocalRuntime>(),
             _learningHttpClient, LearningEndpointCredentials,
             loggers.CreateLogger<LearningPreviewController>(),
             // Multi-source choices require a platform confidence provider. None is registered on
@@ -313,6 +320,7 @@ public sealed class AppHost : IAsyncDisposable
         _hook.KeyEvent -= OnGlobalToggleKey;
         SystemEvents.PowerModeChanged -= OnPowerModeChanged;
         await LearningPreview.DisposeAsync().ConfigureAwait(false);
+        await LearningModels.DisposeAsync().ConfigureAwait(false);
         EmojiPicker.Dispose();
         Macros.Dispose();
         _spelling.Dispose();

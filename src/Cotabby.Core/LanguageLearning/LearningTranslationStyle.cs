@@ -44,17 +44,21 @@ public sealed class LearningTranslationRegisterJsonConverter : JsonConverter<Lea
 /// effective immutable copy so later edits cannot change an in-flight prompt.
 /// </summary>
 public sealed record LearningTranslationStyle(
+    [property: JsonPropertyName("register")]
     LearningTranslationRegister Register = LearningTranslationRegister.Natural,
+    [property: JsonPropertyName("customInstruction")]
     string CustomInstruction = "")
 {
     /// <summary>
     /// Bounds the custom preference exactly as the macOS value does: first 4,000 UTF-8 bytes (a
     /// cut scalar decodes to U+FFFD), then at most 1,000 grapheme clusters.
     /// </summary>
+    [JsonIgnore]
     public LearningTranslationStyle Normalized => new(Register,
         TakeTextElements(DecodeUtf8Prefix(CustomInstruction ?? string.Empty, MaximumInstructionBytes), MaximumInstructionGraphemes));
 
     /// <summary>Non-custom registers discard dormant custom text from the frozen request.</summary>
+    [JsonIgnore]
     public LearningTranslationStyle Effective => Register == LearningTranslationRegister.Custom
         ? Normalized
         : new LearningTranslationStyle(Register);
@@ -63,6 +67,7 @@ public sealed record LearningTranslationStyle(
     /// The bounded user-authored preference channel, or null when no instruction should be added.
     /// It remains separate from literal source text and always precedes fixed translation rules.
     /// </summary>
+    [JsonIgnore]
     public string? Instruction => Register switch
     {
         LearningTranslationRegister.Natural => null,

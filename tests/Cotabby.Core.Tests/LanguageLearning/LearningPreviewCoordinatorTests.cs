@@ -262,6 +262,153 @@ public sealed class LearningPreviewCoordinatorTests
     }
 
     [Fact]
+    public async Task OptionalPlannerRunsOffTheCallingContextAndKeepsCapturedOptionsInState()
+    {
+        await using var coordinator = new LearningPreviewCoordinator();
+        var options = new LearningTranslationOptions
+        {
+            SourceLanguage = LearningLanguage.English,
+            TargetLanguage = LearningLanguage.French,
+            Style = new LearningTranslationStyle(LearningTranslationRegister.Formal),
+        };
+        var engine = new CountingPlannerEngine((_, _) => Task.FromResult("Planned translation."));
+        var uiContext = new PumpSynchronizationContext();
+        var priorContext = SynchronizationContext.Current;
+        Task preview;
+        try
+        {
+            SynchronizationContext.SetSynchronizationContext(uiContext);
+            preview = coordinator.PreviewAsync("A sentence.", options, engine);
+        }
+        finally
+        {
+            SynchronizationContext.SetSynchronizationContext(priorContext);
+        }
+
+        uiContext.PumpPending();
+        var plannerContext = await engine.PlannerContext.Task.WaitAsync(TestTimeout);
+        await preview.WaitAsync(TestTimeout);
+
+        Assert.NotSame(uiContext, plannerContext);
+        Assert.Equal(options, engine.PlannedOptions);
+        Assert.Equal(options, engine.LastRequest?.Options);
+        Assert.Equal(options, coordinator.State.Options);
+        Assert.Equal("Planned translation.", coordinator.State.Result);
+        Assert.Equal(1, engine.PlanCount);
+        Assert.Equal(1, engine.GenerationCount);
+    }
+
+    [Fact]
+    public async Task ACancelledLatePlanDoesNotStartGenerationOrPublishAResult()
+    {
+        await using var coordinator = new LearningPreviewCoordinator();
+        var engine = new GatePlannerEngine();
+        var options = new LearningTranslationOptions();
+
+        var preview = coordinator.PreviewAsync("A sentence.", options, engine, "profile");
+        var plan = await engine.NextPlanAsync();
+        coordinator.Cancel();
+        Assert.True(plan.CancellationToken.IsCancellationRequested);
+        plan.Complete(LearningTranslationRequestFactory.Create(plan.RequestId, plan.Source, plan.Options));
+        await preview.WaitAsync(TestTimeout);
+
+        Assert.Equal(0, engine.GenerationCount);
+        Assert.Equal(LearningPreviewStatus.Cancelled, coordinator.State.Status);
+        Assert.Null(coordinator.State.Result);
+        Assert.Null(coordinator.State.PartialResult);
+
+        var retry = coordinator.PreviewAsync("A sentence.", options, engine, "profile");
+        var retryPlan = await engine.NextPlanAsync();
+        retryPlan.Complete(LearningTranslationRequestFactory.Create(retryPlan.RequestId, retryPlan.Source, retryPlan.Options));
+        await retry.WaitAsync(TestTimeout);
+        Assert.Equal(1, engine.GenerationCount);
+    }
+
+    [Fact]
+    public async Task APlanSupersededWhileWaitingCannotGenerateOrReplaceTheNewerResult()
+    {
+        await using var coordinator = new LearningPreviewCoordinator();
+        var engine = new GatePlannerEngine();
+        var options = new LearningTranslationOptions();
+
+        var oldTask = coordinator.PreviewAsync("Old sentence.", options, engine, "profile");
+        var oldPlan = await engine.NextPlanAsync();
+        var currentTask = coordinator.PreviewAsync("Current sentence.", options, engine, "profile");
+        var currentPlan = await engine.NextPlanAsync();
+        Assert.True(oldPlan.CancellationToken.IsCancellationRequested);
+
+        currentPlan.Complete(LearningTranslationRequestFactory.Create(
+            currentPlan.RequestId, currentPlan.Source, currentPlan.Options));
+        await currentTask.WaitAsync(TestTimeout);
+        Assert.Equal("Generated for Current sentence.", coordinator.State.Result);
+
+        oldPlan.Complete(LearningTranslationRequestFactory.Create(oldPlan.RequestId, oldPlan.Source, oldPlan.Options));
+        await oldTask.WaitAsync(TestTimeout);
+
+        Assert.Equal(1, engine.GenerationCount);
+        Assert.Equal("Current sentence.", coordinator.State.Source);
+        Assert.Equal("Generated for Current sentence.", coordinator.State.Result);
+
+        // The stale plan never completed generation, so it cannot have created an old-source cache entry.
+        var oldRetry = coordinator.PreviewAsync("Old sentence.", options, engine, "profile");
+        var oldRetryPlan = await engine.NextPlanAsync();
+        Assert.Equal(1, engine.GenerationCount);
+        oldRetryPlan.Complete(LearningTranslationRequestFactory.Create(
+            oldRetryPlan.RequestId, oldRetryPlan.Source, oldRetryPlan.Options));
+        await oldRetry.WaitAsync(TestTimeout);
+        Assert.Equal(2, engine.GenerationCount);
+    }
+
+    [Fact]
+    public async Task PlannerFailuresAreRedactedAndCannotReachGeneration()
+    {
+        await using var coordinator = new LearningPreviewCoordinator();
+        var engine = new FailingPlannerEngine(new InvalidOperationException("private source and model path"));
+
+        await coordinator.PreviewAsync("A sentence.", new LearningTranslationOptions(), engine).WaitAsync(TestTimeout);
+
+        Assert.Equal(LearningPreviewStatus.Failed, coordinator.State.Status);
+        Assert.Null(coordinator.State.Result);
+        Assert.DoesNotContain("private source and model path", coordinator.State.ErrorMessage, StringComparison.Ordinal);
+        Assert.Equal("Translation failed. Check the translation settings and try again.", coordinator.State.ErrorMessage);
+        Assert.Equal(0, engine.GenerationCount);
+    }
+
+    [Fact]
+    public async Task ScopedCacheHitStillPlansButSkipsTranslationGeneration()
+    {
+        await using var coordinator = new LearningPreviewCoordinator();
+        var engine = new CountingPlannerEngine((_, _) => Task.FromResult("Cached planned result."));
+        var options = new LearningTranslationOptions();
+
+        await coordinator.PreviewAsync("A sentence.", options, engine, "profile").WaitAsync(TestTimeout);
+        await coordinator.PreviewAsync("A sentence.", options, engine, "profile").WaitAsync(TestTimeout);
+
+        Assert.Equal(2, engine.PlanCount);
+        Assert.Equal(1, engine.GenerationCount);
+        Assert.Equal("Cached planned result.", coordinator.State.Result);
+    }
+
+    [Fact]
+    public async Task PlannerCannotRelabelTheCapturedOptionsInStateOrCache()
+    {
+        await using var coordinator = new LearningPreviewCoordinator();
+        var options = new LearningTranslationOptions { TargetLanguage = LearningLanguage.French };
+        var engine = new CountingPlannerEngine(
+            (request, _) => Task.FromResult("Should not generate."),
+            plannedOptions: options with { TargetLanguage = LearningLanguage.Japanese });
+
+        await coordinator.PreviewAsync("A sentence.", options, engine, "profile").WaitAsync(TestTimeout);
+
+        Assert.Equal(options, coordinator.State.Options);
+        Assert.Equal(LearningPreviewStatus.Failed, coordinator.State.Status);
+        Assert.Null(coordinator.State.Result);
+        Assert.Equal(new LearningTranslationException(LearningTranslationFailure.InvalidOptions).Message,
+            coordinator.State.ErrorMessage);
+        Assert.Equal(0, engine.GenerationCount);
+    }
+
+    [Fact]
     public async Task StreamPublishesTheFirstPrefixImmediatelyThenCoalescesUntilFinal()
     {
         var clock = new ManualTimeProvider();
@@ -608,6 +755,106 @@ public sealed class LearningPreviewCoordinatorTests
         {
             Interlocked.Increment(ref _callCount);
             return translate(request, ct);
+        }
+    }
+
+    private sealed class CountingPlannerEngine(
+        Func<LearningTranslationRequest, CancellationToken, Task<string>> translate,
+        LearningTranslationOptions? plannedOptions = null)
+        : ILearningTranslationEngine, ILearningTranslationRequestPlanner
+    {
+        private int _planCount;
+        private int _generationCount;
+
+        public int PlanCount => Volatile.Read(ref _planCount);
+        public int GenerationCount => Volatile.Read(ref _generationCount);
+        public TaskCompletionSource<SynchronizationContext?> PlannerContext { get; } =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
+        public LearningTranslationOptions? PlannedOptions { get; private set; }
+        public LearningTranslationRequest? LastRequest { get; private set; }
+
+        public Task<LearningTranslationRequest> PlanAsync(
+            string requestId,
+            string source,
+            LearningTranslationOptions options,
+            CancellationToken ct)
+        {
+            ct.ThrowIfCancellationRequested();
+            Interlocked.Increment(ref _planCount);
+            PlannedOptions = options;
+            PlannerContext.TrySetResult(SynchronizationContext.Current);
+            var requestOptions = plannedOptions ?? options;
+            return Task.FromResult(LearningTranslationRequestFactory.Create(requestId, source, requestOptions));
+        }
+
+        public Task<string> TranslateAsync(LearningTranslationRequest request, CancellationToken ct)
+        {
+            Interlocked.Increment(ref _generationCount);
+            LastRequest = request;
+            return translate(request, ct);
+        }
+    }
+
+    private sealed class GatePlannerEngine : ILearningTranslationEngine, ILearningTranslationRequestPlanner
+    {
+        private readonly Channel<PlannerCall> _plans = Channel.CreateUnbounded<PlannerCall>();
+        private int _generationCount;
+
+        public int GenerationCount => Volatile.Read(ref _generationCount);
+
+        public async Task<PlannerCall> NextPlanAsync() =>
+            await _plans.Reader.ReadAsync().AsTask().WaitAsync(TestTimeout);
+
+        public Task<LearningTranslationRequest> PlanAsync(
+            string requestId,
+            string source,
+            LearningTranslationOptions options,
+            CancellationToken ct)
+        {
+            var call = new PlannerCall(requestId, source, options, ct);
+            if (!_plans.Writer.TryWrite(call)) throw new InvalidOperationException("Test planner queue closed.");
+            // This fake deliberately ignores cancellation until the test completes the planned request.
+            return call.Completion.Task;
+        }
+
+        public Task<string> TranslateAsync(LearningTranslationRequest request, CancellationToken ct)
+        {
+            Interlocked.Increment(ref _generationCount);
+            return Task.FromResult($"Generated for {request.Source}");
+        }
+    }
+
+    private sealed class PlannerCall(
+        string requestId,
+        string source,
+        LearningTranslationOptions options,
+        CancellationToken cancellationToken)
+    {
+        public string RequestId { get; } = requestId;
+        public string Source { get; } = source;
+        public LearningTranslationOptions Options { get; } = options;
+        public CancellationToken CancellationToken { get; } = cancellationToken;
+        public TaskCompletionSource<LearningTranslationRequest> Completion { get; } =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        public void Complete(LearningTranslationRequest request) => Completion.TrySetResult(request);
+    }
+
+    private sealed class FailingPlannerEngine(Exception failure)
+        : ILearningTranslationEngine, ILearningTranslationRequestPlanner
+    {
+        public int GenerationCount { get; private set; }
+
+        public Task<LearningTranslationRequest> PlanAsync(
+            string requestId,
+            string source,
+            LearningTranslationOptions options,
+            CancellationToken ct) => Task.FromException<LearningTranslationRequest>(failure);
+
+        public Task<string> TranslateAsync(LearningTranslationRequest request, CancellationToken ct)
+        {
+            GenerationCount++;
+            return Task.FromResult("Should not generate.");
         }
     }
 

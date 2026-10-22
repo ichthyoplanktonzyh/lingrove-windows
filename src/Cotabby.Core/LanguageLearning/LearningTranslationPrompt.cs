@@ -24,6 +24,21 @@ public static class LearningTranslationPrompt
         : int.MaxValue;
 
     /// <summary>
+    /// Maps a resolved local GGUF template to its trained translation adapter. This is deliberately
+    /// independent of the model filename; callers resolve Automatic from bounded GGUF metadata first.
+    /// </summary>
+    public static Family ForTemplate(LearningChatTemplate template) => template switch
+    {
+        LearningChatTemplate.HyMt or LearningChatTemplate.HyMt7 => Family.HyMt,
+        LearningChatTemplate.TranslateGemma => Family.TranslateGemma,
+        LearningChatTemplate.ChatMl or LearningChatTemplate.Qwen3 or
+            LearningChatTemplate.Gemma4 or LearningChatTemplate.Gemma4Large or
+            LearningChatTemplate.Gemma3 or LearningChatTemplate.Llama3 => Family.Generic,
+        LearningChatTemplate.Automatic => throw new LearningTranslationException(LearningTranslationFailure.UnsupportedLocalTemplate),
+        _ => throw new LearningTranslationException(LearningTranslationFailure.InvalidOptions),
+    };
+
+    /// <summary>
     /// Maps recognizable endpoint aliases to specialist templates. Opaque aliases keep the generic
     /// behavior instead of guessing a prompt family from a vague model name.
     /// </summary>
@@ -126,4 +141,12 @@ public sealed record LearningInstructionSampling(
     public static LearningInstructionSampling Standard { get; } = new(0.3, 0.9, 40, 1);
     public static LearningInstructionSampling HyMt { get; } = new(0.7, 0.6, 20, 1.05);
     public static LearningInstructionSampling TranslateGemma { get; } = new(0.3, 0.95, 64, 1);
+
+    public static LearningInstructionSampling ForFamily(LearningTranslationPrompt.Family family) => family switch
+    {
+        LearningTranslationPrompt.Family.Generic => Standard,
+        LearningTranslationPrompt.Family.HyMt => HyMt,
+        LearningTranslationPrompt.Family.TranslateGemma => TranslateGemma,
+        _ => throw new LearningTranslationException(LearningTranslationFailure.InvalidOptions),
+    };
 }

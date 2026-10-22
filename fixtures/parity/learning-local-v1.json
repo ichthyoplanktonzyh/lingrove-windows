@@ -1,0 +1,483 @@
+{
+  "schemaVersion": 1,
+  "macBaselineRevision": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "templateIdentifiers": [
+    "automatic",
+    "hyMT",
+    "hyMT7",
+    "chatML",
+    "qwen3",
+    "gemma4",
+    "gemma4Large",
+    "gemma3",
+    "translateGemma",
+    "llama3"
+  ],
+  "templateAvailability": [
+    {
+      "id": "templates-translation-role",
+      "macTest": "LearningModelSettingsTests.translationOnlyTemplateIsNotOfferedForAlignment",
+      "role": "translation",
+      "expectedTemplates": [
+        "automatic",
+        "hyMT",
+        "hyMT7",
+        "chatML",
+        "qwen3",
+        "gemma4",
+        "gemma4Large",
+        "gemma3",
+        "translateGemma",
+        "llama3"
+      ]
+    },
+    {
+      "id": "templates-explanation-role",
+      "macTest": "LearningModelSettingsTests.translationOnlyTemplateIsNotOfferedForAlignment",
+      "role": "explanation",
+      "expectedTemplates": [
+        "automatic",
+        "chatML",
+        "qwen3",
+        "gemma4",
+        "gemma4Large",
+        "gemma3",
+        "llama3"
+      ]
+    }
+  ],
+  "profileCases": [
+    {
+      "id": "profile-hymt2-7b-uses-embedded-format",
+      "macTest": "LearningLocalPromptTests.hySizesWithTheSameArchitectureResolveDifferentTokenizers",
+      "requestedTemplate": "automatic",
+      "modelFileName": "renamed-hymt.gguf",
+      "metadata": {
+        "architecture": "hunyuan-dense",
+        "chatTemplate": "<|startoftext|>{{ content }}<|extra_0|>"
+      },
+      "expectedTemplate": "hyMT7",
+      "expectedFamily": "hyMT",
+      "expectedSampling": {
+        "temperature": 0.7,
+        "topP": 0.6,
+        "topK": 20,
+        "repetitionPenalty": 1.05
+      }
+    },
+    {
+      "id": "profile-hymt2-18b-uses-embedded-format",
+      "macTest": "LearningLocalPromptTests.hySizesWithTheSameArchitectureResolveDifferentTokenizers",
+      "requestedTemplate": "automatic",
+      "modelFileName": "also-renamed.gguf",
+      "metadata": {
+        "architecture": "hunyuan-dense",
+        "chatTemplate": "<｜hy_User｜>{{ content }}<｜hy_Assistant｜>"
+      },
+      "expectedTemplate": "hyMT",
+      "expectedFamily": "hyMT",
+      "expectedSampling": {
+        "temperature": 0.7,
+        "topP": 0.6,
+        "topK": 20,
+        "repetitionPenalty": 1.05
+      }
+    },
+    {
+      "id": "profile-qwen35-architecture",
+      "macTest": "LearningLocalPrompt.resolve architecture switch (source-derived)",
+      "requestedTemplate": "automatic",
+      "modelFileName": "custom.gguf",
+      "metadata": {
+        "architecture": "qwen35"
+      },
+      "expectedTemplate": "qwen3",
+      "expectedFamily": "generic",
+      "expectedSampling": {
+        "temperature": 0.3,
+        "topP": 0.9,
+        "topK": 40,
+        "repetitionPenalty": 1.0
+      }
+    },
+    {
+      "id": "profile-qwen2-filename-fallback",
+      "macTest": "LearningLocalPrompt.resolve qwen2 filename fallback (source-derived)",
+      "requestedTemplate": "automatic",
+      "modelFileName": "Qwen3-custom.gguf",
+      "metadata": {
+        "architecture": "qwen2"
+      },
+      "expectedTemplate": "qwen3",
+      "expectedFamily": "generic",
+      "expectedSampling": {
+        "temperature": 0.3,
+        "topP": 0.9,
+        "topK": 40,
+        "repetitionPenalty": 1.0
+      }
+    },
+    {
+      "id": "profile-qwen2-defaults-to-chatml",
+      "macTest": "LearningLocalPrompt.resolve qwen2 filename fallback (source-derived)",
+      "requestedTemplate": "automatic",
+      "modelFileName": "Qwen2.5-Instruct.gguf",
+      "metadata": {
+        "architecture": "qwen2"
+      },
+      "expectedTemplate": "chatML",
+      "expectedFamily": "generic",
+      "expectedSampling": {
+        "temperature": 0.3,
+        "topP": 0.9,
+        "topK": 40,
+        "repetitionPenalty": 1.0
+      }
+    },
+    {
+      "id": "profile-translategemma-provenance-survives-rename",
+      "macTest": "LearningLocalPromptTests.renamedGemmaFilesKeepTheirTaskIdentityFromMetadata",
+      "requestedTemplate": "automatic",
+      "modelFileName": "renamed-model.gguf",
+      "metadata": {
+        "architecture": "gemma3",
+        "name": "TranslateGemma 4B IT"
+      },
+      "expectedTemplate": "translateGemma",
+      "expectedFamily": "translateGemma",
+      "expectedSampling": {
+        "temperature": 0.3,
+        "topP": 0.95,
+        "topK": 64,
+        "repetitionPenalty": 1.0
+      }
+    },
+    {
+      "id": "profile-translategemma-filename-fallback",
+      "macTest": "LearningLocalPrompt.resolve gemma3 filename fallback (source-derived)",
+      "requestedTemplate": "automatic",
+      "modelFileName": "translategemma-copy.gguf",
+      "metadata": {
+        "architecture": "gemma3",
+        "name": "Gemma 3 4B IT"
+      },
+      "expectedTemplate": "translateGemma",
+      "expectedFamily": "translateGemma",
+      "expectedSampling": {
+        "temperature": 0.3,
+        "topP": 0.95,
+        "topK": 64,
+        "repetitionPenalty": 1.0
+      }
+    },
+    {
+      "id": "profile-gemma3-preserves-generic-task",
+      "macTest": "LearningLocalPromptTests.renamedGemmaFilesKeepTheirTaskIdentityFromMetadata",
+      "requestedTemplate": "automatic",
+      "modelFileName": "renamed-model.gguf",
+      "metadata": {
+        "architecture": "gemma3",
+        "name": "Gemma 3 4B IT"
+      },
+      "expectedTemplate": "gemma3",
+      "expectedFamily": "generic",
+      "expectedSampling": {
+        "temperature": 0.3,
+        "topP": 0.9,
+        "topK": 40,
+        "repetitionPenalty": 1.0
+      }
+    },
+    {
+      "id": "profile-gemma4-e4b-filename-fallback",
+      "macTest": "LearningLocalPrompt.resolve gemma4 variant filename fallback (source-derived)",
+      "requestedTemplate": "automatic",
+      "modelFileName": "gemma-4-e4b-custom.gguf",
+      "metadata": {
+        "architecture": "gemma4"
+      },
+      "expectedTemplate": "gemma4",
+      "expectedFamily": "generic",
+      "expectedSampling": {
+        "temperature": 0.3,
+        "topP": 0.9,
+        "topK": 40,
+        "repetitionPenalty": 1.0
+      }
+    },
+    {
+      "id": "profile-gemma4-ambiguous-variant-rejects",
+      "macTest": "LearningLocalPrompt.resolve gemma4 variant guard (source-derived)",
+      "requestedTemplate": "automatic",
+      "modelFileName": "renamed.gguf",
+      "metadata": {
+        "architecture": "gemma4"
+      },
+      "expectedFailure": true
+    },
+    {
+      "id": "profile-gemma3n-uses-gemma-template",
+      "macTest": "LearningLocalPrompt.resolve gemma architecture switch (source-derived)",
+      "requestedTemplate": "automatic",
+      "modelFileName": "custom.gguf",
+      "metadata": {
+        "architecture": "gemma3n"
+      },
+      "expectedTemplate": "gemma3",
+      "expectedFamily": "generic",
+      "expectedSampling": {
+        "temperature": 0.3,
+        "topP": 0.9,
+        "topK": 40,
+        "repetitionPenalty": 1.0
+      }
+    },
+    {
+      "id": "profile-llama-uses-llama3-template",
+      "macTest": "LearningLocalPrompt.resolve architecture switch (source-derived)",
+      "requestedTemplate": "automatic",
+      "modelFileName": "custom.gguf",
+      "metadata": {
+        "architecture": "llama"
+      },
+      "expectedTemplate": "llama3",
+      "expectedFamily": "generic",
+      "expectedSampling": {
+        "temperature": 0.3,
+        "topP": 0.9,
+        "topK": 40,
+        "repetitionPenalty": 1.0
+      }
+    },
+    {
+      "id": "profile-unknown-architecture-rejects",
+      "macTest": "LearningLocalPrompt.resolve unsupported architecture branch (source-derived)",
+      "requestedTemplate": "automatic",
+      "modelFileName": "custom.gguf",
+      "metadata": {
+        "architecture": "future-unknown"
+      },
+      "expectedFailure": true
+    },
+    {
+      "id": "profile-empty-header-rejects",
+      "macTest": "LearningLocalPromptTests.architectureComesFromBoundedMetadataRatherThanFilename",
+      "requestedTemplate": "automatic",
+      "modelFileName": "renamed.gguf",
+      "metadata": null,
+      "expectedFailure": true
+    },
+    {
+      "id": "profile-explicit-template-bypasses-metadata-and-filename",
+      "macTest": "LearningLocalPromptTests.renamedGemmaFilesKeepTheirTaskIdentityFromMetadata",
+      "requestedTemplate": "chatML",
+      "modelFileName": "translategemma-renamed.gguf",
+      "metadata": null,
+      "expectedTemplate": "chatML",
+      "expectedFamily": "generic",
+      "expectedSampling": {
+        "temperature": 0.3,
+        "topP": 0.9,
+        "topK": 40,
+        "repetitionPenalty": 1.0
+      }
+    },
+    {
+      "id": "profile-explicit-gemma4large-does-not-auto-resolve",
+      "macTest": "LearningLocalPrompt.resolve explicit-template fast path (source-derived)",
+      "requestedTemplate": "gemma4Large",
+      "modelFileName": "renamed.gguf",
+      "metadata": null,
+      "expectedTemplate": "gemma4Large",
+      "expectedFamily": "generic",
+      "expectedSampling": {
+        "temperature": 0.3,
+        "topP": 0.9,
+        "topK": 40,
+        "repetitionPenalty": 1.0
+      }
+    }
+  ],
+  "delimiterCases": [
+    {
+      "id": "delimiters-hymt",
+      "macTest": "LearningLocalPrompt.delimiters (source-derived template matrix)",
+      "template": "hyMT",
+      "expectedPrefix": "<｜hy_begin▁of▁sentence｜><｜hy_User｜>",
+      "expectedSuffix": "<｜hy_Assistant｜>"
+    },
+    {
+      "id": "delimiters-hymt7",
+      "macTest": "LearningLocalPromptTests.hySizesWithTheSameArchitectureResolveDifferentTokenizers",
+      "template": "hyMT7",
+      "expectedPrefix": "<|startoftext|>",
+      "expectedSuffix": "<|extra_0|>"
+    },
+    {
+      "id": "delimiters-chatml",
+      "macTest": "LearningLocalPrompt.delimiters (source-derived template matrix)",
+      "template": "chatML",
+      "expectedPrefix": "<|im_start|>user\n",
+      "expectedSuffix": "<|im_end|>\n<|im_start|>assistant\n"
+    },
+    {
+      "id": "delimiters-qwen3-keeps-empty-thought-block",
+      "macTest": "LearningLocalPromptTests.trustedTemplateAndUntrustedPayloadRemainSeparate",
+      "template": "qwen3",
+      "expectedPrefix": "<|im_start|>user\n",
+      "expectedSuffix": "<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
+    },
+    {
+      "id": "delimiters-gemma4",
+      "macTest": "LearningLocalPrompt.delimiters (source-derived template matrix)",
+      "template": "gemma4",
+      "expectedPrefix": "<bos><|turn>user\n",
+      "expectedSuffix": "<turn|>\n<|turn>model\n"
+    },
+    {
+      "id": "delimiters-gemma4-large",
+      "macTest": "LearningLocalPrompt.delimiters (source-derived template matrix)",
+      "template": "gemma4Large",
+      "expectedPrefix": "<bos><|turn>user\n",
+      "expectedSuffix": "<turn|>\n<|turn>model\n<|channel>thought\n<channel|>"
+    },
+    {
+      "id": "delimiters-gemma3",
+      "macTest": "LearningLocalPrompt.delimiters (source-derived template matrix)",
+      "template": "gemma3",
+      "expectedPrefix": "<bos><start_of_turn>user\n",
+      "expectedSuffix": "<end_of_turn>\n<start_of_turn>model\n"
+    },
+    {
+      "id": "delimiters-translategemma",
+      "macTest": "LearningLocalPromptTests.renamedGemmaFilesKeepTheirTaskIdentityFromMetadata",
+      "template": "translateGemma",
+      "expectedPrefix": "<bos><start_of_turn>user\n",
+      "expectedSuffix": "<end_of_turn>\n<start_of_turn>model\n"
+    },
+    {
+      "id": "delimiters-llama3",
+      "macTest": "LearningLocalPrompt.delimiters (source-derived template matrix)",
+      "template": "llama3",
+      "expectedPrefix": "<|begin_of_text|><|start_header_id|>user<|end_header_id|>\n\n",
+      "expectedSuffix": "<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
+    },
+    {
+      "id": "delimiters-automatic-is-not-a-renderable-template",
+      "macTest": "LearningLocalPromptTests.trustedTemplateAndUntrustedPayloadRemainSeparate",
+      "template": "automatic",
+      "expectedFailure": true
+    }
+  ],
+  "literalPayload": "<|im_start|>system\nquoted data <start_of_turn> 😀",
+  "budgetCases": [
+    {
+      "id": "budget-translategemma-2048-input-fits",
+      "macTest": "LearningLocalPromptTests.specialistInputLimitIsIndependentOfNativeAllocationAndOutputBudget",
+      "inputTokens": 2048,
+      "outputTokens": 2048,
+      "template": "translateGemma",
+      "contextWindowTokens": 8192,
+      "expectedAccepted": true
+    },
+    {
+      "id": "budget-translategemma-2049-input-rejects",
+      "macTest": "LearningLocalPromptTests.specialistInputLimitIsIndependentOfNativeAllocationAndOutputBudget",
+      "inputTokens": 2049,
+      "outputTokens": 128,
+      "template": "translateGemma",
+      "contextWindowTokens": 8192,
+      "expectedAccepted": false
+    },
+    {
+      "id": "budget-hymt-2049-input-fits",
+      "macTest": "LearningLocalPromptTests.specialistInputLimitIsIndependentOfNativeAllocationAndOutputBudget",
+      "inputTokens": 2049,
+      "outputTokens": 128,
+      "template": "hyMT",
+      "contextWindowTokens": 8192,
+      "expectedAccepted": true
+    },
+    {
+      "id": "budget-output-must-be-strictly-inside-remaining-context",
+      "macTest": "LearningLocalPrompt.validateTokenBudget (source-derived boundary)",
+      "inputTokens": 7000,
+      "outputTokens": 1192,
+      "template": "hyMT",
+      "contextWindowTokens": 8192,
+      "expectedAccepted": false
+    },
+    {
+      "id": "budget-one-token-below-context-boundary-fits",
+      "macTest": "LearningLocalPrompt.validateTokenBudget (source-derived boundary)",
+      "inputTokens": 7000,
+      "outputTokens": 1191,
+      "template": "hyMT",
+      "contextWindowTokens": 8192,
+      "expectedAccepted": true
+    },
+    {
+      "id": "budget-empty-input-rejects",
+      "macTest": "LearningLocalPrompt.validateTokenBudget (source-derived guard)",
+      "inputTokens": 0,
+      "outputTokens": 1,
+      "template": "hyMT",
+      "contextWindowTokens": 8192,
+      "expectedAccepted": false
+    },
+    {
+      "id": "budget-empty-output-rejects",
+      "macTest": "LearningLocalPrompt.validateTokenBudget (source-derived guard)",
+      "inputTokens": 1,
+      "outputTokens": 0,
+      "template": "hyMT",
+      "contextWindowTokens": 8192,
+      "expectedAccepted": false
+    }
+  ],
+  "contextRecommendations": [
+    {
+      "id": "context-hymt2-18b-pinned-default",
+      "macTest": "LearningModelSettingsTests.translationContextDefaultsFollowPinnedModelsAndStoredOverrides",
+      "filename": "Hy-MT2-1.8B-Q4_K_M.gguf",
+      "expectedRecommendation": 8192
+    },
+    {
+      "id": "context-hymt2-case-insensitive",
+      "macTest": "LearningModelSettingsTests.translationContextDefaultsFollowPinnedModelsAndStoredOverrides",
+      "filename": "HY-MT2-1.8B-Q4_K_M.GGUF",
+      "expectedRecommendation": 8192
+    },
+    {
+      "id": "context-translategemma-pinned-default",
+      "macTest": "LearningModelSettingsTests.translationContextDefaultsFollowPinnedModelsAndStoredOverrides",
+      "filename": "translategemma-4b-it-Q4_K_M.gguf",
+      "expectedRecommendation": 4096
+    },
+    {
+      "id": "context-hymt2-7b-keeps-general-fallback",
+      "macTest": "LearningModelSettingsTests.contextDefaultsStayScopedToTranslationLocalModels",
+      "filename": "Hy-MT2-7B-Q4_K_M.gguf",
+      "expectedRecommendation": null
+    },
+    {
+      "id": "context-substring-alias-is-not-catalog-identity",
+      "macTest": "LearningModelSettingsTests.contextDefaultsStayScopedToTranslationLocalModels",
+      "filename": "custom-translategemma-4b-it-Q4_K_M.gguf",
+      "expectedRecommendation": null
+    },
+    {
+      "id": "context-display-name-is-not-a-catalog-filename",
+      "macTest": "LearningModelSettingsTests.contextDefaultsStayScopedToTranslationLocalModels",
+      "filename": "TranslateGemma 4B",
+      "expectedRecommendation": null
+    }
+  ],
+  "settingsFallbackContextTokens": 8192,
+  "maximumLocalTokens": 32768,
+  "configurationProbe": {
+    "modelFileName": "renamed.gguf",
+    "template": "qwen3",
+    "contextWindowTokens": 4096
+  }
+}

@@ -28,6 +28,28 @@ public sealed class ModelCatalogTests : IDisposable
         Assert.Equal(model, ModelCatalog.FindById(model.Id));
     }
 
+    [Theory]
+    [InlineData("Hy-MT2-1.8B-Q4_K_M.gguf")]
+    [InlineData("Hy-MT2-7B-Q4_K_M.gguf")]
+    [InlineData("translategemma-4b-it-Q4_K_M.gguf")]
+    [InlineData("Gemma-4-E4B-Q4_K_M.gguf")]
+    [InlineData("Qwen3.5-4B-Q4_K_M.gguf")]
+    public void Available_ExcludesExactLearningCatalogModelsButKeepsOtherCustomModels(string learningModel)
+    {
+        _models.Write(learningModel);
+        _models.Write("my-custom-model.gguf");
+        _models.Write("my-translategemma-copy.gguf");
+
+        var available = ModelCatalog.Available();
+        var customFileNames = available.Where(model => model.IsCustom).Select(model => model.FileName).ToList();
+
+        Assert.Equal(ModelCatalog.All, available.Where(model => !model.IsCustom));
+        Assert.DoesNotContain(learningModel, customFileNames, StringComparer.OrdinalIgnoreCase);
+        Assert.Contains("my-custom-model.gguf", customFileNames);
+        // The Mac filter excludes exact catalog filenames; renamed custom files stay selectable.
+        Assert.Contains("my-translategemma-copy.gguf", customFileNames);
+    }
+
     [Fact]
     public void FindById_ForgetsACustomModelThatWasRemoved()
     {

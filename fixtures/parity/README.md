@@ -133,3 +133,42 @@ The verifier uses `xcrun swiftc -swift-version 6` and temporary source files. It
 macOS app, load a model, contact an endpoint, or access an editor. The existing test-project fixture
 glob already copies all files below `fixtures/parity/`, so adding this corpus requires no extra
 project-file item.
+
+## Local learning runtime policy
+
+learning-local-v1.json pins the local instruction-template and model-context behavior from the
+same macOS baseline. tests/Cotabby.Core.Tests/Parity/LearningLocalParityCorpusTests.cs consumes the
+expected values, and the independent source runner is:
+
+~~~sh
+python3 scripts/verify-learning-local-macos-parity.py --mac-repo /path/to/lingrove
+~~~
+
+The Swift runner compiles the complete pinned LearningLocalPrompt.swift,
+LearningRuntimeCatalog.swift, LearningLocalModelConfiguration.swift, ModelContextBudget.swift, and
+TokenCountEstimator.swift. It also extracts the actual LearningChatTemplate, LearningModelSnapshot,
+and role/backend value declarations from LearningModelSettings.swift, plus the actual
+LearningTranslationPrompt.Family and LearningInstructionSampling declarations. Those are pure
+policy/value declarations; the @MainActor settings object and its Combine, UserDefaults, and
+power-source dependencies stay outside the harness.
+
+Only unrelated value shapes are stubbed: the app error wrapper, style and sampling-override values
+used as stored fields, the sampler result DTO, and the download-catalog DTO. These stubs provide no
+resolution, delimiter, budget, sampler-selection, or catalog behavior. For metadata cases the
+driver writes a few-byte GGUF header containing only architecture/name/chat-template strings, using
+the layout from LearningLocalPromptTests; the committed Mac file reader parses that header. No
+model weights or native tokenizer are opened.
+
+The cases cover stable template identifiers and role availability; automatic architecture,
+filename, and embedded chat-template resolution; specialist task family and recommended sampler;
+all committed delimiter pairs with literal payload preservation; TranslateGemma and full-context
+accept/reject boundaries; exact catalog context recommendations; the Mac snapshot's 8,192-token
+fallback value; and the shared 32,768-token local ceiling. Metadata resolution includes Hy-MT2's
+two tokenizer formats despite their shared architecture and TranslateGemma identity after a rename.
+
+The whole LearningModelSettings.snapshot computation is not executed: it also resolves persisted
+per-model overrides, endpoint/local scope, power profiles, credentials, and observable settings.
+The fixture therefore checks the pure catalog recommendation function and the actual snapshot
+fallback value separately; it does not claim parity for persistence, power switching, native token
+counts, GGUF tensor loading, or inference. The verifier reads all Swift source from Git at the pinned
+revision, compiles with Swift 6, and uses temporary files only.

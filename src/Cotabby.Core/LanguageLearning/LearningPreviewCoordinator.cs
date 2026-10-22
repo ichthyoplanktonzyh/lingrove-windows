@@ -231,7 +231,25 @@ public sealed class LearningPreviewCoordinator : IAsyncDisposable
                 return;
             }
 
-            var request = LearningTranslationRequestFactory.Create(requestId, source, options);
+            LearningTranslationRequest request;
+            if (engine is ILearningTranslationRequestPlanner planner)
+            {
+                // Native learning models may resolve a profile/template asynchronously. This
+                // await remains on the coordinator's worker task, and the identity check below
+                // prevents a slow profile load from starting generation for a retired capture.
+                var plannedRequest = await planner.PlanAsync(requestId, source, options, token).ConfigureAwait(false);
+                token.ThrowIfCancellationRequested();
+                if (!IsCurrent(generation, requestId, token)) return;
+                request = ValidatePlannedRequest(requestId, source, options, plannedRequest);
+            }
+            else
+            {
+                request = LearningTranslationRequestFactory.Create(requestId, source, options);
+            }
+
+            token.ThrowIfCancellationRequested();
+            if (!IsCurrent(generation, requestId, token)) return;
+
             var cacheKey = cacheScope is null
                 ? (CacheKey?)null
                 : new CacheKey(cacheScope, request.Source, request.Options);
@@ -242,6 +260,10 @@ public sealed class LearningPreviewCoordinator : IAsyncDisposable
                 PublishReady(generation, requestId, token, validatedCached, cacheKey: null, cacheEpoch: cacheEpoch);
                 return;
             }
+
+            // A cache miss and a cache hit both follow request planning. Recheck here so a request
+            // invalidated while its key is being compared never reaches inference.
+            if (!IsCurrent(generation, requestId, token)) return;
 
             var stream = new LearningExpressionOutputPolicy.Stream();
             var streamGate = new object();
@@ -368,6 +390,27 @@ public sealed class LearningPreviewCoordinator : IAsyncDisposable
             translation = string.Empty;
             return false;
         }
+    }
+
+    private static LearningTranslationRequest ValidatePlannedRequest(
+        string requestId,
+        string source,
+        LearningTranslationOptions options,
+        LearningTranslationRequest? request)
+    {
+        if (request is null)
+            throw new LearningTranslationException(LearningTranslationFailure.InvalidOptions);
+        if (!string.Equals(request.RequestId, requestId, StringComparison.Ordinal))
+            throw new LearningTranslationException(LearningTranslationFailure.InvalidRequestId);
+        if (!string.Equals(request.Source, source, StringComparison.Ordinal))
+            throw new LearningTranslationException(LearningTranslationFailure.InvalidSourceRange);
+        if (!EqualityComparer<LearningTranslationOptions>.Default.Equals(request.Options, options) ||
+            request.Prompt is null)
+        {
+            throw new LearningTranslationException(LearningTranslationFailure.InvalidOptions);
+        }
+
+        return request;
     }
 
     private void PublishPartial(

@@ -8,8 +8,8 @@ using Cotabby.Core.LanguageLearning;
 namespace Cotabby.Win32.Text;
 
 /// <summary>
-/// Adapts platform text primitives behind the Mac lexical index. Full ICU casing preserves
-/// expansions/context (for example dotted I and final sigma), and UBRK_WORD replaces NLTokenizer.
+/// Adapts platform text primitives behind the Mac lexical index. Scalar-by-scalar full ICU casing
+/// preserves Swift's expansions without contextual final sigma; UBRK_WORD replaces NLTokenizer.
 /// No suffix, whitespace-only word splitter or unavailable-provider heuristic is substituted.
 /// Each call owns its temporary native buffers/iterator; the app can share this inert adapter.
 /// </summary>
@@ -131,7 +131,27 @@ internal sealed partial class NativeIcuLexicalApi : IIcuLexicalApi
     private NativeIcuLexicalApi() { }
     public bool HasBinaryProperty(int scalar, int property) => u_hasBinaryProperty(scalar, property) != 0;
 
-    public unsafe string ChangeCase(string value, bool upper)
+    public string ChangeCase(string value, bool upper)
+    {
+        // Swift 6.2 String.lowercased/uppercased concatenate each scalar's full mapping, rather
+        // than mapping the whole string contextually. ICU over a whole word would turn final Σ
+        // into ς, changing the Mac dictionary key. A single scalar retains expansions such as İ/ß.
+        var result = new StringBuilder(value.Length);
+        foreach (var scalar in value.EnumerateRunes())
+        {
+            if (scalar.IsAscii)
+            {
+                int code = scalar.Value;
+                if (upper && code is >= 'a' and <= 'z') code -= 32;
+                if (!upper && code is >= 'A' and <= 'Z') code += 32;
+                result.Append((char)code);
+            }
+            else result.Append(ChangeScalarCase(scalar.ToString(), upper));
+        }
+        return result.ToString();
+    }
+
+    private static unsafe string ChangeScalarCase(string value, bool upper)
     {
         fixed (char* source = value)
         {

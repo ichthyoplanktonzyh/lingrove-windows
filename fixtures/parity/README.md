@@ -176,7 +176,7 @@ revision, compiles with Swift 6, and uses temporary files only.
 ## Lexical recognition and platform text
 
 `learning-lexical-v1.json` records 33 actual Mac observations at the same pinned revision:
-13 regression adaptations and 20 explicitly marked source-policy extensions. Each row names its
+13 regression adaptations and 21 explicitly marked source-policy extensions. Each row names its
 production source; adapted rows also name a related Mac regression. Added query/hit probes are
 observations of that source, not claims that every probe existed in the original test.
 
@@ -187,8 +187,10 @@ python3 scripts/verify-learning-lexical-macos-parity.py --mac-repo /path/to/ling
 The runner compiles full committed `LearningUnitPolicy` and `LearningUnitRecognizer`, language and
 catalog code, plus the exact pure word/unit/entry declarations sliced from their original files.
 It executes actual `NLTokenizer` boundaries, index lookup, recognition, keys and hit testing. The
-613 `facts` are domain keys and driver projections of Swift character predicates, not replacement
-recognition code. Expected values were captured before the C# recognizer was implemented. An
+624 `facts` are domain keys and driver projections of Swift character predicates, not replacement
+recognition code. The initial 33 expectations were captured before the C# recognizer; a further source-derived
+casing regression was added after the first Windows CI exposed contextual Sigma behavior.
+All existing expected values were retained unchanged. An
 optional capture command writes a new observation file for explicit authoring; normal verification
 never mutates expected results.
 

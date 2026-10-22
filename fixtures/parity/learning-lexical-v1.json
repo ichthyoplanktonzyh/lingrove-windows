@@ -8883,6 +8883,251 @@
         "units": [],
         "words": []
       }
+    },
+    {
+      "id": "scalar-casing-without-word-context",
+      "text": "ΟΣ ΑΣΑ İΣ",
+      "language": "en",
+      "entries": [],
+      "queries": [
+        "ΟΣ",
+        "Ος",
+        "AΣ",
+        "ß",
+        "İ",
+        "İΣ"
+      ],
+      "hitLocations": [
+        0,
+        2,
+        3,
+        6,
+        7,
+        9
+      ],
+      "nativeWordParity": false,
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/LanguageLearning/LearningUnitPolicy.swift",
+      "expected": {
+        "facts": [
+          {
+            "firstUppercase": true,
+            "key": "οσ",
+            "patternText": true,
+            "text": "ΟΣ"
+          },
+          {
+            "firstUppercase": true,
+            "key": "ος",
+            "patternText": true,
+            "text": "Ος"
+          },
+          {
+            "firstUppercase": true,
+            "key": "aσ",
+            "patternText": true,
+            "text": "AΣ"
+          },
+          {
+            "firstUppercase": false,
+            "key": "ß",
+            "patternText": true,
+            "text": "ß"
+          },
+          {
+            "firstUppercase": true,
+            "key": "i̇",
+            "patternText": true,
+            "text": "İ"
+          },
+          {
+            "firstUppercase": true,
+            "key": "i̇σ",
+            "patternText": true,
+            "text": "İΣ"
+          },
+          {
+            "firstUppercase": true,
+            "key": "ασα",
+            "patternText": true,
+            "text": "ΑΣΑ"
+          },
+          {
+            "firstUppercase": true,
+            "key": "i̇σ",
+            "patternText": true,
+            "text": "İΣ"
+          },
+          {
+            "firstUppercase": true,
+            "key": "οσ ασα",
+            "patternText": true,
+            "text": "ΟΣ ΑΣΑ"
+          },
+          {
+            "firstUppercase": true,
+            "key": "οσ ασα i̇σ",
+            "patternText": true,
+            "text": "ΟΣ ΑΣΑ İΣ"
+          },
+          {
+            "firstUppercase": true,
+            "key": "ασα i̇σ",
+            "patternText": true,
+            "text": "ΑΣΑ İΣ"
+          }
+        ],
+        "hits": [
+          {
+            "id": 0,
+            "kind": "word",
+            "location": 0
+          },
+          {
+            "id": null,
+            "kind": null,
+            "location": 2
+          },
+          {
+            "id": 3,
+            "kind": "word",
+            "location": 3
+          },
+          {
+            "id": null,
+            "kind": null,
+            "location": 6
+          },
+          {
+            "id": 7,
+            "kind": "word",
+            "location": 7
+          },
+          {
+            "id": null,
+            "kind": null,
+            "location": 9
+          }
+        ],
+        "id": "scalar-casing-without-word-context",
+        "lookups": [
+          {
+            "ids": [],
+            "query": "ΟΣ"
+          },
+          {
+            "ids": [],
+            "query": "Ος"
+          },
+          {
+            "ids": [],
+            "query": "AΣ"
+          },
+          {
+            "ids": [],
+            "query": "ß"
+          },
+          {
+            "ids": [],
+            "query": "İ"
+          },
+          {
+            "ids": [],
+            "query": "İΣ"
+          }
+        ],
+        "units": [
+          {
+            "entryID": null,
+            "id": 0,
+            "kind": "word",
+            "query": "ΟΣ",
+            "ranges": [
+              {
+                "length": 2,
+                "location": 0
+              }
+            ],
+            "surface": "ΟΣ",
+            "words": [
+              {
+                "range": {
+                  "length": 2,
+                  "location": 0
+                },
+                "text": "ΟΣ"
+              }
+            ]
+          },
+          {
+            "entryID": null,
+            "id": 3,
+            "kind": "word",
+            "query": "ΑΣΑ",
+            "ranges": [
+              {
+                "length": 3,
+                "location": 3
+              }
+            ],
+            "surface": "ΑΣΑ",
+            "words": [
+              {
+                "range": {
+                  "length": 3,
+                  "location": 3
+                },
+                "text": "ΑΣΑ"
+              }
+            ]
+          },
+          {
+            "entryID": null,
+            "id": 7,
+            "kind": "word",
+            "query": "İΣ",
+            "ranges": [
+              {
+                "length": 2,
+                "location": 7
+              }
+            ],
+            "surface": "İΣ",
+            "words": [
+              {
+                "range": {
+                  "length": 2,
+                  "location": 7
+                },
+                "text": "İΣ"
+              }
+            ]
+          }
+        ],
+        "words": [
+          {
+            "range": {
+              "length": 2,
+              "location": 0
+            },
+            "text": "ΟΣ"
+          },
+          {
+            "range": {
+              "length": 3,
+              "location": 3
+            },
+            "text": "ΑΣΑ"
+          },
+          {
+            "range": {
+              "length": 2,
+              "location": 7
+            },
+            "text": "İΣ"
+          }
+        ]
+      }
     }
   ]
 }

@@ -1,0 +1,315 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "https",
+      "kind": "link",
+      "value": "https://example.com/entry#sense",
+      "macSource": "Cotabby/Support/LanguageLearning/DictionaryLinkPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "allowed": true,
+        "id": "https"
+      }
+    },
+    {
+      "id": "http",
+      "kind": "link",
+      "value": "HTTP://example.com/",
+      "macSource": "Cotabby/Support/LanguageLearning/DictionaryLinkPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "allowed": true,
+        "id": "http"
+      }
+    },
+    {
+      "id": "file",
+      "kind": "link",
+      "value": "file:///tmp/private",
+      "macSource": "Cotabby/Support/LanguageLearning/DictionaryLinkPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "allowed": false,
+        "id": "file"
+      }
+    },
+    {
+      "id": "script",
+      "kind": "link",
+      "value": "javascript:alert(1)",
+      "macSource": "Cotabby/Support/LanguageLearning/DictionaryLinkPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "allowed": false,
+        "id": "script"
+      }
+    },
+    {
+      "id": "reference",
+      "kind": "link",
+      "value": "entry://word",
+      "macSource": "Cotabby/Support/LanguageLearning/DictionaryLinkPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "allowed": false,
+        "id": "reference"
+      }
+    },
+    {
+      "id": "credentials",
+      "kind": "link",
+      "value": "https://user:password@example.com/",
+      "macSource": "Cotabby/Support/LanguageLearning/DictionaryLinkPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "allowed": false,
+        "id": "credentials"
+      }
+    },
+    {
+      "id": "empty-user",
+      "kind": "link",
+      "value": "https://@example.com/",
+      "macSource": "Cotabby/Support/LanguageLearning/DictionaryLinkPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "allowed": false,
+        "id": "empty-user"
+      }
+    },
+    {
+      "id": "no-host",
+      "kind": "link",
+      "value": "https:///entry",
+      "macSource": "Cotabby/Support/LanguageLearning/DictionaryLinkPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "allowed": false,
+        "id": "no-host"
+      }
+    },
+    {
+      "id": "relative",
+      "kind": "link",
+      "value": "relative/path",
+      "macSource": "Cotabby/Support/LanguageLearning/DictionaryLinkPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "allowed": false,
+        "id": "relative"
+      }
+    },
+    {
+      "id": "byte-limit",
+      "kind": "link",
+      "value": "https://example.com/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "macSource": "Cotabby/Support/LanguageLearning/DictionaryLinkPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "allowed": true,
+        "id": "byte-limit"
+      }
+    },
+    {
+      "id": "over-byte-limit",
+      "kind": "link",
+      "value": "https://example.com/éééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé",
+      "macSource": "Cotabby/Support/LanguageLearning/DictionaryLinkPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "allowed": false,
+        "id": "over-byte-limit"
+      }
+    },
+    {
+      "id": "unicode-host",
+      "kind": "link",
+      "value": "https://例子.测试/词条",
+      "macSource": "Cotabby/Support/LanguageLearning/DictionaryLinkPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "allowed": true,
+        "id": "unicode-host"
+      }
+    },
+    {
+      "id": "path-at",
+      "kind": "link",
+      "value": "https://example.com/@entry",
+      "macSource": "Cotabby/Support/LanguageLearning/DictionaryLinkPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "allowed": true,
+        "id": "path-at"
+      }
+    },
+    {
+      "id": "query-at",
+      "kind": "link",
+      "value": "https://example.com/?value=@",
+      "macSource": "Cotabby/Support/LanguageLearning/DictionaryLinkPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "allowed": true,
+        "id": "query-at"
+      }
+    },
+    {
+      "id": "first-result-lock",
+      "kind": "viewport",
+      "steps": [
+        {
+          "query": "word",
+          "height": 70.2,
+          "resolved": false
+        },
+        {
+          "query": "word",
+          "height": 135.2,
+          "resolved": true
+        },
+        {
+          "query": "word",
+          "height": 270,
+          "resolved": true
+        }
+      ],
+      "macSource": "Cotabby/Support/LanguageLearning/LearningDictionaryViewport.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "heights": [
+          120,
+          136,
+          136
+        ],
+        "id": "first-result-lock"
+      }
+    },
+    {
+      "id": "upper-bound-and-query-reset",
+      "kind": "viewport",
+      "steps": [
+        {
+          "query": "word",
+          "height": 900,
+          "resolved": true
+        },
+        {
+          "query": "next",
+          "height": 140.1,
+          "resolved": false
+        },
+        {
+          "query": "next",
+          "height": 210.4,
+          "resolved": true
+        }
+      ],
+      "macSource": "Cotabby/Support/LanguageLearning/LearningDictionaryViewport.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "heights": [
+          300,
+          141,
+          211
+        ],
+        "id": "upper-bound-and-query-reset"
+      }
+    },
+    {
+      "id": "invalid-heights",
+      "kind": "viewport",
+      "steps": [
+        {
+          "query": "word",
+          "height": 0,
+          "resolved": true
+        },
+        {
+          "query": "word",
+          "height": -1,
+          "resolved": true
+        },
+        {
+          "query": "word",
+          "height": "nan",
+          "resolved": true
+        },
+        {
+          "query": "word",
+          "height": 190.1,
+          "resolved": true
+        }
+      ],
+      "macSource": "Cotabby/Support/LanguageLearning/LearningDictionaryViewport.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "heights": [
+          120,
+          120,
+          120,
+          191
+        ],
+        "id": "invalid-heights"
+      }
+    },
+    {
+      "id": "canonical-query-lock",
+      "kind": "viewport",
+      "steps": [
+        {
+          "query": "café",
+          "height": 145.4,
+          "resolved": true
+        },
+        {
+          "query": "café",
+          "height": 290,
+          "resolved": true
+        }
+      ],
+      "macSource": "Cotabby/Support/LanguageLearning/LearningDictionaryViewport.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "heights": [
+          146,
+          146
+        ],
+        "id": "canonical-query-lock"
+      }
+    },
+    {
+      "id": "loading-is-not-locked",
+      "kind": "viewport",
+      "steps": [
+        {
+          "query": "word",
+          "height": 125,
+          "resolved": false
+        },
+        {
+          "query": "word",
+          "height": 180,
+          "resolved": false
+        },
+        {
+          "query": "word",
+          "height": 250,
+          "resolved": true
+        }
+      ],
+      "macSource": "Cotabby/Support/LanguageLearning/LearningDictionaryViewport.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "heights": [
+          125,
+          180,
+          250
+        ],
+        "id": "loading-is-not-locked"
+      }
+    }
+  ]
+}

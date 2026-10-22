@@ -1,0 +1,41 @@
+<Window x:Class="Cotabby.App.UI.Learning.LearningDictionaryWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        Topmost="True" ShowInTaskbar="False" ShowActivated="False" Focusable="False"
+        SizeToContent="WidthAndHeight" ResizeMode="NoResize" UseLayoutRounding="True">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Theme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Border Width="410" Padding="16" CornerRadius="10" BorderThickness="1"
+            Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}">
+        <StackPanel>
+            <DockPanel Margin="0,0,0,10">
+                <Button x:Name="CloseButton" DockPanel.Dock="Right" Content="×" Width="28" Height="28"
+                        Focusable="False" Background="Transparent" BorderThickness="0"
+                        Foreground="{DynamicResource TextSecondary}" Click="OnClose" />
+                <TextBlock x:Name="TitleText" FontSize="16" FontWeight="SemiBold" TextWrapping="Wrap"
+                           Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center" />
+            </DockPanel>
+            <TextBlock Text="Bundled expression dictionary · definitions in English" FontSize="11"
+                       TextWrapping="Wrap" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,10" />
+            <ScrollViewer x:Name="DefinitionViewport" Height="120" VerticalScrollBarVisibility="Auto" Margin="0,0,0,10">
+                <StackPanel x:Name="DefinitionContent" />
+            </ScrollViewer>
+            <StackPanel x:Name="WordSection" Margin="0,0,0,10">
+                <Button x:Name="BackButton" Content="Back to expression" Focusable="False"
+                        HorizontalAlignment="Left" Margin="0,0,0,8" Padding="8,4"
+                        Foreground="{DynamicResource TextPrimary}" Background="{DynamicResource KeycapBg}"
+                        BorderBrush="{DynamicResource CardBorder}" Click="OnBack" />
+                <TextBlock Text="WORDS" FontSize="10" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,5" />
+                <WrapPanel x:Name="WordButtons" />
+            </StackPanel>
+            <TextBlock x:Name="AttributionText" FontSize="10" TextWrapping="Wrap"
+                       Foreground="{DynamicResource TextSecondary}" />
+        </StackPanel>
+    </Border>
+</Window>

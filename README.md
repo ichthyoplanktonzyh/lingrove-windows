@@ -29,9 +29,10 @@ speech remain migration work, and native Windows interaction and model execution
 names still say Cotabby; Lingrove branding in this documentation does not claim that the app binary,
 settings, or stored data have been rebranded or made compatible with macOS.
 
-The [offline lexical index and lazy bundled store](docs/LEARNING_OFFLINE_LEXICON.md) now adapt the
-same pinned Mac resource and attribution. They are registered for later card integration; clickable
-lookup, system/imported dictionaries and dictionary presentation remain incomplete.
+The [offline lexical index and lazy bundled store](docs/LEARNING_OFFLINE_LEXICON.md) adapt the
+same pinned Mac resource and attribution. [Completed-translation double-click lookup](docs/LEARNING_WORD_PREVIEW.md)
+now connects them to a bundled dictionary card; native hit/focus/placement checks and broader
+system/imported dictionary flows remain incomplete.
 
 The first foundation milestone is documentation, build-and-test CI, and shared behavior fixtures. It
 does not add a Windows installer, downloadable build, artifact upload, release workflow, or model
@@ -48,7 +49,7 @@ unverified.
   task settings, cancellation, dedicated CPU local inference and an explicit learning chat endpoint.
   Local model import and catalog downloads require user actions; settings do not load a model.
   Source/model/style/budget rules follow the pinned Mac. Native capture/IME/card and model execution, replacement,
-  reading/OCR, explanations, dictionaries, notebook, Anki and speech remain explicit gaps.
+  reading/OCR, explanations, system/imported/online dictionaries, notebook, Anki and speech remain explicit gaps.
 - **Privacy:** local generation is the default design. A remote endpoint is an explicit user choice;
   requests must be bounded and tied to the selected task. CI must not download model weights or
   contact model endpoints. Cloud sync is outside scope.
@@ -101,7 +102,8 @@ python3 scripts/verify-learning-local-macos-parity.py --mac-repo /path/to/macOS-
 python3 scripts/verify-learning-lexical-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 ```
 
-The Swift verifiers require Xcode 26 and exercise 17 autocomplete, 64 learning, 45 local-learning and 34 lexical fixture cases/checks
+The Swift verifiers require Xcode 26 and exercise 17 autocomplete, 64 learning, 45 local-learning,
+34 lexical and 19 dictionary-policy fixture cases/checks, plus pinned resource integrity/Codable checks
 against committed pure Mac policies. They do not build or launch the macOS app. Routine validation does not run the
 `Cotabby.Tools.*Smoke` projects: those may require an interactive Windows desktop or downloaded
 model weights.

@@ -2,8 +2,8 @@
 
 This slice adapts Mac Lingrove at `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`.
 It supplies the actual offline resource, bounded decoder/file source and one lazy shared store.
-The App composition root registers that store; the sentence preview does not yet call it or show
-clickable words. System dictionaries, MDX/MDD, websites and dictionary cards remain unported.
+The App composition root registers that store. The [subsequent completed-translation card slice](LEARNING_WORD_PREVIEW.md)
+now calls it for annotations and bundled lookup. System dictionaries, MDX/MDD and websites remain unported.
 
 ## Source and ownership
 

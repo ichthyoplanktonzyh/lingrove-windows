@@ -111,13 +111,14 @@ public sealed class AppHost : IAsyncDisposable
         sc.AddSingleton<OpenAICompatibleApiClient>(_ => new OpenAICompatibleApiClient());
         sc.AddSingleton<IOpenAICompatibleCredentialStore>(_ => new DpapiOpenAICompatibleCredentialStore());
         sc.AddSingleton<ILearningSentenceTokenizer, IcuLearningSentenceTokenizer>();
-        // One lazy store will be shared by recognition and dictionary cards. Registration does
-        // no file IO or ICU work; each first request loads the pinned local resource on its worker.
+        // Recognition and dictionary cards share one store. Bundle resolution checks availability;
+        // resource parsing/indexing and ICU calls remain lazy and run on the service worker.
         sc.AddSingleton<ILearningLexicalText, IcuLearningLexicalText>();
         sc.AddSingleton<ILearningLexiconResourceSource>(_ =>
             BundledLearningLexiconResourceSource.FromBundleDirectory(AppContext.BaseDirectory));
         sc.AddSingleton<LearningLexiconService>();
         sc.AddSingleton<ILearningUnitRecognizing>(services => services.GetRequiredService<LearningLexiconService>());
+        sc.AddSingleton<ILearningDictionaryProviding>(services => services.GetRequiredService<LearningLexiconService>());
         // Translation owns a separate lazy runtime and native context; this singleton is only
         // created at startup, and its implementation does not load weights until a manual request.
         sc.AddSingleton<ILearningLocalRuntime, LearningLocalRuntime>();
@@ -171,7 +172,9 @@ public sealed class AppHost : IAsyncDisposable
             // Multi-source choices require a platform confidence provider. None is registered on
             // this Windows slice, so the controller truthfully fails closed until one is selected.
             _services.GetService<ILearningLanguageDetector>(),
-            batterySaverOn: () => PowerStatus.IsBatterySaverOn);
+            batterySaverOn: () => PowerStatus.IsBatterySaverOn,
+            unitRecognizer: _services.GetRequiredService<ILearningUnitRecognizing>(),
+            dictionaryProvider: _services.GetRequiredService<ILearningDictionaryProviding>());
 
         SystemEvents.PowerModeChanged += OnPowerModeChanged;
         ApplySettings();

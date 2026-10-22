@@ -12,7 +12,7 @@ namespace Cotabby.Core.LanguageLearning;
 /// scope can retain a bounded cache across hides/retries without mixing endpoint profiles. The
 /// engine is caller-owned; this type owns preview state, request cancellation, and task lifetime.
 /// </remarks>
-public sealed class LearningPreviewCoordinator : IAsyncDisposable
+public sealed partial class LearningPreviewCoordinator : IAsyncDisposable
 {
     private static readonly TimeSpan DisposeWaitLimit = TimeSpan.FromSeconds(5);
     private static readonly TimeSpan MinimumPartialPublishInterval = TimeSpan.FromSeconds(1d / 30d);
@@ -38,7 +38,11 @@ public sealed class LearningPreviewCoordinator : IAsyncDisposable
     /// Creates a preview owner with a monotonic clock for stream coalescing. Supplying a clock is
     /// useful for deterministic policy tests; production uses <see cref="TimeProvider.System"/>.
     /// </summary>
-    public LearningPreviewCoordinator(TimeProvider? clock = null) => _clock = clock ?? TimeProvider.System;
+    public LearningPreviewCoordinator(TimeProvider? clock = null, ILearningUnitRecognizing? unitRecognizer = null)
+    {
+        _clock = clock ?? TimeProvider.System;
+        _unitRecognizer = unitRecognizer;
+    }
 
     /// <summary>Raised in state-transition order, outside the coordinator lock.</summary>
     /// <remarks>
@@ -87,6 +91,7 @@ public sealed class LearningPreviewCoordinator : IAsyncDisposable
             priorCancellation = _activeCancellation;
             _activeCancellation = cancellation;
             generation = ++_generation;
+            RetireUnitWorkLocked();
             cacheEpoch = _cacheEpoch;
             _publishedPartialSequence = 0;
             _state = new LearningPreviewState
@@ -133,12 +138,15 @@ public sealed class LearningPreviewCoordinator : IAsyncDisposable
             cancellation = _activeCancellation;
             _activeCancellation = null;
             ++_generation;
+            RetireUnitWorkLocked();
             _state = _state with
             {
                 Result = null,
                 PartialResult = null,
                 Status = LearningPreviewStatus.Cancelled,
                 ErrorMessage = null,
+                Units = Array.Empty<LearningUnit>(),
+                UnitStage = LearningUnitStage.Pending,
             };
             drainNotifications = EnqueueNotificationLocked(_state);
         }
@@ -159,6 +167,7 @@ public sealed class LearningPreviewCoordinator : IAsyncDisposable
             if (_disposed) return;
             ++_cacheEpoch;
             _translationCache.Clear();
+            _unitCache.Clear();
         }
     }
 
@@ -179,6 +188,7 @@ public sealed class LearningPreviewCoordinator : IAsyncDisposable
             cancellation = _activeCancellation;
             _activeCancellation = null;
             ++_generation;
+            RetireUnitWorkLocked();
 
             if (_state.Status != LearningPreviewStatus.Idle && _state.Status != LearningPreviewStatus.Cancelled)
             {
@@ -188,11 +198,13 @@ public sealed class LearningPreviewCoordinator : IAsyncDisposable
                     PartialResult = null,
                     Status = LearningPreviewStatus.Cancelled,
                     ErrorMessage = null,
+                    Units = Array.Empty<LearningUnit>(),
+                    UnitStage = LearningUnitStage.Pending,
                 };
                 drainNotifications = EnqueueNotificationLocked(_state);
             }
 
-            tasks = _runningTasks.Values.ToArray();
+            tasks = _runningTasks.Values.Concat(_runningUnitTasks.Values).ToArray();
         }
 
         CancelBestEffort(cancellation);
@@ -464,6 +476,7 @@ public sealed class LearningPreviewCoordinator : IAsyncDisposable
                 ErrorMessage = null,
             };
             _activeCancellation = null;
+            StartUnitsLocked(generation, requestId, result, cacheEpoch);
             drainNotifications = EnqueueNotificationLocked(_state);
         }
 

@@ -206,3 +206,10 @@ files against their pinned Mac Git bytes. The complete actual Mac Codable resour
 round-trip every entry, sense and attribution field without changing the JSON value. This integrity
 check performs no source-data download or refresh; [the resource/store slice](../../docs/LEARNING_OFFLINE_LEXICON.md)
 documents loading and platform evidence separately from lexical policy observations.
+
+`learning-dictionary-ui-v1.json` adds 19 source-policy extensions captured from the actual Mac
+`DictionaryLinkPolicy` (14 URL admission cases) and `LearningDictionaryViewport` (five measurement
+sequences). The same Swift executable compiles both complete policies, plus their real content and
+insertion-safety dependencies; no implementation is stubbed. Portable C# compares the committed
+admission/heights observations. These are policy checks rather than WPF geometry/focus tests;
+[the card adaptation record](../../docs/LEARNING_WORD_PREVIEW.md) defines that boundary.

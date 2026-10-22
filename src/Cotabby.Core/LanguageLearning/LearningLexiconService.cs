@@ -10,7 +10,7 @@ namespace Cotabby.Core.LanguageLearning;
 /// There is no HTTP client or system-dictionary fallback in this boundary.
 /// </summary>
 public sealed class LearningLexiconService(ILearningLexiconResourceSource source, ILearningLexicalText text)
-    : ILearningUnitRecognizing
+    : ILearningUnitRecognizing, ILearningDictionaryProviding
 {
     private readonly SemaphoreSlim _gate = new(1, 1);
     private readonly Dictionary<string, LearningUnitRecognizer> _indices = new(StringComparer.Ordinal);

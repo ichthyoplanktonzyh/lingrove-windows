@@ -1,0 +1,70 @@
+name: Build and test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+  DOTNET_NOLOGO: '1'
+  # Desktop/model smoke tools need an interactive session or downloaded weights.
+  # Unit tests exercise the contracts without altering the runner's clipboard.
+  COTABBY_CLIPBOARD_TEST: '0'
+
+jobs:
+  windows:
+    name: Windows x64 build and unit tests
+    runs-on: windows-2022
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
+        with:
+          global-json-file: global.json
+      - name: Restore solution
+        run: dotnet restore Cotabby.sln
+      - name: Compile all projects
+        run: dotnet build Cotabby.sln --configuration Release --no-restore
+      - name: Test portable core and parity fixtures
+        run: dotnet test tests/Cotabby.Core.Tests/Cotabby.Core.Tests.csproj --configuration Release --no-build --no-restore
+      - name: Test inference transport and Windows adapters
+        run: dotnet test tests/Cotabby.Inference.Tests/Cotabby.Inference.Tests.csproj --configuration Release --no-build --no-restore --filter 'FullyQualifiedName!~ClipboardTextReaderTests'
+
+  portable-core:
+    name: Portable core and Swift parity on macOS ARM64
+    # The pinned Swift policies use Swift 6.2 syntax supplied by Xcode 26.
+    runs-on: macos-26
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
+        with:
+          global-json-file: global.json
+      - name: Test portable core and parity fixtures
+        run: dotnet test tests/Cotabby.Core.Tests/Cotabby.Core.Tests.csproj --configuration Release
+      - name: Read the pinned macOS reference
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          repository: ichthyoplanktonzyh/lingrove
+          ref: 43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f
+          path: .mac-baseline
+          sparse-checkout: Cotabby/Support
+          persist-credentials: false
+      - name: Verify the same corpus against committed Swift policies
+        run: python3 scripts/verify-macos-parity.py --mac-repo .mac-baseline
+
+  # Routine CI stops after validation. Packaging, artifact uploads and releases
+  # are deliberately absent; distribution is a separately authorized task.

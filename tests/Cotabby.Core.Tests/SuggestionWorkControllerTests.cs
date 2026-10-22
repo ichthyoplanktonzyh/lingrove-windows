@@ -16,41 +16,78 @@ public class SuggestionWorkControllerTests
     [Fact]
     public async Task Submit_CancelsPriorWork()
     {
-        // Long debounce ensures the first work never enters its body before the
-        // second submit replaces it.
-        await using var c = new SuggestionWorkController(TimeSpan.FromMilliseconds(200));
+        // Enter the first body before submitting again, then hold it on its cancellation token.
+        // A barrier makes the test independent of how long the thread pool takes to start work.
+        await using var c = new SuggestionWorkController(TimeSpan.Zero);
+        var firstBodyEntered = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var secondBodyEntered = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        bool firstWorkObservedCancellation = false;
 
+        var first = c.Submit(async cancellationToken =>
+        {
+            Task cancellationWait = Task.Delay(Timeout.InfiniteTimeSpan, cancellationToken);
+            firstBodyEntered.TrySetResult(true);
+            try
+            {
+                await cancellationWait;
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                firstWorkObservedCancellation = true;
+                throw;
+            }
+        });
+
+        // This timeout only bounds a broken test; it does not determine whether the
+        // first body should have started before the second submit.
+        await firstBodyEntered.Task.WaitAsync(TimeSpan.FromSeconds(10));
+        var second = c.Submit(_ =>
+        {
+            secondBodyEntered.TrySetResult(true);
+            return Task.CompletedTask;
+        });
+
+        await Task.WhenAll(first, second).WaitAsync(TimeSpan.FromSeconds(10));
+        Assert.True(firstWorkObservedCancellation);
+        Assert.True(secondBodyEntered.Task.IsCompletedSuccessfully);
+    }
+
+    [Fact]
+    public async Task Submit_CancelsPendingWork_AndCancelStopsReplacement()
+    {
+        // Infinite debounce keeps both callbacks pending by construction. The first task must end
+        // when replacement cancels it; explicit Cancel then releases the replacement task.
+        await using var c = new SuggestionWorkController(Timeout.InfiniteTimeSpan);
         bool firstBodyEntered = false;
-        bool secondBodyEntered = false;
+        bool replacementBodyEntered = false;
 
         var first = c.Submit(_ =>
         {
             firstBodyEntered = true;
             return Task.CompletedTask;
         });
-
-        // Submit a second within the debounce window — should kill the first
-        // before its debounce completes, so its body never runs.
-        await Task.Delay(20);
-        var second = c.Submit(_ =>
+        var replacement = c.Submit(_ =>
         {
-            secondBodyEntered = true;
+            replacementBodyEntered = true;
             return Task.CompletedTask;
         });
 
-        await Task.WhenAll(first, second);
+        await first.WaitAsync(TimeSpan.FromSeconds(10));
+        c.Cancel();
+        await replacement.WaitAsync(TimeSpan.FromSeconds(10));
+
         Assert.False(firstBodyEntered);
-        Assert.True(secondBodyEntered);
+        Assert.False(replacementBodyEntered);
     }
 
     [Fact]
     public async Task Cancel_StopsScheduledWork()
     {
-        await using var c = new SuggestionWorkController(TimeSpan.FromMilliseconds(100));
+        await using var c = new SuggestionWorkController(Timeout.InfiniteTimeSpan);
         bool fired = false;
         var task = c.Submit(_ => { fired = true; return Task.CompletedTask; });
         c.Cancel();
-        await task;
+        await task.WaitAsync(TimeSpan.FromSeconds(10));
         Assert.False(fired);
     }
 }

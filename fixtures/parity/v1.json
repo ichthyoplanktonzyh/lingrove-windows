@@ -1,0 +1,163 @@
+{
+  "schemaVersion": 1,
+  "macBaselineRevision": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "acceptanceChunks": [
+    {
+      "id": "leading-whitespace-and-next-word",
+      "macTest": "SuggestionWordAcceptanceTests.test_nextAcceptanceChunk_includesLeadingWhitespaceAndNextVisibleToken",
+      "tail": "  world again",
+      "autoAcceptTrailingPunctuation": true,
+      "expectedChunk": "  world",
+      "expectedUtf16Length": 7
+    },
+    {
+      "id": "leading-punctuation-binds-to-next-word",
+      "macTest": "SuggestionWordAcceptanceTests.test_nextAcceptanceChunk_bindsLeadingPunctuationToTheNextWord",
+      "tail": ". I'll be in touch",
+      "autoAcceptTrailingPunctuation": true,
+      "expectedChunk": ". I'll",
+      "expectedUtf16Length": 6
+    },
+    {
+      "id": "decomposed-accent-stays-with-word-before-punctuation",
+      "macTest": "SuggestionWordAcceptanceTests.test_nextAcceptanceChunk_splitsTrailingPunctuationWhenAutoAcceptDisabled",
+      "tail": "cafe\u0301!",
+      "autoAcceptTrailingPunctuation": false,
+      "expectedChunk": "cafe\u0301",
+      "expectedUtf16Length": 5
+    },
+    {
+      "id": "cjk-trailing-clause-comma-binds-to-word",
+      "macTest": "SuggestionPhraseAcceptanceTests.test_nextAcceptanceChunk_bindsTrailingIdeographicCommaToWord",
+      "tail": "資料、内容",
+      "autoAcceptTrailingPunctuation": true,
+      "expectedChunk": "資料、",
+      "expectedUtf16Length": 3
+    },
+    {
+      "id": "cjk-leading-punctuation-is-its-own-chunk",
+      "macTest": "SuggestionPhraseAcceptanceTests.test_nextAcceptanceChunk_peelsLeadingCJKPunctuationRunInsteadOfSwallowingTheTail",
+      "tail": "、理解し、その内容",
+      "autoAcceptTrailingPunctuation": true,
+      "expectedChunk": "、",
+      "expectedUtf16Length": 1
+    },
+    {
+      "id": "cjk-opener-is-not-bound-to-following-word",
+      "macTest": "SuggestionPhraseAcceptanceTests.test_nextAcceptanceChunk_peelsLeadingCJKOpeningBracket",
+      "tail": "「分かった」と言った",
+      "autoAcceptTrailingPunctuation": true,
+      "expectedChunk": "「",
+      "expectedUtf16Length": 1
+    }
+  ],
+  "ghostSpaceBoundaries": [
+    {
+      "id": "model-leading-space-starts-a-new-word",
+      "macTest": "GhostSpaceBoundaryTests.testTheModelsOwnSpaceStartsANewWord",
+      "completion": " on Friday",
+      "precedingText": "at 12 PM",
+      "requestPrecedingText": "at 12 PM",
+      "expected": " on Friday"
+    },
+    {
+      "id": "model-continues-number-without-space",
+      "macTest": "GhostSpaceBoundaryTests.testAJoinedContinuationStaysJoined",
+      "completion": "50K was too high",
+      "precedingText": "I was thinking that 1",
+      "requestPrecedingText": "I was thinking that 1",
+      "expected": "50K was too high"
+    },
+    {
+      "id": "live-typed-space-is-not-doubled",
+      "macTest": "GhostSpaceBoundaryTests.testASpaceTypedDuringGenerationIsNotDoubled",
+      "completion": " on Friday",
+      "precedingText": "at 12 PM ",
+      "requestPrecedingText": "at 12 PM",
+      "expected": "on Friday"
+    },
+    {
+      "id": "deleted-request-space-is-restored",
+      "macTest": "GhostSpaceBoundaryTests.testASpaceDeletedAfterTheRequestIsRestored",
+      "completion": "on Friday",
+      "precedingText": "at 12 PM",
+      "requestPrecedingText": "at 12 PM ",
+      "expected": " on Friday"
+    },
+    {
+      "id": "comma-binds-to-preceding-word",
+      "macTest": "GhostSpaceBoundaryTests.testPunctuationBindsToThePrecedingWord",
+      "completion": ", regards",
+      "precedingText": "Best",
+      "requestPrecedingText": "Best",
+      "expected": ", regards"
+    },
+    {
+      "id": "line-break-already-provides-boundary",
+      "macTest": "GhostSpaceBoundaryTests.testExactSpacingKeepsTheTypographyRules",
+      "completion": " world",
+      "precedingText": "Hello\n",
+      "requestPrecedingText": "Hello\n",
+      "expected": "world"
+    }
+  ],
+  "normalization": [
+    {
+      "id": "prompt-echo-and-chat-markers-are-removed",
+      "macTest": "SuggestionTextNormalizerTests.test_normalize_removesChatTemplateMarkersAndPromptEcho",
+      "prompt": "PROMPT_PAYLOAD",
+      "prefixText": "",
+      "precedingText": "",
+      "raw": "PROMPT_PAYLOAD<|im_start|> useful continuation<|im_end|>",
+      "isMultiLineEnabled": false,
+      "expectedText": " useful continuation",
+      "expectedSuppression": null
+    },
+    {
+      "id": "emoji-prefix-echo-is-removed-as-a-whole",
+      "macTest": "SuggestionTextNormalizerTests.test_normalize_removesVisiblePrefixEcho",
+      "prompt": "PROMPT",
+      "prefixText": "I love 👩🏽‍💻",
+      "prefixUtf16Length": 14,
+      "precedingText": "I love 👩🏽‍💻",
+      "raw": "I love 👩🏽‍💻 coding",
+      "isMultiLineEnabled": false,
+      "expectedText": " coding",
+      "expectedSuppression": null
+    },
+    {
+      "id": "single-line-mode-keeps-first-line-after-crlf",
+      "macTest": "SuggestionTextNormalizerTests.test_normalize_singleLineKeepsOnlyTheFirstContentLine",
+      "prompt": "PROMPT",
+      "prefixText": "Hello",
+      "precedingText": "Hello",
+      "raw": "next\r\nsecond",
+      "isMultiLineEnabled": false,
+      "expectedText": "next",
+      "expectedSuppression": null
+    },
+    {
+      "id": "repeated-trailing-text-is-suppressed",
+      "macTest": "SuggestionTextNormalizerTests.test_normalizeDetailed_attributesEverySuppression",
+      "prompt": "PROMPT",
+      "prefixText": "Hello",
+      "precedingText": "Hello",
+      "trailingText": " existing suffix",
+      "raw": " existing suffix and extra generated text",
+      "isMultiLineEnabled": false,
+      "expectedText": "",
+      "expectedSuppression": "DuplicatesTrailingText"
+    },
+    {
+      "id": "preceding-tail-echo-is-suppressed-with-reason",
+      "macTest": "SuggestionTextNormalizerTests.test_normalizeDetailed_attributesEverySuppression",
+      "prompt": "PROMPT",
+      "prefixText": "hello world",
+      "precedingText": "hello world",
+      "raw": "world",
+      "isMultiLineEnabled": false,
+      "expectedText": "",
+      "expectedSuppression": "EchoesPrecedingText"
+    }
+  ]
+}

@@ -5,9 +5,11 @@ namespace Cotabby.Core.Tests.Macros;
 
 public class MacroReferenceCatalogTests
 {
+    private static readonly DateTime Now = new(2026, 6, 4, 12, 0, 0);
+    private static readonly CultureInfo Culture = CultureInfo.GetCultureInfo("en-US");
     private static readonly MacroEngine Engine = MacroEngine.Standard(
-        now: () => new DateTime(2026, 6, 4, 12, 0, 0),
-        culture: CultureInfo.GetCultureInfo("en-US"),
+        now: () => Now,
+        culture: Culture,
         randomSource: (low, _) => low);
 
     [Fact]
@@ -33,7 +35,7 @@ public class MacroReferenceCatalogTests
             groups["Currency"]);
         Assert.Equal(
             [
-                new("today", "Jun 4, 2026"), new("now", "12:00 PM"), new("tomorrow", "Jun 5, 2026"),
+                new("today", "Jun 4, 2026"), new("now", Now.ToString("t", Culture)), new("tomorrow", "Jun 5, 2026"),
                 new("next-fri", "Jun 5, 2026"), new("+3d", "Jun 7, 2026"), new("+1week", "Jun 11, 2026"),
                 new("today(iso)", "2026-06-04"), new("now(24h)", "12:00"),
             ],

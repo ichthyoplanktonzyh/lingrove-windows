@@ -138,7 +138,8 @@ public class DateMacroEvaluatorTests
     [Fact]
     public void NowDefaultsToTheCultureShortTime()
     {
-        Assert.Equal("12:00 PM", Insert("now"));
+        var culture = CultureInfo.GetCultureInfo("en-US");
+        Assert.Equal(Now.ToString("t", culture), Insert("now"));
     }
 
     [Fact]
@@ -181,8 +182,9 @@ public class DateMacroEvaluatorTests
     [Fact]
     public void NoonDefaultsToTwelveHourClock()
     {
-        Assert.Equal("12:00 PM", Insert("noon"));
-        Assert.Equal("12:00 AM", Insert("midnight"));
+        var culture = CultureInfo.GetCultureInfo("en-US");
+        Assert.Equal(Now.Date.AddHours(12).ToString("t", culture), Insert("noon"));
+        Assert.Equal(Now.Date.ToString("t", culture), Insert("midnight"));
     }
 
     [Fact]
@@ -203,7 +205,8 @@ public class DateMacroEvaluatorTests
     [Fact]
     public void DatetimeCombinesMediumDateWithShortTime()
     {
-        Assert.Equal("Jun 4, 2026 12:00 PM", Insert("datetime"));
+        var culture = CultureInfo.GetCultureInfo("en-US");
+        Assert.Equal($"Jun 4, 2026 {Now.ToString("t", culture)}", Insert("datetime"));
     }
 
     [Fact]

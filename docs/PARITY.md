@@ -1,0 +1,87 @@
+# Feature Parity and Evidence
+
+This matrix starts from the Windows fork baseline `b1e4031c70aca1be21aae2c57b138fde5fc22bb1` and
+compares it with the committed macOS reference `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`. It also
+records the initial foundation branch's shared JSON corpus and its test evidence. The source paths
+are reference points, not a claim that every Windows behavior has been validated. The Windows tree
+still uses Cotabby names. Language learning is part of the target product but is not implemented in
+this Windows baseline.
+
+## Status meanings
+
+- **verified** — the behavior has passing automated parity evidence and, where it touches Windows
+  UIA, input, display, storage, or inference hardware, has passed the relevant native host check.
+- **implemented-unverified** — Windows source implements the behavior, but evidence is limited to
+  source inspection or portable unit tests; native user-host behavior has not been confirmed.
+- **platform-adapted** — Windows requires a distinct API or runtime path; implementation exists or is
+  planned, and its Windows-specific behavior still needs host validation.
+- **source-only** — the macOS reference contains the feature and tests, but no corresponding Windows
+  product implementation was found at the Windows baseline.
+- **missing** — a required contract or safety behavior is not present in the Windows baseline, even
+  though the rest of the feature may exist. This marks a parity gap rather than a source-file search
+  result.
+
+Only behavior with scoped passing evidence is marked verified. Unit tests do not establish native
+Windows behavior for UIA, input, rendering, insertion, persistence, or inference hardware.
+
+## Autocomplete
+
+| Capability | macOS reference at pinned commit (source / tests) | Windows baseline evidence | Status |
+| --- | --- | --- | --- |
+| Request, prompt, and continuation policies | `Cotabby/Support/Suggestion/Request/SuggestionRequestFactory.swift`, `Cotabby/Support/Prompting/PromptSectionBudget.swift`, `CotabbyTests/Support/Suggestion/Request/SuggestionRequestFactoryTests.swift` | `src/Cotabby.Core/Suggestions/SuggestionRequestFactory.cs`, `src/Cotabby.Core/Support/BaseCompletionPromptRenderer.cs`, `tests/Cotabby.Core.Tests/Suggestions/SuggestionRequestFactoryTests.cs`, `tests/Cotabby.Core.Tests/Support/Prompting/PromptSectionBudgetTests.cs` | implemented-unverified |
+| Output cleanup and session reconciliation | `Cotabby/Support/Suggestion/Output/SuggestionTextNormalizer.swift`, `Cotabby/Support/Suggestion/Session/SuggestionSessionReconciler.swift`, matching `CotabbyTests/Support/Suggestion` tests | `src/Cotabby.Core/Support/SuggestionTextNormalizer.cs`, `src/Cotabby.Core/Suggestions/SuggestionSessionReconciler.cs`, matching `tests/Cotabby.Core.Tests/Support` and `Suggestions` tests | implemented-unverified |
+| Typing, word/phrase acceptance, CJK chunks, double-tap and tail continuation | `Cotabby/App/Coordinators/Suggestion/`, `Cotabby/Support/Suggestion/Acceptance/`, `CotabbyTests/App/Coordinators/Suggestion/` | `src/Cotabby.Core/Suggestions/AcceptanceChunker.cs`, `SuggestionCoordinator.cs`, `SuggestionSessionReconciler.cs`; `tests/Cotabby.Core.Tests/Suggestions/` | implemented-unverified |
+| UIA focus, caret, selection, secure-field and app eligibility | `Cotabby/Services/Focus/`, `Cotabby/Models/Focus/`, `CotabbyTests/Services/Focus/` and `CotabbyTests/Support/Accessibility/` | `src/Cotabby.Win32/Focus/UiaFocusTracker.cs`; `src/Cotabby.Core/Focus/`; `tests/Cotabby.Core.Tests/Focus/` | platform-adapted |
+| Stale capture invalidation before paint and insertion | `Cotabby/App/Coordinators/Suggestion/SuggestionCoordinator+Prediction.swift`, `SuggestionCoordinator+Acceptance.swift`, `CotabbyTests/App/Coordinators/Suggestion/SuggestionFocusFreshnessTests.swift` | `src/Cotabby.Core/Suggestions/SuggestionCoordinator.cs`, `SuggestionWorkController.cs`, `src/Cotabby.Win32/Focus/UiaFocusTracker.cs` | implemented-unverified |
+| Ghost text geometry, multiline wrapping, DPI and host-specific placement | `Cotabby/Services/Presentation/OverlayController.swift`, `Cotabby/Support/Presentation/`, layout and caret tests under `CotabbyTests/` | `src/Cotabby.App/Overlay/GhostOverlayWindow.xaml(.cs)`, `src/Cotabby.Core/Overlay/OverlayStyle.cs`; no native host evidence in this baseline | platform-adapted |
+| Global hotkey observation and safe acceptance | `Cotabby/Services/Input/`, `Cotabby/Models/Input/`, suggestion coordinator tests | `src/Cotabby.Win32/Input/KeyboardHook.cs`, `src/Cotabby.Core/Input/`, acceptance tests | platform-adapted |
+| IME preedit/composition exclusion | `Cotabby/Support/LanguageLearning/LearningInputMethodPolicy.swift` and `CotabbyTests/Support/LanguageLearning/LearningInputMethodPolicyTests.swift` document learning input behavior; autocomplete input tests also cover committed events | No dedicated Windows composition signal or IME policy found | missing |
+| Local model inference and model lifecycle | `Cotabby/Services/Runtime/Llama/`, `CotabbyInference`, runtime tests/evals | `src/Cotabby.Inference/LlamaRuntimeCore.cs`, `LlamaRuntimeManager.cs`, `LlamaSuggestionEngine.cs`, `ModelDownloader.cs`; inference smoke tool | platform-adapted |
+| Optional OpenAI-compatible autocomplete endpoint | `Cotabby/Services/Runtime/OpenAICompatible/`, endpoint policy and runtime tests | `src/Cotabby.Inference/OpenAICompatible/`, `src/Cotabby.Win32/Security/DpapiOpenAICompatibleCredentialStore.cs`, endpoint tests | implemented-unverified |
+| Optional app and clipboard context | `Cotabby/Services/Context/`, `Cotabby/Support/Context/`, sanitizer and request tests | `src/Cotabby.Core/Context/`, `src/Cotabby.Win32/Clipboard/ClipboardTextReader.cs`, context tests | implemented-unverified |
+| OCR or visible-screen context | `Cotabby/Services/Visual/`, `Cotabby/Support/Context/OCRTextHygiene.swift`, `CotabbyTests/Services/Visual/` | No screenshot capture/OCR subsystem found | source-only |
+| Predict-ahead and streaming partial suggestions | `Cotabby/Support/Suggestion/Streaming/`, `Cotabby/App/Coordinators/Suggestion/SuggestionCoordinator+TypingPrediction.swift`, related coordinator tests | No matching streaming/predict-ahead state found | source-only |
+| Emoji, inline macros, and autocorrect | `Cotabby/Services/Spelling/`, `Cotabby/Support/Spelling/`, inline feature coordinators and tests | `src/Cotabby.Core/Emoji/`, `Macros/`, `Spelling/`; `src/Cotabby.Win32/Spelling/WindowsSpellChecker.cs`; corresponding Core tests | implemented-unverified |
+| Per-app behavior, pause, power profiles, settings and performance controls | `Cotabby/Models/Settings/`, `Cotabby/Support/Settings/`, `Cotabby/Services/Power/`, settings tests | `src/Cotabby.App/Settings/`, `src/Cotabby.App/UI/Settings/`, `src/Cotabby.Win32/Power/`, Core settings/pause tests | implemented-unverified |
+
+## Language learning
+
+| Capability | macOS reference at pinned commit (source / tests) | Windows baseline evidence | Status |
+| --- | --- | --- | --- |
+| Translation while writing, task settings and request profiles | `Cotabby/Services/LanguageLearning/LearningTranslationService.swift`, `LearningExpressionService.swift`, `Cotabby/Models/LanguageLearning/`, `CotabbyTests/Services/LanguageLearning/LearningTranslationStyleIntegrationTests.swift` | No learning coordinator, request or runtime found | source-only |
+| Safe translation replacement with acknowledgement | `Cotabby/Services/LanguageLearning/LearningSelectionReplacement.swift`, `Cotabby/Support/LanguageLearning/LearningReplacementVerificationPolicy.swift`, matching tests | No learning replacement flow. Current `src/Cotabby.Win32/Insertion/SendInputTextInserter.cs` saves clipboard text only and documents loss of non-text formats | missing |
+| Selected text and reading capture | `Cotabby/App/Coordinators/InlineFeatures/LearningReadingCoordinator.swift`, `Cotabby/Services/LanguageLearning/LearningReadingSelectionReader.swift`, `LearningReadingSourceReader.swift`, `CotabbyTests/App/Coordinators/InlineFeatures/LearningReadingCoordinatorTests.swift` | No selection/reading learning capture | source-only |
+| Explicit screen-region capture and OCR | `Cotabby/Services/Presentation/LearningRegionSelectionPanel.swift`, `Cotabby/Services/Visual/ScreenTextExtractor.swift`, `CotabbyTests/Services/Visual/ReadingOCRIntegrationTests.swift` | No screen capture/OCR subsystem | source-only |
+| Sentence explanation and offline lexical word/expression recognition | `Cotabby/Services/LanguageLearning/LearningExplanationService.swift`, `LearningExpressionService+Sentence.swift`, `Cotabby/Support/LanguageLearning/LearningUnitRecognizer.swift`, `CotabbyTests/Support/LanguageLearning/LearningUnitRecognizerTests.swift` | No explanation or lexical-recognition code | source-only |
+| Offline lexicon and system dictionary lookup | `Cotabby/Services/LanguageLearning/LearningLexiconService.swift`, `SystemDictionaryArticleService.swift`, `CotabbyTests/Services/LanguageLearning/LearningLexiconServiceTests.swift` | No language-learning dictionary provider | source-only |
+| Imported MDX/MDD dictionaries and dictionary website providers | `Cotabby/Services/LanguageLearning/MDictLibraryService.swift`, `LearningDictionaryRouter.swift`, `OnlineDictionaryClient.swift`, `CotabbyTests/Services/LanguageLearning/DictionaryProviderTests.swift` | No dictionary subsystem | source-only |
+| Stable vocabulary, senses, usages, notes and exact spans | `Cotabby/Models/Vocabulary/VocabularyModels.swift`, `VocabularyContentModels.swift`, `Cotabby/Services/Vocabulary/VocabularyStore.swift`, `CotabbyTests/Services/Vocabulary/VocabularySenseTests.swift` | No durable vocabulary model or store | source-only |
+| Rich notebook, images, graph and export | `Cotabby/Services/Vocabulary/VocabularyNotebookSession.swift`, `VocabularyImageStorage.swift`, `VocabularyGraphLayoutWorker.swift`, `VocabularyArchive+Export.swift`, `CotabbyTests/UI/Vocabulary/` | No notebook or learning storage | source-only |
+| Anki review, card/media handling and connection | `Cotabby/Services/Review/AnkiConnectClient.swift`, `AnkiReviewSession.swift`, `Cotabby/Models/Review/AnkiWireModels.swift`, `CotabbyTests/Services/Review/AnkiReviewTests.swift` | No Anki integration | source-only |
+| System, local and endpoint text-to-speech | `Cotabby/Services/Speech/`, `Cotabby/Models/Speech/`, `CotabbyTests/Services/Speech/` | No speech subsystem | source-only |
+
+Vocabulary data needs a deliberate schema. In the reference, a vocabulary entry has a stable UUID;
+each sense has its own stable UUID and owns meanings, notes, examples, and review state; each usage
+example has its own UUID and exact source ranges. Rewording a sense does not change its identity, and
+review-card identity stays independent. Windows migrations must preserve these relationships. This
+does not imply that Windows storage is already compatible with the macOS database.
+
+## Supporting product capabilities
+
+| Capability | macOS reference at pinned commit (source / tests) | Windows baseline evidence | Status |
+| --- | --- | --- | --- |
+| Typing history, privacy controls and phrase prediction | `Cotabby/Services/History/`, `Cotabby/Services/Runtime/TypingHistoryPhraseEngine.swift`, matching `CotabbyTests/Services/History/` | Suggestion metrics exist, but no typing-history store/index/phrase engine found | source-only |
+| Suggestion/runtime/system metrics | `Cotabby/Models/Runtime/Metrics/`, `Cotabby/Models/Suggestion/SuggestionQualityMetricsStore.swift`, runtime tests | `src/Cotabby.Core/Suggestions/SuggestionMetrics.cs`, `tests/Cotabby.Core.Tests/Suggestions/SuggestionMetricsTests.cs` | implemented-unverified |
+| Shared JSON behavior corpus (17 pure-policy cases) | `Cotabby/Support/Suggestion/Acceptance/`, `Cotabby/Support/Suggestion/Output/GhostSpaceBoundary.swift`, `SuggestionTextNormalizer.swift`; pinned tests recorded per case in `fixtures/parity/README.md` | `fixtures/parity/v1.json`, `fixtures/parity/README.md`, `tests/Cotabby.Core.Tests/Parity/VersionedParityCorpusTests.cs`, and `scripts/verify-macos-parity.py` check acceptance chunks, ghost spacing, and normalization in both runtimes | verified |
+| Vocabulary CLI and mailbox protocol | `Cotabby/Services/CLI/`, `Cotabby/Models/CLI/`, `CotabbyTests/Services/CLI/VocabularyCLITests.swift` | No vocabulary CLI or mailbox | source-only |
+| Interface localization and learning/settings search | `Cotabby/Models/Settings/InterfaceLanguage.swift`, `Cotabby/Support/Settings/InterfaceLanguageNormalizer.swift`, settings views/tests | WPF settings exist, but no interface-language system found | source-only |
+| Durable task-specific settings | `Cotabby/Models/Settings/`, `Cotabby/Support/Settings/SuggestionSettingsStore.swift`, language/speech settings stores | Autocomplete settings exist in `src/Cotabby.App/Settings/`; no separate learning/speech settings | platform-adapted |
+| Automatic update and release feed | `Cotabby/Services/Updates/` and settings models | No updater found; distribution is outside the first milestone | source-only |
+
+## Verification policy
+
+Move a row to **verified** only with named evidence: shared fixture or unit-test output for portable
+rules, plus native Windows host checks for behavior involving UIA, IME, input, caret rendering,
+clipboard, insertion, persistent storage, or GPU runtime. Record the Windows version, architecture,
+host apps and relevant hardware in the validation record. Do not promote a row based solely on file
+existence or a green compile.

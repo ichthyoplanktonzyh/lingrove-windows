@@ -20,6 +20,12 @@ public sealed class LearningExplanationModelParityTests
     public void MacCapabilityResultsRemainTheAuthority(string id)
     {
         var row = Cases().Single(row => row.GetProperty("id").GetString() == id);
+        if (row.GetProperty("mode").GetString() == "output")
+        {
+            Assert.Equal(row.GetProperty("expected").GetProperty("tokens").GetInt32(),
+                LearningExplanationModelPolicy.ResolveOutputTokens(row.GetProperty("configured").Deserialize<int?>()));
+            return;
+        }
         string model = row.GetProperty("model").GetString()!;
         var template = row.GetProperty("template").Deserialize<LearningChatTemplate>();
         bool? actual = row.GetProperty("mode").GetString() == "supports"

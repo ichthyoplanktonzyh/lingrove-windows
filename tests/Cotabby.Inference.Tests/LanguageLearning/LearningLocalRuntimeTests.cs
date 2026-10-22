@@ -152,6 +152,21 @@ public sealed class LearningLocalRuntimeTests
     }
 
     [Fact]
+    public async Task ExplanationMetadataRequirementCannotReuseAnUncheckedResidentAllocation()
+    {
+        var uncheckedSession = new FakeNativeSession(); var checkedSession = new FakeNativeSession();
+        var factory = new FakeSessionFactory(uncheckedSession, checkedSession);
+        await using var runtime = new LearningLocalRuntime(factory);
+        var translation = new LearningLocalModelConfiguration("model.gguf", LearningChatTemplate.ChatMl);
+        await using (await runtime.BeginOperationAsync(translation, default)) { }
+        var explanation = new LearningLocalModelConfiguration("model.gguf", LearningChatTemplate.ChatMl, requiresGeneralInstructions: true);
+        await using (await runtime.BeginOperationAsync(explanation, default)) { }
+        Assert.Equal(2, factory.LoadCount); Assert.True(uncheckedSession.WasDisposed);
+        await using (await runtime.BeginOperationAsync(explanation, default)) { }
+        Assert.Equal(2, factory.LoadCount);
+    }
+
+    [Fact]
     public async Task ReachingTokenLimitWithoutEogThrowsAfterOnlyProvisionalDeltas()
     {
         var session = new FakeNativeSession();

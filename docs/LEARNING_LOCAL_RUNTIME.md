@@ -19,6 +19,7 @@ Windows paths are relative to `src/`, and tests mirror the responsibility under 
 | `Models/LanguageLearning/LearningRuntimeCatalog.swift`, catalog expectations in model-settings tests | `LearningRuntimeCatalog.cs`: exact catalog filenames, pinned URLs, byte sizes, SHA-256 and context recommendations; `Core/Models/ModelCatalog.cs` excludes exact learning catalog filenames from autocomplete |
 | `Services/LanguageLearning/LearningLocalRuntime.swift`, `LearningLocalRuntimeIntegrationTests.swift`, `LearningModelResidencyTests.swift` | `Inference/LanguageLearning/Local/LearningLocalRuntime.cs`: separate LLamaSharp weights/context, exclusive operation lease, cancellation and drain; fake-native runtime tests cover ownership and token loop |
 | `Services/LanguageLearning/LearningModelController.swift`, `LearningTranslationStyleIntegrationTests.swift` | `LearningLocalTranslationEngine.cs`: frozen configuration, planned request identity, effective style and generation; endpoint planner also suppresses dormant TranslateGemma style |
+| `Services/LanguageLearning/LearningExplanationService.swift`, `LearningModelController.validateGeneralInstructionModel/generate` | `LearningLocalExplanationEngine.cs`: library-only complete local explanation provider, mandatory metadata even with manual framing, exact token plan, output cap and disposal; [scope](LEARNING_EXPLANATION_RULES.md) |
 | `Services/LanguageLearning/LearningModelCollection.swift`, `UI/Settings/Panes/Engine/LearningModelConfigurationView.swift`, `UI/Settings/ModelManagement/DownloadableModelCatalogView.swift` | `App/Learning/LearningModelCatalogManager.cs`, `App/UI/Settings/Panes/LearningLocalModels.cs`: installed models, explicit catalog Get/import, template/context selection and cancellation |
 
 The resource-release follow-up also ports
@@ -38,6 +39,13 @@ actual template and builds an exact token plan. `ILearningTranslationRequestPlan
 Core seam for this preparation and runs away from the UI thread. Cancellation and request identity
 are checked again before publication. The existing streamed-output and completed-result policies
 then apply to both providers.
+
+`LearningLocalExplanationEngine` is a separate one-request facade, currently not composed in AppHost.
+Its future service must receive a distinct explanation runtime/settings graph, never the translation
+instance. It returns only complete parsed answers and forces general-instruction metadata preflight
+before weights load, even for manual framing. Runtime identity carries that requirement. A Windows
+read handle remains open through weights/mmap lifetime to prevent file replacement between header
+inspection and generation. Full model execution under this guard remains a native verification gate.
 
 The lease covers preparation through generation or a cache hit. Trusted delimiters allow special
 tokens; literal source and style text do not. Automatic selection reads a bounded GGUF header before

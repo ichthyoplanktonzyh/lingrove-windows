@@ -16,6 +16,9 @@ public sealed class LearningLocalModelConfigurationTests
         Assert.Equal(8_192, configuration.ContextWindowTokens);
         Assert.Null(configuration.SamplingOverrides);
         Assert.Equal(0, configuration.GpuLayerCount);
+        Assert.False(configuration.RequiresGeneralInstructions);
+        Assert.True(new LearningLocalModelConfiguration("model.gguf", LearningChatTemplate.ChatMl,
+            requiresGeneralInstructions: true).RequiresGeneralInstructions);
 
         Assert.Equal(ModelContextBudget.MaximumLocalTokens,
             new LearningLocalModelConfiguration("max.gguf", contextWindowTokens: ModelContextBudget.MaximumLocalTokens)

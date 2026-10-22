@@ -79,6 +79,11 @@ func input(_ row: Value) -> LearningExplanationInput {
 if CommandLine.arguments[1] == "--models" {
     let corpus = try JSONDecoder().decode(Value.self, from: Data(contentsOf: URL(fileURLWithPath: CommandLine.arguments[2])))
     let observations = corpus["cases"].values.map { row -> Value in
+        if row["mode"].string == "output" {
+            let configured: Int?
+            if case .null = row["configured"] { configured = nil } else { configured = row["configured"].int }
+            return .object(["id": row["id"], "tokens": .integer(explanationOutput(configured))])
+        }
         let template = LearningChatTemplate(rawValue: row["template"].string)!
         if row["mode"].string == "supports" {
             return .object(["id": row["id"], "available": .boolean(LearningExplanationPolicy.supportsGeneralInstructions(
@@ -165,9 +170,11 @@ def main():
     model_ids = [row.get("id") for row in model_corpus["cases"]]
     if model_corpus.get("version") != 1 or model_corpus.get("macReference") != BASELINE or any(
             not value for value in model_ids) or len(set(model_ids)) != len(model_ids) or any(
-            row.get("mode") not in ("supports", "availability") or
+            row.get("mode") not in ("supports", "availability", "output") or
             row.get("macSource") != ("Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift" if row.get("mode") == "supports"
                 else "Cotabby/Models/LanguageLearning/LearningModelSettings.swift") or
+            (row.get("mode") == "output" and row.get("macSecondarySource") !=
+             "Cotabby/Services/LanguageLearning/LearningExplanationService.swift") or
             row.get("provenanceKind") not in ("regression-adaptation", "source-policy-extension") or
             (row.get("provenanceKind") == "regression-adaptation" and
              row.get("macTest") != "CotabbyTests/Support/LanguageLearning/LearningExplanationPolicyTests.swift")
@@ -191,6 +198,11 @@ def main():
     policy = source(args.mac_repo, "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift")
     settings = source(args.mac_repo, "Cotabby/Models/LanguageLearning/LearningModelSettings.swift")
     runtime = source(args.mac_repo, "Cotabby/Models/Runtime/LlamaRuntimeModels.swift")
+    service = source(args.mac_repo, "Cotabby/Services/LanguageLearning/LearningExplanationService.swift")
+    output_clamp = between(settings, "maximumOutputTokens: value.maximumOutputTokens.map { ", " }),\n            for: contextIdentity)")
+    output_clamp = output_clamp.removeprefix("maximumOutputTokens: value.maximumOutputTokens.map { ")
+    output_default = between(service, "                let output = profile.maximumOutputTokens ?? ", "                let prompt = try LearningExplanationPolicy.prompt")
+    output_default = output_default.strip()
     slices = ["import Foundation\n" + between(models, "nonisolated enum LearningExplanationContext:",
                "/// A durable, context-specific learning artifact."),
         "import Foundation\nnonisolated enum VocabularyEntry {\n" +
@@ -212,7 +224,13 @@ def main():
             "let endpointModel: String; let template: LearningChatTemplate }\n" +
             "let activeSelection: Selection; let resolvedTemplates: [String: LearningChatTemplate]\n" +
             "let contextIdentity = \"fixture\"\n" +
-            between(settings, "    var generalInstructionsAvailable:", "    var recommendedSampling:") + "}\n"]
+            between(settings, "    var generalInstructionsAvailable:", "    var recommendedSampling:") + "}\n",
+        # Extract the actual clamp expression and service default. The fixture wrapper only
+        # supplies a profile value instead of preferences/Combine and returns its effective output.
+        "struct ExplanationOutputProfile { let maximumOutputTokens: Int? }\n" +
+            "func explanationOutput(_ value: Int?) -> Int {\n" +
+            "let profile = ExplanationOutputProfile(maximumOutputTokens: value.map { " + output_clamp + " })\n" +
+            output_default + "\nreturn output\n}\n"]
     with tempfile.TemporaryDirectory(prefix="lingrove-explanation-parity-") as temporary:
         root = Path(temporary)
         paths = []

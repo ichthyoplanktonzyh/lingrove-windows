@@ -122,8 +122,9 @@ replacement as an acknowledged edit tied to the original field identity.
 
 Completed translations now support bundled word lookup. Explanation input, prompt budgeting and
 complete-output parsing and model capability/metadata gates have [Mac-backed pure coverage](LEARNING_EXPLANATION_RULES.md).
-The next explanation slice must connect the gate to an independent provider/runtime before adding
-a session/card. Capture construction and durable records remain explicit later work.
+The local explanation provider now joins that gate with actual token budgeting and complete-output
+validation. The next slice must compose its independent app runtime/settings and service before
+adding a session/card. Capture construction, endpoint transport and durable records remain later work.
 
 **Gate:** shared policy fixtures pass; Windows host tests cover selection changes, IME composition,
 stale captures, secure fields, OCR cleanup/bounds, replacement acknowledgement and failed edits. The

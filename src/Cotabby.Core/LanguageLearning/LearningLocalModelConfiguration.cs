@@ -135,7 +135,8 @@ public sealed record LearningLocalModelConfiguration
         LearningChatTemplate requestedTemplate = LearningChatTemplate.Automatic,
         int contextWindowTokens = 8_192,
         LearningModelSamplingOverrides? samplingOverrides = null,
-        int gpuLayerCount = 0)
+        int gpuLayerCount = 0,
+        bool requiresGeneralInstructions = false)
     {
         if (modelPath is null || !Enum.IsDefined(requestedTemplate))
             throw new LearningTranslationException(LearningTranslationFailure.InvalidOptions);
@@ -149,6 +150,7 @@ public sealed record LearningLocalModelConfiguration
         ContextWindowTokens = contextWindowTokens;
         SamplingOverrides = samplingOverrides?.Normalized;
         GpuLayerCount = gpuLayerCount;
+        RequiresGeneralInstructions = requiresGeneralInstructions;
     }
 
     public string ModelPath { get; }
@@ -157,6 +159,11 @@ public sealed record LearningLocalModelConfiguration
     public LearningModelSamplingOverrides? SamplingOverrides { get; }
     /// <summary>Zero selects CPU; positive values are native adapter hints capped by the model's layer count.</summary>
     public int GpuLayerCount { get; }
+    /// <summary>
+    /// Explanation must inspect automatic metadata even with manual framing and reject specialists
+    /// before loading weights. Translation keeps its existing manual-template metadata bypass.
+    /// </summary>
+    public bool RequiresGeneralInstructions { get; }
 }
 
 /// <summary>

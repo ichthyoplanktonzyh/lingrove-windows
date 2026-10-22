@@ -1,4 +1,5 @@
 using System.Text;
+using System.Runtime.ExceptionServices;
 using Cotabby.Core.LanguageLearning;
 using LLama;
 using LLama.Common;
@@ -133,7 +134,8 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
                 Path.GetFullPath(configuration.ModelPath),
                 configuration.ContextWindowTokens,
                 configuration.GpuLayerCount,
-                configuration.RequestedTemplate == LearningChatTemplate.Automatic);
+                configuration.RequestedTemplate == LearningChatTemplate.Automatic || configuration.RequiresGeneralInstructions,
+                configuration.RequiresGeneralInstructions);
         }
         catch (Exception ex) when (ex is ArgumentException or NotSupportedException or PathTooLongException)
         {
@@ -170,6 +172,10 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
         catch (LearningLocalRuntimeException)
         {
             throw;
+        }
+        catch (LearningExplanationException)
+        {
+            throw; // The Core capability gate has a fixed, content-free policy message.
         }
         catch (Exception ex)
         {
@@ -279,10 +285,50 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
         }
     }
 
-    // Manual templates deliberately skip header parsing. Automatic must not inherit a resident
-    // session whose metadata was never read; manual-to-manual changes can reuse the allocation.
+    // Translation's manual templates may skip metadata. Explanation must retain independently
+    // checked metadata even with manual framing; an unchecked resident allocation cannot bypass it.
     private readonly record struct RuntimeIdentity(
-        string ModelPath, int ContextTokens, int GpuLayerCount, bool MetadataRequired);
+        string ModelPath, int ContextTokens, int GpuLayerCount, bool MetadataRequired, bool GeneralInstructionsRequired);
+
+    /// <summary>
+    /// Preflight shared by production loading and tiny-header tests. Explanation checks the actual
+    /// bounded file header before any weights are loaded; translation keeps its manual bypass.
+    /// The caller runs this IO on a worker, never on the UI thread.
+    /// </summary>
+    internal static LearningGgufMetadata ReadMetadataForOperation(LearningLocalModelConfiguration configuration, CancellationToken ct)
+    {
+        ct.ThrowIfCancellationRequested();
+        var metadata = configuration.RequestedTemplate == LearningChatTemplate.Automatic || configuration.RequiresGeneralInstructions
+            ? LearningGgufHeaderReader.ReadFile(configuration.ModelPath, ct) : new LearningGgufMetadata(string.Empty);
+        if (configuration.RequiresGeneralInstructions)
+            _ = LearningExplanationModelPolicy.ResolveLocalProfile(configuration, metadata);
+        return metadata;
+    }
+
+    /// <summary>
+    /// On Windows this read handle denies write/delete sharing. Keep it from header validation
+    /// through native weight/mmap lifetime so a concurrent replacement cannot change which model
+    /// the validated metadata describes. Native loading may open additional read handles.
+    /// </summary>
+    internal static FileStream OpenModelReadLease(string path) =>
+        new(path, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 1, FileOptions.SequentialScan);
+
+    /// <summary>
+    /// Attempt child context, parent weights, then the file guard even if an earlier cleanup fails.
+    /// Preserve the first failure; failed-load callers keep their original load/cancellation error.
+    /// The same helper is exercised with disposables without opening a native library in tests.
+    /// </summary>
+    internal static void DisposeModelResources(IDisposable? context, IDisposable? weights, IDisposable? fileGuard,
+        bool suppressErrors = false)
+    {
+        ExceptionDispatchInfo? first = null;
+        foreach (var resource in new[] { context, weights, fileGuard })
+        {
+            try { resource?.Dispose(); }
+            catch (Exception error) { first ??= ExceptionDispatchInfo.Capture(error); }
+        }
+        if (!suppressErrors) first?.Throw();
+    }
 
     /// <summary>
     /// A request-local token plan and sampler run while this object owns the parent gate. Calls on
@@ -696,35 +742,45 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
 
             LLamaWeights? weights = null;
             LLamaContext? context = null;
+            FileStream? modelReadLease = null;
             try
             {
+                modelReadLease = OpenModelReadLease(configuration.ModelPath);
                 // Read the bounded header rather than LLamaSharp's metadata convenience APIs,
                 // which allocate a value-sized buffer before the caller can apply a byte limit.
-                var metadata = configuration.RequestedTemplate == LearningChatTemplate.Automatic
-                    ? LearningGgufHeaderReader.ReadFile(configuration.ModelPath, ct)
-                    : new LearningGgufMetadata(string.Empty);
+                var metadata = ReadMetadataForOperation(configuration, ct);
                 weights = await LLamaWeights.LoadFromFileAsync(parameters, ct).ConfigureAwait(false);
                 ct.ThrowIfCancellationRequested();
                 context = weights.CreateContext(parameters, loggerFactory.CreateLogger<LLamaContext>());
-                return new LLamaLearningLocalNativeSession(
+                var session = new LLamaLearningLocalNativeSession(
                     weights,
                     context,
                     configuration.ContextWindowTokens,
                     metadata,
-                    logger);
+                    logger,
+                    modelReadLease);
+                modelReadLease = null; // The session retains the file guard until weights/mmap are freed.
+                return session;
             }
             catch (OperationCanceledException)
             {
-                context?.Dispose();
-                weights?.Dispose();
+                DisposeModelResources(context, weights, modelReadLease, suppressErrors: true);
+                modelReadLease = null;
+                throw;
+            }
+            catch (LearningExplanationException)
+            {
+                DisposeModelResources(context, weights, modelReadLease, suppressErrors: true);
+                modelReadLease = null;
                 throw;
             }
             catch (Exception ex)
             {
-                context?.Dispose();
-                weights?.Dispose();
+                DisposeModelResources(context, weights, modelReadLease, suppressErrors: true);
+                modelReadLease = null;
                 throw new LearningLocalRuntimeException(LearningLocalRuntimeFailure.ModelLoadFailed, ex);
             }
+            finally { modelReadLease?.Dispose(); }
         }
     }
 
@@ -734,6 +790,7 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
         private readonly LLamaContext _context;
         private readonly ILogger _logger;
         private readonly int _requestedContextTokens;
+        private readonly FileStream _modelReadLease;
         private bool _disposed;
 
         public LLamaLearningLocalNativeSession(
@@ -741,13 +798,15 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
             LLamaContext context,
             int requestedContextTokens,
             LearningGgufMetadata metadata,
-            ILogger logger)
+            ILogger logger,
+            FileStream modelReadLease)
         {
             _weights = weights;
             _context = context;
             _requestedContextTokens = requestedContextTokens;
             _logger = logger;
             Metadata = metadata;
+            _modelReadLease = modelReadLease;
         }
 
         public LearningGgufMetadata Metadata { get; }
@@ -848,14 +907,7 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
             if (_disposed) return;
             _disposed = true;
             // Context memory refers to the weights allocation, so free the context first.
-            try
-            {
-                _context.Dispose();
-            }
-            finally
-            {
-                _weights.Dispose();
-            }
+            DisposeModelResources(_context, _weights, _modelReadLease);
         }
 
         private void ThrowIfDisposed() => ObjectDisposedException.ThrowIf(_disposed, this);

@@ -1,4 +1,5 @@
 using System.Net;
+using StreamContent = System.Net.Http.StreamContent;
 using System.Text;
 using System.Text.Json;
 using Cotabby.Core.LanguageLearning;
@@ -62,6 +63,97 @@ public sealed class OpenAICompatibleLearningTranslationEngineTests
         Assert.Equal(LearningTranslationFailure.ProviderFailure, error.Failure);
         Assert.Equal(0, credentials.ReadCount);
         Assert.Empty(handler.Requests);
+    }
+
+    [Fact]
+    public async Task EndpointPlannerSuppressesDormantTranslateGemmaStyleAndPreservesSettingsSnapshot()
+    {
+        using var handler = new LearningEndpointHandler();
+        using var http = new HttpClient(handler, disposeHandler: false) { Timeout = Timeout.InfiniteTimeSpan };
+        var credentials = new RecordingCredentials("must-not-be-read");
+        using var engine = new OpenAICompatibleLearningTranslationEngine(
+            Configuration("translategemma-4b"), credentials, http);
+        var options = new LearningTranslationOptions
+        {
+            SourceLanguage = LearningLanguage.English,
+            TargetLanguage = LearningLanguage.Spanish,
+            Style = new LearningTranslationStyle(LearningTranslationRegister.Formal),
+            ModelName = "translategemma-4b",
+            ContextTokens = 4_096,
+        };
+
+        var request = await engine.PlanAsync("req-tg-endpoint", "A complete sentence.", options, CancellationToken.None)
+            .WaitAsync(TestTimeout);
+
+        Assert.Equal(options, request.Options);
+        Assert.True(request.Prompt.UserOnly);
+        Assert.Equal(LearningInstructionSampling.TranslateGemma, request.Prompt.Sampling);
+        Assert.DoesNotContain("Translation style preference", request.Prompt.Prompt, StringComparison.Ordinal);
+        Assert.DoesNotContain("formal written register", request.Prompt.Prompt, StringComparison.Ordinal);
+        Assert.Equal(0, credentials.ReadCount);
+        Assert.Empty(handler.Requests);
+    }
+
+    [Fact]
+    public async Task EndpointPlannerKeepsSupportedStyleAndRejectsModelMismatchBeforeCredentials()
+    {
+        using var handler = new LearningEndpointHandler();
+        using var http = new HttpClient(handler, disposeHandler: false) { Timeout = Timeout.InfiniteTimeSpan };
+        var credentials = new RecordingCredentials("must-not-be-read");
+        using var engine = new OpenAICompatibleLearningTranslationEngine(
+            Configuration("local-translator"), credentials, http);
+        var options = new LearningTranslationOptions
+        {
+            SourceLanguage = LearningLanguage.English,
+            TargetLanguage = LearningLanguage.Spanish,
+            Style = new LearningTranslationStyle(LearningTranslationRegister.Formal),
+            ModelName = "local-translator",
+            ContextTokens = 4_096,
+        };
+
+        var request = await engine.PlanAsync("req-generic-endpoint", "A complete sentence.", options, CancellationToken.None)
+            .WaitAsync(TestTimeout);
+
+        Assert.Equal(options, request.Options);
+        Assert.Contains("Translation style preference", request.Prompt.Prompt, StringComparison.Ordinal);
+        Assert.Contains("formal written register", request.Prompt.Prompt, StringComparison.Ordinal);
+
+        var mismatch = await Assert.ThrowsAsync<LearningTranslationEndpointException>(() => engine.PlanAsync(
+            "req-endpoint-model-mismatch", "A complete sentence.", options with { ModelName = "another-model" },
+            CancellationToken.None).WaitAsync(TestTimeout));
+
+        Assert.Equal(LearningTranslationEndpointFailure.ModelMismatch, mismatch.EndpointFailure);
+        Assert.Equal(0, credentials.ReadCount);
+        Assert.Empty(handler.Requests);
+    }
+
+    [Fact]
+    public async Task CoordinatorAcceptsEndpointTranslateGemmaPromptWithoutMutatingCapturedStyle()
+    {
+        using var handler = new LearningEndpointHandler();
+        using var http = new HttpClient(handler, disposeHandler: false) { Timeout = Timeout.InfiniteTimeSpan };
+        using var engine = Engine(handler, http, "translategemma-4b");
+        await using var coordinator = new LearningPreviewCoordinator();
+        var options = new LearningTranslationOptions
+        {
+            SourceLanguage = LearningLanguage.English,
+            TargetLanguage = LearningLanguage.Spanish,
+            Style = new LearningTranslationStyle(LearningTranslationRegister.Formal),
+            ModelName = "translategemma-4b",
+            ContextTokens = 4_096,
+        };
+        handler.RespondWith(Sse(ChatChunk("Traducción completa.", null) + "\n" + ChatChunk(null, "stop")));
+
+        await coordinator.PreviewAsync("A complete sentence.", options, engine, cacheScope: "endpoint-translate-gemma")
+            .WaitAsync(TestTimeout);
+
+        Assert.Equal(LearningPreviewStatus.Ready, coordinator.State.Status);
+        Assert.Equal(options, coordinator.State.Options);
+        Assert.Equal("Traducción completa.", coordinator.State.Result);
+        var sent = Assert.Single(handler.Requests).Json;
+        Assert.True(sent.GetProperty("stream").GetBoolean());
+        Assert.DoesNotContain("Translation style preference", sent.ToString(), StringComparison.Ordinal);
+        Assert.DoesNotContain("formal written register", sent.ToString(), StringComparison.Ordinal);
     }
 
     [Fact]

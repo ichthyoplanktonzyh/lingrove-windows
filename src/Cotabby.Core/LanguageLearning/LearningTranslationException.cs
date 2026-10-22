@@ -20,6 +20,13 @@ public enum LearningTranslationFailure
     InvalidOutput,
     ProviderNotConfigured,
     ProviderFailure,
+    UnsupportedLocalTemplate,
+    AmbiguousLocalTemplate,
+    LocalModelNotConfigured,
+    LocalModelUnavailable,
+    LocalGenerationFailed,
+    LocalOutputTruncated,
+    TranslateGemmaInputTooLarge,
 }
 
 /// <summary>
@@ -52,6 +59,13 @@ public class LearningTranslationException : Exception
         LearningTranslationFailure.InvalidOutput => "The model returned empty, oversized, or unsafe-to-insert text. The original text was kept.",
         LearningTranslationFailure.ProviderNotConfigured => "Choose and configure a translation endpoint before requesting a translation.",
         LearningTranslationFailure.ProviderFailure => "The translation endpoint could not complete the request. Check the translation settings and try again.",
+        LearningTranslationFailure.UnsupportedLocalTemplate => "Could not detect this GGUF's instruction template automatically. Choose one in Model settings.",
+        LearningTranslationFailure.AmbiguousLocalTemplate => "Gemma 4 model variants use different templates. Choose the template for your model variant.",
+        LearningTranslationFailure.LocalModelNotConfigured => "Choose a local GGUF model for this task.",
+        LearningTranslationFailure.LocalModelUnavailable => "The local model could not be loaded. Confirm that this GGUF architecture is supported by the inference runtime.",
+        LearningTranslationFailure.LocalGenerationFailed => "The local model could not process this input.",
+        LearningTranslationFailure.LocalOutputTruncated => "The model reached its output limit; the truncated result was not treated as a complete expression.",
+        LearningTranslationFailure.TranslateGemmaInputTooLarge => "TranslateGemma input exceeds 2,048 tokens. Split the text into smaller parts.",
         _ => throw new ArgumentOutOfRangeException(nameof(failure), failure, "Unknown translation failure."),
     };
 }

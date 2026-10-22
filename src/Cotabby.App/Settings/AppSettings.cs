@@ -20,6 +20,16 @@ public enum EngineKind
 }
 
 /// <summary>
+/// Selects the provider for the learning task only. It is deliberately independent of
+/// <see cref="EngineKind"/> so changing autocomplete can never redirect a captured sentence.
+/// </summary>
+public enum LearningTranslationBackend
+{
+    Local,
+    Endpoint,
+}
+
+/// <summary>
 /// User preferences persisted to %APPDATA%\Cotabby\settings.json. Missing keys
 /// deserialize to their defaults, so older files keep working.
 /// </summary>
@@ -82,14 +92,69 @@ public sealed class AppSettings
     public bool DoubleTapAcceptsAll { get; set; }
     public List<PerAppShortcutOverride> ShortcutOverrides { get; set; } = [];
 
-    // Language learning has its own opt-in endpoint and model profile. The app never copies the
-    // autocomplete endpoint, credential, or active local runtime into this task.
+    // Language learning keeps its backend and both provider profiles task-local. Existing endpoint
+    // keys remain stable; the new backend key defaults to local, and Parse migrates only old users
+    // who had explicitly enabled the learning endpoint.
     public bool LearningTranslationEnabled { get; set; }
+    public LearningTranslationBackend LearningBackend { get; set; } = LearningTranslationBackend.Local;
     public bool LearningEndpointEnabled { get; set; }
     public string LearningEndpointBaseUrl { get; set; } = OpenAICompatibleEndpointConfiguration.DefaultBaseUrl;
     public string LearningEndpointModel { get; set; } = "";
     /// <summary>The macOS learning profile's default context size; serialized values remain unchanged.</summary>
     public int LearningContextTokens { get; set; } = 8_192;
+    /// <summary>The installed GGUF filename selected only for local learning inference.</summary>
+    public string LearningLocalModel { get; set; } = "";
+    /// <summary>The requested instruction format for local learning models; Automatic reads GGUF metadata.</summary>
+    [JsonConverter(typeof(LearningChatTemplateJsonConverter))]
+    public LearningChatTemplate LearningLocalTemplate { get; set; } = LearningChatTemplate.Automatic;
+    /// <summary>Per-model local translation context preferences; endpoint context remains in LearningContextTokens.</summary>
+    public Dictionary<string, int> LearningLocalContextTokensByModel { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+    /// <summary>Per-model local style/sampling preferences, independent of the endpoint generation profile.</summary>
+    public Dictionary<string, LearningGenerationProfile> LearningLocalGenerationProfiles { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>Sanitizes unknown persisted values to the safe local default.</summary>
+    [JsonIgnore]
+    public LearningTranslationBackend EffectiveLearningBackend =>
+        Enum.IsDefined(LearningBackend) ? LearningBackend : LearningTranslationBackend.Local;
+
+    /// <summary>
+    /// Returns one detached and bounded local generation profile. Local profiles are keyed by the
+    /// installed filename, matching the Mac task model identity while keeping endpoint preferences
+    /// and autocomplete model settings out of the translation request.
+    /// </summary>
+    public LearningGenerationProfile EffectiveLearningLocalGenerationProfile(string modelFileName)
+    {
+        var profile = !string.IsNullOrEmpty(modelFileName)
+            && LearningLocalGenerationProfiles is not null
+            && LearningLocalGenerationProfiles.TryGetValue(modelFileName, out var saved)
+            ? saved
+            : null;
+        return new LearningGenerationProfile
+        {
+            // Keep the bounded custom instruction while another register is selected. The
+            // request snapshot applies Effective later, but durable settings should not discard a
+            // user's dormant custom value when switching Natural/Formal/Conversational.
+            Style = (profile?.Style ?? new LearningTranslationStyle()).Normalized,
+            Sampling = (profile?.Sampling ?? new LearningModelSamplingOverrides()).Normalized,
+            MaximumOutputTokens = profile?.MaximumOutputTokens is { } maximum
+                ? Math.Clamp(maximum, 256, ModelContextBudget.MaximumTranslationOutputTokens)
+                : null,
+        };
+    }
+
+    /// <summary>Uses the Mac catalog recommendation when present and otherwise its 8,192-token fallback.</summary>
+    public int EffectiveLearningLocalContextTokens(string modelFileName)
+    {
+        if (!string.IsNullOrEmpty(modelFileName)
+            && LearningLocalContextTokensByModel is not null
+            && LearningLocalContextTokensByModel.TryGetValue(modelFileName, out int saved))
+        {
+            return Math.Clamp(saved, 1_024, ModelContextBudget.MaximumLocalTokens);
+        }
+
+        return LearningRuntimeCatalog.DefaultTranslationContextWindowTokens(modelFileName)
+            ?? 8_192;
+    }
     /// <summary>
     /// Enabled source-language choices. Null means this settings file predates the multi-source
     /// preference and should be read through <see cref="LearningSourceLanguage"/>; an explicit
@@ -225,7 +290,14 @@ public sealed class SettingsStore
     {
         WriteIndented = true,
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-        Converters = { new JsonStringEnumConverter() },
+        // Keep previously persisted enum names stable, while the newly introduced learning model
+        // template and seed mode retain their dedicated Mac-shaped durable identifiers.
+        Converters =
+        {
+            new LearningChatTemplateJsonConverter(),
+            new LearningModelSeedModeJsonConverter(),
+            new JsonStringEnumConverter(),
+        },
     };
 
     public string Path { get; }
@@ -254,15 +326,38 @@ public sealed class SettingsStore
     public void Save(AppSettings settings)
     {
         var tmp = Path + ".tmp";
-        File.WriteAllText(tmp, JsonSerializer.Serialize(settings, JsonOpts));
+        File.WriteAllText(tmp, Serialize(settings));
         File.Move(tmp, Path, overwrite: true);
     }
+
+    // Keep the exact persisted representation testable without creating the user settings folder.
+    internal static string Serialize(AppSettings settings) => JsonSerializer.Serialize(settings, JsonOpts);
 
     public static AppSettings Parse(string json)
     {
         if (JsonNode.Parse(json) is not JsonObject root) return new AppSettings();
         MigrateLegacyKeys(root);
         var settings = root.Deserialize<AppSettings>(JsonOpts) ?? new AppSettings();
+        if (!root.ContainsKey(nameof(AppSettings.LearningBackend)))
+        {
+            // Prior Windows builds had only the learning endpoint consent flag. Preserve those
+            // explicitly opted-in users, while a fresh install or an unconfigured old profile
+            // starts local. A Local selection never consumes the dormant endpoint consent.
+            settings.LearningBackend = settings.LearningEndpointEnabled
+                ? LearningTranslationBackend.Endpoint
+                : LearningTranslationBackend.Local;
+        }
+
+        settings.LearningBackend = settings.EffectiveLearningBackend;
+        settings.LearningLocalModel ??= string.Empty;
+        // JSON creates new dictionaries with its default comparer. Windows filenames remain
+        // case-insensitive after restart too; replaying entries also handles case-only duplicate
+        // keys deterministically without rejecting the rest of the user's preferences.
+        settings.LearningLocalContextTokensByModel = CaseInsensitiveModelMap(settings.LearningLocalContextTokensByModel);
+        settings.LearningLocalGenerationProfiles = CaseInsensitiveModelMap(settings.LearningLocalGenerationProfiles);
+        if (!Enum.IsDefined(settings.LearningLocalTemplate))
+            settings.LearningLocalTemplate = LearningChatTemplate.Automatic;
+
         if (!root.ContainsKey(nameof(AppSettings.LearningSourceLanguages)))
         {
             // Older files stored one explicit source. Materialize it as a one-item choice list so
@@ -272,6 +367,14 @@ public sealed class SettingsStore
         }
 
         return settings;
+    }
+
+    private static Dictionary<string, T> CaseInsensitiveModelMap<T>(Dictionary<string, T>? saved)
+    {
+        var result = new Dictionary<string, T>(StringComparer.OrdinalIgnoreCase);
+        if (saved is not null)
+            foreach (var pair in saved) result[pair.Key] = pair.Value;
+        return result;
     }
 
     /// <summary>Files written before shortcuts were recordable stored the accept-all key by name.</summary>

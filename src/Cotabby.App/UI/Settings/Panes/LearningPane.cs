@@ -27,6 +27,12 @@ internal static class LearningPane
         (LearningTranslationRegister.Custom, "Custom instruction"),
     ];
 
+    private static readonly (LearningTranslationBackend Value, string Label)[] Backends =
+    [
+        (LearningTranslationBackend.Local, "Local GGUF model"),
+        (LearningTranslationBackend.Endpoint, "OpenAI-compatible endpoint"),
+    ];
+
     public static SettingsPane Build(Rows rows)
     {
         var context = rows.Context;
@@ -41,22 +47,21 @@ internal static class LearningPane
                     "The configured shortcut reads the complete current sentence from a supported field and opens a read-only preview.",
                     s => s.LearningTranslationEnabled, (s, v) => s.LearningTranslationEnabled = v)
                     .Tagged("language learning translation sentence preview manual writing current field"),
+                rows.Combo("Translation Provider",
+                    "Local uses a separate learning model runtime. Endpoint sends only after the learning endpoint is explicitly enabled.",
+                    Backends, s => s.EffectiveLearningBackend, (s, v) => s.LearningBackend = v)
+                    .Tagged("translation provider local GGUF model endpoint network learning"),
                 SourceLanguages(rows),
                 rows.Combo("Target Language", "The language requested from the translator.", Languages,
                     s => s.LearningTargetLanguage, (s, v) => s.LearningTargetLanguage = v)
                     .Tagged("to target language english en chinese"),
-                rows.Combo("Translation Style", "Choose the register added to the translation prompt.", Registers,
-                    s => s.LearningStyleRegister, (s, v) => s.LearningStyleRegister = v)
-                    .Tagged("natural formal conversational custom register tone style"),
-                rows.Text("Custom Style Instruction",
-                    "A bounded style preference used only when Custom is selected.",
-                    "Describe the register", s => s.LearningCustomInstruction,
-                    (s, v) => s.LearningCustomInstruction = v)
-                    .VisibleWhen(s => s.LearningStyleRegister == LearningTranslationRegister.Custom)
-                    .Tagged("custom instruction register style tone")),
+                TranslationStyle(rows)),
+            new SettingsCard("Local learning model",
+                Rows.Custom(new LearningLocalModels(context)))
+                .VisibleWhen(s => s.EffectiveLearningBackend == LearningTranslationBackend.Local),
             new SettingsCard("Learning endpoint",
                 rows.Toggle("Allow the Learning Endpoint",
-                    "This separate consent sends a manually requested sentence and its selected translation style to the destination below. It sends no surrounding editor text. No local translation provider is configured in this Windows slice.",
+                    "This separate consent sends a manually requested sentence and its selected translation style to the destination below. It sends no surrounding editor text. Selecting Local never uses this endpoint.",
                     s => s.LearningEndpointEnabled, (s, v) => s.LearningEndpointEnabled = v)
                     .Tagged("endpoint send network cloud privacy remote allow opt in translation"),
                 rows.Text("Server URL", "OpenAI-compatible endpoint used only for learning translations.",
@@ -71,8 +76,119 @@ internal static class LearningPane
                     s => s.LearningContextTokens, (s, v) => s.LearningContextTokens = v)
                     .Tagged("context length tokens budget model"),
                 Credentials(context),
-                Rows.Custom(destination)),
+                Rows.Custom(destination))
+                .VisibleWhen(s => s.EffectiveLearningBackend == LearningTranslationBackend.Endpoint),
         ]);
+    }
+
+    /// <summary>
+    /// Keeps endpoint style preferences in their existing flat keys, while local preferences are
+    /// keyed by the selected learning model. The request controller later freezes only the active
+    /// backend's effective style into LearningTranslationOptions.
+    /// </summary>
+    private static SettingsRow TranslationStyle(Rows rows)
+    {
+        var context = rows.Context;
+        var register = new ComboBox { ItemsSource = Registers.Select(choice => choice.Label).ToArray() }
+            .Styled("Combo");
+        var instruction = new TextBox { Width = 240, Tag = "Describe the register" }.Styled("Input");
+        var editBackend = context.Settings.EffectiveLearningBackend;
+        var editLocalModel = context.Settings.LearningLocalModel;
+        void CaptureEditTarget()
+        {
+            editBackend = context.Settings.EffectiveLearningBackend;
+            editLocalModel = context.Settings.LearningLocalModel;
+        }
+        void SaveRegister(int selected)
+        {
+            if (selected < 0 || selected >= Registers.Length) return;
+            var current = ReadStyle(context.Settings, editBackend, editLocalModel);
+            WriteStyle(context, current with { Register = Registers[selected].Value }, editBackend, editLocalModel);
+        }
+
+        register.GotKeyboardFocus += (_, _) => CaptureEditTarget();
+        register.DropDownOpened += (_, _) => CaptureEditTarget();
+        register.SelectionChanged += (_, _) => SaveRegister(register.SelectedIndex);
+        instruction.GotKeyboardFocus += (_, _) => CaptureEditTarget();
+        instruction.OnCommit(text =>
+        {
+            var current = ReadStyle(context.Settings, editBackend, editLocalModel);
+            WriteStyle(context, current with { CustomInstruction = text }, editBackend, editLocalModel);
+        });
+        context.OnRefresh(() =>
+        {
+            var backend = context.Settings.EffectiveLearningBackend;
+            var model = context.Settings.LearningLocalModel;
+            var style = ReadStyle(context.Settings, backend, model);
+            register.SelectedIndex = Array.FindIndex(Registers, choice => choice.Value == style.Register);
+            if (!instruction.IsKeyboardFocused) instruction.Text = style.CustomInstruction;
+            instruction.Visibility = style.Register == LearningTranslationRegister.Custom
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+            bool localNeedsModel = context.Settings.EffectiveLearningBackend == LearningTranslationBackend.Local
+                && string.IsNullOrWhiteSpace(context.Settings.LearningLocalModel);
+            register.IsEnabled = !localNeedsModel;
+            instruction.IsEnabled = !localNeedsModel;
+            if (!instruction.IsKeyboardFocused && !register.IsKeyboardFocused)
+            {
+                editBackend = backend;
+                editLocalModel = model;
+            }
+        });
+
+        var editor = new StackPanel { Children = { register, instruction } };
+        return rows.Stacked("Translation Style",
+                "Choose a bounded register preference. Local settings follow the selected learning model; endpoint settings remain independent.", editor)
+            .Tagged("natural formal conversational custom register tone style instruction")
+            .EnabledWhen(settings => settings.EffectiveLearningBackend == LearningTranslationBackend.Endpoint
+                || !string.IsNullOrWhiteSpace(settings.LearningLocalModel));
+    }
+
+    private static LearningTranslationStyle ReadStyle(
+        AppSettings settings, LearningTranslationBackend backend, string localModel)
+    {
+        if (backend == LearningTranslationBackend.Local && !string.IsNullOrWhiteSpace(localModel))
+        {
+            return settings.EffectiveLearningLocalGenerationProfile(localModel).Style;
+        }
+
+        if (backend == LearningTranslationBackend.Local) return new LearningTranslationStyle();
+        var register = Enum.IsDefined(settings.LearningStyleRegister)
+            ? settings.LearningStyleRegister
+            : LearningTranslationRegister.Natural;
+        return new LearningTranslationStyle(register, settings.LearningCustomInstruction ?? string.Empty).Normalized;
+    }
+
+    private static void WriteStyle(
+        SettingsContext context,
+        LearningTranslationStyle style,
+        LearningTranslationBackend backend,
+        string localModel)
+    {
+        var normalized = style.Normalized;
+        if (backend == LearningTranslationBackend.Endpoint)
+        {
+            context.Change(settings =>
+            {
+                settings.LearningStyleRegister = normalized.Register;
+                settings.LearningCustomInstruction = normalized.CustomInstruction;
+            });
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(localModel)) return;
+        var model = localModel;
+        var current = context.Settings.EffectiveLearningLocalGenerationProfile(model);
+        context.Change(settings =>
+        {
+            settings.LearningLocalGenerationProfiles ??= new Dictionary<string, LearningGenerationProfile>(StringComparer.OrdinalIgnoreCase);
+            settings.LearningLocalGenerationProfiles[model] = new LearningGenerationProfile
+            {
+                Style = normalized,
+                Sampling = current.Sampling,
+                MaximumOutputTokens = current.MaximumOutputTokens,
+            };
+        });
     }
 
     /// <summary>
@@ -144,7 +260,13 @@ internal static class LearningPane
         var status = Ui.Text("", "Caption");
         var save = Ui.Button("Save", () => StoreKey(context, key, status, save: true));
         var clear = Ui.Button("Clear", () => StoreKey(context, key, status, save: false));
-        context.OnRefresh(() => ShowKeyStatus(context, status));
+        context.OnRefresh(() =>
+        {
+            if (context.Settings.EffectiveLearningBackend == LearningTranslationBackend.Endpoint)
+                ShowKeyStatus(context, status);
+            else
+                status.Text = "The separate endpoint credential is not read or used while Local is selected.";
+        });
         return new SettingsRow("Learning API Key",
             "Optional bearer token stored separately from autocomplete credentials.",
             new StackPanel { Children = { Ui.Across(key, save, clear), status } });

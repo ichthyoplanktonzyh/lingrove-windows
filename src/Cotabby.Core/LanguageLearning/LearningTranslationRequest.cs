@@ -31,3 +31,24 @@ public interface ILearningTranslationEngine
         Action<string>? onDelta,
         CancellationToken ct) => TranslateAsync(request, ct);
 }
+
+/// <summary>
+/// Optional asynchronous planning boundary for engines whose request profile depends on a
+/// provider-owned model/template choice. Planning validates and freezes a complete request but does
+/// not generate output; implementations leave the captured translation settings in
+/// <see cref="LearningTranslationRequest.Options"/> and keep resolved runtime details in its prompt.
+/// </summary>
+/// <remarks>
+/// The coordinator invokes this on its worker task with a request-owned token. Plans are checked
+/// against the original request identity, source and immutable options before cache lookup or
+/// generation, so asynchronous model resolution cannot relabel a result in the UI.
+/// </remarks>
+public interface ILearningTranslationRequestPlanner
+{
+    /// <summary>Builds a validated, model-specific request for one exact captured target.</summary>
+    Task<LearningTranslationRequest> PlanAsync(
+        string requestId,
+        string source,
+        LearningTranslationOptions options,
+        CancellationToken ct);
+}

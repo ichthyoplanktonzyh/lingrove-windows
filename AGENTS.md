@@ -113,6 +113,7 @@ dotnet test tests/Cotabby.Core.Tests/Cotabby.Core.Tests.csproj --configuration R
 dotnet build Cotabby.sln --configuration Release -p:EnableWindowsTargeting=true
 python3 scripts/verify-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-learning-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
+python3 scripts/verify-learning-local-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 ```
 
 The verifier reads the pinned macOS sources from Git and checks the same JSON cases; it does not
@@ -124,7 +125,7 @@ runner. This is ordinary compilation, not packaging or a release.
 
 The current `.github/workflows/ci.yml` has two validation jobs: Windows x64 restores and builds the
 full solution, then runs Core and Inference tests, including noninteractive ICU sentence tests;
-macOS 26 runs Core and both Swift parity verifiers against a sparse checkout of the pinned Mac
+macOS 26 runs Core and all three Swift parity verifiers against a sparse checkout of the pinned Mac
 Support, language-learning models/services, and language catalog source. The separate
 `.github/workflows/upstream-baseline.yml` checks the original Windows fork at commit
 `b1e4031c70aca1be21aae2c57b138fde5fc22bb1` with .NET 9 on manual dispatch. Its initial setup run is
@@ -146,9 +147,10 @@ and a passing `build-for-testing` equivalent is not the same as executing tests.
 
 The maintainer has authorized merging each completed round into `main` after independent review and
 the required checks pass. Create a scoped PR, resolve review findings, verify CI for its final head,
-and merge it without asking for another approval. Use GPT-6 Luna with maximum reasoning for delegated
-implementation, independent review, and test work. Continue to exclude installers, downloadable build
-artifacts and releases from routine rounds. A virtual machine is not a prerequisite for portable
+and merge it without asking for another approval. The primary agent writes all production code,
+configuration, verification code, and tests. Use GPT-6 Luna with maximum reasoning only for independent
+read-only review and running tests; delegated agents report findings without editing project files.
+Continue to exclude installers, downloadable build artifacts and releases from routine rounds. A virtual machine is not a prerequisite for portable
 logic, WPF compile checks or fake-driven tests; native desktop behavior still needs a Windows host.
 The maintainer has also authorized continuous progress through the documented migration slices:
 after merging a validated checkpoint, continue the next applicable slice without waiting for a

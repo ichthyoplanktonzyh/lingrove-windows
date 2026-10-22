@@ -1,3 +1,5 @@
+using Cotabby.Core.LanguageLearning;
+
 namespace Cotabby.Core.Models;
 
 /// <summary>
@@ -96,6 +98,10 @@ public static class ModelCatalog
         var builtIn = All.Select(m => m.FileName).ToHashSet(StringComparer.OrdinalIgnoreCase);
         var custom = Directory.EnumerateFiles(directory, "*.gguf")
             .Where(path => !builtIn.Contains(Path.GetFileName(path)))
+            // Learning specialists are stored in the same folder but are instruction-tuned task
+            // models, not autocomplete base checkpoints. Keep the Mac catalog's exact-name
+            // exclusion at discovery so custom and base models remain available.
+            .Where(path => LearningRuntimeCatalog.IsCompletionCandidate(Path.GetFileName(path)))
             .OrderBy(Path.GetFileName, StringComparer.OrdinalIgnoreCase)
             .Select(Custom);
         return [.. All, .. custom];

@@ -33,6 +33,8 @@ The [offline lexical index and lazy bundled store](docs/LEARNING_OFFLINE_LEXICON
 same pinned Mac resource and attribution. [Completed-translation double-click lookup](docs/LEARNING_WORD_PREVIEW.md)
 now connects them to a bundled dictionary card; native hit/focus/placement checks and broader
 system/imported dictionary flows remain incomplete.
+The [explanation input, prompt and output rules](docs/LEARNING_EXPLANATION_RULES.md) now have
+Mac-backed portable coverage; explanation generation, its independent runtime and card remain unported.
 
 The first foundation milestone is documentation, build-and-test CI, and shared behavior fixtures. It
 does not add a Windows installer, downloadable build, artifact upload, release workflow, or model
@@ -100,10 +102,11 @@ python3 scripts/verify-macos-parity.py --mac-repo /path/to/macOS-lingrove-checko
 python3 scripts/verify-learning-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-learning-local-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-learning-lexical-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
+python3 scripts/verify-learning-explanation-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 ```
 
 The Swift verifiers require Xcode 26 and exercise 17 autocomplete, 64 learning, 45 local-learning,
-34 lexical and 19 dictionary-policy fixture cases/checks, plus pinned resource integrity/Codable checks
+34 lexical, 19 dictionary-policy and 68 explanation fixture cases/checks, plus pinned resource integrity/Codable checks
 against committed pure Mac policies. They do not build or launch the macOS app. Routine validation does not run the
 `Cotabby.Tools.*Smoke` projects: those may require an interactive Windows desktop or downloaded
 model weights.

@@ -115,6 +115,7 @@ python3 scripts/verify-macos-parity.py --mac-repo /path/to/macOS-lingrove-checko
 python3 scripts/verify-learning-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-learning-local-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-learning-lexical-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
+python3 scripts/verify-learning-explanation-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 ```
 
 The verifiers read the pinned macOS sources from Git and check the same JSON cases. The lexical
@@ -127,7 +128,7 @@ runner. This is ordinary compilation, not packaging or a release.
 
 The current `.github/workflows/ci.yml` has two validation jobs: Windows x64 restores and builds the
 full solution, then runs Core and Inference tests, including noninteractive ICU sentence tests;
-macOS 26 runs Core and all four Swift parity verifiers against a sparse checkout of the pinned Mac
+macOS 26 runs Core and all five Swift parity verifiers against a sparse checkout of the pinned Mac
 Support, language-learning models/services, language catalog and pinned expression resource files. The separate
 `.github/workflows/upstream-baseline.yml` checks the original Windows fork at commit
 `b1e4031c70aca1be21aae2c57b138fde5fc22bb1` with .NET 9 on manual dispatch. Its initial setup run is

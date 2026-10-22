@@ -1,4 +1,4 @@
-using System.Text;
+using Cotabby.Core.Text;
 
 namespace Cotabby.Core.LanguageLearning;
 
@@ -138,24 +138,8 @@ internal static class LearningLexicalCollectionValue
         if (values is not null) foreach (var value in values) hash.Add(value, Comparer<T>());
         return hash.ToHashCode();
     }
-    public static bool StringEquals(string? left, string? right) => CanonicalComparer.Instance.Equals(left, right);
-    public static int StringHash(string? value) => value is null ? 0 : CanonicalComparer.Instance.GetHashCode(value);
+    public static bool StringEquals(string? left, string? right) => CanonicalStringComparer.Instance.Equals(left, right);
+    public static int StringHash(string? value) => value is null ? 0 : CanonicalStringComparer.Instance.GetHashCode(value);
     private static IEqualityComparer<T> Comparer<T>() => typeof(T) == typeof(string)
-        ? (IEqualityComparer<T>)(object)CanonicalComparer.Instance : EqualityComparer<T>.Default;
-
-    // Swift String equality is canonically equivalent. Only the comparison key is normalized:
-    // published text/ranges remain untouched. Malformed .NET strings have no Swift counterpart;
-    // retain ordinal equality for those values rather than throwing from Equals/GetHashCode.
-    private sealed class CanonicalComparer : IEqualityComparer<string>
-    {
-        public static CanonicalComparer Instance { get; } = new();
-        public bool Equals(string? left, string? right) =>
-            string.Equals(Key(left), Key(right), StringComparison.Ordinal);
-        public int GetHashCode(string value) => StringComparer.Ordinal.GetHashCode(Key(value)!);
-        private static string? Key(string? value)
-        {
-            try { return value?.Normalize(NormalizationForm.FormC); }
-            catch (ArgumentException) { return value; }
-        }
-    }
+        ? (IEqualityComparer<T>)(object)CanonicalStringComparer.Instance : EqualityComparer<T>.Default;
 }

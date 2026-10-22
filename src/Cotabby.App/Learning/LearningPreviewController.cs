@@ -1199,7 +1199,13 @@ internal sealed class LearningPreviewController : IAsyncDisposable
             using var cancellation = ct.Register(() => _ = lifetime.Retire());
             var token = lifetime.Token;
             EnsureCaptureCurrent(token);
-            var result = await inner.TranslateAsync(request, onDelta, token).ConfigureAwait(false);
+            Action<string>? guardedDelta = onDelta is null ? null : delta =>
+            {
+                ct.ThrowIfCancellationRequested();
+                token.ThrowIfCancellationRequested();
+                onDelta(delta);
+            };
+            var result = await inner.TranslateAsync(request, guardedDelta, token).ConfigureAwait(false);
             ct.ThrowIfCancellationRequested();
             EnsureCaptureCurrent(token);
             return result;

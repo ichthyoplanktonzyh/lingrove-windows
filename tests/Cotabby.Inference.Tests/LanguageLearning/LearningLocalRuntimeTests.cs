@@ -639,6 +639,56 @@ public sealed class LearningLocalRuntimeTests
         }
     }
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task ActiveDecodeChecksDirectCancellationBeforeSamplingWhileCallbacksAreBlocked(bool ownerToken)
+    {
+        var decoded = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var resumeDecode = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var callbackEntered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var resumeCallback = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var session = new FakeNativeSession
+        {
+            OnPromptBatch = _ => { decoded.TrySetResult(); resumeDecode.Task.GetAwaiter().GetResult(); },
+        };
+        var runtime = new LearningLocalRuntime(new FakeSessionFactory(session));
+        using var cancellation = new CancellationTokenSource();
+        var operation = await runtime.BeginOperationAsync(Configuration,
+            ownerToken ? CancellationToken.None : cancellation.Token,
+            ownerToken ? cancellation.Token : CancellationToken.None);
+        var deltas = new List<string>();
+        var generation = operation.GenerateAsync(Tokens(1), Sampling, 2, deltas.Add, CancellationToken.None);
+        CancellationTokenRegistration registration = default;
+        Task? cancelling = null;
+        try
+        {
+            await decoded.Task.WaitAsync(TestTimeout);
+            registration = cancellation.Token.Register(() =>
+            {
+                callbackEntered.TrySetResult();
+                resumeCallback.Task.GetAwaiter().GetResult();
+            });
+            cancelling = cancellation.CancelAsync();
+            await callbackEntered.Task.WaitAsync(TestTimeout);
+            resumeDecode.TrySetResult();
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => generation.WaitAsync(TestTimeout));
+            Assert.False(cancelling.IsCompleted);
+            Assert.Empty(session.Samplers);
+            Assert.Empty(deltas);
+        }
+        finally
+        {
+            resumeDecode.TrySetResult();
+            resumeCallback.TrySetResult();
+            registration.Dispose();
+            if (cancelling is not null) await cancelling.WaitAsync(TestTimeout);
+            try { await generation.WaitAsync(TestTimeout); } catch { }
+            await operation.DisposeAsync().AsTask().WaitAsync(TestTimeout);
+            await runtime.DisposeAsync().AsTask().WaitAsync(TestTimeout);
+        }
+    }
+
     private sealed class GatedLoadFactory(FakeNativeSession session) : ILearningLocalNativeSessionFactory
     {
         public TaskCompletionSource Entered { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);

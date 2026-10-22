@@ -94,6 +94,8 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
             lock (_lifecycleLock)
             {
                 ThrowIfDisposing();
+                ct.ThrowIfCancellationRequested();
+                ownerCancellation.ThrowIfCancellationRequested();
                 // Unload may have arrived while synchronous native loading was still in flight.
                 // Never hand that retired allocation to a caller when the load finally returns.
                 ThrowIfRetired(admittedEpoch);
@@ -101,7 +103,8 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
                 operation = new LearningLocalOperation(
                     _session!,
                     _shutdown.Token,
-                    () => Volatile.Read(ref _retirementEpoch) != admittedEpoch,
+                    () => Volatile.Read(ref _retirementEpoch) != admittedEpoch
+                        || ct.IsCancellationRequested || ownerCancellation.IsCancellationRequested,
                     ReleaseOperation);
                 _activeOperation = operation;
                 // Only a successfully created lease supersedes a pending release. A queued Begin

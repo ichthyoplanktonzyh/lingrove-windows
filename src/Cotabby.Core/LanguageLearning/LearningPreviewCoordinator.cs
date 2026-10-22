@@ -8,25 +8,37 @@ namespace Cotabby.Core.LanguageLearning;
 /// </summary>
 /// <remarks>
 /// Each call freezes its source and settings into one request, cancels the prior task, and advances
-/// an identity that every completion must still match. The engine is owned by the caller and owns
-/// its own inference runtime; this coordinator owns only the request token, latest state, and bounded
-/// set of tasks it must observe during disposal.
+/// an identity that every completion and streamed prefix must still match. A caller-provided opaque
+/// scope can retain a bounded cache across hides/retries without mixing endpoint profiles. The
+/// engine is caller-owned; this type owns preview state, request cancellation, and task lifetime.
 /// </remarks>
 public sealed class LearningPreviewCoordinator : IAsyncDisposable
 {
     private static readonly TimeSpan DisposeWaitLimit = TimeSpan.FromSeconds(5);
+    private static readonly TimeSpan MinimumPartialPublishInterval = TimeSpan.FromSeconds(1d / 30d);
+    private const int MaximumCachedTranslations = 64;
     private const string EngineUnavailableMessage = "The translation engine is not ready. Check the translation settings.";
     private const string UnexpectedFailureMessage = "Translation failed. Check the translation settings and try again.";
 
     private readonly object _gate = new();
     private readonly Dictionary<long, Task> _runningTasks = [];
     private readonly Queue<Notification> _notifications = [];
+    private readonly Dictionary<CacheKey, string> _translationCache = [];
+    private readonly TimeProvider _clock;
 
     private LearningPreviewState _state = LearningPreviewState.Idle;
     private CancellationTokenSource? _activeCancellation;
     private long _generation;
+    private long _cacheEpoch;
+    private long _publishedPartialSequence;
     private bool _disposed;
     private bool _drainingNotifications;
+
+    /// <summary>
+    /// Creates a preview owner with a monotonic clock for stream coalescing. Supplying a clock is
+    /// useful for deterministic policy tests; production uses <see cref="TimeProvider.System"/>.
+    /// </summary>
+    public LearningPreviewCoordinator(TimeProvider? clock = null) => _clock = clock ?? TimeProvider.System;
 
     /// <summary>Raised in state-transition order, outside the coordinator lock.</summary>
     /// <remarks>
@@ -48,18 +60,24 @@ public sealed class LearningPreviewCoordinator : IAsyncDisposable
     /// Starts a complete translation for an already-captured sentence. A later call supersedes this
     /// one even if its engine ignores cancellation; only the latest request may publish a result.
     /// </summary>
-    public Task PreviewAsync(string source, LearningTranslationOptions options, ILearningTranslationEngine engine)
+    public Task PreviewAsync(
+        string source,
+        LearningTranslationOptions options,
+        ILearningTranslationEngine engine,
+        string? cacheScope = null)
     {
         ArgumentNullException.ThrowIfNull(source);
         ArgumentNullException.ThrowIfNull(options);
 
         var capturedOptions = Freeze(options);
+        if (string.IsNullOrWhiteSpace(cacheScope)) cacheScope = null;
         var requestId = $"req_{Guid.NewGuid():N}";
         CancellationTokenSource cancellation;
         CancellationTokenSource? priorCancellation;
         Task task;
         bool drainNotifications;
         long generation;
+        long cacheEpoch;
 
         lock (_gate)
         {
@@ -69,11 +87,14 @@ public sealed class LearningPreviewCoordinator : IAsyncDisposable
             priorCancellation = _activeCancellation;
             _activeCancellation = cancellation;
             generation = ++_generation;
+            cacheEpoch = _cacheEpoch;
+            _publishedPartialSequence = 0;
             _state = new LearningPreviewState
             {
                 RequestId = requestId,
                 Source = source,
                 Result = null,
+                PartialResult = null,
                 Status = LearningPreviewStatus.Loading,
                 ErrorMessage = null,
                 Options = capturedOptions,
@@ -85,7 +106,7 @@ public sealed class LearningPreviewCoordinator : IAsyncDisposable
             // than resuming through the UI dispatcher. CancellationToken.None ensures a queued
             // delegate still runs its finally block and disposes its per-request source.
             task = Task.Run(
-                () => RunAsync(generation, requestId, source, capturedOptions, engine, cancellation),
+                () => RunAsync(generation, requestId, source, capturedOptions, engine, cacheScope, cacheEpoch, cancellation),
                 CancellationToken.None);
             _runningTasks.Add(generation, task);
         }
@@ -115,6 +136,7 @@ public sealed class LearningPreviewCoordinator : IAsyncDisposable
             _state = _state with
             {
                 Result = null,
+                PartialResult = null,
                 Status = LearningPreviewStatus.Cancelled,
                 ErrorMessage = null,
             };
@@ -123,6 +145,21 @@ public sealed class LearningPreviewCoordinator : IAsyncDisposable
 
         CancelBestEffort(cancellation);
         if (drainNotifications) DrainNotifications();
+    }
+
+    /// <summary>
+    /// Drops every completed translation and invalidates cache writes from requests already running.
+    /// Call this with <see cref="Cancel"/> when the selected provider, endpoint, model profile, or
+    /// cache owner changes. Cache scope remains opaque and is never logged or shown in preview state.
+    /// </summary>
+    public void ClearCache()
+    {
+        lock (_gate)
+        {
+            if (_disposed) return;
+            ++_cacheEpoch;
+            _translationCache.Clear();
+        }
     }
 
     /// <summary>
@@ -148,6 +185,7 @@ public sealed class LearningPreviewCoordinator : IAsyncDisposable
                 _state = _state with
                 {
                     Result = null,
+                    PartialResult = null,
                     Status = LearningPreviewStatus.Cancelled,
                     ErrorMessage = null,
                 };
@@ -176,42 +214,114 @@ public sealed class LearningPreviewCoordinator : IAsyncDisposable
         string source,
         LearningTranslationOptions options,
         ILearningTranslationEngine? engine,
+        string? cacheScope,
+        long cacheEpoch,
         CancellationTokenSource cancellation)
     {
+        // Retain the value token rather than reading CancellationTokenSource.Token from the stream
+        // callback: a provider may retain that callback after this task has disposed its source.
+        var token = cancellation.Token;
         try
         {
-            if (!IsCurrent(generation, requestId, cancellation.Token)) return;
+            if (!IsCurrent(generation, requestId, token)) return;
 
             if (engine is null)
             {
-                PublishFailure(generation, requestId, cancellation.Token, EngineUnavailableMessage);
+                PublishFailure(generation, requestId, token, EngineUnavailableMessage);
                 return;
             }
 
             var request = LearningTranslationRequestFactory.Create(requestId, source, options);
-            var raw = await engine.TranslateAsync(request, cancellation.Token).ConfigureAwait(false);
-            cancellation.Token.ThrowIfCancellationRequested();
+            var cacheKey = cacheScope is null
+                ? (CacheKey?)null
+                : new CacheKey(cacheScope, request.Source, request.Options);
+            if (cacheKey is { } key && TryGetCached(generation, requestId, token, cacheEpoch, key, out var cached))
+            {
+                token.ThrowIfCancellationRequested();
+                var validatedCached = LearningExpressionOutputPolicy.ValidatedText(cached);
+                PublishReady(generation, requestId, token, validatedCached, cacheKey: null, cacheEpoch: cacheEpoch);
+                return;
+            }
+
+            var stream = new LearningExpressionOutputPolicy.Stream();
+            var streamGate = new object();
+            Exception? streamFailure = null;
+            var streamClosed = false;
+            var partialSequence = 0L;
+            var lastPublishedAt = 0L;
+            var hasPublishedPartial = false;
+
+            void ReceiveDelta(string delta)
+            {
+                if (!IsCurrent(generation, requestId, token)) return;
+
+                string? prefix;
+                long sequence;
+                bool publish;
+                lock (streamGate)
+                {
+                    // Once a bad delta has exceeded the byte cap or failed safety validation, a
+                    // provider may swallow the callback exception and try again. Keep the request
+                    // failed and its last safe prefix frozen until the final path reports that error.
+                    if (streamClosed || streamFailure is not null || !IsCurrent(generation, requestId, token)) return;
+                    try
+                    {
+                        if (delta is null)
+                            throw new LearningTranslationException(LearningTranslationFailure.InvalidOutput);
+                        prefix = stream.Append(delta);
+                    }
+                    catch (LearningTranslationException error)
+                    {
+                        streamFailure ??= error;
+                        throw;
+                    }
+
+                    if (prefix is null) return;
+                    sequence = ++partialSequence;
+                    var now = _clock.GetTimestamp();
+                    // Match macOS: show the first safe nonblank prefix immediately, then coalesce
+                    // later updates to at most 30 publications per second using monotonic time.
+                    publish = !hasPublishedPartial ||
+                        _clock.GetElapsedTime(lastPublishedAt, now) >= MinimumPartialPublishInterval;
+                    if (publish)
+                    {
+                        hasPublishedPartial = true;
+                        lastPublishedAt = now;
+                    }
+                }
+
+                if (publish) PublishPartial(generation, requestId, token, sequence, prefix);
+            }
+
+            var raw = await engine.TranslateAsync(request, ReceiveDelta, token).ConfigureAwait(false);
+            token.ThrowIfCancellationRequested();
+
+            lock (streamGate)
+            {
+                streamClosed = true;
+                if (streamFailure is not null) throw streamFailure;
+            }
 
             // The shared macOS output contract rejects rather than truncates oversized or unsafe
             // text, so a backend cannot grow a preview without bound or smuggle control characters.
             var result = LearningExpressionOutputPolicy.ValidatedText(raw);
-            PublishReady(generation, requestId, cancellation.Token, result);
+            PublishReady(generation, requestId, token, result, cacheKey, cacheEpoch);
         }
         catch (OperationCanceledException)
         {
             // Cancel/Dispose already published their terminal state. An engine-originated cancel
             // only becomes visible if this request is still current.
-            PublishCancelled(generation, requestId, cancellation.Token);
+            PublishCancelled(generation, requestId, token);
         }
         catch (LearningTranslationException error)
         {
-            PublishFailure(generation, requestId, cancellation.Token, error.Message);
+            PublishFailure(generation, requestId, token, error.Message);
         }
         catch (Exception)
         {
             // Provider exception strings can contain source text, URLs or credentials; only a
             // fixed message crosses the Core-to-UI boundary.
-            PublishFailure(generation, requestId, cancellation.Token, UnexpectedFailureMessage);
+            PublishFailure(generation, requestId, token, UnexpectedFailureMessage);
         }
         finally
         {
@@ -233,15 +343,80 @@ public sealed class LearningPreviewCoordinator : IAsyncDisposable
         }
     }
 
-    private void PublishReady(long generation, string requestId, CancellationToken token, string result)
+    private bool TryGetCached(
+        long generation,
+        string requestId,
+        CancellationToken token,
+        long cacheEpoch,
+        CacheKey key,
+        out string translation)
+    {
+        lock (_gate)
+        {
+            if (!IsCurrentLocked(generation, requestId, token) || cacheEpoch != _cacheEpoch)
+            {
+                translation = string.Empty;
+                return false;
+            }
+
+            if (_translationCache.TryGetValue(key, out var cached))
+            {
+                translation = cached;
+                return true;
+            }
+
+            translation = string.Empty;
+            return false;
+        }
+    }
+
+    private void PublishPartial(
+        long generation,
+        string requestId,
+        CancellationToken token,
+        long sequence,
+        string partial)
+    {
+        bool drainNotifications;
+        lock (_gate)
+        {
+            if (!IsCurrentLocked(generation, requestId, token) || sequence <= _publishedPartialSequence) return;
+            _publishedPartialSequence = sequence;
+            _state = _state with
+            {
+                Result = null,
+                PartialResult = partial,
+                ErrorMessage = null,
+            };
+            drainNotifications = EnqueueNotificationLocked(_state);
+        }
+
+        if (drainNotifications) DrainNotifications();
+    }
+
+    private void PublishReady(
+        long generation,
+        string requestId,
+        CancellationToken token,
+        string result,
+        CacheKey? cacheKey,
+        long cacheEpoch)
     {
         bool drainNotifications;
         lock (_gate)
         {
             if (!IsCurrentLocked(generation, requestId, token)) return;
+            if (cacheKey is { } key && cacheEpoch == _cacheEpoch)
+            {
+                // Match the macOS cache's bounded flush-all policy: no result is preferred by recency.
+                if (_translationCache.Count >= MaximumCachedTranslations) _translationCache.Clear();
+                _translationCache[key] = result;
+            }
+
             _state = _state with
             {
                 Result = result,
+                PartialResult = null,
                 Status = LearningPreviewStatus.Ready,
                 ErrorMessage = null,
             };
@@ -261,6 +436,7 @@ public sealed class LearningPreviewCoordinator : IAsyncDisposable
             _state = _state with
             {
                 Result = null,
+                PartialResult = null,
                 Status = LearningPreviewStatus.Failed,
                 ErrorMessage = message,
             };
@@ -280,6 +456,7 @@ public sealed class LearningPreviewCoordinator : IAsyncDisposable
             _state = _state with
             {
                 Result = null,
+                PartialResult = null,
                 Status = LearningPreviewStatus.Cancelled,
                 ErrorMessage = null,
             };
@@ -356,4 +533,9 @@ public sealed class LearningPreviewCoordinator : IAsyncDisposable
     private sealed record Notification(
         LearningPreviewState State,
         Action<LearningPreviewState>? Handlers);
+
+    private readonly record struct CacheKey(
+        string Scope,
+        string Source,
+        LearningTranslationOptions Options);
 }

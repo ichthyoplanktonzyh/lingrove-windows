@@ -48,7 +48,7 @@ Windows behavior for UIA, input, rendering, insertion, persistence, or inference
 
 | Capability | macOS reference at pinned commit (source / tests) | Windows baseline evidence | Status |
 | --- | --- | --- | --- |
-| Translation while writing, task settings and request profiles | `Cotabby/Services/LanguageLearning/LearningTranslationService.swift`, `LearningExpressionService.swift`, `Cotabby/Models/LanguageLearning/`, `CotabbyTests/Services/LanguageLearning/LearningTranslationStyleIntegrationTests.swift` | `Core/LanguageLearning/`, `Inference/LanguageLearning/`, `App/Learning/`, `App/UI/Learning/`: manual read-only current-sentence preview, independent endpoint/config/cancellation; local runtime, streaming prefixes and cache remain deferred; [source/test mapping and limits](LEARNING_PREVIEW.md) | implemented-unverified |
+| Translation while writing, task settings and request profiles | `Cotabby/Services/LanguageLearning/LearningTranslationService.swift`, `LearningExpressionService.swift`, `Cotabby/Models/LanguageLearning/`, `CotabbyTests/Services/LanguageLearning/LearningTranslationStyleIntegrationTests.swift` | `Core/LanguageLearning/`, `Inference/LanguageLearning/`, `App/Learning/`, `App/UI/Learning/`: manual read-only current-sentence preview, independent endpoint/config/cancellation, bounded safe streaming prefixes and completed-result cache; multi-source preference/ranking policy ported but production recognition unavailable, local runtime deferred; [source/test mapping and limits](LEARNING_PREVIEW.md) | implemented-unverified |
 | Safe translation replacement with acknowledgement | `Cotabby/Services/LanguageLearning/LearningSelectionReplacement.swift`, `Cotabby/Support/LanguageLearning/LearningReplacementVerificationPolicy.swift`, matching tests | No learning replacement flow or host acknowledgement. Shared `GuardedTextInserter` and Win32 clipboard lease now provide guarded dispatch and bounded supported-format preservation; [limits and evidence](EDITOR_SAFETY.md) | missing |
 | Selected text and reading capture | `Cotabby/App/Coordinators/InlineFeatures/LearningReadingCoordinator.swift`, `Cotabby/Services/LanguageLearning/LearningReadingSelectionReader.swift`, `LearningReadingSourceReader.swift`, `CotabbyTests/App/Coordinators/InlineFeatures/LearningReadingCoordinatorTests.swift` | No selection/reading learning capture | source-only |
 | Explicit screen-region capture and OCR | `Cotabby/Services/Presentation/LearningRegionSelectionPanel.swift`, `Cotabby/Services/Visual/ScreenTextExtractor.swift`, `CotabbyTests/Services/Visual/ReadingOCRIntegrationTests.swift` | No screen capture/OCR subsystem | source-only |
@@ -80,10 +80,13 @@ does not imply that Windows storage is already compatible with the macOS databas
 
 ## Verification policy
 
-The learning corpus adds 36 cases for actual pinned Swift language/style/prompt/budget/output rules,
-also consumed by C# tests. It does not establish full learning parity, native UIA/IME behavior or model
-quality; provenance and harness stubs are recorded in `fixtures/parity/README.md`. ICU is the Windows
-sentence-tokenizer adapter, rather than a replacement punctuation rule.
+The learning corpus adds 64 cases for actual pinned Swift language/style/prompt/budget/output rules,
+explicit-source filtering, confidence ranking and streamed-output bounds, also consumed by C# tests.
+Recognition fixtures deliberately avoid invoking the statistical recognizer; they do not establish
+multi-source detection equivalence. The corpus does not establish full learning parity, native
+UIA/IME behavior or model quality; provenance and harness stubs are recorded in
+`fixtures/parity/README.md`. ICU is the Windows sentence-tokenizer adapter, rather than a replacement
+punctuation rule.
 
 The guarded editor insertion stage adds portable transaction, stale-result, cancellation and inline
 query tests plus fake-driven Windows dispatch tests. It does not promote native focus, insertion,

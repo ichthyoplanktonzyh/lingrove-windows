@@ -20,4 +20,14 @@ public interface ILearningTranslationEngine
 {
     /// <summary>Generates a complete translation for the frozen request, or throws on failure.</summary>
     Task<string> TranslateAsync(LearningTranslationRequest request, CancellationToken ct);
+
+    /// <summary>
+    /// Generates a complete translation and may report ordered text deltas for a provisional
+    /// preview. Implementations must stop invoking the callback before the returned task completes.
+    /// Existing engines remain compatible; their default implementation uses the complete-result path.
+    /// </summary>
+    Task<string> TranslateAsync(
+        LearningTranslationRequest request,
+        Action<string>? onDelta,
+        CancellationToken ct) => TranslateAsync(request, ct);
 }

@@ -19,6 +19,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Exercise the real persisted settings without starting the WPF application or touching
+         the user's settings directory. This file depends only on Core and Inference contracts. -->
+    <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.cs" Link="AppSettings\AppSettings.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\Cotabby.Core\Cotabby.Core.csproj" />
     <ProjectReference Include="..\..\src\Cotabby.Inference\Cotabby.Inference.csproj" />
     <ProjectReference Include="..\..\src\Cotabby.Win32\Cotabby.Win32.csproj" />

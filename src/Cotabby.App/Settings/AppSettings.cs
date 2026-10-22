@@ -88,7 +88,41 @@ public sealed class AppSettings
     public bool LearningEndpointEnabled { get; set; }
     public string LearningEndpointBaseUrl { get; set; } = OpenAICompatibleEndpointConfiguration.DefaultBaseUrl;
     public string LearningEndpointModel { get; set; } = "";
-    public int LearningContextTokens { get; set; } = 4_096;
+    /// <summary>The macOS learning profile's default context size; serialized values remain unchanged.</summary>
+    public int LearningContextTokens { get; set; } = 8_192;
+    /// <summary>
+    /// Enabled source-language choices. Null means this settings file predates the multi-source
+    /// preference and should be read through <see cref="LearningSourceLanguage"/>; an explicit
+    /// empty list remains empty so the UI never silently restores a language the user removed.
+    /// </summary>
+    public List<LearningLanguage>? LearningSourceLanguages { get; set; }
+
+    /// <summary>
+    /// A detached, ordered snapshot of usable source choices. The singular preference stays
+    /// serialized for older builds; once the list exists, it is the complete source policy.
+    /// </summary>
+    [JsonIgnore]
+    public IReadOnlyList<LearningLanguage> EffectiveLearningSourceLanguages
+    {
+        get
+        {
+            var configured = LearningSourceLanguages;
+            if (configured is null)
+            {
+                configured = [Enum.IsDefined(LearningSourceLanguage)
+                    ? LearningSourceLanguage
+                    : LearningLanguage.Chinese];
+            }
+
+            var snapshot = configured
+                .Where(language => Enum.IsDefined(language))
+                .Distinct()
+                .ToArray();
+            return Array.AsReadOnly(snapshot);
+        }
+    }
+
+    /// <summary>Legacy one-source key retained for migration from pre-list settings files.</summary>
     public LearningLanguage LearningSourceLanguage { get; set; } = LearningLanguage.Chinese;
     public LearningLanguage LearningTargetLanguage { get; set; } = LearningLanguage.English;
     public LearningTranslationRegister LearningStyleRegister { get; set; } = LearningTranslationRegister.Natural;
@@ -228,7 +262,16 @@ public sealed class SettingsStore
     {
         if (JsonNode.Parse(json) is not JsonObject root) return new AppSettings();
         MigrateLegacyKeys(root);
-        return root.Deserialize<AppSettings>(JsonOpts) ?? new AppSettings();
+        var settings = root.Deserialize<AppSettings>(JsonOpts) ?? new AppSettings();
+        if (!root.ContainsKey(nameof(AppSettings.LearningSourceLanguages)))
+        {
+            // Older files stored one explicit source. Materialize it as a one-item choice list so
+            // the first settings save cannot lose the old direction while the UI moves to the
+            // Mac-shaped multi-source preference. EffectiveLearningSourceLanguages validates it.
+            settings.LearningSourceLanguages = settings.EffectiveLearningSourceLanguages.ToList();
+        }
+
+        return settings;
     }
 
     /// <summary>Files written before shortcuts were recordable stored the accept-all key by name.</summary>

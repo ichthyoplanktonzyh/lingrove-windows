@@ -92,7 +92,7 @@ python3 scripts/verify-macos-parity.py --mac-repo /path/to/macOS-lingrove-checko
 python3 scripts/verify-learning-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 ```
 
-The Swift verifiers require Xcode 26 and exercise 17 autocomplete plus 36 learning fixture cases
+The Swift verifiers require Xcode 26 and exercise 17 autocomplete plus 64 learning fixture cases
 against committed pure Mac policies. They do not build or launch the macOS app. Routine validation does not run the
 `Cotabby.Tools.*Smoke` projects: those may require an interactive Windows desktop or downloaded
 model weights.

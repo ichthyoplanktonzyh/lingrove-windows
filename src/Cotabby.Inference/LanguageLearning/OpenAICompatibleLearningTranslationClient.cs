@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Headers;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Text.Json;
 using Cotabby.Core.LanguageLearning;
@@ -30,16 +31,18 @@ internal sealed class OpenAICompatibleLearningTranslationClient(HttpClient httpC
         OpenAICompatibleEndpointConfiguration configuration,
         LearningTranslationRequest translation,
         string? apiKey,
+        Action<string>? onDelta,
         CancellationToken cancellationToken)
     {
-        var requestBody = SerializeBoundedRequest(configuration, translation);
+        var streaming = onDelta is not null;
+        var requestBody = SerializeBoundedRequest(configuration, translation, streaming);
         var url = configuration.ApiUrl("chat/completions");
         using var request = new HttpRequestMessage(HttpMethod.Post, url)
         {
             Content = new ByteArrayContent(requestBody),
         };
         request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-        request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("text/event-stream"));
+        if (streaming) request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("text/event-stream"));
 
         if (apiKey?.Trim() is { Length: > 0 } key)
         {
@@ -87,52 +90,22 @@ internal sealed class OpenAICompatibleLearningTranslationClient(HttpClient httpC
                 throw new LearningTranslationEndpointException(LearningTranslationEndpointFailure.ResponseTooLarge);
             }
 
-            var stream = await response.Content.ReadAsStreamAsync(linked.Token).ConfigureAwait(false);
-            var reader = new InstructionStreamReader();
-            var buffer = new byte[8 * 1024];
-            var line = new byte[MaximumSseLineBytes];
-            var lineLength = 0;
-            var totalBytes = 0;
-
-            while (true)
-            {
-                var read = await stream.ReadAsync(buffer.AsMemory(), linked.Token).ConfigureAwait(false);
-                if (read == 0) break;
-
-                timeout.CancelAfter(GenerationTimeout);
-                totalBytes = checked(totalBytes + read);
-                if (totalBytes > MaximumResponseBytes)
-                {
-                    throw new LearningTranslationEndpointException(LearningTranslationEndpointFailure.ResponseTooLarge);
-                }
-
-                for (var index = 0; index < read; index++)
-                {
-                    var value = buffer[index];
-                    if (value == (byte)'\n')
-                    {
-                        reader.ProcessLine(line, lineLength);
-                        lineLength = 0;
-                        if (reader.IsDone) break;
-                    }
-                    else
-                    {
-                        if (lineLength == line.Length)
-                        {
-                            throw new LearningTranslationEndpointException(LearningTranslationEndpointFailure.ResponseTooLarge);
-                        }
-                        line[lineLength++] = value;
-                    }
-                }
-
-                if (reader.IsDone) break;
-            }
-
-            if (!reader.IsDone && lineLength > 0) reader.ProcessLine(line, lineLength);
+            var result = streaming
+                ? await ReadInstructionStreamAsync(response.Content, timeout, linked.Token, onDelta!)
+                    .ConfigureAwait(false)
+                : await ReadInstructionResponseAsync(response.Content, timeout, linked.Token)
+                    .ConfigureAwait(false);
             cancellationToken.ThrowIfCancellationRequested();
-            return reader.Complete();
+            return result;
         }
-        catch (LearningTranslationEndpointException)
+        catch (DeltaCallbackFailure error)
+        {
+            // A callback belongs to the Core preview pipeline. Preserve its cancellation or typed
+            // failure instead of relabeling it as an endpoint transport error.
+            ExceptionDispatchInfo.Capture(error.CallbackException).Throw();
+            throw;
+        }
+        catch (LearningTranslationException)
         {
             throw;
         }
@@ -152,9 +125,135 @@ internal sealed class OpenAICompatibleLearningTranslationClient(HttpClient httpC
         }
     }
 
+    private static async Task<string> ReadInstructionResponseAsync(
+        HttpContent content,
+        CancellationTokenSource timeout,
+        CancellationToken cancellationToken)
+    {
+        var bytes = await ReadBoundedResponseAsync(content, timeout, cancellationToken).ConfigureAwait(false);
+        LearningInstructionResponse? response;
+        try
+        {
+            response = JsonSerializer.Deserialize<LearningInstructionResponse>(bytes, OpenAICompatibleJson.Options);
+        }
+        catch (JsonException)
+        {
+            throw new LearningTranslationEndpointException(LearningTranslationEndpointFailure.InvalidResponse);
+        }
+
+        if (response is null || response.Error is not null)
+        {
+            throw new LearningTranslationEndpointException(LearningTranslationEndpointFailure.InvalidResponse);
+        }
+
+        if (response.Choices is not [{ } choice, ..]
+            || choice.Message?.Content is not { } translation
+            || !string.Equals(choice.FinishReason, "stop", StringComparison.Ordinal))
+        {
+            // A missing content field or length-limited completion is never a complete translation.
+            throw new LearningTranslationEndpointException(LearningTranslationEndpointFailure.IncompleteResponse);
+        }
+
+        if (Encoding.UTF8.GetByteCount(translation) > MaximumTranslationBytes)
+        {
+            throw new LearningTranslationEndpointException(LearningTranslationEndpointFailure.ResponseTooLarge);
+        }
+
+        return translation;
+    }
+
+    private static async Task<string> ReadInstructionStreamAsync(
+        HttpContent content,
+        CancellationTokenSource timeout,
+        CancellationToken cancellationToken,
+        Action<string> onDelta)
+    {
+        var stream = await content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+        var reader = new InstructionStreamReader(onDelta);
+        var buffer = new byte[8 * 1024];
+        var line = new byte[MaximumSseLineBytes];
+        var lineLength = 0;
+        var totalBytes = 0;
+
+        while (true)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var read = await stream.ReadAsync(buffer.AsMemory(), cancellationToken).ConfigureAwait(false);
+            if (read == 0) break;
+
+            timeout.CancelAfter(GenerationTimeout);
+            totalBytes = checked(totalBytes + read);
+            if (totalBytes > MaximumResponseBytes)
+            {
+                throw new LearningTranslationEndpointException(LearningTranslationEndpointFailure.ResponseTooLarge);
+            }
+
+            for (var index = 0; index < read; index++)
+            {
+                var value = buffer[index];
+                if (value == (byte)'\n')
+                {
+                    reader.ProcessLine(line, lineLength, cancellationToken);
+                    lineLength = 0;
+                    if (reader.IsDone) break;
+                }
+                else
+                {
+                    if (lineLength == line.Length)
+                    {
+                        throw new LearningTranslationEndpointException(LearningTranslationEndpointFailure.ResponseTooLarge);
+                    }
+                    line[lineLength++] = value;
+                }
+            }
+
+            if (reader.IsDone) break;
+        }
+
+        if (!reader.IsDone && lineLength > 0)
+        {
+            reader.ProcessLine(line, lineLength, cancellationToken);
+        }
+
+        cancellationToken.ThrowIfCancellationRequested();
+        return reader.Complete();
+    }
+
+    private static async Task<byte[]> ReadBoundedResponseAsync(
+        HttpContent content,
+        CancellationTokenSource timeout,
+        CancellationToken cancellationToken)
+    {
+        if (content.Headers.ContentLength is > MaximumResponseBytes)
+        {
+            throw new LearningTranslationEndpointException(LearningTranslationEndpointFailure.ResponseTooLarge);
+        }
+
+        var stream = await content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+        using var response = new MemoryStream();
+        var buffer = new byte[8 * 1024];
+        var totalBytes = 0;
+        while (true)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var read = await stream.ReadAsync(buffer.AsMemory(), cancellationToken).ConfigureAwait(false);
+            if (read == 0) return response.ToArray();
+
+            timeout.CancelAfter(GenerationTimeout);
+            totalBytes = checked(totalBytes + read);
+            if (totalBytes > MaximumResponseBytes)
+            {
+                throw new LearningTranslationEndpointException(LearningTranslationEndpointFailure.ResponseTooLarge);
+            }
+
+            await response.WriteAsync(buffer.AsMemory(0, read), cancellationToken).ConfigureAwait(false);
+        }
+    }
+
     private static byte[] SerializeBoundedRequest(
         OpenAICompatibleEndpointConfiguration configuration,
-        LearningTranslationRequest translation)
+        LearningTranslationRequest translation,
+        bool streaming)
     {
         var prompt = translation.Prompt.Prompt;
         if (prompt.Length > MaximumPromptCodeUnits
@@ -164,7 +263,7 @@ internal sealed class OpenAICompatibleLearningTranslationClient(HttpClient httpC
             throw new LearningTranslationEndpointException(LearningTranslationEndpointFailure.InvalidRequest);
         }
 
-        var payload = MakeChatRequest(configuration, translation);
+        var payload = MakeChatRequest(configuration, translation, streaming);
 
         try
         {
@@ -185,7 +284,8 @@ internal sealed class OpenAICompatibleLearningTranslationClient(HttpClient httpC
 
     private static LearningChatRequest MakeChatRequest(
         OpenAICompatibleEndpointConfiguration configuration,
-        LearningTranslationRequest translation)
+        LearningTranslationRequest translation,
+        bool streaming)
     {
         LearningChatMessage[] messages = translation.Prompt.UserOnly
             ? [new LearningChatMessage("user", translation.Prompt.Prompt)]
@@ -197,7 +297,7 @@ internal sealed class OpenAICompatibleLearningTranslationClient(HttpClient httpC
         return new LearningChatRequest(
             configuration.ModelName,
             messages,
-            true,
+            streaming,
             translation.MaxOutputTokens,
             translation.Prompt.Sampling.Temperature,
             translation.Prompt.Sampling.TopP,
@@ -215,14 +315,18 @@ internal sealed class OpenAICompatibleLearningTranslationClient(HttpClient httpC
 
     private sealed class InstructionStreamReader
     {
+        private readonly Action<string> _onDelta;
         private readonly StringBuilder _translation = new();
         private int _translationBytes;
+
+        public InstructionStreamReader(Action<string> onDelta) => _onDelta = onDelta;
 
         public string? FinishReason { get; private set; }
         public bool IsDone { get; private set; }
 
-        public void ProcessLine(byte[] bytes, int length)
+        public void ProcessLine(byte[] bytes, int length, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             if (length > 0 && bytes[length - 1] == (byte)'\r') length--;
 
             string line;
@@ -284,17 +388,28 @@ internal sealed class OpenAICompatibleLearningTranslationClient(HttpClient httpC
                 throw new LearningTranslationEndpointException(LearningTranslationEndpointFailure.ResponseTooLarge);
             }
 
+            try
+            {
+                // Only the decoded delta crosses to Core. It owns the safe prefix and coalescing
+                // policy; sending the accumulated answer here would duplicate that state.
+                _onDelta(text);
+            }
+            catch (Exception callbackException)
+            {
+                throw new DeltaCallbackFailure(callbackException);
+            }
+            cancellationToken.ThrowIfCancellationRequested();
+
             _translationBytes += addedBytes;
             _translation.Append(text);
         }
 
         public string Complete()
         {
-            if (!string.Equals(FinishReason, "stop", StringComparison.Ordinal)
-                || _translation.Length == 0)
+            if (!string.Equals(FinishReason, "stop", StringComparison.Ordinal))
             {
-                // In particular, "length" means the reserved translation did not fit and must
-                // not be presented as complete or used by any future replacement flow.
+                // In particular, "length" means the reserved translation did not fit. Earlier
+                // deltas may have been shown read-only, but this task must not return as complete.
                 throw new LearningTranslationEndpointException(LearningTranslationEndpointFailure.IncompleteResponse);
             }
 
@@ -325,4 +440,17 @@ internal sealed class OpenAICompatibleLearningTranslationClient(HttpClient httpC
     private sealed record LearningStreamContent(string? Content = null);
 
     private sealed record LearningStreamError(string? Message = null);
+
+    private sealed record LearningInstructionResponse(
+        IReadOnlyList<LearningInstructionChoice?>? Choices = null,
+        LearningStreamError? Error = null);
+
+    private sealed record LearningInstructionChoice(
+        LearningStreamContent? Message = null,
+        string? FinishReason = null);
+
+    private sealed class DeltaCallbackFailure(Exception callbackException) : Exception
+    {
+        public Exception CallbackException { get; } = callbackException;
+    }
 }

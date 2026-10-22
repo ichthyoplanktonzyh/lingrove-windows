@@ -125,6 +125,10 @@ open before language learning can depend on this path. See [the safety record](d
 
 The original Windows baseline had no learning subsystem. The current manual-preview port supplies
 learning contracts, request orchestration, a task-owned endpoint adapter and a read-only WPF panel.
+The preview supports bounded safe streaming prefixes and the Mac completed-result cache policy.
+Enabled-source settings and deterministic confidence ranking are ported; a Windows statistical
+recognizer is still unavailable, so multiple eligible sources fail closed rather than using
+invented confidence. A single explicit source continues to work without recognition.
 The wider Mac learning flow below remains the behavior reference for later Windows slices:
 
 ```text

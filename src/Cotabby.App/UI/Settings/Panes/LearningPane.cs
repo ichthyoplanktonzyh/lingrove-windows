@@ -41,9 +41,7 @@ internal static class LearningPane
                     "The configured shortcut reads the complete current sentence from a supported field and opens a read-only preview.",
                     s => s.LearningTranslationEnabled, (s, v) => s.LearningTranslationEnabled = v)
                     .Tagged("language learning translation sentence preview manual writing current field"),
-                rows.Combo("Source Language", "The language used for the captured sentence.", Languages,
-                    s => s.LearningSourceLanguage, (s, v) => s.LearningSourceLanguage = v)
-                    .Tagged("from source language chinese zh english"),
+                SourceLanguages(rows),
                 rows.Combo("Target Language", "The language requested from the translator.", Languages,
                     s => s.LearningTargetLanguage, (s, v) => s.LearningTargetLanguage = v)
                     .Tagged("to target language english en chinese"),
@@ -75,6 +73,69 @@ internal static class LearningPane
                 Credentials(context),
                 Rows.Custom(destination)),
         ]);
+    }
+
+    /// <summary>
+    /// Mirrors the Mac source-language disclosure: one selected language means an explicit
+    /// direction, while multiple choices are resolved for each captured sentence. AppSettings
+    /// keeps the old singular key as a migration source and persists this full ordered choice.
+    /// </summary>
+    private static SettingsRow SourceLanguages(Rows rows)
+    {
+        var context = rows.Context;
+        var choices = new StackPanel();
+        var checkboxes = new List<(LearningLanguage Language, CheckBox CheckBox)>();
+        foreach (var language in LearningLanguages.All)
+        {
+            var checkbox = new CheckBox
+            {
+                Content = language.Label(),
+                Margin = new Thickness(0, 3, 0, 3),
+                VerticalContentAlignment = VerticalAlignment.Center,
+            }.Styled("Toggle");
+            checkbox.Click += (_, _) => context.Change(settings =>
+            {
+                var selected = settings.EffectiveLearningSourceLanguages.ToList();
+                if (checkbox.IsChecked == true)
+                {
+                    if (!selected.Contains(language)) selected.Add(language);
+                }
+                else
+                {
+                    selected.RemoveAll(candidate => candidate == language);
+                }
+
+                settings.LearningSourceLanguages = selected;
+                // Keep downgrade compatibility whenever the new choice is representable by the
+                // legacy field. A multi-source list stays intact and is never collapsed to one.
+                if (selected.Count == 1) settings.LearningSourceLanguage = selected[0];
+            });
+            choices.Children.Add(checkbox);
+            checkboxes.Add((language, checkbox));
+        }
+
+        var note = Ui.Text(
+            "With one source selected, translations use that direction. Multiple-source detection is not yet available on this Windows build; choose one source to translate.",
+            "Caption");
+        note.Margin = new Thickness(0, 8, 0, 0);
+        note.TextWrapping = TextWrapping.Wrap;
+        choices.Children.Add(note);
+
+        var expander = new Expander { IsExpanded = false, Content = choices };
+        context.OnRefresh(() =>
+        {
+            var selected = context.Settings.EffectiveLearningSourceLanguages;
+            expander.Header = $"{selected.Count} selected";
+            foreach (var (language, checkbox) in checkboxes)
+            {
+                checkbox.IsChecked = selected.Contains(language);
+                checkbox.IsEnabled = language != context.Settings.LearningTargetLanguage;
+            }
+        });
+
+        return rows.Stacked("Source Languages",
+            "Choose one source language to translate. Multiple-source detection is not yet available on this Windows build.", expander)
+            .Tagged("source language languages detection automatic chinese english spanish french german japanese korean hindi arabic");
     }
 
     private static SettingsRow Credentials(SettingsContext context)

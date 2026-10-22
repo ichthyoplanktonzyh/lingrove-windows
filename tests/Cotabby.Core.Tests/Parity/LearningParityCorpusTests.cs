@@ -203,6 +203,73 @@ public sealed class LearningParityCorpusTests
         }
     }
 
+    [Fact]
+    public void SourceLanguageConfidenceRankingMatchesMacFixture()
+    {
+        foreach (JsonElement row in Rows("sourceLanguageScoreCases"))
+        {
+            var scores = new Dictionary<LearningLanguage, double>();
+            foreach (JsonElement score in row.GetProperty("scores").EnumerateArray())
+                scores.Add(Language(String(score, "language")), Double(score, "score"));
+
+            Assert.Equal(OptionalString(row, "expectedLanguage"),
+                LearningSourceLanguageResolver.ConfidentLanguage(scores)?.Code());
+        }
+    }
+
+    [Fact]
+    public void ExplicitSingleSourceResolutionFiltersWithoutCallingTheDetector()
+    {
+        foreach (JsonElement row in Rows("sourceLanguageResolutionCases"))
+        {
+            var detector = new CountingLanguageDetector();
+            string? actual = LearningSourceLanguageResolver.Resolve(
+                String(row, "text"),
+                Strings(row.GetProperty("enabledSourceLanguages")).Select(Language).ToArray(),
+                Language(String(row, "targetLanguage")),
+                detector)?.Code();
+
+            Assert.Equal(OptionalString(row, "expectedLanguage"), actual);
+            Assert.Equal(Integer(row, "expectedDetectorCalls"), detector.Calls);
+        }
+    }
+
+    [Fact]
+    public void StreamedOutputPrefixesAndRejectionsMatchMacFixture()
+    {
+        foreach (JsonElement row in Rows("streamAppendCases"))
+        {
+            JsonElement[] chunks = row.GetProperty("chunks").EnumerateArray().ToArray();
+            JsonElement[] expectedPrefixes = row.GetProperty("expectedPrefixes").EnumerateArray().ToArray();
+            Assert.Equal(chunks.Length, expectedPrefixes.Length);
+
+            int? expectedFailureAt = row.TryGetProperty("expectedFailureAt", out var failureIndex)
+                && failureIndex.ValueKind == JsonValueKind.Number
+                ? failureIndex.GetInt32()
+                : null;
+            var stream = new LearningExpressionOutputPolicy.Stream();
+            var failedAt = (int?)null;
+
+            for (var index = 0; index < chunks.Length; index++)
+            {
+                if (expectedFailureAt == index)
+                {
+                    var error = Assert.Throws<LearningTranslationException>(() => stream.Append(Text(chunks[index])));
+                    Assert.Equal(LearningTranslationFailure.InvalidOutput, error.Failure);
+                    failedAt = index;
+                    break;
+                }
+
+                string? expectedPrefix = expectedPrefixes[index].ValueKind == JsonValueKind.Null
+                    ? null
+                    : Text(expectedPrefixes[index]);
+                Assert.Equal(expectedPrefix, stream.Append(Text(chunks[index])));
+            }
+
+            Assert.Equal(expectedFailureAt, failedAt);
+        }
+    }
+
     private static JsonDocument LoadCorpus()
     {
         string path = Path.Combine(AppContext.BaseDirectory, "fixtures", "parity", "learning-v1.json");
@@ -220,7 +287,7 @@ public sealed class LearningParityCorpusTests
 
     private static void ValidateProvenance(JsonElement root)
     {
-        string[] groups = ["styleCases", "styleBounds", "tokenEstimates", "inputAllowances", "outputReservations", "promptCases", "promptBudgets", "outputValidation"];
+        string[] groups = ["styleCases", "styleBounds", "tokenEstimates", "inputAllowances", "outputReservations", "promptCases", "promptBudgets", "outputValidation", "sourceLanguageScoreCases", "sourceLanguageResolutionCases", "streamAppendCases"];
         var ids = new HashSet<string>(StringComparer.Ordinal);
         foreach (string group in groups)
         {
@@ -271,4 +338,16 @@ public sealed class LearningParityCorpusTests
         "translateGemma" => LearningTranslationPrompt.Family.TranslateGemma,
         _ => throw new InvalidDataException($"Unknown learning prompt family '{name}'."),
     };
+
+    private sealed class CountingLanguageDetector : ILearningLanguageDetector
+    {
+        public int Calls { get; private set; }
+
+        public IReadOnlyDictionary<LearningLanguage, double> Scores(
+            string sample, IReadOnlyList<LearningLanguage> candidates)
+        {
+            Calls++;
+            return new Dictionary<LearningLanguage, double>();
+        }
+    }
 }

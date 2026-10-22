@@ -15,11 +15,13 @@ The source reference is read through Git, independently of changes in the Mac wo
 | `Support/LanguageLearning/LearningExpressionPrompt.swift`, `LearningTranslationPrompt.swift`, matching prompt/style tests | Literal source as data, fixed translation instructions, generic/Hy-MT/TranslateGemma adapters and sampling |
 | `Support/LanguageLearning/LearningTranslationBudget.swift`, `Support/Prompting/ModelContextBudget.swift`, budget tests | Reserve complete output, count full framing, reject oversized targets without shortening them |
 | `Support/LanguageLearning/LearningTextScopePolicy.swift`, scope tests | Exact UTF-16/grapheme ranges and sentence-at-caret rules; native sentence tokenizer is a platform dependency |
+| `Support/LanguageLearning/LearningSourceLanguageResolver.swift`, resolver tests | Ordered enabled-source filtering, explicit single-source preference, and deterministic confidence/margin policy; a Windows statistical recognizer remains unavailable |
 | `Support/LanguageLearning/LearningInputMethodPolicy.swift`, input-method tests | Positive marked text rejects preview; unknown evidence stays unknown; no inferred composition state from timing |
 | `Support/LanguageLearning/LearningExpressionOutputPolicy.swift`, output tests | The same complete-output validation and 12,000-byte UTF-8 limit used by the Mac translation service |
 | `App/Coordinators/InlineFeatures/LearningSentencePreviewCoordinator.swift`, coordinator tests | A learning-owned request identity, captured settings, cancellation and latest-result guards; the App adapter retains field freshness |
 | `Services/LanguageLearning/LearningTranslationService.swift` | Learning-specific endpoint generation, immutable destination/model, complete-result checks and task-owned credentials/client |
 | `Services/Presentation/LearningSentencePanel.swift`, `UI/InlineFeatures/LearningSentenceCard.swift` | WPF read-only source/result panel with loading, failure, retry and cancellation |
+| `App/Core/CotabbyAppEnvironment.swift` (`learningAvailability`), `Support/Suggestion/Request/SuggestionAvailabilityEvaluator.swift` | Shared app enable/pause/battery-saver and field/terminal eligibility; learning does not inherit autocomplete's integrated-terminal opt-in |
 
 Mac paths above are relative to `Cotabby/`; named regression tests live under `CotabbyTests/` at the
 matching responsibility. Windows production paths are under `src/Cotabby.Core/LanguageLearning/`,
@@ -34,6 +36,8 @@ shortcut captures the current sentence; inference receives only that bounded lit
 the captured translation settings. There is no automatic clipboard, screenshot, draft or notebook
 context. Style is a separate preference channel and cannot change the target range. Settings and
 source changes invalidate older work, and a canceled or superseded reply cannot repopulate the card.
+Global pause and configured battery-saver pause apply to learning too. Standalone and integrated
+terminal fields remain ineligible even when autocomplete is enabled for integrated terminals.
 
 The Mac context fallback is 8,192 tokens, with hard limits of 32,768 local / 131,072 endpoint tokens,
 262,144 target UTF-8 bytes and 32,768 output tokens. The port preserves the allocation formulas,
@@ -55,6 +59,9 @@ malformed UTF-16 source because Swift strings cannot represent those invalid val
   IME capture must still be validated before claiming committed-text safety across Windows hosts.
 - WPF and Win32 replace the Mac nonactivating panel implementation. The original field, text,
   caret and focus epoch remain the capture authority; a late result cannot migrate to another field.
+  Partial rendering uses cached focus evidence plus a 400 ms off-thread UIA freshness monitor;
+  mouse-only host changes may therefore retire a provisional prefix with that polling delay. Native
+  focus and selection timing remains a host-validation requirement, not a verified guarantee.
 - The current production translation provider is a separately selected OpenAI-compatible chat endpoint,
   matching the Mac learning transport rather than adding autocomplete's completions mode.
   It has its own URL/model/settings, HTTP client and DPAPI-protected credential file. No endpoint is
@@ -64,12 +71,32 @@ malformed UTF-16 source because Swift strings cannot represent those invalid val
   reports unavailable rather than falling back or producing fake output.
 - Preview is read-only in this round. Editor replacement, notebook, dictionaries, speech and
   automatic learning triggers remain explicit gaps; they are not replaced by new product flows.
-- The Mac streaming-prefix display and bounded preview cache remain follow-up work. The current
-  slice displays a validated complete response and makes a fresh request on retry; it does not claim
-  streaming or cache parity.
-- This slice uses one explicitly configured source language. The Mac multi-source confidence-gated
-  resolver and nearby-text language detection for sentence tokenization remain deferred; Windows
-  supplies the configured source locale to ICU and does not pretend it performed language detection.
+- Streamed deltas now follow the Mac output policy: the first nonblank safe prefix publishes
+  immediately, later prefixes coalesce to at most 30 updates per second, and completion always
+  publishes a fully validated result. A prefix remains loading-only; failure, cancellation and stale
+  work remove it rather than promoting it into a usable translation.
+- Completed translations have the Mac 64-entry in-memory cache, with the same flush-all behavior
+  before the next insertion at capacity. The key retains exact source, resolved direction, effective
+  style/model/context and an opaque provider-profile scope. Translation configuration/credential or
+  owner invalidation clears cached values; ordinary typing only retires the current capture. Cache
+  hits still require current capture/settings checks before display. Partial, failed and stale work
+  never populate the cache, including a late completion after cache invalidation.
+- Enabled source choices now use the Mac ordered-set semantics, retaining the legacy singular
+  Windows setting when the new list is absent. An explicit empty list remains empty. Filtering out
+  duplicates and the target can leave one explicit source; that direction needs no recognition.
+  The Mac multi-source ranking policy is ported, but production recognition remains unavailable:
+  multiple eligible sources fail closed with an explicit message. No rank or script heuristic is
+  converted into a fabricated confidence. Windows ELS returns an ordered list rather than numeric
+  candidate scores; the researched statistical alternatives do not establish the full Mac
+  confidence/script-variant contract. This is an incomplete adaptation, not multi-source parity.
+- Nearby-text language detection for sentence tokenization remains deferred and separate from
+  translation-direction resolution. Windows supplies an explicitly configured locale to ICU;
+  it does not claim to have detected the nearby language.
+
+The recognition limitation is grounded in Microsoft's [language detection service contract](https://learn.microsoft.com/en-us/windows/win32/intl/microsoft-language-detection)
+and [result structure](https://learn.microsoft.com/en-us/windows/win32/api/elscore/ns-elscore-mapping_data_range).
+The pure resolver retains the pinned Mac thresholds and its injectable detector boundary so a
+validated local provider can replace the explicit unavailable state without changing product rules.
 
 ## Validation boundary
 

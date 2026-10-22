@@ -110,6 +110,7 @@ export DOTNET_ROOT="$PWD/.dotnet"
 export PATH="$DOTNET_ROOT:$PATH"
 dotnet --version
 dotnet test tests/Cotabby.Core.Tests/Cotabby.Core.Tests.csproj --configuration Release
+dotnet build Cotabby.sln --configuration Release -p:EnableWindowsTargeting=true
 python3 scripts/verify-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-learning-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 ```
@@ -117,6 +118,9 @@ python3 scripts/verify-learning-macos-parity.py --mac-repo /path/to/macOS-lingro
 The verifier reads the pinned macOS sources from Git and checks the same JSON cases; it does not
 build the macOS app or run a model. If `.dotnet/` is missing in a fresh checkout, install SDK
 `10.0.402` into that ignored directory so `global.json` can select it.
+The Windows-targeting build can compile the full solution, including WPF, from macOS. It does not
+run the Windows test assembly or validate a Windows desktop; execute those tests on the Windows CI
+runner. This is ordinary compilation, not packaging or a release.
 
 The current `.github/workflows/ci.yml` has two validation jobs: Windows x64 restores and builds the
 full solution, then runs Core and Inference tests, including noninteractive ICU sentence tests;
@@ -146,3 +150,7 @@ and merge it without asking for another approval. Use GPT-6 Luna with maximum re
 implementation, independent review, and test work. Continue to exclude installers, downloadable build
 artifacts and releases from routine rounds. A virtual machine is not a prerequisite for portable
 logic, WPF compile checks or fake-driven tests; native desktop behavior still needs a Windows host.
+The maintainer has also authorized continuous progress through the documented migration slices:
+after merging a validated checkpoint, continue the next applicable slice without waiting for a
+checkpoint approval or a dedicated reporting turn. Stop for a user decision only when a material
+scope choice or an external prerequisite prevents safe progress.

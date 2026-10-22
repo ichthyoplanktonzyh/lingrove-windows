@@ -67,7 +67,14 @@ public sealed class OpenAICompatibleLearningTranslationEngine : ILearningTransla
     };
 
     /// <inheritdoc />
-    public async Task<string> TranslateAsync(LearningTranslationRequest request, CancellationToken ct)
+    public Task<string> TranslateAsync(LearningTranslationRequest request, CancellationToken ct) =>
+        TranslateAsync(request, onDelta: null, ct);
+
+    /// <inheritdoc />
+    public async Task<string> TranslateAsync(
+        LearningTranslationRequest request,
+        Action<string>? onDelta,
+        CancellationToken ct)
     {
         ObjectDisposedException.ThrowIf(Volatile.Read(ref _disposed) != 0, this);
         ArgumentNullException.ThrowIfNull(request);
@@ -86,7 +93,7 @@ public sealed class OpenAICompatibleLearningTranslationEngine : ILearningTransla
             throw new LearningTranslationEndpointException(LearningTranslationEndpointFailure.CredentialUnavailable);
         }
 
-        return await _client.TranslateAsync(_configuration, request, apiKey, ct).ConfigureAwait(false);
+        return await _client.TranslateAsync(_configuration, request, apiKey, onDelta, ct).ConfigureAwait(false);
     }
 
     /// <summary>Disposes only a client created by this engine; injected clients remain caller-owned.</summary>

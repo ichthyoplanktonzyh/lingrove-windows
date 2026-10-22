@@ -29,6 +29,12 @@ public sealed record LearningPreviewState
     /// <summary>A complete validated translation, available only when <see cref="Status"/> is Ready.</summary>
     public string? Result { get; init; }
 
+    /// <summary>
+    /// A bounded, monotonic text prefix while the engine is running. It is provisional and is always
+    /// cleared on failure, cancellation, supersession, or completion; it never authorizes a write.
+    /// </summary>
+    public string? PartialResult { get; init; }
+
     /// <summary>The current request lifecycle; only Ready contains a usable result.</summary>
     public LearningPreviewStatus Status { get; init; } = LearningPreviewStatus.Idle;
 

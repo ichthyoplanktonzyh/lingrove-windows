@@ -49,7 +49,7 @@
             </StackPanel>
 
             <StackPanel x:Name="ResultSection" Margin="0,0,0,12" Visibility="Collapsed">
-                <TextBlock Text="TRANSLATION" FontSize="10" FontWeight="SemiBold"
+                <TextBlock x:Name="ResultLabel" Text="TRANSLATION" FontSize="10" FontWeight="SemiBold"
                            Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,5" />
                 <Border Padding="10" CornerRadius="7" Background="{DynamicResource InputBg}">
                     <ScrollViewer MaxHeight="160" VerticalScrollBarVisibility="Auto">

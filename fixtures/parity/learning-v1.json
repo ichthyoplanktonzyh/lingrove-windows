@@ -452,5 +452,242 @@
       "expectedText": "",
       "expectedUtf8Bytes": 0
     }
+  ],
+  "sourceLanguageScoreCases": [
+    {
+      "id": "source-score-confidence-and-margin-pass",
+      "macTest": "LearningSourceLanguageResolverTests.requiresMinimumConfidenceAndMarginAndRejectsTies",
+      "scores": [
+        {
+          "language": "zh-Hans",
+          "score": 0.75
+        },
+        {
+          "language": "en",
+          "score": 0.6
+        }
+      ],
+      "expectedLanguage": "zh-Hans"
+    },
+    {
+      "id": "source-score-below-confidence-floor-rejects",
+      "macTest": "LearningSourceLanguageResolverTests.requiresMinimumConfidenceAndMarginAndRejectsTies",
+      "scores": [
+        {
+          "language": "zh-Hans",
+          "score": 0.549
+        },
+        {
+          "language": "en",
+          "score": 0.1
+        }
+      ],
+      "expectedLanguage": null
+    },
+    {
+      "id": "source-score-below-margin-rejects",
+      "macTest": "LearningSourceLanguageResolverTests.requiresMinimumConfidenceAndMarginAndRejectsTies",
+      "scores": [
+        {
+          "language": "zh-Hans",
+          "score": 0.7
+        },
+        {
+          "language": "en",
+          "score": 0.56
+        }
+      ],
+      "expectedLanguage": null
+    },
+    {
+      "id": "source-score-tie-rejects",
+      "macTest": "LearningSourceLanguageResolverTests.requiresMinimumConfidenceAndMarginAndRejectsTies",
+      "scores": [
+        {
+          "language": "zh-Hans",
+          "score": 0.7
+        },
+        {
+          "language": "en",
+          "score": 0.7
+        }
+      ],
+      "expectedLanguage": null
+    },
+    {
+      "id": "source-score-empty-rejects",
+      "macTest": "LearningSourceLanguageResolverTests.requiresMinimumConfidenceAndMarginAndRejectsTies",
+      "scores": [],
+      "expectedLanguage": null
+    },
+    {
+      "id": "source-score-exact-confidence-floor-passes",
+      "macTest": "LearningSourceLanguageResolver.confidentLanguage minimum-confidence boundary (derived probe)",
+      "scores": [
+        {
+          "language": "en",
+          "score": 0.55
+        }
+      ],
+      "expectedLanguage": "en"
+    }
+  ],
+  "sourceLanguageResolutionCases": [
+    {
+      "id": "source-explicit-single-chinese-short-text",
+      "macTest": "LearningSourceLanguageResolverTests.shortChineseExpressionUsesTheOnlyConfiguredSource",
+      "text": "你好",
+      "enabledSourceLanguages": [
+        "zh-Hans"
+      ],
+      "targetLanguage": "en",
+      "expectedLanguage": "zh-Hans",
+      "expectedDetectorCalls": 0
+    },
+    {
+      "id": "source-explicit-single-japanese-short-text",
+      "macTest": "LearningSourceLanguageResolverTests.shortTextUsesAnExplicitlyChosenLatinOrNonLatinSource",
+      "text": "ありがとう",
+      "enabledSourceLanguages": [
+        "ja"
+      ],
+      "targetLanguage": "en",
+      "expectedLanguage": "ja",
+      "expectedDetectorCalls": 0
+    },
+    {
+      "id": "source-duplicate-choice-remains-one-explicit-source",
+      "macTest": "LearningSourceLanguageResolverTests.duplicateSourceChoicesStillResolveAsOneExplicitPreference",
+      "text": " 你好 ",
+      "enabledSourceLanguages": [
+        "zh-Hans",
+        "zh-Hans"
+      ],
+      "targetLanguage": "en",
+      "expectedLanguage": "zh-Hans",
+      "expectedDetectorCalls": 0
+    },
+    {
+      "id": "source-target-is-filtered-before-single-source-resolution",
+      "macTest": "LearningSourceLanguageResolver.resolve target-candidate filtering (derived probe)",
+      "text": "Hi",
+      "enabledSourceLanguages": [
+        "en",
+        "zh-Hans"
+      ],
+      "targetLanguage": "zh-Hans",
+      "expectedLanguage": "en",
+      "expectedDetectorCalls": 0
+    },
+    {
+      "id": "source-only-target-choice-has-no-direction",
+      "macTest": "LearningSourceLanguageResolverTests.trimsInputAndRejectsTextWithoutLettersOrAnEligibleSource",
+      "text": "hello",
+      "enabledSourceLanguages": [
+        "en"
+      ],
+      "targetLanguage": "en",
+      "expectedLanguage": null,
+      "expectedDetectorCalls": 0
+    },
+    {
+      "id": "source-empty-enabled-set-has-no-direction",
+      "macTest": "LearningSourceLanguageResolverTests.trimsInputAndRejectsTextWithoutLettersOrAnEligibleSource",
+      "text": "hello",
+      "enabledSourceLanguages": [],
+      "targetLanguage": "en",
+      "expectedLanguage": null,
+      "expectedDetectorCalls": 0
+    },
+    {
+      "id": "source-whitespace-is-rejected-before-detection",
+      "macTest": "LearningSourceLanguageResolverTests.trimsInputAndRejectsTextWithoutLettersOrAnEligibleSource",
+      "text": "  \n\t  ",
+      "enabledSourceLanguages": [
+        "zh-Hans"
+      ],
+      "targetLanguage": "en",
+      "expectedLanguage": null,
+      "expectedDetectorCalls": 0
+    },
+    {
+      "id": "source-digits-and-punctuation-have-no-language",
+      "macTest": "LearningSourceLanguageResolverTests.trimsInputAndRejectsTextWithoutLettersOrAnEligibleSource",
+      "text": "123 !!!",
+      "enabledSourceLanguages": [
+        "zh-Hans"
+      ],
+      "targetLanguage": "en",
+      "expectedLanguage": null,
+      "expectedDetectorCalls": 0
+    }
+  ],
+  "streamAppendCases": [
+    {
+      "id": "stream-whitespace-prefix-and-then-readable-text",
+      "macTest": "LearningExpressionOutputPolicyTests.streamedPrefixesSkipWhitespaceAndPreserveWordBoundaries",
+      "chunks": [
+        " \n",
+        "Hello ",
+        "世界",
+        ".\nSecond line."
+      ],
+      "expectedPrefixes": [
+        null,
+        "Hello",
+        "Hello 世界",
+        "Hello 世界.\nSecond line."
+      ],
+      "expectedFailureAt": null
+    },
+    {
+      "id": "stream-rejects-control-before-publishing-corrupt-prefix",
+      "macTest": "LearningExpressionOutputPolicyTests.streamRejectsCorruptionAndBoundsAccumulatedUtf8BeforeDisplay",
+      "chunks": [
+        "Hello",
+        "\u0000world"
+      ],
+      "expectedPrefixes": [
+        "Hello",
+        null
+      ],
+      "expectedFailureAt": 1
+    },
+    {
+      "id": "stream-rejects-replacement-character-before-display",
+      "macTest": "LearningExpressionOutputPolicyTests.rejectsUnsafeCharactersBeforePresentation (derived stream probe)",
+      "chunks": [
+        "Hello",
+        "� world"
+      ],
+      "expectedPrefixes": [
+        "Hello",
+        null
+      ],
+      "expectedFailureAt": 1
+    },
+    {
+      "id": "stream-accepts-cap-and-rejects-first-byte-over",
+      "macTest": "LearningExpressionOutputPolicyTests.streamRejectsCorruptionAndBoundsAccumulatedUtf8BeforeDisplay (derived byte-boundary probe)",
+      "chunks": [
+        {
+          "repeat": {
+            "text": "a",
+            "count": 12000
+          }
+        },
+        "b"
+      ],
+      "expectedPrefixes": [
+        {
+          "repeat": {
+            "text": "a",
+            "count": 12000
+          }
+        },
+        null
+      ],
+      "expectedFailureAt": 1
+    }
   ]
 }

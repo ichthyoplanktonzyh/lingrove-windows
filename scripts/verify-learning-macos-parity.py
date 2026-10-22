@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Run the learning behavior corpus against pure Swift from the pinned macOS commit.
 
-The verifier compiles the actual style, language, prompt, budget, and output-policy declarations
-read with `git show`. Small DTO/error stubs only replace unrelated app-owned dependencies; the rules
-under test remain the committed macOS source. It never builds the app, loads a model, makes a network
-request, or connects to an editor.
+The verifier compiles the actual style, language, prompt, source-language ranking, budget, and output-
+policy declarations read with `git show`. Small DTO/error stubs only replace unrelated app-owned
+dependencies; the rules under test remain the committed macOS source. It never builds the app, loads
+a model, makes a network request, or connects to an editor.
 """
 
 import argparse
@@ -25,6 +25,7 @@ SOURCES = (
     "Cotabby/Support/LanguageLearning/LearningTranslationPrompt.swift",
     "Cotabby/Support/LanguageLearning/LearningTranslationBudget.swift",
     "Cotabby/Support/LanguageLearning/LearningExpressionOutputPolicy.swift",
+    "Cotabby/Support/LanguageLearning/LearningSourceLanguageResolver.swift",
     "Cotabby/Support/Suggestion/Acceptance/InsertionSafetyGate.swift",
 )
 STYLE_SOURCE = "Cotabby/Models/LanguageLearning/LearningGenerationProfile.swift"
@@ -108,6 +109,10 @@ func text(_ value: Any) -> String {
     }
     if let parts = object["concat"] as? [Any] { return parts.map(text).joined() }
     fatalError("unknown text spec")
+}
+
+func optionalText(_ value: Any) -> String? {
+    value is NSNull ? nil : text(value)
 }
 
 func register(_ name: String) -> LearningTranslationStyle.Register {
@@ -279,6 +284,65 @@ for row in corpus["outputValidation"] as! [[String: Any]] {
     }
 }
 
+for row in corpus["sourceLanguageScoreCases"] as! [[String: Any]] {
+    let id = string(row, "id")
+    var scores = [LearningLanguage: Double]()
+    for score in row["scores"] as! [[String: Any]] {
+        guard let value = score["score"] as? Double else { fatalError("missing score value") }
+        scores[language(string(score, "language"))] = value
+    }
+    let actual = LearningSourceLanguageResolver.confidentLanguage(from: scores)?.rawValue
+    let expected = row["expectedLanguage"] as? String
+    check(actual == expected, id: id, detail: "actual confident language \(String(describing: actual))")
+}
+
+let sourceResolver = LearningSourceLanguageResolver()
+for row in corpus["sourceLanguageResolutionCases"] as! [[String: Any]] {
+    let id = string(row, "id")
+    let source = string(row, "text")
+    let enabled = (row["enabledSourceLanguages"] as! [String]).map(language)
+    let target = language(string(row, "targetLanguage"))
+
+    // These shared cases cover the resolver's deterministic empty/single-source branches. Keep
+    // multi-source recognition out of the corpus: NLModel probabilities vary by OS release.
+    var seen = Set<LearningLanguage>()
+    let candidates = enabled.filter { $0 != target && seen.insert($0).inserted }
+    if candidates.count > 1 {
+        fatalError("source resolution fixtures must bypass NaturalLanguage recognition")
+    }
+    let actual = sourceResolver.resolve(
+        text: source, enabledSourceLanguages: enabled, targetLanguage: target)?.rawValue
+    check(actual == (row["expectedLanguage"] as? String),
+          id: id, detail: "actual explicit source resolution \(String(describing: actual))")
+}
+
+for row in corpus["streamAppendCases"] as! [[String: Any]] {
+    let id = string(row, "id")
+    let chunks = row["chunks"] as! [Any]
+    let expectedPrefixes = row["expectedPrefixes"] as! [Any]
+    let expectedFailureAt = row["expectedFailureAt"] as? Int
+    guard chunks.count == expectedPrefixes.count else { fatalError("stream fixture chunk/prefix counts differ") }
+    var stream = LearningExpressionOutputPolicy.Stream()
+    var failureAt: Int?
+    for index in chunks.indices {
+        do {
+            let actual = try stream.append(text(chunks[index]))
+            if expectedFailureAt == index {
+                check(false, id: id, detail: "expected invalid streamed output rejection")
+                continue
+            }
+            check(actual == optionalText(expectedPrefixes[index]),
+                  id: "\(id)-prefix-\(index)", detail: "stream prefix differed")
+        } catch {
+            failureAt = index
+            check(expectedFailureAt == index,
+                  id: id, detail: "unexpected stream rejection at chunk \(index): \(error)")
+            break
+        }
+    }
+    check(failureAt == expectedFailureAt, id: id, detail: "stream rejection occurred at the wrong chunk")
+}
+
 if !failures.isEmpty {
     failures.forEach { print("FAIL: \($0)") }
     exit(1)
@@ -305,7 +369,8 @@ def main() -> None:
 
     categories = (
         "styleCases", "styleBounds", "tokenEstimates", "inputAllowances", "outputReservations",
-        "promptCases", "promptBudgets", "outputValidation",
+        "promptCases", "promptBudgets", "outputValidation", "sourceLanguageScoreCases",
+        "sourceLanguageResolutionCases", "streamAppendCases",
     )
     ids: set[str] = set()
     for group in categories:

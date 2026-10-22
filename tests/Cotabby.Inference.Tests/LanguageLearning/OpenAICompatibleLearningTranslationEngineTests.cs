@@ -9,6 +9,8 @@ namespace Cotabby.Inference.Tests.LanguageLearning;
 
 public sealed class OpenAICompatibleLearningTranslationEngineTests
 {
+    private static readonly TimeSpan TestTimeout = TimeSpan.FromSeconds(5);
+
     [Fact]
     public async Task ChatCompletion_SendsOnlyTheFrozenConfirmedSentencePrompt()
     {
@@ -22,15 +24,15 @@ public sealed class OpenAICompatibleLearningTranslationEngineTests
             "req-learning-1",
             confirmedSentence,
             new LearningTranslationOptions { ModelName = "local-translator", ContextTokens = 4_096 });
-        handler.RespondWith(Sse(ChatChunk("Por favor, cierra la ventana antes de irte.", "stop")));
+        handler.RespondWith(Json(CompletedResponse("Por favor, cierra la ventana antes de irte.", "stop")));
 
-        var translated = await engine.TranslateAsync(request, CancellationToken.None);
+        var translated = await engine.TranslateAsync(request, CancellationToken.None).WaitAsync(TestTimeout);
 
         Assert.Equal("Por favor, cierra la ventana antes de irte.", translated);
         var sent = Assert.Single(handler.Requests);
         Assert.Equal("POST", sent.Method);
         Assert.Equal("http://127.0.0.1:11434/v1/chat/completions", sent.Url);
-        Assert.Equal("text/event-stream", sent.Accept);
+        Assert.Null(sent.Accept);
         Assert.Equal("application/json", sent.ContentType);
         Assert.Null(sent.Authorization);
         Assert.Equal("local-translator", sent.Json.GetProperty("model").GetString());
@@ -40,7 +42,7 @@ public sealed class OpenAICompatibleLearningTranslationEngineTests
         Assert.False(sent.Body.Contains("later paragraph", StringComparison.Ordinal));
         Assert.False(sent.Json.TryGetProperty("source", out _));
         Assert.DoesNotContain("Continue the text", sent.Body, StringComparison.Ordinal);
-        Assert.True(sent.Json.GetProperty("stream").GetBoolean());
+        Assert.False(sent.Json.GetProperty("stream").GetBoolean());
     }
 
     [Fact]
@@ -72,10 +74,12 @@ public sealed class OpenAICompatibleLearningTranslationEngineTests
         var sampling = new LearningInstructionSampling(0.73, 0.61, 19, 1.2);
         var request = MakeRequest(promptText: prompt, userOnly: false, sampling: sampling, maxOutputTokens: 1_234);
         handler.RespondWith(Sse(ChatChunk("Ya pagamos.", null) + "\n" + ChatChunk(null, "stop")));
+        var deltas = new List<string>();
 
-        var translated = await engine.TranslateAsync(request, CancellationToken.None);
+        var translated = await engine.TranslateAsync(request, deltas.Add, CancellationToken.None).WaitAsync(TestTimeout);
 
         Assert.Equal("Ya pagamos.", translated);
+        Assert.Equal(["Ya pagamos."], deltas);
         var json = Assert.Single(handler.Requests).Json;
         Assert.Equal("http://127.0.0.1:11434/v1/chat/completions", handler.Requests[0].Url);
         Assert.Equal("local-translator", json.GetProperty("model").GetString());
@@ -97,15 +101,152 @@ public sealed class OpenAICompatibleLearningTranslationEngineTests
     }
 
     [Fact]
+    public async Task StreamingReportsRawDeltasBeforeReturningTheFinalTranslation()
+    {
+        using var handler = new LearningEndpointHandler();
+        using var http = new HttpClient(handler, disposeHandler: false) { Timeout = Timeout.InfiniteTimeSpan };
+        using var engine = Engine(handler, http);
+        using var stream = new TwoPartGatedReadStream(
+            Encoding.UTF8.GetBytes(ChatChunk("Buenas", null)),
+            Encoding.UTF8.GetBytes("\n" + ChatChunk(" tardes.", null) + "\n" + ChatChunk(null, "stop")));
+        handler.Responder = (_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StreamContent(stream),
+        });
+        var events = new List<string>();
+        var firstDelta = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        var generation = engine.TranslateAsync(MakeRequest(), delta =>
+        {
+            events.Add("delta:" + delta);
+            firstDelta.TrySetResult();
+        }, CancellationToken.None);
+
+        try
+        {
+            await firstDelta.Task.WaitAsync(TestTimeout);
+            Assert.Equal(["delta:Buenas"], events);
+            Assert.False(generation.IsCompleted);
+            stream.ReleaseRemaining();
+
+            var final = await generation.WaitAsync(TestTimeout);
+            events.Add("final:" + final);
+
+            Assert.Equal("Buenas tardes.", final);
+            Assert.Equal(["delta:Buenas", "delta: tardes.", "final:Buenas tardes."], events);
+        }
+        finally
+        {
+            stream.ReleaseRemaining();
+            await DrainWithinTimeoutAsync(generation);
+        }
+    }
+
+    [Fact]
+    public async Task CallbackFailureAfterADelta_PropagatesAndStopsTheStream()
+    {
+        using var handler = new LearningEndpointHandler();
+        using var http = new HttpClient(handler, disposeHandler: false) { Timeout = Timeout.InfiniteTimeSpan };
+        using var engine = Engine(handler, http);
+        handler.RespondWith(Sse(
+            ChatChunk("partial", null) + "\n" +
+            ChatChunk(" that must not be consumed", null) + "\n" +
+            ChatChunk(null, "stop")));
+        var callbackFailure = new LearningTranslationException(LearningTranslationFailure.ProviderFailure);
+        var received = new List<string>();
+
+        var thrown = await Assert.ThrowsAsync<LearningTranslationException>(() => engine.TranslateAsync(
+            MakeRequest(),
+            delta =>
+            {
+                received.Add(delta);
+                throw callbackFailure;
+            },
+            CancellationToken.None).WaitAsync(TestTimeout));
+
+        Assert.Same(callbackFailure, thrown);
+        Assert.Equal(["partial"], received);
+    }
+
+    [Fact]
+    public async Task CancellationAfterADelta_PropagatesAndDoesNotCompleteTheTranslation()
+    {
+        using var handler = new LearningEndpointHandler();
+        using var http = new HttpClient(handler, disposeHandler: false) { Timeout = Timeout.InfiniteTimeSpan };
+        using var engine = Engine(handler, http);
+        using var cancellation = new CancellationTokenSource();
+        handler.RespondWith(Sse(
+            ChatChunk("partial", null) + "\n" +
+            ChatChunk(" that must not be consumed", null) + "\n" +
+            ChatChunk(null, "stop")));
+        var received = new List<string>();
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => engine.TranslateAsync(
+            MakeRequest(),
+            delta =>
+            {
+                received.Add(delta);
+                cancellation.Cancel();
+            },
+            cancellation.Token).WaitAsync(TestTimeout));
+
+        Assert.Equal(["partial"], received);
+    }
+
+    [Fact]
+    public async Task MalformedSseAfterADelta_ReportsFailureWithoutReturningPartialText()
+    {
+        using var handler = new LearningEndpointHandler();
+        using var http = new HttpClient(handler, disposeHandler: false) { Timeout = Timeout.InfiniteTimeSpan };
+        using var engine = Engine(handler, http);
+        handler.RespondWith(Sse(ChatChunk("read-only partial", null) + "\n" + "data: {\"choices\":[\n"));
+        var received = new List<string>();
+
+        var error = await Assert.ThrowsAsync<LearningTranslationEndpointException>(() => engine.TranslateAsync(
+            MakeRequest(), received.Add, CancellationToken.None).WaitAsync(TestTimeout));
+
+        Assert.Equal(LearningTranslationEndpointFailure.InvalidResponse, error.EndpointFailure);
+        Assert.Equal(["read-only partial"], received);
+        Assert.DoesNotContain("read-only partial", error.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task InvalidUtf8SseLine_IsRejectedBeforePublishingADelta()
+    {
+        using var handler = new LearningEndpointHandler();
+        using var http = new HttpClient(handler, disposeHandler: false) { Timeout = Timeout.InfiniteTimeSpan };
+        using var engine = Engine(handler, http);
+        var prefix = Encoding.UTF8.GetBytes("data: {\"choices\":[{\"delta\":{\"content\":\"");
+        var suffix = Encoding.UTF8.GetBytes("\"}}]}\n");
+        var body = new byte[prefix.Length + 2 + suffix.Length];
+        Buffer.BlockCopy(prefix, 0, body, 0, prefix.Length);
+        body[prefix.Length] = 0xC3;
+        body[prefix.Length + 1] = 0x28;
+        Buffer.BlockCopy(suffix, 0, body, prefix.Length + 2, suffix.Length);
+        handler.RespondWith(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new ByteArrayContent(body),
+        });
+        var received = new List<string>();
+
+        var error = await Assert.ThrowsAsync<LearningTranslationEndpointException>(() => engine.TranslateAsync(
+            MakeRequest(), received.Add, CancellationToken.None).WaitAsync(TestTimeout));
+
+        Assert.Equal(LearningTranslationEndpointFailure.InvalidResponse, error.EndpointFailure);
+        Assert.Empty(received);
+    }
+
+    [Fact]
     public async Task SpecialistChatPrompt_IsUserOnlyAndIsNotWrappedInAutocompleteText()
     {
         using var handler = new LearningEndpointHandler();
         using var http = new HttpClient(handler, disposeHandler: false) { Timeout = Timeout.InfiniteTimeSpan };
         using var engine = Engine(handler, http);
         const string prompt = "Specialist translation format\n\nExact source sentence.";
-        handler.RespondWith(Sse(ChatChunk("Traducción completa.", "stop")));
+        handler.RespondWith(Json(CompletedResponse("Traducción completa.", "stop")));
 
-        await engine.TranslateAsync(MakeRequest(promptText: prompt, userOnly: true), CancellationToken.None);
+        await engine.TranslateAsync(MakeRequest(promptText: prompt, userOnly: true), CancellationToken.None)
+            .WaitAsync(TestTimeout);
 
         var json = Assert.Single(handler.Requests).Json;
         var messages = json.GetProperty("messages");
@@ -122,13 +263,12 @@ public sealed class OpenAICompatibleLearningTranslationEngineTests
         using var http = new HttpClient(handler, disposeHandler: false) { Timeout = Timeout.InfiniteTimeSpan };
         using var first = Engine(handler, http, "model-one", "https://one.example/v1", "first-secret");
         using var second = Engine(handler, http, "model-two", "http://192.168.1.5:8000/v1", "second-secret");
-        handler.Responder = (request, _) => Task.FromResult(Sse(
-            request.Url.Contains("one.example", StringComparison.Ordinal)
-                ? ChatChunk("first", "stop")
-                : ChatChunk("second", "stop")));
+        handler.Responder = (request, _) => Task.FromResult(Json(CompletedResponse(
+            request.Url.Contains("one.example", StringComparison.Ordinal) ? "first" : "second",
+            "stop")));
 
-        Assert.Equal("first", await first.TranslateAsync(MakeRequest(model: "model-one"), CancellationToken.None));
-        Assert.Equal("second", await second.TranslateAsync(MakeRequest(model: "model-two"), CancellationToken.None));
+        Assert.Equal("first", await first.TranslateAsync(MakeRequest(model: "model-one"), CancellationToken.None).WaitAsync(TestTimeout));
+        Assert.Equal("second", await second.TranslateAsync(MakeRequest(model: "model-two"), CancellationToken.None).WaitAsync(TestTimeout));
 
         Assert.Equal("https://one.example/v1/chat/completions", handler.Requests[0].Url);
         Assert.Equal("Bearer first-secret", handler.Requests[0].Authorization);
@@ -148,7 +288,7 @@ public sealed class OpenAICompatibleLearningTranslationEngineTests
             Configuration("model-one"), credentials, http);
 
         var error = await Assert.ThrowsAsync<LearningTranslationEndpointException>(
-            () => engine.TranslateAsync(MakeRequest(model: "model-two"), CancellationToken.None));
+            () => engine.TranslateAsync(MakeRequest(model: "model-two"), CancellationToken.None).WaitAsync(TestTimeout));
 
         Assert.Equal(LearningTranslationEndpointFailure.ModelMismatch, error.EndpointFailure);
         Assert.Equal(LearningTranslationFailure.ProviderFailure, error.Failure);
@@ -166,13 +306,13 @@ public sealed class OpenAICompatibleLearningTranslationEngineTests
         handler.RespondWith(_ => new HttpResponseMessage(HttpStatusCode.NoContent));
 
         engine.Dispose();
-        using var response = await http.GetAsync("http://127.0.0.1/health");
+        using var response = await http.GetAsync("http://127.0.0.1/health").WaitAsync(TestTimeout);
 
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
     }
 
     [Fact]
-    public async Task CancellationWhileReadingTheStream_PropagatesWithoutReturningPartialText()
+    public async Task CancellationWhileReadingTheNonStreamingResponse_PropagatesWithoutReturningText()
     {
         using var stream = new BlockingReadStream();
         using var handler = new LearningEndpointHandler();
@@ -185,10 +325,37 @@ public sealed class OpenAICompatibleLearningTranslationEngineTests
         using var cancellation = new CancellationTokenSource();
 
         var generation = engine.TranslateAsync(MakeRequest(), cancellation.Token);
-        await stream.ReadStarted.Task.WaitAsync(TimeSpan.FromSeconds(5));
-        cancellation.Cancel();
+        try
+        {
+            await stream.ReadStarted.Task.WaitAsync(TestTimeout);
+            cancellation.Cancel();
 
-        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => generation);
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => generation.WaitAsync(TestTimeout));
+        }
+        finally
+        {
+            cancellation.Cancel();
+            stream.Release();
+            await DrainWithinTimeoutAsync(generation);
+        }
+    }
+
+    [Fact]
+    public async Task OversizedNonStreamingResponse_IsRejectedWhileReadingBoundedBody()
+    {
+        using var stream = new RepeatingReadStream((4 * 1024 * 1024) + 1);
+        using var handler = new LearningEndpointHandler();
+        handler.Responder = (_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StreamContent(stream),
+        });
+        using var http = new HttpClient(handler, disposeHandler: false) { Timeout = Timeout.InfiniteTimeSpan };
+        using var engine = Engine(handler, http);
+
+        var error = await Assert.ThrowsAsync<LearningTranslationEndpointException>(
+            () => engine.TranslateAsync(MakeRequest(), CancellationToken.None).WaitAsync(TestTimeout));
+
+        Assert.Equal(LearningTranslationEndpointFailure.ResponseTooLarge, error.EndpointFailure);
     }
 
     [Fact]
@@ -200,7 +367,7 @@ public sealed class OpenAICompatibleLearningTranslationEngineTests
         handler.RespondWith(Sse("data: " + new string('x', 300_000) + "\n"));
 
         var error = await Assert.ThrowsAsync<LearningTranslationEndpointException>(
-            () => engine.TranslateAsync(MakeRequest(), CancellationToken.None));
+            () => engine.TranslateAsync(MakeRequest(), static _ => { }, CancellationToken.None).WaitAsync(TestTimeout));
 
         Assert.Equal(LearningTranslationEndpointFailure.ResponseTooLarge, error.EndpointFailure);
     }
@@ -216,7 +383,7 @@ public sealed class OpenAICompatibleLearningTranslationEngineTests
         var request = MakeRequest(promptText: new string('x', 340_001));
 
         var error = await Assert.ThrowsAsync<LearningTranslationEndpointException>(
-            () => engine.TranslateAsync(request, CancellationToken.None));
+            () => engine.TranslateAsync(request, CancellationToken.None).WaitAsync(TestTimeout));
 
         Assert.Equal(LearningTranslationEndpointFailure.InvalidRequest, error.EndpointFailure);
         Assert.Equal(0, credentials.ReadCount);
@@ -230,11 +397,13 @@ public sealed class OpenAICompatibleLearningTranslationEngineTests
         using var http = new HttpClient(handler, disposeHandler: false) { Timeout = Timeout.InfiniteTimeSpan };
         using var engine = Engine(handler, http);
         handler.RespondWith(Sse(ChatChunk(new string('x', LearningExpressionOutputPolicy.MaximumOutputBytes + 1), "stop")));
+        var received = new List<string>();
 
         var error = await Assert.ThrowsAsync<LearningTranslationEndpointException>(
-            () => engine.TranslateAsync(MakeRequest(), CancellationToken.None));
+            () => engine.TranslateAsync(MakeRequest(), received.Add, CancellationToken.None).WaitAsync(TestTimeout));
 
         Assert.Equal(LearningTranslationEndpointFailure.ResponseTooLarge, error.EndpointFailure);
+        Assert.Empty(received);
     }
 
     [Fact]
@@ -254,7 +423,7 @@ public sealed class OpenAICompatibleLearningTranslationEngineTests
         };
 
         var error = await Assert.ThrowsAsync<LearningTranslationEndpointException>(
-            () => engine.TranslateAsync(MakeRequest(), CancellationToken.None));
+            () => engine.TranslateAsync(MakeRequest(), CancellationToken.None).WaitAsync(TestTimeout));
 
         Assert.Equal(LearningTranslationEndpointFailure.RedirectRejected, error.EndpointFailure);
         Assert.Single(handler.Requests);
@@ -282,7 +451,7 @@ public sealed class OpenAICompatibleLearningTranslationEngineTests
         }
 
         var error = await Assert.ThrowsAsync<LearningTranslationEndpointException>(
-            () => engine.TranslateAsync(MakeRequest(), CancellationToken.None));
+            () => engine.TranslateAsync(MakeRequest(), static _ => { }, CancellationToken.None).WaitAsync(TestTimeout));
 
         Assert.Equal(LearningTranslationFailure.ProviderFailure, error.Failure);
         Assert.Equal(new LearningTranslationException(LearningTranslationFailure.ProviderFailure).Message, error.Message);
@@ -297,20 +466,38 @@ public sealed class OpenAICompatibleLearningTranslationEngineTests
         using var handler = new LearningEndpointHandler();
         using var http = new HttpClient(handler, disposeHandler: false) { Timeout = Timeout.InfiniteTimeSpan };
         using var engine = Engine(handler, http);
-        handler.RespondWith(Sse(ChatChunk("Part of a translation", "length")));
+        handler.RespondWith(Sse(ChatChunk("Part of a translation", null) + "\n" + ChatChunk(null, "length")));
+        var deltas = new List<string>();
 
         var error = await Assert.ThrowsAsync<LearningTranslationEndpointException>(
-            () => engine.TranslateAsync(MakeRequest(), CancellationToken.None));
+            () => engine.TranslateAsync(MakeRequest(), deltas.Add, CancellationToken.None).WaitAsync(TestTimeout));
 
         Assert.Equal(LearningTranslationEndpointFailure.IncompleteResponse, error.EndpointFailure);
+        Assert.Equal(["Part of a translation"], deltas);
         Assert.DoesNotContain("Part of a translation", error.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task NonStreamingLengthFinishReason_IsRejectedAsIncompleteTranslation()
+    {
+        using var handler = new LearningEndpointHandler();
+        using var http = new HttpClient(handler, disposeHandler: false) { Timeout = Timeout.InfiniteTimeSpan };
+        using var engine = Engine(handler, http);
+        handler.RespondWith(Json(CompletedResponse("Only part of the translation", "length")));
+
+        var error = await Assert.ThrowsAsync<LearningTranslationEndpointException>(
+            () => engine.TranslateAsync(MakeRequest(), CancellationToken.None).WaitAsync(TestTimeout));
+
+        Assert.Equal(LearningTranslationEndpointFailure.IncompleteResponse, error.EndpointFailure);
+        Assert.DoesNotContain("Only part of the translation", error.Message, StringComparison.Ordinal);
     }
 
     [Fact]
     public async Task UnavailableProvider_ReportsNotConfiguredInsteadOfInventingTranslationText()
     {
         var error = await Assert.ThrowsAsync<LearningTranslationEndpointException>(
-            () => UnavailableLearningTranslationEngine.Instance.TranslateAsync(MakeRequest(), CancellationToken.None));
+            () => UnavailableLearningTranslationEngine.Instance.TranslateAsync(MakeRequest(), CancellationToken.None)
+                .WaitAsync(TestTimeout));
 
         Assert.Equal(LearningTranslationEndpointFailure.NotConfigured, error.EndpointFailure);
         Assert.Equal(LearningTranslationFailure.ProviderNotConfigured, error.Failure);
@@ -375,10 +562,40 @@ public sealed class OpenAICompatibleLearningTranslationEngineTests
         Content = new StringContent(data, Encoding.UTF8, "text/event-stream"),
     };
 
+    private static HttpResponseMessage Json(string data) => new(HttpStatusCode.OK)
+    {
+        Content = new StringContent(data, Encoding.UTF8, "application/json"),
+    };
+
+    private static string CompletedResponse(string? content, string? finishReason) =>
+        JsonSerializer.Serialize(new
+        {
+            choices = new[]
+            {
+                new
+                {
+                    message = new { content },
+                    finish_reason = finishReason,
+                },
+            },
+        });
+
     private static string ChatChunk(string? content, string? finishReason)
     {
         var delta = content is null ? "" : $"\"delta\":{{\"content\":{JsonSerializer.Serialize(content)}}},";
         return $"data: {{\"choices\":[{{{delta}\"finish_reason\":{JsonSerializer.Serialize(finishReason)}}}]}}\n";
+    }
+
+    private static async Task DrainWithinTimeoutAsync(Task task)
+    {
+        try
+        {
+            await task.WaitAsync(TestTimeout);
+        }
+        catch (Exception)
+        {
+            // Cleanup must not hide the assertion already being reported by the test body.
+        }
     }
 
 }
@@ -440,7 +657,11 @@ internal sealed class RecordingCredentials(string? apiKey) : IOpenAICompatibleCr
 
 internal sealed class BlockingReadStream : Stream
 {
+    private readonly TaskCompletionSource _release = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
     public TaskCompletionSource ReadStarted { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+    public void Release() => _release.TrySetResult();
 
     public override bool CanRead => true;
     public override bool CanSeek => false;
@@ -457,7 +678,91 @@ internal sealed class BlockingReadStream : Stream
     public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
     {
         ReadStarted.TrySetResult();
-        await Task.Delay(Timeout.InfiniteTimeSpan, cancellationToken).ConfigureAwait(false);
+        await _release.Task.WaitAsync(cancellationToken).ConfigureAwait(false);
         return 0;
+    }
+}
+
+/// <summary>Emits a bounded number of bytes without buffering the entire fake response in a test.</summary>
+internal sealed class RepeatingReadStream(long remaining) : Stream
+{
+    private long _remaining = remaining;
+
+    public override bool CanRead => true;
+    public override bool CanSeek => false;
+    public override bool CanWrite => false;
+    public override long Length => throw new NotSupportedException();
+    public override long Position { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
+
+    public override int Read(byte[] buffer, int offset, int count)
+    {
+        var copied = (int)Math.Min(count, _remaining);
+        Array.Fill(buffer, (byte)'x', offset, copied);
+        _remaining -= copied;
+        return copied;
+    }
+
+    public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        var copied = (int)Math.Min(buffer.Length, _remaining);
+        buffer.Span[..copied].Fill((byte)'x');
+        _remaining -= copied;
+        return ValueTask.FromResult(copied);
+    }
+
+    public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+    public override void SetLength(long value) => throw new NotSupportedException();
+    public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+    public override void Flush() => throw new NotSupportedException();
+}
+
+/// <summary>Pauses after the first SSE event so a test can observe a delta before EOF arrives.</summary>
+internal sealed class TwoPartGatedReadStream(byte[] first, byte[] remaining) : Stream
+{
+    private readonly TaskCompletionSource _release = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    private int _stage;
+    private int _firstOffset;
+    private int _remainingOffset;
+
+    public override bool CanRead => true;
+    public override bool CanSeek => false;
+    public override bool CanWrite => false;
+    public override long Length => throw new NotSupportedException();
+    public override long Position { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
+
+    public void ReleaseRemaining() => _release.TrySetResult();
+
+    public override int Read(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+
+    public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+    {
+        if (_stage == 0)
+        {
+            var copied = Copy(first, ref _firstOffset, buffer);
+            if (_firstOffset == first.Length) _stage = 1;
+            return copied;
+        }
+
+        if (_stage == 1)
+        {
+            await _release.Task.WaitAsync(cancellationToken).ConfigureAwait(false);
+            _stage = 2;
+        }
+
+        return Copy(remaining, ref _remainingOffset, buffer);
+    }
+
+    public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+    public override void SetLength(long value) => throw new NotSupportedException();
+    public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+    public override void Flush() => throw new NotSupportedException();
+
+    private static int Copy(byte[] source, ref int sourceOffset, Memory<byte> destination)
+    {
+        var count = Math.Min(destination.Length, source.Length - sourceOffset);
+        source.AsMemory(sourceOffset, count).CopyTo(destination);
+        sourceOffset += count;
+        return count;
     }
 }

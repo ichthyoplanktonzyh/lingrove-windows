@@ -1,4 +1,6 @@
 using System.Net.Http;
+using System.Security.Cryptography;
+using System.Text;
 using System.Windows.Threading;
 using Cotabby.App.Settings;
 using Cotabby.App.UI.Controls;
@@ -29,18 +31,24 @@ internal sealed class LearningPreviewController : IAsyncDisposable
     private const string SecureFieldMessage = "Sentence translation is unavailable in secure fields.";
     private const string OwnFieldMessage = "Cotabby does not translate text from its own windows.";
     private const string BlockedAppMessage = "Sentence translation is disabled in this app.";
+    private const string TerminalFieldMessage = "Sentence translation is unavailable in terminal apps.";
     private const string SelectedTextMessage = "Collapse the text selection and leave the caret in the sentence you want to translate.";
     private const string IncompleteTextMessage = "The editor did not expose the complete field text, so the current sentence cannot be verified.";
     private const string UnreliableSelectionMessage = "The editor did not expose a reliable caret position for this sentence.";
     private const string UnsupportedFieldMessage = "Focus a supported text field and try the sentence shortcut again.";
     private const string ChangedFieldMessage = "The sentence changed before its preview could open. Try again.";
     private const string SameLanguageMessage = "Choose different source and target languages in Learning settings.";
+    private const string NoSourceLanguageMessage = "Select at least one source language in Learning settings.";
+    private const string MultiSourceDetectorUnavailableMessage = "Choose one source language to translate. Multiple-language detection is not available on this Windows build.";
+    private const string UncertainSourceLanguageMessage = "The source language is uncertain. Choose one source language or select a clearer sentence.";
 
     private readonly IKeyboardHook _hook;
     private readonly IFocusTracker _focus;
     private readonly Dispatcher _dispatcher;
     private readonly LearningPreviewCoordinator _coordinator = new();
     private readonly ILearningSentenceTokenizer _sentenceTokenizer;
+    private readonly ILearningLanguageDetector? _languageDetector;
+    private readonly Func<bool> _batterySaverOn;
     private readonly HttpClient _learningHttpClient;
     private readonly IOpenAICompatibleCredentialStore _credentials;
     private readonly ILogger<LearningPreviewController> _logger;
@@ -51,6 +59,8 @@ internal sealed class LearningPreviewController : IAsyncDisposable
     private CapturedSentence? _activeCapture;
     private CaptureOrigin? _pendingOrigin;
     private string? _activeRequestId;
+    private LearningPreviewState? _pendingLoadingState;
+    private bool _loadingStateDispatchQueued;
     private bool _intentActive;
     private bool _disposed;
     private long _intentGeneration;
@@ -63,12 +73,16 @@ internal sealed class LearningPreviewController : IAsyncDisposable
         ILearningSentenceTokenizer sentenceTokenizer,
         HttpClient learningHttpClient,
         IOpenAICompatibleCredentialStore credentials,
-        ILogger<LearningPreviewController> logger)
+        ILogger<LearningPreviewController> logger,
+        ILearningLanguageDetector? languageDetector = null,
+        Func<bool>? batterySaverOn = null)
     {
         _hook = hook;
         _focus = focus;
         _dispatcher = dispatcher;
         _sentenceTokenizer = sentenceTokenizer;
+        _languageDetector = languageDetector;
+        _batterySaverOn = batterySaverOn ?? (() => false);
         _learningHttpClient = learningHttpClient;
         _credentials = credentials;
         _logger = logger;
@@ -100,10 +114,31 @@ internal sealed class LearningPreviewController : IAsyncDisposable
 
         if (previous is not null && !previous.HasSameTranslationInputs(next))
         {
-            // Shortcut edits only change how a later request starts. Changing prompt direction,
-            // provider consent, endpoint, credential, style or budget retires the current preview.
+            // Mac drops translation cache entries when the meaning-bearing profile changes. Clear
+            // first so an in-flight completion from the retired profile cannot repopulate it.
+            _coordinator.ClearCache();
+            // Shortcut edits only change how a later request starts. Source choices, prompt
+            // direction, provider consent, endpoint, credential, style and budget retire work.
             CancelAndHide();
         }
+    }
+
+    /// <summary>
+    /// Applies the shared battery-saver pause when Windows reports a power-status change. The
+    /// active capture monitor checks the same condition every 400 ms if no status event is raised.
+    /// </summary>
+    public void PowerStatusChanged()
+    {
+        if (!_dispatcher.CheckAccess())
+        {
+            _dispatcher.BeginInvoke(PowerStatusChanged);
+            return;
+        }
+
+        var settings = Volatile.Read(ref _settings);
+        if (settings is null || !IsBatterySaverPauseActive(settings)) return;
+        _coordinator.ClearCache();
+        CancelAndHide();
     }
 
     /// <summary>Starts the same manual current-sentence command from a tray menu item.</summary>
@@ -125,12 +160,13 @@ internal sealed class LearningPreviewController : IAsyncDisposable
             return;
         }
 
-        if (!settings.AppEnabled || settings.Pause?.IsActive(DateTimeOffset.Now) == true)
+        var availabilityFailure = SharedAvailabilityFailure(settings);
+        if (availabilityFailure is not null)
         {
+            ClearCacheIfBatterySaverPaused(settings);
             BeginIntent();
             var anchor = _focus.Current?.CaretRect ?? ScreenRect.Empty;
-            var reason = settings.AppEnabled ? "Cotabby is paused." : "Cotabby is disabled.";
-            EnsureWindow().ShowCaptureFailure(reason + " Resume it before requesting a sentence preview.", anchor);
+            EnsureWindow().ShowCaptureFailure(availabilityFailure, anchor);
             return;
         }
 
@@ -145,6 +181,9 @@ internal sealed class LearningPreviewController : IAsyncDisposable
         {
             if (_disposed) return;
             _disposed = true;
+            Interlocked.Increment(ref _stateValidationGeneration);
+            _pendingLoadingState = null;
+            _loadingStateDispatchQueued = false;
         }
 
         _hook.KeyEvent -= OnKeyEvent;
@@ -168,6 +207,7 @@ internal sealed class LearningPreviewController : IAsyncDisposable
 
         // Core waits only for its documented bounded interval. The dedicated endpoint client is
         // owned by AppHost and stays alive until this drain has completed.
+        _coordinator.ClearCache();
         await _coordinator.DisposeAsync().ConfigureAwait(false);
     }
 
@@ -176,10 +216,14 @@ internal sealed class LearningPreviewController : IAsyncDisposable
         var input = args.Event;
         var settings = Volatile.Read(ref _settings);
         var focused = _focus.Current;
-        bool isLearningChord = input.IsKeyDown && !input.IsRepeat && !args.Suppress
-            && settings is { CanStart: true, ShortcutConflicts: false }
-            && focused is not null && FieldEnvironmentFailure(focused, settings) is null
+        bool matchesLearningChord = input.IsKeyDown && !input.IsRepeat && !args.Suppress
+            && settings is { TranslationEnabled: true, ShortcutConflicts: false }
             && settings.Shortcut.Matches(input);
+        var isLearningAvailable = matchesLearningChord && IsLearningAvailable(settings!);
+        if (matchesLearningChord && !isLearningAvailable)
+            ClearCacheIfBatterySaverPaused(settings!);
+        bool isLearningChord = isLearningAvailable
+            && focused is not null && FieldEnvironmentFailure(focused, settings!) is null;
 
         if (isLearningChord)
         {
@@ -223,6 +267,9 @@ internal sealed class LearningPreviewController : IAsyncDisposable
         {
             if (_disposed) return -1;
             generation = ++_intentGeneration;
+            Interlocked.Increment(ref _stateValidationGeneration);
+            _pendingLoadingState = null;
+            _loadingStateDispatchQueued = false;
             _intentActive = true;
             _pendingOrigin = origin;
             prior = _activeCapture;
@@ -263,7 +310,20 @@ internal sealed class LearningPreviewController : IAsyncDisposable
         }
 
         var capture = attempt.Capture;
-        if (capture.Settings.Options.SourceLanguage == capture.Settings.Options.TargetLanguage)
+        var availabilityFailure = LearningAvailabilityFailure(capture.Settings);
+        if (availabilityFailure is not null)
+        {
+            ClearCacheIfBatterySaverPaused(capture.Settings);
+            await _dispatcher.InvokeAsync(() =>
+            {
+                if (!IsCurrentIntent(generation)) return;
+                CancelAndHide();
+                EnsureWindow().ShowCaptureFailure(availabilityFailure, capture.Field.CaretRect);
+            }, DispatcherPriority.Background);
+            return;
+        }
+
+        if (capture.TranslationOptions.SourceLanguage == capture.TranslationOptions.TargetLanguage)
         {
             await _dispatcher.InvokeAsync(() =>
             {
@@ -279,10 +339,15 @@ internal sealed class LearningPreviewController : IAsyncDisposable
         if (!IsCurrentIntent(generation)) return;
         if (!isCurrent)
         {
+            var currentAvailabilityFailure = LearningAvailabilityFailure(capture.Settings);
+            ClearCacheIfBatterySaverPaused(capture.Settings);
             await _dispatcher.InvokeAsync(() =>
             {
-                if (IsCurrentIntent(generation))
-                    EnsureWindow().ShowCaptureFailure(ChangedFieldMessage, fallbackAnchor);
+                if (!IsCurrentIntent(generation)) return;
+                CancelAndHide();
+                EnsureWindow().ShowCaptureFailure(
+                    currentAvailabilityFailure ?? ChangedFieldMessage,
+                    currentAvailabilityFailure is null ? fallbackAnchor : capture.Field.CaretRect);
             }, DispatcherPriority.Background);
             return;
         }
@@ -292,6 +357,13 @@ internal sealed class LearningPreviewController : IAsyncDisposable
 
     private CaptureAttempt Capture(LearningRuntimeSettings settings, CaptureOrigin? origin)
     {
+        var availabilityFailure = LearningAvailabilityFailure(settings);
+        if (availabilityFailure is not null)
+        {
+            ClearCacheIfBatterySaverPaused(settings);
+            return new CaptureAttempt(null, availabilityFailure, origin?.Field.CaretRect ?? ScreenRect.Empty);
+        }
+
         if (origin is null)
             return new CaptureAttempt(null, UnsupportedFieldMessage, ScreenRect.Empty);
 
@@ -323,14 +395,48 @@ internal sealed class LearningPreviewController : IAsyncDisposable
         {
             var collapsedCaret = new LearningTextRange(field.CaretOffset, 0);
             var range = LearningTextScopePolicy.ConversionRange(
-                field.Text, collapsedCaret, _sentenceTokenizer, settings.Options.SourceLanguage);
+                field.Text, collapsedCaret, _sentenceTokenizer, settings.SentenceSegmentationLanguage);
             var source = LearningTextScopePolicy.Text(field.Text, range);
+
+            // The sentence boundary locale and the translation direction are separate decisions.
+            // ICU needs a locale before the sentence is known; multi-source direction selection
+            // must still use every enabled candidate and never fall back to that locale.
+            var candidates = settings.SourceLanguages
+                .Where(language => language != settings.Options.TargetLanguage)
+                .ToArray();
+            if (candidates.Length == 0)
+            {
+                var message = settings.SourceLanguages.Count == 0
+                    ? NoSourceLanguageMessage
+                    : SameLanguageMessage;
+                return new CaptureAttempt(null, message, field.CaretRect);
+            }
+
+            LearningLanguage? sourceLanguage;
+            if (candidates.Length == 1)
+            {
+                // A single user choice is explicit in the Mac contract and needs no detector.
+                sourceLanguage = candidates[0];
+            }
+            else if (_languageDetector is null)
+            {
+                return new CaptureAttempt(null, MultiSourceDetectorUnavailableMessage, field.CaretRect);
+            }
+            else
+            {
+                sourceLanguage = LearningSourceLanguageResolver.Resolve(
+                    source, settings.SourceLanguages, settings.Options.TargetLanguage, _languageDetector);
+            }
+
+            if (sourceLanguage is null)
+                return new CaptureAttempt(null, UncertainSourceLanguageMessage, field.CaretRect);
 
             // FocusedField currently has no native marked-text/composition value. The capture is
             // therefore preserved as unknown input-method evidence, which the Mac readonly preview
             // permits; no live-IME state is fabricated from key timing and this path cannot write.
             return new CaptureAttempt(
-                new CapturedSentence(field, range, source, settings), null, field.CaretRect);
+                new CapturedSentence(field, range, source, settings,
+                    settings.Options with { SourceLanguage = sourceLanguage.Value }), null, field.CaretRect);
         }
         catch (LearningTranslationException error)
         {
@@ -360,12 +466,41 @@ internal sealed class LearningPreviewController : IAsyncDisposable
     {
         if (field.ProcessId == Environment.ProcessId) return OwnFieldMessage;
         if (settings.BlockedApps.Contains(field.ProcessName)) return BlockedAppMessage;
+        // Learning follows the Mac availability call's explicit false terminal option, regardless
+        // of autocomplete's integrated-terminal preference.
+        if (TerminalAppDetector.IsTerminal(field.ProcessName)
+            || TerminalAppDetector.IsIntegratedTerminal(field.ClassName)) return TerminalFieldMessage;
         if (CredentialFieldDetector.IsCredentialField(field)) return CredentialFieldDetector.BlockedReason;
         return null;
     }
 
+    private string? LearningAvailabilityFailure(LearningRuntimeSettings settings)
+    {
+        if (!settings.TranslationEnabled)
+            return "Sentence translation is off. Enable it in Learning settings before requesting a preview.";
+        return SharedAvailabilityFailure(settings);
+    }
+
+    private bool IsLearningAvailable(LearningRuntimeSettings settings) =>
+        LearningAvailabilityFailure(settings) is null;
+
+    private string? SharedAvailabilityFailure(LearningRuntimeSettings settings)
+    {
+        bool batterySaverOn = settings.AvailabilitySettings.PauseOnBatterySaver && _batterySaverOn();
+        return SuggestionAvailability.DisabledReason(settings.AvailabilitySettings, DateTimeOffset.Now, batterySaverOn);
+    }
+
+    private bool IsBatterySaverPauseActive(LearningRuntimeSettings settings) =>
+        settings.AvailabilitySettings.PauseOnBatterySaver && _batterySaverOn();
+
+    private void ClearCacheIfBatterySaverPaused(LearningRuntimeSettings settings)
+    {
+        if (IsBatterySaverPauseActive(settings)) _coordinator.ClearCache();
+    }
+
     private bool IsCaptureCurrent(CapturedSentence capture)
     {
+        if (!IsLearningAvailable(capture.Settings)) return false;
         try
         {
             var current = _focus.Refresh();
@@ -396,9 +531,14 @@ internal sealed class LearningPreviewController : IAsyncDisposable
         if (!IsCurrentIntent(generation)) return;
         var currentSettings = Volatile.Read(ref _settings);
         var latest = _focus.Current;
-        if (currentSettings is null
-            || !currentSettings.CanStart
-            || !currentSettings.HasSameTranslationInputs(capture.Settings)
+        if (currentSettings is null || !IsLearningAvailable(currentSettings))
+        {
+            if (currentSettings is not null) ClearCacheIfBatterySaverPaused(currentSettings);
+            CancelAndHide();
+            return;
+        }
+
+        if (!currentSettings.HasSameTranslationInputs(capture.Settings)
             || latest is null
             || !SameCapturedField(capture.Field, latest)
             || FieldCaptureFailure(latest, capture.Settings) is not null)
@@ -408,7 +548,8 @@ internal sealed class LearningPreviewController : IAsyncDisposable
         }
 
         var monitor = new CancellationTokenSource();
-        ILearningTranslationEngine engine = CreateEngine(capture.Settings);
+        ILearningTranslationEngine engine = new CurrentCaptureLearningEngine(
+            this, capture with { Monitor = monitor }, CreateEngine(capture.Settings));
         CapturedSentence? previousCapture;
         Task request;
         LearningPreviewState state;
@@ -427,7 +568,8 @@ internal sealed class LearningPreviewController : IAsyncDisposable
             // Begin the Core request while holding the intent gate. A concurrent key/focus
             // invalidation then either wins before this point or cancels the request after it has
             // an identity; it cannot slip between a freshness check and request creation.
-            request = _coordinator.PreviewAsync(capture.Source, capture.Settings.Options, engine);
+            request = _coordinator.PreviewAsync(
+                capture.Source, capture.TranslationOptions, engine, capture.Settings.CacheScope);
             state = _coordinator.State;
             _activeRequestId = state.RequestId;
         }
@@ -483,9 +625,20 @@ internal sealed class LearningPreviewController : IAsyncDisposable
             while (!cancellationToken.IsCancellationRequested)
             {
                 await Task.Delay(CapturePollInterval, cancellationToken).ConfigureAwait(false);
+                if (!IsLearningAvailable(capture.Settings))
+                {
+                    ClearCacheIfBatterySaverPaused(capture.Settings);
+                    _ = _dispatcher.BeginInvoke(() =>
+                    {
+                        if (IsCurrentIntent(generation)) CancelAndHide();
+                    });
+                    return;
+                }
+
                 bool current = await Task.Run(() => IsCaptureCurrent(capture), cancellationToken).ConfigureAwait(false);
                 if (!current)
                 {
+                    ClearCacheIfBatterySaverPaused(capture.Settings);
                     _ = _dispatcher.BeginInvoke(() =>
                     {
                         if (IsCurrentIntent(generation)) CancelAndHide();
@@ -506,33 +659,124 @@ internal sealed class LearningPreviewController : IAsyncDisposable
 
     private void OnCoordinatorStateChanged(LearningPreviewState state)
     {
-        // The Core event is deliberately not UI-thread-bound. Post its immutable snapshot before
-        // starting another UIA validation so neither the coordinator lock nor hook can touch WPF.
-        _ = _dispatcher.BeginInvoke(() => ValidateAndRenderState(state), DispatcherPriority.Background);
+        // The Core event is deliberately not UI-thread-bound. Loading snapshots are coalesced into
+        // one dispatcher callback and checked against the tracker's cached field; a token stream
+        // therefore never creates one cross-process UIA validation per prefix.
+        if (state.Status == LearningPreviewStatus.Loading)
+        {
+            bool shouldPost;
+            lock (_gate)
+            {
+                if (_disposed) return;
+                _pendingLoadingState = state;
+                shouldPost = !_loadingStateDispatchQueued;
+                _loadingStateDispatchQueued = true;
+            }
+
+            if (shouldPost)
+                _ = _dispatcher.BeginInvoke(DrainPendingLoadingState, DispatcherPriority.Background);
+            return;
+        }
+
+        lock (_gate)
+        {
+            if (_disposed) return;
+            if (_pendingLoadingState?.RequestId == state.RequestId)
+                _pendingLoadingState = null;
+        }
+
+        if (state.Status == LearningPreviewStatus.Cancelled)
+        {
+            _ = _dispatcher.BeginInvoke(() =>
+            {
+                if (IsCurrentRequest(state.RequestId)) CancelAndHide();
+            }, DispatcherPriority.Background);
+            return;
+        }
+
+        if (state.Status is not (LearningPreviewStatus.Ready or LearningPreviewStatus.Failed)) return;
+        var validation = Interlocked.Increment(ref _stateValidationGeneration);
+        _ = _dispatcher.BeginInvoke(
+            () => ValidateAndRenderTerminalState(state, validation), DispatcherPriority.Background);
     }
 
-    private void ValidateAndRenderState(LearningPreviewState state)
+    private void DrainPendingLoadingState()
     {
+        _dispatcher.VerifyAccess();
+        LearningPreviewState? state;
+        lock (_gate)
+        {
+            state = _pendingLoadingState;
+            _pendingLoadingState = null;
+            _loadingStateDispatchQueued = false;
+        }
+
+        if (state is null || _coordinator.State != state) return;
+
         CapturedSentence? capture;
-        long intent;
-        long validation = Interlocked.Increment(ref _stateValidationGeneration);
         lock (_gate)
         {
             if (_disposed || !_intentActive || _activeCapture is null || _activeRequestId != state.RequestId) return;
             capture = _activeCapture;
+        }
+
+        if (!MatchesCapture(state, capture))
+        {
+            CancelAndHide();
+            return;
+        }
+
+        var currentSettings = Volatile.Read(ref _settings);
+        var latest = _focus.Current;
+        if (currentSettings is null || !IsLearningAvailable(currentSettings))
+        {
+            if (currentSettings is not null) ClearCacheIfBatterySaverPaused(currentSettings);
+            CancelAndHide();
+            return;
+        }
+
+        if (!currentSettings.HasSameTranslationInputs(capture.Settings)
+            || latest is null
+            || !SameCapturedField(capture.Field, latest)
+            || FieldCaptureFailure(latest, capture.Settings) is not null)
+        {
+            CancelAndHide();
+            return;
+        }
+
+        // PartialResult is intentionally provisional and cannot authorize a write. The read-only
+        // card may display it while the 400 ms off-thread capture monitor continues full UIA reads.
+        EnsureWindow().ShowState(state, capture.Field.CaretRect, canRetry: false);
+    }
+
+    private void ValidateAndRenderTerminalState(LearningPreviewState state, long validation)
+    {
+        CapturedSentence? capture;
+        long intent;
+        lock (_gate)
+        {
+            if (_disposed || !_intentActive || _activeCapture is null || _activeRequestId != state.RequestId
+                || validation != Interlocked.Read(ref _stateValidationGeneration)) return;
+            capture = _activeCapture;
             intent = _intentGeneration;
         }
 
-        _ = ValidateThenRenderAsync(state, capture, intent, validation);
+        if (!MatchesCapture(state, capture))
+        {
+            CancelAndHide();
+            return;
+        }
+
+        _ = ValidateThenRenderTerminalAsync(state, capture, intent, validation);
     }
 
-    private async Task ValidateThenRenderAsync(
+    private async Task ValidateThenRenderTerminalAsync(
         LearningPreviewState state, CapturedSentence capture, long intent, long validation)
     {
-        if (state.Status == LearningPreviewStatus.Cancelled) return;
         bool current = await Task.Run(() => IsCaptureCurrent(capture)).ConfigureAwait(false);
         if (!current)
         {
+            ClearCacheIfBatterySaverPaused(capture.Settings);
             _ = _dispatcher.BeginInvoke(() =>
             {
                 if (IsCurrentIntent(intent)) CancelAndHide();
@@ -543,7 +787,13 @@ internal sealed class LearningPreviewController : IAsyncDisposable
         await _dispatcher.InvokeAsync(() =>
         {
             if (validation != Interlocked.Read(ref _stateValidationGeneration)
-                || !IsCurrentState(intent, state.RequestId)) return;
+                || !IsCurrentState(intent, state.RequestId)
+                || _coordinator.State != state) return;
+            if (!MatchesCapture(state, capture))
+            {
+                CancelAndHide();
+                return;
+            }
             // A key event normally revokes the intent first. This cached snapshot check also
             // closes the dispatcher gap when UIA published a focus/selection change meanwhile; it
             // performs no cross-process read on the WPF thread.
@@ -552,6 +802,15 @@ internal sealed class LearningPreviewController : IAsyncDisposable
                 || !SameCapturedField(capture.Field, latest)
                 || FieldCaptureFailure(latest, capture.Settings) is not null)
             {
+                CancelAndHide();
+                return;
+            }
+
+            var currentSettings = Volatile.Read(ref _settings);
+            if (currentSettings is null || !IsLearningAvailable(currentSettings)
+                || !currentSettings.HasSameTranslationInputs(capture.Settings))
+            {
+                if (currentSettings is not null) ClearCacheIfBatterySaverPaused(currentSettings);
                 CancelAndHide();
                 return;
             }
@@ -574,8 +833,16 @@ internal sealed class LearningPreviewController : IAsyncDisposable
             settings = _settings;
         }
 
-        if (capture is null || settings is null || !settings.HasSameTranslationInputs(capture.Settings))
+        if (capture is null || settings is null)
         {
+            CancelAndHide();
+            return;
+        }
+
+        var availabilityFailure = LearningAvailabilityFailure(settings);
+        if (availabilityFailure is not null || !settings.HasSameTranslationInputs(capture.Settings))
+        {
+            ClearCacheIfBatterySaverPaused(settings);
             CancelAndHide();
             return;
         }
@@ -593,6 +860,7 @@ internal sealed class LearningPreviewController : IAsyncDisposable
             if (!IsCurrentIntent(intent)) return;
             if (!current)
             {
+                ClearCacheIfBatterySaverPaused(capture.Settings);
                 CancelAndHide();
                 return;
             }
@@ -628,6 +896,9 @@ internal sealed class LearningPreviewController : IAsyncDisposable
         {
             if (_disposed && !_intentActive && _activeCapture is null) return;
             generation = ++_intentGeneration;
+            Interlocked.Increment(ref _stateValidationGeneration);
+            _pendingLoadingState = null;
+            _loadingStateDispatchQueued = false;
             _intentActive = false;
             _pendingOrigin = null;
             capture = _activeCapture;
@@ -679,6 +950,16 @@ internal sealed class LearningPreviewController : IAsyncDisposable
             return !_disposed && _intentActive && _intentGeneration == generation
                 && _activeRequestId == requestId && _activeCapture is not null;
     }
+
+    private bool IsCurrentRequest(string requestId)
+    {
+        lock (_gate)
+            return !_disposed && _intentActive && _activeRequestId == requestId && _activeCapture is not null;
+    }
+
+    private static bool MatchesCapture(LearningPreviewState state, CapturedSentence capture) =>
+        string.Equals(state.Source, capture.Source, StringComparison.Ordinal)
+        && state.Options == capture.TranslationOptions;
 
     private LearningPreviewWindow EnsureWindow()
     {
@@ -732,41 +1013,109 @@ internal sealed class LearningPreviewController : IAsyncDisposable
         LearningTextRange Range,
         string Source,
         LearningRuntimeSettings Settings,
+        LearningTranslationOptions TranslationOptions,
         CancellationTokenSource? Monitor = null);
+
+    /// <summary>
+    /// Keeps the coordinator's cache boundary behind a final exact-field check. Mac validates the
+    /// captured editor again before it promotes a complete stream into its translation cache; this
+    /// wrapper performs that UIA read on the worker after the endpoint returns, never on WPF.
+    /// </summary>
+    private sealed class CurrentCaptureLearningEngine(
+        LearningPreviewController owner,
+        CapturedSentence capture,
+        ILearningTranslationEngine inner) : ILearningTranslationEngine, IDisposable
+    {
+        private int _disposed;
+
+        public Task<string> TranslateAsync(LearningTranslationRequest request, CancellationToken ct) =>
+            TranslateAsync(request, null, ct);
+
+        public async Task<string> TranslateAsync(
+            LearningTranslationRequest request, Action<string>? onDelta, CancellationToken ct)
+        {
+            ObjectDisposedException.ThrowIf(Volatile.Read(ref _disposed) != 0, this);
+            ct.ThrowIfCancellationRequested();
+            var result = await inner.TranslateAsync(request, onDelta, ct).ConfigureAwait(false);
+            ct.ThrowIfCancellationRequested();
+            if (!owner.IsCaptureCurrent(capture))
+            {
+                owner.ClearCacheIfBatterySaverPaused(capture.Settings);
+                throw new OperationCanceledException("The captured source changed during translation.", ct);
+            }
+            return result;
+        }
+
+        public void Dispose()
+        {
+            if (Interlocked.Exchange(ref _disposed, 1) != 0) return;
+            if (inner is IDisposable disposable) disposable.Dispose();
+        }
+    }
 
     /// <summary>One immutable projection of only the settings that belong to translation.</summary>
     private sealed record LearningRuntimeSettings(
         bool TranslationEnabled,
-        bool AppEnabled,
-        PauseState? Pause,
+        SuggestionSettings AvailabilitySettings,
         IReadOnlySet<string> BlockedApps,
         bool EndpointEnabled,
         KeyBinding Shortcut,
         bool ShortcutConflicts,
         string EndpointBaseUrl,
+        IReadOnlyList<LearningLanguage> SourceLanguages,
         LearningTranslationOptions Options,
-        int CredentialRevision)
+        int CredentialRevision,
+        string? CacheScope)
     {
-        public bool CanStart => TranslationEnabled && AppEnabled && Pause?.IsActive(DateTimeOffset.Now) != true;
+        /// <summary>
+        /// ICU requires a language at sentence-tokenization time, before constrained source
+        /// resolution has the captured sentence. For a multi-source profile retain the legacy
+        /// locale as a platform segmentation hint only; it never narrows the translation choices.
+        /// </summary>
+        public LearningLanguage SentenceSegmentationLanguage
+        {
+            get
+            {
+                var candidates = SourceLanguages
+                    .Where(language => language != Options.TargetLanguage)
+                    .Distinct()
+                    .Take(2)
+                    .ToArray();
+                return candidates.Length == 1 ? candidates[0] : Options.SourceLanguage;
+            }
+        }
 
         public bool HasSameTranslationInputs(LearningRuntimeSettings other) =>
             TranslationEnabled == other.TranslationEnabled
-            && AppEnabled == other.AppEnabled
-            && (Pause?.IsActive(DateTimeOffset.Now) == true) == (other.Pause?.IsActive(DateTimeOffset.Now) == true)
+            && AvailabilitySettings.Enabled == other.AvailabilitySettings.Enabled
+            && AvailabilitySettings.Pause == other.AvailabilitySettings.Pause
+            && AvailabilitySettings.PauseOnBatterySaver == other.AvailabilitySettings.PauseOnBatterySaver
             && BlockedApps.SetEquals(other.BlockedApps)
             && EndpointEnabled == other.EndpointEnabled
             && string.Equals(EndpointBaseUrl, other.EndpointBaseUrl, StringComparison.Ordinal)
+            && SourceLanguages.SequenceEqual(other.SourceLanguages)
             && Options == other.Options
             && CredentialRevision == other.CredentialRevision;
 
         public static LearningRuntimeSettings From(AppSettings settings, int credentialRevision)
         {
-            var source = Enum.IsDefined(settings.LearningSourceLanguage)
+            var legacySource = Enum.IsDefined(settings.LearningSourceLanguage)
                 ? settings.LearningSourceLanguage
                 : LearningLanguage.Chinese;
+            var sourceLanguages = Array.AsReadOnly(settings.EffectiveLearningSourceLanguages.ToArray());
             var target = Enum.IsDefined(settings.LearningTargetLanguage)
                 ? settings.LearningTargetLanguage
                 : LearningLanguage.English;
+            // The prior singular direction remains the tokenizer locale when several source
+            // choices are enabled. Translation later resolves against the full immutable list.
+            var segmentationCandidates = sourceLanguages
+                .Where(language => language != target)
+                .Distinct()
+                .Take(2)
+                .ToArray();
+            var sentenceLanguage = segmentationCandidates.Length == 1
+                ? segmentationCandidates[0]
+                : legacySource;
             var register = Enum.IsDefined(settings.LearningStyleRegister)
                 ? settings.LearningStyleRegister
                 : LearningTranslationRegister.Natural;
@@ -776,9 +1125,19 @@ internal sealed class LearningPreviewController : IAsyncDisposable
                 .Where(app => !string.IsNullOrWhiteSpace(app))
                 .Select(app => app.Trim())
                 .ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var availabilitySettings = new SuggestionSettings
+            {
+                Enabled = settings.Enabled,
+                Pause = settings.Pause,
+                PauseOnBatterySaver = settings.PauseOnBatterySaver,
+                BlockedApps = blockedApps,
+                // Learning is always excluded from integrated terminals, regardless of the
+                // autocomplete-only preference that SuggestionSettings normally carries.
+                SuggestInIntegratedTerminals = false,
+            };
             var options = new LearningTranslationOptions
             {
-                SourceLanguage = source,
+                SourceLanguage = sentenceLanguage,
                 TargetLanguage = target,
                 Style = style,
                 ModelName = model,
@@ -788,15 +1147,28 @@ internal sealed class LearningPreviewController : IAsyncDisposable
 
             return new LearningRuntimeSettings(
                 settings.LearningTranslationEnabled,
-                settings.Enabled,
-                settings.Pause,
+                availabilitySettings,
                 blockedApps,
                 settings.LearningEndpointEnabled,
                 settings.LearningTranslationShortcut,
                 GlobalShortcut.LearningTranslation.Conflict(settings, settings.LearningTranslationShortcut) is not null,
                 (settings.LearningEndpointBaseUrl ?? OpenAICompatibleEndpointConfiguration.DefaultBaseUrl).Trim(),
+                sourceLanguages,
                 options,
-                credentialRevision);
+                credentialRevision,
+                CreateCacheScope(settings.LearningEndpointEnabled,
+                    (settings.LearningEndpointBaseUrl ?? OpenAICompatibleEndpointConfiguration.DefaultBaseUrl).Trim(),
+                    model, credentialRevision));
+        }
+
+        private static string? CreateCacheScope(bool endpointEnabled, string endpoint, string model, int credentialRevision)
+        {
+            if (!endpointEnabled || model.Length == 0) return null;
+
+            // Cache keys outlive one engine instance but never contain a bearer token. Hashing the
+            // endpoint, model and local credential generation gives Core an opaque profile scope.
+            var profile = $"learning-chat-v1\nlearning-dpapi-key\n{endpoint}\n{model}\n{credentialRevision}";
+            return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(profile)));
         }
     }
 

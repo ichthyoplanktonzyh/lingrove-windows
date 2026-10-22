@@ -53,11 +53,14 @@ public partial class LearningPreviewWindow : Window
 
         bool loading = state.Status == LearningPreviewStatus.Loading;
         bool ready = state.Status == LearningPreviewStatus.Ready && state.Result is not null;
+        string? visibleTranslation = ready ? state.Result : loading ? state.PartialResult : null;
+        bool hasProvisionalText = loading && !string.IsNullOrEmpty(visibleTranslation);
         TitleText.Text = "Sentence translation";
         StatusText.Text = loading ? "Translating…" : ready ? "Translation preview" : "Could not translate";
         Progress.Visibility = loading ? Visibility.Visible : Visibility.Collapsed;
-        ResultSection.Visibility = ready ? Visibility.Visible : Visibility.Collapsed;
-        ResultText.Text = ready ? state.Result ?? string.Empty : string.Empty;
+        ResultSection.Visibility = ready || hasProvisionalText ? Visibility.Visible : Visibility.Collapsed;
+        ResultLabel.Text = hasProvisionalText ? "TRANSLATION · PREVIEW" : "TRANSLATION";
+        ResultText.Text = visibleTranslation ?? string.Empty;
         ErrorText.Text = ready ? "" : state.ErrorMessage ?? "";
         ErrorText.Visibility = ErrorText.Text.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
         RetryButton.Visibility = !loading && !ready && canRetry ? Visibility.Visible : Visibility.Collapsed;

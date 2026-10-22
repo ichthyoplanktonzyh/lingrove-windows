@@ -136,7 +136,6 @@ public sealed class AppHost : IAsyncDisposable
             loggers.CreateLogger<EmojiPickerController>());
         Macros = new MacroController(_hook, focus, inserter, macroPreview, loggers.CreateLogger<MacroController>());
         _hook.KeyEvent += OnGlobalToggleKey;
-        SystemEvents.PowerModeChanged += OnPowerModeChanged;
 
         Coordinator = new SuggestionCoordinator(
             _hook, focus, _router, overlay, inserter, new SuggestionWorkController(TimeSpan.Zero),
@@ -153,8 +152,13 @@ public sealed class AppHost : IAsyncDisposable
             _hook, focus, overlay.Dispatcher,
             _services.GetRequiredService<ILearningSentenceTokenizer>(),
             _learningHttpClient, LearningEndpointCredentials,
-            loggers.CreateLogger<LearningPreviewController>());
+            loggers.CreateLogger<LearningPreviewController>(),
+            // Multi-source choices require a platform confidence provider. None is registered on
+            // this Windows slice, so the controller truthfully fails closed until one is selected.
+            _services.GetService<ILearningLanguageDetector>(),
+            batterySaverOn: () => PowerStatus.IsBatterySaverOn);
 
+        SystemEvents.PowerModeChanged += OnPowerModeChanged;
         ApplySettings();
     }
 
@@ -277,6 +281,9 @@ public sealed class AppHost : IAsyncDisposable
     private void OnPowerModeChanged(object sender, PowerModeChangedEventArgs e)
     {
         if (e.Mode != PowerModes.StatusChange) return;
+        // Power availability is a shared feature gate. Learning owns its own request/cache, but it
+        // must retire that work when the same battery-saver pause used by autocomplete becomes active.
+        LearningPreview.PowerStatusChanged();
         _ui.Post(_ => LoadSelectedModelIfChanged(), null);
     }
 

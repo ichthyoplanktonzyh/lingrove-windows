@@ -37,6 +37,8 @@ The [explanation input, prompt and output rules](docs/LEARNING_EXPLANATION_RULES
 Mac-backed portable coverage, including model capability/metadata gates. A local provider now
 connects those rules to an exclusive native lease and complete-response validation; independent
 app settings/runtime ownership, its service/card and the explanation endpoint remain unported.
+The [writing capture adapter](docs/LEARNING_EXPLANATION_RULES.md#writing-capture-to-input) now preserves
+the completed translation's target, exact occurrences and context receipt for that future service.
 
 The first foundation milestone is documentation, build-and-test CI, and shared behavior fixtures. It
 does not add a Windows installer, downloadable build, artifact upload, release workflow, or model
@@ -105,10 +107,11 @@ python3 scripts/verify-learning-macos-parity.py --mac-repo /path/to/macOS-lingro
 python3 scripts/verify-learning-local-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-learning-lexical-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-learning-explanation-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
+python3 scripts/verify-learning-capture-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 ```
 
 The Swift verifiers require Xcode 26 and exercise 17 autocomplete, 64 learning, 45 local-learning,
-34 lexical, 19 dictionary-policy, 68 explanation and 52 explanation-model fixture cases/checks, plus pinned resource integrity/Codable checks
+34 lexical, 19 dictionary-policy, 68 explanation, 52 explanation-model and 33 writing-capture fixture cases/checks, plus pinned resource integrity/Codable checks
 against committed pure Mac policies. They do not build or launch the macOS app. Routine validation does not run the
 `Cotabby.Tools.*Smoke` projects: those may require an interactive Windows desktop or downloaded
 model weights.

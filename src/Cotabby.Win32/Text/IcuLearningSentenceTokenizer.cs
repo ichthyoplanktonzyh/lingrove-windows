@@ -61,7 +61,7 @@ public sealed class IcuLearningSentenceTokenizer : ILearningSentenceTokenizer
         }
     }
 
-    private static string IcuLocale(LearningLanguage language)
+    internal static string IcuLocale(LearningLanguage language)
     {
         // LearningLanguage.Code is a stable BCP-47-shaped identifier. ICU's C API accepts ICU
         // locale IDs, whose script separator is an underscore. ICU ships sentence-filter data for
@@ -77,7 +77,7 @@ public sealed class IcuLearningSentenceTokenizer : ILearningSentenceTokenizer
                 : locale;
     }
 
-    private static LearningTranslationException Unavailable() =>
+    internal static LearningTranslationException Unavailable() =>
         new(LearningTranslationFailure.SentenceTokenizerUnavailable);
 }
 
@@ -103,7 +103,11 @@ internal sealed partial class NativeIcuSentenceSegmenter : IIcuSentenceSegmenter
 
     public static NativeIcuSentenceSegmenter Instance => Shared;
 
-    public unsafe IReadOnlyList<LearningTextRange> Segment(string value, string locale)
+    public IReadOnlyList<LearningTextRange> Segment(string value, string locale) => Segment(value, locale, trimEdges: true);
+
+    internal IReadOnlyList<LearningTextRange> SegmentIncludingSeparators(string value, string locale) => Segment(value, locale, trimEdges: false);
+
+    private unsafe IReadOnlyList<LearningTextRange> Segment(string value, string locale, bool trimEdges)
     {
         // ICU's UChar and .NET's char are both 16-bit UTF-16 code units. ICU returns offsets in
         // those code units, matching LearningTextRange and Windows UIA's UTF-16 positions exactly.
@@ -128,13 +132,16 @@ internal sealed partial class NativeIcuSentenceSegmenter : IIcuSentenceSegmenter
                     if (boundary == UbrkDone) break;
                     if (boundary <= previous || boundary > value.Length) throw Unavailable();
 
-                    // NLTokenizer returns the sentence token without surrounding separator spaces.
-                    // ICU's sentence iterator can include those spaces in its boundary interval, so
-                    // trim only edge whitespace while retaining the exact original UTF-16 offsets.
+                    // The existing current-sentence preview uses trimmed caret-capture intervals.
+                    // Learning evidence instead needs the complete NLTokenizer-shaped extent:
+                    // separator spaces participate in original context, ranges and receipt hashes.
                     var tokenStart = previous;
                     var tokenEnd = boundary;
-                    while (tokenStart < tokenEnd && char.IsWhiteSpace(value[tokenStart])) tokenStart++;
-                    while (tokenEnd > tokenStart && char.IsWhiteSpace(value[tokenEnd - 1])) tokenEnd--;
+                    if (trimEdges)
+                    {
+                        while (tokenStart < tokenEnd && char.IsWhiteSpace(value[tokenStart])) tokenStart++;
+                        while (tokenEnd > tokenStart && char.IsWhiteSpace(value[tokenEnd - 1])) tokenEnd--;
+                    }
                     if (tokenEnd > tokenStart)
                     {
                         ranges.Add(new LearningTextRange(tokenStart, tokenEnd - tokenStart));

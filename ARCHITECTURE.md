@@ -1,9 +1,9 @@
 # Lingrove for Windows Architecture
 
 This is a maintainer map for the Windows port. The source and binaries still use Cotabby identifiers
-during migration. The repository currently contains an inherited autocomplete implementation;
-language-learning components described as future flows are architectural targets, not shipped
-Windows behavior.
+during migration. The repository contains the inherited autocomplete implementation and a scoped
+manual read-only translation preview. Other learning flows below remain migration targets; native
+Windows host behavior is unverified. See [the preview port record](docs/LEARNING_PREVIEW.md).
 
 ## Architecture authority
 
@@ -123,8 +123,9 @@ open before language learning can depend on this path. See [the safety record](d
 
 ## Learning flow and independent runtimes
 
-The Windows baseline has no language-learning coordinator, capture UI, dictionary or notebook. The
-macOS source is the behavior reference for a future Windows subsystem. A suitable Windows flow is:
+The original Windows baseline had no learning subsystem. The current manual-preview port supplies
+learning contracts, request orchestration, a task-owned endpoint adapter and a read-only WPF panel.
+The wider Mac learning flow below remains the behavior reference for later Windows slices:
 
 ```text
 committed typing / explicit selection / explicit region capture

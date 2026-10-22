@@ -4,8 +4,8 @@ This matrix starts from the Windows fork baseline `b1e4031c70aca1be21aae2c57b138
 compares it with the committed macOS reference `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`. It also
 records the initial foundation branch's shared JSON corpus and its test evidence. The source paths
 are reference points, not a claim that every Windows behavior has been validated. The Windows tree
-still uses Cotabby names. Language learning is part of the target product but is not implemented in
-this Windows baseline.
+still uses Cotabby names. The current learning addition is the scoped manual read-only preview
+recorded in [LEARNING_PREVIEW.md](LEARNING_PREVIEW.md); the wider learning product remains incomplete.
 
 ## Status meanings
 
@@ -48,7 +48,7 @@ Windows behavior for UIA, input, rendering, insertion, persistence, or inference
 
 | Capability | macOS reference at pinned commit (source / tests) | Windows baseline evidence | Status |
 | --- | --- | --- | --- |
-| Translation while writing, task settings and request profiles | `Cotabby/Services/LanguageLearning/LearningTranslationService.swift`, `LearningExpressionService.swift`, `Cotabby/Models/LanguageLearning/`, `CotabbyTests/Services/LanguageLearning/LearningTranslationStyleIntegrationTests.swift` | No learning coordinator, request or runtime found | source-only |
+| Translation while writing, task settings and request profiles | `Cotabby/Services/LanguageLearning/LearningTranslationService.swift`, `LearningExpressionService.swift`, `Cotabby/Models/LanguageLearning/`, `CotabbyTests/Services/LanguageLearning/LearningTranslationStyleIntegrationTests.swift` | `Core/LanguageLearning/`, `Inference/LanguageLearning/`, `App/Learning/`, `App/UI/Learning/`: manual read-only current-sentence preview, independent endpoint/config/cancellation; local runtime, streaming prefixes and cache remain deferred; [source/test mapping and limits](LEARNING_PREVIEW.md) | implemented-unverified |
 | Safe translation replacement with acknowledgement | `Cotabby/Services/LanguageLearning/LearningSelectionReplacement.swift`, `Cotabby/Support/LanguageLearning/LearningReplacementVerificationPolicy.swift`, matching tests | No learning replacement flow or host acknowledgement. Shared `GuardedTextInserter` and Win32 clipboard lease now provide guarded dispatch and bounded supported-format preservation; [limits and evidence](EDITOR_SAFETY.md) | missing |
 | Selected text and reading capture | `Cotabby/App/Coordinators/InlineFeatures/LearningReadingCoordinator.swift`, `Cotabby/Services/LanguageLearning/LearningReadingSelectionReader.swift`, `LearningReadingSourceReader.swift`, `CotabbyTests/App/Coordinators/InlineFeatures/LearningReadingCoordinatorTests.swift` | No selection/reading learning capture | source-only |
 | Explicit screen-region capture and OCR | `Cotabby/Services/Presentation/LearningRegionSelectionPanel.swift`, `Cotabby/Services/Visual/ScreenTextExtractor.swift`, `CotabbyTests/Services/Visual/ReadingOCRIntegrationTests.swift` | No screen capture/OCR subsystem | source-only |
@@ -75,10 +75,15 @@ does not imply that Windows storage is already compatible with the macOS databas
 | Shared JSON behavior corpus (17 pure-policy cases) | `Cotabby/Support/Suggestion/Acceptance/`, `Cotabby/Support/Suggestion/Output/GhostSpaceBoundary.swift`, `SuggestionTextNormalizer.swift`; pinned tests recorded per case in `fixtures/parity/README.md` | `fixtures/parity/v1.json`, `fixtures/parity/README.md`, `tests/Cotabby.Core.Tests/Parity/VersionedParityCorpusTests.cs`, and `scripts/verify-macos-parity.py` check acceptance chunks, ghost spacing, and normalization in both runtimes | verified |
 | Vocabulary CLI and mailbox protocol | `Cotabby/Services/CLI/`, `Cotabby/Models/CLI/`, `CotabbyTests/Services/CLI/VocabularyCLITests.swift` | No vocabulary CLI or mailbox | source-only |
 | Interface localization and learning/settings search | `Cotabby/Models/Settings/InterfaceLanguage.swift`, `Cotabby/Support/Settings/InterfaceLanguageNormalizer.swift`, settings views/tests | WPF settings exist, but no interface-language system found | source-only |
-| Durable task-specific settings | `Cotabby/Models/Settings/`, `Cotabby/Support/Settings/SuggestionSettingsStore.swift`, language/speech settings stores | Autocomplete settings exist in `src/Cotabby.App/Settings/`; no separate learning/speech settings | platform-adapted |
+| Durable task-specific settings | `Cotabby/Models/Settings/`, `Cotabby/Support/Settings/SuggestionSettingsStore.swift`, language/speech settings stores | `src/Cotabby.App/Settings/` keeps autocomplete and learning values separate; learning uses its own DPAPI key and explicit endpoint opt-in; speech settings remain absent | platform-adapted |
 | Automatic update and release feed | `Cotabby/Services/Updates/` and settings models | No updater found; distribution is outside the first milestone | source-only |
 
 ## Verification policy
+
+The learning corpus adds 36 cases for actual pinned Swift language/style/prompt/budget/output rules,
+also consumed by C# tests. It does not establish full learning parity, native UIA/IME behavior or model
+quality; provenance and harness stubs are recorded in `fixtures/parity/README.md`. ICU is the Windows
+sentence-tokenizer adapter, rather than a replacement punctuation rule.
 
 The guarded editor insertion stage adds portable transaction, stale-result, cancellation and inline
 query tests plus fake-driven Windows dispatch tests. It does not promote native focus, insertion,

@@ -3,9 +3,10 @@
 ## Product scope
 
 Lingrove has two equally core product capabilities: local-first autocomplete while writing and
-language learning while writing. Treat both as first-class product work. The current Windows code is
-an inherited Cotabby autocomplete port; language learning is a porting goal, not an implemented
-Windows feature. Do not describe planned learning behavior as shipped or verified.
+language learning while writing. Treat both as first-class product work. The Windows code contains
+the inherited autocomplete port and a scoped manual, read-only sentence-translation preview adapted
+from Mac. Broader learning remains migration work. Do not describe planned or native-unverified
+behavior as shipped or verified; see `docs/LEARNING_PREVIEW.md` for the exact implemented subset.
 
 This repository is the Windows port of the macOS Lingrove project and retains its AGPL-3.0 license
 and upstream attribution. During the migration, keep existing `Cotabby` namespaces, assemblies,
@@ -110,6 +111,7 @@ export PATH="$DOTNET_ROOT:$PATH"
 dotnet --version
 dotnet test tests/Cotabby.Core.Tests/Cotabby.Core.Tests.csproj --configuration Release
 python3 scripts/verify-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
+python3 scripts/verify-learning-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 ```
 
 The verifier reads the pinned macOS sources from Git and checks the same JSON cases; it does not
@@ -117,8 +119,9 @@ build the macOS app or run a model. If `.dotnet/` is missing in a fresh checkout
 `10.0.402` into that ignored directory so `global.json` can select it.
 
 The current `.github/workflows/ci.yml` has two validation jobs: Windows x64 restores and builds the
-full solution, then runs Core and Inference tests; macOS 26 runs the Core tests and the Swift parity
-verifier against a sparse checkout of the pinned macOS source. The separate
+full solution, then runs Core and Inference tests, including noninteractive ICU sentence tests;
+macOS 26 runs Core and both Swift parity verifiers against a sparse checkout of the pinned Mac
+Support, language-learning models/services, and language catalog source. The separate
 `.github/workflows/upstream-baseline.yml` checks the original Windows fork at commit
 `b1e4031c70aca1be21aae2c57b138fde5fc22bb1` with .NET 9 on manual dispatch. Its initial setup run is
 recorded in the baseline note. It does not gate ordinary PRs; its result describes that old snapshot,

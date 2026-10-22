@@ -4,6 +4,7 @@ using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using Cotabby.Core.Emoji;
 using Cotabby.Core.Input;
+using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Overlay;
 using Cotabby.Core.Spelling;
 using Cotabby.Core.Suggestions;
@@ -76,8 +77,22 @@ public sealed class AppSettings
     public KeyBinding AcceptWord { get; set; } = KeyBinding.Tab;
     public KeyBinding AcceptAll { get; set; } = KeyBinding.Backtick;
     public KeyBinding GlobalToggle { get; set; } = KeyBinding.Unbound;
+    /// <summary>Explicit, manual current-sentence translation. The Mac Option+T binding maps to Alt+T on Windows.</summary>
+    public KeyBinding LearningTranslationShortcut { get; set; } = new(0x54, KeyModifiers.Alt, "Alt+T");
     public bool DoubleTapAcceptsAll { get; set; }
     public List<PerAppShortcutOverride> ShortcutOverrides { get; set; } = [];
+
+    // Language learning has its own opt-in endpoint and model profile. The app never copies the
+    // autocomplete endpoint, credential, or active local runtime into this task.
+    public bool LearningTranslationEnabled { get; set; }
+    public bool LearningEndpointEnabled { get; set; }
+    public string LearningEndpointBaseUrl { get; set; } = OpenAICompatibleEndpointConfiguration.DefaultBaseUrl;
+    public string LearningEndpointModel { get; set; } = "";
+    public int LearningContextTokens { get; set; } = 4_096;
+    public LearningLanguage LearningSourceLanguage { get; set; } = LearningLanguage.Chinese;
+    public LearningLanguage LearningTargetLanguage { get; set; } = LearningLanguage.English;
+    public LearningTranslationRegister LearningStyleRegister { get; set; } = LearningTranslationRegister.Natural;
+    public string LearningCustomInstruction { get; set; } = "";
 
     // Apps
     public List<string> BlockedApps { get; set; } = [];

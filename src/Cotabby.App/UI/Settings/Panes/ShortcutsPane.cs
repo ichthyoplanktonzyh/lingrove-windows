@@ -21,7 +21,10 @@ internal static class ShortcutsPane
                 .Tagged("double-tap twice tab tab press twice accept all"),
             r.Shortcut(GlobalShortcut.Toggle,
                 "Turn Cotabby on or off from anywhere without opening the system tray.")
-                .Tagged("global on off hotkey pause enable disable keybind binding")),
+                .Tagged("global on off hotkey pause enable disable keybind binding"),
+            r.Shortcut(GlobalShortcut.LearningTranslation,
+                "Manually translate the current sentence into a read-only preview. The key is ignored while translation is disabled or conflicts with another shortcut.")
+                .Tagged("learning translate sentence translation hotkey option alt t keybind binding")),
         new SettingsCard("Per-App Shortcuts",
             Rows.Note("Give a specific app its own accept key, disable an accept action there, "
                 + "or keep inheriting the global shortcut."),

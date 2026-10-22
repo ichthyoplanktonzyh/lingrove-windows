@@ -20,9 +20,11 @@ write. This repository is an early Windows port forked from
 [Cotabby](https://github.com/FuJacob/cotabby) by FuJacob, jam-cai, akramj13, and contributors.
 
 The current Windows code contains an inherited Cotabby autocomplete implementation with a WPF tray
-app, Windows UI Automation, local/endpoint inference paths, and portable policy tests. It is not yet
-a feature-complete Lingrove port: language-learning capture, translation, dictionaries, vocabulary
-notebook, Anki, and speech have not been implemented for Windows. The runtime and internal project
+app, Windows UI Automation, local/endpoint inference paths, and portable policy tests. A scoped
+[manual sentence-translation preview](docs/LEARNING_PREVIEW.md) now adapts the stable Mac contracts
+through a separately configured learning endpoint. This is not yet a feature-complete port:
+learning local inference, full capture/replacement, dictionaries, vocabulary notebook, Anki and speech
+remain migration work, and native Windows interaction is unverified. The runtime and internal project
 names still say Cotabby; Lingrove branding in this documentation does not claim that the app binary,
 settings, or stored data have been rebranded or made compatible with macOS.
 
@@ -37,9 +39,10 @@ unverified.
   keyboard input, local LLamaSharp inference, optional configured endpoint, app/clipboard context,
   emoji, macros, and autocorrection. Source and tests exist, but native Windows editor behavior has
   not yet been verified across hosts.
-- **Language learning:** a first-class product goal, not a Windows implementation yet. The port plan
-  covers writing translation and safe replacement, selected/reading/region OCR, explanations,
-  dictionaries, vocabulary notebook and graph, Anki, and text-to-speech.
+- **Language learning:** a disabled-by-default manual current-sentence preview with independent
+  task settings, cancellation and an explicit learning chat endpoint. Source/model/style/budget rules
+  follow the pinned Mac. Native capture/IME/card behavior, local learning inference, replacement,
+  reading/OCR, explanations, dictionaries, notebook, Anki and speech remain explicit gaps.
 - **Privacy:** local generation is the default design. A remote endpoint is an explicit user choice;
   requests must be bounded and tied to the selected task. CI must not download model weights or
   contact model endpoints. Cloud sync is outside scope.
@@ -86,10 +89,11 @@ export PATH="$DOTNET_ROOT:$PATH"
 dotnet --version # 10.0.402
 dotnet test tests/Cotabby.Core.Tests/Cotabby.Core.Tests.csproj --configuration Release
 python3 scripts/verify-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
+python3 scripts/verify-learning-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 ```
 
-The Swift verifier requires Xcode 26 and exercises the 17 fixture cases against committed pure
-policies. It does not build or launch the macOS app. Routine validation does not run the
+The Swift verifiers require Xcode 26 and exercise 17 autocomplete plus 36 learning fixture cases
+against committed pure Mac policies. They do not build or launch the macOS app. Routine validation does not run the
 `Cotabby.Tools.*Smoke` projects: those may require an interactive Windows desktop or downloaded
 model weights.
 

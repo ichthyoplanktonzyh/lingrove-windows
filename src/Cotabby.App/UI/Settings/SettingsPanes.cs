@@ -11,7 +11,7 @@ internal static class SettingsPanes
         IReadOnlyList<IReadOnlyList<SettingsPane>> groups =
         [
             [GeneralPane.Build(rows), AppearancePane.Build(rows), EmojiPane.Build(rows)],
-            [WritingPane.Build(rows), EnginePane.Build(rows)],
+            [WritingPane.Build(rows), EnginePane.Build(rows), LearningPane.Build(rows)],
             [ShortcutsPane.Build(rows), AppsPane.Build(rows)],
             [PerformancePane.Build(rows), AdvancedPane.Build(rows), AboutPane.Build(rows)],
         ];

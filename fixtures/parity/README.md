@@ -80,3 +80,44 @@ regression test asserts that exact chunk, and the same input passes the Swift ve
 The other two CJK cases stop at a leading punctuation character. New lexical-boundary mismatches need
 a deliberate platform-adapter decision; changing expected output to whichever runtime ran it would
 hide the divergence.
+
+## Learning translation policy
+
+`learning-v1.json` is a separate versioned corpus for deterministic learning rules ported in the
+current Windows learning slice. Its expected values are checked against the pinned macOS commit
+`43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f` by the Swift-source verifier, then consumed by
+`tests/Cotabby.Core.Tests/Parity/LearningParityCorpusTests.cs`:
+
+```bash
+python3 scripts/verify-learning-macos-parity.py --mac-repo /path/to/lingrove
+```
+
+The corpus records stable language codes, translation-style normalization and instructions, generic
+and specialist prompt templates, token estimates, input/output allocation, whole-target rejection,
+and complete-response validation. Long repetitive strings use small `repeat` or `concat` text specs;
+both test runtimes expand those specs before invoking the policy. Each row has a macOS XCTest or an
+explicit derived-probe reference so the rule and its source can be reviewed.
+
+The verifier reads every source from Git at the pinned revision. It compiles the actual
+`LearningTranslationStyle` declaration from `LearningGenerationProfile.swift`, plus the committed
+language catalog, language values, token estimator, context budget, generic/specialist translation
+prompts, prompt budget, output policy, and insertion-safety gate. It extracts only the style type
+from the generation-profile file to avoid unrelated settings and sampling-profile dependencies.
+Fixture-only stubs provide the text DTO consumed by the pure prompt/budget functions, the model
+template enum needed to type-check an unexercised initializer, a sampling value DTO, and an
+impossible-to-trigger endpoint response error. They supply no policy behavior. The verifier also
+checks that the pinned `LearningTranslationService` still uses the output policy for streamed
+prefixes and the completed response.
+
+The output boundary is part of the actual translation path: at the pinned commit,
+`LearningTranslationService.generateValidated` accumulates partial translations with
+`LearningExpressionOutputPolicy.Stream` and validates the final model response with
+`LearningExpressionOutputPolicy.validatedText`. The policy rejects more than 12,000 UTF-8 bytes
+before preview or insertion. The corpus checks the exact limit and the first byte over it, along with
+edge trimming and replacement-character rejection; it does not rely on the policy's separate use
+by structured hints.
+
+The verifier uses `xcrun swiftc -swift-version 6` and temporary source files. It does not build the
+macOS app, load a model, contact an endpoint, or access an editor. The existing test-project fixture
+glob already copies all files below `fixtures/parity/`, so adding this corpus requires no extra
+project-file item.

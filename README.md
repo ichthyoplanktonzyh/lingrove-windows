@@ -36,9 +36,11 @@ system/imported dictionary flows remain incomplete.
 The [explanation input, prompt and output rules](docs/LEARNING_EXPLANATION_RULES.md) now have
 Mac-backed portable coverage, including model capability/metadata gates. A local provider now
 connects those rules to an exclusive native lease and complete-response validation; independent
-app settings/runtime ownership, its service/card and the explanation endpoint remain unported.
+app settings/runtime ownership, service/card wiring and the explanation endpoint remain unported.
 The [writing capture adapter](docs/LEARNING_EXPLANATION_RULES.md#writing-capture-to-input) now preserves
 the completed translation's target, exact occurrences and context receipt for that future service.
+The library service now adds saved-first lookup, profile/language isolation, complete records and
+the Mac's bounded result cache; it is not yet instantiated by the app.
 
 The first foundation milestone is documentation, build-and-test CI, and shared behavior fixtures. It
 does not add a Windows installer, downloadable build, artifact upload, release workflow, or model

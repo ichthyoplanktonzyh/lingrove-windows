@@ -2,7 +2,7 @@
 
 This port adapts the stable Mac explanation rules and a local provider at
 `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`. The Windows app has no explanation trigger yet;
-app service/settings/card integration remains unported. Translation and autocomplete runtime
+app settings/runtime/session/card wiring remains unported. Translation and autocomplete runtime
 ownership are unchanged.
 
 ## Source mapping and ownership
@@ -19,6 +19,7 @@ ownership are unchanged.
 | `LearningExplanationService.generate`, `LearningModelController.validateGeneralInstructionModel/generate`, `LearningLocalRuntime.generate` | `Core/LanguageLearning/ILearningExplanationEngine.cs`, `Inference/LanguageLearning/LearningLocalExplanationEngine.cs`, existing local runtime | Single-request local provider: frozen input/configuration to actual framed token plan to EOG-complete, byte-bounded, parsed result. App service/cache/settings/card wiring remains separate. |
 | `Support/Vocabulary/VocabularyCaptureFactory.swift`: writing `preview`, `unit(original:false)`, `component`; `VocabularyPolicy.example/exampleKey`; `LearningExplanationPolicy.input(capture)` | `Core/LanguageLearning/LearningExplanationInputFactory.cs` | Projects completed writing values into an explanation input, preserving ordered original occurrences and the captured context receipt. No durable capture/entry store is created. |
 | `VocabularyPolicy.example` sentence tokenizer; `LearningUnitPolicy.words` | `ILearningEvidenceSentenceTokenizer`, `Win32/Text/IcuLearningEvidenceSentenceTokenizer.cs`, existing lexical adapter | Full sentence token extents and word facts enter the projection. Native facts are validated before trusting a containing sentence; failures remain content-free. |
+| `Services/LanguageLearning/LearningExplanationService.swift`; `LearningModelSettings.swift`: snapshot; `LearningExplanationModels.swift`: record/protocol | `Core/LanguageLearning/LearningExplanationService.cs`, `LearningModelSnapshot.cs`, `LearningExplanationRecord.cs`, `ILearningExplanationGenerating.cs` | Library service borrows an app-owned facade factory, freezes effective profile/language, loads saved results before cache, retains bounded complete records and rejects retired work. No settings persistence, notebook store or app instance is introduced. |
 
 The values have no process lifetime or service owner. A future card or notebook session will own an
 input snapshot and hand it to an independent explanation provider. Policy returns a bounded prompt
@@ -206,11 +207,67 @@ This subset does not cover original-text toggles, selected text, reading/pointer
 their original Mac capture origin and corresponding adapters; the writing-preview method is not a
 generic selection capture API.
 
+## Library explanation service
+
+`LearningExplanationService` adapts the original explicit service orchestration. The future
+composition root supplies an explanation-only engine factory and committed profile/response-language
+snapshots. Each generated record has its own UUID, frozen input, response language, complete parsed
+result, model name and creation instant. Provider addresses and credentials do not enter a record.
+The record is currently an in-memory value: no durable schema, Codable date compatibility, store,
+notebook entry/sense/usage relationship or cross-platform storage compatibility is claimed.
+
+Input validation precedes model configuration failures. Unless refresh was requested, an optional
+asynchronous saved lookup (then synchronous fallback) wins over memory cache. Saved hooks are
+composition-time notebook seams, unset in production today. Generated answers alone update memory
+cache; refresh skips both saved/cache reads but replaces the complete cached record. Cache identity
+is input + response language + complete effective model snapshot. Hits do not promote entries.
+FIFO eviction retains at most 48 records and 4 MiB of the Mac's UTF-8 text estimate (target, context,
+dictionary form, meaning, explanation), not a total managed-memory guarantee.
+
+`LearningModelSnapshot.ForExplanation` mirrors the active-role projection: local clears dormant
+endpoint URL/model/credential revision, endpoint clears the local name and uses Automatic, the
+explanation role clears translation style, and endpoint sampling retains temperature/top-p only.
+String equality/hash retain Swift canonical identity for profile strings and record model names;
+original text is kept. Destination validation, model metadata and endpoint consent remain effect
+boundaries; this projection cannot authorize IO. Power-source selection and per-destination settings
+persistence still belong to the later settings adapter.
+Snapshots must already contain installed model names and settings-normalized context/output
+preferences. `ForExplanation` is the active-role field projection, not the complete settings parser,
+backend context-limit clamp or power-profile resolver; generation still applies the output clamp.
+
+The service checks caller cancellation, direct owner retirement, profile and language after saved
+lookup and model work, and again under its cache admission lock. Settings changes retire pending
+work before notifying future sessions. A one-use facade is drained before a record can be cached;
+service disposal retires and drains generation and admitted saved lookups without disposing the
+app-owned native runtime. Saved callbacks recheck language and closing state before returning.
+Foreign provider/storage errors become fixed content-free failures. These are explicit Windows
+thread/lifetime guards around the Mac orchestration, which runs on MainActor.
+The future saved-store boundary also rejects a mismatched input/response language or invalid
+result as a miss. Mac's notebook policy supplies trusted matching rows; this additional guard
+keeps a corrupt/mis-keyed Windows adapter from bypassing validation. Unexpected foreign exceptions
+use a fixed explanation-service failure rather than being mislabeled as local-model errors.
+
+Provider implementations retain prompt/metadata validation, exact token budgeting, raw response
+byte accounting, EOG completion and parsing; the service additionally checks parsed result validity.
+The existing local engine enforces those boundaries. Endpoint names can pass the source capability
+predicate, but no explanation endpoint or consent/credential path is implemented or wired. No new
+network transmission is introduced by this service.
+
+The tests adapt the independent-profile/cache/refresh regression in
+`CotabbyTests/Services/LanguageLearning/LearningExplanationTests.swift` and add source/lifetime
+boundaries: saved precedence, delayed preference/caller changes, FIFO/UTF-8 caps, invalid answers,
+facade failure/disposal, saved lookup shutdown, dormant settings and canonical identity. They use
+deterministic effect doubles, not a second Swift algorithm or real model. Existing six Swift
+verifiers still cover their own committed pure-policy/capture cases; they do not execute this
+asynchronous service. Request-ID trace/metrics correlation and display telemetry remain unported:
+the Mac-shaped request ID and display hook are retained for that future integration, but generation
+currently records no telemetry.
+
 ## Next adapter gates
 
 Still unported: the remaining capture origins and notebook construction, app ownership/settings for the new
-independent local explanation provider, endpoint transport,
-record ownership/persistence, request cancellation/stale-result session handling and the explanation
+independent local explanation provider/service, endpoint transport,
+durable record ownership/persistence, request cancellation/stale-result session handling and the explanation
 card. The translation model must not be borrowed to simulate this feature. App composition must
 give the local provider independent configuration/runtime ownership, or report it unavailable.
 Native WPF/UIA/IME/model

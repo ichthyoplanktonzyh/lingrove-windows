@@ -124,8 +124,9 @@ Completed translations now support bundled word lookup. Explanation input, promp
 complete-output parsing and model capability/metadata gates have [Mac-backed pure coverage](LEARNING_EXPLANATION_RULES.md).
 The local explanation provider now joins that gate with actual token budgeting and complete-output
 validation. A writing-only capture adapter now projects completed preview/unit/component targets
-into frozen explanation inputs with exact original occurrences and context receipts. The next slice
-must compose independent app runtime/settings and service before adding a session/card. Original,
+into frozen explanation inputs with exact original occurrences and context receipts. The library
+service now owns saved-first lookup and the bounded complete-record cache. The next slice must
+compose independent app runtime/settings with that service before adding a session/card. Original,
 selected-text and reading captures, endpoint transport and durable records remain later work.
 
 **Gate:** shared policy fixtures pass; Windows host tests cover selection changes, IME composition,

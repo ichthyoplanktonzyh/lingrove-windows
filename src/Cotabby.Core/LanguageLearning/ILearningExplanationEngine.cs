@@ -5,6 +5,8 @@ namespace Cotabby.Core.LanguageLearning;
 /// Only complete validated answers leave this boundary; provisional tokens never become a card
 /// or saved record. A facade owns its cancellation/lease, while the app owns a separate reusable
 /// runtime for this role. Disposing a facade must not dispose translation/autocomplete runtimes.
+/// A provider must enforce the Mac raw 24,000-byte response cap before parsing, reject incomplete
+/// generation, and return only a valid result; service validation of parsed fields cannot replace it.
 /// </summary>
 public interface ILearningExplanationEngine : IAsyncDisposable
 {

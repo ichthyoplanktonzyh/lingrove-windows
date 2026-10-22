@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Cotabby.App.Settings;
 using KeyBinding = Cotabby.Core.Input.KeyBinding;
+using KeyModifiers = Cotabby.Core.Input.KeyModifiers;
 
 namespace Cotabby.App.UI.Controls;
 

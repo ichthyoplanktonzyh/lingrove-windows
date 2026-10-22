@@ -168,8 +168,11 @@ be based on Windows-supported local engines or an explicit endpoint.
 The lexical index now ports explicit forms and known-pattern matching behind a platform text
 adapter. It returns original-text occurrence ranges; Windows ICU and the .NET Unicode runtime
 provide text primitives with the documented platform/version limits.
-It is not yet connected to a bundled lexicon service or WPF word lookup.
+The shared lazy lexicon store and bounded local bundle source are now registered once by AppHost;
+they are not yet called by the preview or WPF word lookup.
 [Source mappings and evidence](docs/LEARNING_LEXICAL_RULES.md) keep that library scope explicit.
+The [offline resource/service mapping](docs/LEARNING_OFFLINE_LEXICON.md) records the worker ownership,
+immutable dataset, Chinese language sharing, lookup and cancellation contracts.
 
 The durable vocabulary model is separate from transient translation output. The macOS reference uses
 stable entry UUIDs, stable sense UUIDs, example/usage UUIDs with source ranges and provenance, and

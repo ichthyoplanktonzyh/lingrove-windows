@@ -22,6 +22,8 @@
     <Resource Include="Assets\MenuBarCatIcon.png" />
     <Resource Include="Assets\MenuBarCatIcon@3x.png" />
     <Resource Include="Assets\Cotabby.ico" />
+    <Content Include="..\..\resources\LearningLexicon\learning-expressions*"
+             Link="Resources\LearningLexicon\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

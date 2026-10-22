@@ -1,0 +1,501 @@
+{
+  "version": "kaikki-2026-10-03-v1",
+  "licenseURL": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "sourceEdition": "English Wiktionary",
+  "extraction": "2026-10-03, enwiktionary dump 2026-09-02",
+  "sources": [
+    {
+      "url": "https://kaikki.org/dictionary/Arabic/pos-conj/kaikki.org-dictionary-Arabic-by-pos-conj.jsonl",
+      "bytes": 279656,
+      "sha256": "b549177bfc53c06f955f6071230983b5188e99e242579e942a982cae29f5f8a9"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/Arabic/pos-phrase/kaikki.org-dictionary-Arabic-by-pos-phrase.jsonl",
+      "bytes": 269885,
+      "sha256": "c185dd856885811d5f2935b05c7ee58d509a4d1c9f82b9c04ec56d6893c14383"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/Arabic/pos-prep/kaikki.org-dictionary-Arabic-by-pos-prep.jsonl",
+      "bytes": 594843,
+      "sha256": "7ea8d2425cc426909bdf103196bd50e399cb0854c88149eb81bc22de0b228221"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/Arabic/pos-prep_phrase/kaikki.org-dictionary-Arabic-by-pos-prep_phrase.jsonl",
+      "bytes": 13968,
+      "sha256": "a91dc42470075fe3534313cbd1cbf875a27f33f768f522e1f9ade86bd348cd0c"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/Chinese/pos-conj/kaikki.org-dictionary-Chinese-by-pos-conj.jsonl",
+      "bytes": 2232977,
+      "sha256": "d2345af15f31e279015c69690033a4ad86be2cb4ed9dc0c455d45c05869ad2e0"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/Chinese/pos-phrase/kaikki.org-dictionary-Chinese-by-pos-phrase.jsonl",
+      "bytes": 36454525,
+      "sha256": "eecc4ef8c05d5a20c3b0e8a9dd4987089699dfb3b5b5feb7abbb519fd57ad03d"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/Chinese/pos-prep/kaikki.org-dictionary-Chinese-by-pos-prep.jsonl",
+      "bytes": 1308798,
+      "sha256": "dc36dc4fdfa747fe3855844aad887158fe6a559b36b6574ae2c885303721c7b5"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/Dutch/pos-conj/kaikki.org-dictionary-Dutch-by-pos-conj.jsonl",
+      "bytes": 184134,
+      "sha256": "5ab2cfe78dd66a02b821a7266362dc5d3074f021bacf035baa78615dccf85bff"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/Dutch/pos-phrase/kaikki.org-dictionary-Dutch-by-pos-phrase.jsonl",
+      "bytes": 423244,
+      "sha256": "f7c3e313b821af608436b7cad20d9095501c793a06f67d080b69c83489332c89"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/Dutch/pos-prep/kaikki.org-dictionary-Dutch-by-pos-prep.jsonl",
+      "bytes": 378252,
+      "sha256": "b5c66f7a90a2cc86e6af11fbf6324b90aea5b5a6690e98e9c9b108e85a600d6d"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/Dutch/pos-prep_phrase/kaikki.org-dictionary-Dutch-by-pos-prep_phrase.jsonl",
+      "bytes": 399155,
+      "sha256": "3f6da0eebf223a434f16570113df780c1bdd0b89d7f3ed4d4fc1d0233c218544"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/-m/English%20phrasal%20verbs%20formed%20with%20%22into%22/kaikki.org-dictionary-English-category-English-3E~pM0ud",
+      "bytes": 223258,
+      "sha256": "663364755a3430ef9861f932ffa6d9e63546d39f1660808abebff194608a4b11"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/1j/English%20phrasal%20verbs%20formed%20with%20%22aside%22/kaikki.org-dictionary-English-category-English-A7SaRlKO",
+      "bytes": 32364,
+      "sha256": "f238042aa51dc9f91d1229b41442f5d0346a089cd49d85d946f092e0b95eef78"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/2c/English%20phrasal%20verbs%20formed%20with%20%22with%22/kaikki.org-dictionary-English-category-English-uRiUh8Ip",
+      "bytes": 331095,
+      "sha256": "254b448b3ef180b942f136896c9018031e03bfa99d6f3dd9cc51b0dc92ce966e"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/3b/English%20phrasal%20verbs%20formed%20with%20%22under%22/kaikki.org-dictionary-English-category-English-ePceQ7x-",
+      "bytes": 55948,
+      "sha256": "9440988a8f9b2748164200b8e00ba2e0c0f224392702780808be13c32ec83da9"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/60/English%20phrasal%20verbs%20formed%20with%20%22after%22/kaikki.org-dictionary-English-category-English-SG3I19~M",
+      "bytes": 72304,
+      "sha256": "adbeabc9c6961e4e145e984fe829aa0ed589968ae7d692689f05c7fc7e477ebf"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/6e/English%20phrasal%20verbs%20formed%20with%20%22beyond%22/kaikki.org-dictionary-English-category-English-UoUSAJnu",
+      "bytes": 3897,
+      "sha256": "61ee48b8daab017bb38e06673a94f7ed508d1989c11432f3ef56e47d97093e77"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/8t/English%20phrasal%20verbs%20formed%20with%20%22as%22/kaikki.org-dictionary-English-category-English-5MtsvaZe",
+      "bytes": 28579,
+      "sha256": "e3a152f58a917cc8d850582be9e6668c1e50c37f607865215394be1f88037d20"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/BT/English%20phrasal%20verbs%20formed%20with%20%22out%22/kaikki.org-dictionary-English-category-English-WvJIh3Bm",
+      "bytes": 2669504,
+      "sha256": "8f84fea648fe5c012a373bf0d09da2284bba17315fc5008601269ee935ca5b99"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/Bu/English%20phrasal%20verbs%20formed%20with%20%22without%22/kaikki.org-dictionary-English-category-English-3J~wLnMB",
+      "bytes": 11888,
+      "sha256": "978b88a2c6318c10a31a1fc20cc403b477296cb391c050a091c0ba371c64241d"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/DJ/English%20phrasal%20verbs%20formed%20with%20%22from%22/kaikki.org-dictionary-English-category-English-m3D5jniB",
+      "bytes": 57103,
+      "sha256": "f4634867a0c55d60623573561d8615ed3533f398c0a5dff0605e360e83d8d2d5"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/Ev/English%20phrasal%20verbs%20formed%20with%20%22around%22/kaikki.org-dictionary-English-category-English-jfoCu2f7",
+      "bytes": 355877,
+      "sha256": "0b85a2985d3a60e421fd560215999ecb6e3de75654edabf1c42967bb66bf5e15"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/Fc/English%20phrasal%20verbs%20formed%20with%20%22in%22/kaikki.org-dictionary-English-category-English-K0dJV242",
+      "bytes": 951931,
+      "sha256": "7713138777735ed0dfe128f001009235704124a28386eaaf53d778f83d568bff"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/I8/English%20phrasal%20verbs%20formed%20with%20%22ahead%22/kaikki.org-dictionary-English-category-English-biYjWhKp",
+      "bytes": 71160,
+      "sha256": "bde902446265b548e2b2e4b0e8926457e16f6479c862791ee649bcf93fb9fecb"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/J5/English%20phrasal%20verbs%20formed%20with%20%22for%22/kaikki.org-dictionary-English-category-English-gab~WFPG",
+      "bytes": 304558,
+      "sha256": "ebd4ee70257faf16a7d052d38db99e641a98bce2058005a59a0b99aff93b2996"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/JW/English%20phrasal%20verbs%20formed%20with%20%22against%22/kaikki.org-dictionary-English-category-English-0fyZsq~r",
+      "bytes": 61732,
+      "sha256": "ab4929ddd18d0a692d633e244539a1b54075f05ccd38478a2cef472d4fd24a82"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/K-/English%20phrasal%20verbs%20formed%20with%20%22back%22/kaikki.org-dictionary-English-category-English-mJSlKVMX",
+      "bytes": 414751,
+      "sha256": "8a2628d37e1d8d72b6f67d77a12b3afbb00fb6526ce03bb0aaf081358eac043e"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/LV/English%20phrasal%20verbs%20formed%20with%20%22round%22/kaikki.org-dictionary-English-category-English-0H5-qhnD",
+      "bytes": 56128,
+      "sha256": "0d9f8d8a817d0ca6e45484ace97b8f320ececf12172102f9b4efee4551319292"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/Le/English%20phrasal%20verbs%20formed%20with%20%22up%22/kaikki.org-dictionary-English-category-English-U2lq71GL",
+      "bytes": 3678822,
+      "sha256": "7629a7c444b0f4401a02b2723b7bc9e743a59d62cf48b993e345ce411af2c019"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/MV/English%20phrasal%20verbs%20formed%20with%20%22through%22/kaikki.org-dictionary-English-category-English-4UWU1IuZ",
+      "bytes": 208223,
+      "sha256": "fceaa8a00109fb21eba85f9fa1ec4b243fae6e6799ca11a3c24006dd5bd5f3a0"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/MY/English%20phrasal%20verbs%20formed%20with%20%22between%22/kaikki.org-dictionary-English-category-English-e9Jq79Uk",
+      "bytes": 9304,
+      "sha256": "420ec851ddc3c03abf63d8de651a48a15aa6ba607ed50cf0ca51d6b8872cc65e"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/Mv/English%20phrasal%20verbs%20formed%20with%20%22down%22/kaikki.org-dictionary-English-category-English-Qk-ipJav",
+      "bytes": 1318630,
+      "sha256": "e7eeb4112a942ee57de9b9836e241f72c752eb141ad8001dc768e33550b23feb"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/Pk/English%20phrasal%20verbs%20formed%20with%20%22above%22/kaikki.org-dictionary-English-category-English-5G6JvMO2",
+      "bytes": 8067,
+      "sha256": "edf2dd764545f6376c81c0515fc9744ca7607fb2bb35cd80f2fab0ad6ce85814"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/Pv/English%20phrasal%20verbs%20formed%20with%20%22at%22/kaikki.org-dictionary-English-category-English-JddjzgJS",
+      "bytes": 111326,
+      "sha256": "0c0df522d9b1788213e557f64c45ef66cd28cb675cb12c197d32fb6dde6bee26"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/Td/English%20phrasal%20verbs%20formed%20with%20%22away%22/kaikki.org-dictionary-English-category-English-gVM2Ljbz",
+      "bytes": 556304,
+      "sha256": "44f2593bfb02261809db64ff061af0190c8b2f3348599fafb55c85878dc9339f"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/UL/English%20phrasal%20verbs%20formed%20with%20%22across%22/kaikki.org-dictionary-English-category-English-fxn3Neps",
+      "bytes": 33829,
+      "sha256": "b702105fcd5bf8bb84b0753953019989ba426ed2d7d28d2061de39f4fa8da248"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/VS/English%20phrasal%20verbs%20formed%20with%20%22to%22/kaikki.org-dictionary-English-category-English-P0XAfXrC",
+      "bytes": 371819,
+      "sha256": "39b806dbd7815920dd750bcd324379b91ff5f0c6385ba569da3dc10f02a2d0a3"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/Wh/English%20phrasal%20verbs%20formed%20with%20%22over%22/kaikki.org-dictionary-English-category-English-bAgRio-S",
+      "bytes": 494297,
+      "sha256": "b0ccae664fc9c6824c1734b5b88a54dca24214b1a927464f0b91096707a0ae23"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/XX/English%20phrasal%20verbs%20formed%20with%20%22behind%22/kaikki.org-dictionary-English-category-English-IVRAzGpZ",
+      "bytes": 94648,
+      "sha256": "990e3a99d30b5f91eec82c400acb38a3978d39d8d998af41da0c7c7c0fec064b"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/ZH/English%20phrasal%20verbs%20formed%20with%20%22past%22/kaikki.org-dictionary-English-category-English-d5qxeiaW",
+      "bytes": 50192,
+      "sha256": "727341482e424918fc9d9769c28271b8b93aa798ef123945591513e720bde6b1"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/bj/English%20phrasal%20verbs%20formed%20with%20%22below%22/kaikki.org-dictionary-English-category-English-6zO7ExT5",
+      "bytes": 6174,
+      "sha256": "ddb3d4fbcb32de446a66b4ee5cfe006002b4e9418c8c929e64662814578c94f7"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/ct/English%20phrasal%20verbs%20formed%20with%20%22by%22/kaikki.org-dictionary-English-category-English-fZPzTY56",
+      "bytes": 117800,
+      "sha256": "2d496220c594eb51c6cd32837d51bc9d991a13087017f42244f4269cd76e3529"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/fG/English%20phrasal%20verbs%20formed%20with%20%22along%22/kaikki.org-dictionary-English-category-English-IPEMDJUC",
+      "bytes": 108939,
+      "sha256": "e88ae76c78f2df56736b31ffd30277d02b46dcdaf1f1eb8370d58db03ea4f334"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/fl/English%20phrasal%20verbs%20formed%20with%20%22together%22/kaikki.org-dictionary-English-category-English-T9wOaRu4",
+      "bytes": 159099,
+      "sha256": "70437dce170589243204eff085a379a314e514bc6bab99bc65ebe230423be092"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/i2/English%20phrasal%20verbs%20formed%20with%20%22towards%22/kaikki.org-dictionary-English-category-English-8jD7urqU",
+      "bytes": 10523,
+      "sha256": "4da51f73450c659822a125d75162404d77d28cb29b5db30029186760f570d975"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/kZ/English%20phrasal%20verbs%20formed%20with%20%22aback%22/kaikki.org-dictionary-English-category-English-oX~9B6On",
+      "bytes": 7688,
+      "sha256": "fa9ae4c2bc255055a42c9b0859a347aea086c7cc44248b06350f27626b726048"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/l-/English%20phrasal%20verbs%20formed%20with%20%22apart%22/kaikki.org-dictionary-English-category-English-iPAoUA06",
+      "bytes": 51232,
+      "sha256": "107b90c02f0a07b18747a01c7051defef46a353399f93210f7260ec5c4792d39"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/mX/English%20phrasal%20verbs%20formed%20with%20%22of%22/kaikki.org-dictionary-English-category-English-LcLZtcRM",
+      "bytes": 94115,
+      "sha256": "58bbd8b911785f6198aab00c9c901c1a346305710574e8e39173f4921a3ae977"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/of/English%20phrasal%20verbs%20formed%20with%20%22off%22/kaikki.org-dictionary-English-category-English-hD6v5fvK",
+      "bytes": 1592809,
+      "sha256": "c47eaae021bdbc09928811bfa555073e5d1005c0ff087a288f03eefe10baa745"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/tq/English%20phrasal%20verbs%20formed%20with%20%22about%22/kaikki.org-dictionary-English-category-English-mhUj90yS",
+      "bytes": 299228,
+      "sha256": "6ff7fd6d6b73fa16ee56acea74a0e77076143c5da4aa9c5e91655ca1c595f501"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/uf/English%20phrasal%20verbs%20formed%20with%20%22forth%22/kaikki.org-dictionary-English-category-English-5xSVwjAO",
+      "bytes": 41031,
+      "sha256": "4b3809c511ca6488a8d128136862393f0eaf7c1f767b1cfeaa12c73dcb39b606"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/vz/English%20phrasal%20verbs%20formed%20with%20%22onto%22/kaikki.org-dictionary-English-category-English-qONu9oxx",
+      "bytes": 34163,
+      "sha256": "e944b31d4b56b9e1e250d80605fb08e7b70a30373d93c6865ffa7d6d202f71bc"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/x5/English%20phrasal%20verbs%20formed%20with%20%22on%22/kaikki.org-dictionary-English-category-English-nIFcnYOH",
+      "bytes": 1000573,
+      "sha256": "58f5fb88bdc01e98969dd2e1a0c922d8c274a7b66640c3e7f9152176dbd8e58b"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/xG/English%20phrasal%20verbs%20formed%20with%20%22upon%22/kaikki.org-dictionary-English-category-English-6dkdn5Kc",
+      "bytes": 132114,
+      "sha256": "fef3505b6d007ba9db5334bd14b0898711eb8650390bd39b68d91874eea00faf"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/categories-other/zA/English%20phrasal%20verbs%20formed%20with%20%22before%22/kaikki.org-dictionary-English-category-English-Yy9m5kyh",
+      "bytes": 8789,
+      "sha256": "1ea8e508ca3a944761016f049a0b4c7f02ca81cbad6df77ddb15c3586d26235a"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/pos-conj/kaikki.org-dictionary-English-by-pos-conj.jsonl",
+      "bytes": 3015876,
+      "sha256": "a641dd5fa9376542a0a1b95bf9bb58d33f011562eae9d128863a43f21762b3f7"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/pos-phrase/kaikki.org-dictionary-English-by-pos-phrase.jsonl",
+      "bytes": 14533591,
+      "sha256": "95ba9188b98b3e1174c5ee468ead3f447f4cad7526cd1bb6e2346806bb72a5d7"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/pos-prep/kaikki.org-dictionary-English-by-pos-prep.jsonl",
+      "bytes": 6038980,
+      "sha256": "748339fcd211d346859f90097231962271ab22989d60e78a4af615f94cbc65cc"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/pos-prep_phrase/kaikki.org-dictionary-English-by-pos-prep_phrase.jsonl",
+      "bytes": 7784399,
+      "sha256": "258a187208687e17610a189b781c820f295e845d790ef3085667427815a5f5a8"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/French/pos-conj/kaikki.org-dictionary-French-by-pos-conj.jsonl",
+      "bytes": 311557,
+      "sha256": "a6dc434690b83f23878148e1c3e65fb6190f73c1b5cb1ac26572569a45f13e4a"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/French/pos-phrase/kaikki.org-dictionary-French-by-pos-phrase.jsonl",
+      "bytes": 921594,
+      "sha256": "26a80a73581e1042c2c9744962ba6b8752a3affc35acd12697e02f085b47fc1e"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/French/pos-prep/kaikki.org-dictionary-French-by-pos-prep.jsonl",
+      "bytes": 703395,
+      "sha256": "f2bf00642acdcb4cb8cb20f2975995c333113daff535c8ffbdc03910e6343177"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/French/pos-prep_phrase/kaikki.org-dictionary-French-by-pos-prep_phrase.jsonl",
+      "bytes": 432652,
+      "sha256": "02b5831af7e8a7fa3c5706299a977491dc602f28e9a44b85aef0b627e9eb8859"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/German/pos-conj/kaikki.org-dictionary-German-by-pos-conj.jsonl",
+      "bytes": 269570,
+      "sha256": "7799d0088ddadd3be42d2bee4bb73ce9005c27c68b28b6a8aef9edb04563dfa4"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/German/pos-phrase/kaikki.org-dictionary-German-by-pos-phrase.jsonl",
+      "bytes": 875760,
+      "sha256": "6a77ac2f397a9f6a05fcf57daf7b46b6543a93074574b75923c4a7d62cd172db"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/German/pos-prep/kaikki.org-dictionary-German-by-pos-prep.jsonl",
+      "bytes": 545500,
+      "sha256": "13f14eeb07fb07120d519c50ad7809413e8ad77058739123fb8ad31d90b900a9"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/German/pos-prep_phrase/kaikki.org-dictionary-German-by-pos-prep_phrase.jsonl",
+      "bytes": 293258,
+      "sha256": "91fe1da7b7a7ba947ca68e40e11d3d63b6fc0049b236ebdeb8c009c4a4c563d5"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/Hindi/pos-conj/kaikki.org-dictionary-Hindi-by-pos-conj.jsonl",
+      "bytes": 96311,
+      "sha256": "d87b8886c0d9fe7dd07aba8dcc21a15d55e349ad069440a03dccdc2758b7e1ac"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/Hindi/pos-phrase/kaikki.org-dictionary-Hindi-by-pos-phrase.jsonl",
+      "bytes": 372491,
+      "sha256": "5f839647b215ee8037ecc99cf0835eaeaa736a87b4fe12053be5483134f4ac72"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/Hindi/pos-prep/kaikki.org-dictionary-Hindi-by-pos-prep.jsonl",
+      "bytes": 29576,
+      "sha256": "a7b9b6fb84a79b8f9d79472dee5bddadcc80d4d4110cae4e82201680d333c036"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/Hindi/pos-prep_phrase/kaikki.org-dictionary-Hindi-by-pos-prep_phrase.jsonl",
+      "bytes": 1865,
+      "sha256": "7442fe54fa63006d66f10ec35c1c35dacd8f63ca2a3b0fb966b80bb515d26baf"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/Italian/pos-conj/kaikki.org-dictionary-Italian-by-pos-conj.jsonl",
+      "bytes": 308660,
+      "sha256": "50311dd3d66d3150269a8d6c8d78b9c6a0b86965e61a4ba241fa441ab9528bac"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/Italian/pos-phrase/kaikki.org-dictionary-Italian-by-pos-phrase.jsonl",
+      "bytes": 298937,
+      "sha256": "80a7a96306716fbb922fcb3793f2ece7193dcbe4d2745bd2878c469deeb88488"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/Italian/pos-prep/kaikki.org-dictionary-Italian-by-pos-prep.jsonl",
+      "bytes": 316157,
+      "sha256": "0b058fba4f9debb55d791e1647cea005353aebbe882867cfc1ac7c7f105b5eaf"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/Italian/pos-prep_phrase/kaikki.org-dictionary-Italian-by-pos-prep_phrase.jsonl",
+      "bytes": 1024014,
+      "sha256": "0ae041d370d2d63bc72dabb01c627976e91ad1367d07f2a8da6b8575fdd3e0be"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/Japanese/pos-conj/kaikki.org-dictionary-Japanese-by-pos-conj.jsonl",
+      "bytes": 320358,
+      "sha256": "57a8eb45c6ce25e4e03c77059fb2410d99219c92cd3a6bb4c8a2633ff8e2db01"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/Japanese/pos-phrase/kaikki.org-dictionary-Japanese-by-pos-phrase.jsonl",
+      "bytes": 2266656,
+      "sha256": "66961e8e0b4f658b56d723a16c61eebfe96ddca192a2c48e5d60361052cf4f60"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/Korean/pos-conj/kaikki.org-dictionary-Korean-by-pos-conj.jsonl",
+      "bytes": 1726,
+      "sha256": "b3818db5c41bd7f796ec921b1c1a4ddd690decba6ec4a9338b8cdecab891ff79"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/Korean/pos-phrase/kaikki.org-dictionary-Korean-by-pos-phrase.jsonl",
+      "bytes": 242554,
+      "sha256": "488a7d3d0e6a01799172190aa69dcc79b1b69668a48fcb041f450413764d6a14"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/Portuguese/pos-conj/kaikki.org-dictionary-Portuguese-by-pos-conj.jsonl",
+      "bytes": 225958,
+      "sha256": "88c3efa9eff6ce6c8377bc73d4b5f333e23f108270330ce71f6bca7e0ed00939"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/Portuguese/pos-phrase/kaikki.org-dictionary-Portuguese-by-pos-phrase.jsonl",
+      "bytes": 563350,
+      "sha256": "7689e63e91f8f0d11b5dc675981b01f833287d889c47592427ffb01b481379db"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/Portuguese/pos-prep/kaikki.org-dictionary-Portuguese-by-pos-prep.jsonl",
+      "bytes": 357812,
+      "sha256": "feddbad3b599e24ca9e9d7ed24479f1c8e00366938e10d404d85f6860aa0bdd8"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/Portuguese/pos-prep_phrase/kaikki.org-dictionary-Portuguese-by-pos-prep_phrase.jsonl",
+      "bytes": 31675,
+      "sha256": "33f4fa137d1177f7b03e87e95497767c83a0e70ac6395d86fd12c67625b1dc6e"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/Russian/pos-conj/kaikki.org-dictionary-Russian-by-pos-conj.jsonl",
+      "bytes": 280635,
+      "sha256": "bcfbc31a455f2feab0167dfd74e8ff0ee0439ac2de9e1b7b8d7c9a515cb95576"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/Russian/pos-phrase/kaikki.org-dictionary-Russian-by-pos-phrase.jsonl",
+      "bytes": 788624,
+      "sha256": "451899ccf34070717dd7b0d1ca1b89fb0f7c056b6f10156d6fde70b22a516e63"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/Russian/pos-prep/kaikki.org-dictionary-Russian-by-pos-prep.jsonl",
+      "bytes": 480161,
+      "sha256": "d759e34f1b31fbbdd74ef9202e31e1d5d806e3fe710cc1cb1de9fbd2df46a688"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/Russian/pos-prep_phrase/kaikki.org-dictionary-Russian-by-pos-prep_phrase.jsonl",
+      "bytes": 8499,
+      "sha256": "e11582a5d68a635327c9b874478654bceb918d2e4e6c93eff034c1c7a96f9d21"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/Spanish/pos-conj/kaikki.org-dictionary-Spanish-by-pos-conj.jsonl",
+      "bytes": 288737,
+      "sha256": "e05aa4343ab264b76e56bbbdb86be791c7950213e732ccc219b56c531bb5a9f2"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/Spanish/pos-phrase/kaikki.org-dictionary-Spanish-by-pos-phrase.jsonl",
+      "bytes": 1039705,
+      "sha256": "d9c3c7e6e9c08e0717ef03a7abc2933905c16b4c0a98ef10bdc2da202833ff38"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/Spanish/pos-prep/kaikki.org-dictionary-Spanish-by-pos-prep.jsonl",
+      "bytes": 489465,
+      "sha256": "9aad1ee93be69962cb74ed84cdb780c0ee573e6605c24917324c99ab28639108"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/Spanish/pos-prep_phrase/kaikki.org-dictionary-Spanish-by-pos-prep_phrase.jsonl",
+      "bytes": 70836,
+      "sha256": "de82fd868152f8524fd388973297b7ff5b4b955ac70f7ec5a20b45f629d5c43a"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/tags/93/idiomatic/kaikki.org-dictionary-English-tag-idiomatic.jsonl",
+      "bytes": 40643030,
+      "sha256": "fee2b8016389b225e3713fbe36ed5c4482dc64a375370cccd72c8822559800e2"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/meaning/t/ta/take%20care%20of.jsonl",
+      "bytes": 15239,
+      "sha256": "6afbb79972430b5d26a0c2a3b855a779677980639f97326fedaa958e363da159"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/meaning/m/ma/make%20a%20decision.jsonl",
+      "bytes": 4855,
+      "sha256": "5c8361ea71406e6784761c9fa9506bb5ec7bbe4918419ffb55a8f21d523fe6ff"
+    },
+    {
+      "url": "https://kaikki.org/dictionary/English/meaning/k/ke/keep%20in%20mind.jsonl",
+      "bytes": 1983,
+      "sha256": "143159fe42c7a4f8a214435d7e08f6bddbc9de7c7ab5bf18b381b772c602820b"
+    }
+  ],
+  "entriesByLanguage": {
+    "en": 18366,
+    "es": 1012,
+    "fr": 1069,
+    "de": 632,
+    "it": 861,
+    "pt": 488,
+    "nl": 653,
+    "ru": 457,
+    "zh": 9704,
+    "ja": 706,
+    "ko": 107,
+    "hi": 189,
+    "ar": 153
+  },
+  "bytes": 11543088,
+  "sha256": "ff66f9835d9cf8f586d0618c09ad3e2b091269bc15bcdac1502660dd0e4c7984",
+  "transformation": "Subset of Phrase, Prepositional phrase, multiword Conjunction/Preposition, English phrasal-verb and idiomatic categories. Retain glosses, POS, labels, explicit forms and source URL; omit citations, examples and media."
+}

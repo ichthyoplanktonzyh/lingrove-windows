@@ -19,6 +19,8 @@ SOURCES = [
 ]
 UNIT_MODELS = "Cotabby/Models/LanguageLearning/LearningUnitModels.swift"
 WORD_MODELS = "Cotabby/Models/LanguageLearning/LearningDictionaryWord.swift"
+RESOURCE_NAMES = ("learning-expressions.json", "learning-expressions.NOTICE.md",
+                  "learning-expressions.provenance.json")
 
 DRIVER = r'''
 import Foundation
@@ -35,6 +37,14 @@ func unitJSON(_ unit: LearningUnit) -> [String: Any] {
     ["id": unit.id, "surface": unit.surface, "query": unit.query,
      "kind": unit.kind.rawValue, "ranges": unit.ranges.map(rangeJSON),
      "words": unit.words.map(wordJSON), "entryID": unit.entryID as Any? ?? NSNull()]
+}
+// Decode/re-encode with the complete actual Codable resource model. Python compares the full
+// JSON value, including every source-owned entry/sense, rather than a hand-picked projection.
+if CommandLine.arguments[1] == "--decode-lexicon" {
+    let data = try Data(contentsOf: URL(fileURLWithPath: CommandLine.arguments[2]))
+    let resource = try JSONDecoder().decode(LearningLexiconResource.self, from: data)
+    FileHandle.standardOutput.write(try JSONEncoder().encode(resource))
+    exit(0)
 }
 let data = try Data(contentsOf: URL(fileURLWithPath: CommandLine.arguments[1]))
 let corpus = try JSONSerialization.jsonObject(with: data) as! [String: Any]
@@ -115,6 +125,12 @@ def main() -> None:
     if any(row["provenanceKind"] == "regression-adaptation" and not row.get("macTest")
            for row in corpus["cases"]):
         parser.error("Regression adaptations require the corresponding Mac test path")
+    resource_root = Path(__file__).resolve().parents[1] / "resources/LearningLexicon"
+    for name in RESOURCE_NAMES:
+        pinned = subprocess.check_output(["git", "-C", str(args.mac_repo), "show",
+            f"{BASELINE}:Cotabby/Resources/{name}"])
+        if (resource_root / name).read_bytes() != pinned:
+            raise SystemExit(f"FAIL: bundled {name} differs from the pinned Mac bytes")
     with tempfile.TemporaryDirectory(prefix="lingrove-lexical-parity-") as temporary:
         directory = Path(temporary)
         sources = []
@@ -128,6 +144,7 @@ def main() -> None:
             "nonisolated struct LearningUnit:", "nonisolated enum LearningUnitStage:")
         pure_models += between(models, "nonisolated struct LearningLexiconEntry:",
             "nonisolated struct LearningLexiconResource:")
+        pure_models += between(models, "nonisolated struct LearningLexiconResource:", "/// Sources return content")
         pure_models += between(word, "nonisolated struct LearningDictionaryWord:", "/// View-local geometry")
         target = directory / "LexicalValues.swift"
         target.write_text(pure_models, encoding="utf-8")
@@ -137,6 +154,10 @@ def main() -> None:
         executable = directory / "lexical-parity"
         subprocess.run(["xcrun", "swiftc", "-swift-version", "6", *sources, str(driver), "-o", str(executable)], check=True)
         actual = json.loads(subprocess.check_output([str(executable), str(args.fixture)], text=True))
+        resource_path = resource_root / "learning-expressions.json"
+        decoded = json.loads(subprocess.check_output([str(executable), "--decode-lexicon", str(resource_path)]))
+        if decoded != json.loads(resource_path.read_bytes()):
+            raise SystemExit("FAIL: bundled JSON differs from actual Mac Codable resource roundtrip")
     if args.capture_output:
         with args.capture_output.open("x", encoding="utf-8") as output:
             json.dump(actual, output, ensure_ascii=False, indent=2)
@@ -149,6 +170,7 @@ def main() -> None:
         if expected != observed:
             raise SystemExit(f"FAIL {row['id']}: actual pinned Mac observation differs from the fixture")
     print(f"PASS: {len(actual)} lexical parity cases against macOS {BASELINE}")
+    print(f"PASS: 3 pinned resource files and Mac Codable roundtrip of {len(decoded['entries'])} entries")
 
 if __name__ == "__main__":
     main()

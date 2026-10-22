@@ -37,7 +37,9 @@ The [explanation input, prompt and output rules](docs/LEARNING_EXPLANATION_RULES
 Mac-backed portable coverage, including model capability/metadata gates. A local provider now
 connects those rules to an exclusive native lease and complete-response validation. The app now
 owns [independent local settings and runtime](docs/LEARNING_EXPLANATION_RUNTIME.md); explanation
-session/card wiring and the explanation endpoint remain unported.
+session/card wiring and the explanation endpoint remain unported. The
+[session library](docs/LEARNING_EXPLANATION_SESSION.md) now preserves explicit generation, saved
+restoration, refresh retention and revision-based cancellation for that future UI adapter.
 The [writing capture adapter](docs/LEARNING_EXPLANATION_RULES.md#writing-capture-to-input) now preserves
 the completed translation's target, exact occurrences and context receipt for that future service.
 The library service now adds saved-first lookup, profile/language isolation, complete records and

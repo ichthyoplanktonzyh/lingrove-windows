@@ -4,7 +4,9 @@ This slice adapts the pinned Mac implementation at
 `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`. AppHost now instantiates one local explanation
 controller/service with its **own** lazy runtime. Settings UI can select an installed model, a
 role-appropriate template, response language and per-model context/output limits. An interactive
-explanation session/card and settings test action remain unported; selecting a model does not run it.
+explanation session/card and settings test action remain unwired; selecting a model does not run it.
+The [portable session library](LEARNING_EXPLANATION_SESSION.md) now owns target/refresh/cancellation
+state, while its WPF adapter is still a separate step.
 
 ## Source mapping
 

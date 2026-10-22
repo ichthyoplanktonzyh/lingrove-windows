@@ -48,6 +48,8 @@ coverage*.info
 project.lock.json
 project.fragment.lock.json
 .dotnet/
+# Read-only sparse checkout used by the cross-language fixture verifier in CI.
+/.mac-baseline/
 
 # OS noise
 .DS_Store

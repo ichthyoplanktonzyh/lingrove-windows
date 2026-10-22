@@ -88,12 +88,19 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         ILearningLanguageDetector? languageDetector = null,
         Func<bool>? batterySaverOn = null,
         ILearningUnitRecognizing? unitRecognizer = null,
-        ILearningDictionaryProviding? dictionaryProvider = null)
+        ILearningDictionaryProviding? dictionaryProvider = null,
+        ILearningExplanationGenerating? explanationService = null,
+        LearningExplanationInputFactory? explanationInputs = null,
+        Action? configureExplanation = null)
     {
         _hook = hook;
         _coordinator = new LearningPreviewCoordinator(unitRecognizer: unitRecognizer);
         _dictionarySession = dictionaryProvider is null ? null : new LearningDictionarySession(dictionaryProvider);
         if (_dictionarySession is not null) _dictionarySession.StateChanged += OnDictionaryStateChanged;
+        _explanationInputs = explanationInputs;
+        _configureExplanation = configureExplanation;
+        _explanationSession = explanationService is null || explanationInputs is null ? null : new LearningExplanationSession(explanationService);
+        if (_explanationSession is not null) _explanationSession.StateChanged += OnExplanationStateChanged;
         _focus = focus;
         _dispatcher = dispatcher;
         _sentenceTokenizer = sentenceTokenizer;
@@ -211,6 +218,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         _focus.FocusChanged -= OnFocusChanged;
         _coordinator.StateChanged -= OnCoordinatorStateChanged;
         if (_dictionarySession is not null) _dictionarySession.StateChanged -= OnDictionaryStateChanged;
+        if (_explanationSession is not null) _explanationSession.StateChanged -= OnExplanationStateChanged;
         CancelCurrentState();
 
         if (_dispatcher.CheckAccess())
@@ -236,6 +244,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         _coordinator.ClearCache();
         await _coordinator.DisposeAsync().ConfigureAwait(false);
         if (_dictionarySession is not null) await _dictionarySession.DisposeAsync().ConfigureAwait(false);
+        if (_explanationSession is not null) await _explanationSession.DisposeAsync().ConfigureAwait(false);
     }
 
     private void OnKeyEvent(object? sender, KeyEventArgs args)
@@ -304,6 +313,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
             _activeCapture = null;
             _activeRequestId = null;
             RetireDictionaryLocked();
+            RetireExplanationLocked();
         }
 
         CancelMonitor(prior?.Monitor);
@@ -583,6 +593,13 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
             _logger.LogDebug("Learning local resource release ended with a cleanup failure.");
         }
     }
+
+    // Cached tracker reads close a dispatcher gap without blocking it on cross-process UIA.
+    // Dictionary and explanation children share the parent card's captured-field authority.
+    private bool CachedCaptureCurrent(CapturedSentence capture) =>
+        _settings is { } settings && settings.HasSameTranslationInputs(capture.Settings) && IsLearningAvailable(settings)
+        && _focus.Current is { } field && SameCapturedField(capture.Field, field)
+        && FieldCaptureFailure(field, capture.Settings) is null;
 
     private bool IsCaptureCurrent(CapturedSentence capture)
     {
@@ -943,6 +960,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
 
             EnsureWindow().ShowState(state, capture.Field.CaretRect,
                 canRetry: state.Status == LearningPreviewStatus.Failed);
+            PrepareSentenceExplanation(state, capture, intent);
         }, DispatcherPriority.Background);
     }
 
@@ -1036,6 +1054,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         _activeCapture = null;
         _activeRequestId = null;
         RetireDictionaryLocked();
+        RetireExplanationLocked();
         return new RetiredIntent(generation, capture);
     }
 
@@ -1108,6 +1127,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         _window.CancelRequested += CancelAndHide;
         _window.DismissRequested += CancelAndHide;
         _window.LookupRequested += OnDictionaryLookupRequested;
+        _window.ExplanationRequested += OnExplanationRequested;
         _window.Closed += (_, _) =>
         {
             _window = null;

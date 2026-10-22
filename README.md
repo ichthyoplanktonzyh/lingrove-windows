@@ -36,12 +36,13 @@ system/imported dictionary flows remain incomplete.
 The [explanation input, prompt and output rules](docs/LEARNING_EXPLANATION_RULES.md) now have
 Mac-backed portable coverage, including model capability/metadata gates. A local provider now
 connects those rules to an exclusive native lease and complete-response validation. The app now
-owns [independent local settings and runtime](docs/LEARNING_EXPLANATION_RUNTIME.md); explanation
-session/card wiring and the explanation endpoint remain unported. The
-[session library](docs/LEARNING_EXPLANATION_SESSION.md) now preserves explicit generation, saved
-restoration, refresh retention and revision-based cancellation for that future UI adapter.
+owns [independent local settings and runtime](docs/LEARNING_EXPLANATION_RUNTIME.md). The
+[writing sentence card](docs/LEARNING_EXPLANATION_CARD.md) now connects explicit explanation,
+stop and refresh to the [session](docs/LEARNING_EXPLANATION_SESSION.md), preserving complete
+answers through refresh and revalidating the original editor. Native interaction/model execution
+are unverified; the explanation endpoint remains unported.
 The [writing capture adapter](docs/LEARNING_EXPLANATION_RULES.md#writing-capture-to-input) now preserves
-the completed translation's target, exact occurrences and context receipt for that future service.
+the completed translation's target, exact occurrences and context receipt for the service.
 The library service now adds saved-first lookup, profile/language isolation, complete records and
 the Mac's bounded result cache. Its app-owned controller loads on demand and releases after 60 idle seconds.
 
@@ -60,7 +61,7 @@ unverified.
   task settings, cancellation, dedicated CPU local inference and an explicit learning chat endpoint.
   Local model import and catalog downloads require user actions; settings do not load a model.
   Source/model/style/budget rules follow the pinned Mac. Native capture/IME/card and model execution, replacement,
-  reading/OCR, interactive explanations, system/imported/online dictionaries, notebook, Anki and speech remain explicit gaps.
+  reading/OCR, unit/component explanations, system/imported/online dictionaries, notebook, Anki and speech remain explicit gaps.
 - **Privacy:** local generation is the default design. A remote endpoint is an explicit user choice;
   requests must be bounded and tied to the selected task. CI must not download model weights or
   contact model endpoints. Cloud sync is outside scope.

@@ -162,8 +162,10 @@ evidence tokenizer retains separator spaces separately from the existing trimmed
 The service owns per-request facades and a bounded complete-record cache. AppHost now owns its
 independent local settings/runtime controller, which loads on request and releases after 60 idle
 seconds. The portable session now owns target state, saved restoration and revision-based
-cancellation; WPF session/card wiring is still required before this becomes an interactive
-feature. See [the explanation map](docs/LEARNING_EXPLANATION_RULES.md) and [app ownership](docs/LEARNING_EXPLANATION_RUNTIME.md).
+cancellation. The [writing sentence card](docs/LEARNING_EXPLANATION_CARD.md) now borrows that session
+for explicit generation/stop/refresh, revalidating the original editor before request/display.
+Native interaction and model execution remain unverified. See [the explanation map](docs/LEARNING_EXPLANATION_RULES.md)
+and [app ownership](docs/LEARNING_EXPLANATION_RUNTIME.md).
 
 Explicit replacement and a combined autocomplete/learning host walkthrough are follow-up slices
 after captured ranges, IME and editor acknowledgement are verified. Broader model residency/power controls, dictionary, notebook, Anki, speech and history work follows the scoped preview port.

@@ -57,6 +57,15 @@ public partial class SettingsWindow : Window
         _instance.Activate();
     }
 
+    /// <summary>The learning card hands off to the existing pane after retiring its editor capture.</summary>
+    internal static void ShowLearning(AppHost host)
+    {
+        ShowOrFocus(host);
+        _instance!.SearchBox.Clear();
+        var index = _instance._panes.FindIndex(view => view.Pane.Title == "Learning");
+        if (index >= 0) _instance.NavList.SelectedIndex = index;
+    }
+
     protected override void OnKeyDown(KeyEventArgs e)
     {
         base.OnKeyDown(e);

@@ -3,6 +3,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using Cotabby.App.UI;
+using Cotabby.App.Learning;
 using Cotabby.Core.Focus;
 using Cotabby.Core.LanguageLearning;
 
@@ -20,6 +21,9 @@ namespace Cotabby.App.UI.Learning;
 /// </remarks>
 public partial class LearningPreviewWindow : Window
 {
+    private LearningPreviewState? _displayedPreview;
+    private LearningExplanationState? _displayedExplanation;
+
     public LearningPreviewWindow()
     {
         InitializeComponent();
@@ -31,11 +35,14 @@ public partial class LearningPreviewWindow : Window
     public event Action? CancelRequested;
     public event Action? DismissRequested;
     public event Action<LearningUnit, string, ScreenRect>? LookupRequested;
+    public event Action<string, LearningExplanationState>? ExplanationRequested;
 
     /// <summary>Shows a coordinator snapshot while leaving the host application active.</summary>
     public void ShowState(LearningPreviewState state, ScreenRect anchor, bool canRetry)
     {
         Dispatcher.VerifyAccess();
+        if (!LearningExplanationCardPolicy.SameDocument(_displayedPreview, state)) ClearExplanation();
+        _displayedPreview = state;
         SourceSection.Visibility = Visibility.Visible;
         SourceText.Text = state.Source;
         DirectionText.Text = state.Options is { } options
@@ -110,6 +117,8 @@ public partial class LearningPreviewWindow : Window
     public void ShowCaptureFailure(string message, ScreenRect anchor)
     {
         Dispatcher.VerifyAccess();
+        _displayedPreview = null;
+        ClearExplanation();
         SourceSection.Visibility = Visibility.Collapsed;
         SourceText.Text = string.Empty;
         DirectionText.Visibility = Visibility.Collapsed;
@@ -135,6 +144,56 @@ public partial class LearningPreviewWindow : Window
         }
 
         Hide();
+        _displayedPreview = null;
+        ClearExplanation();
+    }
+
+    /// <summary>
+    /// The controller supplies only a session snapshot that passed captured-field validation.
+    /// This view renders plain model text, retaining the previous complete answer during refresh;
+    /// it never parses markup, reads the editor or constructs a model/service.
+    /// </summary>
+    internal void ShowExplanationState(string documentId, LearningExplanationState state, bool configured, ScreenRect anchor)
+    {
+        Dispatcher.VerifyAccess();
+        if (!IsVisible || _displayedPreview?.RequestId != documentId
+            || _displayedPreview.Status != LearningPreviewStatus.Ready) return;
+        _displayedExplanation = state;
+        var action = LearningExplanationCardPolicy.Action(state, configured);
+        string label = LearningExplanationCardPolicy.Label(state, configured);
+        ExplanationButton.Visibility = action == LearningExplanationCardAction.None ? Visibility.Collapsed : Visibility.Visible;
+        ExplanationButton.Content = state.IsGenerating ? "■" : "✦";
+        ExplanationButton.ToolTip = state.ErrorMessage is not null && configured && !state.IsGenerating
+            ? label + "\n" + state.ErrorMessage : label;
+        System.Windows.Automation.AutomationProperties.SetName(ExplanationButton, label);
+        ExplanationSection.Visibility = state.Record is not null || state.IsGenerating || state.ErrorMessage is not null
+            ? Visibility.Visible : Visibility.Collapsed;
+        ExplanationResult.Visibility = state.Record is null ? Visibility.Collapsed : Visibility.Visible;
+        ExplanationMeaning.Text = state.Record?.Result.Meaning ?? string.Empty;
+        ExplanationText.Text = state.Record?.Result.Explanation ?? string.Empty;
+        ExplanationResult.FlowDirection = state.Record?.Language == LearningLanguage.Arabic
+            ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
+        ExplanationProgress.Visibility = state.IsGenerating ? Visibility.Visible : Visibility.Collapsed;
+        ExplanationStatus.Text = state.IsGenerating ? "Explaining…" : state.ErrorMessage ?? string.Empty;
+        ExplanationStatus.Visibility = ExplanationStatus.Text.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
+        PresentAt(anchor);
+    }
+
+    private void ClearExplanation()
+    {
+        _displayedExplanation = null;
+        ExplanationButton.Visibility = Visibility.Collapsed;
+        ExplanationSection.Visibility = Visibility.Collapsed;
+        ExplanationMeaning.Text = string.Empty;
+        ExplanationText.Text = string.Empty;
+        ExplanationStatus.Text = string.Empty;
+        ExplanationProgress.Visibility = Visibility.Collapsed;
+    }
+
+    private void OnExplanationClick(object sender, RoutedEventArgs e)
+    {
+        if (_displayedPreview is { } preview && _displayedExplanation is { } state)
+            ExplanationRequested?.Invoke(preview.RequestId, state);
     }
 
     private void PresentAt(ScreenRect anchor)

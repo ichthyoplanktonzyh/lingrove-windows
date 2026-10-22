@@ -1,10 +1,10 @@
 # Explanation input, prompt and output rules
 
 This port adapts the stable Mac explanation rules and a local provider at
-`43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`. The Windows app has no explanation trigger yet;
+`43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`. The writing sentence card now has an explicit explanation trigger;
 independent local app settings/runtime ownership is mapped in [the runtime note](LEARNING_EXPLANATION_RUNTIME.md).
-[Session state](LEARNING_EXPLANATION_SESSION.md) is adapted as a library; WPF session/card wiring
-remains unported. Translation and autocomplete runtime
+[Session state](LEARNING_EXPLANATION_SESSION.md) is connected by the
+[writing card adapter](LEARNING_EXPLANATION_CARD.md); native interaction/model execution remain unverified. Translation and autocomplete runtime
 ownership are unchanged.
 
 ## Source mapping and ownership
@@ -18,12 +18,12 @@ ownership are unchanged.
 | `Support/Prompting/ModelContextBudget.swift`, `TokenCountEstimator.swift`; `InsertionSafetyGate.swift` | Existing shared Core budget/estimator/insertion safety policies | Conservative input estimate and safe text checks; the local provider also enforces exact framed token limits. |
 | `LearningFailure.swift`, `VocabularyError.invalidContent` | `LearningExplanationException.cs` | Fixed failure categories and English fallback messages, without captured/model text in errors. UI localization is deferred. |
 | `LearningExplanationPolicy.supportsGeneralInstructions`, `RuntimeModelCatalog.isKnownBaseModel`, `LearningModelSettings.generalInstructionsAvailable` | `Core/LanguageLearning/LearningExplanationModelPolicy.cs` | Separate model capability from configured state; require local metadata even for a manually selected template. |
-| `LearningExplanationService.generate`, `LearningModelController.validateGeneralInstructionModel/generate`, `LearningLocalRuntime.generate` | `Core/LanguageLearning/ILearningExplanationEngine.cs`, `Inference/LanguageLearning/LearningLocalExplanationEngine.cs`, existing local runtime | Single-request local provider: frozen input/configuration to actual framed token plan to EOG-complete, byte-bounded, parsed result. App service/cache/settings/card wiring remains separate. |
+| `LearningExplanationService.generate`, `LearningModelController.validateGeneralInstructionModel/generate`, `LearningLocalRuntime.generate` | `Core/LanguageLearning/ILearningExplanationEngine.cs`, `Inference/LanguageLearning/LearningLocalExplanationEngine.cs`, existing local runtime | Single-request local provider: frozen input/configuration to actual framed token plan to EOG-complete, byte-bounded, parsed result. Service/cache/settings ownership and the writing card are mapped in the linked stage notes. |
 | `Support/Vocabulary/VocabularyCaptureFactory.swift`: writing `preview`, `unit(original:false)`, `component`; `VocabularyPolicy.example/exampleKey`; `LearningExplanationPolicy.input(capture)` | `Core/LanguageLearning/LearningExplanationInputFactory.cs` | Projects completed writing values into an explanation input, preserving ordered original occurrences and the captured context receipt. No durable capture/entry store is created. |
 | `VocabularyPolicy.example` sentence tokenizer; `LearningUnitPolicy.words` | `ILearningEvidenceSentenceTokenizer`, `Win32/Text/IcuLearningEvidenceSentenceTokenizer.cs`, existing lexical adapter | Full sentence token extents and word facts enter the projection. Native facts are validated before trusting a containing sentence; failures remain content-free. |
 | `Services/LanguageLearning/LearningExplanationService.swift`; `LearningModelSettings.swift`: snapshot; `LearningExplanationModels.swift`: record/protocol | `Core/LanguageLearning/LearningExplanationService.cs`, `LearningModelSnapshot.cs`, `LearningExplanationRecord.cs`, `ILearningExplanationGenerating.cs` | Library service borrows an app-owned facade factory, freezes effective profile/language, loads saved results before cache, retains bounded complete records and rejects retired work. No settings persistence, notebook store or app instance is introduced. |
 
-The values have no process lifetime or service owner. A future card or notebook session will own an
+The values have no process lifetime or service owner. A card or future notebook session owns an
 input snapshot and hand it to an independent explanation provider. Policy returns a bounded prompt
 or parsed result and never queries the currently focused app. Input range collections are detached;
 value equality preserves Swift's canonical string equality without normalizing original text.
@@ -90,13 +90,13 @@ are recorded in `AGENTS.md`; the solution compile additionally uses `-p:EnableWi
 
 ## Explanation model eligibility
 
-The local provider below consumes this library gate; app service/settings UI integration remains
-unported. `SupportsGeneralInstructions` rejects the Mac's two exact known completion filenames,
+The local provider below consumes this library gate; app service/settings ownership is mapped
+in [the runtime note](LEARNING_EXPLANATION_RUNTIME.md). `SupportsGeneralInstructions` rejects the Mac's two exact known completion filenames,
 the delimited `base` token, translation-specialist aliases and the three specialist templates.
 `GeneralInstructionsAvailable` preserves the original three states: false for an excluded model,
 null for an otherwise eligible local model without metadata, and true after metadata confirms it
 or for an otherwise eligible endpoint selection. Empty endpoint names passing this capability rule
-are still unconfigured; the future service must check name/configuration independently.
+are still unconfigured; the service checks name/configuration independently.
 
 `ResolveLocalProfile` composes that gate with the existing Mac-backed template resolver. It always
 resolves Automatic metadata for capability, even when the user selected manual framing. Renaming
@@ -122,9 +122,9 @@ The three new Inference header/gate tests execute on Windows CI, not on the macO
 ## Local explanation provider
 
 `LearningLocalExplanationEngine` implements a real provider over `ILearningLocalRuntime`, with no
-fake production output. The future app-owned explanation service supplies an **explanation-only**
-runtime and owns a one-use facade. This slice does not instantiate it in AppHost, add explanation
-settings or expose a UI trigger, and does not borrow the translation or autocomplete runtime.
+fake production output. The app-owned explanation service supplies an **explanation-only**
+runtime and owns a one-use facade. AppHost, settings and the writing UI trigger are mapped in the
+linked runtime/card notes; they do not borrow the translation or autocomplete runtime.
 
 The facade freezes the local selection and sampler overrides, renders the Mac explanation prompt,
 acquires an exclusive lease, repeats the capability check against its actual metadata, and tokenizes
@@ -168,7 +168,7 @@ These are model-free boundary checks, not a native model execution or quality ev
 current manual caret-sentence **writing translation**. `FromWritingSentencePreview` requires a
 completed nonempty source/result; `FromUnit` retains the Mac's separate guards and does not invent
 the preview's nonempty-source requirement. The caller supplies an immutable presentation/unit;
-the factory has no UIA, notebook, runtime or live focus state. A future session must separately
+the factory has no UIA, notebook, runtime or live focus state. A card owner must separately
 verify that its document is still current before showing a result.
 
 One-word previews have no example. A multiword current-sentence preview has sentence target kind,
@@ -231,15 +231,15 @@ endpoint URL/model/credential revision, endpoint clears the local name and uses 
 explanation role clears translation style, and endpoint sampling retains temperature/top-p only.
 String equality/hash retain Swift canonical identity for profile strings and record model names;
 original text is kept. Destination validation, model metadata and endpoint consent remain effect
-boundaries; this projection cannot authorize IO. Power-source selection and per-destination settings
-persistence still belong to the later settings adapter.
+boundaries; this projection cannot authorize IO. The local settings adapter owns per-model preference normalization and persistence; broader
+power-source profile selection and explanation endpoint settings remain separate work.
 Snapshots must already contain installed model names and settings-normalized context/output
 preferences. `ForExplanation` is the active-role field projection, not the complete settings parser,
 backend context-limit clamp or power-profile resolver; generation still applies the output clamp.
 
 The service checks caller cancellation, direct owner retirement, profile and language after saved
 lookup and model work, and again under its cache admission lock. Settings changes retire pending
-work before notifying future sessions. A one-use facade is drained before a record can be cached;
+work before notifying sessions. A one-use facade is drained before a record can be cached;
 service disposal retires and drains generation and admitted saved lookups without disposing the
 app-owned native runtime. Saved callbacks recheck language and closing state before returning.
 Foreign provider/storage errors become fixed content-free failures. These are explicit Windows
@@ -268,8 +268,8 @@ currently records no telemetry.
 ## Next adapter gates
 
 Still unported: the remaining capture origins and notebook construction, explanation endpoint transport,
-durable record ownership/persistence, captured-document freshness in the session/card adapter and the explanation
-card. The [app-owned local provider](LEARNING_EXPLANATION_RUNTIME.md) has independent configuration/runtime
+durable record ownership/persistence and unit/component explanation card wiring. The writing
+card now revalidates its captured document before requesting/displaying explanations. The [app-owned local provider](LEARNING_EXPLANATION_RUNTIME.md) has independent configuration/runtime
 ownership; it reports unavailable rather than borrowing translation's selected model.
 Native WPF/UIA/IME/model
 execution and model-backed explanation quality are not established by these pure tests.

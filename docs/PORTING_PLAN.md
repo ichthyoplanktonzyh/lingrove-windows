@@ -127,8 +127,9 @@ validation. A writing-only capture adapter now projects completed preview/unit/c
 into frozen explanation inputs with exact original occurrences and context receipts. The library
 service now owns saved-first lookup and the bounded complete-record cache. AppHost now composes
 independent local runtime/settings with that service and its on-demand/60-second idle policy. The
-portable session now preserves saved restoration, refresh and cancellation. The next slice connects
-it to the card with captured-document freshness checks. Original,
+portable session now preserves saved restoration, refresh and cancellation. The writing sentence
+card now connects it with explicit controls and captured-document freshness checks; native desktop
+and model execution remain unverified. Unit/component explanation, original,
 selected-text and reading captures, endpoint transport and durable records remain later work.
 
 **Gate:** shared policy fixtures pass; Windows host tests cover selection changes, IME composition,

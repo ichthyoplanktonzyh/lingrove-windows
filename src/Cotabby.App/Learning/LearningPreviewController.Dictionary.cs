@@ -44,7 +44,7 @@ internal sealed partial class LearningPreviewController
             {
                 if (_intentGeneration != intent || _dictionaryOpeningRevision != openingRevision
                     || !CanQueryDictionaryLocked(documentId, unit)
-                    || !CachedDictionaryCaptureCurrent(capture)) return;
+                    || !CachedCaptureCurrent(capture)) return;
                 _dictionaryAnchor = anchor; _dictionaryIntent = intent;
                 var state = _coordinator.State;
                 _ = _dictionarySession!.OpenAsync(unit, documentId, state.Options!.TargetLanguage, state.Result);
@@ -61,11 +61,6 @@ internal sealed partial class LearningPreviewController
             && state.RequestId == documentId && state.Status == LearningPreviewStatus.Ready
             && state.UnitStage == LearningUnitStage.Ready && (unit is null || state.Units.Contains(unit));
     }
-
-    private bool CachedDictionaryCaptureCurrent(CapturedSentence capture) =>
-        _settings is { } settings && settings.HasSameTranslationInputs(capture.Settings) && IsLearningAvailable(settings)
-        && _focus.Current is { } field && SameCapturedField(capture.Field, field)
-        && FieldCaptureFailure(field, capture.Settings) is null;
 
     private void OnDictionaryStateChanged(LearningDictionaryState state)
     {
@@ -93,7 +88,7 @@ internal sealed partial class LearningPreviewController
             lock (_gate)
             {
                 if (_dictionarySession?.State != state || state.DocumentId is null || _intentGeneration != intent
-                    || !CanQueryDictionaryLocked(state.DocumentId) || !CachedDictionaryCaptureCurrent(capture)) return;
+                    || !CanQueryDictionaryLocked(state.DocumentId) || !CachedCaptureCurrent(capture)) return;
                 EnsureDictionaryWindow().ShowState(state, _dictionaryAnchor);
             }
         }, DispatcherPriority.Background);
@@ -122,7 +117,7 @@ internal sealed partial class LearningPreviewController
             ++_dictionaryOpeningRevision;
             if (close) _dictionarySession.Close(target);
             else if (state.DocumentId is not null && CanQueryDictionaryLocked(state.DocumentId)
-                && _activeCapture is { } capture && CachedDictionaryCaptureCurrent(capture))
+                && _activeCapture is { } capture && CachedCaptureCurrent(capture))
             {
                 if (word is not null) _ = _dictionarySession.SelectWordAsync(word, target);
                 else _ = _dictionarySession.ReturnToExpressionAsync(target);

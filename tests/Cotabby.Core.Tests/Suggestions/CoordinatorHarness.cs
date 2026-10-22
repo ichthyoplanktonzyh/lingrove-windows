@@ -62,7 +62,11 @@ public abstract class CoordinatorHarness : IAsyncDisposable
         }
     }
 
-    protected Task Shown(string text) => Eventually(() => Overlay.Text == text, $"the overlay shows \"{text}\"");
+    protected Task Shown(string text) => Overlay.WaitForTextAsync(text);
+
+    protected Task RunOnUiAsync(Action action) => _pump.InvokeAsync(action);
+
+    protected void BlockUiUntil(Task release, TaskCompletionSource<bool> entered) => _pump.BlockUntil(release, entered);
 
     protected async Task StaysHidden()
     {

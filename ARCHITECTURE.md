@@ -72,11 +72,31 @@ not steal focus. IME preedit text is not committed user text: learning capture, 
 completion acceptance, and replacement must wait until composition is committed or cancelled.
 Carry that state as an explicit signal rather than guessing from keystroke timing.
 
-Short, representable text can be inserted as Unicode input. Long or complex text may require paste,
-but the current `SendInputTextInserter` snapshots only clipboard text. Its source comment notes that
-non-text clipboard formats can be lost. Treat rich-format preservation, concurrent-copy handling,
-focused-target revalidation, and failure acknowledgement as open platform safety work before relying
-on this path for language-learning replacement.
+`FocusedField` carries an explicit field ID, a positive focus epoch, and reliable selection evidence.
+The UIA producer leaves unsupported selection state unknown and skips text reads for secure fields.
+Core's `InsertionTargetPolicy` compares immutable snapshots; `GuardedTextInserter` serializes the
+whole edit, revalidates after queueing and clipboard preparation, and checks cancellation before
+dispatch. `PendingEditLifetime` revokes queued autocomplete/correction edits when focus, settings,
+ordinary input, or dismissal invalidates their authorization. Macro and emoji replacement retain the
+pre-trigger capture and require the exact typed query at its original caret.
+
+`SendInputTextInserter` is the App-facing facade over this Core transaction. `Win32InsertionBackend`
+owns fresh focus reads, native dispatch and clipboard leases. Short text uses Unicode input; a longer
+or multiline edit stages paste before sending any deletion. Delete and insertion events share one
+native batch, and partial `SendInput` results fail without retry. Until host range replacement is
+validated, destructive spans are limited to printable ASCII; Unicode insertion remains supported.
+
+The clipboard lease deep-copies all enumerated supported HGLOBAL formats before mutation, capped at
+32 MiB and 512 formats. Supported formats include text, DIB, file-drop lists, HTML and RTF. Any
+unsupported format (including GDI handles and unknown registered formats) or failed snapshot rejects
+paste before the clipboard is emptied. Restoration checks both sequence and live owner HWND while
+holding the clipboard open, so a concurrent user copy wins. `ClipboardWriteAccounting` subtracts only
+the app's actual write deltas rather than hiding the entire lease interval.
+
+These checks establish dispatch policy, not editor acknowledgement. The paste-consumption delay is
+a heuristic, clipboard restoration after a native failure is best effort, and focus can still change
+after the last OS read. Native host validation, IME composition and acknowledged replacement remain
+open before language learning can depend on this path. See [the safety record](docs/EDITOR_SAFETY.md).
 
 ## Learning flow and independent runtimes
 

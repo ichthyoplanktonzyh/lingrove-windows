@@ -145,6 +145,10 @@ sealed class FakeField : IFocusTracker, ITextInserter
             FieldRect = new ScreenRect(0, 0, 800, 600),
             IsSingleLine = false,
             IsSecure = false,
+            FieldId = "smoke-editor",
+            HasReliableSelection = true,
+            IsTextWindowTruncated = false,
+            FocusChangeSequence = 1,
         };
         lock (_gate) _field = field;
         FocusChanged?.Invoke(this, field);

@@ -43,22 +43,14 @@ public static class SyntheticKeys
     public static List<SyntheticKey> Text(IEnumerable<ushort> heldModifiers, string text)
     {
         var keys = Release(heldModifiers);
-        foreach (char c in text)
-        {
-            keys.Add(new(0, c, KeyUp: false));
-            keys.Add(new(0, c, KeyUp: true));
-        }
+        AppendText(keys, text);
         return keys;
     }
 
     public static List<SyntheticKey> Backspaces(IEnumerable<ushort> heldModifiers, int count)
     {
         var keys = Release(heldModifiers);
-        for (int i = 0; i < count; i++)
-        {
-            keys.Add(SyntheticKey.Down(VkBackspace));
-            keys.Add(SyntheticKey.Up(VkBackspace));
-        }
+        AppendBackspaces(keys, count);
         return keys;
     }
 
@@ -66,11 +58,56 @@ public static class SyntheticKeys
     public static List<SyntheticKey> Paste(IEnumerable<ushort> heldModifiers)
     {
         var keys = Release(heldModifiers);
+        AppendPaste(keys);
+        return keys;
+    }
+
+    /// <summary>
+    /// Builds one atomic delete-and-type batch. Releasing held modifiers once before both parts
+    /// keeps Ctrl+Backspace from expanding the requested deletion and prevents another input from
+    /// landing between the delete and accepted text.
+    /// </summary>
+    public static List<SyntheticKey> Edit(IEnumerable<ushort> heldModifiers, int deleteCount, string text)
+    {
+        var keys = Release(heldModifiers);
+        AppendBackspaces(keys, deleteCount);
+        AppendText(keys, text);
+        return keys;
+    }
+
+    /// <summary>Builds one atomic delete-and-paste batch using the same released modifier state.</summary>
+    public static List<SyntheticKey> PasteEdit(IEnumerable<ushort> heldModifiers, int deleteCount)
+    {
+        var keys = Release(heldModifiers);
+        AppendBackspaces(keys, deleteCount);
+        AppendPaste(keys);
+        return keys;
+    }
+
+    private static void AppendPaste(List<SyntheticKey> keys)
+    {
         keys.Add(SyntheticKey.Down(VkControl));
         keys.Add(SyntheticKey.Down(VkV));
         keys.Add(SyntheticKey.Up(VkV));
         keys.Add(SyntheticKey.Up(VkControl));
-        return keys;
+    }
+
+    private static void AppendBackspaces(List<SyntheticKey> keys, int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            keys.Add(SyntheticKey.Down(VkBackspace));
+            keys.Add(SyntheticKey.Up(VkBackspace));
+        }
+    }
+
+    private static void AppendText(List<SyntheticKey> keys, string text)
+    {
+        foreach (char c in text)
+        {
+            keys.Add(new(0, c, KeyUp: false));
+            keys.Add(new(0, c, KeyUp: true));
+        }
     }
 
     private static List<SyntheticKey> Release(IEnumerable<ushort> heldModifiers)

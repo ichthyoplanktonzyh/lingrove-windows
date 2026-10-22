@@ -7,10 +7,9 @@ namespace Cotabby.Win32.Clipboard;
 /// Reads clipboard text through the raw Win32 API, which works from any thread.
 /// </summary>
 /// <remarks>
-/// The inserter pastes long suggestions through the clipboard and then puts the old text back,
-/// or empties the clipboard when it held none. It brackets that with <see cref="BeginOwnWrite"/> and <see cref="EndOwnWrite"/>, and the
-/// changes made in between are subtracted from <see cref="SequenceNumber"/>. A paste therefore
-/// never looks like a copy by the user.
+/// The guarded inserter reports each clipboard mutation while it holds the clipboard open
+/// exclusively. <see cref="ClipboardWriteAccounting"/> subtracts only those exact sequence
+/// deltas, so a user copy made while a paste lease is alive remains available as context.
 /// </remarks>
 public sealed class ClipboardTextReader : IClipboardReader
 {
@@ -20,73 +19,59 @@ public sealed class ClipboardTextReader : IClipboardReader
     private const int OpenAttempts = 3;
     private const int OpenRetryMs = 5;
 
-    private readonly object _gate = new();
-    private uint _ownChanges;
-    private uint? _ownWriteStart;
-    private uint? _ownTextSequence;
+    private readonly ClipboardWriteAccounting _writeAccounting;
 
-    public uint SequenceNumber
-    {
-        get
-        {
-            lock (_gate) return unchecked((_ownWriteStart ?? GetClipboardSequenceNumber()) - _ownChanges);
-        }
-    }
+    public ClipboardTextReader() : this(new ClipboardWriteAccounting()) { }
+
+    internal ClipboardTextReader(ClipboardWriteAccounting writeAccounting) =>
+        _writeAccounting = writeAccounting;
+
+    public uint SequenceNumber => _writeAccounting.GetVisibleSequence(GetClipboardSequenceNumber());
 
     public string? ReadText()
-    {
-        lock (_gate)
-        {
-            if (_ownWriteStart is not null || GetClipboardSequenceNumber() == _ownTextSequence) return null;
-            return ReadUnicodeText();
-        }
-    }
-
-    /// <summary>Call before Cotabby writes to the clipboard. Until the matching end the clipboard reads as empty.</summary>
-    public void BeginOwnWrite()
-    {
-        lock (_gate) _ownWriteStart = GetClipboardSequenceNumber();
-    }
-
-    /// <param name="restored">False when Cotabby's own text was left on the clipboard.</param>
-    public void EndOwnWrite(bool restored)
-    {
-        lock (_gate)
-        {
-            if (_ownWriteStart is not { } start) return;
-            uint now = GetClipboardSequenceNumber();
-            _ownChanges = unchecked(_ownChanges + now - start);
-            _ownTextSequence = restored || now == start ? null : now;
-            _ownWriteStart = null;
-        }
-    }
-
-    private static unsafe string? ReadUnicodeText()
     {
         if (!TryOpenClipboard()) return null;
         try
         {
-            IntPtr handle = GetClipboardData(CF_UNICODETEXT);
-            if (handle == IntPtr.Zero) return null;
-            char* text = (char*)GlobalLock(handle);
-            if (text is null) return null;
-            try
-            {
-                int limit = (int)Math.Min(GlobalSize(handle) / sizeof(char), (nuint)MaxChars);
-                int length = new ReadOnlySpan<char>(text, limit).IndexOf('\0');
-                if (length < 0) length = limit;
-                // A cut must not leave half a surrogate pair.
-                if (length > 0 && char.IsHighSurrogate(text[length - 1])) length--;
-                return new string(text, 0, length);
-            }
-            finally
-            {
-                GlobalUnlock(handle);
-            }
+            // Read the sequence only after the clipboard is open. This ties the ownership check to
+            // the same clipboard contents from which the text handle is read.
+            uint sequence = GetClipboardSequenceNumber();
+            if (_writeAccounting.IsOwnText(sequence)) return null;
+            return ReadUnicodeTextWhileOpen();
         }
         finally
         {
             CloseClipboard();
+        }
+    }
+
+    /// <summary>Begin tracking a mutation after OpenClipboard has succeeded.</summary>
+    internal void BeginOwnWrite(uint sequenceBeforeWrite) => _writeAccounting.BeginOwnWrite(sequenceBeforeWrite);
+
+    /// <summary>Finish tracking with a sequence read taken before CloseClipboard.</summary>
+    internal void EndOwnWrite(uint sequenceAfterWrite, bool containsOwnText) =>
+        _writeAccounting.EndOwnWrite(sequenceAfterWrite, containsOwnText);
+
+    private static unsafe string? ReadUnicodeTextWhileOpen()
+    {
+        IntPtr handle = GetClipboardData(CF_UNICODETEXT);
+        if (handle == IntPtr.Zero) return null;
+        char* text = (char*)GlobalLock(handle);
+        if (text is null) return null;
+        try
+        {
+            int limit = (int)Math.Min(GlobalSize(handle) / sizeof(char), (nuint)MaxChars);
+            int length = new ReadOnlySpan<char>(text, limit).IndexOf('\0');
+            if (length < 0) length = limit;
+            // A cut must not leave half a surrogate pair.
+            if (length > 0 && char.IsHighSurrogate(text[length - 1])) length--;
+            return new string(text, 0, length);
+        }
+        finally
+        {
+            // Clipboard handles belong to Windows; release only our temporary lock, never the
+            // HGLOBAL itself.
+            GlobalUnlock(handle);
         }
     }
 

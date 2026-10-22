@@ -1,5 +1,6 @@
 using Cotabby.Core.Focus;
 using Cotabby.Core.Input;
+using Cotabby.Core.Insertion;
 
 namespace Cotabby.Core.Emoji;
 
@@ -15,9 +16,10 @@ public interface IEmojiPickerPanel
 
 /// <summary>
 /// Replaces the typed query run in <paramref name="field"/> with <paramref name="glyph"/>.
-/// <paramref name="fallbackDeleteCount"/> is the typed run length, for hosts whose text cannot be measured.
+/// <paramref name="expectedRun"/> is the exact typed run, anchored to the pre-trigger capture.
+/// A host that cannot confirm that run must not replace text using a guessed character count.
 /// </summary>
-public delegate void EmojiQueryReplacer(FocusedField field, string glyph, int fallbackDeleteCount);
+public delegate void EmojiQueryReplacer(FocusedField field, string glyph, string expectedRun);
 
 /// <summary>
 /// Orchestrates one inline <c>:emoji:</c> picker. Feeds keystrokes to the trigger state machine,
@@ -39,6 +41,9 @@ public sealed class EmojiPickerSession(
     private IReadOnlyList<EmojiMatch> _matches = [];
     private int _selectedIndex;
     private FocusedField? _captureField;
+    // Caret observations update _captureField for presentation, while this immutable origin
+    // remains the authority for a later edit, even if another query exists elsewhere in the field.
+    private FocusedField? _captureOrigin;
 
     public bool Enabled { get; set; } = true;
 
@@ -116,12 +121,13 @@ public sealed class EmojiPickerSession(
 
     private void BeginCapture()
     {
-        if (focus.Current is not { IsSecure: false } field || !CanCapture(field))
+        if (focus.Current is not { } field || !InsertionTargetPolicy.IsEligibleField(field) || !CanCapture(field))
         {
             _machine.Reset();
             return;
         }
         _captureField = field;
+        _captureOrigin = field;
         // A bare colon immediately shows the user's recents, padded with popular emoji.
         RefreshMatches("");
         PresentPanel();
@@ -139,7 +145,12 @@ public sealed class EmojiPickerSession(
     /// </summary>
     public void UpdateCaret(FocusedField field)
     {
-        if (!IsCapturing || field.IsSecure) return;
+        if (!IsCapturing) return;
+        if (!IsCaptureField(field))
+        {
+            Cancel();
+            return;
+        }
         _captureField = field;
         PresentPanel();
     }
@@ -174,12 +185,12 @@ public sealed class EmojiPickerSession(
 
     private void Commit(EmojiMatch match)
     {
-        var field = _captureField!;
-        int typedLength = _query.Length + 1;
+        var field = _captureOrigin!;
+        string expectedRun = ":" + _query;
         // Usage is keyed by the base primary alias, which is stable across variants.
         if (match.Entry.Aliases.Count > 0) usage.Record(match.Entry.Aliases[0]);
         TeardownCapture();
-        replaceQuery(field, match.Glyph, typedLength);
+        replaceQuery(field, match.Glyph, expectedRun);
     }
 
     private void TeardownCapture()
@@ -189,6 +200,7 @@ public sealed class EmojiPickerSession(
         _selectedIndex = 0;
         _query = "";
         _captureField = null;
+        _captureOrigin = null;
         panel.Hide();
     }
 
@@ -204,7 +216,8 @@ public sealed class EmojiPickerSession(
 
     private void PresentPanel() => panel.Show(_query, _matches, _selectedIndex, _captureField!.CaretRect);
 
-    // UI Automation offers no stable element identity here, so the process and field bounds stand in.
+    // Bounds can be shared by unrelated editors and can move within the same editor. Only the
+    // runtime identity plus focus epoch can authorize continued capture after an asynchronous read.
     private bool IsCaptureField(FocusedField field) =>
-        field.ProcessId == _captureField!.ProcessId && field.FieldRect == _captureField.FieldRect;
+        InsertionTargetPolicy.IsSameField(_captureField, field);
 }

@@ -1,35 +1,60 @@
 using System.Runtime.InteropServices;
+using Cotabby.Core.Focus;
+using Cotabby.Win32.Interop;
 using static Cotabby.Win32.Interop.NativeMethods;
 
 namespace Cotabby.Win32.Insertion;
 
 /// <summary>
-/// Sends <see cref="SyntheticKeys"/> batches to the focused application. One SendInput call with
-/// the whole batch cannot be interleaved with other input.
+/// Dispatches one complete key batch to the target process that still owns the foreground. The
+/// fresh process check narrows the race after Core's field snapshot revalidation; SendInput is
+/// reported as successful only when Windows accepted every event in the batch.
 /// </summary>
-internal static class KeySender
+internal sealed class KeySender : IKeyboardEditDispatcher
 {
-    public static void SendBackspaces(int count)
+    private readonly IKeyboardNativeApi _native;
+
+    public KeySender() : this(new Win32KeyboardNativeApi()) { }
+
+    internal KeySender(IKeyboardNativeApi native) =>
+        _native = native ?? throw new ArgumentNullException(nameof(native));
+
+    public bool SendUnicodeEdit(FocusedField target, int deleteCount, string text)
     {
-        if (count > 0) Send(SyntheticKeys.Backspaces(HeldModifiers(), count));
+        SyntheticKey[] batch = SyntheticKeys.Edit(HeldModifiers(), deleteCount, text).ToArray();
+        return Send(target, batch, beforeSend: null);
     }
 
-    public static void SendText(string text) => Send(SyntheticKeys.Text(HeldModifiers(), text));
-
-    public static void SendPaste() => Send(SyntheticKeys.Paste(HeldModifiers()));
-
-    private static IEnumerable<ushort> HeldModifiers() =>
-        SyntheticKeys.Modifiers.Where(vk => (GetAsyncKeyState(vk) & 0x8000) != 0);
-
-    private static void Send(List<SyntheticKey> keys)
+    public bool SendPasteEdit(FocusedField target, int deleteCount, Func<bool> clipboardIsCurrent)
     {
-        var inputs = new INPUT[keys.Count];
+        ArgumentNullException.ThrowIfNull(clipboardIsCurrent);
+        SyntheticKey[] batch = SyntheticKeys.PasteEdit(HeldModifiers(), deleteCount).ToArray();
+        return Send(target, batch, clipboardIsCurrent);
+    }
+
+    private bool IsTargetForeground(FocusedField target)
+    {
+        if (target.ProcessId <= 0) return false;
+        return _native.ForegroundProcessId == (uint)target.ProcessId;
+    }
+
+    private IEnumerable<ushort> HeldModifiers() =>
+        SyntheticKeys.Modifiers.Where(vk => (_native.GetAsyncKeyState(vk) & 0x8000) != 0);
+
+    private bool Send(FocusedField target, SyntheticKey[] keys, Func<bool>? beforeSend)
+    {
+        if (keys.Length == 0) return true;
+
+        var inputs = new INPUT[keys.Length];
         for (int i = 0; i < inputs.Length; i++)
         {
-            var key = keys[i];
+            SyntheticKey key = keys[i];
             uint flags = key.KeyUp ? KEYEVENTF_KEYUP : 0;
             if (key.VirtualKey == 0) flags |= KEYEVENTF_UNICODE;
-            else if (key.VirtualKey is VK_RCONTROL or VK_RMENU or VK_LWIN or VK_RWIN) flags |= KEYEVENTF_EXTENDEDKEY;
+            else if (key.VirtualKey is VK_RCONTROL or VK_RMENU or VK_LWIN or VK_RWIN)
+            {
+                flags |= KEYEVENTF_EXTENDEDKEY;
+            }
 
             inputs[i] = new INPUT
             {
@@ -40,6 +65,45 @@ internal static class KeySender
                 },
             };
         }
-        SendInput((uint)inputs.Length, inputs, Marshal.SizeOf<INPUT>());
+
+        // Construct the complete native array before checking foreground so the process check is
+        // adjacent to dispatch, even for a larger bounded paste replacement.
+        if (!IsTargetForeground(target)) return false;
+
+        // Clipboard ownership may change while modifiers and the native batch are prepared. Core
+        // checks before entering the backend too; this last predicate check narrows that race to
+        // the small interval between this call and SendInput.
+        if (beforeSend is not null && !beforeSend()) return false;
+
+        // Windows can accept only a prefix of the batch. Retrying the suffix could delete more
+        // text or duplicate an insertion in a different host state, so any partial count fails.
+        return _native.SendInput(inputs) == (uint)inputs.Length;
     }
+}
+
+internal interface IKeyboardNativeApi
+{
+    uint? ForegroundProcessId { get; }
+    short GetAsyncKeyState(int virtualKey);
+    uint SendInput(INPUT[] inputs);
+}
+
+internal sealed class Win32KeyboardNativeApi : IKeyboardNativeApi
+{
+    public uint? ForegroundProcessId
+    {
+        get
+        {
+            IntPtr foreground = GetForegroundWindow();
+            if (foreground == IntPtr.Zero) return null;
+
+            GetWindowThreadProcessId(foreground, out uint processId);
+            return processId == 0 ? null : processId;
+        }
+    }
+
+    public short GetAsyncKeyState(int virtualKey) => NativeMethods.GetAsyncKeyState(virtualKey);
+
+    public uint SendInput(INPUT[] inputs) =>
+        NativeMethods.SendInput((uint)inputs.Length, inputs, Marshal.SizeOf<INPUT>());
 }

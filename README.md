@@ -47,6 +47,9 @@ unverified.
 The full status and evidence for both feature sets lives in [PARITY.md](docs/PARITY.md). The
 architecture and ownership map is in [ARCHITECTURE.md](ARCHITECTURE.md), and the staged completion
 gates are in [PORTING_PLAN.md](docs/PORTING_PLAN.md).
+The next implementation stage adds [guarded editor insertion](docs/EDITOR_SAFETY.md): exact capture
+checks, queued-edit cancellation and bounded clipboard leases. Native editor acknowledgement and
+IME handling remain open; long/truncated fields and unsupported clipboard formats fail closed.
 
 ## Repository layout
 

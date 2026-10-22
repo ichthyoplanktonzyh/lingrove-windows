@@ -22,12 +22,13 @@ public sealed class UiaFocusTracker : IFocusTracker
 
     private AutomationFocusChangedEventHandler? _handler;
     private FocusedField? _current;
+    private long _focusChangeSequence;
     private bool _running;
     private bool _disposed;
 
     public UiaFocusTracker(ILogger<UiaFocusTracker> logger) => _logger = logger;
 
-    public FocusedField? Current => _current;
+    public FocusedField? Current => Volatile.Read(ref _current);
 
     public event EventHandler<FocusedField?>? FocusChanged;
 
@@ -38,14 +39,14 @@ public sealed class UiaFocusTracker : IFocusTracker
             ObjectDisposedException.ThrowIf(_disposed, this);
             if (_running) return;
             _running = true;
+            Interlocked.Increment(ref _focusChangeSequence);
 
             _handler = OnFocusChanged;
             Automation.AddAutomationFocusChangedEventHandler(_handler);
             _logger.LogInformation("UIA focus tracker started.");
 
             // Seeded so Current is not null until the first focus change.
-            TryCaptureFocused(out var initial);
-            _current = initial;
+            Refresh();
         }
     }
 
@@ -55,22 +56,31 @@ public sealed class UiaFocusTracker : IFocusTracker
         {
             if (!_running) return;
             _running = false;
+            Interlocked.Increment(ref _focusChangeSequence);
             if (_handler is not null)
             {
                 try { Automation.RemoveAutomationFocusChangedEventHandler(_handler); }
                 catch (Exception ex) { _logger.LogWarning(ex, "RemoveAutomationFocusChangedEventHandler threw."); }
                 _handler = null;
             }
-            _current = null;
+            Volatile.Write(ref _current, null);
             _logger.LogInformation("UIA focus tracker stopped.");
         }
     }
 
     public FocusedField? Refresh()
     {
-        TryCaptureFocused(out var snap);
-        _current = snap;
-        return snap;
+        if (!Volatile.Read(ref _running)) return null;
+        long sequence = Interlocked.Read(ref _focusChangeSequence);
+        TryCaptureFocused(sequence, out var snap);
+        lock (_gate)
+        {
+            // UIA reads cross processes and can finish after a newer focus event. Publishing
+            // that old read would make an unrelated field look current to an insertion task.
+            if (!_running || sequence != Interlocked.Read(ref _focusChangeSequence)) return null;
+            Volatile.Write(ref _current, snap);
+            return snap;
+        }
     }
 
     public void Dispose()
@@ -82,21 +92,20 @@ public sealed class UiaFocusTracker : IFocusTracker
 
     private void OnFocusChanged(object? sender, AutomationFocusChangedEventArgs e)
     {
-        if (!_running) return;
+        if (!Volatile.Read(ref _running)) return;
+        Interlocked.Increment(ref _focusChangeSequence);
 
         try
         {
-            TryCaptureFocused(out var snap);
+            var snap = Refresh();
             // Focus on a field that is not editable ends the session, so no ghost text is left behind.
             if (snap is null)
             {
-                _current = null;
                 FocusChanged?.Invoke(this, null);
                 return;
             }
 
             // Every focus event is passed on. Listeners compare FieldId to tell a new field.
-            _current = snap;
             FocusChanged?.Invoke(this, snap);
         }
         catch (Exception ex)
@@ -105,7 +114,7 @@ public sealed class UiaFocusTracker : IFocusTracker
         }
     }
 
-    private bool TryCaptureFocused(out FocusedField? snapshot)
+    private bool TryCaptureFocused(long sequence, out FocusedField? snapshot)
     {
         snapshot = null;
         AutomationElement? element;
@@ -123,7 +132,7 @@ public sealed class UiaFocusTracker : IFocusTracker
         try
         {
             if (!IsEditableField(element)) return false;
-            snapshot = BuildSnapshot(element);
+            snapshot = BuildSnapshot(element, sequence);
             return snapshot is not null;
         }
         catch (ElementNotAvailableException) { return false; }
@@ -164,20 +173,32 @@ public sealed class UiaFocusTracker : IFocusTracker
         catch (Exception) { return false; }
     }
 
-    private FocusedField? BuildSnapshot(AutomationElement element)
+    private FocusedField? BuildSnapshot(AutomationElement element, long sequence)
     {
         var info = element.Current;
 
         int pid = info.ProcessId;
+        IntPtr foreground = NativeMethods.GetForegroundWindow();
+        if (foreground == IntPtr.Zero
+            || NativeMethods.GetWindowThreadProcessId(foreground, out uint foregroundPid) == 0
+            || foregroundPid != (uint)pid) return null;
         string procName = TryGetProcessName(pid);
         string label = info.Name ?? string.Empty;
         string helpText = info.HelpText ?? string.Empty;
         bool isSecure = info.IsPassword
             || SecureFieldDetector.IsSecure(label, helpText, info.LocalizedControlType);
 
-        var (text, caretOffset, hasSelection) = ReadTextAndCaret(element);
-        var caretRect = ReadCaretRect(element);
+        // Password-like controls are classified before requesting their text. They still publish
+        // an ineligible snapshot so consumers can close an existing capture without reading secrets.
+        var (text, caretOffset, hasSelection, reliableSelection, truncatedWindow) = isSecure
+            ? (string.Empty, 0, false, false, true)
+            : ReadTextAndCaret(element);
+        var caretRect = isSecure ? ScreenRect.Empty : ReadCaretRect(element);
         var fieldRect = ToScreenRect(info.BoundingRectangle);
+
+        // UIA can lag behind foreground activation. A cross-process read which straddled that
+        // transition cannot establish the destination of a future SendInput batch.
+        if (NativeMethods.GetForegroundWindow() != foreground) return null;
 
         return new FocusedField
         {
@@ -191,7 +212,10 @@ public sealed class UiaFocusTracker : IFocusTracker
             IsSingleLine = FieldShape.IsSingleLine(info.ControlType == ControlType.Edit, fieldRect, caretRect),
             IsSecure = isSecure,
             HasSelection = hasSelection,
-            FieldId = ReadFieldId(element, info),
+            HasReliableSelection = reliableSelection,
+            IsTextWindowTruncated = truncatedWindow,
+            FocusChangeSequence = sequence,
+            FieldId = ReadFieldId(element),
             Label = label,
             HelpText = helpText,
             AutomationId = info.AutomationId ?? string.Empty,
@@ -200,14 +224,10 @@ public sealed class UiaFocusTracker : IFocusTracker
         };
     }
 
-    /// <summary>Text kept before the caret. The request factory sends at most this much prefix.</summary>
-    private const int MaxCharsBeforeCaret = 14000;
-    private const int MaxCharsAfterCaret = 512;
-
     /// <summary>Cap of the document read when the host reports no caret.</summary>
     private const int MaxDocumentChars = 16 * 1024;
 
-    private static (string text, int caretOffset, bool hasSelection) ReadTextAndCaret(AutomationElement element)
+    private static (string text, int caretOffset, bool hasSelection, bool reliableSelection, bool truncatedWindow) ReadTextAndCaret(AutomationElement element)
     {
         // TextPattern is preferred because it gives the caret as a selection.
         if (element.TryGetCurrentPattern(TextPattern.Pattern, out var rawText)
@@ -218,13 +238,18 @@ public sealed class UiaFocusTracker : IFocusTracker
                 var selections = textPattern.GetSelection();
                 if (selections is not { Length: > 0 })
                 {
-                    return (textPattern.DocumentRange.GetText(MaxDocumentChars), 0, false);
+                    return (textPattern.DocumentRange.GetText(MaxDocumentChars), 0, false, false, true);
                 }
 
                 var selection = selections[0];
-                bool hasSelection = selection.GetText(1).Length > 0;
-                var (before, after) = ReadAroundSelection(textPattern.DocumentRange, selection);
-                return (before + after, before.Length, hasSelection);
+                // A selected embedded object can have no text. Endpoint equality, rather than
+                // the returned string length, establishes whether the selection is collapsed.
+                bool hasSelection = selection.CompareEndpoints(
+                    TextPatternRangeEndpoint.Start, selection, TextPatternRangeEndpoint.End) != 0;
+                var (before, after, truncatedWindow) = ReadAroundSelection(textPattern.DocumentRange, selection);
+                // Multiple selections cannot describe one insertion caret. Keep the text for
+                // diagnostics, but never authorize an edit from this ambiguous snapshot.
+                return (before + after, before.Length, hasSelection, selections.Length == 1, truncatedWindow);
             }
             catch (Exception) { /* fall through */ }
         }
@@ -233,10 +258,11 @@ public sealed class UiaFocusTracker : IFocusTracker
             && rawValue is ValuePattern vp)
         {
             string v = vp.Current.Value ?? string.Empty;
-            return (v, v.Length, false); // ValuePattern has no caret, so assume the end.
+            if (v.Length > MaxDocumentChars) v = v[..MaxDocumentChars];
+            return (v, v.Length, false, false, true); // ValuePattern has no caret; this is not edit evidence.
         }
 
-        return (string.Empty, 0, false);
+        return (string.Empty, 0, false, false, true);
     }
 
     /// <summary>
@@ -247,27 +273,21 @@ public sealed class UiaFocusTracker : IFocusTracker
     /// The ranges are built with MoveEndpointByRange only. MoveEndpointByUnit by character takes
     /// seconds in a WPF text box, and reading up to the caret takes milliseconds.
     /// </remarks>
-    private static (string before, string after) ReadAroundSelection(TextPatternRange document, TextPatternRange selection)
+    private static (string before, string after, bool truncatedWindow) ReadAroundSelection(TextPatternRange document, TextPatternRange selection)
     {
         var toCaret = document.Clone();
         toCaret.MoveEndpointByRange(TextPatternRangeEndpoint.End, selection, TextPatternRangeEndpoint.Start);
         string before = toCaret.GetText(-1);
-        if (before.Length > MaxCharsBeforeCaret)
-        {
-            before = before[^MaxCharsBeforeCaret..];
-            // The cut must not leave half a surrogate pair.
-            if (char.IsLowSurrogate(before[0])) before = before[1..];
-        }
 
         var fromCaret = document.Clone();
         fromCaret.MoveEndpointByRange(TextPatternRangeEndpoint.Start, selection, TextPatternRangeEndpoint.End);
-        string after = fromCaret.GetText(MaxCharsAfterCaret);
-        if (after.Length > 0 && char.IsHighSurrogate(after[^1])) after = after[..^1];
-
-        return (before, after);
+        // Ask for one extra unit so a full window cannot masquerade as a complete suffix. Until
+        // native absolute ranges exist, omitted text on either side must make writes ineligible.
+        string after = fromCaret.GetText(FocusTextWindowPolicy.MaxCharsAfterCaret + 1);
+        return FocusTextWindowPolicy.Bound(before, after);
     }
 
-    private static string ReadFieldId(AutomationElement element, AutomationElement.AutomationElementInformation info)
+    private static string ReadFieldId(AutomationElement element)
     {
         int[]? runtimeId = null;
         try { runtimeId = element.GetRuntimeId(); }
@@ -275,7 +295,9 @@ public sealed class UiaFocusTracker : IFocusTracker
 
         return runtimeId is { Length: > 0 }
             ? string.Join('.', runtimeId)
-            : $"{info.AutomationId}|{info.ControlType.ProgrammaticName}";
+            // AutomationId/control type can be identical in two fields. An absent runtime ID
+            // stays unknown so the write policy can reject it rather than fabricate identity.
+            : string.Empty;
     }
 
     private static ScreenRect ReadCaretRect(AutomationElement element)

@@ -32,6 +32,11 @@ Fixtures use no network or model. Every listed feature has a parity row and evid
 
 ## Phase 2: Windows host safety and first cross-pillar vertical slice
 
+The first implementation slice establishes guarded editor dispatch before adding learning UI. Its
+portable policy, coordinator cancellation, inline query anchoring, and Windows clipboard/dispatch
+boundaries are recorded in [EDITOR_SAFETY.md](EDITOR_SAFETY.md). This is preparation for this phase;
+the native host gate and first learning flow remain pending.
+
 Validate UIA capture, caret and selection behavior, field identity, stale-result rejection, global
 hook ownership, focus preservation, IME composition, and insertion in real Windows applications.
 Cover native edit controls, Notepad, browser contenteditables, Electron, and representative Office or

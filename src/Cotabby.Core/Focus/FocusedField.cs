@@ -12,7 +12,10 @@ public sealed record FocusedField
     /// <summary>Best-effort host process name without extension (e.g. <c>"chrome"</c>).</summary>
     public required string ProcessName { get; init; }
 
-    /// <summary>Full text content of the field at snapshot time. May be empty.</summary>
+    /// <summary>
+    /// Captured field text. A producer that omits source text must keep
+    /// <see cref="IsTextWindowTruncated"/> true; the caret offset is relative to this string.
+    /// </summary>
     public required string Text { get; init; }
 
     /// <summary>Caret position as a UTF-16 offset into <see cref="Text"/>.</summary>
@@ -41,6 +44,26 @@ public sealed record FocusedField
 
     /// <summary>True when a non-empty range of text is selected.</summary>
     public bool HasSelection { get; init; }
+
+    /// <summary>
+    /// True only when the snapshot producer actually read the selection/caret, rather than
+    /// assuming the end of a ValuePattern string. Unknown is the default: a producer must opt
+    /// into edit eligibility after obtaining one actual selection/caret range.
+    /// </summary>
+    public bool HasReliableSelection { get; init; }
+
+    /// <summary>
+    /// True when text was trimmed to a local window or completeness is unknown. Without an
+    /// absolute document-range anchor, equal repeated windows cannot prove the caret stayed put.
+    /// A producer opts out only after proving both sides complete; unknown snapshots cannot edit.
+    /// </summary>
+    public bool IsTextWindowTruncated { get; init; } = true;
+
+    /// <summary>
+    /// Capture epoch advanced by the focus owner on every focus transition and restart. Equal
+    /// field IDs and text do not authorize a delayed edit after leaving and revisiting a field.
+    /// </summary>
+    public long FocusChangeSequence { get; init; }
 
     /// <summary>
     /// Identity of the field within its process, stable while focus stays in it. Empty when the

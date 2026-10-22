@@ -37,7 +37,8 @@ public sealed record LearningExplanationInput
     [JsonPropertyName("context")] public string Context { get; }
     [JsonPropertyName("ranges")] public IReadOnlyList<VocabularyTextRange> Ranges { get; }
     [JsonPropertyName("contextKind")] public LearningExplanationContext ContextKind { get; }
-    [JsonPropertyName("occurrenceIdentity")] public string? OccurrenceIdentity { get; }
+    [JsonPropertyName("occurrenceIdentity"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? OccurrenceIdentity { get; }
 
     public bool Equals(LearningExplanationInput? other) => other is not null
         && Same(Target, other.Target) && Same(DictionaryForm, other.DictionaryForm) && Language == other.Language

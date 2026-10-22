@@ -17,6 +17,8 @@ public sealed class LearningExplanationModelsTests
         Assert.Equal(first, second); Assert.Equal(first.GetHashCode(), second.GetHashCode());
         Assert.Equal("é", first.Target); Assert.Equal("e\u0301", second.Target);
         Assert.Equal(LearningExplanationContext.Fragment, first.ContextKind);
+        var withoutReceipt = new LearningExplanationInput("x", "", LearningLanguage.English, VocabularyEntryKind.Word, "x", [new(0, 1)]);
+        Assert.DoesNotContain("occurrenceIdentity", JsonSerializer.Serialize(withoutReceipt));
         Assert.Equal(new VocabularyTextRange(0, 2), first.Ranges[0]);
         Assert.NotEqual(first, new LearningExplanationInput("é", "é", LearningLanguage.French, VocabularyEntryKind.Word,
             "e\u0301", [new(0, 2)], occurrenceIdentity: "é"));

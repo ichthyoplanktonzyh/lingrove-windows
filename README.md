@@ -51,7 +51,7 @@ unverified.
   task settings, cancellation, dedicated CPU local inference and an explicit learning chat endpoint.
   Local model import and catalog downloads require user actions; settings do not load a model.
   Source/model/style/budget rules follow the pinned Mac. Native capture/IME/card and model execution, replacement,
-  reading/OCR, explanations, system/imported/online dictionaries, notebook, Anki and speech remain explicit gaps.
+  reading/OCR, interactive explanations, system/imported/online dictionaries, notebook, Anki and speech remain explicit gaps.
 - **Privacy:** local generation is the default design. A remote endpoint is an explicit user choice;
   requests must be bounded and tied to the selected task. CI must not download model weights or
   contact model endpoints. Cloud sync is outside scope.

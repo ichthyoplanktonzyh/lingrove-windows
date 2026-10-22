@@ -48,8 +48,9 @@ comparison behavior is unchanged.
 
 Foundation trim includes U+200B and retains U+FEFF. .NET's default trim and JSON escaping differ;
 explicit primitives preserve the observed Mac rules and byte budgets, including slash, emoji,
-controls and U+2028. Malformed .NET UTF-16 and undefined enum values have no Swift value counterpart
-and fail validation. Grapheme boundaries use .NET StringInfo; Unicode-version differences beyond
+controls and U+2028. Malformed .NET UTF-16 in model-facing text and undefined enum values have no
+Swift value counterpart and fail validation. The local receipt is outside this validation contract.
+Grapheme boundaries use .NET StringInfo; Unicode-version differences beyond
 the shared cases remain an explicit platform limit, not a claim of universal Foundation parity.
 
 ## Evidence

@@ -11,6 +11,7 @@ public sealed record LearningDictionaryWord(string Text, LearningTextRange Range
 }
 
 public enum LearningUnitKind { Word, Expression, Pattern }
+public enum LearningUnitStage { Pending, Ready, Failed }
 
 /// <summary>
 /// A lexical click target, independent of editor state or a proposed source correspondence. The

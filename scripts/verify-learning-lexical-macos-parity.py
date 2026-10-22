@@ -16,6 +16,10 @@ SOURCES = [
     "Cotabby/Models/LanguageLearning/LearningLanguage.swift",
     "Cotabby/Support/LanguageLearning/LearningUnitPolicy.swift",
     "Cotabby/Support/LanguageLearning/LearningUnitRecognizer.swift",
+    "Cotabby/Support/LanguageLearning/LearningDictionaryViewport.swift",
+    "Cotabby/Support/LanguageLearning/DictionaryLinkPolicy.swift",
+    "Cotabby/Support/LanguageLearning/DictionaryContentPolicy.swift",
+    "Cotabby/Support/Suggestion/Acceptance/InsertionSafetyGate.swift",
 ]
 UNIT_MODELS = "Cotabby/Models/LanguageLearning/LearningUnitModels.swift"
 WORD_MODELS = "Cotabby/Models/LanguageLearning/LearningDictionaryWord.swift"
@@ -44,6 +48,28 @@ if CommandLine.arguments[1] == "--decode-lexicon" {
     let data = try Data(contentsOf: URL(fileURLWithPath: CommandLine.arguments[2]))
     let resource = try JSONDecoder().decode(LearningLexiconResource.self, from: data)
     FileHandle.standardOutput.write(try JSONEncoder().encode(resource))
+    exit(0)
+}
+if CommandLine.arguments[1] == "--dictionary-ui" {
+    let data = try Data(contentsOf: URL(fileURLWithPath: CommandLine.arguments[2]))
+    let corpus = try JSONSerialization.jsonObject(with: data) as! [String: Any]
+    var observations = [[String: Any]]()
+    for row in corpus["cases"] as! [[String: Any]] {
+        if row["kind"] as! String == "link" {
+            observations.append(["id": row["id"] as! String,
+                "allowed": DictionaryLinkPolicy.externalURL(row["value"] as! String) != nil])
+        } else {
+            var viewport = LearningDictionaryViewport()
+            let heights = (row["steps"] as! [[String: Any]]).map { step -> Double in
+                let query = step["query"] as! String
+                let height = step["height"] as? Double ?? Double.nan
+                viewport.measure(height, query: query, resolved: step["resolved"] as! Bool)
+                return viewport.height(for: query)
+            }
+            observations.append(["id": row["id"] as! String, "heights": heights])
+        }
+    }
+    FileHandle.standardOutput.write(try JSONSerialization.data(withJSONObject: observations, options: [.sortedKeys]))
     exit(0)
 }
 let data = try Data(contentsOf: URL(fileURLWithPath: CommandLine.arguments[1]))
@@ -106,8 +132,21 @@ def main() -> None:
         default=Path(__file__).resolve().parents[1] / "fixtures/parity/learning-lexical-v1.json")
     parser.add_argument("--capture-output", type=Path,
         help="Write reference observations to a new file for explicit fixture authoring, without overwriting it")
+    parser.add_argument("--capture-ui-output", type=Path,
+        help="Write original Mac link/viewport observations to a new file for explicit authoring")
     args = parser.parse_args()
+    if args.capture_output and args.capture_ui_output:
+        parser.error("Capture one observation corpus at a time")
     corpus = json.loads(args.fixture.read_text(encoding="utf-8"))
+    ui_fixture = Path(__file__).resolve().parents[1] / "fixtures/parity/learning-dictionary-ui-v1.json"
+    ui_corpus = json.loads(ui_fixture.read_text(encoding="utf-8"))
+    if ui_corpus.get("version") != 1 or ui_corpus.get("macReference") != BASELINE:
+        parser.error("Dictionary UI fixture must use schema1 and the pinned Mac commit")
+    ui_ids = [row.get("id") for row in ui_corpus["cases"]]
+    if any(not value for value in ui_ids) or len(set(ui_ids)) != len(ui_ids) or any(
+            row.get("kind") not in ("link", "viewport") or not row.get("macSource")
+            or row.get("provenanceKind") != "source-policy-extension" for row in ui_corpus["cases"]):
+        parser.error("Dictionary UI cases require unique IDs and explicit source-policy provenance")
     if corpus.get("macReference") != BASELINE:
         parser.error("Fixture must name the pinned Mac commit")
     if corpus.get("version") != 1:
@@ -154,6 +193,7 @@ def main() -> None:
         executable = directory / "lexical-parity"
         subprocess.run(["xcrun", "swiftc", "-swift-version", "6", *sources, str(driver), "-o", str(executable)], check=True)
         actual = json.loads(subprocess.check_output([str(executable), str(args.fixture)], text=True))
+        actual_ui = json.loads(subprocess.check_output([str(executable), "--dictionary-ui", str(ui_fixture)]))
         resource_path = resource_root / "learning-expressions.json"
         decoded = json.loads(subprocess.check_output([str(executable), "--decode-lexicon", str(resource_path)]))
         if decoded != json.loads(resource_path.read_bytes()):
@@ -163,14 +203,25 @@ def main() -> None:
             json.dump(actual, output, ensure_ascii=False, indent=2)
         print(f"Captured {len(actual)} pinned Mac lexical observations.")
         return
+    if args.capture_ui_output:
+        with args.capture_ui_output.open("x", encoding="utf-8") as output:
+            json.dump(actual_ui, output, ensure_ascii=False, indent=2)
+        print(f"Captured {len(actual_ui)} original Mac link/viewport observations.")
+        return
     if len(actual) != len(corpus["cases"]):
         raise SystemExit("FAIL: pinned Mac case count differs from the fixture")
     for row, observed in zip(corpus["cases"], actual):
         expected = row.get("expected")
         if expected != observed:
             raise SystemExit(f"FAIL {row['id']}: actual pinned Mac observation differs from the fixture")
+    if len(actual_ui) != len(ui_corpus["cases"]):
+        raise SystemExit("FAIL: dictionary UI fixture case count differs")
+    for row, observed in zip(ui_corpus["cases"], actual_ui):
+        if row.get("expected") != observed:
+            raise SystemExit(f"FAIL {row['id']}: pinned Mac link/viewport observation differs")
     print(f"PASS: {len(actual)} lexical parity cases against macOS {BASELINE}")
     print(f"PASS: 3 pinned resource files and Mac Codable roundtrip of {len(decoded['entries'])} entries")
+    print(f"PASS: {len(actual_ui)} original Mac dictionary link/viewport cases")
 
 if __name__ == "__main__":
     main()

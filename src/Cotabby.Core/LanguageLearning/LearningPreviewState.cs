@@ -43,4 +43,9 @@ public sealed record LearningPreviewState
 
     /// <summary>The immutable translation settings captured when this request began.</summary>
     public LearningTranslationOptions? Options { get; init; }
+
+    /// <summary>Lexical targets annotate only this complete Result; provisional streams never own them.</summary>
+    public IReadOnlyList<LearningUnit> Units { get; init; } = Array.Empty<LearningUnit>();
+    /// <summary>Recognition failure is independent from a successful translation.</summary>
+    public LearningUnitStage UnitStage { get; init; } = LearningUnitStage.Pending;
 }

@@ -3,9 +3,9 @@
 This slice adapts stable Mac Lingrove at `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`.
 It supplies the explicit lexical index, occurrence values and Windows text primitives needed by a
 later dictionary/card integration. The [subsequent resource/store slice](LEARNING_OFFLINE_LEXICON.md)
-adds the pinned lexicon and shared lazy service. Clickable preview words and system/MDX/online
-dictionaries remain unported.
-The existing translation flow remains unchanged.
+adds the pinned lexicon and shared lazy service. [Completed-translation double-click lookup](LEARNING_WORD_PREVIEW.md)
+now uses that index; source-word fallback and system/MDX/online dictionaries remain unported.
+Translation request, normalization and provider contracts remain unchanged.
 
 ## Source and responsibility mapping
 
@@ -18,7 +18,8 @@ The existing translation flow remains unchanged.
 | Swift Character properties and Mac `NLTokenizer(unit: .word)` used by that policy | `Win32/Text/IcuLearningLexicalText.cs`: full root-locale scalar Unicode casing, binary Alphabetic/Uppercase properties and ICU word breaking |
 
 The Mac lexicon service owns lazy resource loading and per-language indices. Its Windows service and
-pinned resource are now adapted separately; lookup routing, dictionary sessions and WPF remain later work.
+pinned resource are now adapted separately; the bundled card/session subset is also connected,
+while broader provider routing remains later work.
 Windows paths above are relative to `src/`; tests mirror those responsibilities under `tests/`.
 
 ## Preserved index behavior

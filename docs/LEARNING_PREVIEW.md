@@ -69,7 +69,7 @@ malformed UTF-16 source because Swift strings cannot represent those invalid val
   HTTP client and DPAPI credential. Autocomplete's runtime and credentials are never borrowed.
   The [local-runtime record](LEARNING_LOCAL_RUNTIME.md) maps templates, exact-token planning,
   model-file operations, persistence and remaining native validation to the Mac source.
-- Preview is read-only in this round. Editor replacement, notebook, dictionaries, speech and
+- Preview is read-only. Editor replacement, notebook, broader dictionary sources, speech and
   automatic learning triggers remain explicit gaps; they are not replaced by new product flows.
 - Streamed deltas now follow the Mac output policy: the first nonblank safe prefix publishes
   immediately, later prefixes coalesce to at most 30 updates per second, and completion always

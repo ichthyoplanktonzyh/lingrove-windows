@@ -29,7 +29,7 @@ namespace Cotabby.App.Learning;
 /// edits text or asks the inference engine to rediscover editor content. A complete frozen learning
 /// settings projection also means unrelated autocomplete edits do not cancel a sentence request.
 /// </remarks>
-internal sealed class LearningPreviewController : IAsyncDisposable
+internal sealed partial class LearningPreviewController : IAsyncDisposable
 {
     private static readonly TimeSpan CapturePollInterval = TimeSpan.FromMilliseconds(400);
     private static readonly ILearningTranslationEngine UnavailableLocalEngine = new UnavailableLocalLearningTranslationEngine();
@@ -50,7 +50,7 @@ internal sealed class LearningPreviewController : IAsyncDisposable
     private readonly IKeyboardHook _hook;
     private readonly IFocusTracker _focus;
     private readonly Dispatcher _dispatcher;
-    private readonly LearningPreviewCoordinator _coordinator = new();
+    private readonly LearningPreviewCoordinator _coordinator;
     private readonly ILearningSentenceTokenizer _sentenceTokenizer;
     private readonly ILearningLanguageDetector? _languageDetector;
     private readonly ILearningLocalRuntime _localRuntime;
@@ -86,9 +86,14 @@ internal sealed class LearningPreviewController : IAsyncDisposable
         IOpenAICompatibleCredentialStore credentials,
         ILogger<LearningPreviewController> logger,
         ILearningLanguageDetector? languageDetector = null,
-        Func<bool>? batterySaverOn = null)
+        Func<bool>? batterySaverOn = null,
+        ILearningUnitRecognizing? unitRecognizer = null,
+        ILearningDictionaryProviding? dictionaryProvider = null)
     {
         _hook = hook;
+        _coordinator = new LearningPreviewCoordinator(unitRecognizer: unitRecognizer);
+        _dictionarySession = dictionaryProvider is null ? null : new LearningDictionarySession(dictionaryProvider);
+        if (_dictionarySession is not null) _dictionarySession.StateChanged += OnDictionaryStateChanged;
         _focus = focus;
         _dispatcher = dispatcher;
         _sentenceTokenizer = sentenceTokenizer;
@@ -205,12 +210,15 @@ internal sealed class LearningPreviewController : IAsyncDisposable
         _hook.KeyEvent -= OnKeyEvent;
         _focus.FocusChanged -= OnFocusChanged;
         _coordinator.StateChanged -= OnCoordinatorStateChanged;
+        if (_dictionarySession is not null) _dictionarySession.StateChanged -= OnDictionaryStateChanged;
         CancelCurrentState();
 
         if (_dispatcher.CheckAccess())
         {
             _window?.Close();
             _window = null;
+            _dictionaryWindow?.Close();
+            _dictionaryWindow = null;
         }
         else
         {
@@ -218,6 +226,8 @@ internal sealed class LearningPreviewController : IAsyncDisposable
             {
                 _window?.Close();
                 _window = null;
+                _dictionaryWindow?.Close();
+                _dictionaryWindow = null;
             });
         }
 
@@ -225,6 +235,7 @@ internal sealed class LearningPreviewController : IAsyncDisposable
         // owned by AppHost and stays alive until this drain has completed.
         _coordinator.ClearCache();
         await _coordinator.DisposeAsync().ConfigureAwait(false);
+        if (_dictionarySession is not null) await _dictionarySession.DisposeAsync().ConfigureAwait(false);
     }
 
     private void OnKeyEvent(object? sender, KeyEventArgs args)
@@ -292,6 +303,7 @@ internal sealed class LearningPreviewController : IAsyncDisposable
             if (prior?.Lifetime is { } lifetime) _ = lifetime.Retire();
             _activeCapture = null;
             _activeRequestId = null;
+            RetireDictionaryLocked();
         }
 
         CancelMonitor(prior?.Monitor);
@@ -300,6 +312,7 @@ internal sealed class LearningPreviewController : IAsyncDisposable
             if (!IsPendingIntent(generation)) return;
             _coordinator.Cancel();
             _window?.HidePreview();
+            _dictionaryWindow?.HideCard();
         }
 
         if (_dispatcher.CheckAccess()) CancelPreviousOnUi();
@@ -1022,6 +1035,7 @@ internal sealed class LearningPreviewController : IAsyncDisposable
         if (capture?.Lifetime is { } lifetime) _ = lifetime.Retire();
         _activeCapture = null;
         _activeRequestId = null;
+        RetireDictionaryLocked();
         return new RetiredIntent(generation, capture);
     }
 
@@ -1033,6 +1047,7 @@ internal sealed class LearningPreviewController : IAsyncDisposable
             if (!IsRetiredIntent(retired.Generation)) return;
             _coordinator.Cancel();
             _window?.HidePreview();
+            _dictionaryWindow?.HideCard();
         }
         if (_dispatcher.CheckAccess()) CancelAndHideOnUi();
         else _ = _dispatcher.BeginInvoke(CancelAndHideOnUi, DispatcherPriority.Normal);
@@ -1092,6 +1107,7 @@ internal sealed class LearningPreviewController : IAsyncDisposable
         _window.RetryRequested += RetryCurrentCapture;
         _window.CancelRequested += CancelAndHide;
         _window.DismissRequested += CancelAndHide;
+        _window.LookupRequested += OnDictionaryLookupRequested;
         _window.Closed += (_, _) =>
         {
             _window = null;

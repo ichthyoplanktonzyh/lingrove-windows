@@ -1,6 +1,7 @@
-using System.Runtime.InteropServices;
 using System.Windows;
-using System.Windows.Interop;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
 using Cotabby.App.UI;
 using Cotabby.Core.Focus;
 using Cotabby.Core.LanguageLearning;
@@ -19,26 +20,17 @@ namespace Cotabby.App.UI.Learning;
 /// </remarks>
 public partial class LearningPreviewWindow : Window
 {
-    private const int GwlExStyle = -20;
-    private const int WsExNoActivate = 0x08000000;
-    private const int WsExToolWindow = 0x00000080;
-    private const uint SwpNoActivate = 0x0010;
-    private const uint SwpShowWindow = 0x0040;
-    private const uint MonitorDefaultToNearest = 2;
-    private static readonly IntPtr HwndTopmost = new(-1);
-
-    private HwndSource? _source;
-
     public LearningPreviewWindow()
     {
         InitializeComponent();
         WindowTheme.Follow(this);
-        SourceInitialized += OnSourceInitialized;
+        SourceInitialized += (_, _) => LearningPanelPlacement.Install(this);
     }
 
     public event Action? RetryRequested;
     public event Action? CancelRequested;
     public event Action? DismissRequested;
+    public event Action<LearningUnit, string, ScreenRect>? LookupRequested;
 
     /// <summary>Shows a coordinator snapshot while leaving the host application active.</summary>
     public void ShowState(LearningPreviewState state, ScreenRect anchor, bool canRetry)
@@ -60,13 +52,58 @@ public partial class LearningPreviewWindow : Window
         Progress.Visibility = loading ? Visibility.Visible : Visibility.Collapsed;
         ResultSection.Visibility = ready || hasProvisionalText ? Visibility.Visible : Visibility.Collapsed;
         ResultLabel.Text = hasProvisionalText ? "TRANSLATION · PREVIEW" : "TRANSLATION";
-        ResultText.Text = visibleTranslation ?? string.Empty;
+        PresentTranslation(state, visibleTranslation ?? string.Empty);
+        SourceText.FlowDirection = state.Options?.SourceLanguage == LearningLanguage.Arabic
+            ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
         ErrorText.Text = ready ? "" : state.ErrorMessage ?? "";
         ErrorText.Visibility = ErrorText.Text.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
         RetryButton.Visibility = !loading && !ready && canRetry ? Visibility.Visible : Visibility.Collapsed;
         CancelButton.Content = loading ? "Cancel" : "Close";
 
         PresentAt(anchor);
+    }
+
+    private void PresentTranslation(LearningPreviewState state, string text)
+    {
+        ResultText.Inlines.Clear();
+        ResultText.FlowDirection = state.Options?.TargetLanguage == LearningLanguage.Arabic
+            ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
+        ResultText.ToolTip = state.Status == LearningPreviewStatus.Ready && state.UnitStage == LearningUnitStage.Ready
+            ? "Double-click a word or expression to look it up" : null;
+        if (state.Status != LearningPreviewStatus.Ready || state.UnitStage != LearningUnitStage.Ready)
+        {
+            ResultText.Inlines.Add(new Run(text));
+            return;
+        }
+        foreach (var part in LearningUnitDisplayPolicy.Runs(text, state.Units))
+        {
+            var run = new Run(part.Text);
+            if (part.Underlined)
+                run.TextDecorations = new TextDecorationCollection
+                {
+                    new TextDecoration { Location = TextDecorationLocation.Underline,
+                        Pen = new Pen((Brush)FindResource("TextSecondary"), 0.6) }
+                };
+            if (part.Target is { } unit && part.Word is not null)
+            {
+                run.MouseLeftButtonDown += (_, args) =>
+                {
+                    args.Handled = true;
+                    if (args.ClickCount != 2) return;
+                    var point = args.GetPosition(ResultText);
+                    var hit = ResultText.GetPositionFromPoint(point, snapToText: false);
+                    if (hit is null) return;
+                    var bounds = hit.GetCharacterRect(LogicalDirection.Forward);
+                    if (!bounds.Contains(point)) bounds = hit.GetCharacterRect(LogicalDirection.Backward);
+                    if (bounds.IsEmpty || !bounds.Contains(point)) return;
+                    var topLeft = ResultText.PointToScreen(bounds.TopLeft);
+                    var bottomRight = ResultText.PointToScreen(bounds.BottomRight);
+                    LookupRequested?.Invoke(unit, state.RequestId,
+                        new ScreenRect(topLeft.X, topLeft.Y, bottomRight.X - topLeft.X, bottomRight.Y - topLeft.Y));
+                };
+            }
+            ResultText.Inlines.Add(run);
+        }
     }
 
     /// <summary>Shows a fixed capture-policy error when no sentence request could be created.</summary>
@@ -105,53 +142,7 @@ public partial class LearningPreviewWindow : Window
         if (!IsVisible) Show();
         Visibility = Visibility.Visible;
         UpdateLayout();
-        PositionAt(anchor);
-    }
-
-    private void PositionAt(ScreenRect anchor)
-    {
-        if (_source?.CompositionTarget is not { } target) return;
-
-        double scaleX = target.TransformToDevice.M11;
-        double scaleY = target.TransformToDevice.M22;
-        double width = Math.Ceiling(ActualWidth * scaleX);
-        double height = Math.Ceiling(ActualHeight * scaleY);
-        int x;
-        int y;
-        if (anchor.IsEmpty)
-        {
-            // Capture-policy failures have no trustworthy editor anchor, so keep the status card
-            // centered on the primary monitor without consulting another process's UIA element.
-            x = (int)Math.Max(0, (SystemParameters.PrimaryScreenWidth * scaleX - width) / 2);
-            y = (int)Math.Max(0, (SystemParameters.PrimaryScreenHeight * scaleY - height) / 2);
-            anchor = new ScreenRect(x, y, 1, 1);
-        }
-        else
-        {
-            x = (int)anchor.X;
-            y = (int)(anchor.Bottom + 8);
-        }
-
-        var monitor = MonitorFromPoint(new NativePoint { X = x, Y = (int)anchor.Y }, MonitorDefaultToNearest);
-        var info = new MonitorInfo { Size = (uint)Marshal.SizeOf<MonitorInfo>() };
-        if (GetMonitorInfo(monitor, ref info))
-        {
-            var work = info.Work;
-            if (x + width > work.Right) x = work.Right - (int)width - 2;
-            if (x < work.Left) x = work.Left + 2;
-            if (y + height > work.Bottom) y = (int)anchor.Y - (int)height - 2;
-            if (y < work.Top) y = work.Top + 2;
-        }
-
-        SetWindowPos(_source.Handle, HwndTopmost, x, y, (int)width, (int)height,
-            SwpNoActivate | SwpShowWindow);
-    }
-
-    private void OnSourceInitialized(object? sender, EventArgs e)
-    {
-        _source = (HwndSource)PresentationSource.FromVisual(this)!;
-        int style = GetWindowLong(_source.Handle, GwlExStyle);
-        SetWindowLong(_source.Handle, GwlExStyle, style | WsExNoActivate | WsExToolWindow);
+        LearningPanelPlacement.Position(this, anchor);
     }
 
     private void OnRetryClick(object sender, RoutedEventArgs e) => RetryRequested?.Invoke();
@@ -160,36 +151,4 @@ public partial class LearningPreviewWindow : Window
 
     private void OnCloseClick(object sender, RoutedEventArgs e) => DismissRequested?.Invoke();
 
-    [StructLayout(LayoutKind.Sequential)]
-    private struct NativePoint { public int X, Y; }
-
-    [StructLayout(LayoutKind.Sequential)]
-    private struct NativeRect { public int Left, Top, Right, Bottom; }
-
-    [StructLayout(LayoutKind.Sequential)]
-    private struct MonitorInfo
-    {
-        public uint Size;
-        public NativeRect Monitor;
-        public NativeRect Work;
-        public uint Flags;
-    }
-
-    [LibraryImport("user32.dll")]
-    private static partial IntPtr MonitorFromPoint(NativePoint point, uint flags);
-
-    [LibraryImport("user32.dll", EntryPoint = "GetMonitorInfoW")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool GetMonitorInfo(IntPtr monitor, ref MonitorInfo info);
-
-    [LibraryImport("user32.dll", EntryPoint = "SetWindowLongW")]
-    private static partial int SetWindowLong(IntPtr hwnd, int index, int value);
-
-    [LibraryImport("user32.dll", EntryPoint = "GetWindowLongW")]
-    private static partial int GetWindowLong(IntPtr hwnd, int index);
-
-    [LibraryImport("user32.dll", SetLastError = true)]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool SetWindowPos(
-        IntPtr hwnd, IntPtr insertAfter, int x, int y, int width, int height, uint flags);
 }

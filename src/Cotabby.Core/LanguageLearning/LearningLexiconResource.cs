@@ -27,6 +27,13 @@ public interface ILearningUnitRecognizing
         CancellationToken cancellationToken = default);
 }
 
+/// <summary>The bundled-only lookup contract; other Mac provider/source variants remain unported.</summary>
+public interface ILearningDictionaryProviding
+{
+    Task<LearningDictionaryResult> LookupAsync(string query, LearningLanguage language, bool expression,
+        CancellationToken cancellationToken = default);
+}
+
 /// <summary>
 /// The bundled subset of the Mac result algebra. A miss is a value, whereas an unavailable
 /// resource throws. System articles, imported dictionaries and website results remain unported.

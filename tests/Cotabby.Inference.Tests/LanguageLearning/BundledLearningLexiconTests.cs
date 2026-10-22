@@ -11,6 +11,32 @@ public sealed class BundledLearningLexiconTests
         BundledLearningLexiconResourceSource.FromBundleDirectory(AppContext.BaseDirectory), new IcuLearningLexicalText());
 
     [Fact]
+    public async Task CompletedPreviewAnnotationsAndDictionarySessionUseTheSameActualResource()
+    {
+        var service = Create();
+        await using var preview = new LearningPreviewCoordinator(unitRecognizer: service);
+        var annotated = new TaskCompletionSource<LearningPreviewState>(TaskCreationOptions.RunContinuationsAsynchronously);
+        preview.StateChanged += state =>
+        {
+            if (state.Status == LearningPreviewStatus.Ready && state.UnitStage == LearningUnitStage.Ready)
+                annotated.TrySetResult(state);
+        };
+        await preview.PreviewAsync("fixture source", new LearningTranslationOptions { ModelName = "fixture" },
+            new FixtureEngine()).WaitAsync(TimeSpan.FromSeconds(10));
+        var state = await annotated.Task.WaitAsync(TimeSpan.FromSeconds(10));
+        var expression = Assert.Single(state.Units, unit => unit.Kind == LearningUnitKind.Expression);
+        Assert.Equal("look forward to", expression.Surface);
+        Assert.Equal(state.Result, string.Concat(LearningUnitDisplayPolicy.Runs(state.Result!, state.Units).Select(run => run.Text)));
+        await using var dictionary = new LearningDictionarySession(service);
+        await dictionary.OpenAsync(expression, state.RequestId, LearningLanguage.English, state.Result).WaitAsync(TimeSpan.FromSeconds(10));
+        Assert.Contains(Assert.IsType<LearningDictionaryResult.Entries>(dictionary.State.Result).Values,
+            entry => entry.Id == "1b618b011fddd4a5");
+        Assert.Equal(state.RequestId, dictionary.State.DocumentId);
+        dictionary.Close(); preview.Cancel();
+        Assert.Null(dictionary.State.Unit); Assert.Empty(preview.State.Units);
+    }
+
+    [Fact]
     public async Task ActualEnglishExpressionsRecordedFormsAndConstituentWordsRetainTheirIdentity()
     {
         var service = Create();
@@ -39,5 +65,11 @@ public sealed class BundledLearningLexiconTests
         var result = Assert.IsType<LearningDictionaryResult.Entries>(await service.LookupAsync(expression, language, true));
         string code = language is LearningLanguage.Chinese or LearningLanguage.TraditionalChinese ? "zh" : language.Code();
         Assert.All(result.Values, entry => Assert.Equal(code, entry.Language));
+    }
+
+    private sealed class FixtureEngine : ILearningTranslationEngine
+    {
+        public Task<string> TranslateAsync(LearningTranslationRequest request, CancellationToken cancellationToken) =>
+            Task.FromResult("I look forward to seeing you.");
     }
 }

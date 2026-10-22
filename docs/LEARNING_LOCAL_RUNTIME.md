@@ -36,8 +36,9 @@ The lease covers preparation through generation or a cache hit. Trusted delimite
 tokens; literal source and style text do not. Automatic selection reads a bounded GGUF header before
 weights load: 16 MB per string, 32 MB total, 100,000 metadata entries and 1,000,000 array elements;
 nested arrays are refused. Hy-MT variants share an architecture, so the embedded chat template is
-needed. TranslateGemma identity can survive a filename change. Unknown/ambiguous metadata requires
-an explicit template, following the Mac policy. A manual-template allocation is reloaded before an
+needed. TranslateGemma identity can survive a filename change. Unsupported architectures or variant ambiguity not resolved by the Mac family-specific fallbacks
+require an explicit template. Missing Hunyuan chat-template metadata retains Hy-MT, and a Gemma3
+model without a TranslateGemma marker retains Gemma3. A manual-template allocation is reloaded before an
 automatic request so absent metadata cannot be reused as an observation.
 
 Budgeting counts the complete framed token plan and reserves full output against the smaller of
@@ -64,8 +65,9 @@ Local and endpoint style/context preferences remain independent.
 
 Learning shares the physical GGUF folder with autocomplete to avoid duplicate weights, while owning
 separate model selection, transfer state and native memory. Catalog downloads start only after Get;
-imports copy an explicitly selected file. Transfers use staging files, bounds/hash/header validation,
-closed file handles before promotion, and no overwrite of existing weights. Cancellation and shutdown
+imports copy an explicitly selected file. Catalog downloads validate expected size, SHA-256 and the GGUF magic header. User imports
+validate the extension and magic header, without a catalog checksum or size cap. Both use staging
+files, closed file handles before promotion, and no overwrite of existing weights. Cancellation and shutdown
 drain transfers and remove staging files. Model-folder scans, hashing and copies run off the WPF thread.
 The synthetic-file tests do not establish successful downloads or compatibility of actual model weights.
 

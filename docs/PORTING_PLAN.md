@@ -121,9 +121,9 @@ lookup, followed by MDX/MDD dictionaries. Capture only committed text, keep scop
 replacement as an acknowledged edit tied to the original field identity.
 
 Completed translations now support bundled word lookup. Explanation input, prompt budgeting and
-complete-output parsing have [Mac-backed pure coverage](LEARNING_EXPLANATION_RULES.md); the next
-explanation slice must adapt its instruction-compatibility gate and independent provider/runtime
-before adding a session/card. Capture construction and durable records remain explicit later work.
+complete-output parsing and model capability/metadata gates have [Mac-backed pure coverage](LEARNING_EXPLANATION_RULES.md).
+The next explanation slice must connect the gate to an independent provider/runtime before adding
+a session/card. Capture construction and durable records remain explicit later work.
 
 **Gate:** shared policy fixtures pass; Windows host tests cover selection changes, IME composition,
 stale captures, secure fields, OCR cleanup/bounds, replacement acknowledgement and failed edits. The

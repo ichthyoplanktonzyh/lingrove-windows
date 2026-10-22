@@ -67,6 +67,7 @@ jobs:
             Cotabby/Models/Context
             Cotabby/Models/LanguageLearning
             Cotabby/Models/Vocabulary
+            Cotabby/Models/Runtime
             Cotabby/Services/LanguageLearning
             Cotabby/Resources/learning-expressions.json
             Cotabby/Resources/learning-expressions.NOTICE.md

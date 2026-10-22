@@ -14,6 +14,7 @@ app or generate an answer. Translation and autocomplete runtime ownership are un
 | `Support/Vocabulary/VocabularyPolicy.swift`: `valid(range:in:)`; Foundation text/JSON primitives | `Core/LanguageLearning/LearningExplanationText.cs` | Original range validation, grapheme-expanded windows, Foundation trim set and JSONEncoder-compatible string quoting. |
 | `Support/Prompting/ModelContextBudget.swift`, `TokenCountEstimator.swift`; `InsertionSafetyGate.swift` | Existing shared Core budget/estimator/insertion safety policies | Conservative input estimate and safe text checks; an eventual local adapter must also enforce exact framed token limits. |
 | `LearningFailure.swift`, `VocabularyError.invalidContent` | `LearningExplanationException.cs` | Fixed failure categories and English fallback messages, without captured/model text in errors. UI localization is deferred. |
+| `LearningExplanationPolicy.supportsGeneralInstructions`, `RuntimeModelCatalog.isKnownBaseModel`, `LearningModelSettings.generalInstructionsAvailable` | `Core/LanguageLearning/LearningExplanationModelPolicy.cs` | Separate model capability from configured state; require local metadata even for a manually selected template. |
 
 The values have no process lifetime or service owner. A future card or notebook session will own an
 input snapshot and hand it to an independent explanation provider. Policy returns a bounded prompt
@@ -76,13 +77,43 @@ escape spelling. Error strings are the original policies' English fallback text 
 executable without app localization resources, not evidence of localized Windows/Mac UI parity.
 Core tests and the fifth Swift verifier run on CI without a model, endpoint or desktop.
 
-Independent local validation for this slice: Core Release 2,029/2,029; full Windows-targeting
+Independent local validation for the initial text-rule checkpoint: Core Release 2,029/2,029; full Windows-targeting
 Release solution compilation with zero warnings/errors; all five Mac verifiers passed. Commands
 are recorded in `AGENTS.md`; the solution compile additionally uses `-p:EnableWindowsTargeting=true`.
 
+## Explanation model eligibility
+
+The following library gate is now adapted, but it is not yet connected to an explanation service
+or settings UI. `SupportsGeneralInstructions` rejects the Mac's two exact known completion filenames,
+the delimited `base` token, translation-specialist aliases and the three specialist templates.
+`GeneralInstructionsAvailable` preserves the original three states: false for an excluded model,
+null for an otherwise eligible local model without metadata, and true after metadata confirms it
+or for an otherwise eligible endpoint selection. Empty endpoint names passing this capability rule
+are still unconfigured; the future service must check name/configuration independently.
+
+`ResolveLocalProfile` composes that gate with the existing Mac-backed template resolver. It always
+resolves Automatic metadata for capability, even when the user selected manual framing. Renaming
+a Hy-MT/TranslateGemma file or selecting ChatML does not turn a specialist into a tutor. Once
+capability passes, the selected framing and independent configuration remain authoritative.
+This method must consume the exclusive operation's metadata before tokenization/generation;
+a detached filename precheck or cached UI status cannot authorize the later operation.
+
+The extended fifth verifier compiles the actual Mac support/base predicates and settings property.
+Only the property's preferences/Combine context is replaced by fixed fixture values, not its
+algorithm. `learning-explanation-model-v1.json` records 44 original observations (11 adaptations of
+existing model-policy regressions and 33 source-policy extensions). Core tests also compose real
+metadata with the gate, and Windows tests feed three tiny synthetic GGUF headers through the actual
+bounded reader before applying it. No weights, endpoint or native model is used. Text classification
+uses the existing .NET grapheme primitives; the recorded Latin, combining-text, separator and number
+cases are covered, while universal Swift Unicode classification/casing parity is not claimed.
+
+Independent model-gate checkpoint validation: Core Release 2,083/2,083 and full Windows-targeting
+Release solution compilation with zero warnings/errors; all five Mac verifiers passed again.
+The three new Inference header/gate tests execute on Windows CI, not on the macOS desktop.
+
 ## Next adapter gates
 
-Still unported: capture-to-input and notebook construction, model instruction-compatibility gates,
+Still unported: capture-to-input and notebook construction, integration of the model gate with
 independent explanation settings/runtime and endpoint transport, exact native token planning,
 record ownership/persistence, request cancellation/stale-result session handling and the explanation
 card. The translation model must not be borrowed to simulate this feature. Production will need a

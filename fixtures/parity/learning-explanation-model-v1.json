@@ -1,0 +1,523 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "specialist-0",
+      "mode": "supports",
+      "model": "Hy-MT2-1.8B-Q4_K_M.gguf",
+      "template": "qwen3",
+      "macSource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "regression-adaptation",
+      "expected": {
+        "available": false
+      },
+      "macTest": "CotabbyTests/Support/LanguageLearning/LearningExplanationPolicyTests.swift"
+    },
+    {
+      "id": "specialist-1",
+      "mode": "supports",
+      "model": "translategemma-4b-it.gguf",
+      "template": "qwen3",
+      "macSource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "regression-adaptation",
+      "expected": {
+        "available": false
+      },
+      "macTest": "CotabbyTests/Support/LanguageLearning/LearningExplanationPolicyTests.swift"
+    },
+    {
+      "id": "specialist-2",
+      "mode": "supports",
+      "model": "HY_MT2-7B.gguf",
+      "template": "qwen3",
+      "macSource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "regression-adaptation",
+      "expected": {
+        "available": false
+      },
+      "macTest": "CotabbyTests/Support/LanguageLearning/LearningExplanationPolicyTests.swift"
+    },
+    {
+      "id": "specialist-3",
+      "mode": "supports",
+      "model": "google/translate-gemma-4b-it",
+      "template": "qwen3",
+      "macSource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "regression-adaptation",
+      "expected": {
+        "available": false
+      },
+      "macTest": "CotabbyTests/Support/LanguageLearning/LearningExplanationPolicyTests.swift"
+    },
+    {
+      "id": "specialist-4",
+      "mode": "supports",
+      "model": "google/hunyuan mt",
+      "template": "qwen3",
+      "macSource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "regression-adaptation",
+      "expected": {
+        "available": false
+      },
+      "macTest": "CotabbyTests/Support/LanguageLearning/LearningExplanationPolicyTests.swift"
+    },
+    {
+      "id": "specialist-5",
+      "mode": "supports",
+      "model": "tencent/Hy.MT2",
+      "template": "qwen3",
+      "macSource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "regression-adaptation",
+      "expected": {
+        "available": false
+      },
+      "macTest": "CotabbyTests/Support/LanguageLearning/LearningExplanationPolicyTests.swift"
+    },
+    {
+      "id": "base-0",
+      "mode": "supports",
+      "model": "gemma-4-E2B.i1-Q6_K.gguf",
+      "template": "automatic",
+      "macSource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "regression-adaptation",
+      "expected": {
+        "available": false
+      },
+      "macTest": "CotabbyTests/Support/LanguageLearning/LearningExplanationPolicyTests.swift"
+    },
+    {
+      "id": "base-1",
+      "mode": "supports",
+      "model": "gemma-4-E4B.i1-Q4_K_M.gguf",
+      "template": "automatic",
+      "macSource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "regression-adaptation",
+      "expected": {
+        "available": false
+      },
+      "macTest": "CotabbyTests/Support/LanguageLearning/LearningExplanationPolicyTests.swift"
+    },
+    {
+      "id": "base-2",
+      "mode": "supports",
+      "model": "Qwen3.5-2B-Base.i1-Q4_K_M.gguf",
+      "template": "automatic",
+      "macSource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "regression-adaptation",
+      "expected": {
+        "available": false
+      },
+      "macTest": "CotabbyTests/Support/LanguageLearning/LearningExplanationPolicyTests.swift"
+    },
+    {
+      "id": "general-qwen",
+      "mode": "supports",
+      "model": "Qwen3.5-4B-Q4_K_M.gguf",
+      "template": "qwen3",
+      "macSource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "regression-adaptation",
+      "expected": {
+        "available": true
+      },
+      "macTest": "CotabbyTests/Support/LanguageLearning/LearningExplanationPolicyTests.swift"
+    },
+    {
+      "id": "instruct-gemma",
+      "mode": "supports",
+      "model": "Gemma-4-E4B-IT.gguf",
+      "template": "gemma4",
+      "macSource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "regression-adaptation",
+      "expected": {
+        "available": true
+      },
+      "macTest": "CotabbyTests/Support/LanguageLearning/LearningExplanationPolicyTests.swift"
+    },
+    {
+      "id": "manual-automatic",
+      "mode": "supports",
+      "model": "renamed.gguf",
+      "template": "automatic",
+      "macSource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": true
+      }
+    },
+    {
+      "id": "manual-hyMT",
+      "mode": "supports",
+      "model": "renamed.gguf",
+      "template": "hyMT",
+      "macSource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": false
+      }
+    },
+    {
+      "id": "manual-hyMT7",
+      "mode": "supports",
+      "model": "renamed.gguf",
+      "template": "hyMT7",
+      "macSource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": false
+      }
+    },
+    {
+      "id": "manual-chatML",
+      "mode": "supports",
+      "model": "renamed.gguf",
+      "template": "chatML",
+      "macSource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": true
+      }
+    },
+    {
+      "id": "manual-qwen3",
+      "mode": "supports",
+      "model": "renamed.gguf",
+      "template": "qwen3",
+      "macSource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": true
+      }
+    },
+    {
+      "id": "manual-gemma4",
+      "mode": "supports",
+      "model": "renamed.gguf",
+      "template": "gemma4",
+      "macSource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": true
+      }
+    },
+    {
+      "id": "manual-gemma4Large",
+      "mode": "supports",
+      "model": "renamed.gguf",
+      "template": "gemma4Large",
+      "macSource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": true
+      }
+    },
+    {
+      "id": "manual-gemma3",
+      "mode": "supports",
+      "model": "renamed.gguf",
+      "template": "gemma3",
+      "macSource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": true
+      }
+    },
+    {
+      "id": "manual-translateGemma",
+      "mode": "supports",
+      "model": "renamed.gguf",
+      "template": "translateGemma",
+      "macSource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": false
+      }
+    },
+    {
+      "id": "manual-llama3",
+      "mode": "supports",
+      "model": "renamed.gguf",
+      "template": "llama3",
+      "macSource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": true
+      }
+    },
+    {
+      "id": "base-token",
+      "mode": "supports",
+      "model": "BASE",
+      "template": "qwen3",
+      "macSource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": false
+      }
+    },
+    {
+      "id": "base-delimited",
+      "mode": "supports",
+      "model": "model/base-v1",
+      "template": "qwen3",
+      "macSource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": false
+      }
+    },
+    {
+      "id": "base-substring",
+      "mode": "supports",
+      "model": "database-model",
+      "template": "qwen3",
+      "macSource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": true
+      }
+    },
+    {
+      "id": "base-digit",
+      "mode": "supports",
+      "model": "base2-model",
+      "template": "qwen3",
+      "macSource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": true
+      }
+    },
+    {
+      "id": "base-accent",
+      "mode": "supports",
+      "model": "baśe-model",
+      "template": "qwen3",
+      "macSource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": true
+      }
+    },
+    {
+      "id": "base-combining",
+      "mode": "supports",
+      "model": "baseͅ.gguf",
+      "template": "qwen3",
+      "macSource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": true
+      }
+    },
+    {
+      "id": "separator-specialist",
+      "mode": "supports",
+      "model": "Hy​-M​T",
+      "template": "qwen3",
+      "macSource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": false
+      }
+    },
+    {
+      "id": "accented-specialist",
+      "mode": "supports",
+      "model": "hyḿt",
+      "template": "qwen3",
+      "macSource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": true
+      }
+    },
+    {
+      "id": "combining-specialist",
+      "mode": "supports",
+      "model": "hýmt",
+      "template": "qwen3",
+      "macSource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": true
+      }
+    },
+    {
+      "id": "unicode-numbers",
+      "mode": "supports",
+      "model": "⑴-base",
+      "template": "qwen3",
+      "macSource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": false
+      }
+    },
+    {
+      "id": "unknown-alias",
+      "mode": "supports",
+      "model": "model",
+      "template": "qwen3",
+      "macSource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": true
+      }
+    },
+    {
+      "id": "empty-alias",
+      "mode": "supports",
+      "model": "",
+      "template": "qwen3",
+      "macSource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": true
+      }
+    },
+    {
+      "id": "availability-0",
+      "mode": "availability",
+      "local": true,
+      "model": "renamed.gguf",
+      "template": "qwen3",
+      "resolvedTemplate": null,
+      "macSource": "Cotabby/Models/LanguageLearning/LearningModelSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": null
+      }
+    },
+    {
+      "id": "availability-1",
+      "mode": "availability",
+      "local": true,
+      "model": "renamed.gguf",
+      "template": "qwen3",
+      "resolvedTemplate": "translateGemma",
+      "macSource": "Cotabby/Models/LanguageLearning/LearningModelSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": false
+      }
+    },
+    {
+      "id": "availability-2",
+      "mode": "availability",
+      "local": true,
+      "model": "renamed.gguf",
+      "template": "qwen3",
+      "resolvedTemplate": "hyMT7",
+      "macSource": "Cotabby/Models/LanguageLearning/LearningModelSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": false
+      }
+    },
+    {
+      "id": "availability-3",
+      "mode": "availability",
+      "local": true,
+      "model": "renamed.gguf",
+      "template": "automatic",
+      "resolvedTemplate": "qwen3",
+      "macSource": "Cotabby/Models/LanguageLearning/LearningModelSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": true
+      }
+    },
+    {
+      "id": "availability-4",
+      "mode": "availability",
+      "local": true,
+      "model": "renamed.gguf",
+      "template": "gemma4",
+      "resolvedTemplate": "chatML",
+      "macSource": "Cotabby/Models/LanguageLearning/LearningModelSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": true
+      }
+    },
+    {
+      "id": "availability-5",
+      "mode": "availability",
+      "local": true,
+      "model": "renamed.gguf",
+      "template": "hyMT",
+      "resolvedTemplate": "qwen3",
+      "macSource": "Cotabby/Models/LanguageLearning/LearningModelSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": false
+      }
+    },
+    {
+      "id": "availability-6",
+      "mode": "availability",
+      "local": true,
+      "model": "Qwen-Base.gguf",
+      "template": "qwen3",
+      "resolvedTemplate": "qwen3",
+      "macSource": "Cotabby/Models/LanguageLearning/LearningModelSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": false
+      }
+    },
+    {
+      "id": "availability-7",
+      "mode": "availability",
+      "local": false,
+      "model": "opaque",
+      "template": "automatic",
+      "resolvedTemplate": null,
+      "macSource": "Cotabby/Models/LanguageLearning/LearningModelSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": true
+      }
+    },
+    {
+      "id": "availability-8",
+      "mode": "availability",
+      "local": false,
+      "model": "google/hunyuan mt",
+      "template": "qwen3",
+      "resolvedTemplate": null,
+      "macSource": "Cotabby/Models/LanguageLearning/LearningModelSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": false
+      }
+    },
+    {
+      "id": "availability-9",
+      "mode": "availability",
+      "local": false,
+      "model": "opaque",
+      "template": "hyMT",
+      "resolvedTemplate": null,
+      "macSource": "Cotabby/Models/LanguageLearning/LearningModelSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": false
+      }
+    },
+    {
+      "id": "availability-10",
+      "mode": "availability",
+      "local": false,
+      "model": "",
+      "template": "automatic",
+      "resolvedTemplate": null,
+      "macSource": "Cotabby/Models/LanguageLearning/LearningModelSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": true
+      }
+    }
+  ]
+}

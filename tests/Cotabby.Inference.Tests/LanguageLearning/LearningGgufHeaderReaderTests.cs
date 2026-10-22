@@ -122,6 +122,68 @@ public sealed class LearningGgufHeaderReaderTests
             Assert.Throws<LearningExplanationException>(() => LearningExplanationModelPolicy.ResolveLocalProfile(configuration, metadata)).Failure);
     }
 
+    [Theory]
+    [InlineData("hunyuan-dense", false)]
+    [InlineData("qwen3", true)]
+    public void ProductionPreflightReadsMetadataForManualExplanationBeforeAnyNativeLoad(string architecture, bool allowed)
+    {
+        string path = Path.GetTempFileName();
+        try
+        {
+            using var header = Header(1, writer => TextField(writer, "general.architecture", architecture));
+            File.WriteAllBytes(path, header.ToArray());
+            var configuration = new LearningLocalModelConfiguration(path, LearningChatTemplate.ChatMl, requiresGeneralInstructions: true);
+            if (allowed) Assert.Equal(architecture, LearningLocalRuntime.ReadMetadataForOperation(configuration, default).Architecture);
+            else Assert.Equal(LearningExplanationFailure.InstructionModelRequired,
+                Assert.Throws<LearningExplanationException>(() => LearningLocalRuntime.ReadMetadataForOperation(configuration, default)).Failure);
+        }
+        finally { File.Delete(path); }
+    }
+
+    [Fact]
+    public void TranslationManualPreflightRetainsTheExistingMetadataBypass()
+    {
+        var configuration = new LearningLocalModelConfiguration("nonexistent-file.gguf", LearningChatTemplate.ChatMl);
+        Assert.Equal(string.Empty, LearningLocalRuntime.ReadMetadataForOperation(configuration, default).Architecture);
+    }
+
+    [Fact]
+    public void WindowsModelReadLeaseDeniesWritesAndReplacementUntilReleased()
+    {
+        string path = Path.GetTempFileName(), destination = path + ".moved";
+        try
+        {
+            using var header = Header(1, writer => TextField(writer, "general.architecture", "qwen3"));
+            File.WriteAllBytes(path, header.ToArray());
+            using (LearningLocalRuntime.OpenModelReadLease(path))
+            {
+                Assert.ThrowsAny<IOException>(() => File.WriteAllText(path, "replaced"));
+                Assert.ThrowsAny<IOException>(() => File.Move(path, destination));
+                Assert.Equal("qwen3", LearningLocalRuntime.ReadMetadataForOperation(
+                    new(path, LearningChatTemplate.ChatMl, requiresGeneralInstructions: true), default).Architecture);
+            }
+            File.Move(path, destination);
+            File.WriteAllText(destination, "released");
+        }
+        finally { File.Delete(path); File.Delete(destination); }
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void NativeCleanupAlwaysAttemptsWeightsAndFileGuardPreservingTheFirstFailure(bool suppress)
+    {
+        var order = new List<string>(); var first = new InvalidOperationException("first");
+        var context = new DisposalAction(() => { order.Add("context"); throw first; });
+        var weights = new DisposalAction(() => { order.Add("weights"); throw new InvalidOperationException("second"); });
+        var guard = new DisposalAction(() => order.Add("guard"));
+        if (suppress) LearningLocalRuntime.DisposeModelResources(context, weights, guard, suppressErrors: true);
+        else Assert.Same(first, Assert.Throws<InvalidOperationException>(() => LearningLocalRuntime.DisposeModelResources(context, weights, guard)));
+        Assert.Equal(new[] { "context", "weights", "guard" }, order);
+    }
+
+    private sealed class DisposalAction(Action action) : IDisposable { public void Dispose() => action(); }
+
     private static MemoryStream Header(ulong entries, Action<BinaryWriter> content)
     {
         var stream = new MemoryStream();

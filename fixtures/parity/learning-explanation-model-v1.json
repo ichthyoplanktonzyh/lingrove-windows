@@ -518,6 +518,94 @@
       "expected": {
         "available": true
       }
+    },
+    {
+      "id": "configured-output-0",
+      "mode": "output",
+      "configured": null,
+      "macSource": "Cotabby/Models/LanguageLearning/LearningModelSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "tokens": 1024
+      },
+      "macSecondarySource": "Cotabby/Services/LanguageLearning/LearningExplanationService.swift"
+    },
+    {
+      "id": "configured-output-1",
+      "mode": "output",
+      "configured": -2147483648,
+      "macSource": "Cotabby/Models/LanguageLearning/LearningModelSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "tokens": 256
+      },
+      "macSecondarySource": "Cotabby/Services/LanguageLearning/LearningExplanationService.swift"
+    },
+    {
+      "id": "configured-output-2",
+      "mode": "output",
+      "configured": 0,
+      "macSource": "Cotabby/Models/LanguageLearning/LearningModelSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "tokens": 256
+      },
+      "macSecondarySource": "Cotabby/Services/LanguageLearning/LearningExplanationService.swift"
+    },
+    {
+      "id": "configured-output-3",
+      "mode": "output",
+      "configured": 255,
+      "macSource": "Cotabby/Models/LanguageLearning/LearningModelSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "tokens": 256
+      },
+      "macSecondarySource": "Cotabby/Services/LanguageLearning/LearningExplanationService.swift"
+    },
+    {
+      "id": "configured-output-4",
+      "mode": "output",
+      "configured": 256,
+      "macSource": "Cotabby/Models/LanguageLearning/LearningModelSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "tokens": 256
+      },
+      "macSecondarySource": "Cotabby/Services/LanguageLearning/LearningExplanationService.swift"
+    },
+    {
+      "id": "configured-output-5",
+      "mode": "output",
+      "configured": 4096,
+      "macSource": "Cotabby/Models/LanguageLearning/LearningModelSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "tokens": 4096
+      },
+      "macSecondarySource": "Cotabby/Services/LanguageLearning/LearningExplanationService.swift"
+    },
+    {
+      "id": "configured-output-6",
+      "mode": "output",
+      "configured": 4097,
+      "macSource": "Cotabby/Models/LanguageLearning/LearningModelSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "tokens": 4096
+      },
+      "macSecondarySource": "Cotabby/Services/LanguageLearning/LearningExplanationService.swift"
+    },
+    {
+      "id": "configured-output-7",
+      "mode": "output",
+      "configured": 2147483647,
+      "macSource": "Cotabby/Models/LanguageLearning/LearningModelSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "tokens": 4096
+      },
+      "macSecondarySource": "Cotabby/Services/LanguageLearning/LearningExplanationService.swift"
     }
   ]
 }

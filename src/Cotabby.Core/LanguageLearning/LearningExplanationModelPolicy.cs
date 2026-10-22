@@ -9,6 +9,9 @@ namespace Cotabby.Core.LanguageLearning;
 /// </summary>
 public static class LearningExplanationModelPolicy
 {
+    /// <summary>Mac per-destination explanation setting: bounded override, or the service's default.</summary>
+    public static int ResolveOutputTokens(int? configured = null) => configured is { } value ? Math.Clamp(value, 256, 4096) : 1024;
+
     public static bool SupportsGeneralInstructions(string model, LearningChatTemplate template)
     {
         ArgumentNullException.ThrowIfNull(model);

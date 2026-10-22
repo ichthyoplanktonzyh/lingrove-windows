@@ -102,6 +102,26 @@ public sealed class LearningGgufHeaderReaderTests
             LearningLocalPrompt.ResolveTemplate(LearningChatTemplate.Automatic, metadata));
     }
 
+    [Theory]
+    [InlineData("hunyuan-dense", null, false)]
+    [InlineData("gemma3", "TranslateGemma", false)]
+    [InlineData("qwen3", "General instruction model", true)]
+    public void ExplanationGateUsesTheActualBoundedHeaderDespiteAManualGeneralTemplate(
+        string architecture, string? name, bool allowed)
+    {
+        using var header = Header(name is null ? 1ul : 2ul, writer =>
+        {
+            TextField(writer, "general.architecture", architecture);
+            if (name is not null) TextField(writer, "general.name", name);
+        });
+        var metadata = LearningGgufHeaderReader.Read(header, CancellationToken.None);
+        var configuration = new LearningLocalModelConfiguration("renamed.gguf", LearningChatTemplate.ChatMl);
+        if (allowed) Assert.Equal(LearningChatTemplate.ChatMl,
+            LearningExplanationModelPolicy.ResolveLocalProfile(configuration, metadata).Template);
+        else Assert.Equal(LearningExplanationFailure.InstructionModelRequired,
+            Assert.Throws<LearningExplanationException>(() => LearningExplanationModelPolicy.ResolveLocalProfile(configuration, metadata)).Failure);
+    }
+
     private static MemoryStream Header(ulong entries, Action<BinaryWriter> content)
     {
         var stream = new MemoryStream();

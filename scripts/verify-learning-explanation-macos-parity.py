@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Run the pinned Mac explanation input/prompt/parser rules, without a model or app.
 
-Compile slices exclude capture/notebook construction and the model-compatibility gate, which
-are outside this port's current scope. Every exercised rule and dependency is original code;
+Compile slices exclude capture/notebook construction. Model-gate rules include the actual settings
+availability property in fixture-only value wrappers, without preferences/Combine ownership.
+Every exercised rule and dependency is original code;
 the driver only expands fixture text and projects returned values. JSON object key order is
 not a Swift JSONEncoder contract, so prompts compare exact surrounding prose, semantic payload,
 and exact UTF-8/token budgets rather than a serialized object order.
@@ -56,6 +57,7 @@ indirect enum Value: Codable {
     }
     var string: String { guard case let .string(v) = self else { fatalError("Expected string") }; return v }
     var int: Int { guard case let .integer(v) = self else { fatalError("Expected integer") }; return v }
+    var bool: Bool { guard case let .boolean(v) = self else { fatalError("Expected boolean") }; return v }
     var values: [Value] { guard case let .array(v) = self else { fatalError("Expected array") }; return v }
     var optionalString: String? { if case let .string(v) = self { return v }; return nil }
 }
@@ -73,6 +75,25 @@ func input(_ row: Value) -> LearningExplanationInput {
             VocabularyTextRange(NSRange(location: $0["location"].int, length: $0["length"].int))
         }, contextKind: LearningExplanationContext(rawValue: row["contextKind"].optionalString ?? "fragment")!,
         occurrenceIdentity: row["occurrenceIdentity"].optionalString)
+}
+if CommandLine.arguments[1] == "--models" {
+    let corpus = try JSONDecoder().decode(Value.self, from: Data(contentsOf: URL(fileURLWithPath: CommandLine.arguments[2])))
+    let observations = corpus["cases"].values.map { row -> Value in
+        let template = LearningChatTemplate(rawValue: row["template"].string)!
+        if row["mode"].string == "supports" {
+            return .object(["id": row["id"], "available": .boolean(LearningExplanationPolicy.supportsGeneralInstructions(
+                model: row["model"].string, template: template))])
+        }
+        let resolved = row["resolvedTemplate"].optionalString.flatMap(LearningChatTemplate.init(rawValue:))
+        let settings = ExplanationFixtureSettings(activeSelection: .init(
+            backend: row["local"].bool ? .local : .endpoint, localModel: row["model"].string,
+            endpointModel: row["model"].string, template: template),
+            resolvedTemplates: resolved.map { ["fixture": $0] } ?? [:])
+        return .object(["id": row["id"], "available": settings.generalInstructionsAvailable.map(Value.boolean) ?? .null])
+    }
+    let encoder = JSONEncoder(); encoder.outputFormatting = [.sortedKeys]
+    FileHandle.standardOutput.write(try encoder.encode(observations))
+    exit(0)
 }
 let corpus = try JSONDecoder().decode(Value.self, from: Data(contentsOf: URL(fileURLWithPath: CommandLine.arguments[1])))
 var observations = [Value]()
@@ -135,7 +156,23 @@ def main():
     parser.add_argument("--fixture", type=Path, default=Path(__file__).resolve().parents[1] /
                         "fixtures/parity/learning-explanation-v1.json")
     parser.add_argument("--capture-output", type=Path, help="Write actual Mac observations to a NEW file for fixture authoring")
+    parser.add_argument("--capture-model-output", type=Path, help="Write actual Mac model-gate observations to a NEW file")
     args = parser.parse_args()
+    if args.capture_output and args.capture_model_output:
+        parser.error("Capture one corpus at a time")
+    model_fixture = Path(__file__).resolve().parents[1] / "fixtures/parity/learning-explanation-model-v1.json"
+    model_corpus = json.loads(model_fixture.read_text(encoding="utf-8"))
+    model_ids = [row.get("id") for row in model_corpus["cases"]]
+    if model_corpus.get("version") != 1 or model_corpus.get("macReference") != BASELINE or any(
+            not value for value in model_ids) or len(set(model_ids)) != len(model_ids) or any(
+            row.get("mode") not in ("supports", "availability") or
+            row.get("macSource") != ("Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift" if row.get("mode") == "supports"
+                else "Cotabby/Models/LanguageLearning/LearningModelSettings.swift") or
+            row.get("provenanceKind") not in ("regression-adaptation", "source-policy-extension") or
+            (row.get("provenanceKind") == "regression-adaptation" and
+             row.get("macTest") != "CotabbyTests/Support/LanguageLearning/LearningExplanationPolicyTests.swift")
+            for row in model_corpus["cases"]):
+        parser.error("Model cases require pinned schema, unique IDs and original method/test provenance")
     corpus = json.loads(args.fixture.read_text(encoding="utf-8"))
     if corpus.get("version") != 1 or corpus.get("macReference") != BASELINE:
         parser.error("Fixture must use schema 1 and the pinned Mac revision")
@@ -152,6 +189,8 @@ def main():
     vocabulary = source(args.mac_repo, "Cotabby/Models/Vocabulary/VocabularyModels.swift")
     vocabulary_policy = source(args.mac_repo, "Cotabby/Support/Vocabulary/VocabularyPolicy.swift")
     policy = source(args.mac_repo, "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift")
+    settings = source(args.mac_repo, "Cotabby/Models/LanguageLearning/LearningModelSettings.swift")
+    runtime = source(args.mac_repo, "Cotabby/Models/Runtime/LlamaRuntimeModels.swift")
     slices = ["import Foundation\n" + between(models, "nonisolated enum LearningExplanationContext:",
                "/// A durable, context-specific learning artifact."),
         "import Foundation\nnonisolated enum VocabularyEntry {\n" +
@@ -161,7 +200,19 @@ def main():
             between(vocabulary_policy, "    static func valid(_ range:", "    /// The window's two completeness flags") +
             "}\n" + vocabulary_policy[vocabulary_policy.index("nonisolated enum VocabularyError:"):],
         "import Foundation\nnonisolated enum LearningExplanationPolicy {\n" +
-            policy[policy.index("    static func isValid(_ input:"):]]
+            between(policy, "    static func supportsGeneralInstructions(", "    /// The target and its occurrence quotes") +
+            policy[policy.index("    static func isValid(_ input:"):],
+        "import Foundation\n" + between(settings, "nonisolated enum LearningModelRole:", "/// Retained by one request."),
+        "import Foundation\nnonisolated enum RuntimeModelCatalog {\n" +
+            between(runtime, "    nonisolated static func isKnownBaseModel(", "    static func displayName(") + "}\n",
+        # These fixture DTO fields replace only preferences/Combine ownership. The computed
+        # availability property below is copied intact and is the only settings algorithm run.
+        "import Foundation\nstruct ExplanationFixtureSettings {\n" +
+            "struct Selection { let backend: LearningModelBackend; let localModel: String; " +
+            "let endpointModel: String; let template: LearningChatTemplate }\n" +
+            "let activeSelection: Selection; let resolvedTemplates: [String: LearningChatTemplate]\n" +
+            "let contextIdentity = \"fixture\"\n" +
+            between(settings, "    var generalInstructionsAvailable:", "    var recommendedSampling:") + "}\n"]
     with tempfile.TemporaryDirectory(prefix="lingrove-explanation-parity-") as temporary:
         root = Path(temporary)
         paths = []
@@ -174,11 +225,14 @@ def main():
         binary = root / "explanation-parity"
         subprocess.run(["swiftc", "-O", *paths, str(driver), "-o", str(binary)], check=True)
         observations = json.loads(subprocess.check_output([str(binary), str(args.fixture)]))
-    if args.capture_output:
-        with args.capture_output.open("x", encoding="utf-8") as output:
-            json.dump(observations, output, ensure_ascii=False, indent=2)
+        model_observations = json.loads(subprocess.check_output([str(binary), "--models", str(model_fixture)]))
+    capture = args.capture_output or args.capture_model_output
+    if capture:
+        with capture.open("x", encoding="utf-8") as output:
+            values = observations if args.capture_output else model_observations
+            json.dump(values, output, ensure_ascii=False, indent=2)
             output.write("\n")
-        print(f"Captured {len(observations)} original Mac explanation observations to {args.capture_output}")
+        print(f"Captured {len(values)} original Mac explanation observations to {capture}")
         return
     if len(observations) != len(corpus["cases"]):
         raise SystemExit("Observation count changed")
@@ -187,6 +241,12 @@ def main():
         if observation != expected:
             raise SystemExit(f"Mac explanation mismatch: {row['id']}")
     print(f"Verified {len(observations)} explanation cases against actual pinned Mac rules")
+    if len(model_observations) != len(model_corpus["cases"]):
+        raise SystemExit("Model observation count changed")
+    for row, observation in zip(model_corpus["cases"], model_observations):
+        if observation != {"id": row["id"], **row["expected"]}:
+            raise SystemExit(f"Mac explanation model-gate mismatch: {row['id']}")
+    print(f"Verified {len(model_observations)} explanation model-gate cases against actual pinned Mac methods")
 
 
 if __name__ == "__main__":

@@ -20,6 +20,10 @@ internal static class Fields
         FieldRect = new ScreenRect(0, 0, 400, 200),
         IsSingleLine = singleLine,
         IsSecure = false,
+        FieldId = "editor",
+        HasReliableSelection = true,
+        IsTextWindowTruncated = false,
+        FocusChangeSequence = 1,
     };
 }
 
@@ -69,22 +73,43 @@ internal sealed class FakeFocus : IFocusTracker, ITextInserter
 {
     private readonly object _gate = new();
     private FocusedField? _field;
+    private long _focusChangeSequence;
+    private int _refreshesOnPump;
 
     public event EventHandler<FocusedField?>? FocusChanged;
 
     public List<string> Insertions { get; } = [];
+    public List<FocusedField> InsertTargets { get; } = [];
+    public List<FocusedField> ReplaceTargets { get; } = [];
+    public Func<FocusedField?>? RefreshOverride { get; set; }
+    public Action<FocusedField?>? AfterRefresh { get; set; }
+    public Func<FocusedField, string, CancellationToken, Task<bool>>? InsertOverride { get; set; }
+    public Func<FocusedField, int, string, CancellationToken, Task<bool>>? ReplaceOverride { get; set; }
+    public int RefreshesOnPump => Volatile.Read(ref _refreshesOnPump);
 
     public FocusedField? Current
     {
         get { lock (_gate) return _field; }
     }
 
-    public FocusedField? Refresh() => Current;
+    public FocusedField? Refresh()
+    {
+        if (SynchronizationContext.Current is PumpContext) Interlocked.Increment(ref _refreshesOnPump);
+        var field = RefreshOverride is { } refresh ? refresh() : Current;
+        AfterRefresh?.Invoke(field);
+        return field;
+    }
 
     public void Focus(FocusedField? field)
     {
-        lock (_gate) _field = field;
-        FocusChanged?.Invoke(this, field);
+        FocusedField? focused;
+        lock (_gate)
+        {
+            _focusChangeSequence++;
+            focused = field is null ? null : field with { FocusChangeSequence = _focusChangeSequence };
+            _field = focused;
+        }
+        FocusChanged?.Invoke(this, focused);
     }
 
     public void Append(string text)
@@ -107,21 +132,43 @@ internal sealed class FakeFocus : IFocusTracker, ITextInserter
         lock (_gate) _field = _field! with { CaretRect = caret };
     }
 
-    public Task<bool> InsertAsync(FocusedField target, string text, CancellationToken ct)
+    public async Task<bool> InsertAsync(FocusedField target, string text, CancellationToken ct)
     {
-        lock (_gate) Insertions.Add(text);
-        Append(text);
-        return Task.FromResult(true);
-    }
+        InsertTargets.Add(target);
+        if (ct.IsCancellationRequested) return false;
+        if (InsertOverride is { } insert) return await insert(target, text, ct).ConfigureAwait(false);
 
-    public Task<bool> ReplaceAsync(FocusedField target, int deleteCount, string text, CancellationToken ct)
-    {
         lock (_gate)
         {
-            var updated = _field!.Text[..^deleteCount] + text;
-            _field = _field with { Text = updated, CaretOffset = updated.Length };
+            if (!InsertionTargetPolicy.IsCurrentTarget(target, _field)) return false;
+            Insertions.Add(text);
+            ApplyEdit(target, deleteCount: 0, text);
+            return true;
         }
-        return Task.FromResult(true);
+    }
+
+    public async Task<bool> ReplaceAsync(FocusedField target, int deleteCount, string text, CancellationToken ct)
+    {
+        ReplaceTargets.Add(target);
+        if (ct.IsCancellationRequested) return false;
+        if (ReplaceOverride is { } replace)
+        {
+            return await replace(target, deleteCount, text, ct).ConfigureAwait(false);
+        }
+
+        lock (_gate)
+        {
+            if (!InsertionTargetPolicy.IsCurrentTarget(target, _field)) return false;
+            ApplyEdit(target, deleteCount, text);
+            return true;
+        }
+    }
+
+    private void ApplyEdit(FocusedField target, int deleteCount, string text)
+    {
+        int start = target.CaretOffset - deleteCount;
+        string updated = target.Text[..start] + text + target.Text[target.CaretOffset..];
+        _field = target with { Text = updated, CaretOffset = start + text.Length };
     }
 
     public void Start() { }
@@ -132,6 +179,7 @@ internal sealed class FakeFocus : IFocusTracker, ITextInserter
 internal sealed class ScriptedEngine : ISuggestionEngine
 {
     public Func<SuggestionRequest, string> Completion { get; set; } = _ => " world again";
+    public Func<SuggestionRequest, CancellationToken, Task<string>>? GenerateOverride { get; set; }
     public ConcurrentQueue<SuggestionRequest> Requests { get; } = new();
     public bool IsReady { get; set; } = true;
     public bool SpacingIsExact => true;
@@ -139,6 +187,11 @@ internal sealed class ScriptedEngine : ISuggestionEngine
     public async Task<string> GenerateAsync(SuggestionRequest request, CancellationToken ct)
     {
         Requests.Enqueue(request);
+        if (GenerateOverride is { } generate)
+        {
+            return await generate(request, ct).ConfigureAwait(false);
+        }
+
         await Task.Yield();
         return Completion(request);
     }
@@ -187,6 +240,7 @@ internal sealed class RecordingOverlay : IOverlayPresenter
 {
     private readonly object _gate = new();
     private string _text = "";
+    private readonly Dictionary<string, List<TaskCompletionSource<bool>>> _waiters = new(StringComparer.Ordinal);
 
     public string Text
     {
@@ -199,6 +253,24 @@ internal sealed class RecordingOverlay : IOverlayPresenter
 
     public ScreenRect Anchor { get; private set; }
 
+    public Task WaitForTextAsync(string text)
+    {
+        TaskCompletionSource<bool> waiter;
+        lock (_gate)
+        {
+            if (_text == text) return Task.CompletedTask;
+            waiter = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            if (!_waiters.TryGetValue(text, out var waiters))
+            {
+                waiters = [];
+                _waiters.Add(text, waiters);
+            }
+            waiters.Add(waiter);
+        }
+
+        return waiter.Task.WaitAsync(TimeSpan.FromSeconds(5));
+    }
+
     public void Show(string text, ScreenRect anchor, OverlayStyle style = OverlayStyle.Inline)
     {
         Style = style;
@@ -208,7 +280,16 @@ internal sealed class RecordingOverlay : IOverlayPresenter
 
     public void Update(string text)
     {
-        lock (_gate) _text = text;
+        List<TaskCompletionSource<bool>>? completed;
+        lock (_gate)
+        {
+            _text = text;
+            _waiters.Remove(text, out completed);
+        }
+        if (completed is not null)
+        {
+            foreach (var waiter in completed) waiter.TrySetResult(true);
+        }
     }
 
     public void Hide() => Update("");
@@ -228,6 +309,30 @@ internal sealed class PumpContext : SynchronizationContext, IDisposable
         })
         { IsBackground = true }.Start();
     }
+
+    public Task InvokeAsync(Action action)
+    {
+        var completed = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        Post(_ =>
+        {
+            try
+            {
+                action();
+                completed.TrySetResult(true);
+            }
+            catch (Exception ex)
+            {
+                completed.TrySetException(ex);
+            }
+        }, null);
+        return completed.Task.WaitAsync(TimeSpan.FromSeconds(5));
+    }
+
+    public void BlockUntil(Task release, TaskCompletionSource<bool> entered) => Post(_ =>
+    {
+        entered.TrySetResult(true);
+        release.GetAwaiter().GetResult();
+    }, null);
 
     public override void Post(SendOrPostCallback d, object? state) => _queue.Add((d, state));
 

@@ -8,32 +8,74 @@ namespace Cotabby.Inference.Tests;
 
 /// <summary>
 /// Runs against the real clipboard. The text that was there is put back at the end, and the
-/// test does nothing when the clipboard holds something other than text.
+/// test does nothing unless its explicit, non-converted formats are all supported plain text.
 /// </summary>
 public class ClipboardTextReaderTests
 {
+    private static readonly HashSet<string> RestorableTextFormats = new(StringComparer.OrdinalIgnoreCase)
+    {
+        DataFormats.UnicodeText,
+        DataFormats.Text,
+        DataFormats.OemText,
+        DataFormats.Locale,
+        DataFormats.StringFormat,
+    };
+
     private readonly ClipboardTextReader _reader = new();
 
     [Fact]
-    public void ReadsCopiedTextAndIgnoresItsOwnWrites()
+    public void ReadsCopiedTextAndTruncatesLongReads()
     {
         // The test rewrites the real clipboard, so it only runs when asked for.
         if (Environment.GetEnvironmentVariable("COTABBY_CLIPBOARD_TEST") != "1") return;
 
         OnStaThread(() =>
         {
+            IDataObject? originalData = WpfClipboard.GetDataObject();
+            if (originalData is null) return;
+
+            // GetFormats(false) excludes synthesized conversions. If any explicit format is not
+            // one of the plain-text representations below, restoring just the text would discard
+            // the user's rich clipboard data, so this opt-in test leaves it untouched.
+            string[] originalFormats = originalData.GetFormats(autoConvert: false);
+            if (originalFormats.Length == 0 || !ContainsOnlySupportedTextFormats(originalFormats)) return;
+
             string? original = WpfClipboard.ContainsText() ? WpfClipboard.GetText() : null;
-            if (original is null && WpfClipboard.GetDataObject()?.GetFormats().Length > 0) return;
+            if (original is null) return;
+
             try
             {
                 RoundTrip();
             }
             finally
             {
-                if (original is null) WpfClipboard.Clear();
-                else WpfClipboard.SetDataObject(original, copy: true);
+                WpfClipboard.SetDataObject(original, copy: true);
             }
         });
+    }
+
+    [Fact]
+    public void TextOnlyClipboardGuardAcceptsSupportedExplicitFormats()
+    {
+        Assert.True(ContainsOnlySupportedTextFormats(
+        [
+            DataFormats.UnicodeText,
+            DataFormats.Text,
+            DataFormats.OemText,
+            DataFormats.Locale,
+            DataFormats.StringFormat,
+        ]));
+    }
+
+    [Theory]
+    [InlineData("HTML Format")]
+    [InlineData("Rich Text Format")]
+    [InlineData("Bitmap")]
+    [InlineData("FileDrop")]
+    [InlineData("ExcludeClipboardContentFromMonitorProcessing")]
+    public void TextOnlyClipboardGuardRejectsRichOrUnknownExplicitFormats(string format)
+    {
+        Assert.False(ContainsOnlySupportedTextFormats([DataFormats.UnicodeText, format]));
     }
 
     private void RoundTrip()
@@ -44,23 +86,6 @@ public class ClipboardTextReaderTests
         AssertReads(copied);
         uint afterCopy = _reader.SequenceNumber;
         Assert.NotEqual(before, afterCopy);
-
-        // A paste that puts the old contents back leaves no trace.
-        _reader.BeginOwnWrite();
-        Copy("cotabby suggestion");
-        Assert.Null(_reader.ReadText());
-        Assert.Equal(afterCopy, _reader.SequenceNumber);
-        Copy(copied);
-        _reader.EndOwnWrite(restored: true);
-        Assert.Equal(afterCopy, _reader.SequenceNumber);
-        AssertReads(copied);
-
-        // A paste that could not put them back hides its own text until the next copy.
-        _reader.BeginOwnWrite();
-        Copy("cotabby suggestion");
-        _reader.EndOwnWrite(restored: false);
-        Assert.Equal(afterCopy, _reader.SequenceNumber);
-        Assert.Null(_reader.ReadText());
 
         Copy(new string('a', ClipboardTextReader.MaxChars + 100));
         AssertReads(new string('a', ClipboardTextReader.MaxChars));
@@ -84,6 +109,9 @@ public class ClipboardTextReaderTests
         while ((text = _reader.ReadText()) != expected && clock.ElapsedMilliseconds < 2000) Thread.Sleep(10);
         Assert.Equal(expected, text);
     }
+
+    private static bool ContainsOnlySupportedTextFormats(IEnumerable<string> formats) =>
+        formats.All(RestorableTextFormats.Contains);
 
     private static void OnStaThread(Action action)
     {

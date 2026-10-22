@@ -49,7 +49,7 @@ Windows behavior for UIA, input, rendering, insertion, persistence, or inference
 | Capability | macOS reference at pinned commit (source / tests) | Windows baseline evidence | Status |
 | --- | --- | --- | --- |
 | Translation while writing, task settings and request profiles | `Cotabby/Services/LanguageLearning/LearningTranslationService.swift`, `LearningExpressionService.swift`, `Cotabby/Models/LanguageLearning/`, `CotabbyTests/Services/LanguageLearning/LearningTranslationStyleIntegrationTests.swift` | No learning coordinator, request or runtime found | source-only |
-| Safe translation replacement with acknowledgement | `Cotabby/Services/LanguageLearning/LearningSelectionReplacement.swift`, `Cotabby/Support/LanguageLearning/LearningReplacementVerificationPolicy.swift`, matching tests | No learning replacement flow. Current `src/Cotabby.Win32/Insertion/SendInputTextInserter.cs` saves clipboard text only and documents loss of non-text formats | missing |
+| Safe translation replacement with acknowledgement | `Cotabby/Services/LanguageLearning/LearningSelectionReplacement.swift`, `Cotabby/Support/LanguageLearning/LearningReplacementVerificationPolicy.swift`, matching tests | No learning replacement flow or host acknowledgement. Shared `GuardedTextInserter` and Win32 clipboard lease now provide guarded dispatch and bounded supported-format preservation; [limits and evidence](EDITOR_SAFETY.md) | missing |
 | Selected text and reading capture | `Cotabby/App/Coordinators/InlineFeatures/LearningReadingCoordinator.swift`, `Cotabby/Services/LanguageLearning/LearningReadingSelectionReader.swift`, `LearningReadingSourceReader.swift`, `CotabbyTests/App/Coordinators/InlineFeatures/LearningReadingCoordinatorTests.swift` | No selection/reading learning capture | source-only |
 | Explicit screen-region capture and OCR | `Cotabby/Services/Presentation/LearningRegionSelectionPanel.swift`, `Cotabby/Services/Visual/ScreenTextExtractor.swift`, `CotabbyTests/Services/Visual/ReadingOCRIntegrationTests.swift` | No screen capture/OCR subsystem | source-only |
 | Sentence explanation and offline lexical word/expression recognition | `Cotabby/Services/LanguageLearning/LearningExplanationService.swift`, `LearningExpressionService+Sentence.swift`, `Cotabby/Support/LanguageLearning/LearningUnitRecognizer.swift`, `CotabbyTests/Support/LanguageLearning/LearningUnitRecognizerTests.swift` | No explanation or lexical-recognition code | source-only |
@@ -79,6 +79,10 @@ does not imply that Windows storage is already compatible with the macOS databas
 | Automatic update and release feed | `Cotabby/Services/Updates/` and settings models | No updater found; distribution is outside the first milestone | source-only |
 
 ## Verification policy
+
+The guarded editor insertion stage adds portable transaction, stale-result, cancellation and inline
+query tests plus fake-driven Windows dispatch tests. It does not promote native focus, insertion,
+clipboard or IME rows to verified. See [EDITOR_SAFETY.md](EDITOR_SAFETY.md) for the exact boundary.
 
 Move a row to **verified** only with named evidence: shared fixture or unit-test output for portable
 rules, plus native Windows host checks for behavior involving UIA, IME, input, caret rendering,

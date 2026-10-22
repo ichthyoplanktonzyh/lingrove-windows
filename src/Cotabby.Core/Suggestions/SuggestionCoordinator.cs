@@ -49,6 +49,7 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
     private readonly IOverlayPresenter _overlay;
     private readonly ITextInserter _inserter;
     private readonly SuggestionWorkController _work;
+    private readonly PendingEditLifetime _pendingEdits = new();
     private readonly ILogger<SuggestionCoordinator> _logger;
     private readonly SynchronizationContext _ui;
     private readonly Func<bool> _batterySaverOn;
@@ -63,6 +64,8 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
 
     private SuggestionSession? _session;
     private FocusedField? _sessionField;
+    private CorrectionEdit? _correctionEdit;
+    private long _sessionAuthorizationEpoch;
     private bool _sessionAcceptedAny;
 
     /// <summary>The text that should sit before the caret, counting what was typed or accepted since the offer.</summary>
@@ -72,7 +75,7 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
     private int _pendingInsertChars;
     private (string RequestId, long Timestamp)? _pendingDoubleTap;
     private AcceptedTail? _lastAcceptedTail;
-    private bool _queuedAccept;
+    private long? _queuedAcceptEpoch;
 
     /// <summary>Text an automatic fix was last applied to. It stops a fix the host ignored from repeating.</summary>
     private volatile string? _lastAutoFixedText;
@@ -84,7 +87,6 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
     private FocusedField? _publishBaseline;
     private int _expectedDelta;
     private long _keySequence;
-    private int _focusedPid;
 
     /// <summary>What the hook thread may accept right now.</summary>
     private sealed record Offer(KeyBinding AcceptWord, KeyBinding AcceptAll);
@@ -92,6 +94,12 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
     private sealed record AcceptKeyOwnership(KeyBinding AcceptWord, long ExpiresAt);
 
     private sealed record AcceptedTail(string Text, string PrecedingText);
+
+    /// <summary>The original capture and plan for one correction, retained through asynchronous dispatch.</summary>
+    private sealed record CorrectionEdit(
+        FocusedField OriginalField,
+        TypoCorrection Correction,
+        TypoCorrectionReplacement Plan);
 
     public SuggestionCoordinator(
         IKeyboardHook hook,
@@ -146,6 +154,7 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
         get => _settings;
         set
         {
+            _pendingEdits.Invalidate();
             _settings = value;
             UpdateDebounce(value, lastLatencyMs: null);
             Post(() => CancelSession("settings changed"));
@@ -166,21 +175,30 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
     {
         if (_disposed) return;
         _disposed = true;
+        _pendingEdits.Dispose();
         _hook.KeyEvent -= OnKeyEvent;
         _focus.FocusChanged -= OnFocusChanged;
         _focus.Stop();
         _hook.Stop();
         await _work.DisposeAsync().ConfigureAwait(false);
+        await _insertChain.ConfigureAwait(false);
     }
 
     private void OnFocusChanged(object? sender, FocusedField? field)
     {
+        // Revoke queued accepts at event arrival, before its UI callback can race a previously
+        // posted accept. The tracker has already advanced the focus epoch on its producer thread.
+        _pendingEdits.Invalidate();
         Post(() =>
         {
-            int pid = field?.ProcessId ?? 0;
-            bool sameHost = pid != 0 && (_focusedPid == 0 || pid == _focusedPid);
-            _focusedPid = pid;
-            if (sameHost && (_sessionField is null || _sessionField.FieldId == field!.FieldId)) return;
+            if (field is not null
+                && _sessionField is { } offeredIn
+                && InsertionTargetPolicy.IsSameField(offeredIn, field))
+            {
+                _sessionAuthorizationEpoch = _pendingEdits.CaptureEpoch();
+                return;
+            }
+
             _publishBaseline = null;
             _expectedDelta = 0;
             CancelSession("focus moved");
@@ -194,6 +212,7 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
 
         if (InlineCaptureActive?.Invoke() == true)
         {
+            _pendingEdits.Invalidate();
             Post(() => CancelSession("inline capture active"));
             return;
         }
@@ -207,7 +226,8 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
                 // Suppressing here is the only way to eat the key before the host sees it.
                 args.Suppress = true;
                 _work.Cancel();
-                Post(() => Accept(all, ev.IsRepeat));
+                long editEpoch = _pendingEdits.CaptureEpoch();
+                Post(() => Accept(all, ev.IsRepeat, editEpoch));
                 return;
             }
         }
@@ -216,20 +236,39 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
                  && _clock.GetTimestamp() < ownership.ExpiresAt)
         {
             args.Suppress = true;
-            Post(() => _queuedAccept = _ownership is not null);
+            long editEpoch = _pendingEdits.CaptureEpoch();
+            Post(() =>
+            {
+                if (_pendingEdits.IsCurrent(editEpoch) && _ownership is not null)
+                {
+                    _queuedAcceptEpoch = editEpoch;
+                }
+            });
             return;
         }
 
-        Post(() => HandleEvent(ev));
+        // Any non-accept key may change text, caret, selection or focus. This also cancels accepted
+        // work waiting behind another edit before the dispatcher processes the key.
+        long inputEpoch = _pendingEdits.Invalidate();
+        Post(() => HandleEvent(ev, inputEpoch));
     }
 
-    private void HandleEvent(KeyboardEvent ev)
+    private void HandleEvent(KeyboardEvent ev, long editEpoch)
     {
-        if (ev.Kind == KeyKind.Other) return;
+        if (ev.Kind == KeyKind.Other)
+        {
+            _queuedAcceptEpoch = null;
+            if (_session is not null)
+            {
+                if (IsSameOfferField(_focus.Current)) _sessionAuthorizationEpoch = editEpoch;
+                else CancelSession("the caret left the suggestion");
+            }
+            return;
+        }
 
         _pendingDoubleTap = null;
         _ownership = null;
-        _queuedAccept = false;
+        _queuedAcceptEpoch = null;
 
         if (SuggestionAvailability.DisabledReason(_settings, _clock.GetUtcNow(), _batterySaverOn()) is { } reason)
         {
@@ -252,12 +291,18 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
             switch (result.Outcome)
             {
                 case SuggestionSessionReconciler.Outcome.Ignore:
+                    if (IsSameOfferField(_focus.Current)) _sessionAuthorizationEpoch = editEpoch;
+                    else CancelSession("the caret left the suggestion");
                     return;
                 case SuggestionSessionReconciler.Outcome.Advance when result.Next is { VisibleText.Length: > 0 } next:
                     _session = next;
+                    _sessionAuthorizationEpoch = editEpoch;
                     _expectedPreceding += ev.Character;
                     _overlay.Update(next.VisibleText);
-                    _ = ReanchorAsync(next.RequestId, HostPublishPollMs);
+                    if (_sessionField is { } anchor)
+                    {
+                        _ = ReanchorAsync(next.RequestId, HostPublishPollMs, anchor);
+                    }
                     return;
                 default:
                     CancelSession("typing invalidated the suggestion");
@@ -301,12 +346,13 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
         var baseline = _publishBaseline;
         int delta = _expectedDelta;
         long sequence = _keySequence;
-        _ = _work.Submit(ct => PredictAsync(requestId, settings, baseline, delta, typed, sequence, ct));
+        long editEpoch = _pendingEdits.CaptureEpoch();
+        _ = _work.Submit(ct => PredictAsync(requestId, settings, baseline, delta, typed, sequence, editEpoch, ct));
     }
 
     private async Task PredictAsync(
         string requestId, SuggestionSettings settings, FocusedField? baseline, int delta, char? typed,
-        long sequence, CancellationToken ct)
+        long sequence, long editEpoch, CancellationToken ct)
     {
         try
         {
@@ -319,6 +365,7 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
                 _expectedDelta = 0;
             });
 
+            if (!InsertionTargetPolicy.IsEligibleField(field)) return;
             if (SuggestionAvailability.DisabledReason(settings, field) is { } reason)
             {
                 _logger.LogDebug("Request {ReqId} skipped: {Reason}", requestId, reason);
@@ -327,7 +374,7 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
             if (!SuggestionAvailability.HasTextToContinue(field)) return;
 
             string preceding = field.PrecedingText;
-            if (await HandleTypoAsync(requestId, settings, field, sequence, ct).ConfigureAwait(false)) return;
+            if (await HandleTypoAsync(requestId, settings, field, sequence, editEpoch, ct).ConfigureAwait(false)) return;
             if (!settings.SuggestWithinWords && CaretWordContext.UnfinishedWord(preceding) is not null) return;
             // A completion inside a token would duplicate or splice what follows the caret.
             if (CaretTokenPosition.IsInsideToken(preceding, field.TrailingText)) return;
@@ -343,18 +390,18 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
 
             // Generation took a while. Show the suggestion only if the text it continues is still there.
             var live = _focus.Refresh();
-            if (live is null || live.ProcessId != field.ProcessId || live.PrecedingText != preceding)
+            if (!InsertionTargetPolicy.IsCurrentTarget(field, live))
             {
                 _logger.LogInformation("Request {ReqId} dropped because the field changed during generation.", requestId);
                 return;
             }
-            if (CompletionFinalizer.VisibleText(text, live, settings, _engine.SpacingIsExact, _typos) is not { } visible)
+            if (CompletionFinalizer.VisibleText(text, live!, settings, _engine.SpacingIsExact, _typos) is not { } visible)
             {
                 _logger.LogInformation("Request {ReqId} dropped by the final presentation checks.", requestId);
                 return;
             }
 
-            Post(() => Present(requestId, visible, live, latencyMs, sequence, ct));
+            Post(() => Present(requestId, visible, live!, latencyMs, sequence, editEpoch, ct));
         }
         catch (OperationCanceledException)
         {
@@ -375,7 +422,8 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
     /// replaced the completion with a suppression, an offer or an automatic fix.
     /// </summary>
     private async Task<bool> HandleTypoAsync(
-        string requestId, SuggestionSettings settings, FocusedField field, long sequence, CancellationToken ct)
+        string requestId, SuggestionSettings settings, FocusedField field, long sequence, long editEpoch,
+        CancellationToken ct)
     {
         if (_typos is null) return false;
         string preceding = field.PrecedingText;
@@ -386,18 +434,34 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
             case TypoGateAction.Proceed:
                 return false;
 
-            case TypoGateAction.ApplyCorrection when advice.Replacement is not null:
+            case TypoGateAction.ApplyCorrection when advice.Replacement is { } replacement:
                 if (_lastAutoFixedText == preceding) return true;
+                if (ct.IsCancellationRequested) return true;
+                var editLease = _pendingEdits.TryBegin(editEpoch);
+                if (editLease is null) return true;
+
                 _lastAutoFixedText = preceding;
-                ct.ThrowIfCancellationRequested();
-                await ApplyCorrectionAsync(
-                    new TypoCorrection(decision.Word!, decision.CorrectedWord!), requiresTrailingSpace: true)
-                    .ConfigureAwait(false);
+                var automaticCorrection = new CorrectionEdit(
+                    field,
+                    new TypoCorrection(decision.Word!, decision.CorrectedWord!),
+                    replacement);
+                try
+                {
+                    await ApplyCorrectionAsync(automaticCorrection, editEpoch, editLease.Token).ConfigureAwait(false);
+                }
+                finally
+                {
+                    editLease.Dispose();
+                }
                 return true;
 
             case TypoGateAction.OfferCorrection:
-                var correction = new TypoCorrection(decision.Word!, decision.CorrectedWord!);
-                Post(() => Present(requestId, decision.CorrectedWord!, field, latencyMs: 0, sequence, ct, correction));
+                if (advice.Replacement is not { } offeredPlan) return true;
+                var offeredCorrection = new TypoCorrection(decision.Word!, decision.CorrectedWord!);
+                var correctionEdit = new CorrectionEdit(field, offeredCorrection, offeredPlan);
+                Post(() => Present(
+                    requestId, decision.CorrectedWord!, field, latencyMs: 0, sequence, editEpoch, ct,
+                    offeredCorrection, correctionEdit));
                 return true;
 
             default:
@@ -423,6 +487,7 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
             ct.ThrowIfCancellationRequested();
             var field = _focus.Refresh();
             if (field is null) return null;
+            if (baseline is not null && !InsertionTargetPolicy.IsSameField(baseline, field)) return null;
             if (waited >= HostPublishCeilingMs || HasPublished(field, baseline, delta, typed, waited)) return field;
             await Task.Delay(interval, ct).ConfigureAwait(false);
             waited += interval;
@@ -433,7 +498,7 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
     private static bool HasPublished(FocusedField field, FocusedField? baseline, int delta, char? typed, int waited)
     {
         var preceding = field.PrecedingText;
-        if (baseline is null || baseline.ProcessId != field.ProcessId)
+        if (baseline is null)
         {
             // With nothing to count against, the typed character itself is the evidence. A dead key
             // can make the host insert an accented form of it, which then waits out the ceiling.
@@ -465,11 +530,32 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
     }
 
     private void Present(
-        string requestId, string text, FocusedField field, int latencyMs, long sequence, CancellationToken ct,
-        TypoCorrection? correction = null)
+        string requestId, string text, FocusedField field, int latencyMs, long sequence, long editEpoch,
+        CancellationToken ct, TypoCorrection? correction = null, CorrectionEdit? correctionEdit = null)
     {
         // A key handled after the work finished can no longer cancel it, so the sequence is checked too.
-        if (ct.IsCancellationRequested || _session is not null || _keySequence != sequence) return;
+        if (ct.IsCancellationRequested
+            || !_pendingEdits.IsCurrent(editEpoch)
+            || _session is not null
+            || _keySequence != sequence)
+        {
+            return;
+        }
+
+        // Generation already refreshed off the UI context. Current is the focus tracker's cached
+        // immutable snapshot; checking it here closes the post-to-dispatcher gap without blocking UIA.
+        if (!InsertionTargetPolicy.IsCurrentTarget(field, _focus.Current))
+        {
+            _logger.LogInformation("Request {ReqId} dropped because the cached field snapshot is stale.", requestId);
+            return;
+        }
+        if ((correction is null) != (correctionEdit is null)
+            || (correctionEdit is not null
+                && !InsertionTargetPolicy.IsCurrentTarget(correctionEdit.OriginalField, field)))
+        {
+            _logger.LogInformation("Request {ReqId} dropped because its correction plan is stale.", requestId);
+            return;
+        }
 
         var preceding = field.PrecedingText;
         if (correction is null
@@ -493,6 +579,8 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
             Correction = correction,
         };
         _sessionField = field;
+        _correctionEdit = correctionEdit;
+        _sessionAuthorizationEpoch = editEpoch;
         _sessionAcceptedAny = false;
         _expectedPreceding = preceding;
         PublishOffer();
@@ -504,10 +592,17 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
         _ = WatchSessionAsync(requestId);
 
         // A queued press only counts while the key is still owned. Later it would accept unseen text.
-        bool acceptQueued = _queuedAccept && _ownership is { } owned && _clock.GetTimestamp() < owned.ExpiresAt;
+        long? queuedAcceptEpoch = _queuedAcceptEpoch;
+        bool acceptQueued = queuedAcceptEpoch is { } queuedEpoch
+            && _pendingEdits.IsCurrent(queuedEpoch)
+            && _ownership is { } owned
+            && _clock.GetTimestamp() < owned.ExpiresAt;
         _ownership = null;
-        _queuedAccept = false;
-        if (acceptQueued && correction is null) Accept(all: false, isRepeat: true);
+        _queuedAcceptEpoch = null;
+        if (acceptQueued && correction is null)
+        {
+            Accept(all: false, isRepeat: true, editEpoch: queuedAcceptEpoch!.Value);
+        }
     }
 
     /// <summary>
@@ -535,10 +630,22 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
         }
     }
 
+    private bool IsSameOfferField(FocusedField? live)
+    {
+        if (_sessionField is not { } offeredIn
+            || !InsertionTargetPolicy.IsSameField(offeredIn, live)
+            || !string.Equals(offeredIn.TrailingText, live!.TrailingText, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     private bool IsStillAtOffer(FocusedField? live) =>
-        live is not null && _sessionField is { } offeredIn
-        && live.ProcessId == offeredIn.ProcessId && live.FieldId == offeredIn.FieldId
-        && FollowsExpected(_expectedPreceding, live.PrecedingText, PublishLagChars + _pendingInsertChars);
+        IsSameOfferField(live)
+        && FollowsExpected(
+            _expectedPreceding, live!.PrecedingText, PublishLagChars + _pendingInsertChars);
 
     /// <summary>
     /// True when <paramref name="live"/> is the expected text, or the expected text less a few
@@ -555,22 +662,46 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
         return at >= 0 && expected.Length - (at + ComparedTailChars) <= allowedLag;
     }
 
-    private void Accept(bool all, bool isRepeat)
+    private void Accept(bool all, bool isRepeat, long editEpoch)
     {
-        if (_session is not { } session || _sessionField is not { } field)
+        if (!_pendingEdits.IsCurrent(editEpoch)
+            || (_session is not null && _sessionAuthorizationEpoch != editEpoch))
         {
-            // The press raced the accept that exhausted the suggestion, so it belongs to the continuation.
-            _queuedAccept = !all && _ownership is not null;
             return;
         }
 
-        var settings = _settings;
-        if (session.Correction is { } correction)
+        if (_session is not { } session || _sessionField is not { } field)
         {
+            // The press raced the accept that exhausted the suggestion, so it belongs to the continuation.
+            _queuedAcceptEpoch = !all && _ownership is not null ? editEpoch : null;
+            return;
+        }
+
+        if (!IsSameOfferField(_focus.Current))
+        {
+            CancelSession("the field changed before the accept");
+            return;
+        }
+
+        // Register the task at key-processing time, before the offer is cleared or another event
+        // can invalidate the epoch. Accept keys share an epoch, so rapid words still queue in order.
+        var editLease = _pendingEdits.TryBegin(editEpoch);
+        if (editLease is null) return;
+
+        var settings = _settings;
+        if (session.Correction is not null)
+        {
+            if (_correctionEdit is not { } correctionEdit)
+            {
+                editLease.Dispose();
+                CancelSession("correction plan expired");
+                return;
+            }
+
             ClearSession();
             _insertChain = _insertChain
                 .ContinueWith(
-                    _ => ApplyCorrectionAsync(correction, requiresTrailingSpace: false), TaskScheduler.Default)
+                    _ => RunCorrectionEditAsync(correctionEdit, editEpoch, editLease), TaskScheduler.Default)
                 .Unwrap();
             return;
         }
@@ -602,9 +733,21 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
         bool firstChunk = !_sessionAcceptedAny;
 
         string expected = _expectedPreceding;
+        // The focus snapshot may still lag characters accepted or typed since it was captured.
+        // Carry the caret position implied by the accepted prefix, then require a future fresh
+        // snapshot to prove that exact prefix and offset before dispatch.
+        int expectedCaretOffset = field.CaretOffset + (expected.Length - field.PrecedingText.Length);
+        if (expectedCaretOffset < 0)
+        {
+            editLease.Dispose();
+            CancelSession("the accepted caret could not be anchored");
+            return;
+        }
+
         string insertion = AcceptanceChunker.InsertionChunk(chunk, expected);
         if (exhausted && settings.AddSpaceAfterAccept) insertion = AcceptanceChunker.AppendingTrailingSpace(insertion);
-        var accepted = new AcceptedChunk(session.RequestId, field, expected, chunk, insertion, exhausted, firstChunk);
+        var accepted = new AcceptedChunk(
+            session.RequestId, field, expected, expectedCaretOffset, chunk, insertion, exhausted, firstChunk);
         _expectedPreceding = expected + insertion;
         _pendingInsertChars += insertion.Length;
 
@@ -626,34 +769,58 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
         }
 
         _insertChain = _insertChain
-            .ContinueWith(_ => InsertAcceptedAsync(accepted), TaskScheduler.Default)
+            .ContinueWith(_ => RunAcceptedEditAsync(accepted, editEpoch, editLease), TaskScheduler.Default)
             .Unwrap();
     }
 
     /// <summary>One accept, decided on the UI context and carried out on the thread pool.</summary>
     private sealed record AcceptedChunk(
-        string RequestId, FocusedField OfferedIn, string ExpectedPreceding, string Chunk, string Insertion,
-        bool Exhausted, bool FirstChunk);
+        string RequestId, FocusedField OfferedIn, string ExpectedPreceding, int ExpectedCaretOffset,
+        string Chunk, string Insertion, bool Exhausted, bool FirstChunk);
 
-    private async Task InsertAcceptedAsync(AcceptedChunk accepted)
+    private async Task RunAcceptedEditAsync(
+        AcceptedChunk accepted, long editEpoch, PendingEditLifetime.EditLease editLease)
+    {
+        try
+        {
+            await InsertAcceptedAsync(accepted, editEpoch, editLease.Token).ConfigureAwait(false);
+        }
+        finally
+        {
+            editLease.Dispose();
+        }
+    }
+
+    private async Task InsertAcceptedAsync(AcceptedChunk accepted, long editEpoch, CancellationToken ct)
     {
         try
         {
             // The text goes where the caret is, so it is only sent if the caret is still where the
-            // suggestion was shown.
+            // suggestion was shown. A repeated run of text can make a fuzzy suffix search match a
+            // different caret, so dispatch requires the exact accepted prefix, implied UTF-16 caret
+            // offset, and original suffix. If UIA has not published that proof yet, the edit waits
+            // for a later accept rather than guessing a nearby position.
+            if (ct.IsCancellationRequested) return;
             var field = _focus.Refresh();
             if (field is null
-                || field.ProcessId != accepted.OfferedIn.ProcessId || field.FieldId != accepted.OfferedIn.FieldId
-                || !FollowsExpected(accepted.ExpectedPreceding, field.PrecedingText, PublishLagChars))
+                || !InsertionTargetPolicy.IsSameField(accepted.OfferedIn, field)
+                || !string.Equals(accepted.OfferedIn.TrailingText, field.TrailingText, StringComparison.Ordinal)
+                || field.CaretOffset != accepted.ExpectedCaretOffset
+                || !string.Equals(accepted.ExpectedPreceding, field.PrecedingText, StringComparison.Ordinal))
             {
+                _pendingEdits.Invalidate();
                 Post(() => CancelSession("the caret left the suggestion before the accept"));
                 return;
             }
 
             if (accepted.Insertion.Length > 0
-                && !await _inserter.InsertAsync(field, accepted.Insertion, CancellationToken.None).ConfigureAwait(false))
+                && !await _inserter.InsertAsync(field, accepted.Insertion, ct).ConfigureAwait(false))
             {
-                Post(() => CancelSession("insertion failed"));
+                if (!ct.IsCancellationRequested)
+                {
+                    _pendingEdits.Invalidate();
+                    Post(() => CancelSession("insertion failed"));
+                }
                 return;
             }
             Metrics.RecordAccepted(accepted.Chunk, accepted.FirstChunk);
@@ -667,6 +834,7 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
             {
                 Post(() =>
                 {
+                    if (!_pendingEdits.IsCurrent(editEpoch)) return;
                     _lastAcceptedTail = new AcceptedTail(accepted.Chunk, field.PrecedingText);
                     _publishBaseline = field;
                     _expectedDelta = accepted.Insertion.Length;
@@ -675,12 +843,16 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
                 return;
             }
 
-            await ReanchorAsync(accepted.RequestId, PostInsertSettleMs).ConfigureAwait(false);
+            await ReanchorAsync(accepted.RequestId, PostInsertSettleMs, accepted.OfferedIn).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (ct.IsCancellationRequested)
+        {
         }
         catch (Exception ex)
         {
+            if (!ct.IsCancellationRequested) _pendingEdits.Invalidate();
             _logger.LogError(ex, "Accept failed for {ReqId}.", accepted.RequestId);
-            Post(() => CancelSession("accept failed"));
+            if (!ct.IsCancellationRequested) Post(() => CancelSession("accept failed"));
         }
         finally
         {
@@ -688,37 +860,85 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
         }
     }
 
-    /// <summary>
-    /// Swaps the typo for its fix. The edit is planned against the live text, and once it starts
-    /// it is not cancelled, because a cancelled edit would leave the word deleted.
-    /// </summary>
-    private async Task ApplyCorrectionAsync(TypoCorrection correction, bool requiresTrailingSpace)
+    private async Task RunCorrectionEditAsync(
+        CorrectionEdit correction, long editEpoch, PendingEditLifetime.EditLease editLease)
     {
         try
         {
-            if (_focus.Refresh() is not { } field) return;
-            var plan = TypoCorrectionReplacementPlanner.Plan(
-                field.PrecedingText, correction.Word, correction.CorrectedWord, requiresTrailingSpace);
-            if (plan is not { } fix) return;
-            await _inserter.ReplaceAsync(field, fix.DeletingUtf16Count, fix.ReplacementText, CancellationToken.None)
-                .ConfigureAwait(false);
-            Post(RestartPrediction);
+            await ApplyCorrectionAsync(correction, editEpoch, editLease.Token).ConfigureAwait(false);
+        }
+        finally
+        {
+            editLease.Dispose();
+        }
+    }
+
+    /// <summary>
+    /// Dispatches the exact typo plan built from its original field snapshot. A fresh read can
+    /// verify that the snapshot is still current, but must never re-plan the correction in whichever
+    /// field happens to be focused later.
+    /// </summary>
+    private async Task ApplyCorrectionAsync(CorrectionEdit correction, long editEpoch, CancellationToken ct)
+    {
+        try
+        {
+            if (ct.IsCancellationRequested) return;
+            if (!InsertionTargetPolicy.IsCurrentTarget(correction.OriginalField, _focus.Refresh()))
+            {
+                if (!ct.IsCancellationRequested) _pendingEdits.Invalidate();
+                return;
+            }
+
+            bool replaced = await _inserter.ReplaceAsync(
+                correction.OriginalField,
+                correction.Plan.DeletingUtf16Count,
+                correction.Plan.ReplacementText,
+                ct).ConfigureAwait(false);
+            if (!replaced)
+            {
+                if (!ct.IsCancellationRequested) _pendingEdits.Invalidate();
+                return;
+            }
+
+            Post(() =>
+            {
+                if (_pendingEdits.IsCurrent(editEpoch)) RestartPrediction();
+            });
+        }
+        catch (OperationCanceledException) when (ct.IsCancellationRequested)
+        {
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Applying a correction failed.");
+            if (!ct.IsCancellationRequested) _pendingEdits.Invalidate();
         }
     }
 
-    /// <summary>Moves the ghost to the caret once the host has published an insert or a typed key.</summary>
-    private async Task ReanchorAsync(string requestId, int settleMs)
+    /// <summary>Moves the ghost only within the field and focus epoch where its session began.</summary>
+    private async Task ReanchorAsync(string requestId, int settleMs, FocusedField expectedField)
     {
         await Task.Delay(settleMs).ConfigureAwait(false);
         var after = _focus.Refresh();
-        if (after is null || after.CaretRect.IsEmpty) return;
+        if (after is null
+            || after.CaretRect.IsEmpty
+            || !InsertionTargetPolicy.IsSameField(expectedField, after)
+            || !string.Equals(expectedField.TrailingText, after.TrailingText, StringComparison.Ordinal))
+        {
+            return;
+        }
+
         Post(() =>
         {
-            if (_session is not { } live || live.RequestId != requestId) return;
+            if (_session is not { } live
+                || live.RequestId != requestId
+                || !InsertionTargetPolicy.IsSameField(expectedField, after)
+                || !IsStillAtOffer(after)
+                || !InsertionTargetPolicy.IsCurrentTarget(after, _focus.Current))
+            {
+                return;
+            }
+
             _sessionField = after;
             _overlay.Show(live.VisibleText, after.CaretRect, StyleFor(after, live.Correction));
         });
@@ -740,6 +960,8 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
     {
         _session = null;
         _sessionField = null;
+        _correctionEdit = null;
+        _sessionAuthorizationEpoch = 0;
         _offer = null;
         _overlay.Hide();
     }
@@ -747,9 +969,10 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
     private void CancelSession(string reason)
     {
         if (_session is not null) _logger.LogInformation("Suggestion cleared ({Reason}).", reason);
+        _pendingEdits.Invalidate();
         _pendingDoubleTap = null;
         _ownership = null;
-        _queuedAccept = false;
+        _queuedAcceptEpoch = null;
         ClearSession();
         _work.Cancel();
     }

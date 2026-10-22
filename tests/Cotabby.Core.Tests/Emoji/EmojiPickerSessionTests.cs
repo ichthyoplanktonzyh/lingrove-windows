@@ -15,7 +15,7 @@ public sealed class EmojiPickerSessionTests : IDisposable
     private readonly string _usagePath = Path.Combine(Path.GetTempPath(), $"cotabby-emoji-session-{Guid.NewGuid():N}.json");
     private readonly FakeFocus _focus = new() { Field = Field() };
     private readonly FakePanel _panel = new();
-    private readonly List<(FocusedField Field, string Glyph, int FallbackDeleteCount)> _replacements = [];
+    private readonly List<(FocusedField Field, string Glyph, string ExpectedRun)> _replacements = [];
     private readonly EmojiUsageStore _usage;
     private readonly EmojiPickerSession _sut;
 
@@ -35,7 +35,7 @@ public sealed class EmojiPickerSessionTests : IDisposable
             _panel,
             _focus,
             _usage,
-            (field, glyph, fallbackDeleteCount) => _replacements.Add((field, glyph, fallbackDeleteCount)));
+            (field, glyph, expectedRun) => _replacements.Add((field, glyph, expectedRun)));
     }
 
     public void Dispose() => File.Delete(_usagePath);
@@ -50,6 +50,10 @@ public sealed class EmojiPickerSessionTests : IDisposable
         FieldRect = FieldRect,
         IsSingleLine = false,
         IsSecure = secure,
+        FieldId = "editor",
+        HasReliableSelection = true,
+        IsTextWindowTruncated = false,
+        FocusChangeSequence = 1,
     };
 
     private static KeyboardEvent Key(KeyKind kind, char character = '\0', bool modifier = false) =>
@@ -79,7 +83,7 @@ public sealed class EmojiPickerSessionTests : IDisposable
 
         Assert.True(_sut.HandleKey(Key(KeyKind.Tab)));
 
-        Assert.Equal((_focus.Field!, Smile, 6), Assert.Single(_replacements));
+        Assert.Equal((_focus.Field!, Smile, ":smile"), Assert.Single(_replacements));
         Assert.False(_panel.IsVisible);
         Assert.False(_sut.IsCapturing);
         Assert.Equal(["smile"], _usage.Snapshot().RecentAliases);
@@ -93,7 +97,7 @@ public sealed class EmojiPickerSessionTests : IDisposable
         // The colon never reaches the field, so the run to delete is ":smile" as for a commit key.
         Assert.True(Type(":"));
 
-        Assert.Equal((_focus.Field!, Smile, 6), Assert.Single(_replacements));
+        Assert.Equal((_focus.Field!, Smile, ":smile"), Assert.Single(_replacements));
         Assert.Equal(["smile"], _usage.Snapshot().RecentAliases);
         Assert.False(_sut.IsCapturing);
     }
@@ -103,7 +107,7 @@ public sealed class EmojiPickerSessionTests : IDisposable
     {
         Assert.True(Type(":smil:"));
 
-        Assert.Equal((_focus.Field!, Smile, 5), Assert.Single(_replacements));
+        Assert.Equal((_focus.Field!, Smile, ":smil"), Assert.Single(_replacements));
     }
 
     [Fact]
@@ -339,7 +343,14 @@ public sealed class EmojiPickerSessionTests : IDisposable
     [Fact]
     public void FocusChangeOrSecureFieldDuringCaptureCancels()
     {
-        FocusedField?[] changes = [Field(processId: 2), Field(secure: true), null];
+        FocusedField?[] changes =
+        [
+            Field(processId: 2), Field(secure: true), null,
+            Field() with { FieldId = "different-editor" },
+            Field() with { FocusChangeSequence = 2 },
+            Field() with { HasSelection = true },
+            Field() with { HasReliableSelection = false },
+        ];
         foreach (var change in changes)
         {
             Type(":smi");
@@ -349,6 +360,61 @@ public sealed class EmojiPickerSessionTests : IDisposable
             Assert.False(_sut.IsCapturing);
             Assert.False(_panel.IsVisible);
         }
+    }
+
+    [Fact]
+    public void CaretRefreshCannotAdoptAnotherFieldOrUnknownSelection()
+    {
+        FocusedField[] changes =
+        [
+            Field() with { FieldId = "different-editor" },
+            Field() with { FocusChangeSequence = 2 },
+            Field() with { HasReliableSelection = false },
+            Field() with { HasSelection = true },
+            Field(secure: true),
+        ];
+        foreach (var change in changes)
+        {
+            Type(":smi");
+            _sut.UpdateCaret(change);
+
+            Assert.False(_sut.IsCapturing);
+            Assert.False(_panel.IsVisible);
+        }
+        Assert.Empty(_replacements);
+    }
+
+    [Fact]
+    public void MissingIdentityOrSelectionEvidenceCannotStartCapture()
+    {
+        FocusedField[] invalid =
+        [
+            Field() with { FieldId = "" },
+            Field() with { FocusChangeSequence = 0 },
+            Field() with { HasReliableSelection = false },
+            Field() with { HasSelection = true },
+        ];
+        foreach (var field in invalid)
+        {
+            _focus.Field = field;
+            Assert.False(Type(":"));
+            Assert.False(_sut.IsCapturing);
+        }
+        Assert.Equal(0, _panel.ShowCount);
+    }
+
+    [Fact]
+    public void CommitRetainsPreTriggerOriginAfterCaretRefresh()
+    {
+        var origin = _focus.Field!;
+        Type(":smile");
+        _sut.UpdateCaret(origin with { Text = ":smile", CaretOffset = 6 });
+
+        Assert.True(_sut.HandleKey(Key(KeyKind.Tab)));
+
+        var replacement = Assert.Single(_replacements);
+        Assert.Same(origin, replacement.Field);
+        Assert.Equal(":smile", replacement.ExpectedRun);
     }
 
     [Fact]

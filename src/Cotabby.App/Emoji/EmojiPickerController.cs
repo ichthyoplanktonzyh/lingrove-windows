@@ -23,8 +23,6 @@ public sealed class EmojiPickerController : IDisposable
     // How long a capture may sit untouched before it cancels itself.
     private static readonly TimeSpan LongPause = TimeSpan.FromSeconds(8);
 
-    // Lets the host apply the backspaces before the glyph arrives.
-
     private readonly IKeyboardHook _hook;
     private readonly IFocusTracker _focus;
     private readonly ITextInserter _inserter;
@@ -57,8 +55,8 @@ public sealed class EmojiPickerController : IDisposable
             new DispatchedPanel(popup, dispatcher),
             focus,
             _usage,
-            (field, glyph, fallbackDeleteCount) =>
-                Task.Run(() => ReplaceQueryAsync(field, glyph, fallbackDeleteCount)));
+            (field, glyph, expectedRun) =>
+                Task.Run(() => ReplaceQueryAsync(field, glyph, expectedRun)));
         _longPauseTimer = new Timer(_ => CancelCapture());
         // The hook callback has a hard time budget and a cold decode of the catalog takes about
         // 100 ms, so it happens here instead of on the first colon.
@@ -157,14 +155,17 @@ public sealed class EmojiPickerController : IDisposable
     /// Deletes the typed <c>:query</c> run and inserts the glyph. Runs on the thread pool so the
     /// synthetic keys are never posted from inside the keystroke's own hook callback.
     /// </summary>
-    private async Task ReplaceQueryAsync(FocusedField captureField, string glyph, int fallbackDeleteCount)
+    private async Task ReplaceQueryAsync(FocusedField captureField, string glyph, string expectedRun)
     {
         try
         {
-            var field = _focus.Refresh() ?? captureField;
-            int deleteCount = EmojiQueryRun.DeleteCount(field, fallbackDeleteCount);
-            await _inserter.ReplaceAsync(field, deleteCount, glyph, CancellationToken.None);
-            _logger.LogInformation("Emoji committed {Glyph} (deleted {Count} chars)", glyph, deleteCount);
+            var field = InlineQueryReplacementPolicy.Resolve(captureField, expectedRun, _focus.Refresh());
+            if (field is null) return;
+            int deleteCount = expectedRun.Length;
+            if (await _inserter.ReplaceAsync(field, deleteCount, glyph, CancellationToken.None))
+            {
+                _logger.LogInformation("Emoji committed (deleted {Count} chars)", deleteCount);
+            }
         }
         catch (Exception ex)
         {

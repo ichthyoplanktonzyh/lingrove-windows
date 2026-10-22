@@ -23,7 +23,7 @@ public sealed class MacroController : IDisposable
     private readonly object _gate = new();
     private MacroResult? _result;
     private bool _enabled = true;
-    private int _capturePid;
+    private FocusedField? _captureField;
 
     private const int CaretSettleMs = 30;
 
@@ -85,18 +85,23 @@ public sealed class MacroController : IDisposable
             switch (outcome)
             {
                 case MacroTriggerStateMachine.Outcome.Opened:
-                    _capturePid = _focus.Current?.ProcessId ?? 0;
-                    if (_focus.Current is not { IsSecure: false } field || !CanCapture(field)) End();
+                    _captureField = _focus.Current;
+                    if (!InsertionTargetPolicy.IsEligibleField(_captureField) || !CanCapture(_captureField!)) End();
                     break;
                 case MacroTriggerStateMachine.Outcome.QueryChanged:
                     Preview(_engine.Evaluate(_machine.Query));
                     break;
                 case MacroTriggerStateMachine.Outcome.Commit when _result is { } result:
-                    int deleteCount = _machine.QueryAtCommitLength;
+                    var captured = _captureField;
+                    string expectedRun = "/" + _machine.LastCommittedQuery;
                     Preview(null);
-                    _ = Task.Run(() => CommitAsync(result, deleteCount));
+                    _captureField = null;
+                    if (captured is not null) _ = Task.Run(() => CommitAsync(captured, expectedRun, result));
                     break;
                 case MacroTriggerStateMachine.Outcome.Cancel:
+                    // The state machine retains the invalidating character for the next trigger's
+                    // boundary check. Resetting it here would make an in-word slash look eligible.
+                    _captureField = null;
                     Preview(null);
                     break;
             }
@@ -118,21 +123,24 @@ public sealed class MacroController : IDisposable
             var field = _focus.Refresh();
             lock (_gate)
             {
-                if (ReferenceEquals(_result, result) && field is not null)
+                if (ReferenceEquals(_result, result) && InsertionTargetPolicy.IsSameField(_captureField, field))
                 {
-                    _preview.Show(result.PreviewText, field.CaretRect, OverlayStyle.Popup);
+                    _preview.Show(result.PreviewText, field!.CaretRect, OverlayStyle.Popup);
                 }
             }
         });
     }
 
-    private async Task CommitAsync(MacroResult result, int deleteCount)
+    private async Task CommitAsync(FocusedField capture, string expectedRun, MacroResult result)
     {
         try
         {
-            if (_focus.Refresh() is not { } field) return;
-            await _inserter.ReplaceAsync(field, deleteCount, result.InsertionText, CancellationToken.None);
-            _logger.LogInformation("Macro committed (replaced {Count} chars).", deleteCount);
+            var field = InlineQueryReplacementPolicy.Resolve(capture, expectedRun, _focus.Refresh());
+            if (field is null) return;
+            if (await _inserter.ReplaceAsync(field, expectedRun.Length, result.InsertionText, CancellationToken.None))
+            {
+                _logger.LogInformation("Macro committed (replaced {Count} chars).", expectedRun.Length);
+            }
         }
         catch (Exception ex)
         {
@@ -142,7 +150,10 @@ public sealed class MacroController : IDisposable
 
     private void OnFocusChanged(object? sender, FocusedField? field)
     {
-        if (field?.ProcessId != _capturePid) Cancel();
+        lock (_gate)
+        {
+            if (_machine.IsActive && !InsertionTargetPolicy.IsSameField(_captureField, field)) End();
+        }
     }
 
     private void Cancel()
@@ -153,6 +164,7 @@ public sealed class MacroController : IDisposable
     private void End()
     {
         _machine.Reset();
+        _captureField = null;
         Preview(null);
     }
 }

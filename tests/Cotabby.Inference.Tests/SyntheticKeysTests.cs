@@ -59,6 +59,22 @@ public class SyntheticKeysTests
     }
 
     [Fact]
+    public void Edit_UsesOneModifierReleaseBeforeDeleteAndUnicodeText()
+    {
+        Assert.Equal(
+            [Up(LeftCtrl), Down(Backspace), Up(Backspace), CharDown('i'), CharUp('i')],
+            SyntheticKeys.Edit([LeftCtrl], deleteCount: 1, "i"));
+    }
+
+    [Fact]
+    public void PasteEdit_DeletesAndPastesInTheSameKeyBatch()
+    {
+        Assert.Equal(
+            [Up(RightShift), Up(LeftCtrl), Down(Backspace), Up(Backspace), Down(Ctrl), Down(V), Up(V), Up(Ctrl)],
+            SyntheticKeys.PasteEdit([RightShift, LeftCtrl], deleteCount: 1));
+    }
+
+    [Fact]
     public void ReleasingAltOrWin_PressesAnInertKeyFirstSoNoMenuOpens()
     {
         const ushort inert = 0xE8;

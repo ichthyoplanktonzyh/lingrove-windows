@@ -73,6 +73,8 @@ jobs:
         run: python3 scripts/verify-learning-macos-parity.py --mac-repo .mac-baseline
       - name: Verify local learning templates against committed Mac policies
         run: python3 scripts/verify-learning-local-macos-parity.py --mac-repo .mac-baseline
+      - name: Verify lexical recognition against committed Mac policies
+        run: python3 scripts/verify-learning-lexical-macos-parity.py --mac-repo .mac-baseline
 
   # Routine CI stops after validation. Packaging, artifact uploads and releases
   # are deliberately absent; distribution is a separately authorized task.

@@ -16,6 +16,8 @@
 
   <ItemGroup>
     <Using Include="Xunit" />
+    <Compile Include="..\Shared\LearningLexicalCorpus.cs" Link="Shared\LearningLexicalCorpus.cs" />
+    <None Include="..\..\fixtures\parity\learning-lexical-v1.json" Link="fixtures\parity\learning-lexical-v1.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

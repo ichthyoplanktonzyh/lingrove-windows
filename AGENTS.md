@@ -114,9 +114,10 @@ dotnet build Cotabby.sln --configuration Release -p:EnableWindowsTargeting=true
 python3 scripts/verify-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-learning-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-learning-local-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
+python3 scripts/verify-learning-lexical-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 ```
 
-The verifier reads the pinned macOS sources from Git and checks the same JSON cases; it does not
+The verifiers read the pinned macOS sources from Git and checks the same JSON cases; it does not
 build the macOS app or run a model. If `.dotnet/` is missing in a fresh checkout, install SDK
 `10.0.402` into that ignored directory so `global.json` can select it.
 The Windows-targeting build can compile the full solution, including WPF, from macOS. It does not
@@ -125,7 +126,7 @@ runner. This is ordinary compilation, not packaging or a release.
 
 The current `.github/workflows/ci.yml` has two validation jobs: Windows x64 restores and builds the
 full solution, then runs Core and Inference tests, including noninteractive ICU sentence tests;
-macOS 26 runs Core and all three Swift parity verifiers against a sparse checkout of the pinned Mac
+macOS 26 runs Core and all four Swift parity verifiers against a sparse checkout of the pinned Mac
 Support, language-learning models/services, and language catalog source. The separate
 `.github/workflows/upstream-baseline.yml` checks the original Windows fork at commit
 `b1e4031c70aca1be21aae2c57b138fde5fc22bb1` with .NET 9 on manual dispatch. Its initial setup run is

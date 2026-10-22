@@ -20,7 +20,8 @@ app.
   and optional suppression reason. `prefixUtf16Length` is included for the emoji-prefix case so the
   fixture makes the cross-runtime cut length explicit; consumers should still pass the prefix string
   to the policy rather than slicing by that stored measurement.
-- Each case carries `id` for failure output and `macTest` for its provenance.
+- Each case carries `id` for failure output and `macTest` for the test establishing its rule.
+  A derived probe need not be a literal input in that XCTest; such probes are identified below.
 
 ## Provenance
 
@@ -71,8 +72,11 @@ rule. Record the exact test name, keep each input minimal, and preserve Unicode 
 For any integer text offsets, state that the unit is UTF-16 and include a test assertion for it.
 Review the same input against the pinned macOS source before accepting an expected value.
 
-Do not pin an exact first word for space-less CJK runs here. macOS uses ICU word segmentation, while
-the Windows core's default fallback is a script-run heuristic until its application host installs a
-segmenter. The macOS acceptance tests intentionally assert only that a segment is a non-empty prefix
-shorter than the run. A mismatch in that area needs a deliberate platform-adapter decision; changing a
-fixture expectation to match whichever runtime ran it would hide the divergence.
+Do not assume an exact first word is portable for arbitrary unpunctuated CJK runs. macOS uses ICU
+word segmentation, while the Windows core's default fallback is a script-run heuristic until its
+application host installs a segmenter. The broad segmentation tests allow a non-empty prefix shorter
+than the run. The `資料、` case here is a specific exception: the pinned macOS punctuation-binding
+regression test asserts that exact chunk, and the same input passes the Swift verifier and C# runner.
+The other two CJK cases stop at a leading punctuation character. New lexical-boundary mismatches need
+a deliberate platform-adapter decision; changing expected output to whichever runtime ran it would
+hide the divergence.

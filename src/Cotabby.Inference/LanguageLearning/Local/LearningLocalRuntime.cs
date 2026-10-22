@@ -242,8 +242,12 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
     {
         lock (_lifecycleLock)
         {
-            _disposeRequested = 1;
-            _disposeTask ??= Task.Run(DisposeCoreAsync);
+            if (_disposeTask is not null) return new ValueTask(_disposeTask);
+            Volatile.Write(ref _disposeRequested, 1);
+            // Shutdown retires active loops before its worker gets CPU time, just like Unload.
+            // Otherwise a returning Decode could sample before _shutdown.Cancel runs off-thread.
+            Interlocked.Increment(ref _retirementEpoch);
+            _disposeTask = Task.Run(DisposeCoreAsync);
             return new ValueTask(_disposeTask);
         }
     }

@@ -40,6 +40,11 @@ public sealed record LearningModelSnapshot
         SamplingOverrides = Backend == LearningModelBackend.Endpoint ? SamplingOverrides.EndpointOnly : SamplingOverrides.Normalized,
     };
 
+    /// <summary>Mac allocation identity excludes request-only style, sampler and output controls.</summary>
+    public bool UsesSameRuntime(LearningModelSnapshot other) =>
+        (this with { TranslationStyle = new(), SamplingOverrides = new(), MaximumOutputTokens = null })
+        == (other with { TranslationStyle = new(), SamplingOverrides = new(), MaximumOutputTokens = null });
+
     public bool Equals(LearningModelSnapshot? other) => other is not null && Backend == other.Backend
         && Same(LocalModel, other.LocalModel) && Template == other.Template && Same(BaseUrl, other.BaseUrl)
         && Same(EndpointModel, other.EndpointModel) && CredentialRevision == other.CredentialRevision

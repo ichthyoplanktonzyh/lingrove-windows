@@ -66,6 +66,7 @@ public sealed class AppHost : IAsyncDisposable
     public IOpenAICompatibleCredentialStore LearningEndpointCredentials { get; }
     internal LearningModelCatalogManager LearningModels { get; }
     internal LearningPreviewController LearningPreview { get; }
+    internal LearningExplanationController LearningExplanation { get; }
 
     /// <summary>Raised on the UI thread after settings were applied or a model was loaded, so open windows and the tray can refresh.</summary>
     public event Action? SettingsApplied;
@@ -132,6 +133,11 @@ public sealed class AppHost : IAsyncDisposable
         EndpointCredentials = _services.GetRequiredService<IOpenAICompatibleCredentialStore>();
 
         var loggers = _services.GetRequiredService<ILoggerFactory>();
+        // Explanation is a third independent native owner. Construction is inert; only an
+        // explicit request through its service can load weights, and shutdown drains it first.
+        LearningExplanation = new LearningExplanationController(
+            new LearningLocalRuntime(loggers.CreateLogger<LearningLocalRuntime>(), loggers), Settings,
+            ModelCatalog.DefaultLocalDirectory(), batterySaverOn: () => PowerStatus.IsBatterySaverOn);
         _spelling = new SymSpellCorrector(logger: loggers.CreateLogger<SymSpellCorrector>());
         _logger = loggers.CreateLogger("Cotabby.App");
         _hook = _services.GetRequiredService<IKeyboardHook>();
@@ -227,6 +233,7 @@ public sealed class AppHost : IAsyncDisposable
         EmojiPicker.PreferredGender = Settings.EmojiGender;
         Macros.Enabled = Settings.MacrosEnabled;
         LearningPreview.ApplySettings(Settings, _learningCredentialRevision);
+        LearningExplanation.ApplySettings(Settings);
         Overlay.ApplyAppearance(Settings);
         _macroPreview.ApplyAppearance(Settings);
         LaunchAtLogin.Set(Settings.LaunchAtLogin);
@@ -302,6 +309,7 @@ public sealed class AppHost : IAsyncDisposable
         // Power availability is a shared feature gate. Learning owns its own request/cache, but it
         // must retire that work when the same battery-saver pause used by autocomplete becomes active.
         LearningPreview.PowerStatusChanged();
+        LearningExplanation.PowerStatusChanged();
         _ui.Post(_ => LoadSelectedModelIfChanged(), null);
     }
 
@@ -331,6 +339,7 @@ public sealed class AppHost : IAsyncDisposable
         _hook.KeyEvent -= OnGlobalToggleKey;
         SystemEvents.PowerModeChanged -= OnPowerModeChanged;
         await LearningPreview.DisposeAsync().ConfigureAwait(false);
+        await LearningExplanation.DisposeAsync().ConfigureAwait(false);
         await LearningModels.DisposeAsync().ConfigureAwait(false);
         EmojiPicker.Dispose();
         Macros.Dispose();

@@ -35,12 +35,13 @@ now connects them to a bundled dictionary card; native hit/focus/placement check
 system/imported dictionary flows remain incomplete.
 The [explanation input, prompt and output rules](docs/LEARNING_EXPLANATION_RULES.md) now have
 Mac-backed portable coverage, including model capability/metadata gates. A local provider now
-connects those rules to an exclusive native lease and complete-response validation; independent
-app settings/runtime ownership, service/card wiring and the explanation endpoint remain unported.
+connects those rules to an exclusive native lease and complete-response validation. The app now
+owns [independent local settings and runtime](docs/LEARNING_EXPLANATION_RUNTIME.md); explanation
+session/card wiring and the explanation endpoint remain unported.
 The [writing capture adapter](docs/LEARNING_EXPLANATION_RULES.md#writing-capture-to-input) now preserves
 the completed translation's target, exact occurrences and context receipt for that future service.
 The library service now adds saved-first lookup, profile/language isolation, complete records and
-the Mac's bounded result cache; it is not yet instantiated by the app.
+the Mac's bounded result cache. Its app-owned controller loads on demand and releases after 60 idle seconds.
 
 The first foundation milestone is documentation, build-and-test CI, and shared behavior fixtures. It
 does not add a Windows installer, downloadable build, artifact upload, release workflow, or model
@@ -104,6 +105,7 @@ export DOTNET_ROOT="$PWD/.dotnet"
 export PATH="$DOTNET_ROOT:$PATH"
 dotnet --version # 10.0.402
 dotnet test tests/Cotabby.Core.Tests/Cotabby.Core.Tests.csproj --configuration Release
+dotnet test tests/Cotabby.App.Tests/Cotabby.App.Tests.csproj --configuration Release
 python3 scripts/verify-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-learning-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-learning-local-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout

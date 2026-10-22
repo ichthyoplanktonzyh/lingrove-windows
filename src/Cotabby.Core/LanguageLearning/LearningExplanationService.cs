@@ -71,6 +71,16 @@ public sealed class LearningExplanationService : ILearningExplanationGenerating,
         finally { FinishSavedLookup(completion); }
     }
 
+    /// <summary>
+    /// The role owner retires pending work on global pause/disable without changing a profile or
+    /// erasing complete records. Direct flags close the gap before asynchronous callbacks run.
+    /// </summary>
+    public void CancelPending()
+    {
+        lock (_gate)
+            foreach (var lifetime in _work.Keys) _ = ObserveRetirement(lifetime.Retire());
+    }
+
     public async Task<LearningExplanationRecord?> LoadSavedAsync(LearningExplanationInput input)
     {
         var (language, completion) = AdmitSavedLookup();

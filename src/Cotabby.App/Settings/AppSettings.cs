@@ -33,7 +33,7 @@ public enum LearningTranslationBackend
 /// User preferences persisted to %APPDATA%\Cotabby\settings.json. Missing keys
 /// deserialize to their defaults, so older files keep working.
 /// </summary>
-public sealed class AppSettings
+public sealed partial class AppSettings
 {
     // General
     public bool Enabled { get; set; } = true;
@@ -355,6 +355,11 @@ public sealed class SettingsStore
         // keys deterministically without rejecting the rest of the user's preferences.
         settings.LearningLocalContextTokensByModel = CaseInsensitiveModelMap(settings.LearningLocalContextTokensByModel);
         settings.LearningLocalGenerationProfiles = CaseInsensitiveModelMap(settings.LearningLocalGenerationProfiles);
+        settings.LearningExplanationLocalModel ??= string.Empty;
+        settings.LearningExplanationLocalContextTokensByModel = CaseInsensitiveModelMap(settings.LearningExplanationLocalContextTokensByModel);
+        settings.LearningExplanationLocalGenerationProfiles = CaseInsensitiveModelMap(settings.LearningExplanationLocalGenerationProfiles);
+        if (!Enum.IsDefined(settings.LearningExplanationLocalTemplate))
+            settings.LearningExplanationLocalTemplate = LearningChatTemplate.Automatic;
         if (!Enum.IsDefined(settings.LearningLocalTemplate))
             settings.LearningLocalTemplate = LearningChatTemplate.Automatic;
 

@@ -59,6 +59,13 @@ internal static class LearningPane
             new SettingsCard("Local learning model",
                 Rows.Custom(new LearningLocalModels(context)))
                 .VisibleWhen(s => s.EffectiveLearningBackend == LearningTranslationBackend.Local),
+            new SettingsCard("AI explanation model",
+                rows.Combo<LearningLanguage?>("Explanation Language", "The language used for meanings and teaching explanations.",
+                    new (LearningLanguage? Value, string Label)[] { (null, "App language") }
+                        .Concat(Languages.Select(choice => ((LearningLanguage?)choice.Value, choice.Label))).ToArray(),
+                    s => s.LearningExplanationLanguage, (s, v) => s.LearningExplanationLanguage = v)
+                    .Tagged("AI explanation language tutor meaning"),
+                Rows.Custom(new LearningLocalModels(context, LearningModelRole.Explanation))),
             new SettingsCard("Learning endpoint",
                 rows.Toggle("Allow the Learning Endpoint",
                     "This separate consent sends a manually requested sentence and its selected translation style to the destination below. It sends no surrounding editor text. Selecting Local never uses this endpoint.",

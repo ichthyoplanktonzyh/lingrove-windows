@@ -5,6 +5,27 @@ focus, input, storage, and runtime constraints. Autocomplete and language learni
 product pillars. The first milestone is repository foundation: documentation, build/test-only CI,
 and initial shared JSON behavior fixtures. It does not implement language learning.
 
+## Governing rule: port, then adapt platform details
+
+**基于已收敛的 macOS 成果做 Windows 适配，不重新发明产品、交互或业务架构。**
+
+The pinned Mac implementation and tests define each feature's intended behavior. For every slice:
+
+1. Read the corresponding Mac source and regression tests at the recorded stable revision.
+2. Map its existing responsibilities and contracts to Windows files, preserving defaults, user
+   flow, request scope, prompts, budgets, task isolation, cancellation and privacy rules.
+3. Port deterministic logic and test cases before replacing AX/AppKit/SwiftUI or Apple-specific
+   providers with the necessary UIA/Win32/WPF and Windows inference implementations.
+4. Record source/test mappings, unavoidable platform differences and deferred functionality in
+   [PARITY.md](PARITY.md) or the stage record. Keep unsupported behavior explicit rather than silently
+   replacing it with a simpler product flow or adjusting expected tests to the current Windows code.
+5. Validate the scoped port, review it independently, and merge the completed round to `main`.
+   Architecture/design skills assist this adaptation; product redesign is outside the port's scope.
+
+The phases below sequence migration of existing Mac capabilities. A phase can deliver a documented
+subset, and passing its checks does not establish full feature parity. Fake engines are test inputs;
+production uses a real configured provider or an explicit unavailable state.
+
 ## Phase 0: foundation and portable behavior contracts
 
 **Scope:** settle repo guidance, pin the .NET 10 SDK, add CI that restores/builds/tests only, and add
@@ -43,19 +64,28 @@ Cover native edit controls, Notepad, browser contenteditables, Electron, and rep
 mail fields. Handle text after the caret without painting over host text. Verify per-monitor DPI and
 multi-line geometry.
 
-In this phase, build the first narrow end-to-end learning slice alongside autocomplete: in one host
-field, accept an autocomplete suggestion, capture a committed sentence, show a translation preview
-using a deterministic fake engine, and offer explicit replacement only after rechecking the captured
-field and selection. A manually configured endpoint can support a separate host walkthrough; CI and
-fixtures use only the deterministic fake. This gives both equally core capabilities a real Windows
-path before broadening learning into dictionaries, notebooks, Anki, or speech.
+This phase has incremental slices. The current learning slice ports the Mac manual sentence
+preview: explicit trigger, committed sentence capture, task-owned translation and a read-only result.
+It includes the minimum independent learning settings and task cancellation. Production uses a real
+configured provider or reports that it is unavailable. Deterministic fake engines exercise the same
+interfaces in CI and fixtures, with no network or models; they are not a production provider.
+
+Follow-up slices add acknowledged replacement after rechecking the captured field/selection, and
+an autocomplete-plus-learning walkthrough in one host field. A manually configured endpoint can
+support that separate host walkthrough. Replacement, dictionaries, notebook, Anki and speech are
+outside the current preview slice, while remaining migration targets for this phase and later ones.
 
 Before language-learning replacement depends on insertion, repair the clipboard path so a paste
 preserves available clipboard formats and does not overwrite a copy the user made concurrently.
 Recheck the focused field and selection immediately before deletion or insertion; fail closed if the
 host no longer matches the captured target.
 
-**Gate:** record the Windows version, app/editor versions, host and DPI setup for each check. Compare
+**Current preview slice gate:** map the implementation and regression cases to the pinned Mac
+source/tests, pass portable tests and the Windows compile/adapter checks, and record native capture,
+IME and WPF interaction as unverified until a Windows host is available. This gate does not complete
+the broader native-host or replacement milestone.
+
+**Full phase gate:** record the Windows version, app/editor versions, host and DPI setup for each check. Compare
 rendered ghost and host text, accept and compare the resulting text, verify a focus change during
 generation is discarded, and verify secure fields and uncommitted IME composition do not run tasks.
 Verify that sentence translation first appears as a preview and replacement occurs only after the
@@ -65,9 +95,10 @@ checks but cannot replace them.
 ## Phase 3: independent runtime and task routing
 
 Stabilize local autocomplete inference and explicitly configured endpoint generation on Windows.
-Then define separate task-owned runtime, settings, cancellation, and telemetry boundaries for
-learning and speech. Do not let model switching, cache eviction, or cancellation in one task disturb
-another. Keep Apple Intelligence unavailable on Windows and select Windows-supported alternatives.
+Expand the minimum independent translation configuration and cancellation introduced by the preview
+slice into the Mac-defined local runtime, task routing, model lifecycle and telemetry responsibilities
+for learning and speech. Do not let model switching, cache eviction, or cancellation in one task
+disturb another. Keep Apple Intelligence unavailable on Windows and select supported alternatives.
 
 **Gate:** local inference works on native x64 CPU; Vulkan is separately tested on supported hardware
 and remains optional. Endpoint requests are bounded, identify the selected task and destination,

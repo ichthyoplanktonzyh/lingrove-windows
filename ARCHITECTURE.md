@@ -129,12 +129,15 @@ macOS source is the behavior reference for a future Windows subsystem. A suitabl
 ```text
 committed typing / explicit selection / explicit region capture
   -> capture policy, current-field identity, IME and secure-field checks
-  -> immutable, bounded LearningRequestContext
+  -> immutable, bounded LearningTranslationInput + captured task settings
   -> learning task router + its own local runtime or explicitly selected endpoint
   -> translation / explanation / offline lexical word-expression recognition / dictionary lookup
   -> result card with provenance and safe replacement acknowledgement
   -> optional save to local vocabulary store -> notebook / Anki export or connection
 ```
+
+`LearningTranslationInput` is the Mac text payload contract. `LearningRequestContext` carries
+request/operation correlation and engine metadata separately; it does not contain the source text.
 
 The current Windows learning slice ports the Mac manual current-sentence preview: explicit trigger,
 captured sentence, task-owned translation and a read-only result. Production uses a real configured

@@ -2,6 +2,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Windows;
 using System.Windows.Controls;
+using Cotabby.App.Settings;
 using Cotabby.App.UI.Controls;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Inference.OpenAICompatible;

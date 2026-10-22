@@ -85,8 +85,15 @@ Recorded results for 2026-10-22:
   were made culture-aware so the same portable cases pass on Windows and macOS; no product behavior
   changed.
 - The Swift verifier passed all 17 JSON parity cases against the committed macOS pure policies.
-- The new .NET 10 `ci.yml` workflow has not run yet. No native Windows desktop, UI Automation,
-  insertion, IME, or GPU validation has been performed. No model-backed smoke project was run.
+- The hosted .NET 10 run [39726484238](https://github.com/ichthyoplanktonzyh/lingrove-windows/actions/runs/39726484238)
+  passed at code revision `81f4741`: Windows x64 built all projects with zero warnings/errors and
+  passed 1,572 Core plus 142 non-interactive Inference tests; macOS ARM64 passed the same 1,572 Core
+  tests and all 17 Swift parity cases.
+- Existing native/runtime and `Microsoft.Extensions.*` package versions are intentionally retained
+  so this milestone isolates the SDK/target-framework upgrade. The hosted build validates those
+  existing packages under .NET 10; it does not establish native model runtime compatibility.
+- No native Windows desktop, UI Automation, insertion, IME, or GPU validation has been performed.
+  No model-backed smoke project was run.
 
 These results establish automated source-level evidence for the named suites only. They do not mark
 the full app or native host behavior verified in [PARITY.md](PARITY.md).

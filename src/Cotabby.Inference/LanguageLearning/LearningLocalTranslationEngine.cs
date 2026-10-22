@@ -73,7 +73,9 @@ public sealed class LearningLocalTranslationEngine :
             if (options is null || options.Style is null)
                 throw new LearningTranslationException(LearningTranslationFailure.InvalidOptions);
 
-            var activeOperation = await _runtime.BeginOperationAsync(_configuration, linked.Token).ConfigureAwait(false);
+            // Preserve the direct capture and facade-owner tokens through admission. CancelAsync
+            // retires their flags immediately, before linked-token callbacks may have run.
+            var activeOperation = await _runtime.BeginOperationAsync(_configuration, ct, lifetimeToken).ConfigureAwait(false);
             operation = activeOperation;
             linked.Token.ThrowIfCancellationRequested();
             lock (_gate)

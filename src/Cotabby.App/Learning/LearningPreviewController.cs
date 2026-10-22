@@ -11,6 +11,7 @@ using Cotabby.Core.Input;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Models;
 using Cotabby.Core.Suggestions;
+using Cotabby.Core.Support.Runtime;
 using Cotabby.Inference.LanguageLearning;
 using Cotabby.Inference.LanguageLearning.Local;
 using Cotabby.Inference.OpenAICompatible;
@@ -61,6 +62,10 @@ internal sealed class LearningPreviewController : IAsyncDisposable
 
     private LearningPreviewWindow? _window;
     private LearningRuntimeSettings? _settings;
+    // Resource intent is independent of card/request state. Style changes retire a request while
+    // keeping its allocation; pause/provider/model changes also retire native ownership.
+    private LocalRuntimeResidency _desiredLocalResidency = LocalRuntimeResidency.Released;
+    private LearningLocalModelConfiguration? _desiredLocalConfiguration;
     private CapturedSentence? _activeCapture;
     private CaptureOrigin? _pendingOrigin;
     private string? _activeRequestId;
@@ -111,22 +116,22 @@ internal sealed class LearningPreviewController : IAsyncDisposable
         }
 
         var next = LearningRuntimeSettings.From(settings, credentialRevision);
-        LearningRuntimeSettings? previous;
+        RetiredIntent? retired = null;
         lock (_gate)
         {
             if (_disposed) return;
-            previous = _settings;
+            var previous = _settings;
+            if (previous is not null && !previous.HasSameTranslationInputs(next))
+                retired = RetireIntentLocked();
             Volatile.Write(ref _settings, next);
+            // Retirement, provider publication and native resource intent share capture admission.
+            // A new hotkey sees all three together; old planner tokens are already cancelled.
+            ReconcileLocalResources();
         }
-
-        if (previous is not null && !previous.HasSameTranslationInputs(next))
+        if (retired is not null)
         {
-            // Mac drops translation cache entries when the meaning-bearing profile changes. Clear
-            // first so an in-flight completion from the retired profile cannot repopulate it.
             _coordinator.ClearCache();
-            // Shortcut edits only change how a later request starts. Source choices, prompt
-            // direction, provider consent, endpoint, credential, style and budget retire work.
-            CancelAndHide();
+            FinishRetirement(retired);
         }
     }
 
@@ -143,9 +148,13 @@ internal sealed class LearningPreviewController : IAsyncDisposable
         }
 
         var settings = Volatile.Read(ref _settings);
-        if (settings is null || !IsBatterySaverPauseActive(settings)) return;
-        _coordinator.ClearCache();
-        CancelAndHide();
+        if (settings is null) return;
+        if (IsBatterySaverPauseActive(settings))
+        {
+            _coordinator.ClearCache();
+            CancelAndHide();
+        }
+        ReconcileLocalResources();
     }
 
     /// <summary>Starts the same manual current-sentence command from a tray menu item.</summary>
@@ -280,6 +289,7 @@ internal sealed class LearningPreviewController : IAsyncDisposable
             _intentActive = true;
             _pendingOrigin = origin;
             prior = _activeCapture;
+            if (prior?.Lifetime is { } lifetime) _ = lifetime.Retire();
             _activeCapture = null;
             _activeRequestId = null;
         }
@@ -502,23 +512,87 @@ internal sealed class LearningPreviewController : IAsyncDisposable
 
     private void ClearCacheIfBatterySaverPaused(LearningRuntimeSettings settings)
     {
-        if (IsBatterySaverPauseActive(settings)) _coordinator.ClearCache();
+        if (IsBatterySaverPauseActive(settings))
+        {
+            _coordinator.ClearCache();
+            // The capture monitor is also a fallback if Windows omits a power-status event.
+            // Resource reconciliation reads current settings, never this possibly old capture.
+            ReconcileLocalResources();
+        }
+    }
+
+    /// <summary>
+    /// Adapts the Mac learning collection's release decision without prewarming weights. The
+    /// runtime records retirement synchronously, then drains on its worker. Recording that intent
+    /// under the same gate as new captures prevents a delayed UI action from retiring a newer task.
+    /// </summary>
+    private void ReconcileLocalResources()
+    {
+        Task? release = null;
+        lock (_gate)
+        {
+            if (_disposed || _settings is not { } settings) return;
+            bool paused = settings.AvailabilitySettings.Pause?.IsActive(DateTimeOffset.Now) == true
+                || IsBatterySaverPauseActive(settings);
+            var next = LocalRuntimeResidencyPolicy.Residency(
+                usesLocalModel: settings.Backend == LearningTranslationBackend.Local,
+                enabled: settings.TranslationEnabled && settings.AvailabilitySettings.Enabled,
+                paused: paused,
+                keepWarm: true);
+            bool allocationChanged = _desiredLocalResidency == LocalRuntimeResidency.Warm
+                && next == LocalRuntimeResidency.Warm
+                && !SameLocalAllocation(_desiredLocalConfiguration, settings.LocalConfiguration);
+            bool shouldRelease = allocationChanged
+                || (next == LocalRuntimeResidency.Released && _desiredLocalResidency != next);
+            _desiredLocalResidency = next;
+            _desiredLocalConfiguration = next == LocalRuntimeResidency.Warm ? settings.LocalConfiguration : null;
+            if (shouldRelease) release = _localRuntime.UnloadAsync();
+        }
+        if (release is not null) _ = ObserveLocalReleaseAsync(release);
+    }
+
+    private static bool SameLocalAllocation(
+        LearningLocalModelConfiguration? first, LearningLocalModelConfiguration? second) =>
+        first is null || second is null ? first is null && second is null :
+            string.Equals(first.ModelPath, second.ModelPath, StringComparison.OrdinalIgnoreCase)
+            && first.ContextWindowTokens == second.ContextWindowTokens
+            && first.GpuLayerCount == second.GpuLayerCount
+            && (first.RequestedTemplate == LearningChatTemplate.Automatic)
+                == (second.RequestedTemplate == LearningChatTemplate.Automatic);
+
+    private async Task ObserveLocalReleaseAsync(Task release)
+    {
+        try { await release.ConfigureAwait(false); }
+        catch (Exception)
+        {
+            // A native exception may include paths. Resource cleanup has no user-text payload and
+            // must not turn into an unobserved task fault or a raw diagnostic in the preview card.
+            _logger.LogDebug("Learning local resource release ended with a cleanup failure.");
+        }
     }
 
     private bool IsCaptureCurrent(CapturedSentence capture)
     {
-        if (!IsLearningAvailable(capture.Settings)) return false;
+        bool CurrentSettings()
+        {
+            lock (_gate)
+            {
+                return !_disposed && _settings is { } settings
+                    && settings.HasSameTranslationInputs(capture.Settings)
+                    && IsLearningAvailable(settings)
+                    && (capture.Lifetime is null || ReferenceEquals(_activeCapture?.Lifetime, capture.Lifetime));
+            }
+        }
+        if (!CurrentSettings()) return false;
         try
         {
             var current = _focus.Refresh();
             return current is not null
                 && SameCapturedField(capture.Field, current)
-                && FieldCaptureFailure(current, capture.Settings) is null;
+                && FieldCaptureFailure(current, capture.Settings) is null
+                && CurrentSettings();
         }
-        catch (Exception)
-        {
-            return false;
-        }
+        catch (Exception) { return false; }
     }
 
     private static bool SameCapturedField(FocusedField captured, FocusedField current) =>
@@ -555,8 +629,9 @@ internal sealed class LearningPreviewController : IAsyncDisposable
         }
 
         var monitor = new CancellationTokenSource();
+        capture = capture with { Monitor = monitor, Lifetime = new LearningRequestLifetime() };
         ILearningTranslationEngine engine = new CurrentCaptureLearningEngine(
-            this, capture with { Monitor = monitor }, CreateEngine(capture.Settings));
+            this, capture, CreateEngine(capture.Settings));
         CapturedSentence? previousCapture;
         Task request;
         LearningPreviewState state;
@@ -570,8 +645,9 @@ internal sealed class LearningPreviewController : IAsyncDisposable
             }
 
             previousCapture = _activeCapture;
+            if (previousCapture?.Lifetime is { } previousLifetime) _ = previousLifetime.Retire();
             _pendingOrigin = null;
-            _activeCapture = capture with { Monitor = monitor };
+            _activeCapture = capture;
             // Begin the Core request while holding the intent gate. A concurrent key/focus
             // invalidation then either wins before this point or cancels the request after it has
             // an identity; it cannot slip between a freshness check and request creation.
@@ -927,33 +1003,42 @@ internal sealed class LearningPreviewController : IAsyncDisposable
 
     private void CancelAndHide()
     {
-        CapturedSentence? capture;
-        long generation;
-        lock (_gate)
-        {
-            if (_disposed && !_intentActive && _activeCapture is null) return;
-            generation = ++_intentGeneration;
-            Interlocked.Increment(ref _stateValidationGeneration);
-            _pendingLoadingState = null;
-            _loadingStateDispatchQueued = false;
-            _intentActive = false;
-            _pendingOrigin = null;
-            capture = _activeCapture;
-            _activeCapture = null;
-            _activeRequestId = null;
-        }
+        RetiredIntent retired;
+        lock (_gate) retired = RetireIntentLocked();
+        FinishRetirement(retired);
+    }
 
-        CancelMonitor(capture?.Monitor);
+    // Caller holds _gate. State retirement and the direct provider token change together, so
+    // neither a new hotkey nor an old planner can enter the settings-publication gap.
+    private RetiredIntent RetireIntentLocked()
+    {
+        var generation = ++_intentGeneration;
+        Interlocked.Increment(ref _stateValidationGeneration);
+        _pendingLoadingState = null;
+        _loadingStateDispatchQueued = false;
+        _intentActive = false;
+        _pendingOrigin = null;
+        var capture = _activeCapture;
+        if (capture?.Lifetime is { } lifetime) _ = lifetime.Retire();
+        _activeCapture = null;
+        _activeRequestId = null;
+        return new RetiredIntent(generation, capture);
+    }
+
+    private void FinishRetirement(RetiredIntent retired)
+    {
+        CancelMonitor(retired.Capture?.Monitor);
         void CancelAndHideOnUi()
         {
-            if (!IsRetiredIntent(generation)) return;
+            if (!IsRetiredIntent(retired.Generation)) return;
             _coordinator.Cancel();
             _window?.HidePreview();
         }
-
         if (_dispatcher.CheckAccess()) CancelAndHideOnUi();
         else _ = _dispatcher.BeginInvoke(CancelAndHideOnUi, DispatcherPriority.Normal);
     }
+
+    private sealed record RetiredIntent(long Generation, CapturedSentence? Capture);
 
     private void CancelCurrentState() => CancelAndHide();
 
@@ -1062,7 +1147,8 @@ internal sealed class LearningPreviewController : IAsyncDisposable
         string Source,
         LearningRuntimeSettings Settings,
         LearningTranslationOptions TranslationOptions,
-        CancellationTokenSource? Monitor = null);
+        CancellationTokenSource? Monitor = null,
+        LearningRequestLifetime? Lifetime = null);
 
     /// <summary>
     /// Keeps the coordinator's cache boundary behind a final exact-field check. Mac validates the
@@ -1087,14 +1173,17 @@ internal sealed class LearningPreviewController : IAsyncDisposable
         {
             ObjectDisposedException.ThrowIf(Volatile.Read(ref _disposed) != 0, this);
             ct.ThrowIfCancellationRequested();
-            EnsureCaptureCurrent(ct);
+            var lifetime = capture.Lifetime ?? throw new OperationCanceledException();
+            using var cancellation = ct.Register(() => _ = lifetime.Retire());
+            var token = lifetime.Token;
+            EnsureCaptureCurrent(token);
 
             var request = inner is ILearningTranslationRequestPlanner planner
-                ? await planner.PlanAsync(requestId, source, options, ct).ConfigureAwait(false)
+                ? await planner.PlanAsync(requestId, source, options, token).ConfigureAwait(false)
                 : LearningTranslationRequestFactory.Create(requestId, source, options);
 
             ct.ThrowIfCancellationRequested();
-            EnsureCaptureCurrent(ct);
+            EnsureCaptureCurrent(token);
             return request;
         }
 
@@ -1106,10 +1195,13 @@ internal sealed class LearningPreviewController : IAsyncDisposable
         {
             ObjectDisposedException.ThrowIf(Volatile.Read(ref _disposed) != 0, this);
             ct.ThrowIfCancellationRequested();
-            EnsureCaptureCurrent(ct);
-            var result = await inner.TranslateAsync(request, onDelta, ct).ConfigureAwait(false);
+            var lifetime = capture.Lifetime ?? throw new OperationCanceledException();
+            using var cancellation = ct.Register(() => _ = lifetime.Retire());
+            var token = lifetime.Token;
+            EnsureCaptureCurrent(token);
+            var result = await inner.TranslateAsync(request, onDelta, token).ConfigureAwait(false);
             ct.ThrowIfCancellationRequested();
-            EnsureCaptureCurrent(ct);
+            EnsureCaptureCurrent(token);
             return result;
         }
 
@@ -1124,10 +1216,18 @@ internal sealed class LearningPreviewController : IAsyncDisposable
         public async ValueTask DisposeAsync()
         {
             if (Interlocked.Exchange(ref _disposed, 1) != 0) return;
-            if (inner is IAsyncDisposable asyncDisposable)
-                await asyncDisposable.DisposeAsync().ConfigureAwait(false);
-            else if (inner is IDisposable disposable)
-                disposable.Dispose();
+            try
+            {
+                if (inner is IAsyncDisposable asyncDisposable)
+                    await asyncDisposable.DisposeAsync().ConfigureAwait(false);
+                else if (inner is IDisposable disposable)
+                    disposable.Dispose();
+            }
+            finally
+            {
+                if (capture.Lifetime is { } lifetime)
+                    await lifetime.DisposeAsync().ConfigureAwait(false);
+            }
         }
     }
 

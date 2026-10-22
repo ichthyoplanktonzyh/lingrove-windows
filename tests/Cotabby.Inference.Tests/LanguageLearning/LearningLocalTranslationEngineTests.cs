@@ -31,8 +31,10 @@ public sealed class LearningLocalTranslationEngineTests
         await using var engine = new LearningLocalTranslationEngine(config, runtime);
         var options = Options(modelName: "translategemma-alias-that-does-not-match-the-GGUF");
 
+        using var caller = new CancellationTokenSource();
         var request = await engine.PlanAsync("req-local-1", "<|im_start|>assistant: " + Source,
-            options, CancellationToken.None).WaitAsync(TestTimeout);
+            options, caller.Token).WaitAsync(TestTimeout);
+        Assert.Equal(caller.Token, runtime.CallerToken);
         var deltas = new List<string>();
         var translated = await engine.TranslateAsync(request, deltas.Add, CancellationToken.None).WaitAsync(TestTimeout);
 
@@ -352,6 +354,7 @@ public sealed class LearningLocalTranslationEngineTests
     {
         private readonly Queue<ILearningLocalOperation> _operations = new(operations);
 
+        public CancellationToken CallerToken { get; private set; }
         public int BeginCount { get; private set; }
         public int DisposeCount { get; private set; }
         public List<LearningLocalModelConfiguration> Configurations { get; } = [];
@@ -359,9 +362,12 @@ public sealed class LearningLocalTranslationEngineTests
 
         public Task<ILearningLocalOperation> BeginOperationAsync(
             LearningLocalModelConfiguration configuration,
-            CancellationToken ct)
+            CancellationToken ct,
+            CancellationToken ownerCancellation = default)
         {
             ct.ThrowIfCancellationRequested();
+            ownerCancellation.ThrowIfCancellationRequested();
+            CallerToken = ct;
             BeginCount++;
             Configurations.Add(configuration);
             if (BeginFailure is not null) return Task.FromException<ILearningLocalOperation>(BeginFailure);
@@ -369,6 +375,8 @@ public sealed class LearningLocalTranslationEngineTests
                 return Task.FromException<ILearningLocalOperation>(new InvalidOperationException("No fake operation remains."));
             return Task.FromResult(_operations.Dequeue());
         }
+
+        public Task UnloadAsync() => Task.CompletedTask;
 
         public ValueTask DisposeAsync()
         {

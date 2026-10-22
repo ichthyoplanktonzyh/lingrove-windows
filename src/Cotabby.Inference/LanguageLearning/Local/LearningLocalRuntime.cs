@@ -33,6 +33,8 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
     private LearningLocalOperation? _activeOperation;
     private Task? _disposeTask;
     private int _disposeRequested;
+    private long _retirementEpoch;
+    private long _residencyVersion;
 
     /// <summary>Creates the production LLamaSharp owner; model files are never downloaded.</summary>
     public LearningLocalRuntime(ILogger<LearningLocalRuntime>? logger = null, ILoggerFactory? loggerFactory = null)
@@ -55,12 +57,20 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
     /// <inheritdoc />
     public async Task<ILearningLocalOperation> BeginOperationAsync(
         LearningLocalModelConfiguration configuration,
-        CancellationToken ct)
+        CancellationToken ct,
+        CancellationToken ownerCancellation = default)
     {
         ArgumentNullException.ThrowIfNull(configuration);
-        ThrowIfDisposing();
+        long admittedEpoch;
+        lock (_lifecycleLock)
+        {
+            ThrowIfDisposing();
+            ct.ThrowIfCancellationRequested();
+            ownerCancellation.ThrowIfCancellationRequested();
+            admittedEpoch = _retirementEpoch;
+        }
 
-        using var admission = CancellationTokenSource.CreateLinkedTokenSource(ct, _shutdown.Token);
+        using var admission = CancellationTokenSource.CreateLinkedTokenSource(ct, ownerCancellation, _shutdown.Token);
         try
         {
             await _operationGate.WaitAsync(admission.Token).ConfigureAwait(false);
@@ -74,21 +84,29 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
         try
         {
             ThrowIfDisposing();
+            lock (_lifecycleLock) ThrowIfRetired(admittedEpoch);
             await EnsureSessionAsync(configuration, admission.Token).ConfigureAwait(false);
             ct.ThrowIfCancellationRequested();
+            ownerCancellation.ThrowIfCancellationRequested();
             ThrowIfDisposing();
 
             LearningLocalOperation operation;
             lock (_lifecycleLock)
             {
-                if (_disposeRequested != 0)
-                    throw new LearningLocalRuntimeException(LearningLocalRuntimeFailure.RuntimeDisposed);
+                ThrowIfDisposing();
+                // Unload may have arrived while synchronous native loading was still in flight.
+                // Never hand that retired allocation to a caller when the load finally returns.
+                ThrowIfRetired(admittedEpoch);
 
                 operation = new LearningLocalOperation(
                     _session!,
                     _shutdown.Token,
+                    () => Volatile.Read(ref _retirementEpoch) != admittedEpoch,
                     ReleaseOperation);
                 _activeOperation = operation;
+                // Only a successfully created lease supersedes a pending release. A queued Begin
+                // that is cancelled or fails must not leave old weights resident without an owner.
+                _residencyVersion++;
             }
             transferGate = true;
             return operation;
@@ -158,8 +176,56 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
 
     private void ReleaseOperation(LearningLocalOperation operation)
     {
-        if (ReferenceEquals(_activeOperation, operation)) _activeOperation = null;
+        lock (_lifecycleLock)
+        {
+            if (ReferenceEquals(_activeOperation, operation)) _activeOperation = null;
+        }
         _operationGate.Release();
+    }
+
+    /// <inheritdoc />
+    public Task UnloadAsync()
+    {
+        lock (_lifecycleLock)
+        {
+            if (_disposeRequested != 0) return _disposeTask ?? Task.CompletedTask;
+            Interlocked.Increment(ref _retirementEpoch);
+            var version = ++_residencyVersion;
+            var active = _activeOperation;
+            // Even an idle allocation can take time to free. Keep both cancellation callbacks and
+            // native disposal off the caller's WPF thread and outside the lifecycle lock.
+            return Task.Run(() => UnloadCoreAsync(version, active));
+        }
+    }
+
+    private async Task UnloadCoreAsync(long version, LearningLocalOperation? active)
+    {
+        if (active is not null) await active.DisposeAsync().ConfigureAwait(false);
+        await _operationGate.WaitAsync(CancellationToken.None).ConfigureAwait(false);
+        try
+        {
+            ILearningLocalNativeSession? retired;
+            lock (_lifecycleLock)
+            {
+                // A newer request or shutdown owns the allocation now. A delayed release must
+                // never tear down memory that the new request has just prepared or will reuse.
+                if (_disposeRequested != 0 || version != _residencyVersion) return;
+                retired = _session;
+                _session = null;
+                _identity = null;
+            }
+            retired?.Dispose();
+            _logger.LogDebug("Learning local allocation released.");
+        }
+        finally
+        {
+            _operationGate.Release();
+        }
+    }
+
+    private void ThrowIfRetired(long admittedEpoch)
+    {
+        if (admittedEpoch != _retirementEpoch) throw new OperationCanceledException();
     }
 
     private void ThrowIfDisposing()
@@ -174,7 +240,7 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
         lock (_lifecycleLock)
         {
             _disposeRequested = 1;
-            _disposeTask ??= DisposeCoreAsync();
+            _disposeTask ??= Task.Run(DisposeCoreAsync);
             return new ValueTask(_disposeTask);
         }
     }
@@ -230,6 +296,7 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
         private readonly SemaphoreSlim _callGate = new(1, 1);
         private readonly CancellationTokenSource _stop;
         private readonly CancellationToken _runtimeStop;
+        private readonly Func<bool> _isRetired;
         private readonly Action<LearningLocalOperation> _releaseParent;
         private readonly object _lifecycleLock = new();
         private Task? _disposeTask;
@@ -238,6 +305,7 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
         public LearningLocalOperation(
             ILearningLocalNativeSession session,
             CancellationToken runtimeStop,
+            Func<bool> isRetired,
             Action<LearningLocalOperation> releaseParent)
         {
             _session = session;
@@ -247,6 +315,7 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
             _metadata = session.Metadata;
             _contextWindowTokens = session.ContextWindowTokens;
             _runtimeStop = runtimeStop;
+            _isRetired = isRetired;
             _stop = CancellationTokenSource.CreateLinkedTokenSource(runtimeStop);
             _releaseParent = releaseParent;
         }
@@ -265,9 +334,9 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
             EnterCallSynchronously();
             try
             {
-                _stop.Token.ThrowIfCancellationRequested();
+                ThrowIfStopped(_stop.Token);
                 var tokens = _session.Tokenize(text, allowSpecialTokens).ToArray();
-                _stop.Token.ThrowIfCancellationRequested();
+                ThrowIfStopped(_stop.Token);
                 return Array.AsReadOnly(tokens);
             }
             finally
@@ -327,6 +396,14 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
             }
         }
 
+        private void ThrowIfStopped(CancellationToken ct)
+        {
+            ct.ThrowIfCancellationRequested();
+            // Retirement is visible synchronously, even before the unload worker can run its
+            // cancellation callbacks. A returning Decode must not sample or publish in that gap.
+            if (_isRetired()) throw new OperationCanceledException();
+        }
+
         private static bool IsValidSampling(LearningModelSamplingValues sampling) =>
             double.IsFinite(sampling.Temperature) && sampling.Temperature is >= 0 and <= 2 &&
             double.IsFinite(sampling.TopP) && sampling.TopP is >= 0.01 and <= 1 &&
@@ -348,7 +425,7 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
             try
             {
                 _session.ClearMemory();
-                ct.ThrowIfCancellationRequested();
+                ThrowIfStopped(ct);
                 int logitsIndex = Prefill(promptTokens, ct);
                 using var sampler = _session.CreateSampler(sampling);
                 var output = new StrictUtf8Output(MaximumOutputBytes);
@@ -356,34 +433,34 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
 
                 for (int generated = 0; generated < maxTokens; generated++)
                 {
-                    ct.ThrowIfCancellationRequested();
+                    ThrowIfStopped(ct);
                     LLamaToken token = sampler.Sample(logitsIndex);
-                    ct.ThrowIfCancellationRequested();
+                    ThrowIfStopped(ct);
                     if (_session.IsEndOfGeneration(token))
                     {
                         string complete = output.Complete();
-                        ct.ThrowIfCancellationRequested();
+                        ThrowIfStopped(ct);
                         return complete;
                     }
 
                     sampler.Accept(token);
-                    ct.ThrowIfCancellationRequested();
+                    ThrowIfStopped(ct);
                     output.Append(_session.TokenToBytes(token));
                     string delta = output.TakeNewText();
-                    ct.ThrowIfCancellationRequested();
+                    ThrowIfStopped(ct);
                     if (delta.Length > 0) onDelta?.Invoke(delta);
 
                     // The final sampled token is not decoded back into KV because no next sample
                     // is permitted. This also leaves maxTokens an exact count of output tokens.
                     if (generated + 1 < maxTokens)
                     {
-                        ct.ThrowIfCancellationRequested();
+                        ThrowIfStopped(ct);
                         logitsIndex = _session.DecodeToken(token, nextPosition++);
-                        ct.ThrowIfCancellationRequested();
+                        ThrowIfStopped(ct);
                     }
                 }
 
-                ct.ThrowIfCancellationRequested();
+                ThrowIfStopped(ct);
                 throw new LearningLocalRuntimeException(LearningLocalRuntimeFailure.OutputLimitReached);
             }
             catch (Exception ex)
@@ -417,7 +494,7 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
             int batchSize = Math.Max(1, _session.BatchSize);
             for (int offset = 0; offset < promptTokens.Count; offset += batchSize)
             {
-                ct.ThrowIfCancellationRequested();
+                ThrowIfStopped(ct);
                 int count = Math.Min(batchSize, promptTokens.Count - offset);
                 // Only the final prompt token needs logits. DecodeBatch returns that token's row
                 // index, which is the starting point for the first sample.
@@ -427,7 +504,7 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
                     count,
                     position: offset,
                     requestLogits: offset + count == promptTokens.Count);
-                ct.ThrowIfCancellationRequested();
+                ThrowIfStopped(ct);
             }
 
             if (logitsIndex < 0)
@@ -450,7 +527,7 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
             if (_stop.IsCancellationRequested)
             {
                 _callGate.Release();
-                _stop.Token.ThrowIfCancellationRequested();
+                ThrowIfStopped(_stop.Token);
             }
 
             lock (_lifecycleLock)

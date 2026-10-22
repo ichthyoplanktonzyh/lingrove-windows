@@ -161,7 +161,8 @@ occurrences and a local context receipt; it owns no live editor or durable noteb
 evidence tokenizer retains separator spaces separately from the existing trimmed caret tokenizer.
 The service owns per-request facades and a bounded complete-record cache. AppHost now owns its
 independent local settings/runtime controller, which loads on request and releases after 60 idle
-seconds. Stale-result session/card wiring is still required before this becomes an interactive
+seconds. The portable session now owns target state, saved restoration and revision-based
+cancellation; WPF session/card wiring is still required before this becomes an interactive
 feature. See [the explanation map](docs/LEARNING_EXPLANATION_RULES.md) and [app ownership](docs/LEARNING_EXPLANATION_RUNTIME.md).
 
 Explicit replacement and a combined autocomplete/learning host walkthrough are follow-up slices

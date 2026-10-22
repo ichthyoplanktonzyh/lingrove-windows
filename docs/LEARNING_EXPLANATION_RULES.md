@@ -3,7 +3,8 @@
 This port adapts the stable Mac explanation rules and a local provider at
 `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`. The Windows app has no explanation trigger yet;
 independent local app settings/runtime ownership is mapped in [the runtime note](LEARNING_EXPLANATION_RUNTIME.md).
-Session/card wiring remains unported. Translation and autocomplete runtime
+[Session state](LEARNING_EXPLANATION_SESSION.md) is adapted as a library; WPF session/card wiring
+remains unported. Translation and autocomplete runtime
 ownership are unchanged.
 
 ## Source mapping and ownership
@@ -267,7 +268,7 @@ currently records no telemetry.
 ## Next adapter gates
 
 Still unported: the remaining capture origins and notebook construction, explanation endpoint transport,
-durable record ownership/persistence, request cancellation/stale-result session handling and the explanation
+durable record ownership/persistence, captured-document freshness in the session/card adapter and the explanation
 card. The [app-owned local provider](LEARNING_EXPLANATION_RUNTIME.md) has independent configuration/runtime
 ownership; it reports unavailable rather than borrowing translation's selected model.
 Native WPF/UIA/IME/model

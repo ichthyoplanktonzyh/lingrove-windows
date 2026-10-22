@@ -28,6 +28,7 @@ public sealed class LearningTranslationRequestFactoryTests
         var request = LearningTranslationRequestFactory.Create("req-1", "A complete sentence.", new LearningTranslationOptions
         {
             SourceLanguage = LearningLanguage.English,
+            TargetLanguage = LearningLanguage.Chinese,
             ModelName = modelName,
         });
 
@@ -46,6 +47,7 @@ public sealed class LearningTranslationRequestFactoryTests
         var request = LearningTranslationRequestFactory.Create("req-1", "Hello.", new LearningTranslationOptions
         {
             SourceLanguage = LearningLanguage.English,
+            TargetLanguage = LearningLanguage.Chinese,
             Style = new LearningTranslationStyle(LearningTranslationRegister.Formal, "dormant custom text"),
         });
 
@@ -99,6 +101,7 @@ public sealed class LearningTranslationRequestFactoryTests
             LearningTranslationRequestFactory.Create("req-1", "Hello.", new LearningTranslationOptions
             {
                 SourceLanguage = LearningLanguage.English,
+                TargetLanguage = LearningLanguage.Chinese,
                 ModelName = "translategemma-4b",
                 Style = new LearningTranslationStyle(LearningTranslationRegister.Conversational),
             }));

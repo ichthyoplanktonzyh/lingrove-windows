@@ -67,6 +67,9 @@ malformed UTF-16 source because Swift strings cannot represent those invalid val
 - The Mac streaming-prefix display and bounded preview cache remain follow-up work. The current
   slice displays a validated complete response and makes a fresh request on retry; it does not claim
   streaming or cache parity.
+- This slice uses one explicitly configured source language. The Mac multi-source confidence-gated
+  resolver and nearby-text language detection for sentence tokenization remain deferred; Windows
+  supplies the configured source locale to ICU and does not pretend it performed language detection.
 
 ## Validation boundary
 

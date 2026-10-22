@@ -27,6 +27,8 @@ public static class LearningTranslationRequestFactory
         {
             throw new LearningTranslationException(LearningTranslationFailure.InvalidOptions);
         }
+        if (options.SourceLanguage == options.TargetLanguage)
+            throw new LearningTranslationException(LearningTranslationFailure.SameLanguage);
 
         LearningTextScopePolicy.ValidateSource(source);
         var frozenOptions = options with { Style = options.Style.Effective };

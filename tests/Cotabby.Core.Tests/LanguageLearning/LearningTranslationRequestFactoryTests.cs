@@ -105,4 +105,20 @@ public sealed class LearningTranslationRequestFactoryTests
 
         Assert.Equal(LearningTranslationFailure.UnsupportedStyle, error.Failure);
     }
+
+    [Fact]
+    public void SameSourceAndTargetLanguageIsRejectedBeforePromptConstruction()
+    {
+        var error = Assert.Throws<LearningTranslationException>(() =>
+            LearningTranslationRequestFactory.Create("req-1", "Hello.", new LearningTranslationOptions
+            {
+                SourceLanguage = LearningLanguage.English,
+                TargetLanguage = LearningLanguage.English,
+            }));
+
+        Assert.Equal(LearningTranslationFailure.SameLanguage, error.Failure);
+        Assert.Equal(
+            "The source language is not enabled or matches the target. Check the translation settings.",
+            error.Message);
+    }
 }

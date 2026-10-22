@@ -155,6 +155,9 @@ internal sealed partial class NativeIcuSentenceSegmenter : IIcuSentenceSegmenter
         }
     }
 
+    private static LearningTranslationException Unavailable() =>
+        new(LearningTranslationFailure.SentenceTokenizerUnavailable);
+
     [LibraryImport("icu.dll", EntryPoint = "ubrk_open", StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]

@@ -17,6 +17,8 @@ ownership are unchanged.
 | `LearningFailure.swift`, `VocabularyError.invalidContent` | `LearningExplanationException.cs` | Fixed failure categories and English fallback messages, without captured/model text in errors. UI localization is deferred. |
 | `LearningExplanationPolicy.supportsGeneralInstructions`, `RuntimeModelCatalog.isKnownBaseModel`, `LearningModelSettings.generalInstructionsAvailable` | `Core/LanguageLearning/LearningExplanationModelPolicy.cs` | Separate model capability from configured state; require local metadata even for a manually selected template. |
 | `LearningExplanationService.generate`, `LearningModelController.validateGeneralInstructionModel/generate`, `LearningLocalRuntime.generate` | `Core/LanguageLearning/ILearningExplanationEngine.cs`, `Inference/LanguageLearning/LearningLocalExplanationEngine.cs`, existing local runtime | Single-request local provider: frozen input/configuration to actual framed token plan to EOG-complete, byte-bounded, parsed result. App service/cache/settings/card wiring remains separate. |
+| `Support/Vocabulary/VocabularyCaptureFactory.swift`: writing `preview`, `unit(original:false)`, `component`; `VocabularyPolicy.example/exampleKey`; `LearningExplanationPolicy.input(capture)` | `Core/LanguageLearning/LearningExplanationInputFactory.cs` | Projects completed writing values into an explanation input, preserving ordered original occurrences and the captured context receipt. No durable capture/entry store is created. |
+| `VocabularyPolicy.example` sentence tokenizer; `LearningUnitPolicy.words` | `ILearningEvidenceSentenceTokenizer`, `Win32/Text/IcuLearningEvidenceSentenceTokenizer.cs`, existing lexical adapter | Full sentence token extents and word facts enter the projection. Native facts are validated before trusting a containing sentence; failures remain content-free. |
 
 The values have no process lifetime or service owner. A future card or notebook session will own an
 input snapshot and hand it to an independent explanation provider. Policy returns a bounded prompt
@@ -157,9 +159,56 @@ late answers, repeated disposal, release retry and blocked cancellation callback
 exercise resident identity changes and the actual production preflight with tiny GGUF headers.
 These are model-free boundary checks, not a native model execution or quality evaluation.
 
+## Writing capture to input
+
+`LearningExplanationInputFactory` ports the actual capture-factory → input composition for the
+current manual caret-sentence **writing translation**. `FromWritingSentencePreview` requires a
+completed nonempty source/result; `FromUnit` retains the Mac's separate guards and does not invent
+the preview's nonempty-source requirement. The caller supplies an immutable presentation/unit;
+the factory has no UIA, notebook, runtime or live focus state. A future session must separately
+verify that its document is still current before showing a result.
+
+One-word previews have no example. A multiword current-sentence preview has sentence target kind,
+including an unpunctuated phrase, while its captured context can be a fragment if no single sentence
+token contains the full range. Unit targets use the original surface for words/expressions and the
+canonical query for patterns; dictionary form remains the query. Ranges keep their order and
+duplicates. The containing sentence retains separator whitespace and rebases original UTF-16 spans;
+without one containing sentence, the full text is a fragment. Standalone one-word translations lose
+their example as on Mac. The input projection does not replace later `IsValid` checks.
+
+Clicked components must be exact members of their unit. Their original occurrence maps through the
+unit/example offset, with a grapheme/range/text check; repeated text is never found by searching for
+the first match. The lowercase SHA-256 receipt uses the original Mac UTF-8 length framing over exact
+example text, ordered `location:length` ranges and sentence/fragment completeness. Translation,
+meaning, app provenance, UUIDs and provider identity do not affect that receipt or enter the prompt.
+
+The new `ILearningEvidenceSentenceTokenizer` keeps full token extents, including leading/trailing
+separator spaces. It reuses the pinned-buffer Windows ICU implementation but is deliberately a
+separate interface from the existing trimmed current-caret sentence adapter. Both contracts remain
+explicit. Core validates every returned sentence interval before selecting one, rejecting null,
+overlapping, unordered, invalid or throwing providers with a fixed failure. This is an OS boundary
+guard; it does not alter the Mac capture policy for valid token facts.
+
+`learning-explanation-capture-v1.json` contains 33 observations from the actual pinned composition,
+including six adaptations of `CotabbyTests/Support/Vocabulary/VocabularyCaptureFactoryTests.swift`
+and 27 source-policy extensions: lifecycle rejection, standalone words, unpunctuated phrases, complete/fragment context,
+separator spaces, surface/query differences, repeated/offset components and ordered duplicate
+ranges. The sixth verifier compiles the actual capture factory, example/key policy, input methods,
+models and NLTokenizer word/sentence dependencies. Its explicit lifecycle fixture projection maps
+Windows non-ready statuses onto the Mac's stale/error/translating flags. It does not implement their
+production state machine. Recorded token facts support portable C# tests only and cannot be
+registered as a production provider. The Windows suite additionally exercises 31 explicitly scoped
+English/French/Spanish capture cases through real ICU; other language/Unicode versions are open
+platform limits. Fixed-error tests separately exercise malformed/throwing adapters.
+
+This subset does not cover original-text toggles, selected text, reading/pointer/screenshot evidence,
+`vocabularyContext`, notebook captures or durable entry/sense/usage records. Those flows require
+their original Mac capture origin and corresponding adapters; the writing-preview method is not a
+generic selection capture API.
+
 ## Next adapter gates
 
-Still unported: capture-to-input and notebook construction, app ownership/settings for the new
+Still unported: the remaining capture origins and notebook construction, app ownership/settings for the new
 independent local explanation provider, endpoint transport,
 record ownership/persistence, request cancellation/stale-result session handling and the explanation
 card. The translation model must not be borrowed to simulate this feature. App composition must

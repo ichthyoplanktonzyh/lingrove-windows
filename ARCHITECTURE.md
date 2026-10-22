@@ -155,6 +155,13 @@ short-lived engine facade owns one exclusive operation lease; AppHost owns and d
 learning runtime and explicit model-file manager. The learning backend selector never falls back
 from a local error to a network service. See [the runtime map](docs/LEARNING_LOCAL_RUNTIME.md).
 
+The explanation library has its own single-request local provider and a writing-only input factory.
+The factory projects an immutable completed preview/unit/component into target text, exact UTF-16
+occurrences and a local context receipt; it owns no live editor or durable notebook. Its full sentence
+evidence tokenizer retains separator spaces separately from the existing trimmed caret tokenizer.
+An app-owned independent explanation runtime/settings/service and stale-result session/card wiring
+are still required before this becomes an interactive feature. See [the explanation map](docs/LEARNING_EXPLANATION_RULES.md).
+
 Explicit replacement and a combined autocomplete/learning host walkthrough are follow-up slices
 after captured ranges, IME and editor acknowledgement are verified. Broader model residency/power controls, dictionary, notebook, Anki, speech and history work follows the scoped preview port.
 

@@ -17,6 +17,8 @@
   <ItemGroup>
     <Using Include="Xunit" />
     <Compile Include="..\Shared\LearningLexicalCorpus.cs" Link="Shared\LearningLexicalCorpus.cs" />
+    <Compile Include="..\Shared\LearningExplanationCaptureCorpus.cs" Link="Shared\LearningExplanationCaptureCorpus.cs" />
+    <None Include="..\..\fixtures\parity\learning-explanation-capture-v1.json" Link="fixtures\parity\learning-explanation-capture-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\fixtures\parity\learning-lexical-v1.json" Link="fixtures\parity\learning-lexical-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\resources\LearningLexicon\learning-expressions*"
           Link="Resources\LearningLexicon\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />

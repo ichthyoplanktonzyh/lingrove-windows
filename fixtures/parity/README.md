@@ -172,3 +172,31 @@ The fixture therefore checks the pure catalog recommendation function and the ac
 fallback value separately; it does not claim parity for persistence, power switching, native token
 counts, GGUF tensor loading, or inference. The verifier reads all Swift source from Git at the pinned
 revision, compiles with Swift 6, and uses temporary files only.
+
+## Lexical recognition and platform text
+
+`learning-lexical-v1.json` records 33 actual Mac observations at the same pinned revision:
+13 regression adaptations and 21 explicitly marked source-policy extensions. Each row names its
+production source; adapted rows also name a related Mac regression. Added query/hit probes are
+observations of that source, not claims that every probe existed in the original test.
+
+```sh
+python3 scripts/verify-learning-lexical-macos-parity.py --mac-repo /path/to/lingrove
+```
+
+The runner compiles full committed `LearningUnitPolicy` and `LearningUnitRecognizer`, language and
+catalog code, plus the exact pure word/unit/entry declarations sliced from their original files.
+It executes actual `NLTokenizer` boundaries, index lookup, recognition, keys and hit testing. The
+624 `facts` are domain keys and driver projections of Swift character predicates, not replacement
+recognition code. The initial 33 expectations were captured before the C# recognizer; a further source-derived
+casing regression was added after the first Windows CI exposed contextual Sigma behavior.
+All existing expected values were retained unchanged. An
+optional capture command writes a new observation file for explicit authoring; normal verification
+never mutates expected results.
+
+`tests/Shared/LearningLexicalCorpus.cs` is compiled only into tests. Its oracle answers recorded
+word/fact lookups and contains no segmentation or casing algorithm; production uses the Windows
+ICU adapter. Windows tests compare all native Unicode facts and 31 English/Spanish/French word/recognition cases.
+`nativeWordParity` is a predeclared evidence scope: the mixed-script and CJK cases retain Mac word
+observations without claiming that ICU globally reproduces NLTokenizer. See
+[the scoped adaptation record](../../docs/LEARNING_LEXICAL_RULES.md) for ownership, mappings and gaps.

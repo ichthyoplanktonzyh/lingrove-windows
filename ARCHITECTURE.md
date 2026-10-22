@@ -165,6 +165,12 @@ native library, but mutable native contexts, cache state, prompt caches and file
 serialized within their owner. On Windows, Apple Intelligence is unavailable; model selection should
 be based on Windows-supported local engines or an explicit endpoint.
 
+The lexical index now ports explicit forms and known-pattern matching behind a platform text
+adapter. It returns original-text occurrence ranges; Windows ICU and the .NET Unicode runtime
+provide text primitives with the documented platform/version limits.
+It is not yet connected to a bundled lexicon service or WPF word lookup.
+[Source mappings and evidence](docs/LEARNING_LEXICAL_RULES.md) keep that library scope explicit.
+
 The durable vocabulary model is separate from transient translation output. The macOS reference uses
 stable entry UUIDs, stable sense UUIDs, example/usage UUIDs with source ranges and provenance, and
 independent review-card identities. Preserve those semantics in any Windows schema and migration.

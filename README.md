@@ -93,9 +93,10 @@ dotnet test tests/Cotabby.Core.Tests/Cotabby.Core.Tests.csproj --configuration R
 python3 scripts/verify-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-learning-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-learning-local-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
+python3 scripts/verify-learning-lexical-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 ```
 
-The Swift verifiers require Xcode 26 and exercise 17 autocomplete, 64 learning and 45 local-learning fixture checks
+The Swift verifiers require Xcode 26 and exercise 17 autocomplete, 64 learning, 45 local-learning and 34 lexical fixture cases/checks
 against committed pure Mac policies. They do not build or launch the macOS app. Routine validation does not run the
 `Cotabby.Tools.*Smoke` projects: those may require an interactive Windows desktop or downloaded
 model weights.

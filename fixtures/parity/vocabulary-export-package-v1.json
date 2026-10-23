@@ -1,0 +1,742 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "text-normal",
+      "format": "text",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "expected": {
+        "byteCount": 627,
+        "dataFilename": "Lingrove-vocabulary.txt",
+        "entryCount": 2,
+        "exampleCount": 1,
+        "filename": "Lingrove-vocabulary.txt",
+        "format": "text",
+        "idNonzero": true,
+        "imageCount": 0,
+        "preview": "bank [en]\n\nSense 1: core\nNotes: note\nTags: Work\nliteral\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · literal caption\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · second occurrence\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · different metadata\n\nExample sentence: The bank.\nExample translation: 原句\nContextual meaning: context\n\nSense 2: second\n\n────────────────────\n\nbank [en]\n\nSense 1: third\n\n────────────────────\n\n",
+        "sameConfiguration": true,
+        "senseCount": 3,
+        "sha256": "da0776afcb74a2a670f533afa9e8fda56a735b0205adaf96a2b37a3f89566c16"
+      }
+    },
+    {
+      "id": "text-empty",
+      "format": "text",
+      "mode": "empty",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "expected": {
+        "byteCount": 0,
+        "dataFilename": "Lingrove-vocabulary.txt",
+        "entryCount": 0,
+        "exampleCount": 0,
+        "filename": "Lingrove-vocabulary.txt",
+        "format": "text",
+        "idNonzero": true,
+        "imageCount": 0,
+        "preview": "",
+        "sameConfiguration": true,
+        "senseCount": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "text-longPreview",
+      "format": "text",
+      "mode": "longPreview",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "expected": {
+        "byteCount": 18645,
+        "dataFilename": "Lingrove-vocabulary.txt",
+        "entryCount": 2,
+        "exampleCount": 1,
+        "filename": "Lingrove-vocabulary.txt",
+        "format": "text",
+        "idNonzero": true,
+        "imageCount": 0,
+        "preview": "拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾\n…",
+        "sameConfiguration": true,
+        "senseCount": 3,
+        "sha256": "7a1fbf7a319ac2a7d13eea27a3686a66609bdaddacd32b79e01bc58df8be043b"
+      }
+    },
+    {
+      "id": "text-manyExamples",
+      "format": "text",
+      "mode": "manyExamples",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "expected": {
+        "byteCount": 712,
+        "dataFilename": "Lingrove-vocabulary.txt",
+        "entryCount": 2,
+        "exampleCount": 2,
+        "filename": "Lingrove-vocabulary.txt",
+        "format": "text",
+        "idNonzero": true,
+        "imageCount": 0,
+        "preview": "bank [en]\n\nSense 1: core\nNotes: note\nTags: Work\nliteral\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · literal caption\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · second occurrence\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · different metadata\n\nExample sentence: The bank.\nExample translation: 原句\nContextual meaning: context\n\nExample sentence: The bank.\nExample translation: 原句\nContextual meaning: context\n\nSense 2: second\n\n────────────────────\n\nbank [en]\n\nSense 1: third\n\n────────────────────\n\n",
+        "sameConfiguration": true,
+        "senseCount": 3,
+        "sha256": "55de5712f355f7ae03315bbf5528682463dd8821384fc374bd1130c032c24873"
+      }
+    },
+    {
+      "id": "text-ownership",
+      "format": "text",
+      "mode": "ownership",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyExportModels.swift",
+      "expected": {
+        "attached": {
+          "byteCount": 627,
+          "dataFilename": "Lingrove-vocabulary.txt",
+          "entryCount": 2,
+          "exampleCount": 1,
+          "filename": "Lingrove-vocabulary.txt",
+          "format": "text",
+          "idNonzero": true,
+          "imageCount": 1,
+          "preview": "bank [en]\n\nSense 1: core\nNotes: note\nTags: Work\nliteral\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · literal caption\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · second occurrence\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · different metadata\n\nExample sentence: The bank.\nExample translation: 原句\nContextual meaning: context\n\nSense 2: second\n\n────────────────────\n\nbank [en]\n\nSense 1: third\n\n────────────────────\n\n",
+          "sameConfiguration": true,
+          "senseCount": 3,
+          "sha256": "da0776afcb74a2a670f533afa9e8fda56a735b0205adaf96a2b37a3f89566c16"
+        },
+        "attachedBytes": [
+          1,
+          2,
+          3
+        ],
+        "dataUnchanged": true,
+        "detachedBytes": [
+          1,
+          8,
+          3
+        ],
+        "differentPreparationID": true,
+        "original": {
+          "byteCount": 627,
+          "dataFilename": "Lingrove-vocabulary.txt",
+          "entryCount": 2,
+          "exampleCount": 1,
+          "filename": "Lingrove-vocabulary.txt",
+          "format": "text",
+          "idNonzero": true,
+          "imageCount": 0,
+          "preview": "bank [en]\n\nSense 1: core\nNotes: note\nTags: Work\nliteral\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · literal caption\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · second occurrence\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · different metadata\n\nExample sentence: The bank.\nExample translation: 原句\nContextual meaning: context\n\nSense 2: second\n\n────────────────────\n\nbank [en]\n\nSense 1: third\n\n────────────────────\n\n",
+          "sameConfiguration": true,
+          "senseCount": 3,
+          "sha256": "da0776afcb74a2a670f533afa9e8fda56a735b0205adaf96a2b37a3f89566c16"
+        },
+        "sameID": true
+      }
+    },
+    {
+      "id": "text-normal-images-true",
+      "format": "text",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "images": true,
+      "expected": {
+        "byteCount": 648,
+        "dataFilename": "Lingrove-vocabulary.txt",
+        "entryCount": 2,
+        "exampleCount": 1,
+        "filename": "Lingrove-vocabulary.zip",
+        "format": "text",
+        "idNonzero": true,
+        "imageCount": 0,
+        "preview": "bank [en]\n\nSense 1: core\nNotes: note\nTags: Work\nliteral\nImage: images/lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · literal caption\nImage: images/lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · second occurrence\nImage: images/lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · different metadata\n\nExample sentence: The bank.\nExample translation: 原句\nContextual meaning: context\n\nSense 2: second\n\n────────────────────\n\nbank [en]\n\nSense 1: third\n\n────────────────────\n\n",
+        "sameConfiguration": true,
+        "senseCount": 3,
+        "sha256": "2f35a0d996aca0d1bb3b47617c39a95b80c21b72e64cdfc269e5e18dadeb7fb0"
+      }
+    },
+    {
+      "id": "text-normal-examples-false",
+      "format": "text",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "examples": false,
+      "expected": {
+        "byteCount": 542,
+        "dataFilename": "Lingrove-vocabulary.txt",
+        "entryCount": 2,
+        "exampleCount": 0,
+        "filename": "Lingrove-vocabulary.txt",
+        "format": "text",
+        "idNonzero": true,
+        "imageCount": 0,
+        "preview": "bank [en]\n\nSense 1: core\nNotes: note\nTags: Work\nliteral\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · literal caption\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · second occurrence\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · different metadata\n\nSense 2: second\n\n────────────────────\n\nbank [en]\n\nSense 1: third\n\n────────────────────\n\n",
+        "sameConfiguration": true,
+        "senseCount": 3,
+        "sha256": "bfd6130edd41fa5db08df5137153e3e4a05ea0829bdf7e57a6b3833d92c5a744"
+      }
+    },
+    {
+      "id": "text-empty-cancelled-true",
+      "format": "text",
+      "mode": "empty",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "cancelled": true,
+      "expected": {
+        "error": "cancelled"
+      }
+    },
+    {
+      "id": "text-normal-cancelled-true",
+      "format": "text",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "cancelled": true,
+      "expected": {
+        "error": "cancelled"
+      }
+    },
+    {
+      "id": "csv-normal",
+      "format": "csv",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "expected": {
+        "byteCount": 1261,
+        "dataFilename": "Lingrove-vocabulary.csv",
+        "entryCount": 2,
+        "exampleCount": 1,
+        "filename": "Lingrove-vocabulary.csv",
+        "format": "csv",
+        "idNonzero": true,
+        "imageCount": 0,
+        "preview": "\"entry_id\",\"expression\",\"dictionary_form\",\"language\",\"type\",\"sense_id\",\"saved_at\",\"meaning\",\"meaning_language\",\"other_meanings\",\"usage_id\",\"usage_saved_at\",\"example\",\"translation\",\"translation_language\",\"other_translations\",\"contextual_meaning\",\"contextual_meaning_language\",\"notes\",\"tags\",\"supplemental_text\",\"images\",\"image_captions\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000002\",\"1970-01-01T00:00:00Z\",\"core\",\"\",\"\",\"00000000-0000-0000-0000-000000000003\",\"1970-01-01T00:00:00Z\",\"The bank.\",\"原句\",\"\",\"\",\"context\",\"\",\"note\",\"Work\",\"literal\",\"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\"literal caption\nsecond occurrence\ndifferent metadata\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000004\",\"1970-01-01T00:00:00Z\",\"second\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n\"00000000-0000-0000-0000-000000000005\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000006\",\"1970-01-01T00:00:00Z\",\"third\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n",
+        "sameConfiguration": true,
+        "senseCount": 3,
+        "sha256": "848970d8ea184ff463d97e0efddfc81899f80480f1d891b712299ee0a3415bbf"
+      }
+    },
+    {
+      "id": "csv-empty",
+      "format": "csv",
+      "mode": "empty",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "expected": {
+        "byteCount": 340,
+        "dataFilename": "Lingrove-vocabulary.csv",
+        "entryCount": 0,
+        "exampleCount": 0,
+        "filename": "Lingrove-vocabulary.csv",
+        "format": "csv",
+        "idNonzero": true,
+        "imageCount": 0,
+        "preview": "\"entry_id\",\"expression\",\"dictionary_form\",\"language\",\"type\",\"sense_id\",\"saved_at\",\"meaning\",\"meaning_language\",\"other_meanings\",\"usage_id\",\"usage_saved_at\",\"example\",\"translation\",\"translation_language\",\"other_translations\",\"contextual_meaning\",\"contextual_meaning_language\",\"notes\",\"tags\",\"supplemental_text\",\"images\",\"image_captions\"\r\n",
+        "sameConfiguration": true,
+        "senseCount": 0,
+        "sha256": "04bd583951c4816959806874cd70993aefff4172008ef4bba9a98bcf837f133c"
+      }
+    },
+    {
+      "id": "csv-longPreview",
+      "format": "csv",
+      "mode": "longPreview",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "expected": {
+        "byteCount": 37253,
+        "dataFilename": "Lingrove-vocabulary.csv",
+        "entryCount": 2,
+        "exampleCount": 1,
+        "filename": "Lingrove-vocabulary.csv",
+        "format": "csv",
+        "idNonzero": true,
+        "imageCount": 0,
+        "preview": "\"entry_id\",\"expression\",\"dictionary_form\",\"language\",\"type\",\"sense_id\",\"saved_at\",\"meaning\",\"meaning_language\",\"other_meanings\",\"usage_id\",\"usage_saved_at\",\"example\",\"translation\",\"translation_language\",\"other_translations\",\"contextual_meaning\",\"contextual_meaning_language\",\"notes\",\"tags\",\"supplemental_text\",\"images\",\"image_captions\"\r\n\"00000000-0000-0000-0000-000000000001\",\"拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾\n…",
+        "sameConfiguration": true,
+        "senseCount": 3,
+        "sha256": "ddca6f762f170c4e08113002cfa44ebfb593fbfa731a9b1bf4e61f176ab85804"
+      }
+    },
+    {
+      "id": "csv-manyExamples",
+      "format": "csv",
+      "mode": "manyExamples",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "expected": {
+        "byteCount": 1819,
+        "dataFilename": "Lingrove-vocabulary.csv",
+        "entryCount": 2,
+        "exampleCount": 2,
+        "filename": "Lingrove-vocabulary.csv",
+        "format": "csv",
+        "idNonzero": true,
+        "imageCount": 0,
+        "preview": "\"entry_id\",\"expression\",\"dictionary_form\",\"language\",\"type\",\"sense_id\",\"saved_at\",\"meaning\",\"meaning_language\",\"other_meanings\",\"usage_id\",\"usage_saved_at\",\"example\",\"translation\",\"translation_language\",\"other_translations\",\"contextual_meaning\",\"contextual_meaning_language\",\"notes\",\"tags\",\"supplemental_text\",\"images\",\"image_captions\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000002\",\"1970-01-01T00:00:00Z\",\"core\",\"\",\"\",\"00000000-0000-0000-0000-000000000003\",\"1970-01-01T00:00:00Z\",\"The bank.\",\"原句\",\"\",\"\",\"context\",\"\",\"note\",\"Work\",\"literal\",\"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\"literal caption\nsecond occurrence\ndifferent metadata\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000002\",\"1970-01-01T00:00:00Z\",\"core\",\"\",\"\",\"00000000-0000-0000-0000-000000000008\",\"1970-01-01T00:00:00Z\",\"The bank.\",\"原句\",\"\",\"\",\"context\",\"\",\"note\",\"Work\",\"literal\",\"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\"literal caption\nsecond occurrence\ndifferent metadata\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000004\",\"1970-01-01T00:00:00Z\",\"second\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n\"00000000-0000-0000-0000-000000000005\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000006\",\"1970-01-01T00:00:00Z\",\"third\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n",
+        "sameConfiguration": true,
+        "senseCount": 3,
+        "sha256": "282a5eca8165588146fd8d73ddf9cfa4476de8265e2a850c4333dca616180118"
+      }
+    },
+    {
+      "id": "csv-ownership",
+      "format": "csv",
+      "mode": "ownership",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyExportModels.swift",
+      "expected": {
+        "attached": {
+          "byteCount": 1261,
+          "dataFilename": "Lingrove-vocabulary.csv",
+          "entryCount": 2,
+          "exampleCount": 1,
+          "filename": "Lingrove-vocabulary.csv",
+          "format": "csv",
+          "idNonzero": true,
+          "imageCount": 1,
+          "preview": "\"entry_id\",\"expression\",\"dictionary_form\",\"language\",\"type\",\"sense_id\",\"saved_at\",\"meaning\",\"meaning_language\",\"other_meanings\",\"usage_id\",\"usage_saved_at\",\"example\",\"translation\",\"translation_language\",\"other_translations\",\"contextual_meaning\",\"contextual_meaning_language\",\"notes\",\"tags\",\"supplemental_text\",\"images\",\"image_captions\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000002\",\"1970-01-01T00:00:00Z\",\"core\",\"\",\"\",\"00000000-0000-0000-0000-000000000003\",\"1970-01-01T00:00:00Z\",\"The bank.\",\"原句\",\"\",\"\",\"context\",\"\",\"note\",\"Work\",\"literal\",\"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\"literal caption\nsecond occurrence\ndifferent metadata\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000004\",\"1970-01-01T00:00:00Z\",\"second\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n\"00000000-0000-0000-0000-000000000005\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000006\",\"1970-01-01T00:00:00Z\",\"third\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n",
+          "sameConfiguration": true,
+          "senseCount": 3,
+          "sha256": "848970d8ea184ff463d97e0efddfc81899f80480f1d891b712299ee0a3415bbf"
+        },
+        "attachedBytes": [
+          1,
+          2,
+          3
+        ],
+        "dataUnchanged": true,
+        "detachedBytes": [
+          1,
+          8,
+          3
+        ],
+        "differentPreparationID": true,
+        "original": {
+          "byteCount": 1261,
+          "dataFilename": "Lingrove-vocabulary.csv",
+          "entryCount": 2,
+          "exampleCount": 1,
+          "filename": "Lingrove-vocabulary.csv",
+          "format": "csv",
+          "idNonzero": true,
+          "imageCount": 0,
+          "preview": "\"entry_id\",\"expression\",\"dictionary_form\",\"language\",\"type\",\"sense_id\",\"saved_at\",\"meaning\",\"meaning_language\",\"other_meanings\",\"usage_id\",\"usage_saved_at\",\"example\",\"translation\",\"translation_language\",\"other_translations\",\"contextual_meaning\",\"contextual_meaning_language\",\"notes\",\"tags\",\"supplemental_text\",\"images\",\"image_captions\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000002\",\"1970-01-01T00:00:00Z\",\"core\",\"\",\"\",\"00000000-0000-0000-0000-000000000003\",\"1970-01-01T00:00:00Z\",\"The bank.\",\"原句\",\"\",\"\",\"context\",\"\",\"note\",\"Work\",\"literal\",\"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\"literal caption\nsecond occurrence\ndifferent metadata\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000004\",\"1970-01-01T00:00:00Z\",\"second\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n\"00000000-0000-0000-0000-000000000005\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000006\",\"1970-01-01T00:00:00Z\",\"third\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n",
+          "sameConfiguration": true,
+          "senseCount": 3,
+          "sha256": "848970d8ea184ff463d97e0efddfc81899f80480f1d891b712299ee0a3415bbf"
+        },
+        "sameID": true
+      }
+    },
+    {
+      "id": "csv-normal-images-true",
+      "format": "csv",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "images": true,
+      "expected": {
+        "byteCount": 1282,
+        "dataFilename": "Lingrove-vocabulary.csv",
+        "entryCount": 2,
+        "exampleCount": 1,
+        "filename": "Lingrove-vocabulary.zip",
+        "format": "csv",
+        "idNonzero": true,
+        "imageCount": 0,
+        "preview": "\"entry_id\",\"expression\",\"dictionary_form\",\"language\",\"type\",\"sense_id\",\"saved_at\",\"meaning\",\"meaning_language\",\"other_meanings\",\"usage_id\",\"usage_saved_at\",\"example\",\"translation\",\"translation_language\",\"other_translations\",\"contextual_meaning\",\"contextual_meaning_language\",\"notes\",\"tags\",\"supplemental_text\",\"images\",\"image_captions\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000002\",\"1970-01-01T00:00:00Z\",\"core\",\"\",\"\",\"00000000-0000-0000-0000-000000000003\",\"1970-01-01T00:00:00Z\",\"The bank.\",\"原句\",\"\",\"\",\"context\",\"\",\"note\",\"Work\",\"literal\",\"images/lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nimages/lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nimages/lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\"literal caption\nsecond occurrence\ndifferent metadata\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000004\",\"1970-01-01T00:00:00Z\",\"second\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n\"00000000-0000-0000-0000-000000000005\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000006\",\"1970-01-01T00:00:00Z\",\"third\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n",
+        "sameConfiguration": true,
+        "senseCount": 3,
+        "sha256": "f7da5e0019dac02b5c2060b9bccf15eedeaa82efb8303eb68109fed6ce3b5bcc"
+      }
+    },
+    {
+      "id": "csv-normal-examples-false",
+      "format": "csv",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "examples": false,
+      "expected": {
+        "byteCount": 964,
+        "dataFilename": "Lingrove-vocabulary.csv",
+        "entryCount": 2,
+        "exampleCount": 0,
+        "filename": "Lingrove-vocabulary.csv",
+        "format": "csv",
+        "idNonzero": true,
+        "imageCount": 0,
+        "preview": "\"entry_id\",\"expression\",\"dictionary_form\",\"language\",\"type\",\"sense_id\",\"saved_at\",\"meaning\",\"meaning_language\",\"other_meanings\",\"notes\",\"tags\",\"supplemental_text\",\"images\",\"image_captions\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000002\",\"1970-01-01T00:00:00Z\",\"core\",\"\",\"\",\"note\",\"Work\",\"literal\",\"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\"literal caption\nsecond occurrence\ndifferent metadata\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000004\",\"1970-01-01T00:00:00Z\",\"second\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n\"00000000-0000-0000-0000-000000000005\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000006\",\"1970-01-01T00:00:00Z\",\"third\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n",
+        "sameConfiguration": true,
+        "senseCount": 3,
+        "sha256": "b0597f86d564c5319d0a6338306f3a127538c28b3fba97522db881bcd178d517"
+      }
+    },
+    {
+      "id": "csv-empty-cancelled-true",
+      "format": "csv",
+      "mode": "empty",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "cancelled": true,
+      "expected": {
+        "error": "cancelled"
+      }
+    },
+    {
+      "id": "csv-normal-cancelled-true",
+      "format": "csv",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "cancelled": true,
+      "expected": {
+        "error": "cancelled"
+      }
+    },
+    {
+      "id": "json-normal",
+      "format": "json",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "expected": {
+        "byteCount": 3699,
+        "dataFilename": "Lingrove-vocabulary.json",
+        "entryCount": 2,
+        "exampleCount": 1,
+        "filename": "Lingrove-vocabulary.json",
+        "format": "json",
+        "idNonzero": true,
+        "imageCount": 0,
+        "preview": "{\n  \"entries\" : [\n    {\n      \"dictionaryForm\" : \"bank\",\n      \"expression\" : \"bank\",\n      \"id\" : \"00000000-0000-0000-0000-000000000001\",\n      \"kind\" : \"word\",\n      \"language\" : \"en\",\n      \"senses\" : [\n        {\n          \"content\" : [\n            {\n              \"id\" : \"00000000-0000-0000-0000-000000000014\",\n              \"text\" : {\n                \"bold\" : false,\n                \"italic\" : false,\n                \"style\" : \"paragraph\",\n                \"text\" : \"literal\"\n              }\n            },\n            {\n              \"caption\" : \"literal caption\",\n              \"filename\" : \"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\n              \"id\" : \"00000000-0000-0000-0000-000000000015\",\n              \"image\" : {\n                \"byteCount\" : 70,\n                \"digest\" : \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n                \"height\" : 1,\n                \"width\" : 1\n              }\n            },\n            {\n              \"caption\" : \"second occurrence\",\n              \"filename\" : \"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\n              \"id\" : \"00000000-0000-0000-0000-000000000016\",\n              \"image\" : {\n                \"byteCount\" : 70,\n                \"digest\" : \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n                \"height\" : 1,\n                \"width\" : 1\n              }\n            },\n            {\n              \"caption\" : \"different metadata\",\n              \"filename\" : \"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\n              \"id\" : \"00000000-0000-0000-0000-000000000017\",\n              \"image\" : {\n                \"byteCount\" : 70,\n                \"digest\" : \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n                \"height\" : 1,\n                \"width\" : 2\n              }\n            }\n          ],\n          \"createdAt\" : \"1970-01-01T00:00:00Z\",\n          \"examples\" : [\n            {\n              \"completeness\" : \"sentence\",\n              \"createdAt\" : \"1970-01-01T00:00:00Z\",\n              \"id\" : \"00000000-0000-0000-0000-000000000003\",\n              \"meaning\" : \"context\",\n              \"otherTranslations\" : [\n\n              ],\n              \"ranges\" : [\n                {\n                  \"length\" : 4,\n                  \"location\" : 4\n                }\n              ],\n              \"text\" : \"The bank.\",\n              \"translation\" : \"原句\"\n            }\n          ],\n          \"id\" : \"00000000-0000-0000-0000-000000000002\",\n          \"meaning\" : \"core\",\n          \"note\" : \"note\",\n          \"otherMeanings\" : [\n\n          ],\n          \"tags\" : [\n            \"Work\"\n          ]\n        },\n        {\n          \"content\" : [\n\n          ],\n          \"createdAt\" : \"1970-01-01T00:00:00Z\",\n          \"examples\" : [\n\n          ],\n          \"id\" : \"00000000-0000-0000-0000-000000000004\",\n          \"meaning\" : \"second\",\n          \"note\" : \"\",\n          \"otherMeanings\" : [\n\n          ],\n          \"tags\" : [\n\n          ]\n        }\n      ]\n    },\n    {\n      \"dictionaryForm\" : \"bank\",\n      \"expression\" : \"bank\",\n      \"id\" : \"00000000-0000-0000-0000-000000000005\",\n      \"kind\" : \"word\",\n      \"language\" : \"en\",\n      \"senses\" : [\n        {\n          \"content\" : [\n\n          ],\n          \"createdAt\" : \"1970-01-01T00:00:00Z\",\n          \"examples\" : [\n\n          ],\n          \"id\" : \"00000000-0000-0000-0000-000000000006\",\n          \"meaning\" : \"third\",\n          \"note\" : \"\",\n          \"otherMeanings\" : [\n\n          ],\n          \"tags\" : [\n\n          ]\n        }\n      ]\n    }\n  ],\n  \"format\" : \"lingrove-vocabulary-export\",\n  \"version\" : 1\n}",
+        "sameConfiguration": true,
+        "senseCount": 3,
+        "sha256": "859e185843a1c692b070663d2e83593c0fa5091ab2d537fe0130fd530bd5e4bd"
+      }
+    },
+    {
+      "id": "json-empty",
+      "format": "json",
+      "mode": "empty",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "expected": {
+        "byteCount": 84,
+        "dataFilename": "Lingrove-vocabulary.json",
+        "entryCount": 0,
+        "exampleCount": 0,
+        "filename": "Lingrove-vocabulary.json",
+        "format": "json",
+        "idNonzero": true,
+        "imageCount": 0,
+        "preview": "{\n  \"entries\" : [\n\n  ],\n  \"format\" : \"lingrove-vocabulary-export\",\n  \"version\" : 1\n}",
+        "sameConfiguration": true,
+        "senseCount": 0,
+        "sha256": "b5f3df26ff6128410113c6d7150709a6405aef5729211df5251e20695894bb3a"
+      }
+    },
+    {
+      "id": "json-longPreview",
+      "format": "json",
+      "mode": "longPreview",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "expected": {
+        "byteCount": 21695,
+        "dataFilename": "Lingrove-vocabulary.json",
+        "entryCount": 2,
+        "exampleCount": 1,
+        "filename": "Lingrove-vocabulary.json",
+        "format": "json",
+        "idNonzero": true,
+        "imageCount": 0,
+        "preview": "{\n  \"entries\" : [\n    {\n      \"dictionaryForm\" : \"bank\",\n      \"expression\" : \"拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾拾\n…",
+        "sameConfiguration": true,
+        "senseCount": 3,
+        "sha256": "582f14e0c5e431dbe81dca1c44d011523057e2d10532bc1364c9bc6e79b16b49"
+      }
+    },
+    {
+      "id": "json-manyExamples",
+      "format": "json",
+      "mode": "manyExamples",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "expected": {
+        "byteCount": 4197,
+        "dataFilename": "Lingrove-vocabulary.json",
+        "entryCount": 2,
+        "exampleCount": 2,
+        "filename": "Lingrove-vocabulary.json",
+        "format": "json",
+        "idNonzero": true,
+        "imageCount": 0,
+        "preview": "{\n  \"entries\" : [\n    {\n      \"dictionaryForm\" : \"bank\",\n      \"expression\" : \"bank\",\n      \"id\" : \"00000000-0000-0000-0000-000000000001\",\n      \"kind\" : \"word\",\n      \"language\" : \"en\",\n      \"senses\" : [\n        {\n          \"content\" : [\n            {\n              \"id\" : \"00000000-0000-0000-0000-000000000014\",\n              \"text\" : {\n                \"bold\" : false,\n                \"italic\" : false,\n                \"style\" : \"paragraph\",\n                \"text\" : \"literal\"\n              }\n            },\n            {\n              \"caption\" : \"literal caption\",\n              \"filename\" : \"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\n              \"id\" : \"00000000-0000-0000-0000-000000000015\",\n              \"image\" : {\n                \"byteCount\" : 70,\n                \"digest\" : \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n                \"height\" : 1,\n                \"width\" : 1\n              }\n            },\n            {\n              \"caption\" : \"second occurrence\",\n              \"filename\" : \"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\n              \"id\" : \"00000000-0000-0000-0000-000000000016\",\n              \"image\" : {\n                \"byteCount\" : 70,\n                \"digest\" : \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n                \"height\" : 1,\n                \"width\" : 1\n              }\n            },\n            {\n              \"caption\" : \"different metadata\",\n              \"filename\" : \"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\n              \"id\" : \"00000000-0000-0000-0000-000000000017\",\n              \"image\" : {\n                \"byteCount\" : 70,\n                \"digest\" : \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n                \"height\" : 1,\n                \"width\" : 2\n              }\n            }\n          ],\n          \"createdAt\" : \"1970-01-01T00:00:00Z\",\n          \"examples\" : [\n            {\n              \"completeness\" : \"sentence\",\n              \"createdAt\" : \"1970-01-01T00:00:00Z\",\n              \"id\" : \"00000000-0000-0000-0000-000000000003\",\n              \"meaning\" : \"context\",\n              \"otherTranslations\" : [\n\n              ],\n              \"ranges\" : [\n                {\n                  \"length\" : 4,\n                  \"location\" : 4\n                }\n              ],\n              \"text\" : \"The bank.\",\n              \"translation\" : \"原句\"\n            },\n            {\n              \"completeness\" : \"sentence\",\n              \"createdAt\" : \"1970-01-01T00:00:00Z\",\n              \"id\" : \"00000000-0000-0000-0000-000000000008\",\n              \"meaning\" : \"context\",\n              \"otherTranslations\" : [\n\n              ],\n              \"ranges\" : [\n                {\n                  \"length\" : 4,\n                  \"location\" : 4\n                }\n              ],\n              \"text\" : \"The bank.\",\n              \"translation\" : \"原句\"\n            }\n          ],\n          \"id\" : \"00000000-0000-0000-0000-000000000002\",\n          \"meaning\" : \"core\",\n          \"note\" : \"note\",\n          \"otherMeanings\" : [\n\n          ],\n          \"tags\" : [\n            \"Work\"\n          ]\n        },\n        {\n          \"content\" : [\n\n          ],\n          \"createdAt\" : \"1970-01-01T00:00:00Z\",\n          \"examples\" : [\n\n          ],\n          \"id\" : \"00000000-0000-0000-0000-000000000004\",\n          \"meaning\" : \"second\",\n          \"note\" : \"\",\n          \"otherMeanings\" : [\n\n          ],\n          \"tags\" : [\n\n          ]\n        }\n      ]\n    },\n    {\n      \"dictionaryForm\" : \"bank\",\n      \"expression\" : \"bank\",\n      \"id\" : \"00000000-0000-0000-0000-000000000005\",\n      \"kind\" : \"word\",\n      \"language\" : \"en\",\n      \"senses\" : [\n        {\n          \"content\" : [\n\n          ],\n          \"createdAt\" : \"1970-01-01T00:00:00Z\",\n          \"examples\" : [\n\n          ],\n          \"id\" : \"00000000-0000-0000-0000-000000000006\",\n          \"meaning\" : \"third\",\n          \"note\" : \"\",\n          \"otherMeanings\" : [\n\n          ],\n          \"tags\" : [\n\n          ]\n        }\n      ]\n    }\n  ],\n  \"format\" : \"lingrove-vocabulary-export\",\n  \"version\" : 1\n}",
+        "sameConfiguration": true,
+        "senseCount": 3,
+        "sha256": "8c3e195610fc8f93c6753358b499f6ff78a39eaefe17ba83472a9a60406ef01d"
+      }
+    },
+    {
+      "id": "json-ownership",
+      "format": "json",
+      "mode": "ownership",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyExportModels.swift",
+      "expected": {
+        "attached": {
+          "byteCount": 3699,
+          "dataFilename": "Lingrove-vocabulary.json",
+          "entryCount": 2,
+          "exampleCount": 1,
+          "filename": "Lingrove-vocabulary.json",
+          "format": "json",
+          "idNonzero": true,
+          "imageCount": 1,
+          "preview": "{\n  \"entries\" : [\n    {\n      \"dictionaryForm\" : \"bank\",\n      \"expression\" : \"bank\",\n      \"id\" : \"00000000-0000-0000-0000-000000000001\",\n      \"kind\" : \"word\",\n      \"language\" : \"en\",\n      \"senses\" : [\n        {\n          \"content\" : [\n            {\n              \"id\" : \"00000000-0000-0000-0000-000000000014\",\n              \"text\" : {\n                \"bold\" : false,\n                \"italic\" : false,\n                \"style\" : \"paragraph\",\n                \"text\" : \"literal\"\n              }\n            },\n            {\n              \"caption\" : \"literal caption\",\n              \"filename\" : \"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\n              \"id\" : \"00000000-0000-0000-0000-000000000015\",\n              \"image\" : {\n                \"byteCount\" : 70,\n                \"digest\" : \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n                \"height\" : 1,\n                \"width\" : 1\n              }\n            },\n            {\n              \"caption\" : \"second occurrence\",\n              \"filename\" : \"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\n              \"id\" : \"00000000-0000-0000-0000-000000000016\",\n              \"image\" : {\n                \"byteCount\" : 70,\n                \"digest\" : \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n                \"height\" : 1,\n                \"width\" : 1\n              }\n            },\n            {\n              \"caption\" : \"different metadata\",\n              \"filename\" : \"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\n              \"id\" : \"00000000-0000-0000-0000-000000000017\",\n              \"image\" : {\n                \"byteCount\" : 70,\n                \"digest\" : \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n                \"height\" : 1,\n                \"width\" : 2\n              }\n            }\n          ],\n          \"createdAt\" : \"1970-01-01T00:00:00Z\",\n          \"examples\" : [\n            {\n              \"completeness\" : \"sentence\",\n              \"createdAt\" : \"1970-01-01T00:00:00Z\",\n              \"id\" : \"00000000-0000-0000-0000-000000000003\",\n              \"meaning\" : \"context\",\n              \"otherTranslations\" : [\n\n              ],\n              \"ranges\" : [\n                {\n                  \"length\" : 4,\n                  \"location\" : 4\n                }\n              ],\n              \"text\" : \"The bank.\",\n              \"translation\" : \"原句\"\n            }\n          ],\n          \"id\" : \"00000000-0000-0000-0000-000000000002\",\n          \"meaning\" : \"core\",\n          \"note\" : \"note\",\n          \"otherMeanings\" : [\n\n          ],\n          \"tags\" : [\n            \"Work\"\n          ]\n        },\n        {\n          \"content\" : [\n\n          ],\n          \"createdAt\" : \"1970-01-01T00:00:00Z\",\n          \"examples\" : [\n\n          ],\n          \"id\" : \"00000000-0000-0000-0000-000000000004\",\n          \"meaning\" : \"second\",\n          \"note\" : \"\",\n          \"otherMeanings\" : [\n\n          ],\n          \"tags\" : [\n\n          ]\n        }\n      ]\n    },\n    {\n      \"dictionaryForm\" : \"bank\",\n      \"expression\" : \"bank\",\n      \"id\" : \"00000000-0000-0000-0000-000000000005\",\n      \"kind\" : \"word\",\n      \"language\" : \"en\",\n      \"senses\" : [\n        {\n          \"content\" : [\n\n          ],\n          \"createdAt\" : \"1970-01-01T00:00:00Z\",\n          \"examples\" : [\n\n          ],\n          \"id\" : \"00000000-0000-0000-0000-000000000006\",\n          \"meaning\" : \"third\",\n          \"note\" : \"\",\n          \"otherMeanings\" : [\n\n          ],\n          \"tags\" : [\n\n          ]\n        }\n      ]\n    }\n  ],\n  \"format\" : \"lingrove-vocabulary-export\",\n  \"version\" : 1\n}",
+          "sameConfiguration": true,
+          "senseCount": 3,
+          "sha256": "859e185843a1c692b070663d2e83593c0fa5091ab2d537fe0130fd530bd5e4bd"
+        },
+        "attachedBytes": [
+          1,
+          2,
+          3
+        ],
+        "dataUnchanged": true,
+        "detachedBytes": [
+          1,
+          8,
+          3
+        ],
+        "differentPreparationID": true,
+        "original": {
+          "byteCount": 3699,
+          "dataFilename": "Lingrove-vocabulary.json",
+          "entryCount": 2,
+          "exampleCount": 1,
+          "filename": "Lingrove-vocabulary.json",
+          "format": "json",
+          "idNonzero": true,
+          "imageCount": 0,
+          "preview": "{\n  \"entries\" : [\n    {\n      \"dictionaryForm\" : \"bank\",\n      \"expression\" : \"bank\",\n      \"id\" : \"00000000-0000-0000-0000-000000000001\",\n      \"kind\" : \"word\",\n      \"language\" : \"en\",\n      \"senses\" : [\n        {\n          \"content\" : [\n            {\n              \"id\" : \"00000000-0000-0000-0000-000000000014\",\n              \"text\" : {\n                \"bold\" : false,\n                \"italic\" : false,\n                \"style\" : \"paragraph\",\n                \"text\" : \"literal\"\n              }\n            },\n            {\n              \"caption\" : \"literal caption\",\n              \"filename\" : \"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\n              \"id\" : \"00000000-0000-0000-0000-000000000015\",\n              \"image\" : {\n                \"byteCount\" : 70,\n                \"digest\" : \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n                \"height\" : 1,\n                \"width\" : 1\n              }\n            },\n            {\n              \"caption\" : \"second occurrence\",\n              \"filename\" : \"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\n              \"id\" : \"00000000-0000-0000-0000-000000000016\",\n              \"image\" : {\n                \"byteCount\" : 70,\n                \"digest\" : \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n                \"height\" : 1,\n                \"width\" : 1\n              }\n            },\n            {\n              \"caption\" : \"different metadata\",\n              \"filename\" : \"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\n              \"id\" : \"00000000-0000-0000-0000-000000000017\",\n              \"image\" : {\n                \"byteCount\" : 70,\n                \"digest\" : \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n                \"height\" : 1,\n                \"width\" : 2\n              }\n            }\n          ],\n          \"createdAt\" : \"1970-01-01T00:00:00Z\",\n          \"examples\" : [\n            {\n              \"completeness\" : \"sentence\",\n              \"createdAt\" : \"1970-01-01T00:00:00Z\",\n              \"id\" : \"00000000-0000-0000-0000-000000000003\",\n              \"meaning\" : \"context\",\n              \"otherTranslations\" : [\n\n              ],\n              \"ranges\" : [\n                {\n                  \"length\" : 4,\n                  \"location\" : 4\n                }\n              ],\n              \"text\" : \"The bank.\",\n              \"translation\" : \"原句\"\n            }\n          ],\n          \"id\" : \"00000000-0000-0000-0000-000000000002\",\n          \"meaning\" : \"core\",\n          \"note\" : \"note\",\n          \"otherMeanings\" : [\n\n          ],\n          \"tags\" : [\n            \"Work\"\n          ]\n        },\n        {\n          \"content\" : [\n\n          ],\n          \"createdAt\" : \"1970-01-01T00:00:00Z\",\n          \"examples\" : [\n\n          ],\n          \"id\" : \"00000000-0000-0000-0000-000000000004\",\n          \"meaning\" : \"second\",\n          \"note\" : \"\",\n          \"otherMeanings\" : [\n\n          ],\n          \"tags\" : [\n\n          ]\n        }\n      ]\n    },\n    {\n      \"dictionaryForm\" : \"bank\",\n      \"expression\" : \"bank\",\n      \"id\" : \"00000000-0000-0000-0000-000000000005\",\n      \"kind\" : \"word\",\n      \"language\" : \"en\",\n      \"senses\" : [\n        {\n          \"content\" : [\n\n          ],\n          \"createdAt\" : \"1970-01-01T00:00:00Z\",\n          \"examples\" : [\n\n          ],\n          \"id\" : \"00000000-0000-0000-0000-000000000006\",\n          \"meaning\" : \"third\",\n          \"note\" : \"\",\n          \"otherMeanings\" : [\n\n          ],\n          \"tags\" : [\n\n          ]\n        }\n      ]\n    }\n  ],\n  \"format\" : \"lingrove-vocabulary-export\",\n  \"version\" : 1\n}",
+          "sameConfiguration": true,
+          "senseCount": 3,
+          "sha256": "859e185843a1c692b070663d2e83593c0fa5091ab2d537fe0130fd530bd5e4bd"
+        },
+        "sameID": true
+      }
+    },
+    {
+      "id": "json-normal-images-true",
+      "format": "json",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "images": true,
+      "expected": {
+        "byteCount": 3720,
+        "dataFilename": "Lingrove-vocabulary.json",
+        "entryCount": 2,
+        "exampleCount": 1,
+        "filename": "Lingrove-vocabulary.zip",
+        "format": "json",
+        "idNonzero": true,
+        "imageCount": 0,
+        "preview": "{\n  \"entries\" : [\n    {\n      \"dictionaryForm\" : \"bank\",\n      \"expression\" : \"bank\",\n      \"id\" : \"00000000-0000-0000-0000-000000000001\",\n      \"kind\" : \"word\",\n      \"language\" : \"en\",\n      \"senses\" : [\n        {\n          \"content\" : [\n            {\n              \"id\" : \"00000000-0000-0000-0000-000000000014\",\n              \"text\" : {\n                \"bold\" : false,\n                \"italic\" : false,\n                \"style\" : \"paragraph\",\n                \"text\" : \"literal\"\n              }\n            },\n            {\n              \"caption\" : \"literal caption\",\n              \"filename\" : \"images/lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\n              \"id\" : \"00000000-0000-0000-0000-000000000015\",\n              \"image\" : {\n                \"byteCount\" : 70,\n                \"digest\" : \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n                \"height\" : 1,\n                \"width\" : 1\n              }\n            },\n            {\n              \"caption\" : \"second occurrence\",\n              \"filename\" : \"images/lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\n              \"id\" : \"00000000-0000-0000-0000-000000000016\",\n              \"image\" : {\n                \"byteCount\" : 70,\n                \"digest\" : \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n                \"height\" : 1,\n                \"width\" : 1\n              }\n            },\n            {\n              \"caption\" : \"different metadata\",\n              \"filename\" : \"images/lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\n              \"id\" : \"00000000-0000-0000-0000-000000000017\",\n              \"image\" : {\n                \"byteCount\" : 70,\n                \"digest\" : \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n                \"height\" : 1,\n                \"width\" : 2\n              }\n            }\n          ],\n          \"createdAt\" : \"1970-01-01T00:00:00Z\",\n          \"examples\" : [\n            {\n              \"completeness\" : \"sentence\",\n              \"createdAt\" : \"1970-01-01T00:00:00Z\",\n              \"id\" : \"00000000-0000-0000-0000-000000000003\",\n              \"meaning\" : \"context\",\n              \"otherTranslations\" : [\n\n              ],\n              \"ranges\" : [\n                {\n                  \"length\" : 4,\n                  \"location\" : 4\n                }\n              ],\n              \"text\" : \"The bank.\",\n              \"translation\" : \"原句\"\n            }\n          ],\n          \"id\" : \"00000000-0000-0000-0000-000000000002\",\n          \"meaning\" : \"core\",\n          \"note\" : \"note\",\n          \"otherMeanings\" : [\n\n          ],\n          \"tags\" : [\n            \"Work\"\n          ]\n        },\n        {\n          \"content\" : [\n\n          ],\n          \"createdAt\" : \"1970-01-01T00:00:00Z\",\n          \"examples\" : [\n\n          ],\n          \"id\" : \"00000000-0000-0000-0000-000000000004\",\n          \"meaning\" : \"second\",\n          \"note\" : \"\",\n          \"otherMeanings\" : [\n\n          ],\n          \"tags\" : [\n\n          ]\n        }\n      ]\n    },\n    {\n      \"dictionaryForm\" : \"bank\",\n      \"expression\" : \"bank\",\n      \"id\" : \"00000000-0000-0000-0000-000000000005\",\n      \"kind\" : \"word\",\n      \"language\" : \"en\",\n      \"senses\" : [\n        {\n          \"content\" : [\n\n          ],\n          \"createdAt\" : \"1970-01-01T00:00:00Z\",\n          \"examples\" : [\n\n          ],\n          \"id\" : \"00000000-0000-0000-0000-000000000006\",\n          \"meaning\" : \"third\",\n          \"note\" : \"\",\n          \"otherMeanings\" : [\n\n          ],\n          \"tags\" : [\n\n          ]\n        }\n      ]\n    }\n  ],\n  \"format\" : \"lingrove-vocabulary-export\",\n  \"version\" : 1\n}",
+        "sameConfiguration": true,
+        "senseCount": 3,
+        "sha256": "f69cc2a0abc30012f240e34cd0165fd44e58ac2a4ffa72283fb9f1017ae86dbb"
+      }
+    },
+    {
+      "id": "json-normal-examples-false",
+      "format": "json",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "examples": false,
+      "expected": {
+        "byteCount": 3086,
+        "dataFilename": "Lingrove-vocabulary.json",
+        "entryCount": 2,
+        "exampleCount": 0,
+        "filename": "Lingrove-vocabulary.json",
+        "format": "json",
+        "idNonzero": true,
+        "imageCount": 0,
+        "preview": "{\n  \"entries\" : [\n    {\n      \"dictionaryForm\" : \"bank\",\n      \"expression\" : \"bank\",\n      \"id\" : \"00000000-0000-0000-0000-000000000001\",\n      \"kind\" : \"word\",\n      \"language\" : \"en\",\n      \"senses\" : [\n        {\n          \"content\" : [\n            {\n              \"id\" : \"00000000-0000-0000-0000-000000000014\",\n              \"text\" : {\n                \"bold\" : false,\n                \"italic\" : false,\n                \"style\" : \"paragraph\",\n                \"text\" : \"literal\"\n              }\n            },\n            {\n              \"caption\" : \"literal caption\",\n              \"filename\" : \"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\n              \"id\" : \"00000000-0000-0000-0000-000000000015\",\n              \"image\" : {\n                \"byteCount\" : 70,\n                \"digest\" : \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n                \"height\" : 1,\n                \"width\" : 1\n              }\n            },\n            {\n              \"caption\" : \"second occurrence\",\n              \"filename\" : \"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\n              \"id\" : \"00000000-0000-0000-0000-000000000016\",\n              \"image\" : {\n                \"byteCount\" : 70,\n                \"digest\" : \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n                \"height\" : 1,\n                \"width\" : 1\n              }\n            },\n            {\n              \"caption\" : \"different metadata\",\n              \"filename\" : \"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\n              \"id\" : \"00000000-0000-0000-0000-000000000017\",\n              \"image\" : {\n                \"byteCount\" : 70,\n                \"digest\" : \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n                \"height\" : 1,\n                \"width\" : 2\n              }\n            }\n          ],\n          \"createdAt\" : \"1970-01-01T00:00:00Z\",\n          \"id\" : \"00000000-0000-0000-0000-000000000002\",\n          \"meaning\" : \"core\",\n          \"note\" : \"note\",\n          \"otherMeanings\" : [\n\n          ],\n          \"tags\" : [\n            \"Work\"\n          ]\n        },\n        {\n          \"content\" : [\n\n          ],\n          \"createdAt\" : \"1970-01-01T00:00:00Z\",\n          \"id\" : \"00000000-0000-0000-0000-000000000004\",\n          \"meaning\" : \"second\",\n          \"note\" : \"\",\n          \"otherMeanings\" : [\n\n          ],\n          \"tags\" : [\n\n          ]\n        }\n      ]\n    },\n    {\n      \"dictionaryForm\" : \"bank\",\n      \"expression\" : \"bank\",\n      \"id\" : \"00000000-0000-0000-0000-000000000005\",\n      \"kind\" : \"word\",\n      \"language\" : \"en\",\n      \"senses\" : [\n        {\n          \"content\" : [\n\n          ],\n          \"createdAt\" : \"1970-01-01T00:00:00Z\",\n          \"id\" : \"00000000-0000-0000-0000-000000000006\",\n          \"meaning\" : \"third\",\n          \"note\" : \"\",\n          \"otherMeanings\" : [\n\n          ],\n          \"tags\" : [\n\n          ]\n        }\n      ]\n    }\n  ],\n  \"format\" : \"lingrove-vocabulary-export\",\n  \"version\" : 1\n}",
+        "sameConfiguration": true,
+        "senseCount": 3,
+        "sha256": "c58b84c86366122ac3822993866c1c5af9855b3028d67d054491d04e1a452699"
+      }
+    },
+    {
+      "id": "json-empty-cancelled-true",
+      "format": "json",
+      "mode": "empty",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "cancelled": true,
+      "expected": {
+        "error": "cancelled"
+      }
+    },
+    {
+      "id": "json-normal-cancelled-true",
+      "format": "json",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "cancelled": true,
+      "expected": {
+        "error": "cancelled"
+      }
+    },
+    {
+      "id": "text-normal-style-expressions-images-true",
+      "format": "text",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "style": "expressions",
+      "images": true,
+      "expected": {
+        "byteCount": 5,
+        "dataFilename": "Lingrove-vocabulary.txt",
+        "entryCount": 2,
+        "exampleCount": 0,
+        "filename": "Lingrove-vocabulary.txt",
+        "format": "text",
+        "idNonzero": true,
+        "imageCount": 0,
+        "preview": "bank\n",
+        "sameConfiguration": true,
+        "senseCount": 3,
+        "sha256": "7bb74618b5ab45a6539c37d08517be6d34ccb30c766c4280dc4de4906d5f5150"
+      }
+    },
+    {
+      "id": "csv-normal-style-expressions-images-true",
+      "format": "csv",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "style": "expressions",
+      "images": true,
+      "expected": {
+        "byteCount": 1282,
+        "dataFilename": "Lingrove-vocabulary.csv",
+        "entryCount": 2,
+        "exampleCount": 1,
+        "filename": "Lingrove-vocabulary.zip",
+        "format": "csv",
+        "idNonzero": true,
+        "imageCount": 0,
+        "preview": "\"entry_id\",\"expression\",\"dictionary_form\",\"language\",\"type\",\"sense_id\",\"saved_at\",\"meaning\",\"meaning_language\",\"other_meanings\",\"usage_id\",\"usage_saved_at\",\"example\",\"translation\",\"translation_language\",\"other_translations\",\"contextual_meaning\",\"contextual_meaning_language\",\"notes\",\"tags\",\"supplemental_text\",\"images\",\"image_captions\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000002\",\"1970-01-01T00:00:00Z\",\"core\",\"\",\"\",\"00000000-0000-0000-0000-000000000003\",\"1970-01-01T00:00:00Z\",\"The bank.\",\"原句\",\"\",\"\",\"context\",\"\",\"note\",\"Work\",\"literal\",\"images/lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nimages/lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nimages/lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\"literal caption\nsecond occurrence\ndifferent metadata\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000004\",\"1970-01-01T00:00:00Z\",\"second\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n\"00000000-0000-0000-0000-000000000005\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000006\",\"1970-01-01T00:00:00Z\",\"third\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n",
+        "sameConfiguration": true,
+        "senseCount": 3,
+        "sha256": "f7da5e0019dac02b5c2060b9bccf15eedeaa82efb8303eb68109fed6ce3b5bcc"
+      }
+    },
+    {
+      "id": "json-normal-style-expressions-images-true",
+      "format": "json",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "style": "expressions",
+      "images": true,
+      "expected": {
+        "byteCount": 3720,
+        "dataFilename": "Lingrove-vocabulary.json",
+        "entryCount": 2,
+        "exampleCount": 1,
+        "filename": "Lingrove-vocabulary.zip",
+        "format": "json",
+        "idNonzero": true,
+        "imageCount": 0,
+        "preview": "{\n  \"entries\" : [\n    {\n      \"dictionaryForm\" : \"bank\",\n      \"expression\" : \"bank\",\n      \"id\" : \"00000000-0000-0000-0000-000000000001\",\n      \"kind\" : \"word\",\n      \"language\" : \"en\",\n      \"senses\" : [\n        {\n          \"content\" : [\n            {\n              \"id\" : \"00000000-0000-0000-0000-000000000014\",\n              \"text\" : {\n                \"bold\" : false,\n                \"italic\" : false,\n                \"style\" : \"paragraph\",\n                \"text\" : \"literal\"\n              }\n            },\n            {\n              \"caption\" : \"literal caption\",\n              \"filename\" : \"images/lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\n              \"id\" : \"00000000-0000-0000-0000-000000000015\",\n              \"image\" : {\n                \"byteCount\" : 70,\n                \"digest\" : \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n                \"height\" : 1,\n                \"width\" : 1\n              }\n            },\n            {\n              \"caption\" : \"second occurrence\",\n              \"filename\" : \"images/lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\n              \"id\" : \"00000000-0000-0000-0000-000000000016\",\n              \"image\" : {\n                \"byteCount\" : 70,\n                \"digest\" : \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n                \"height\" : 1,\n                \"width\" : 1\n              }\n            },\n            {\n              \"caption\" : \"different metadata\",\n              \"filename\" : \"images/lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\n              \"id\" : \"00000000-0000-0000-0000-000000000017\",\n              \"image\" : {\n                \"byteCount\" : 70,\n                \"digest\" : \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n                \"height\" : 1,\n                \"width\" : 2\n              }\n            }\n          ],\n          \"createdAt\" : \"1970-01-01T00:00:00Z\",\n          \"examples\" : [\n            {\n              \"completeness\" : \"sentence\",\n              \"createdAt\" : \"1970-01-01T00:00:00Z\",\n              \"id\" : \"00000000-0000-0000-0000-000000000003\",\n              \"meaning\" : \"context\",\n              \"otherTranslations\" : [\n\n              ],\n              \"ranges\" : [\n                {\n                  \"length\" : 4,\n                  \"location\" : 4\n                }\n              ],\n              \"text\" : \"The bank.\",\n              \"translation\" : \"原句\"\n            }\n          ],\n          \"id\" : \"00000000-0000-0000-0000-000000000002\",\n          \"meaning\" : \"core\",\n          \"note\" : \"note\",\n          \"otherMeanings\" : [\n\n          ],\n          \"tags\" : [\n            \"Work\"\n          ]\n        },\n        {\n          \"content\" : [\n\n          ],\n          \"createdAt\" : \"1970-01-01T00:00:00Z\",\n          \"examples\" : [\n\n          ],\n          \"id\" : \"00000000-0000-0000-0000-000000000004\",\n          \"meaning\" : \"second\",\n          \"note\" : \"\",\n          \"otherMeanings\" : [\n\n          ],\n          \"tags\" : [\n\n          ]\n        }\n      ]\n    },\n    {\n      \"dictionaryForm\" : \"bank\",\n      \"expression\" : \"bank\",\n      \"id\" : \"00000000-0000-0000-0000-000000000005\",\n      \"kind\" : \"word\",\n      \"language\" : \"en\",\n      \"senses\" : [\n        {\n          \"content\" : [\n\n          ],\n          \"createdAt\" : \"1970-01-01T00:00:00Z\",\n          \"examples\" : [\n\n          ],\n          \"id\" : \"00000000-0000-0000-0000-000000000006\",\n          \"meaning\" : \"third\",\n          \"note\" : \"\",\n          \"otherMeanings\" : [\n\n          ],\n          \"tags\" : [\n\n          ]\n        }\n      ]\n    }\n  ],\n  \"format\" : \"lingrove-vocabulary-export\",\n  \"version\" : 1\n}",
+        "sameConfiguration": true,
+        "senseCount": 3,
+        "sha256": "f69cc2a0abc30012f240e34cd0165fd44e58ac2a4ffa72283fb9f1017ae86dbb"
+      }
+    },
+    {
+      "id": "text-manyExamples-style-expressions",
+      "format": "text",
+      "mode": "manyExamples",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "style": "expressions",
+      "expected": {
+        "byteCount": 5,
+        "dataFilename": "Lingrove-vocabulary.txt",
+        "entryCount": 2,
+        "exampleCount": 0,
+        "filename": "Lingrove-vocabulary.txt",
+        "format": "text",
+        "idNonzero": true,
+        "imageCount": 0,
+        "preview": "bank\n",
+        "sameConfiguration": true,
+        "senseCount": 3,
+        "sha256": "7bb74618b5ab45a6539c37d08517be6d34ccb30c766c4280dc4de4906d5f5150"
+      }
+    },
+    {
+      "id": "csv-manyExamples-examples-false",
+      "format": "csv",
+      "mode": "manyExamples",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "examples": false,
+      "expected": {
+        "byteCount": 964,
+        "dataFilename": "Lingrove-vocabulary.csv",
+        "entryCount": 2,
+        "exampleCount": 0,
+        "filename": "Lingrove-vocabulary.csv",
+        "format": "csv",
+        "idNonzero": true,
+        "imageCount": 0,
+        "preview": "\"entry_id\",\"expression\",\"dictionary_form\",\"language\",\"type\",\"sense_id\",\"saved_at\",\"meaning\",\"meaning_language\",\"other_meanings\",\"notes\",\"tags\",\"supplemental_text\",\"images\",\"image_captions\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000002\",\"1970-01-01T00:00:00Z\",\"core\",\"\",\"\",\"note\",\"Work\",\"literal\",\"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\"literal caption\nsecond occurrence\ndifferent metadata\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000004\",\"1970-01-01T00:00:00Z\",\"second\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n\"00000000-0000-0000-0000-000000000005\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000006\",\"1970-01-01T00:00:00Z\",\"third\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n",
+        "sameConfiguration": true,
+        "senseCount": 3,
+        "sha256": "b0597f86d564c5319d0a6338306f3a127538c28b3fba97522db881bcd178d517"
+      }
+    },
+    {
+      "id": "json-normal-images-true-content-false",
+      "format": "json",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "images": true,
+      "content": false,
+      "expected": {
+        "byteCount": 1895,
+        "dataFilename": "Lingrove-vocabulary.json",
+        "entryCount": 2,
+        "exampleCount": 1,
+        "filename": "Lingrove-vocabulary.json",
+        "format": "json",
+        "idNonzero": true,
+        "imageCount": 0,
+        "preview": "{\n  \"entries\" : [\n    {\n      \"dictionaryForm\" : \"bank\",\n      \"expression\" : \"bank\",\n      \"id\" : \"00000000-0000-0000-0000-000000000001\",\n      \"kind\" : \"word\",\n      \"language\" : \"en\",\n      \"senses\" : [\n        {\n          \"createdAt\" : \"1970-01-01T00:00:00Z\",\n          \"examples\" : [\n            {\n              \"completeness\" : \"sentence\",\n              \"createdAt\" : \"1970-01-01T00:00:00Z\",\n              \"id\" : \"00000000-0000-0000-0000-000000000003\",\n              \"meaning\" : \"context\",\n              \"otherTranslations\" : [\n\n              ],\n              \"ranges\" : [\n                {\n                  \"length\" : 4,\n                  \"location\" : 4\n                }\n              ],\n              \"text\" : \"The bank.\",\n              \"translation\" : \"原句\"\n            }\n          ],\n          \"id\" : \"00000000-0000-0000-0000-000000000002\",\n          \"meaning\" : \"core\",\n          \"note\" : \"note\",\n          \"otherMeanings\" : [\n\n          ],\n          \"tags\" : [\n            \"Work\"\n          ]\n        },\n        {\n          \"createdAt\" : \"1970-01-01T00:00:00Z\",\n          \"examples\" : [\n\n          ],\n          \"id\" : \"00000000-0000-0000-0000-000000000004\",\n          \"meaning\" : \"second\",\n          \"note\" : \"\",\n          \"otherMeanings\" : [\n\n          ],\n          \"tags\" : [\n\n          ]\n        }\n      ]\n    },\n    {\n      \"dictionaryForm\" : \"bank\",\n      \"expression\" : \"bank\",\n      \"id\" : \"00000000-0000-0000-0000-000000000005\",\n      \"kind\" : \"word\",\n      \"language\" : \"en\",\n      \"senses\" : [\n        {\n          \"createdAt\" : \"1970-01-01T00:00:00Z\",\n          \"examples\" : [\n\n          ],\n          \"id\" : \"00000000-0000-0000-0000-000000000006\",\n          \"meaning\" : \"third\",\n          \"note\" : \"\",\n          \"otherMeanings\" : [\n\n          ],\n          \"tags\" : [\n\n          ]\n        }\n      ]\n    }\n  ],\n  \"format\" : \"lingrove-vocabulary-export\",\n  \"version\" : 1\n}",
+        "sameConfiguration": true,
+        "senseCount": 3,
+        "sha256": "3a79e007dd96bde0390abb9e901e22e19c3909b9308ada83c15e58bf367eb335"
+      }
+    }
+  ]
+}

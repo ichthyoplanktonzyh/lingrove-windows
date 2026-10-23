@@ -155,5 +155,8 @@ jobs:
       - name: Verify portable JSON export bytes against actual Mac encoder
         run: python3 scripts/verify-vocabulary-export-json-macos-parity.py --mac-repo .mac-baseline
 
+      - name: Verify prepared export payloads against actual Mac package factory
+        run: python3 scripts/verify-vocabulary-export-package-macos-parity.py --mac-repo .mac-baseline
+
   # Routine CI stops after validation. Packaging, artifact uploads and releases
   # are deliberately absent; distribution is a separately authorized task.

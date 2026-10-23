@@ -40,6 +40,23 @@ public static class VocabularyExportPolicy
         (options.IncludesImages ? entries.SelectMany(entry => entry.Senses).SelectMany(sense => VocabularyContentPolicy.Images(sense.Content ?? []))
             : Enumerable.Empty<VocabularyImageReference>()).ToFrozenSet();
 
+    /// <summary>Prepare one value-owned payload without media or storage effects. This retains the
+    /// Mac initial cancellation check separately from each renderer's loop checkpoints.</summary>
+    public static VocabularyExportPackage Package(IReadOnlyList<VocabularyEntry> entries, VocabularyExportConfiguration options,
+        VocabularyExportTextLabels? labels = null, CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        // Swift arrays are value snapshots. IReadOnlyList alone may wrap a mutable List, so
+        // detach its immutable entry references before deriving both payload and counts.
+        var capturedEntries = CollectionValues.List(entries);
+        var document = Document(capturedEntries, options);
+        byte[] data = VocabularyExportFormatter.Render(document, options, labels, cancellationToken);
+        if (data.Length > MaximumDataBytes) throw new VocabularyExportException(VocabularyExportFailure.TooLarge);
+        return new(options, data, VocabularyExportFormatter.Preview(data, options.Format), capturedEntries.Count,
+            capturedEntries.Sum(entry => (long)entry.Senses.Count), options.Examples && !options.IsExpressionList
+                ? capturedEntries.Sum(entry => entry.Senses.Sum(sense => (long)sense.Examples.Count)) : 0);
+    }
+
     private static VocabularyExportDocument.Sense ProjectSense(VocabularySense sense, VocabularyExportConfiguration options) =>
         new(sense.Id, sense.CreatedAt,
             options.Meanings ? sense.Meaning : null, options.Meanings ? sense.MeaningLanguage : null,

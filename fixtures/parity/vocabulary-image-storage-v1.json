@@ -1,0 +1,135 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "input": "iVBORw0KGgoAAAANSUhEUgAAAFAAAAAoCAYAAABpYH0BAAAAX0lEQVR4nO3QMQ0AIADAMHSgFrXYAA88ZEmP/UvHXPvovfF7oB5AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgH+7T3Y1UlqIbeIAAAAASUVORK5CYII=",
+  "cases": [
+    {
+      "id": "memory-roundtrip",
+      "operation": "memory-roundtrip",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyImageStorage.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "created": true,
+        "detached": true,
+        "exact": true,
+        "removed": true,
+        "reused": true
+      }
+    },
+    {
+      "id": "memory-missing",
+      "operation": "memory-missing",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyImageStorage.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": false
+      }
+    },
+    {
+      "id": "disk-inert",
+      "operation": "disk-inert",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyImageStorage.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "after": false,
+        "available": false,
+        "before": false
+      }
+    },
+    {
+      "id": "disk-roundtrip",
+      "operation": "disk-roundtrip",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyImageStorage.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "created": true,
+        "exact": true,
+        "files": 1,
+        "reopened": true,
+        "reused": true
+      }
+    },
+    {
+      "id": "disk-repair",
+      "operation": "disk-repair",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyImageStorage.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "before": false,
+        "created": false,
+        "exact": true,
+        "files": 1
+      }
+    },
+    {
+      "id": "disk-remove",
+      "operation": "disk-remove",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyImageStorage.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": false,
+        "exists": false
+      }
+    },
+    {
+      "id": "disk-invalid-bytes",
+      "operation": "disk-invalid-bytes",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyImageStorage.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "accepted": false,
+        "root": false
+      }
+    },
+    {
+      "id": "disk-metadata",
+      "operation": "disk-metadata",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyImageStorage.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "accepted": false,
+        "available": false,
+        "exact": true
+      }
+    },
+    {
+      "id": "disk-directory-leaf",
+      "operation": "disk-directory-leaf",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyImageStorage.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "accepted": false,
+        "preserved": true
+      }
+    },
+    {
+      "id": "disk-root-link",
+      "operation": "disk-root-link",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyImageStorage.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "accepted": false,
+        "files": 0
+      }
+    },
+    {
+      "id": "disk-leaf-link",
+      "operation": "disk-leaf-link",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyImageStorage.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "accepted": false,
+        "preserved": true
+      }
+    },
+    {
+      "id": "disk-oversize",
+      "operation": "disk-oversize",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyImageStorage.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": false
+      }
+    }
+  ]
+}

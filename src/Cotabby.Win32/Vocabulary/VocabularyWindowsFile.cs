@@ -90,7 +90,7 @@ internal sealed class VocabularyWindowsFile : IDisposable
         security.AddAccessRule(new FileSystemAccessRule(user, FileSystemRights.FullControl, AccessControlType.Allow));
         return security;
     }
-    private static void CheckParentInheritance(string path)
+    internal static void CheckParentInheritance(string path)
     {
         if (!OperatingSystem.IsWindows()) throw Invalid();
         // SQLite's Windows VFS creates WAL/SHM with the parent ACL, unlike the Unix VFS's
@@ -161,7 +161,7 @@ internal sealed class VocabularyWindowsFile : IDisposable
         catch (Exception error) when (error is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException or System.Security.SecurityException)
         { throw Invalid(); }
     }
-    private static void CheckFileAccess(SafeFileHandle handle)
+    internal static void CheckFileAccess(SafeFileHandle handle)
     {
         if (!OperatingSystem.IsWindows()) throw Invalid();
         // A duplicate lets the framework query the exact opened object's ACL without borrowing
@@ -187,7 +187,7 @@ internal sealed class VocabularyWindowsFile : IDisposable
             Native.OpenExisting, Native.OpenReparsePoint | Native.BackupSemantics, IntPtr.Zero);
         if (named.IsInvalid || Identity(named) != _identity) throw Invalid();
     }
-    private static FileIdentity Identity(SafeFileHandle handle)
+    internal static FileIdentity Identity(SafeFileHandle handle)
     {
         if (Native.GetFileType(handle) != 1
             || !Native.GetAttributes(handle, 9, out var attributes, (uint)Marshal.SizeOf<FileAttributesInfo>())

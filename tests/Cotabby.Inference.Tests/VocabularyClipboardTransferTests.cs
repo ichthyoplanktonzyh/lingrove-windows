@@ -37,7 +37,7 @@ public sealed class VocabularyClipboardTransferTests
             "truncated" => Reply(bytes[..8]),
             "trailing" => Reply([.. bytes, 5]),
             "nonzero-exit" => Reply(bytes) + "; exit 3",
-            _ => "[Console]::Error.Write([string]::new([char]120, 40000)); [Threading.Thread]::Sleep(-1)"
+            _ => "$payload=[byte[]]::new(40000); $pipe=[Console]::OpenStandardError(); $pipe.Write($payload,0,$payload.Length); $pipe.Flush(); [Threading.Thread]::Sleep(-1)"
         };
         await using var transfer = new WindowsVocabularyClipboardTransfer(_ => Start(script), TimeSpan.FromSeconds(30));
         // A stalled reply must fail from the stderr budget, not satisfy this assertion by timeout.

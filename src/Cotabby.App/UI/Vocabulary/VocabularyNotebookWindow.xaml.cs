@@ -31,8 +31,8 @@ public partial class VocabularyNotebookWindow : Window
     private long _version;
     private string _selectedTag = "";
     private sealed record BrowseRequest(VocabularyDocument Document, string Query, LearningLanguage? Language, string Tag,
-        bool Newest, bool Loaded, string? Error, ulong Revision, long Version, CancellationTokenSource Work);
-    private sealed record BrowseResult(IReadOnlyList<VocabularyEntry> Entries, IReadOnlyList<string> Tags, string Tag);
+        bool Newest, bool Loaded, string? Error, ulong Revision, long Version, CancellationTokenSource Work, GraphFilterReconciliation? GraphReconciliation);
+    private sealed record BrowseResult(IReadOnlyList<VocabularyEntry> Entries, IReadOnlyList<string> Tags, string Tag, bool ClearGraphSelection);
     private sealed record DetailKey(Guid Entry, string Expression, string Form, LearningLanguage Language, VocabularyEntryKind Kind, VocabularySense Sense);
     private DetailKey? _renderedDetail;
     private bool _hasRenderedDetail;
@@ -43,17 +43,17 @@ public partial class VocabularyNotebookWindow : Window
     private sealed record TagOption(string Value, string Label);
 
     internal VocabularyNotebookWindow(VocabularyStore store, IVocabularyTextSearching textSearch,
-        VocabularyNotebookSession? learning = null, Action? configureExplanation = null, IVocabularyClipboardImageTransfer? clipboard = null)
+        VocabularyNotebookSession? learning = null, Action? configureExplanation = null, IVocabularyClipboardImageTransfer? clipboard = null, IVocabularyGraphPreferences? graphPreferences = null)
     {
         _store = store; _textSearch = textSearch; _learning = learning; _configureExplanation = configureExplanation; _clipboard = clipboard;
-        InitializeComponent(); WindowTheme.Follow(this);
+        InitializeComponent(); WindowTheme.Follow(this); InitializeGraph(graphPreferences);
         _presenting = true;
         LanguageFilter.ItemsSource = new[] { new LanguageOption(null, "All languages") }
             .Concat(LearningLanguages.All.Select(language => new LanguageOption(language, language.Label()))).ToArray();
         LanguageFilter.SelectedIndex = 0; _presenting = false;
         _store.Changed += OnStoreChanged;
         Closing += OnClosing;
-        Closed += (_, _) => { _retired = true; _store.Changed -= OnStoreChanged; CancelFiltering(); RetireActions(); RetireLearning(); RetireExport(); RetireBackupPresentation(); ClearImages(); };
+        Closed += (_, _) => { _retired = true; _store.Changed -= OnStoreChanged; CancelFiltering(); RetireActions(); RetireLearning(); RetireExport(); RetireBackupPresentation(); RetireGraph(); ClearImages(); };
         IsVisibleChanged += (_, _) => { if (IsInitialized) { if (!IsVisible) { RetireExport(); RetireBackupPresentation(); } UpdateExportAdmission(); UpdateBackupAdmission(); } };
         RequestRefresh();
     }
@@ -63,6 +63,7 @@ public partial class VocabularyNotebookWindow : Window
         if (_retired) return;
         if (selection is { } value)
         {
+            _pendingGraphReconciliation = null;
             ClearLearningRows(); _hasRenderedDetail = false;
             _presenting = true; SearchText.Text = ""; LanguageFilter.SelectedIndex = 0; _selectedTag = ""; _newestFirst = true;
             _presenting = false; _requested = value; _expanded.Add(value.EntryId);
@@ -86,18 +87,33 @@ public partial class VocabularyNotebookWindow : Window
     {
         if (_presenting || !IsInitialized || _retired) return;
         if (ReferenceEquals(sender, TagFilter) && TagFilter.SelectedItem is TagOption tag) _selectedTag = tag.Value;
-        RequestRefresh();
+        RequestRefresh(reconcileGraph: IsGraphMode);
     }
     private void OnSort(object sender, RoutedEventArgs args) { _newestFirst = !_newestFirst; RequestRefresh(); }
-    private void RequestRefresh()
+    private void OnRetryBrowse(object sender, RoutedEventArgs args) { if (!_retired && IsVisible) RequestRefresh(); }
+    private void RequestRefresh(bool reconcileGraph = false)
     {
         Dispatcher.VerifyAccess(); if (_retired) return;
+        // Windows filters off the dispatcher. Retain the last drawing for continuity but do
+        // not accept graph intents against rows from the previous query/revision.
+        if (_graphView is { } graphView) graphView.IsEnabled = false;
+        RetryBrowseButton.Visibility = Visibility.Collapsed;
         UpdateBackupAdmission();
         CancelFiltering(); var source = new CancellationTokenSource(); _filterWork = source; long version = ++_version;
         InvalidateExportOffer();
         var state = _store.ReadState(); var document = state.Snapshot.Document; string query = SearchText.Text;
         var language = (LanguageFilter.SelectedItem as LanguageOption)?.Value;
-        var request = new BrowseRequest(document, query, language, _selectedTag, _newestFirst, state.IsLoaded, state.ErrorMessage, state.Snapshot.Revision, version, source);
+        if (reconcileGraph)
+        {
+            if (_selection is { } selected)
+            {
+                var constraint = new GraphFilterConstraint(document, query, language, _selectedTag);
+                var previous = _pendingGraphReconciliation is { } pending && pending.SenseId == selected ? pending.Filters : [];
+                _pendingGraphReconciliation = new(selected, previous.Append(constraint).ToArray());
+            }
+            else _pendingGraphReconciliation = null;
+        }
+        var request = new BrowseRequest(document, query, language, _selectedTag, _newestFirst, state.IsLoaded, state.ErrorMessage, state.Snapshot.Revision, version, source, _pendingGraphReconciliation);
         var work = RefreshAsync(request); LastRefresh = work;
         Track(work);
     }
@@ -116,8 +132,9 @@ public partial class VocabularyNotebookWindow : Window
             {
                 token.ThrowIfCancellationRequested(); var tags = VocabularyNotebookPolicy.Tags(request.Document);
                 string tag = VocabularyNotebookPolicy.ResolveTag(tags, request.Tag);
-                return new BrowseResult(VocabularyNotebookPolicy.VisibleEntries(request.Document, _textSearch, request.Query,
-                    request.Language, tag, request.Newest, token), tags, tag);
+                var entries = VocabularyNotebookPolicy.VisibleEntries(request.Document, _textSearch, request.Query, request.Language, tag, request.Newest, token);
+                bool clear = request.GraphReconciliation is { } reconciliation && reconciliation.Filters.Any(filter => GraphFilterExcludesSelection(filter, reconciliation.SenseId, token));
+                return new BrowseResult(entries, tags, tag, clear);
             }, token).ConfigureAwait(false);
             if (token.IsCancellationRequested || Dispatcher.HasShutdownStarted) return;
             await Dispatcher.InvokeAsync(() => ApplyBrowse(request, result), System.Windows.Threading.DispatcherPriority.DataBind, token).Task.ConfigureAwait(false);
@@ -132,7 +149,10 @@ public partial class VocabularyNotebookWindow : Window
                 await Dispatcher.InvokeAsync(() =>
                 {
                     if (!_retired && request.Version == _version)
-                    { StorageError.Text = "The vocabulary view could not be updated."; StorageError.Visibility = Visibility.Visible; }
+                    {
+                        StorageError.Text = "The vocabulary view could not be updated."; StorageError.Visibility = Visibility.Visible;
+                        RetryBrowseButton.Visibility = Visibility.Visible;
+                    }
                 }, System.Windows.Threading.DispatcherPriority.DataBind, token).Task.ConfigureAwait(false);
             }
             catch (OperationCanceledException) { }
@@ -153,6 +173,9 @@ public partial class VocabularyNotebookWindow : Window
         // Resolve retired aliases after merge. A list filter does not discard global selection;
         // Mac's detail remains available while its row is hidden by the current query.
         _selection = VocabularyNotebookPolicy.ResolveSelection(document, _selection)?.SenseId;
+        // Reconcile before projecting IsSelected flags. Otherwise the new list can still mark
+        // the just-cleared sense selected, and deferred container binding would select it again.
+        ApplyGraphBrowse(request, result);
         if (request.Query.Length > 0) _expanded.UnionWith(visible.Select(entry => entry.Id));
         _presenting = true;
         try
@@ -169,17 +192,22 @@ public partial class VocabularyNotebookWindow : Window
             StorageError.Text = request.Error ?? ""; StorageError.Visibility = StorageError.Text.Length == 0 ? Visibility.Collapsed : Visibility.Visible;
         }
         finally { _presenting = false; }
+        RefreshGraph(); if (_graphView is { } graphView) graphView.IsEnabled = true;
         _exportOffer = new(request, visible); UpdateExportAdmission();
         RenderDetail(document);
     }
     private void OnSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> args)
     {
         if (_presenting || _retired || args.NewValue is not VocabularySenseRow row) return;
-        if (_selection != row.Selection.SenseId) DetailViewport.ScrollToTop();
+        // Rebuilding TreeView containers can replay their projected IsSelected binding after
+        // _presenting ends. Only an actual logical choice cancels an earlier filter intent;
+        // repeating the same selection (including its current merged alias) is not navigation.
+        if (Selection != row.Selection) { _pendingGraphReconciliation = null; DetailViewport.ScrollToTop(); }
         _selection = row.Selection.SenseId; RenderDetail(_store.Snapshot.Document);
     }
     private void RenderDetail(VocabularyDocument document)
     {
+        RefreshGraph();
         var selection = VocabularyNotebookPolicy.ResolveSelection(document, _selection);
         var entry = selection is null ? null : document.Entries.Single(value => value.Id == selection.Value.EntryId);
         var sense = entry?.Senses.Single(value => value.Id == selection!.Value.SenseId);
@@ -290,7 +318,7 @@ public partial class VocabularyNotebookWindow : Window
         if (!_retired)
         {
             _retired = true; _store.Changed -= OnStoreChanged; CancelFiltering(); ++_version;
-            RetireActions(); RetireLearning(); RetireExport(); RetireBackupPresentation();
+            RetireActions(); RetireLearning(); RetireExport(); RetireBackupPresentation(); RetireGraph();
             if (_editor is { } editor) Track(editor.RetireAsync());
             _closing = true; Close();
         }

@@ -40,6 +40,7 @@ public partial class VocabularyNotebookWindow
     {
         if (_presenting || !IsInitialized || _retired) return;
         _selectingSenses = SelectSensesButton.IsChecked == true;
+        if (_selectingSenses) ShowListForBatch();
         SelectVisibleButton.Visibility = ExportSelectedButton.Visibility = _selectingSenses ? Visibility.Visible : Visibility.Collapsed;
         // As on Mac, leaving checklist mode keeps its IDs; filters never clear that set either.
         RequestRefresh();

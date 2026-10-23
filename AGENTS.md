@@ -146,7 +146,8 @@ the [graph solver](docs/VOCABULARY_GRAPH_LAYOUT.md) now adapts the original Grap
 the [serialized graph worker](docs/VOCABULARY_GRAPH_WORKER.md) now preserves epoch/cache/layout lifetime;
 the [graph preference/presentation library](docs/VOCABULARY_GRAPH_PRESENTATION.md) now preserves Codable settings and window-local state;
 the [compiled graph canvas component](docs/VOCABULARY_GRAPH_CANVAS.md) now adapts drawing/input/lifecycle/virtual peers;
-notebook graph/chrome and AppHost/preferences wiring, compressed/profiled bitmap variants, virtual/pixel drops, review and other dictionary providers remain work. Do not flatten senses into
+the [notebook graph integration](docs/VOCABULARY_GRAPH_NOTEBOOK.md) now connects original mode/chrome/settings and shared Store/detail selection;
+compressed/profiled bitmap variants, virtual/pixel drops, review and other dictionary providers remain work. Do not flatten senses into
 one translation string, regenerate stable IDs during edits, or treat a generated explanation as the
 user's authored meaning. See the vocabulary models and porting gates in the linked docs. Storage
 compatibility with macOS is not assumed; migrations must be explicit and tested.

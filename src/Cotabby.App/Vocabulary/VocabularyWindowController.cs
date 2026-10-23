@@ -20,15 +20,16 @@ internal sealed class VocabularyWindowController : IAsyncDisposable
     private readonly Action? _configureExplanation;
     private readonly IVocabularyClipboardImageTransfer? _clipboard;
     private VocabularyNotebookWindow? _window;
+    private readonly IVocabularyGraphPreferences? _graphPreferences;
     private int _disposed;
     internal VocabularyWindowController(VocabularyStore store, Dispatcher dispatcher,
-        Func<VocabularyNotebookSession>? learningFactory = null, Action? configureExplanation = null, IVocabularyClipboardImageTransfer? clipboard = null)
-    { _store = store; _dispatcher = dispatcher; _learningFactory = learningFactory; _configureExplanation = configureExplanation; _clipboard = clipboard; _show = Show; store.OpenSelection = _show; }
+        Func<VocabularyNotebookSession>? learningFactory = null, Action? configureExplanation = null, IVocabularyClipboardImageTransfer? clipboard = null, IVocabularyGraphPreferences? graphPreferences = null)
+    { _store = store; _dispatcher = dispatcher; _learningFactory = learningFactory; _configureExplanation = configureExplanation; _clipboard = clipboard; _graphPreferences = graphPreferences; _show = Show; store.OpenSelection = _show; }
     internal void Show(VocabularySelection? selection = null)
     {
         if (Volatile.Read(ref _disposed) != 0) return;
         if (!_dispatcher.CheckAccess()) { _dispatcher.BeginInvoke(() => Show(selection)); return; }
-        _window ??= new VocabularyNotebookWindow(_store, new WindowsVocabularyTextSearch(), _learningFactory?.Invoke(), _configureExplanation, _clipboard);
+        _window ??= new VocabularyNotebookWindow(_store, new WindowsVocabularyTextSearch(), _learningFactory?.Invoke(), _configureExplanation, _clipboard, _graphPreferences);
         _window.Reveal(selection); _window.Show();
         if (_window.WindowState == WindowState.Minimized) _window.WindowState = WindowState.Normal;
         _window.Activate(); _ = LoadAsync();

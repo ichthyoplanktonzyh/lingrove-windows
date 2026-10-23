@@ -118,6 +118,10 @@ public partial class VocabularyNotebookWindow
     private void BeginMutation(VocabularySelection receipt, long version, Func<Task<MutationResult>> operation)
     {
         if (!CanAct(receipt, version)) return;
+        // Claim this explicit detail intent before Store can publish Changed. Its notification
+        // may start/finish browsing before the mutation's UI acknowledgement; an older filter
+        // must not clear this command's selected identity through a newly committed merge alias.
+        _pendingGraphReconciliation = null;
         CloseActionMenus(); _mutating = true; UpdateActions();
         LastMutation = RunMutation(receipt, version, operation, _actionsLifetime.Token); Track(LastMutation);
     }
@@ -135,7 +139,8 @@ public partial class VocabularyNotebookWindow
                 _mutating = false;
                 // A later user selection owns browsing. A completed transaction may update its
                 // graph, but cannot pull the user back from a different sense they selected.
-                if (result.Succeeded && _detailVersion == version && _selection == receipt.SenseId) _selection = result.Selection;
+                if (result.Succeeded && _detailVersion == version && _selection == receipt.SenseId)
+                    _selection = result.Selection;
                 if (result.Succeeded) _expanded.Add(receipt.EntryId);
                 UpdateActions(); RequestRefresh();
                 if (!result.Succeeded && failure is { } message) { StorageError.Text = message; StorageError.Visibility = Visibility.Visible; }

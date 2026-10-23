@@ -64,7 +64,7 @@ internal sealed partial class VocabularyGraphCanvas
         protected override bool HasKeyboardFocusCore() => _canvas.TryGetTarget(out var canvas) && canvas.IsKeyboardFocused && canvas._keyboardNode == _id;
         protected override bool IsContentElementCore() => true;
         protected override bool IsControlElementCore() => true;
-        protected override bool IsEnabledCore() => _canvas.TryGetTarget(out var canvas) && !canvas._retired && canvas.IsEnabled && canvas._snapshot.Nodes.Any(n => n.Id == _id);
+        protected override bool IsEnabledCore() => _canvas.TryGetTarget(out var canvas) && !canvas._retired && canvas.IsEnabled && canvas.IsVisible && canvas._snapshot.Nodes.Any(n => n.Id == _id);
         protected override bool IsPasswordCore() => false;
         protected override bool IsRequiredForFormCore() => false;
         protected override Point GetClickablePointCore()
@@ -76,7 +76,7 @@ internal sealed partial class VocabularyGraphCanvas
         protected override void SetFocusCore()
         {
             Dispatcher.VerifyAccess();
-            if (!_canvas.TryGetTarget(out var canvas) || canvas._retired || !canvas._snapshot.Nodes.Any(n => n.Id == _id)) return;
+            if (!_canvas.TryGetTarget(out var canvas) || canvas._retired || !canvas.IsEnabled || !canvas.IsVisible || !canvas._snapshot.Nodes.Any(n => n.Id == _id)) return;
             canvas._keyboardNode = _id; canvas.Focus(); canvas.InvalidateVisual();
         }
         public override object? GetPattern(PatternInterface patternInterface) => patternInterface == PatternInterface.Invoke ? this : null;
@@ -86,13 +86,14 @@ internal sealed partial class VocabularyGraphCanvas
             if (canvas.Dispatcher.CheckAccess())
             {
                 if (canvas._retired || !canvas._snapshot.Nodes.Any(n => n.Id == _id)) throw new ElementNotAvailableException();
+                if (!canvas.IsEnabled || !canvas.IsVisible) throw new ElementNotEnabledException();
                 canvas.Activate(_id);
             }
             else canvas.Dispatcher.BeginInvoke(() =>
             {
                 // A queued accessibility request can outlive a topology change or retirement.
                 // Recheck on the UI thread and decline silently rather than throwing on WPF's loop.
-                if (!canvas._retired && canvas._snapshot.Nodes.Any(n => n.Id == _id)) canvas.Activate(_id);
+                if (!canvas._retired && canvas.IsEnabled && canvas.IsVisible && canvas._snapshot.Nodes.Any(n => n.Id == _id)) canvas.Activate(_id);
             });
         }
     }

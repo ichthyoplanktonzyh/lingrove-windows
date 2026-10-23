@@ -63,8 +63,8 @@ Windows CI executes these cases before merge.
 
 The [image UI](VOCABULARY_IMAGE_UI.md) now adds explicit file import, draft previews and saved-image
 reading; its separate tests include actual temporary notebook files. [Existing-file drops](VOCABULARY_FILE_DROP.md)
-and [encoded-image paste](VOCABULARY_IMAGE_PASTE.md) now connect the same import flow. DIB/bitmap
-clipboard formats, virtual/pixel drops, graph/batch/review/export UI, speech, localization and window
+and [image paste](VOCABULARY_IMAGE_PASTE.md), including the [DIB subset](VOCABULARY_CLIPBOARD_DIB.md),
+now connect the same import flow. Compressed/profiled bitmap variants, virtual/pixel drops, graph/batch/review/export UI, speech, localization and window
 geometry persistence remain open.
 [Sense actions](VOCABULARY_ACTIONS.md), [contextual explanation/adoption](VOCABULARY_EXPLANATION_UI.md)
 and [dictionary sessions](VOCABULARY_DICTIONARY_UI.md) now use the shared Store/notebook. Native

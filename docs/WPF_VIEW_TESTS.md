@@ -126,3 +126,8 @@ wire-format cases run in Inference.Tests with fixed PowerShell fixture output. T
 [image paste integration](VOCABULARY_IMAGE_PASTE.md) adds twelve controls/routed-command/WIC/SQLite cases
 through a test clipboard-offer boundary, with no system clipboard access. Native producer and
 physical keyboard/IME checks remain open.
+
+The [DIB adapter](VOCABULARY_CLIPBOARD_DIB.md) adds thirteen actual WIC/archive/PNG color, row-direction,
+alpha and opaque-spare-byte cases with literal bitmap bytes. These never open a clipboard or claim real producer
+interoperability; 52 structure/color-evidence cases and six additional reader cases run in Inference.Tests. One
+direct native frame test exposes WIC failures independently of the fixed UI error.

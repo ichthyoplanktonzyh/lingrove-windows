@@ -30,7 +30,7 @@ The Shell documents an OLE compatibility path for real [`CF_HDROP` file location
 Virtual file contents use different provider protocols, so this does not claim full Mac
 `NSItemProvider` or arbitrary OLE drag parity. Pixel-only image drags, virtual files, ANSI drops,
 and elevated-host interoperability remain open. Encoded clipboard images now use the separate
-[image paste adapter](VOCABULARY_IMAGE_PASTE.md); DIB/bitmap formats remain open. No message filter is relaxed.
+[image paste adapter](VOCABULARY_IMAGE_PASTE.md), including the bounded [DIB subset](VOCABULARY_CLIPBOARD_DIB.md). No message filter is relaxed.
 
 Twenty-one Windows cases use actual HGLOBAL allocation, `SendMessage` and the compiled WPF HWND
 hook without touching the runner clipboard or a foreign provider. They verify first path and

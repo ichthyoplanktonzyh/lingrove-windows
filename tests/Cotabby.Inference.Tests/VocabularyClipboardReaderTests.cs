@@ -10,12 +10,38 @@ namespace Cotabby.Inference.Tests;
 /// </summary>
 public sealed class VocabularyClipboardReaderTests
 {
-    [Fact]
-    public void FormatAdmissionUsesOnlyMetadataAndCannotRequestDelayedData()
+    [Theory]
+    [InlineData("TIFF")]
+    [InlineData("DIBV5")]
+    [InlineData("DIB")]
+    public void FormatAdmissionUsesOnlyMetadataAndCannotRequestDelayedData(string name)
     {
         using var native = new Clipboard(); var reader = new VocabularyClipboardImageReader(native);
-        Assert.False(reader.HasAvailableImage()); native.Add("TIFF", null); Assert.True(reader.HasAvailableImage());
+        Assert.False(reader.HasAvailableImage()); native.Add(name, null); Assert.True(reader.HasAvailableImage());
         Assert.Equal(0, native.Opens); Assert.Equal(0, native.Closes); Assert.Equal(0, native.Locks); Assert.Empty(native.ReadFormats);
+    }
+    [Fact]
+    public void EncodedRepresentationsRetainPriorityOverBitmapFallback()
+    {
+        using var native = new Clipboard(); var reader = new VocabularyClipboardImageReader(native); native.Add("PNG", [7]); native.Add("DIBV5", VocabularyDibFixture.Image(124));
+        Assert.Equal(new byte[] { 7 }, reader.Read(7)); Assert.Equal(new[] { native.Format("PNG") }, native.ReadFormats);
+    }
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void BitmapSelectionDetachesAndClosesBeforeTheEnvelopeIsReturned(bool firstNull)
+    {
+        using var native = new Clipboard(); var reader = new VocabularyClipboardImageReader(native);
+        native.Add("DIBV5", firstNull ? null : VocabularyDibFixture.Image(124)); native.Add("DIB", VocabularyDibFixture.Image());
+        native.AfterClose = () => native.Zero(firstNull ? "DIB" : "DIBV5");
+        byte[] bmp = reader.Read(7)!; Assert.Equal(new byte[] { 66, 77 }, bmp[..2]); Assert.Equal(1, native.Closes); Assert.Equal(1, native.Unlocks);
+        Assert.Equal(firstNull ? 2 : 1, native.ReadFormats.Count);
+    }
+    [Fact]
+    public void ASelectedInvalidBitmapDoesNotFallBackToTheNextBitmapFormat()
+    {
+        using var native = new Clipboard(); var reader = new VocabularyClipboardImageReader(native); native.Add("DIBV5", [1]); native.Add("DIB", VocabularyDibFixture.Image());
+        Assert.Throws<InvalidDataException>(() => reader.Read(7)); Assert.Single(native.ReadFormats); Assert.Equal(1, native.Closes); Assert.Equal(1, native.Unlocks);
     }
     [Theory]
     [InlineData("PNG")]
@@ -147,7 +173,7 @@ public sealed class VocabularyClipboardReaderTests
     }
     private sealed class Clipboard : IVocabularyImageClipboard, IDisposable
     {
-        private readonly Dictionary<string, uint> _formats = new() { ["TIFF"] = 6 };
+        private readonly Dictionary<string, uint> _formats = new() { ["TIFF"] = 6, ["DIBV5"] = 17, ["DIB"] = 8 };
         private readonly Dictionary<uint, (IntPtr Pointer, int Length)> _buffers = [];
         public uint Register(string name) { if (!_formats.TryGetValue(name, out uint value)) _formats[name] = value = (uint)(_formats.Count + 100); return value; }
         internal uint Format(string name) => _formats[name];
@@ -157,15 +183,16 @@ public sealed class VocabularyClipboardReaderTests
             if (bytes is { Length: > 0 }) Marshal.Copy(bytes, 0, buffer, bytes.Length);
             _buffers.Add(Format(name), (buffer, bytes?.Length ?? 0));
         }
+        internal void Zero(string name) { var value = _buffers[Format(name)]; Marshal.Copy(new byte[value.Length], 0, value.Pointer, value.Length); }
         public uint Sequence { get; set; } = 7;
         public IntPtr Owner { get; set; } = new(10);
         internal bool OpenResult = true, LockFails;
         internal int Opens, Closes, Locks, Unlocks;
         internal int? ReportedSize;
-        internal Action? AfterOpen, AfterData, AfterUnlock;
+        internal Action? AfterOpen, AfterData, AfterUnlock, AfterClose;
         internal List<uint> ReadFormats { get; } = [];
         public bool Open() { ++Opens; AfterOpen?.Invoke(); return OpenResult; }
-        public void Close() => ++Closes;
+        public void Close() { ++Closes; AfterClose?.Invoke(); }
         public bool Available(uint format) => _buffers.ContainsKey(format);
         public IntPtr Data(uint format) { ReadFormats.Add(format); var data = _buffers[format].Pointer; AfterData?.Invoke(); return data; }
         public nuint Size(IntPtr handle) => (nuint)(ReportedSize ?? _buffers.Values.Single(value => value.Pointer == handle).Length);

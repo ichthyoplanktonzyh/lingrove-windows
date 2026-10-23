@@ -7,7 +7,7 @@ namespace Cotabby.Win32.Vocabulary;
 /// <summary>
 /// Read-only encoded-image extraction used inside the killable transfer host. Never run this on
 /// a UI thread: GetClipboardData can synchronously request a foreign application's delayed render.
-/// It copies only the first non-null PNG/TIFF/JPEG representation, bounds its HGLOBAL and never
+/// It copies only the first non-null PNG/TIFF/JPEG or supported DIB representation, bounds its HGLOBAL and never
 /// empties, replaces or frees Windows-owned clipboard data. Decode belongs to the archive later.
 /// </summary>
 internal sealed class VocabularyClipboardImageReader
@@ -21,11 +21,18 @@ internal sealed class VocabularyClipboardImageReader
         // Registered aliases are Windows producer conventions, not automatic format conversion.
         // Preserve Mac's PNG -> TIFF -> JPEG groups. A non-null invalid blob never falls through.
         _formats = [_native.Register("PNG"), _native.Register("image/png"), 6,
-            _native.Register("JFIF"), _native.Register("JPEG"), _native.Register("image/jpeg")];
+            _native.Register("JFIF"), _native.Register("JPEG"), _native.Register("image/jpeg"), 17, 8];
     }
     // Metadata only: safe for command admission without invoking delayed clipboard rendering.
     internal bool HasAvailableImage() => _formats.Any(format => format != 0 && _native.Available(format));
     internal byte[]? Read(uint expectedSequence)
+    {
+        var selected = ReadRepresentation(expectedSequence);
+        // Native open/lock ownership ends before format adaptation or pipe output. The parent
+        // still normalizes the resulting encoded BMP through its normal WIC/archive boundary.
+        return selected is not { } value ? null : value.Format is 17 or 8 ? VocabularyClipboardDib.Wrap(value.Bytes, value.Format == 17) : value.Bytes;
+    }
+    private (uint Format, byte[] Bytes)? ReadRepresentation(uint expectedSequence)
     {
         if (expectedSequence == 0 || _native.Sequence != expectedSequence) return null;
         bool opened = false;
@@ -61,7 +68,7 @@ internal sealed class VocabularyClipboardImageReader
                 // Delayed rendering may legitimately advance sequence while Data runs. Once a
                 // handle has materialized, owner and sequence must stay stable through our copy.
                 if (_native.Owner != owner || _native.Sequence != renderedSequence) return null;
-                return bytes;
+                return (format, bytes);
             }
             return null;
         }

@@ -10,6 +10,8 @@ public sealed class VocabularyArchiveWindowsTests : IDisposable
     private readonly string _root = Path.Combine(Path.GetTempPath(), "lingrove-archive-" + Guid.NewGuid().ToString("N"));
     private string FilePath => Path.Combine(_root, "vocabulary.sqlite");
     private static VocabularyCapture Capture(string word) => new(word, word, LearningLanguage.English, VocabularyEntryKind.Word, "meaning");
+    private static void SameSnapshot(VocabularySnapshot expected, VocabularySnapshot actual)
+    { Assert.Equal(expected.Revision, actual.Revision); Assert.Equal(expected.Document, actual.Document); }
 
     [Fact]
     public async Task SaveIsAcknowledgedAndRetainsIdentityAfterArchiveRestart()
@@ -18,7 +20,7 @@ public sealed class VocabularyArchiveWindowsTests : IDisposable
         await using (var archive = new VocabularyArchive(FilePath)) saved = await archive.SaveAsync(Capture("bank"));
         await using (var reopened = new VocabularyArchive(FilePath))
         {
-            var loaded = await reopened.LoadAsync(); Assert.Equal(saved, loaded);
+            var loaded = await reopened.LoadAsync(); SameSnapshot(saved, loaded);
             Assert.True(VocabularyPolicy.Contains(Capture("bank"), loaded.Document.Entries));
             var removed = await reopened.RemoveAsync(Capture("bank")); Assert.Equal(2ul, removed.Revision); Assert.Empty(removed.Document.Entries);
         }
@@ -34,9 +36,9 @@ public sealed class VocabularyArchiveWindowsTests : IDisposable
         var candidate = VocabularyPolicy.Save(Capture("river"), baseline.Document, DateTimeOffset.UnixEpoch).Document;
         var error = await Assert.ThrowsAsync<VocabularyException>(() => first.CommitAsync(candidate));
         Assert.Equal(VocabularyFailure.EditConflict, error.Failure);
-        Assert.Equal(winner, await first.LoadAsync());
+        SameSnapshot(winner, await first.LoadAsync());
         var next = await first.SaveAsync(Capture("river")); Assert.Equal(2ul, next.Revision); Assert.Equal(2, next.Document.Entries.Count);
-        Assert.Equal(next, await second.LoadAsync());
+        SameSnapshot(next, await second.LoadAsync());
     }
     public void Dispose() { if (Directory.Exists(_root)) Directory.Delete(_root, true); }
 }

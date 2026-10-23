@@ -1,0 +1,4712 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "defaults",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "connection"
+        },
+        {
+          "op": "readKey"
+        }
+      ],
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        },
+        {
+          "result": {
+            "endpoint": "http://127.0.0.1:8765",
+            "key": ""
+          },
+          "state": {
+            "address": "http://127.0.0.1:8765",
+            "deck": "Default",
+            "effectiveMapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "gap": false,
+            "hasSavedDeck": false,
+            "mapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "model": "Lingrove v1",
+            "recognition": true,
+            "savedKeys": [],
+            "savedMapping": null,
+            "savedMappingIsArray": null
+          }
+        },
+        {
+          "result": {
+            "key": ""
+          },
+          "state": {
+            "address": "http://127.0.0.1:8765",
+            "deck": "Default",
+            "effectiveMapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "gap": false,
+            "hasSavedDeck": false,
+            "mapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "model": "Lingrove v1",
+            "recognition": true,
+            "savedKeys": [],
+            "savedMapping": null,
+            "savedMappingIsArray": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "edit-restart",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "address",
+          "value": " http://LOCALHOST:08765/​"
+        },
+        {
+          "op": "deck",
+          "value": ""
+        },
+        {
+          "op": "model",
+          "value": "Custom"
+        },
+        {
+          "op": "mapping",
+          "value": {
+            "LingroveID": "ID",
+            "Expression": "Question",
+            "Meaning": "Answer"
+          }
+        },
+        {
+          "op": "recognition",
+          "value": false
+        },
+        {
+          "op": "gap",
+          "value": true
+        },
+        {
+          "op": "saveKey",
+          "value": "  fixture key  "
+        },
+        {
+          "op": "connection"
+        },
+        {
+          "op": "restart"
+        },
+        {
+          "op": "readKey"
+        }
+      ],
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        },
+        {
+          "result": null,
+          "state": {
+            "address": " http://LOCALHOST:08765/​",
+            "deck": "Default",
+            "effectiveMapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "gap": false,
+            "hasSavedDeck": false,
+            "mapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "model": "Lingrove v1",
+            "recognition": true,
+            "savedKeys": [
+              "ankiReviewAddress"
+            ],
+            "savedMapping": null,
+            "savedMappingIsArray": null
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "address": " http://LOCALHOST:08765/​",
+            "deck": "",
+            "effectiveMapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "gap": false,
+            "hasSavedDeck": true,
+            "mapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "model": "Lingrove v1",
+            "recognition": true,
+            "savedKeys": [
+              "ankiReviewAddress",
+              "ankiReviewDeck"
+            ],
+            "savedMapping": null,
+            "savedMappingIsArray": null
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "address": " http://LOCALHOST:08765/​",
+            "deck": "",
+            "effectiveMapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "gap": false,
+            "hasSavedDeck": true,
+            "mapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "model": "Custom",
+            "recognition": true,
+            "savedKeys": [
+              "ankiReviewAddress",
+              "ankiReviewDeck",
+              "ankiReviewModel"
+            ],
+            "savedMapping": null,
+            "savedMappingIsArray": null
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "address": " http://LOCALHOST:08765/​",
+            "deck": "",
+            "effectiveMapping": {
+              "Expression": "Question",
+              "LingroveID": "ID",
+              "Meaning": "Answer"
+            },
+            "gap": false,
+            "hasSavedDeck": true,
+            "mapping": {
+              "Expression": "Question",
+              "LingroveID": "ID",
+              "Meaning": "Answer"
+            },
+            "model": "Custom",
+            "recognition": true,
+            "savedKeys": [
+              "ankiReviewAddress",
+              "ankiReviewDeck",
+              "ankiReviewModel",
+              "ankiReviewMapping"
+            ],
+            "savedMapping": {
+              "Expression": "Question",
+              "LingroveID": "ID",
+              "Meaning": "Answer"
+            },
+            "savedMappingIsArray": true
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "address": " http://LOCALHOST:08765/​",
+            "deck": "",
+            "effectiveMapping": {
+              "Expression": "Question",
+              "LingroveID": "ID",
+              "Meaning": "Answer"
+            },
+            "gap": false,
+            "hasSavedDeck": true,
+            "mapping": {
+              "Expression": "Question",
+              "LingroveID": "ID",
+              "Meaning": "Answer"
+            },
+            "model": "Custom",
+            "recognition": false,
+            "savedKeys": [
+              "ankiReviewAddress",
+              "ankiReviewDeck",
+              "ankiReviewModel",
+              "ankiReviewMapping",
+              "ankiReviewRecognition"
+            ],
+            "savedMapping": {
+              "Expression": "Question",
+              "LingroveID": "ID",
+              "Meaning": "Answer"
+            },
+            "savedMappingIsArray": true
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "address": " http://LOCALHOST:08765/​",
+            "deck": "",
+            "effectiveMapping": {
+              "Expression": "Question",
+              "LingroveID": "ID",
+              "Meaning": "Answer"
+            },
+            "gap": true,
+            "hasSavedDeck": true,
+            "mapping": {
+              "Expression": "Question",
+              "LingroveID": "ID",
+              "Meaning": "Answer"
+            },
+            "model": "Custom",
+            "recognition": false,
+            "savedKeys": [
+              "ankiReviewAddress",
+              "ankiReviewDeck",
+              "ankiReviewModel",
+              "ankiReviewMapping",
+              "ankiReviewRecognition",
+              "ankiReviewGap"
+            ],
+            "savedMapping": {
+              "Expression": "Question",
+              "LingroveID": "ID",
+              "Meaning": "Answer"
+            },
+            "savedMappingIsArray": true
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "address": " http://LOCALHOST:08765/​",
+            "deck": "",
+            "effectiveMapping": {
+              "Expression": "Question",
+              "LingroveID": "ID",
+              "Meaning": "Answer"
+            },
+            "gap": true,
+            "hasSavedDeck": true,
+            "mapping": {
+              "Expression": "Question",
+              "LingroveID": "ID",
+              "Meaning": "Answer"
+            },
+            "model": "Custom",
+            "recognition": false,
+            "savedKeys": [
+              "ankiReviewAddress",
+              "ankiReviewDeck",
+              "ankiReviewModel",
+              "ankiReviewMapping",
+              "ankiReviewRecognition",
+              "ankiReviewGap"
+            ],
+            "savedMapping": {
+              "Expression": "Question",
+              "LingroveID": "ID",
+              "Meaning": "Answer"
+            },
+            "savedMappingIsArray": true
+          }
+        },
+        {
+          "result": {
+            "endpoint": "http://localhost:8765",
+            "key": "  fixture key  "
+          },
+          "state": {
+            "address": " http://LOCALHOST:08765/​",
+            "deck": "",
+            "effectiveMapping": {
+              "Expression": "Question",
+              "LingroveID": "ID",
+              "Meaning": "Answer"
+            },
+            "gap": true,
+            "hasSavedDeck": true,
+            "mapping": {
+              "Expression": "Question",
+              "LingroveID": "ID",
+              "Meaning": "Answer"
+            },
+            "model": "Custom",
+            "recognition": false,
+            "savedKeys": [
+              "ankiReviewAddress",
+              "ankiReviewDeck",
+              "ankiReviewModel",
+              "ankiReviewMapping",
+              "ankiReviewRecognition",
+              "ankiReviewGap"
+            ],
+            "savedMapping": {
+              "Expression": "Question",
+              "LingroveID": "ID",
+              "Meaning": "Answer"
+            },
+            "savedMappingIsArray": true
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "address": " http://LOCALHOST:08765/​",
+            "deck": "",
+            "effectiveMapping": {
+              "Expression": "Question",
+              "LingroveID": "ID",
+              "Meaning": "Answer"
+            },
+            "gap": true,
+            "hasSavedDeck": true,
+            "mapping": {
+              "Expression": "Question",
+              "LingroveID": "ID",
+              "Meaning": "Answer"
+            },
+            "model": "Custom",
+            "recognition": false,
+            "savedKeys": [
+              "ankiReviewAddress",
+              "ankiReviewDeck",
+              "ankiReviewModel",
+              "ankiReviewMapping",
+              "ankiReviewRecognition",
+              "ankiReviewGap"
+            ],
+            "savedMapping": {
+              "Expression": "Question",
+              "LingroveID": "ID",
+              "Meaning": "Answer"
+            },
+            "savedMappingIsArray": true
+          }
+        },
+        {
+          "result": {
+            "key": "  fixture key  "
+          },
+          "state": {
+            "address": " http://LOCALHOST:08765/​",
+            "deck": "",
+            "effectiveMapping": {
+              "Expression": "Question",
+              "LingroveID": "ID",
+              "Meaning": "Answer"
+            },
+            "gap": true,
+            "hasSavedDeck": true,
+            "mapping": {
+              "Expression": "Question",
+              "LingroveID": "ID",
+              "Meaning": "Answer"
+            },
+            "model": "Custom",
+            "recognition": false,
+            "savedKeys": [
+              "ankiReviewAddress",
+              "ankiReviewDeck",
+              "ankiReviewModel",
+              "ankiReviewMapping",
+              "ankiReviewRecognition",
+              "ankiReviewGap"
+            ],
+            "savedMapping": {
+              "Expression": "Question",
+              "LingroveID": "ID",
+              "Meaning": "Answer"
+            },
+            "savedMappingIsArray": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "preset-effective",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "mapping",
+          "value": {
+            "LingroveID": "ID"
+          }
+        },
+        {
+          "op": "model",
+          "value": "Custom"
+        },
+        {
+          "op": "model",
+          "value": "Lingrove v1"
+        },
+        {
+          "op": "restart"
+        }
+      ],
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        },
+        {
+          "result": null,
+          "state": {
+            "address": "http://127.0.0.1:8765",
+            "deck": "Default",
+            "effectiveMapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "gap": false,
+            "hasSavedDeck": false,
+            "mapping": {
+              "LingroveID": "ID"
+            },
+            "model": "Lingrove v1",
+            "recognition": true,
+            "savedKeys": [
+              "ankiReviewMapping"
+            ],
+            "savedMapping": {
+              "LingroveID": "ID"
+            },
+            "savedMappingIsArray": true
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "address": "http://127.0.0.1:8765",
+            "deck": "Default",
+            "effectiveMapping": {
+              "LingroveID": "ID"
+            },
+            "gap": false,
+            "hasSavedDeck": false,
+            "mapping": {
+              "LingroveID": "ID"
+            },
+            "model": "Custom",
+            "recognition": true,
+            "savedKeys": [
+              "ankiReviewModel",
+              "ankiReviewMapping"
+            ],
+            "savedMapping": {
+              "LingroveID": "ID"
+            },
+            "savedMappingIsArray": true
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "address": "http://127.0.0.1:8765",
+            "deck": "Default",
+            "effectiveMapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "gap": false,
+            "hasSavedDeck": false,
+            "mapping": {
+              "LingroveID": "ID"
+            },
+            "model": "Lingrove v1",
+            "recognition": true,
+            "savedKeys": [
+              "ankiReviewModel",
+              "ankiReviewMapping"
+            ],
+            "savedMapping": {
+              "LingroveID": "ID"
+            },
+            "savedMappingIsArray": true
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "address": "http://127.0.0.1:8765",
+            "deck": "Default",
+            "effectiveMapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "gap": false,
+            "hasSavedDeck": false,
+            "mapping": {
+              "LingroveID": "ID"
+            },
+            "model": "Lingrove v1",
+            "recognition": true,
+            "savedKeys": [
+              "ankiReviewModel",
+              "ankiReviewMapping"
+            ],
+            "savedMapping": {
+              "LingroveID": "ID"
+            },
+            "savedMappingIsArray": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "key-empty-delete",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "saveKey",
+          "value": "fixture"
+        },
+        {
+          "op": "readKey"
+        },
+        {
+          "op": "saveKey",
+          "value": ""
+        },
+        {
+          "op": "connection"
+        }
+      ],
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        },
+        {
+          "result": null,
+          "state": {
+            "address": "http://127.0.0.1:8765",
+            "deck": "Default",
+            "effectiveMapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "gap": false,
+            "hasSavedDeck": false,
+            "mapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "model": "Lingrove v1",
+            "recognition": true,
+            "savedKeys": [],
+            "savedMapping": null,
+            "savedMappingIsArray": null
+          }
+        },
+        {
+          "result": {
+            "key": "fixture"
+          },
+          "state": {
+            "address": "http://127.0.0.1:8765",
+            "deck": "Default",
+            "effectiveMapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "gap": false,
+            "hasSavedDeck": false,
+            "mapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "model": "Lingrove v1",
+            "recognition": true,
+            "savedKeys": [],
+            "savedMapping": null,
+            "savedMappingIsArray": null
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "address": "http://127.0.0.1:8765",
+            "deck": "Default",
+            "effectiveMapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "gap": false,
+            "hasSavedDeck": false,
+            "mapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "model": "Lingrove v1",
+            "recognition": true,
+            "savedKeys": [],
+            "savedMapping": null,
+            "savedMappingIsArray": null
+          }
+        },
+        {
+          "result": {
+            "endpoint": "http://127.0.0.1:8765",
+            "key": ""
+          },
+          "state": {
+            "address": "http://127.0.0.1:8765",
+            "deck": "Default",
+            "effectiveMapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "gap": false,
+            "hasSavedDeck": false,
+            "mapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "model": "Lingrove v1",
+            "recognition": true,
+            "savedKeys": [],
+            "savedMapping": null,
+            "savedMappingIsArray": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "key-whitespace",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "saveKey",
+          "value": " \t "
+        },
+        {
+          "op": "restart"
+        },
+        {
+          "op": "connection"
+        }
+      ],
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        },
+        {
+          "result": null,
+          "state": {
+            "address": "http://127.0.0.1:8765",
+            "deck": "Default",
+            "effectiveMapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "gap": false,
+            "hasSavedDeck": false,
+            "mapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "model": "Lingrove v1",
+            "recognition": true,
+            "savedKeys": [],
+            "savedMapping": null,
+            "savedMappingIsArray": null
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "address": "http://127.0.0.1:8765",
+            "deck": "Default",
+            "effectiveMapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "gap": false,
+            "hasSavedDeck": false,
+            "mapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "model": "Lingrove v1",
+            "recognition": true,
+            "savedKeys": [],
+            "savedMapping": null,
+            "savedMappingIsArray": null
+          }
+        },
+        {
+          "result": {
+            "endpoint": "http://127.0.0.1:8765",
+            "key": " \t "
+          },
+          "state": {
+            "address": "http://127.0.0.1:8765",
+            "deck": "Default",
+            "effectiveMapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "gap": false,
+            "hasSavedDeck": false,
+            "mapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "model": "Lingrove v1",
+            "recognition": true,
+            "savedKeys": [],
+            "savedMapping": null,
+            "savedMappingIsArray": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "invalid-address",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "address",
+          "value": "https://example.com"
+        },
+        {
+          "op": "saveKey",
+          "value": "fixture"
+        },
+        {
+          "op": "connection"
+        },
+        {
+          "op": "readKey"
+        }
+      ],
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        },
+        {
+          "result": null,
+          "state": {
+            "address": "https://example.com",
+            "deck": "Default",
+            "effectiveMapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "gap": false,
+            "hasSavedDeck": false,
+            "mapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "model": "Lingrove v1",
+            "recognition": true,
+            "savedKeys": [
+              "ankiReviewAddress"
+            ],
+            "savedMapping": null,
+            "savedMappingIsArray": null
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "address": "https://example.com",
+            "deck": "Default",
+            "effectiveMapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "gap": false,
+            "hasSavedDeck": false,
+            "mapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "model": "Lingrove v1",
+            "recognition": true,
+            "savedKeys": [
+              "ankiReviewAddress"
+            ],
+            "savedMapping": null,
+            "savedMappingIsArray": null
+          }
+        },
+        {
+          "result": {
+            "error": "Use a local AnkiConnect HTTP address."
+          },
+          "state": {
+            "address": "https://example.com",
+            "deck": "Default",
+            "effectiveMapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "gap": false,
+            "hasSavedDeck": false,
+            "mapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "model": "Lingrove v1",
+            "recognition": true,
+            "savedKeys": [
+              "ankiReviewAddress"
+            ],
+            "savedMapping": null,
+            "savedMappingIsArray": null
+          }
+        },
+        {
+          "result": {
+            "key": "fixture"
+          },
+          "state": {
+            "address": "https://example.com",
+            "deck": "Default",
+            "effectiveMapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "gap": false,
+            "hasSavedDeck": false,
+            "mapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "model": "Lingrove v1",
+            "recognition": true,
+            "savedKeys": [
+              "ankiReviewAddress"
+            ],
+            "savedMapping": null,
+            "savedMappingIsArray": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "ankiReviewAddress-empty",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewAddress": {
+          "type": "string",
+          "value": ""
+        }
+      },
+      "expected": [
+        {
+          "address": "",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewAddress"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "ankiReviewAddress-bool",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewAddress": {
+          "type": "bool",
+          "value": true
+        }
+      },
+      "expected": [
+        {
+          "address": "1",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewAddress"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "ankiReviewAddress-number",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewAddress": {
+          "type": "number",
+          "value": 1.5
+        }
+      },
+      "expected": [
+        {
+          "address": "1.5",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewAddress"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "ankiReviewAddress-array",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewAddress": {
+          "type": "array",
+          "value": null
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewAddress"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "ankiReviewDeck-empty",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewDeck": {
+          "type": "string",
+          "value": ""
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": true,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewDeck"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "ankiReviewDeck-bool",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewDeck": {
+          "type": "bool",
+          "value": true
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "1",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": true,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewDeck"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "ankiReviewDeck-number",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewDeck": {
+          "type": "number",
+          "value": 1.5
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "1.5",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": true,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewDeck"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "ankiReviewDeck-array",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewDeck": {
+          "type": "array",
+          "value": null
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewDeck"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "ankiReviewModel-empty",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewModel": {
+          "type": "string",
+          "value": ""
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewModel"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "ankiReviewModel-bool",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewModel": {
+          "type": "bool",
+          "value": true
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewModel"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "ankiReviewModel-number",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewModel": {
+          "type": "number",
+          "value": 1.5
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "1.5",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewModel"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "ankiReviewModel-array",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewModel": {
+          "type": "array",
+          "value": null
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewModel"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "ankiReviewRecognition-false",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewRecognition": {
+          "type": "bool",
+          "value": false
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": false,
+          "savedKeys": [
+            "ankiReviewRecognition"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "ankiReviewRecognition-true",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewRecognition": {
+          "type": "bool",
+          "value": true
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewRecognition"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "ankiReviewRecognition-zero",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewRecognition": {
+          "type": "number",
+          "value": 0
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": false,
+          "savedKeys": [
+            "ankiReviewRecognition"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "ankiReviewRecognition-one",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewRecognition": {
+          "type": "number",
+          "value": 1
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewRecognition"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "ankiReviewRecognition-two",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewRecognition": {
+          "type": "number",
+          "value": 2
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewRecognition"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "ankiReviewRecognition-negative",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewRecognition": {
+          "type": "number",
+          "value": -1
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewRecognition"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "ankiReviewRecognition-yes-string",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewRecognition": {
+          "type": "string",
+          "value": "YES"
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewRecognition"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "ankiReviewRecognition-no-string",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewRecognition": {
+          "type": "string",
+          "value": "NO"
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewRecognition"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "ankiReviewRecognition-true-string",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewRecognition": {
+          "type": "string",
+          "value": "true"
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewRecognition"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "ankiReviewRecognition-two-string",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewRecognition": {
+          "type": "string",
+          "value": "2"
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewRecognition"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "ankiReviewRecognition-array",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewRecognition": {
+          "type": "array",
+          "value": null
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewRecognition"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "ankiReviewGap-false",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewGap": {
+          "type": "bool",
+          "value": false
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewGap"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "ankiReviewGap-true",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewGap": {
+          "type": "bool",
+          "value": true
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": true,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewGap"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "ankiReviewGap-zero",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewGap": {
+          "type": "number",
+          "value": 0
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewGap"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "ankiReviewGap-one",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewGap": {
+          "type": "number",
+          "value": 1
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": true,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewGap"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "ankiReviewGap-two",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewGap": {
+          "type": "number",
+          "value": 2
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": true,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewGap"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "ankiReviewGap-negative",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewGap": {
+          "type": "number",
+          "value": -1
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": true,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewGap"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "ankiReviewGap-yes-string",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewGap": {
+          "type": "string",
+          "value": "YES"
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": true,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewGap"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "ankiReviewGap-no-string",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewGap": {
+          "type": "string",
+          "value": "NO"
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewGap"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "ankiReviewGap-true-string",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewGap": {
+          "type": "string",
+          "value": "true"
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": true,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewGap"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "ankiReviewGap-two-string",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewGap": {
+          "type": "string",
+          "value": "2"
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewGap"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "ankiReviewGap-array",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewGap": {
+          "type": "array",
+          "value": null
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewGap"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "mapping-empty",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewMapping": {
+          "type": "data",
+          "value": ""
+        }
+      },
+      "actions": [
+        {
+          "op": "restart"
+        }
+      ],
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewMapping"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": false
+        },
+        {
+          "result": null,
+          "state": {
+            "address": "http://127.0.0.1:8765",
+            "deck": "Default",
+            "effectiveMapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "gap": false,
+            "hasSavedDeck": false,
+            "mapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "model": "Lingrove v1",
+            "recognition": true,
+            "savedKeys": [
+              "ankiReviewMapping"
+            ],
+            "savedMapping": null,
+            "savedMappingIsArray": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "mapping-valid",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewMapping": {
+          "type": "data",
+          "value": "WyJMaW5ncm92ZUlEIiwiSUQiLCJFeHByZXNzaW9uIiwiUSIsIk1lYW5pbmciLCJBIl0="
+        }
+      },
+      "actions": [
+        {
+          "op": "restart"
+        }
+      ],
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Expression": "Q",
+            "LingroveID": "ID",
+            "Meaning": "A"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewMapping"
+          ],
+          "savedMapping": {
+            "Expression": "Q",
+            "LingroveID": "ID",
+            "Meaning": "A"
+          },
+          "savedMappingIsArray": true
+        },
+        {
+          "result": null,
+          "state": {
+            "address": "http://127.0.0.1:8765",
+            "deck": "Default",
+            "effectiveMapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "gap": false,
+            "hasSavedDeck": false,
+            "mapping": {
+              "Expression": "Q",
+              "LingroveID": "ID",
+              "Meaning": "A"
+            },
+            "model": "Lingrove v1",
+            "recognition": true,
+            "savedKeys": [
+              "ankiReviewMapping"
+            ],
+            "savedMapping": {
+              "Expression": "Q",
+              "LingroveID": "ID",
+              "Meaning": "A"
+            },
+            "savedMappingIsArray": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "mapping-object",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewMapping": {
+          "type": "data",
+          "value": "eyJMaW5ncm92ZUlEIjoiSUQifQ=="
+        }
+      },
+      "actions": [
+        {
+          "op": "restart"
+        }
+      ],
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewMapping"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": false
+        },
+        {
+          "result": null,
+          "state": {
+            "address": "http://127.0.0.1:8765",
+            "deck": "Default",
+            "effectiveMapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "gap": false,
+            "hasSavedDeck": false,
+            "mapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "model": "Lingrove v1",
+            "recognition": true,
+            "savedKeys": [
+              "ankiReviewMapping"
+            ],
+            "savedMapping": null,
+            "savedMappingIsArray": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "mapping-duplicate",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewMapping": {
+          "type": "data",
+          "value": "WyJNZWFuaW5nIiwiZmlyc3QiLCJNZWFuaW5nIiwibGFzdCJd"
+        }
+      },
+      "actions": [
+        {
+          "op": "restart"
+        }
+      ],
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Meaning": "last"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewMapping"
+          ],
+          "savedMapping": {
+            "Meaning": "last"
+          },
+          "savedMappingIsArray": true
+        },
+        {
+          "result": null,
+          "state": {
+            "address": "http://127.0.0.1:8765",
+            "deck": "Default",
+            "effectiveMapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "gap": false,
+            "hasSavedDeck": false,
+            "mapping": {
+              "Meaning": "last"
+            },
+            "model": "Lingrove v1",
+            "recognition": true,
+            "savedKeys": [
+              "ankiReviewMapping"
+            ],
+            "savedMapping": {
+              "Meaning": "last"
+            },
+            "savedMappingIsArray": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "mapping-unknown",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewMapping": {
+          "type": "data",
+          "value": "WyJVbmtub3duIiwiZmllbGQiXQ=="
+        }
+      },
+      "actions": [
+        {
+          "op": "restart"
+        }
+      ],
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewMapping"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": true
+        },
+        {
+          "result": null,
+          "state": {
+            "address": "http://127.0.0.1:8765",
+            "deck": "Default",
+            "effectiveMapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "gap": false,
+            "hasSavedDeck": false,
+            "mapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "model": "Lingrove v1",
+            "recognition": true,
+            "savedKeys": [
+              "ankiReviewMapping"
+            ],
+            "savedMapping": null,
+            "savedMappingIsArray": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "mapping-odd",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewMapping": {
+          "type": "data",
+          "value": "WyJNZWFuaW5nIl0="
+        }
+      },
+      "actions": [
+        {
+          "op": "restart"
+        }
+      ],
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewMapping"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": true
+        },
+        {
+          "result": null,
+          "state": {
+            "address": "http://127.0.0.1:8765",
+            "deck": "Default",
+            "effectiveMapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "gap": false,
+            "hasSavedDeck": false,
+            "mapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "model": "Lingrove v1",
+            "recognition": true,
+            "savedKeys": [
+              "ankiReviewMapping"
+            ],
+            "savedMapping": null,
+            "savedMappingIsArray": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "mapping-wrong-value",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewMapping": {
+          "type": "data",
+          "value": "WyJNZWFuaW5nIiwxXQ=="
+        }
+      },
+      "actions": [
+        {
+          "op": "restart"
+        }
+      ],
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewMapping"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": true
+        },
+        {
+          "result": null,
+          "state": {
+            "address": "http://127.0.0.1:8765",
+            "deck": "Default",
+            "effectiveMapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "gap": false,
+            "hasSavedDeck": false,
+            "mapping": {
+              "Explanation": "Explanation",
+              "Expression": "Expression",
+              "ExpressionAudio": "ExpressionAudio",
+              "GapAnswer": "GapAnswer",
+              "GapPrompt": "GapPrompt",
+              "LingroveID": "LingroveID",
+              "Meaning": "Meaning",
+              "Notes": "Notes",
+              "Recognition": "Recognition",
+              "Sentence": "Sentence",
+              "SentenceAudio": "SentenceAudio",
+              "Translation": "Translation"
+            },
+            "model": "Lingrove v1",
+            "recognition": true,
+            "savedKeys": [
+              "ankiReviewMapping"
+            ],
+            "savedMapping": null,
+            "savedMappingIsArray": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "mapping-string",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewMapping": {
+          "type": "string",
+          "value": "[]"
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewMapping"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "numeric-string-0",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewModel": {
+          "type": "number",
+          "value": 1.2345678901234567
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "1.234567890123457",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewModel"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "numeric-string-1",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewModel": {
+          "type": "number",
+          "value": 9007199254740994
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "9007199254740994",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewModel"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "numeric-string-2",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewModel": {
+          "type": "number",
+          "value": 1e+16
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "1e+16",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewModel"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "numeric-string-3",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewModel": {
+          "type": "number",
+          "value": 1e-05
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "1e-05",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewModel"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "numeric-string-4",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewModel": {
+          "type": "number",
+          "value": -0.0
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "-0",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewModel"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "numeric-string-5",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewModel": {
+          "type": "number",
+          "value": 1.7976931348623157e+308
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "1.797693134862316e+308",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewModel"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "gap-string-0",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewGap": {
+          "type": "string",
+          "value": "TRUE"
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": true,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewGap"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "gap-string-1",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewGap": {
+          "type": "string",
+          "value": "Yes"
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": true,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewGap"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "gap-string-2",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewGap": {
+          "type": "string",
+          "value": "y"
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewGap"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "gap-string-3",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewGap": {
+          "type": "string",
+          "value": "true "
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewGap"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "gap-string-4",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewGap": {
+          "type": "string",
+          "value": "01"
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": false,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewGap"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    },
+    {
+      "id": "gap-string-5",
+      "macSource": "Cotabby/Models/Review/AnkiReviewSettings.swift",
+      "provenanceKind": "source-policy-extension",
+      "seed": {
+        "ankiReviewGap": {
+          "type": "string",
+          "value": "1"
+        }
+      },
+      "expected": [
+        {
+          "address": "http://127.0.0.1:8765",
+          "deck": "Default",
+          "effectiveMapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "gap": true,
+          "hasSavedDeck": false,
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "model": "Lingrove v1",
+          "recognition": true,
+          "savedKeys": [
+            "ankiReviewGap"
+          ],
+          "savedMapping": null,
+          "savedMappingIsArray": null
+        }
+      ]
+    }
+  ]
+}

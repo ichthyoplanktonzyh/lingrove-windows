@@ -138,8 +138,10 @@ model weights.
 The [sense-content library](docs/VOCABULARY_CONTENT.md) ports stable text/image block values,
 UTF-8/media metadata budgets and literal review HTML. The [usage/capture values and keys](docs/VOCABULARY_CAPTURE.md)
 retain exact encounter/provenance and share explanation receipts. The [notebook/review values](docs/VOCABULARY_MODELS.md)
-now preserve full sense ownership, retained plans and binding identity. Notebook storage, image
-preparation and Anki transport remain unfinished.
+now preserve full sense ownership, retained plans and binding identity. The shared notebook now has durable storage, image preparation, export/backup and graph adapters.
+The [local Anki transport](docs/ANKI_CONNECT_TRANSPORT.md) and
+[review preferences](docs/ANKI_REVIEW_SETTINGS.md) have bounded automated evidence; native credential
+storage, connection controls and the review send transaction remain open.
 
 Windows CI also executes the [compiled WPF learning-view suite](docs/WPF_VIEW_TESTS.md): actual
 XAML/resource loading, window layout, in-memory rendering, native no-activation styles and

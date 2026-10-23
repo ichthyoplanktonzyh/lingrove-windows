@@ -146,7 +146,8 @@ The [review controller](docs/ANKI_REVIEW_CONTROLLER.md) now preserves operation 
 status and guarded navigation/template updates. [Review/template persistence](docs/VOCABULARY_REVIEW_TRANSACTIONS.md)
 now supplies card CAS and acknowledged receipt storage. The [review settings adapter](docs/ANKI_REVIEW_SETTINGS_UI.md)
 connects one inert AppHost owner, explicit connection controls and normal-quit drain. Review navigation,
-card preparation and the send transaction remain open. The [PCM foundation](docs/SPEECH_PCM_FOUNDATION.md)
+card preparation UI and the send transaction remain open. The [recording preparation library](docs/REVIEW_AUDIO_PREPARATION.md)
+now preserves sheet-owned cache, busy admission and cancellation with borrowed speech contracts. The [PCM foundation](docs/SPEECH_PCM_FOUNDATION.md)
 now adapts bounded Float32 blocks and playback queue accounting. The [frame decoder](docs/SPEECH_FRAME_DECODER.md)
 adds bounded fragmented helper-stream admission. The [export buffer](docs/SPEECH_EXPORT_BUFFER.md)
 now serializes request-owned audio accumulation/packaging. The [provider metadata rules](docs/SPEECH_PROVIDER_METADATA.md)

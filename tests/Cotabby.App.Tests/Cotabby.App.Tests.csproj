@@ -6,6 +6,7 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="..\..\fixtures\parity\review-audio-v1.json" Link="fixtures\review-audio-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\fixtures\parity\speech-buffer-v1.json" Link="fixtures\speech-buffer-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\fixtures\parity\anki-settings-interaction-v1.json" Link="fixtures\anki-settings-interaction-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <Compile Include="..\Shared\AnkiReviewTestEffects.cs" Link="Shared\AnkiReviewTestEffects.cs" />
@@ -20,6 +21,7 @@
          no replacement for compiling the complete WPF app or exercising a Windows desktop. -->
     <Compile Include="..\..\src\Cotabby.Win32\Review\AnkiConnectClient.cs" Link="Production\AnkiConnectClient.cs" />
     <Compile Include="..\..\src\Cotabby.App\Review\AnkiReviewFeature.cs" Link="Production\AnkiReviewFeature.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Review\ReviewAudioPreparation.cs" Link="Production\ReviewAudioPreparation.cs" />
     <Compile Include="..\..\src\Cotabby.App\Review\AnkiReviewSettingsInteraction.cs" Link="Production\AnkiReviewSettingsInteraction.cs" />
     <Compile Include="..\..\src\Cotabby.App\Review\AnkiReviewSettings.cs" Link="Production\AnkiReviewSettings.cs" />
     <Compile Include="..\..\src\Cotabby.App\Review\AnkiReviewController.cs" Link="Production\AnkiReviewController.cs" />

@@ -109,3 +109,12 @@ def database_sqlite_sources(repo):
         "Cotabby/Models/Vocabulary/VocabularyCLIReceipt.swift",
         "Cotabby/Services/Vocabulary/VocabularySQLiteFileLock.swift",
         "Cotabby/Services/Vocabulary/VocabularySQLiteDatabase.swift")]
+
+
+def database_archive_sources(repo):
+    """Complete real archive/media classes; the three validation dependencies retain original bodies."""
+    return database_sqlite_sources(repo) + archive_validation_sources(repo)[-3:] + [source(repo, path) for path in (
+        "Cotabby/Services/Vocabulary/VocabularyImageStorage.swift",
+        "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+        "Cotabby/Services/Vocabulary/VocabularyArchive+ReviewCards.swift",
+        "Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift")]

@@ -294,3 +294,10 @@ and relational row inputs. SQLite expectations come from the separate Swift driv
 exercise real SQL constraints, update/delete order and transaction rollback, not a fake database.
 [SQLite scope and unresolved named-file protection](../../docs/VOCABULARY_SQLITE_TRANSACTIONS.md)
 separate in-memory evidence from restart, disk durability, Windows file locks and product Save.
+
+`vocabulary-archive-v1.json` adds 22 observations from the complete pinned Mac archive actor,
+original image storage and actual memory SQLite. The driver only seeds faults/interleavings; it
+does not substitute archive algorithms. Save/no-op, sense ownership, concurrent edits, semantic
+admission, stale CAS, real SQL rollback and explanation authorship feed the actual C# archive.
+[Archive ownership and outstanding media/product work](../../docs/VOCABULARY_ARCHIVE.md) describe
+the limits. Normal verification never updates expected observations.

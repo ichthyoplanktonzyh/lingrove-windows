@@ -6,7 +6,7 @@ using Value = Cotabby.Win32.Vocabulary.VocabularySQLiteConnection.Value;
 namespace Cotabby.Win32.Vocabulary;
 
 /// <summary>
-/// One future archive owns this relational database and its connection. Typed projection decides
+/// One archive owns this relational database and its connection. Typed projection decides
 /// which rows changed before encoding; SQLite owns atomic compare-and-increment acknowledgement.
 /// This synchronous boundary retains Mac table order, deferred FKs and rollback. The named-file
 /// factory adds Windows identity, exclusive creation and cross-process locking. No AppHost service

@@ -73,6 +73,11 @@ stderr bounds, cancellation of a blocked child, its observed exit, synchronous r
 clipboard APIs. One WPF output case checks all four real helper sidecars and launches the actual
 helper with invalid arguments, proving startup/exit before any clipboard access.
 
+The stderr-budget process case observes a PID marker before releasing its fixed 40,000-byte
+write. It then requires the content failure and observed child exit within 12 seconds, separately
+from the startup bound and before its 60-second fallback deadline. A marker after the write would
+be unreliable because correct budget enforcement can terminate the child during that write.
+
 These tests do not establish actual foreign producer compatibility, delayed-render interoperability
 or actual PNG/TIFF/JPEG/DIB availability from Paint, browsers or Office. The DIB adapter has
 separate structure and WIC pixel cases, with compressed/profiled variants explicitly unsupported. Native clipboard producer checks remain a Windows desktop gate.

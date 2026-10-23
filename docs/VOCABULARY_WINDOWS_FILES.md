@@ -1,7 +1,7 @@
 # Windows vocabulary files
 
-This adapter extends the real SQLite transaction library to named Windows files. AppHost, the
-archive cache, durable Save UI, notebook, media and CLI remain disconnected. Native file tests run
+This adapter extends the real SQLite transaction library to named Windows files. AppHost, durable Save UI, notebook, media and CLI remain disconnected. The
+[archive owner](VOCABULARY_ARCHIVE.md) now composes the adapter with semantic admission and caching. Native file tests run
 only on Windows CI; macOS can compile them and run the unchanged in-memory transaction suite.
 No desktop/editor, model, installer or downloadable artifact is involved.
 
@@ -83,6 +83,9 @@ DOTNET_ROOT="$PWD/.dotnet" .dotnet/dotnet test tests/Cotabby.App.Tests/Cotabby.A
 dotnet test tests/Cotabby.Inference.Tests/Cotabby.Inference.Tests.csproj --configuration Release --filter FullyQualifiedName~VocabularyWindowsFileTests
 ```
 
-These checks establish a bounded file/transaction adapter. Complete archive semantic admission,
-cache/revision publication, media lifetime and user-visible Save/notebook work remain open. They
+These checks establish a bounded file/transaction adapter. The separate archive now supplies semantic admission and cache/revision acknowledgement;
+AppHost publication, media lifetime and user-visible Save/notebook work remain open. They
 also do not establish native UIA, IME, clipboard acknowledgement, ghost geometry or GPU behavior.
+
+All 37 native file cases passed on Windows x64 at the final PR34 head
+`803d543a96a064636b4cd876241b702d8c7a6bfc`: [CI run 39912053197](https://github.com/ichthyoplanktonzyh/lingrove-windows/actions/runs/39912053197).

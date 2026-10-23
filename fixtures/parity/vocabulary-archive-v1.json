@@ -1,0 +1,254 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "fresh",
+      "operation": "fresh",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "entries": 0,
+        "revision": 0
+      }
+    },
+    {
+      "id": "save",
+      "operation": "save",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "contains": true,
+        "entries": 1,
+        "revision": 1,
+        "senses": 1,
+        "usageIDRetained": true,
+        "usages": 1
+      }
+    },
+    {
+      "id": "duplicateSave",
+      "operation": "duplicateSave",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "contains": true,
+        "entries": 1,
+        "revision": 2,
+        "senses": 1,
+        "usageIDRetained": true,
+        "usages": 1
+      }
+    },
+    {
+      "id": "removeMissing",
+      "operation": "removeMissing",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "entries": 0,
+        "revision": 0
+      }
+    },
+    {
+      "id": "removeMissingEntry",
+      "operation": "removeMissingEntry",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "entries": 0,
+        "revision": 1
+      }
+    },
+    {
+      "id": "explanationMissing",
+      "operation": "explanationMissing",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "entries": 0,
+        "revision": 0
+      }
+    },
+    {
+      "id": "commitBeforeLoad",
+      "operation": "commitBeforeLoad",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "equal": true,
+        "revision": 1
+      }
+    },
+    {
+      "id": "removeStandalone",
+      "operation": "removeStandalone",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "general": 0,
+        "note": "note",
+        "revision": 2,
+        "saved": false,
+        "usages": 1
+      }
+    },
+    {
+      "id": "createRemoveSense",
+      "operation": "createRemoveSense",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "originalRetained": true,
+        "revision": 3,
+        "senses": 1
+      }
+    },
+    {
+      "id": "moveUsage",
+      "operation": "moveUsage",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "ownerRetained": true,
+        "records": 1,
+        "revision": 3,
+        "sourceEmpty": true
+      }
+    },
+    {
+      "id": "mergeSense",
+      "operation": "mergeSense",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "alias": true,
+        "owner": true,
+        "revision": 3,
+        "senses": 1,
+        "usages": 1
+      }
+    },
+    {
+      "id": "updatePreservesCapture",
+      "operation": "updatePreservesCapture",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "note": "edited",
+        "revision": 3,
+        "usages": 2
+      }
+    },
+    {
+      "id": "editConflict",
+      "operation": "editConflict",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "error": "editConflict",
+        "note": "winner",
+        "revision": 2
+      }
+    },
+    {
+      "id": "prune",
+      "operation": "prune",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "general": 1,
+        "revision": 2,
+        "usage": 0
+      }
+    },
+    {
+      "id": "rollback",
+      "operation": "rollback",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "cachePreserved": true,
+        "diskPreserved": true,
+        "error": "invalidArchive",
+        "revision": 1
+      }
+    },
+    {
+      "id": "staleBaseline",
+      "operation": "staleBaseline",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "error": "editConflict",
+        "preserved": true,
+        "revision": 2
+      }
+    },
+    {
+      "id": "invalidCommit",
+      "operation": "invalidCommit",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "error": "invalidArchive",
+        "preserved": true,
+        "revision": 1
+      }
+    },
+    {
+      "id": "invalidLoad",
+      "operation": "invalidLoad",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "error": "invalidArchive",
+        "preserved": true
+      }
+    },
+    {
+      "id": "missingImage",
+      "operation": "missingImage",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "error": "invalidContent",
+        "preserved": true,
+        "revision": 1
+      }
+    },
+    {
+      "id": "explanation",
+      "operation": "explanation",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "meaning": "core",
+        "recordID": "00000000-0000-0000-0000-000000000065",
+        "revision": 2
+      }
+    },
+    {
+      "id": "invalidExplanation",
+      "operation": "invalidExplanation",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "meaning": "core",
+        "recordID": "00000000-0000-0000-0000-000000000064",
+        "revision": 2
+      }
+    },
+    {
+      "id": "userExplanation",
+      "operation": "userExplanation",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "meaning": "context",
+        "recordID": "00000000-0000-0000-0000-000000000065",
+        "revision": 2
+      }
+    }
+  ]
+}

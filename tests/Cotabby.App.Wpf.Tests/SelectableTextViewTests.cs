@@ -118,7 +118,7 @@ public sealed class SelectableTextViewTests(WpfDispatcher dispatcher)
         try
         {
             text.Select(0, 4); var first = text.RequestCopy()!;
-            Guid sameTarget = (Guid)text.DocumentIdentity;
+            Guid sameTarget = Assert.IsType<Guid>(text.DocumentIdentity);
             text.DocumentIdentity = sameTarget; // Equal identity in a newly allocated object box.
             Assert.True(first.IsCurrent); Assert.Equal("same", text.Selection!.Text);
             text.DocumentIdentity = Guid.NewGuid();

@@ -1,4 +1,3 @@
-using System.Security.Cryptography;
 using System.Text;
 using Cotabby.Core.Speech;
 using Cotabby.Core.Support;
@@ -16,7 +15,7 @@ public static partial class AnkiReviewPolicy
         {
             if (!Enum.IsDefined(kind)) return false;
             string text = kind == ReviewAudioKind.Expression ? content.Expression : content.Sentence;
-            string hash = Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(SpeechTextPolicy.SanitizedText(text) ?? "")));
+            string hash = SpeechExportPolicy.Digest(Encoding.UTF8.GetBytes(SpeechTextPolicy.SanitizedText(text) ?? ""));
             if (plan.AudioReceipts is not { } receipts || !receipts.TryGetValue(kind, out var receipt)
                 || receipt is null || !CollectionValues.Same(receipt.TextHash, hash)) return false;
         }

@@ -212,6 +212,7 @@ python3 scripts/verify-review-card-macos-parity.py --mac-repo /path/to/macOS-lin
 python3 scripts/verify-anki-connect-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-anki-fields-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-speech-text-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
+python3 scripts/verify-speech-export-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 ```
 
 The verifiers read the pinned macOS sources from Git and check the same JSON cases. The lexical
@@ -225,7 +226,7 @@ runner. This is ordinary compilation, not packaging or a release.
 The current `.github/workflows/ci.yml` has two validation jobs: Windows x64 restores and builds the
 full solution, then runs Core, portable App boundary and Inference tests, including noninteractive ICU sentence tests,
 and the compiled learning-card WPF view suite on its own STA dispatcher (see `docs/WPF_VIEW_TESTS.md`);
-macOS 26 x64 runs Core, portable App boundary tests and all forty-six Swift parity verifiers against a sparse checkout of the pinned Mac
+macOS 26 x64 runs Core, portable App boundary tests and all forty-seven Swift parity verifiers against a sparse checkout of the pinned Mac
 Support, language-learning/vocabulary models/services, content-test provenance, language catalog and pinned expression resource files. The separate
 `.github/workflows/upstream-baseline.yml` checks the original Windows fork at commit
 `b1e4031c70aca1be21aae2c57b138fde5fc22bb1` with .NET 9 on manual dispatch. Its initial setup run is

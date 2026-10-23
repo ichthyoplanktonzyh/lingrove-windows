@@ -1116,6 +1116,9 @@
       "text": "lingrove-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.wav",
       "expected": {
         "valid": true
+      },
+      "bridgedExpected": {
+        "valid": true
       }
     },
     {
@@ -1126,6 +1129,9 @@
       "text": "lingrove-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.mp3",
       "expected": {
         "valid": true
+      },
+      "bridgedExpected": {
+        "valid": true
       }
     },
     {
@@ -1135,6 +1141,9 @@
       "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
       "text": "lingrove-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.wav\n",
       "expected": {
+        "valid": false
+      },
+      "bridgedExpected": {
         "valid": true
       }
     },
@@ -1145,6 +1154,9 @@
       "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
       "text": "lingrove-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.wav\r\n",
       "expected": {
+        "valid": false
+      },
+      "bridgedExpected": {
         "valid": true
       }
     },
@@ -1156,6 +1168,9 @@
       "text": "LINGROVE-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.WAV",
       "expected": {
         "valid": false
+      },
+      "bridgedExpected": {
+        "valid": false
       }
     },
     {
@@ -1165,6 +1180,9 @@
       "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
       "text": "/lingrove-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.wav",
       "expected": {
+        "valid": false
+      },
+      "bridgedExpected": {
         "valid": false
       }
     },
@@ -1176,6 +1194,9 @@
       "text": "lingrove-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.ogg",
       "expected": {
         "valid": false
+      },
+      "bridgedExpected": {
+        "valid": false
       }
     },
     {
@@ -1185,6 +1206,9 @@
       "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
       "text": "lingrove-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.wav",
       "expected": {
+        "valid": false
+      },
+      "bridgedExpected": {
         "valid": false
       }
     },
@@ -1196,6 +1220,9 @@
       "text": "lingrove-😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀.wav",
       "expected": {
         "valid": false
+      },
+      "bridgedExpected": {
+        "valid": false
       }
     },
     {
@@ -1205,6 +1232,9 @@
       "provenanceKind": "source-policy-extension",
       "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
       "expected": {
+        "valid": false
+      },
+      "bridgedExpected": {
         "valid": true
       }
     },
@@ -1215,6 +1245,9 @@
       "provenanceKind": "source-policy-extension",
       "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
       "expected": {
+        "valid": false
+      },
+      "bridgedExpected": {
         "valid": true
       }
     },
@@ -1225,6 +1258,9 @@
       "provenanceKind": "source-policy-extension",
       "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
       "expected": {
+        "valid": false
+      },
+      "bridgedExpected": {
         "valid": true
       }
     },
@@ -1235,6 +1271,9 @@
       "provenanceKind": "source-policy-extension",
       "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
       "expected": {
+        "valid": false
+      },
+      "bridgedExpected": {
         "valid": true
       }
     },
@@ -1245,6 +1284,9 @@
       "provenanceKind": "source-policy-extension",
       "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
       "expected": {
+        "valid": false
+      },
+      "bridgedExpected": {
         "valid": true
       }
     },
@@ -1255,6 +1297,9 @@
       "provenanceKind": "source-policy-extension",
       "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
       "expected": {
+        "valid": false
+      },
+      "bridgedExpected": {
         "valid": true
       }
     },
@@ -1265,6 +1310,9 @@
       "provenanceKind": "source-policy-extension",
       "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
       "expected": {
+        "valid": false
+      },
+      "bridgedExpected": {
         "valid": false
       }
     }

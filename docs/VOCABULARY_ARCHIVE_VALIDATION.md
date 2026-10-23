@@ -44,9 +44,12 @@ their source behavior.
 
 Audio receipt fingerprints and text hashes are 64 Swift Characters, not necessarily hexadecimal or
 64 UTF-16 code units. .NET text-element counting adapts this, subject to the documented Unicode
-runtime-version boundary. The original filename regex permits one final Unicode newline sequence;
-124-case observations include CRLF, CR, LF, NEL, LS, PS, VT and FF, but reject two final LF sequences.
-An explicit regex adaptation preserves that admission behavior and leaves the retained string intact.
+runtime-version boundary. The filename oracle originally used JSONSerialization/NSString strings, which
+admit a final Unicode newline. [The later audio-export probe](SPEECH_EXPORT_POLICY.md) demonstrated
+that identical bytes in native/JSONDecoder strings reject those endings. The verifier now preserves
+both observations and the Windows adapter follows the native notebook/wire path; eight native
+expected decisions were recaptured without changing the original policy. Stored names are not
+trimmed or rewritten.
 Actual Windows filename/byte IO remains a separate platform boundary.
 
 Guard failures in the archive produce `InvalidArchive`; nested content/layout failures propagate
@@ -63,7 +66,7 @@ SQLite files or call any included acquisition/search/model functions. The wrappe
 the original pure instance methods with their collaborators; it supplies no replacement policy.
 C# probes construct corresponding graphs and invoke the production boundaries. Four additional
 cases check unchanged raw/optional values, malformed .NET values, exception categories and local
-layout-reference identity scope. Existing expected corpora remain unchanged.
+layout-reference identity scope. All non-filename expectations remain unchanged; filename rows preserve their prior bridge observations.
 
 ```sh
 DOTNET_ROOT="$PWD/.dotnet" .dotnet/dotnet test tests/Cotabby.Core.Tests/Cotabby.Core.Tests.csproj --configuration Release

@@ -81,7 +81,7 @@ retired menus, fixed failures/recovery, later browsing during a blocked mutation
 admitted transaction during retirement. These cases keep native physical input and popup-focus
 verification separate from routed events and actual archive acknowledgements.
 
-The [notebook session library](VOCABULARY_NOTEBOOK_SESSION.md) adds 32 dispatcher cases (94 WPF
-assembly cases total): 24 original Swift observations and eight transition/worker regressions. They
+The [notebook session library](VOCABULARY_NOTEBOOK_SESSION.md) adds 33 dispatcher cases (95 WPF
+assembly cases total): 24 original Swift observations and nine transition/worker regressions. They
 execute real App/Core sessions without constructing a notebook window. This count does not imply
 that the notebook UI has been connected to explanations/dictionary, or that native input was tested.

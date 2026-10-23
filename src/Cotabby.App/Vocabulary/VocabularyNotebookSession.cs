@@ -64,13 +64,18 @@ internal sealed class VocabularyNotebookSession : IAsyncDisposable
         }
         bool closeDictionary = EntryId != entry?.Id || _dictionaryEntry is { } remembered && entry is not null
             && VocabularyNotebookTargetPolicy.DictionaryChanged(remembered, entry);
+        // Mac computes words synchronously. During Windows preparation an empty form can make
+        // an edited expression change the effective query without changing form/language. Retire
+        // only that unfinished preparation; an already-open dictionary keeps Mac's source rule.
+        closeDictionary |= _pendingDictionary is { } pending && entry is not null && pending.Id == entry.Id
+            && !VocabularyNotebookTargetPolicy.SameQuery(VocabularyNotebookTargetPolicy.DictionaryQuery(pending), VocabularyNotebookTargetPolicy.DictionaryQuery(entry));
         EntryId = entry?.Id; SenseId = sense?.Id;
         if (newOwner) _explanations = Empty();
         try
         {
             if (closeDictionary)
             {
-                _dictionaryEntry = null; CancelPreparation(); Dictionary.Close();
+                _dictionaryEntry = null; CancelPreparation(); DictionaryError = null; Dictionary.Close();
                 if (version != _selectionVersion || _disposed) return;
             }
             var next = new Dictionary<string, LearningExplanationSession>();
@@ -178,7 +183,7 @@ internal sealed class VocabularyNotebookSession : IAsyncDisposable
         foreach (var session in _explanations.Values)
         { if (version != _selectionVersion || _disposed) return; session.Cancel(); }
         if (version != _selectionVersion || _disposed) return;
-        CancelPreparation(); Dictionary.Close(); Notify();
+        CancelPreparation(); DictionaryError = null; Dictionary.Close(); Notify();
     }
     private void CancelPreparation()
     {

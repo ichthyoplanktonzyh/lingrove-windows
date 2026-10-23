@@ -180,12 +180,33 @@ public sealed class VocabularyNotebookSessionTests(WpfDispatcher dispatcher)
     });
 
     [Fact]
+    public Task AnEditedEmptyFormExpressionRetiresItsPendingNativePreparationUnderTheSameEntryIdentity() => dispatcher.RunAsync(async () =>
+    {
+        using var entered = new ManualResetEventSlim(); using var release = new ManualResetEventSlim();
+        var text = new TextProbe { Prepare = (query, _) => { if (query == "bank") { entered.Set(); Assert.True(release.Wait(Timeout)); } return []; } };
+        var provider = new Provider(); var entry = Entry() with { DictionaryForm = "" };
+        await using var session = new VocabularyNotebookSession(Dispatcher.CurrentDispatcher, provider, text);
+        session.Select(entry, Id(2)); var old = session.ShowDictionaryAsync(entry);
+        try
+        {
+            Assert.True(entered.Wait(Timeout)); entry = entry with { Expression = "coffee" }; session.Select(entry, Id(2));
+            release.Set(); await old.WaitAsync(Timeout); Assert.Null(session.Dictionary.State.Unit); Assert.Equal(0, provider.Calls);
+            await session.Resume(); Assert.Equal(0, provider.Calls);
+            await session.ShowDictionaryAsync(entry).WaitAsync(Timeout); Assert.Equal("coffee", session.Dictionary.State.Query); Assert.Equal(1, provider.Calls);
+        }
+        finally { release.Set(); await old.WaitAsync(Timeout); }
+    });
+
+    [Fact]
     public Task NativePreparationFailureIsFixedAndAnExplicitRetryCanSucceedWithoutStartingAi() => dispatcher.RunAsync(async () =>
     {
         var text = new TextProbe { Prepare = (_, _) => throw new IOException("private query path") }; var provider = new Provider(); var service = new Service(); var entry = Entry();
         await using var session = new VocabularyNotebookSession(Dispatcher.CurrentDispatcher, provider, text, service);
         session.Select(entry, Id(2)); await session.ShowDictionaryAsync(entry).WaitAsync(Timeout);
         Assert.Equal("Lexical text processing is unavailable on this system.", session.DictionaryError); Assert.Null(session.Dictionary.State.Unit); Assert.Equal(0, provider.Calls);
+        session.Cancel(); Assert.Null(session.DictionaryError);
+        await session.ShowDictionaryAsync(entry).WaitAsync(Timeout); Assert.NotNull(session.DictionaryError);
+        entry = Copy(entry, id: Id(8)); session.Select(entry, Id(2)); Assert.Null(session.DictionaryError);
         text.Prepare = (_, _) => []; await session.ShowDictionaryAsync(entry).WaitAsync(Timeout);
         Assert.Null(session.DictionaryError); Assert.Equal("bank", session.Dictionary.State.Query); Assert.Equal(1, provider.Calls); Assert.Equal(0, service.Generations);
     });

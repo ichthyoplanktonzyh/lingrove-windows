@@ -33,7 +33,8 @@ and validate row/session identity and the rendered state before acting.
 Dictionary preparation uses a weak owner and a cancellation/version receipt. A new query clears
 the previous article while native word segmentation runs. Repeated and reentrant calls deduplicate
 both pending preparation and an already-open query for that entry. Cancel closes the dictionary but
-remembers an explicitly opened entry for Resume; Hide clears that memory. Word-provider failures
+remembers an explicitly opened entry for Resume; Hide clears that memory. An empty-form expression edit also retires pending preparation when its effective query changes;
+an already-open dictionary retains the original Mac form/language invalidation rule. Word-provider failures
 show a fixed message and allow explicit retry. No guessed word ranges are substituted. Disposal
 revokes workers without waiting for an uncooperative text adapter; provider work keeps the existing
 dictionary session's bounded teardown policy.
@@ -51,16 +52,16 @@ The cases cover missing/merged sense selection, separate standalone/example rows
 unchanged-input live generation, changed/removed-target cancellation, configured saved records,
 activation/cancel, explicit/repeated/hide/resume dictionary operations, form/language changes,
 empty form, pattern-to-expression and canonical query equality. C# executes the same operations
-against the real App session and real Core children on a WPF dispatcher. Eight additional Windows
-cases cover entry-scoped document identity, release/reentry inside SavedRecord, reentrant query deduplication, a blocked native
-word worker across navigation/disposal, fixed failure/retry and a late provider across cancel/resume.
+against the real App session and real Core children on a WPF dispatcher. Nine additional Windows
+cases cover entry-scoped document identity, release/reentry inside SavedRecord, reentrant query deduplication, blocked native
+word workers across navigation/disposal and same-ID effective-query edits, fixed failure/retry and a late provider across cancel/resume.
 Three portable Core cases verify suspended admission and resumption by target, cancel and clear.
 The shared input graph is construction data only; expected outputs remain independently Swift-owned.
 
 The first-hit oracle does not verify source ordering, settings-based routing, misses, error fallback
 or bundled-provider selection; those Mac capabilities remain unported. Native document identity is
 supported by source comparison, not serialized in these 24 observations. Windows CI executes the
-32 dispatcher cases; macOS compiles them and runs the portable suite and original Swift verifier.
+33 dispatcher cases; macOS compiles them and runs the portable suite and original Swift verifier.
 This is the twenty-first Swift verifier. No Windows editor, physical input, model, GPU, image,
 clipboard or network provider is exercised by these tests.
 

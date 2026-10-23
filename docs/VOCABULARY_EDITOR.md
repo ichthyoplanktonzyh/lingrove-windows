@@ -63,7 +63,7 @@ Windows CI executes these cases before merge.
 
 New image import/paste/drop/normalization/storage, graph/batch/review/export UI, speech, notebook AI
 and dictionary sessions, explicit explanation-adoption controls, localization and window geometry
-persistence remain open. New-sense, merge, delete-sense and move-usage commands remain a separate
-notebook action slice. Existing images display placeholders until media is implemented. Native
+persistence remain open. [New/merge/delete-sense and move-usage commands](VOCABULARY_ACTIONS.md)
+now use the same Store through the notebook action partial. Existing images display placeholders until media is implemented. Native
 physical keyboard/pointer, editor activation, UIA/IME, ghost pixels, insertion and GPU gates remain.
 No installer, artifact upload or release is produced.

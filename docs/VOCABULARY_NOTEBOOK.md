@@ -58,7 +58,8 @@ merge. These cases do not establish physical keyboard/pointer interaction or ext
 ## Remaining notebook work
 
 The list/detail browser displays acknowledged values. The [owned editor](VOCABULARY_EDITOR.md)
-now supplies an explicit full-value draft and acknowledged Save/Cancel. Delete/merge/move/new-sense controls, explicit
+now supplies an explicit full-value draft and acknowledged Save/Cancel. [Sense/usage actions](VOCABULARY_ACTIONS.md)
+now supply New/Merge/Delete/Move with durable acknowledgement. Explicit
 explanation adoption, the notebook-owned AI/dictionary session, speech, review/Anki, batch selection,
 graph mode, export/backup/restore, localization and persisted window geometry remain unported UI.
 Authored image references display an unavailable placeholder and literal caption until verified

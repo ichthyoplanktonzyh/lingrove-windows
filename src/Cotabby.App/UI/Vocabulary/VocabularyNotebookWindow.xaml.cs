@@ -48,7 +48,7 @@ public partial class VocabularyNotebookWindow : Window
         LanguageFilter.SelectedIndex = 0; _presenting = false;
         _store.Changed += OnStoreChanged;
         Closing += OnClosing;
-        Closed += (_, _) => { _retired = true; _store.Changed -= OnStoreChanged; CancelFiltering(); };
+        Closed += (_, _) => { _retired = true; _store.Changed -= OnStoreChanged; CancelFiltering(); RetireActions(); };
         RequestRefresh();
     }
     internal void Reveal(VocabularySelection? selection)
@@ -160,10 +160,11 @@ public partial class VocabularyNotebookWindow : Window
         var selection = VocabularyNotebookPolicy.ResolveSelection(document, _selection);
         var entry = selection is null ? null : document.Entries.Single(value => value.Id == selection.Value.EntryId);
         var sense = entry?.Senses.Single(value => value.Id == selection!.Value.SenseId);
-        EditButton.IsEnabled = entry is not null && sense is not null;
+        UpdateActions();
         var key = entry is null || sense is null ? null : new DetailKey(entry.Id, entry.Expression, entry.DictionaryForm, entry.Language, entry.Kind, sense);
         // Unrelated saves/filter changes keep the same literal controls, scroll and selection.
         if (_hasRenderedDetail && key == _renderedDetail) return;
+        CloseActionMenus(); ++_detailVersion;
         _hasRenderedDetail = true; _renderedDetail = key; DetailContent.Children.Clear();
         if (entry is null || sense is null) { DetailContent.Children.Add(Label("Vocabulary", 22, bold: true)); return; }
         DetailContent.Children.Add(Literal(entry.Expression, 22, entry.Language, bold: true));
@@ -212,6 +213,7 @@ public partial class VocabularyNotebookWindow : Window
             foreach (var variant in example.TranslationVariants.Where(value => value.Text != example.Translation || value.Language != example.TranslationLanguage))
                 content.Children.Add(Literal(variant.Text, 13, variant.Language));
             if (example.Meaning.Length > 0) content.Children.Add(Literal(example.Meaning, 13, example.MeaningLanguage));
+            content.Children.Add(MoveUsageButton(new(entry.Id, sense.Id), example.Id));
             Section(example.Completeness == VocabularyExampleCompleteness.Sentence ? "Example sentence" : "Context fragment", content);
         }
         DetailContent.Children.Add(Label(sense.CreatedAt.ToLocalTime().ToString("d"), 11));
@@ -234,7 +236,7 @@ public partial class VocabularyNotebookWindow : Window
     }
     private void OnEdit(object sender, RoutedEventArgs args)
     {
-        if (_retired || _editor is not null || Selection is not { } selected) return;
+        if (_retired || _mutating || _editor is not null || Selection is not { } selected) return;
         // Resolve against the full acknowledged graph. A filtered row intentionally contains
         // fewer senses and would delete hidden ownership if it became an editor baseline.
         var entry = _store.Snapshot.Document.Entries.FirstOrDefault(value => value.Id == selected.EntryId);
@@ -246,7 +248,7 @@ public partial class VocabularyNotebookWindow : Window
     }
     private void OnClosing(object? sender, CancelEventArgs args)
     {
-        if (_closing) return; args.Cancel = true; Hide(); CancelFiltering(); ++_version;
+        if (_closing) return; args.Cancel = true; CloseActionMenus(); Hide(); CancelFiltering(); ++_version;
     }
     private void CancelFiltering()
     {
@@ -260,6 +262,7 @@ public partial class VocabularyNotebookWindow : Window
         if (!_retired)
         {
             _retired = true; _store.Changed -= OnStoreChanged; CancelFiltering(); ++_version;
+            RetireActions();
             if (_editor is { } editor) Track(editor.RetireAsync());
             _closing = true; Close();
         }

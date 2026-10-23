@@ -81,6 +81,8 @@ jobs:
             Cotabby/Models/Vocabulary
             Cotabby/Models/Review
             Cotabby/Models/Runtime
+            Cotabby/Models/Speech/LearningSpeechModels.swift
+            Cotabby/Services/Review/AnkiConnectClient.swift
             CotabbyTests/Services/Vocabulary/VocabularyContentTests.swift
             CotabbyTests/Support/Review/ReviewCardPolicyTests.swift
             Cotabby/Services/Vocabulary/VocabularyArchive.swift
@@ -208,3 +210,6 @@ jobs:
         run: python3 scripts/verify-vocabulary-graph-presentation-macos-parity.py --mac-repo .mac-baseline
       - name: Verify review card content layouts templates and JSON against original Mac policies
         run: python3 scripts/verify-review-card-macos-parity.py --mac-repo .mac-baseline
+
+      - name: Verify local Anki protocol against complete original client without network
+        run: python3 scripts/verify-anki-connect-macos-parity.py --mac-repo .mac-baseline

@@ -1,0 +1,2900 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "writing-default-translation",
+      "mode": "preview",
+      "presentation": {
+        "source": "请随时告诉我最新进展。",
+        "translation": "Please keep me posted.",
+        "sourceLanguage": "zh-Hans",
+        "targetLanguage": "en",
+        "status": "Ready"
+      },
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyCaptureFactory.swift",
+      "macSecondarySource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "regression-adaptation",
+      "nativeTextParity": true,
+      "facts": {
+        "language": "en",
+        "sentences": [
+          {
+            "length": 22,
+            "location": 0
+          }
+        ],
+        "text": "Please keep me posted.",
+        "words": [
+          {
+            "range": {
+              "length": 6,
+              "location": 0
+            },
+            "text": "Please"
+          },
+          {
+            "range": {
+              "length": 4,
+              "location": 7
+            },
+            "text": "keep"
+          },
+          {
+            "range": {
+              "length": 2,
+              "location": 12
+            },
+            "text": "me"
+          },
+          {
+            "range": {
+              "length": 6,
+              "location": 15
+            },
+            "text": "posted"
+          }
+        ]
+      },
+      "macTest": "CotabbyTests/Support/Vocabulary/VocabularyCaptureFactoryTests.swift",
+      "app": "fixture.app",
+      "expected": {
+        "dictionaryForm": "Please keep me posted.",
+        "example": {
+          "app": "fixture.app",
+          "completeness": "sentence",
+          "meaning": "",
+          "meaningLanguage": null,
+          "meaningOrigin": "captured",
+          "ranges": [
+            {
+              "length": 22,
+              "location": 0
+            }
+          ],
+          "text": "Please keep me posted.",
+          "translation": "请随时告诉我最新进展。",
+          "translationLanguage": "zh-Hans"
+        },
+        "expression": "Please keep me posted.",
+        "input": {
+          "context": "Please keep me posted.",
+          "contextKind": "sentence",
+          "dictionaryForm": "Please keep me posted.",
+          "kind": "sentence",
+          "language": "en",
+          "occurrenceIdentity": "02009cc8dba01a18c61a7a07646c48994e7be0b617012bc08843f7c04269117d",
+          "ranges": [
+            {
+              "length": 22,
+              "location": 0
+            }
+          ],
+          "target": "Please keep me posted."
+        },
+        "kind": "sentence",
+        "language": "en",
+        "meaning": "请随时告诉我最新进展。",
+        "meaningLanguage": "zh-Hans"
+      }
+    },
+    {
+      "id": "preview-Loading",
+      "mode": "preview",
+      "presentation": {
+        "source": "请随时告诉我最新进展。",
+        "translation": "Please keep me posted.",
+        "sourceLanguage": "zh-Hans",
+        "targetLanguage": "en",
+        "status": "Loading"
+      },
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyCaptureFactory.swift",
+      "macSecondarySource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "regression-adaptation",
+      "nativeTextParity": true,
+      "facts": {
+        "language": "en",
+        "sentences": [
+          {
+            "length": 22,
+            "location": 0
+          }
+        ],
+        "text": "Please keep me posted.",
+        "words": [
+          {
+            "range": {
+              "length": 6,
+              "location": 0
+            },
+            "text": "Please"
+          },
+          {
+            "range": {
+              "length": 4,
+              "location": 7
+            },
+            "text": "keep"
+          },
+          {
+            "range": {
+              "length": 2,
+              "location": 12
+            },
+            "text": "me"
+          },
+          {
+            "range": {
+              "length": 6,
+              "location": 15
+            },
+            "text": "posted"
+          }
+        ]
+      },
+      "macTest": "CotabbyTests/Support/Vocabulary/VocabularyCaptureFactoryTests.swift",
+      "app": "fixture.app",
+      "expected": null
+    },
+    {
+      "id": "preview-Failed",
+      "mode": "preview",
+      "presentation": {
+        "source": "请随时告诉我最新进展。",
+        "translation": "Please keep me posted.",
+        "sourceLanguage": "zh-Hans",
+        "targetLanguage": "en",
+        "status": "Failed"
+      },
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyCaptureFactory.swift",
+      "macSecondarySource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "nativeTextParity": true,
+      "facts": {
+        "language": "en",
+        "sentences": [
+          {
+            "length": 22,
+            "location": 0
+          }
+        ],
+        "text": "Please keep me posted.",
+        "words": [
+          {
+            "range": {
+              "length": 6,
+              "location": 0
+            },
+            "text": "Please"
+          },
+          {
+            "range": {
+              "length": 4,
+              "location": 7
+            },
+            "text": "keep"
+          },
+          {
+            "range": {
+              "length": 2,
+              "location": 12
+            },
+            "text": "me"
+          },
+          {
+            "range": {
+              "length": 6,
+              "location": 15
+            },
+            "text": "posted"
+          }
+        ]
+      },
+      "app": "fixture.app",
+      "expected": null
+    },
+    {
+      "id": "preview-Cancelled",
+      "mode": "preview",
+      "presentation": {
+        "source": "请随时告诉我最新进展。",
+        "translation": "Please keep me posted.",
+        "sourceLanguage": "zh-Hans",
+        "targetLanguage": "en",
+        "status": "Cancelled"
+      },
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyCaptureFactory.swift",
+      "macSecondarySource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "regression-adaptation",
+      "nativeTextParity": true,
+      "facts": {
+        "language": "en",
+        "sentences": [
+          {
+            "length": 22,
+            "location": 0
+          }
+        ],
+        "text": "Please keep me posted.",
+        "words": [
+          {
+            "range": {
+              "length": 6,
+              "location": 0
+            },
+            "text": "Please"
+          },
+          {
+            "range": {
+              "length": 4,
+              "location": 7
+            },
+            "text": "keep"
+          },
+          {
+            "range": {
+              "length": 2,
+              "location": 12
+            },
+            "text": "me"
+          },
+          {
+            "range": {
+              "length": 6,
+              "location": 15
+            },
+            "text": "posted"
+          }
+        ]
+      },
+      "macTest": "CotabbyTests/Support/Vocabulary/VocabularyCaptureFactoryTests.swift",
+      "app": "fixture.app",
+      "expected": null
+    },
+    {
+      "id": "preview-Idle",
+      "mode": "preview",
+      "presentation": {
+        "source": "请随时告诉我最新进展。",
+        "translation": "Please keep me posted.",
+        "sourceLanguage": "zh-Hans",
+        "targetLanguage": "en",
+        "status": "Idle"
+      },
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyCaptureFactory.swift",
+      "macSecondarySource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "nativeTextParity": true,
+      "facts": {
+        "language": "en",
+        "sentences": [
+          {
+            "length": 22,
+            "location": 0
+          }
+        ],
+        "text": "Please keep me posted.",
+        "words": [
+          {
+            "range": {
+              "length": 6,
+              "location": 0
+            },
+            "text": "Please"
+          },
+          {
+            "range": {
+              "length": 4,
+              "location": 7
+            },
+            "text": "keep"
+          },
+          {
+            "range": {
+              "length": 2,
+              "location": 12
+            },
+            "text": "me"
+          },
+          {
+            "range": {
+              "length": 6,
+              "location": 15
+            },
+            "text": "posted"
+          }
+        ]
+      },
+      "app": "fixture.app",
+      "expected": null
+    },
+    {
+      "id": "preview-single-word",
+      "mode": "preview",
+      "presentation": {
+        "source": "请随时告诉我最新进展。",
+        "translation": "posted",
+        "sourceLanguage": "zh-Hans",
+        "targetLanguage": "en",
+        "status": "Ready"
+      },
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyCaptureFactory.swift",
+      "macSecondarySource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "nativeTextParity": true,
+      "facts": {
+        "language": "en",
+        "sentences": [
+          {
+            "length": 6,
+            "location": 0
+          }
+        ],
+        "text": "posted",
+        "words": [
+          {
+            "range": {
+              "length": 6,
+              "location": 0
+            },
+            "text": "posted"
+          }
+        ]
+      },
+      "app": "fixture.app",
+      "expected": {
+        "dictionaryForm": "posted",
+        "example": null,
+        "expression": "posted",
+        "input": {
+          "context": "posted",
+          "contextKind": "none",
+          "dictionaryForm": "posted",
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": "posted"
+        },
+        "kind": "word",
+        "language": "en",
+        "meaning": "请随时告诉我最新进展。",
+        "meaningLanguage": "zh-Hans"
+      }
+    },
+    {
+      "id": "preview-unpunctuated-phrase",
+      "mode": "preview",
+      "presentation": {
+        "source": "请随时告诉我最新进展。",
+        "translation": "keep me posted",
+        "sourceLanguage": "zh-Hans",
+        "targetLanguage": "en",
+        "status": "Ready"
+      },
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyCaptureFactory.swift",
+      "macSecondarySource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "nativeTextParity": true,
+      "facts": {
+        "language": "en",
+        "sentences": [
+          {
+            "length": 14,
+            "location": 0
+          }
+        ],
+        "text": "keep me posted",
+        "words": [
+          {
+            "range": {
+              "length": 4,
+              "location": 0
+            },
+            "text": "keep"
+          },
+          {
+            "range": {
+              "length": 2,
+              "location": 5
+            },
+            "text": "me"
+          },
+          {
+            "range": {
+              "length": 6,
+              "location": 8
+            },
+            "text": "posted"
+          }
+        ]
+      },
+      "app": "fixture.app",
+      "expected": {
+        "dictionaryForm": "keep me posted",
+        "example": {
+          "app": "fixture.app",
+          "completeness": "sentence",
+          "meaning": "",
+          "meaningLanguage": null,
+          "meaningOrigin": "captured",
+          "ranges": [
+            {
+              "length": 14,
+              "location": 0
+            }
+          ],
+          "text": "keep me posted",
+          "translation": "请随时告诉我最新进展。",
+          "translationLanguage": "zh-Hans"
+        },
+        "expression": "keep me posted",
+        "input": {
+          "context": "keep me posted",
+          "contextKind": "sentence",
+          "dictionaryForm": "keep me posted",
+          "kind": "sentence",
+          "language": "en",
+          "occurrenceIdentity": "16a7bca124d759b6550476cd42d1d6296a2d4d6cde3854ad5b8e43eeb205ee25",
+          "ranges": [
+            {
+              "length": 14,
+              "location": 0
+            }
+          ],
+          "target": "keep me posted"
+        },
+        "kind": "sentence",
+        "language": "en",
+        "meaning": "请随时告诉我最新进展。",
+        "meaningLanguage": "zh-Hans"
+      }
+    },
+    {
+      "id": "preview-two-sentences",
+      "mode": "preview",
+      "presentation": {
+        "source": "请随时告诉我最新进展。",
+        "translation": "First sentence. Keep me posted.",
+        "sourceLanguage": "zh-Hans",
+        "targetLanguage": "en",
+        "status": "Ready"
+      },
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyCaptureFactory.swift",
+      "macSecondarySource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "nativeTextParity": true,
+      "facts": {
+        "language": "en",
+        "sentences": [
+          {
+            "length": 16,
+            "location": 0
+          },
+          {
+            "length": 15,
+            "location": 16
+          }
+        ],
+        "text": "First sentence. Keep me posted.",
+        "words": [
+          {
+            "range": {
+              "length": 5,
+              "location": 0
+            },
+            "text": "First"
+          },
+          {
+            "range": {
+              "length": 8,
+              "location": 6
+            },
+            "text": "sentence"
+          },
+          {
+            "range": {
+              "length": 4,
+              "location": 16
+            },
+            "text": "Keep"
+          },
+          {
+            "range": {
+              "length": 2,
+              "location": 21
+            },
+            "text": "me"
+          },
+          {
+            "range": {
+              "length": 6,
+              "location": 24
+            },
+            "text": "posted"
+          }
+        ]
+      },
+      "app": "fixture.app",
+      "expected": {
+        "dictionaryForm": "First sentence. Keep me posted.",
+        "example": {
+          "app": "fixture.app",
+          "completeness": "fragment",
+          "meaning": "",
+          "meaningLanguage": null,
+          "meaningOrigin": "captured",
+          "ranges": [
+            {
+              "length": 31,
+              "location": 0
+            }
+          ],
+          "text": "First sentence. Keep me posted.",
+          "translation": "请随时告诉我最新进展。",
+          "translationLanguage": "zh-Hans"
+        },
+        "expression": "First sentence. Keep me posted.",
+        "input": {
+          "context": "First sentence. Keep me posted.",
+          "contextKind": "fragment",
+          "dictionaryForm": "First sentence. Keep me posted.",
+          "kind": "sentence",
+          "language": "en",
+          "occurrenceIdentity": "a38be954acbb4a199fec318121247e7845ba0c317afe613be63f1bc724e9a413",
+          "ranges": [
+            {
+              "length": 31,
+              "location": 0
+            }
+          ],
+          "target": "First sentence. Keep me posted."
+        },
+        "kind": "sentence",
+        "language": "en",
+        "meaning": "请随时告诉我最新进展。",
+        "meaningLanguage": "zh-Hans"
+      }
+    },
+    {
+      "id": "preview-leading-space",
+      "mode": "preview",
+      "presentation": {
+        "source": "请随时告诉我最新进展。",
+        "translation": " Keep me posted.",
+        "sourceLanguage": "zh-Hans",
+        "targetLanguage": "en",
+        "status": "Ready"
+      },
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyCaptureFactory.swift",
+      "macSecondarySource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "nativeTextParity": true,
+      "facts": {
+        "language": "en",
+        "sentences": [
+          {
+            "length": 16,
+            "location": 0
+          }
+        ],
+        "text": " Keep me posted.",
+        "words": [
+          {
+            "range": {
+              "length": 4,
+              "location": 1
+            },
+            "text": "Keep"
+          },
+          {
+            "range": {
+              "length": 2,
+              "location": 6
+            },
+            "text": "me"
+          },
+          {
+            "range": {
+              "length": 6,
+              "location": 9
+            },
+            "text": "posted"
+          }
+        ]
+      },
+      "app": "fixture.app",
+      "expected": {
+        "dictionaryForm": " Keep me posted.",
+        "example": {
+          "app": "fixture.app",
+          "completeness": "sentence",
+          "meaning": "",
+          "meaningLanguage": null,
+          "meaningOrigin": "captured",
+          "ranges": [
+            {
+              "length": 16,
+              "location": 0
+            }
+          ],
+          "text": " Keep me posted.",
+          "translation": "请随时告诉我最新进展。",
+          "translationLanguage": "zh-Hans"
+        },
+        "expression": " Keep me posted.",
+        "input": {
+          "context": " Keep me posted.",
+          "contextKind": "sentence",
+          "dictionaryForm": " Keep me posted.",
+          "kind": "sentence",
+          "language": "en",
+          "occurrenceIdentity": "cc395082c27c9f9f7047b2e44f42e344dcdf468819912736fce27edc3879e761",
+          "ranges": [
+            {
+              "length": 16,
+              "location": 0
+            }
+          ],
+          "target": " Keep me posted."
+        },
+        "kind": "sentence",
+        "language": "en",
+        "meaning": "请随时告诉我最新进展。",
+        "meaningLanguage": "zh-Hans"
+      }
+    },
+    {
+      "id": "preview-trailing-space",
+      "mode": "preview",
+      "presentation": {
+        "source": "请随时告诉我最新进展。",
+        "translation": "Keep me posted. ",
+        "sourceLanguage": "zh-Hans",
+        "targetLanguage": "en",
+        "status": "Ready"
+      },
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyCaptureFactory.swift",
+      "macSecondarySource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "nativeTextParity": true,
+      "facts": {
+        "language": "en",
+        "sentences": [
+          {
+            "length": 16,
+            "location": 0
+          }
+        ],
+        "text": "Keep me posted. ",
+        "words": [
+          {
+            "range": {
+              "length": 4,
+              "location": 0
+            },
+            "text": "Keep"
+          },
+          {
+            "range": {
+              "length": 2,
+              "location": 5
+            },
+            "text": "me"
+          },
+          {
+            "range": {
+              "length": 6,
+              "location": 8
+            },
+            "text": "posted"
+          }
+        ]
+      },
+      "app": "fixture.app",
+      "expected": {
+        "dictionaryForm": "Keep me posted. ",
+        "example": {
+          "app": "fixture.app",
+          "completeness": "sentence",
+          "meaning": "",
+          "meaningLanguage": null,
+          "meaningOrigin": "captured",
+          "ranges": [
+            {
+              "length": 16,
+              "location": 0
+            }
+          ],
+          "text": "Keep me posted. ",
+          "translation": "请随时告诉我最新进展。",
+          "translationLanguage": "zh-Hans"
+        },
+        "expression": "Keep me posted. ",
+        "input": {
+          "context": "Keep me posted. ",
+          "contextKind": "sentence",
+          "dictionaryForm": "Keep me posted. ",
+          "kind": "sentence",
+          "language": "en",
+          "occurrenceIdentity": "30d362756a288998a26238f4eac0d28e20ded88dec7b408df1cae019e1fef1b5",
+          "ranges": [
+            {
+              "length": 16,
+              "location": 0
+            }
+          ],
+          "target": "Keep me posted. "
+        },
+        "kind": "sentence",
+        "language": "en",
+        "meaning": "请随时告诉我最新进展。",
+        "meaningLanguage": "zh-Hans"
+      }
+    },
+    {
+      "id": "preview-french",
+      "mode": "preview",
+      "presentation": {
+        "source": "请随时告诉我最新进展。",
+        "translation": "Tenez-moi au courant.",
+        "sourceLanguage": "zh-Hans",
+        "targetLanguage": "fr",
+        "status": "Ready"
+      },
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyCaptureFactory.swift",
+      "macSecondarySource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "nativeTextParity": true,
+      "facts": {
+        "language": "fr",
+        "sentences": [
+          {
+            "length": 21,
+            "location": 0
+          }
+        ],
+        "text": "Tenez-moi au courant.",
+        "words": [
+          {
+            "range": {
+              "length": 5,
+              "location": 0
+            },
+            "text": "Tenez"
+          },
+          {
+            "range": {
+              "length": 3,
+              "location": 6
+            },
+            "text": "moi"
+          },
+          {
+            "range": {
+              "length": 2,
+              "location": 10
+            },
+            "text": "au"
+          },
+          {
+            "range": {
+              "length": 7,
+              "location": 13
+            },
+            "text": "courant"
+          }
+        ]
+      },
+      "app": "fixture.app",
+      "expected": {
+        "dictionaryForm": "Tenez-moi au courant.",
+        "example": {
+          "app": "fixture.app",
+          "completeness": "sentence",
+          "meaning": "",
+          "meaningLanguage": null,
+          "meaningOrigin": "captured",
+          "ranges": [
+            {
+              "length": 21,
+              "location": 0
+            }
+          ],
+          "text": "Tenez-moi au courant.",
+          "translation": "请随时告诉我最新进展。",
+          "translationLanguage": "zh-Hans"
+        },
+        "expression": "Tenez-moi au courant.",
+        "input": {
+          "context": "Tenez-moi au courant.",
+          "contextKind": "sentence",
+          "dictionaryForm": "Tenez-moi au courant.",
+          "kind": "sentence",
+          "language": "fr",
+          "occurrenceIdentity": "fe6e7a7c02d0c133929debd363e6bfe2def4244414bdc79bf1701167f412373f",
+          "ranges": [
+            {
+              "length": 21,
+              "location": 0
+            }
+          ],
+          "target": "Tenez-moi au courant."
+        },
+        "kind": "sentence",
+        "language": "fr",
+        "meaning": "请随时告诉我最新进展。",
+        "meaningLanguage": "zh-Hans"
+      }
+    },
+    {
+      "id": "preview-spanish",
+      "mode": "preview",
+      "presentation": {
+        "source": "请随时告诉我最新进展。",
+        "translation": "Por favor, avísame.",
+        "sourceLanguage": "zh-Hans",
+        "targetLanguage": "es",
+        "status": "Ready"
+      },
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyCaptureFactory.swift",
+      "macSecondarySource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "nativeTextParity": true,
+      "facts": {
+        "language": "es",
+        "sentences": [
+          {
+            "length": 19,
+            "location": 0
+          }
+        ],
+        "text": "Por favor, avísame.",
+        "words": [
+          {
+            "range": {
+              "length": 3,
+              "location": 0
+            },
+            "text": "Por"
+          },
+          {
+            "range": {
+              "length": 5,
+              "location": 4
+            },
+            "text": "favor"
+          },
+          {
+            "range": {
+              "length": 7,
+              "location": 11
+            },
+            "text": "avísame"
+          }
+        ]
+      },
+      "app": "fixture.app",
+      "expected": {
+        "dictionaryForm": "Por favor, avísame.",
+        "example": {
+          "app": "fixture.app",
+          "completeness": "sentence",
+          "meaning": "",
+          "meaningLanguage": null,
+          "meaningOrigin": "captured",
+          "ranges": [
+            {
+              "length": 19,
+              "location": 0
+            }
+          ],
+          "text": "Por favor, avísame.",
+          "translation": "请随时告诉我最新进展。",
+          "translationLanguage": "zh-Hans"
+        },
+        "expression": "Por favor, avísame.",
+        "input": {
+          "context": "Por favor, avísame.",
+          "contextKind": "sentence",
+          "dictionaryForm": "Por favor, avísame.",
+          "kind": "sentence",
+          "language": "es",
+          "occurrenceIdentity": "54640cb010c684e2c289de9c15571e2e279a6b436273932ba0b3537149e0f795",
+          "ranges": [
+            {
+              "length": 19,
+              "location": 0
+            }
+          ],
+          "target": "Por favor, avísame."
+        },
+        "kind": "sentence",
+        "language": "es",
+        "meaning": "请随时告诉我最新进展。",
+        "meaningLanguage": "zh-Hans"
+      }
+    },
+    {
+      "id": "preview-chinese",
+      "mode": "preview",
+      "presentation": {
+        "source": "请随时告诉我最新进展。",
+        "translation": "请告诉我。",
+        "sourceLanguage": "zh-Hans",
+        "targetLanguage": "zh-Hans",
+        "status": "Ready"
+      },
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyCaptureFactory.swift",
+      "macSecondarySource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "nativeTextParity": false,
+      "facts": {
+        "language": "zh-Hans",
+        "sentences": [
+          {
+            "length": 5,
+            "location": 0
+          }
+        ],
+        "text": "请告诉我。",
+        "words": [
+          {
+            "range": {
+              "length": 1,
+              "location": 0
+            },
+            "text": "请"
+          },
+          {
+            "range": {
+              "length": 2,
+              "location": 1
+            },
+            "text": "告诉"
+          },
+          {
+            "range": {
+              "length": 1,
+              "location": 3
+            },
+            "text": "我"
+          }
+        ]
+      },
+      "app": "fixture.app",
+      "expected": {
+        "dictionaryForm": "请告诉我。",
+        "example": {
+          "app": "fixture.app",
+          "completeness": "sentence",
+          "meaning": "",
+          "meaningLanguage": null,
+          "meaningOrigin": "captured",
+          "ranges": [
+            {
+              "length": 5,
+              "location": 0
+            }
+          ],
+          "text": "请告诉我。",
+          "translation": "请随时告诉我最新进展。",
+          "translationLanguage": "zh-Hans"
+        },
+        "expression": "请告诉我。",
+        "input": {
+          "context": "请告诉我。",
+          "contextKind": "sentence",
+          "dictionaryForm": "请告诉我。",
+          "kind": "sentence",
+          "language": "zh-Hans",
+          "occurrenceIdentity": "2dfb959aa7cbb8fa234777bb28753355e2b117963e54bacdcb83989670a7dab3",
+          "ranges": [
+            {
+              "length": 5,
+              "location": 0
+            }
+          ],
+          "target": "请告诉我。"
+        },
+        "kind": "sentence",
+        "language": "zh-Hans",
+        "meaning": "请随时告诉我最新进展。",
+        "meaningLanguage": "zh-Hans"
+      }
+    },
+    {
+      "id": "preview-nfd-word",
+      "mode": "preview",
+      "presentation": {
+        "source": "请随时告诉我最新进展。",
+        "translation": "é",
+        "sourceLanguage": "zh-Hans",
+        "targetLanguage": "fr",
+        "status": "Ready"
+      },
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyCaptureFactory.swift",
+      "macSecondarySource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "nativeTextParity": true,
+      "facts": {
+        "language": "fr",
+        "sentences": [
+          {
+            "length": 2,
+            "location": 0
+          }
+        ],
+        "text": "é",
+        "words": [
+          {
+            "range": {
+              "length": 2,
+              "location": 0
+            },
+            "text": "é"
+          }
+        ]
+      },
+      "app": "fixture.app",
+      "expected": {
+        "dictionaryForm": "é",
+        "example": null,
+        "expression": "é",
+        "input": {
+          "context": "é",
+          "contextKind": "none",
+          "dictionaryForm": "é",
+          "kind": "word",
+          "language": "fr",
+          "ranges": [
+            {
+              "length": 2,
+              "location": 0
+            }
+          ],
+          "target": "é"
+        },
+        "kind": "word",
+        "language": "fr",
+        "meaning": "请随时告诉我最新进展。",
+        "meaningLanguage": "zh-Hans"
+      }
+    },
+    {
+      "id": "preview-punctuation-only",
+      "mode": "preview",
+      "presentation": {
+        "source": "请随时告诉我最新进展。",
+        "translation": "...",
+        "sourceLanguage": "zh-Hans",
+        "targetLanguage": "en",
+        "status": "Ready"
+      },
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyCaptureFactory.swift",
+      "macSecondarySource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "nativeTextParity": false,
+      "facts": {
+        "language": "en",
+        "sentences": [
+          {
+            "length": 3,
+            "location": 0
+          }
+        ],
+        "text": "...",
+        "words": []
+      },
+      "app": "fixture.app",
+      "expected": {
+        "dictionaryForm": "...",
+        "example": {
+          "app": "fixture.app",
+          "completeness": "sentence",
+          "meaning": "",
+          "meaningLanguage": null,
+          "meaningOrigin": "captured",
+          "ranges": [
+            {
+              "length": 3,
+              "location": 0
+            }
+          ],
+          "text": "...",
+          "translation": "请随时告诉我最新进展。",
+          "translationLanguage": "zh-Hans"
+        },
+        "expression": "...",
+        "input": {
+          "context": "...",
+          "contextKind": "sentence",
+          "dictionaryForm": "...",
+          "kind": "sentence",
+          "language": "en",
+          "occurrenceIdentity": "417534fb243b9552fc4ee4d4dbc8180fefa5f2fd0af860e314205f0309e2d70a",
+          "ranges": [
+            {
+              "length": 3,
+              "location": 0
+            }
+          ],
+          "target": "..."
+        },
+        "kind": "sentence",
+        "language": "en",
+        "meaning": "请随时告诉我最新进展。",
+        "meaningLanguage": "zh-Hans"
+      }
+    },
+    {
+      "id": "preview-oversized-word-token",
+      "mode": "preview",
+      "presentation": {
+        "source": "请随时告诉我最新进展。",
+        "translation": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "sourceLanguage": "zh-Hans",
+        "targetLanguage": "en",
+        "status": "Ready"
+      },
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyCaptureFactory.swift",
+      "macSecondarySource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "nativeTextParity": true,
+      "facts": {
+        "language": "en",
+        "sentences": [
+          {
+            "length": 300,
+            "location": 0
+          }
+        ],
+        "text": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "words": []
+      },
+      "app": "fixture.app",
+      "expected": {
+        "dictionaryForm": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "example": {
+          "app": "fixture.app",
+          "completeness": "sentence",
+          "meaning": "",
+          "meaningLanguage": null,
+          "meaningOrigin": "captured",
+          "ranges": [
+            {
+              "length": 300,
+              "location": 0
+            }
+          ],
+          "text": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "translation": "请随时告诉我最新进展。",
+          "translationLanguage": "zh-Hans"
+        },
+        "expression": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "input": {
+          "context": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "contextKind": "sentence",
+          "dictionaryForm": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "kind": "sentence",
+          "language": "en",
+          "occurrenceIdentity": "d326f8929f2427badd2c9a993ad739dd95008f6c1b4b91663b25392c3ba33cc7",
+          "ranges": [
+            {
+              "length": 300,
+              "location": 0
+            }
+          ],
+          "target": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "kind": "sentence",
+        "language": "en",
+        "meaning": "请随时告诉我最新进展。",
+        "meaningLanguage": "zh-Hans"
+      }
+    },
+    {
+      "id": "empty-source",
+      "mode": "preview",
+      "presentation": {
+        "source": "",
+        "translation": "Please keep me posted.",
+        "sourceLanguage": "zh-Hans",
+        "targetLanguage": "en",
+        "status": "Ready"
+      },
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyCaptureFactory.swift",
+      "macSecondarySource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "nativeTextParity": true,
+      "facts": {
+        "language": "en",
+        "sentences": [
+          {
+            "length": 22,
+            "location": 0
+          }
+        ],
+        "text": "Please keep me posted.",
+        "words": [
+          {
+            "range": {
+              "length": 6,
+              "location": 0
+            },
+            "text": "Please"
+          },
+          {
+            "range": {
+              "length": 4,
+              "location": 7
+            },
+            "text": "keep"
+          },
+          {
+            "range": {
+              "length": 2,
+              "location": 12
+            },
+            "text": "me"
+          },
+          {
+            "range": {
+              "length": 6,
+              "location": 15
+            },
+            "text": "posted"
+          }
+        ]
+      },
+      "app": "fixture.app",
+      "expected": null
+    },
+    {
+      "id": "empty-translation",
+      "mode": "preview",
+      "presentation": {
+        "source": "请随时告诉我最新进展。",
+        "translation": "",
+        "sourceLanguage": "zh-Hans",
+        "targetLanguage": "en",
+        "status": "Ready"
+      },
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyCaptureFactory.swift",
+      "macSecondarySource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "nativeTextParity": true,
+      "facts": {
+        "language": "en",
+        "sentences": [],
+        "text": "",
+        "words": []
+      },
+      "app": "fixture.app",
+      "expected": null
+    },
+    {
+      "id": "word-in-complete-translation",
+      "mode": "unit",
+      "presentation": {
+        "source": "请随时告诉我最新进展。",
+        "translation": "Please keep me posted.",
+        "sourceLanguage": "zh-Hans",
+        "targetLanguage": "en",
+        "status": "Ready"
+      },
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyCaptureFactory.swift",
+      "macSecondarySource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "regression-adaptation",
+      "nativeTextParity": true,
+      "facts": {
+        "language": "en",
+        "sentences": [
+          {
+            "length": 22,
+            "location": 0
+          }
+        ],
+        "text": "Please keep me posted.",
+        "words": [
+          {
+            "range": {
+              "length": 6,
+              "location": 0
+            },
+            "text": "Please"
+          },
+          {
+            "range": {
+              "length": 4,
+              "location": 7
+            },
+            "text": "keep"
+          },
+          {
+            "range": {
+              "length": 2,
+              "location": 12
+            },
+            "text": "me"
+          },
+          {
+            "range": {
+              "length": 6,
+              "location": 15
+            },
+            "text": "posted"
+          }
+        ]
+      },
+      "unit": {
+        "id": 1,
+        "surface": "posted",
+        "query": "posted",
+        "kind": "word",
+        "ranges": [
+          {
+            "location": 15,
+            "length": 6
+          }
+        ],
+        "words": [
+          {
+            "text": "posted",
+            "range": {
+              "location": 15,
+              "length": 6
+            }
+          }
+        ]
+      },
+      "macTest": "CotabbyTests/Support/Vocabulary/VocabularyCaptureFactoryTests.swift",
+      "app": "fixture.app",
+      "expected": {
+        "dictionaryForm": "posted",
+        "example": {
+          "app": "fixture.app",
+          "completeness": "sentence",
+          "meaning": "",
+          "meaningLanguage": "zh-Hans",
+          "meaningOrigin": "captured",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 15
+            }
+          ],
+          "text": "Please keep me posted.",
+          "translation": "请随时告诉我最新进展。",
+          "translationLanguage": "zh-Hans"
+        },
+        "expression": "posted",
+        "input": {
+          "context": "Please keep me posted.",
+          "contextKind": "sentence",
+          "dictionaryForm": "posted",
+          "kind": "word",
+          "language": "en",
+          "occurrenceIdentity": "44259b61ada122e52120707ad57aa9b7b8fd721e80e90572df9a5880336a1b3f",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 15
+            }
+          ],
+          "target": "posted"
+        },
+        "kind": "word",
+        "language": "en",
+        "meaning": "",
+        "meaningLanguage": "zh-Hans"
+      }
+    },
+    {
+      "id": "pattern-canonical-target",
+      "mode": "unit",
+      "presentation": {
+        "source": "请随时告诉我最新进展。",
+        "translation": "Please keep me posted.",
+        "sourceLanguage": "zh-Hans",
+        "targetLanguage": "en",
+        "status": "Ready"
+      },
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyCaptureFactory.swift",
+      "macSecondarySource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "regression-adaptation",
+      "nativeTextParity": true,
+      "facts": {
+        "language": "en",
+        "sentences": [
+          {
+            "length": 22,
+            "location": 0
+          }
+        ],
+        "text": "Please keep me posted.",
+        "words": [
+          {
+            "range": {
+              "length": 6,
+              "location": 0
+            },
+            "text": "Please"
+          },
+          {
+            "range": {
+              "length": 4,
+              "location": 7
+            },
+            "text": "keep"
+          },
+          {
+            "range": {
+              "length": 2,
+              "location": 12
+            },
+            "text": "me"
+          },
+          {
+            "range": {
+              "length": 6,
+              "location": 15
+            },
+            "text": "posted"
+          }
+        ]
+      },
+      "unit": {
+        "id": 1,
+        "surface": "keep me posted",
+        "query": "keep someone posted",
+        "kind": "pattern",
+        "ranges": [
+          {
+            "location": 7,
+            "length": 4
+          },
+          {
+            "location": 15,
+            "length": 6
+          }
+        ],
+        "words": []
+      },
+      "macTest": "CotabbyTests/Support/Vocabulary/VocabularyCaptureFactoryTests.swift",
+      "app": "fixture.app",
+      "expected": {
+        "dictionaryForm": "keep someone posted",
+        "example": {
+          "app": "fixture.app",
+          "completeness": "sentence",
+          "meaning": "",
+          "meaningLanguage": "zh-Hans",
+          "meaningOrigin": "captured",
+          "ranges": [
+            {
+              "length": 4,
+              "location": 7
+            },
+            {
+              "length": 6,
+              "location": 15
+            }
+          ],
+          "text": "Please keep me posted.",
+          "translation": "请随时告诉我最新进展。",
+          "translationLanguage": "zh-Hans"
+        },
+        "expression": "keep someone posted",
+        "input": {
+          "context": "Please keep me posted.",
+          "contextKind": "sentence",
+          "dictionaryForm": "keep someone posted",
+          "kind": "pattern",
+          "language": "en",
+          "occurrenceIdentity": "b1e5527d504ba2217cb45c92cbd480170b7761c5dde93bb392c66b65a8ebaf06",
+          "ranges": [
+            {
+              "length": 4,
+              "location": 7
+            },
+            {
+              "length": 6,
+              "location": 15
+            }
+          ],
+          "target": "keep someone posted"
+        },
+        "kind": "pattern",
+        "language": "en",
+        "meaning": "",
+        "meaningLanguage": "zh-Hans"
+      }
+    },
+    {
+      "id": "unit-Loading",
+      "mode": "unit",
+      "presentation": {
+        "source": "请随时告诉我最新进展。",
+        "translation": "Please keep me posted.",
+        "sourceLanguage": "zh-Hans",
+        "targetLanguage": "en",
+        "status": "Loading"
+      },
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyCaptureFactory.swift",
+      "macSecondarySource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "nativeTextParity": true,
+      "facts": {
+        "language": "en",
+        "sentences": [
+          {
+            "length": 22,
+            "location": 0
+          }
+        ],
+        "text": "Please keep me posted.",
+        "words": [
+          {
+            "range": {
+              "length": 6,
+              "location": 0
+            },
+            "text": "Please"
+          },
+          {
+            "range": {
+              "length": 4,
+              "location": 7
+            },
+            "text": "keep"
+          },
+          {
+            "range": {
+              "length": 2,
+              "location": 12
+            },
+            "text": "me"
+          },
+          {
+            "range": {
+              "length": 6,
+              "location": 15
+            },
+            "text": "posted"
+          }
+        ]
+      },
+      "unit": {
+        "id": 1,
+        "surface": "posted",
+        "query": "posted",
+        "kind": "word",
+        "ranges": [
+          {
+            "location": 15,
+            "length": 6
+          }
+        ],
+        "words": [
+          {
+            "text": "posted",
+            "range": {
+              "location": 15,
+              "length": 6
+            }
+          }
+        ]
+      },
+      "app": "fixture.app",
+      "expected": null
+    },
+    {
+      "id": "unit-Failed",
+      "mode": "unit",
+      "presentation": {
+        "source": "请随时告诉我最新进展。",
+        "translation": "Please keep me posted.",
+        "sourceLanguage": "zh-Hans",
+        "targetLanguage": "en",
+        "status": "Failed"
+      },
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyCaptureFactory.swift",
+      "macSecondarySource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "nativeTextParity": true,
+      "facts": {
+        "language": "en",
+        "sentences": [
+          {
+            "length": 22,
+            "location": 0
+          }
+        ],
+        "text": "Please keep me posted.",
+        "words": [
+          {
+            "range": {
+              "length": 6,
+              "location": 0
+            },
+            "text": "Please"
+          },
+          {
+            "range": {
+              "length": 4,
+              "location": 7
+            },
+            "text": "keep"
+          },
+          {
+            "range": {
+              "length": 2,
+              "location": 12
+            },
+            "text": "me"
+          },
+          {
+            "range": {
+              "length": 6,
+              "location": 15
+            },
+            "text": "posted"
+          }
+        ]
+      },
+      "unit": {
+        "id": 1,
+        "surface": "posted",
+        "query": "posted",
+        "kind": "word",
+        "ranges": [
+          {
+            "location": 15,
+            "length": 6
+          }
+        ],
+        "words": [
+          {
+            "text": "posted",
+            "range": {
+              "location": 15,
+              "length": 6
+            }
+          }
+        ]
+      },
+      "app": "fixture.app",
+      "expected": null
+    },
+    {
+      "id": "unit-Cancelled",
+      "mode": "unit",
+      "presentation": {
+        "source": "请随时告诉我最新进展。",
+        "translation": "Please keep me posted.",
+        "sourceLanguage": "zh-Hans",
+        "targetLanguage": "en",
+        "status": "Cancelled"
+      },
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyCaptureFactory.swift",
+      "macSecondarySource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "nativeTextParity": true,
+      "facts": {
+        "language": "en",
+        "sentences": [
+          {
+            "length": 22,
+            "location": 0
+          }
+        ],
+        "text": "Please keep me posted.",
+        "words": [
+          {
+            "range": {
+              "length": 6,
+              "location": 0
+            },
+            "text": "Please"
+          },
+          {
+            "range": {
+              "length": 4,
+              "location": 7
+            },
+            "text": "keep"
+          },
+          {
+            "range": {
+              "length": 2,
+              "location": 12
+            },
+            "text": "me"
+          },
+          {
+            "range": {
+              "length": 6,
+              "location": 15
+            },
+            "text": "posted"
+          }
+        ]
+      },
+      "unit": {
+        "id": 1,
+        "surface": "posted",
+        "query": "posted",
+        "kind": "word",
+        "ranges": [
+          {
+            "location": 15,
+            "length": 6
+          }
+        ],
+        "words": [
+          {
+            "text": "posted",
+            "range": {
+              "location": 15,
+              "length": 6
+            }
+          }
+        ]
+      },
+      "app": "fixture.app",
+      "expected": null
+    },
+    {
+      "id": "unit-range-outside",
+      "mode": "unit",
+      "presentation": {
+        "source": "请随时告诉我最新进展。",
+        "translation": "Please keep me posted.",
+        "sourceLanguage": "zh-Hans",
+        "targetLanguage": "en",
+        "status": "Ready"
+      },
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyCaptureFactory.swift",
+      "macSecondarySource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "nativeTextParity": true,
+      "facts": {
+        "language": "en",
+        "sentences": [
+          {
+            "length": 22,
+            "location": 0
+          }
+        ],
+        "text": "Please keep me posted.",
+        "words": [
+          {
+            "range": {
+              "length": 6,
+              "location": 0
+            },
+            "text": "Please"
+          },
+          {
+            "range": {
+              "length": 4,
+              "location": 7
+            },
+            "text": "keep"
+          },
+          {
+            "range": {
+              "length": 2,
+              "location": 12
+            },
+            "text": "me"
+          },
+          {
+            "range": {
+              "length": 6,
+              "location": 15
+            },
+            "text": "posted"
+          }
+        ]
+      },
+      "unit": {
+        "id": 1,
+        "surface": "posted",
+        "query": "posted",
+        "kind": "word",
+        "ranges": [
+          {
+            "location": 100,
+            "length": 6
+          }
+        ],
+        "words": [
+          {
+            "text": "posted",
+            "range": {
+              "location": 15,
+              "length": 6
+            }
+          }
+        ]
+      },
+      "app": "fixture.app",
+      "expected": null
+    },
+    {
+      "id": "unit-empty-ranges",
+      "mode": "unit",
+      "presentation": {
+        "source": "请随时告诉我最新进展。",
+        "translation": "Please keep me posted.",
+        "sourceLanguage": "zh-Hans",
+        "targetLanguage": "en",
+        "status": "Ready"
+      },
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyCaptureFactory.swift",
+      "macSecondarySource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "nativeTextParity": true,
+      "facts": {
+        "language": "en",
+        "sentences": [
+          {
+            "length": 22,
+            "location": 0
+          }
+        ],
+        "text": "Please keep me posted.",
+        "words": [
+          {
+            "range": {
+              "length": 6,
+              "location": 0
+            },
+            "text": "Please"
+          },
+          {
+            "range": {
+              "length": 4,
+              "location": 7
+            },
+            "text": "keep"
+          },
+          {
+            "range": {
+              "length": 2,
+              "location": 12
+            },
+            "text": "me"
+          },
+          {
+            "range": {
+              "length": 6,
+              "location": 15
+            },
+            "text": "posted"
+          }
+        ]
+      },
+      "unit": {
+        "id": 1,
+        "surface": "posted",
+        "query": "posted",
+        "kind": "word",
+        "ranges": [],
+        "words": [
+          {
+            "text": "posted",
+            "range": {
+              "location": 15,
+              "length": 6
+            }
+          }
+        ]
+      },
+      "app": "fixture.app",
+      "expected": {
+        "dictionaryForm": "posted",
+        "example": null,
+        "expression": "posted",
+        "input": {
+          "context": "posted",
+          "contextKind": "none",
+          "dictionaryForm": "posted",
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": "posted"
+        },
+        "kind": "word",
+        "language": "en",
+        "meaning": "",
+        "meaningLanguage": "zh-Hans"
+      }
+    },
+    {
+      "id": "unit-empty-source-is-not-preview-guard",
+      "mode": "unit",
+      "presentation": {
+        "source": "",
+        "translation": "Please keep me posted.",
+        "sourceLanguage": "zh-Hans",
+        "targetLanguage": "en",
+        "status": "Ready"
+      },
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyCaptureFactory.swift",
+      "macSecondarySource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "nativeTextParity": true,
+      "facts": {
+        "language": "en",
+        "sentences": [
+          {
+            "length": 22,
+            "location": 0
+          }
+        ],
+        "text": "Please keep me posted.",
+        "words": [
+          {
+            "range": {
+              "length": 6,
+              "location": 0
+            },
+            "text": "Please"
+          },
+          {
+            "range": {
+              "length": 4,
+              "location": 7
+            },
+            "text": "keep"
+          },
+          {
+            "range": {
+              "length": 2,
+              "location": 12
+            },
+            "text": "me"
+          },
+          {
+            "range": {
+              "length": 6,
+              "location": 15
+            },
+            "text": "posted"
+          }
+        ]
+      },
+      "unit": {
+        "id": 1,
+        "surface": "posted",
+        "query": "posted",
+        "kind": "word",
+        "ranges": [
+          {
+            "location": 15,
+            "length": 6
+          }
+        ],
+        "words": [
+          {
+            "text": "posted",
+            "range": {
+              "location": 15,
+              "length": 6
+            }
+          }
+        ]
+      },
+      "app": "fixture.app",
+      "expected": {
+        "dictionaryForm": "posted",
+        "example": {
+          "app": "fixture.app",
+          "completeness": "sentence",
+          "meaning": "",
+          "meaningLanguage": "zh-Hans",
+          "meaningOrigin": "captured",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 15
+            }
+          ],
+          "text": "Please keep me posted.",
+          "translation": "",
+          "translationLanguage": "zh-Hans"
+        },
+        "expression": "posted",
+        "input": {
+          "context": "Please keep me posted.",
+          "contextKind": "sentence",
+          "dictionaryForm": "posted",
+          "kind": "word",
+          "language": "en",
+          "occurrenceIdentity": "44259b61ada122e52120707ad57aa9b7b8fd721e80e90572df9a5880336a1b3f",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 15
+            }
+          ],
+          "target": "posted"
+        },
+        "kind": "word",
+        "language": "en",
+        "meaning": "",
+        "meaningLanguage": "zh-Hans"
+      }
+    },
+    {
+      "id": "standalone-unit",
+      "mode": "unit",
+      "presentation": {
+        "source": "请随时告诉我最新进展。",
+        "translation": "posted",
+        "sourceLanguage": "zh-Hans",
+        "targetLanguage": "en",
+        "status": "Ready"
+      },
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyCaptureFactory.swift",
+      "macSecondarySource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "nativeTextParity": true,
+      "facts": {
+        "language": "en",
+        "sentences": [
+          {
+            "length": 6,
+            "location": 0
+          }
+        ],
+        "text": "posted",
+        "words": [
+          {
+            "range": {
+              "length": 6,
+              "location": 0
+            },
+            "text": "posted"
+          }
+        ]
+      },
+      "unit": {
+        "id": 1,
+        "surface": "posted",
+        "query": "posted",
+        "kind": "word",
+        "ranges": [
+          {
+            "location": 0,
+            "length": 6
+          }
+        ],
+        "words": [
+          {
+            "text": "posted",
+            "range": {
+              "location": 0,
+              "length": 6
+            }
+          }
+        ]
+      },
+      "app": "fixture.app",
+      "expected": {
+        "dictionaryForm": "posted",
+        "example": null,
+        "expression": "posted",
+        "input": {
+          "context": "posted",
+          "contextKind": "none",
+          "dictionaryForm": "posted",
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": "posted"
+        },
+        "kind": "word",
+        "language": "en",
+        "meaning": "",
+        "meaningLanguage": "zh-Hans"
+      }
+    },
+    {
+      "id": "repeated-component",
+      "mode": "component",
+      "presentation": {
+        "source": "请随时告诉我最新进展。",
+        "translation": "Time after time, we wait.",
+        "sourceLanguage": "zh-Hans",
+        "targetLanguage": "en",
+        "status": "Ready"
+      },
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyCaptureFactory.swift",
+      "macSecondarySource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "regression-adaptation",
+      "nativeTextParity": true,
+      "facts": {
+        "language": "en",
+        "sentences": [
+          {
+            "length": 25,
+            "location": 0
+          }
+        ],
+        "text": "Time after time, we wait.",
+        "words": [
+          {
+            "range": {
+              "length": 4,
+              "location": 0
+            },
+            "text": "Time"
+          },
+          {
+            "range": {
+              "length": 5,
+              "location": 5
+            },
+            "text": "after"
+          },
+          {
+            "range": {
+              "length": 4,
+              "location": 11
+            },
+            "text": "time"
+          },
+          {
+            "range": {
+              "length": 2,
+              "location": 17
+            },
+            "text": "we"
+          },
+          {
+            "range": {
+              "length": 4,
+              "location": 20
+            },
+            "text": "wait"
+          }
+        ]
+      },
+      "unit": {
+        "id": 1,
+        "surface": "Time after time",
+        "query": "time after time",
+        "kind": "expression",
+        "ranges": [
+          {
+            "location": 0,
+            "length": 15
+          }
+        ],
+        "words": [
+          {
+            "text": "Time",
+            "range": {
+              "location": 0,
+              "length": 4
+            }
+          },
+          {
+            "text": "after",
+            "range": {
+              "location": 5,
+              "length": 5
+            }
+          },
+          {
+            "text": "time",
+            "range": {
+              "location": 11,
+              "length": 4
+            }
+          }
+        ]
+      },
+      "clicked": {
+        "text": "time",
+        "range": {
+          "location": 11,
+          "length": 4
+        }
+      },
+      "macTest": "CotabbyTests/Support/Vocabulary/VocabularyCaptureFactoryTests.swift",
+      "app": "fixture.app",
+      "expected": {
+        "dictionaryForm": "time",
+        "example": {
+          "app": "fixture.app",
+          "completeness": "sentence",
+          "meaning": "",
+          "meaningLanguage": null,
+          "meaningOrigin": "captured",
+          "ranges": [
+            {
+              "length": 4,
+              "location": 11
+            }
+          ],
+          "text": "Time after time, we wait.",
+          "translation": "请随时告诉我最新进展。",
+          "translationLanguage": "zh-Hans"
+        },
+        "expression": "time",
+        "input": {
+          "context": "Time after time, we wait.",
+          "contextKind": "sentence",
+          "dictionaryForm": "time",
+          "kind": "word",
+          "language": "en",
+          "occurrenceIdentity": "283998f3459d99ce318ac6f73876587ab7e763c2a0b0d76ec12a7c0a67944243",
+          "ranges": [
+            {
+              "length": 4,
+              "location": 11
+            }
+          ],
+          "target": "time"
+        },
+        "kind": "word",
+        "language": "en",
+        "meaning": "",
+        "meaningLanguage": null
+      }
+    },
+    {
+      "id": "offset-repeated-component",
+      "mode": "component",
+      "presentation": {
+        "source": "请随时告诉我最新进展。",
+        "translation": "Earlier sentence. Time after time, we wait.",
+        "sourceLanguage": "zh-Hans",
+        "targetLanguage": "en",
+        "status": "Ready"
+      },
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyCaptureFactory.swift",
+      "macSecondarySource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "nativeTextParity": true,
+      "facts": {
+        "language": "en",
+        "sentences": [
+          {
+            "length": 18,
+            "location": 0
+          },
+          {
+            "length": 25,
+            "location": 18
+          }
+        ],
+        "text": "Earlier sentence. Time after time, we wait.",
+        "words": [
+          {
+            "range": {
+              "length": 7,
+              "location": 0
+            },
+            "text": "Earlier"
+          },
+          {
+            "range": {
+              "length": 8,
+              "location": 8
+            },
+            "text": "sentence"
+          },
+          {
+            "range": {
+              "length": 4,
+              "location": 18
+            },
+            "text": "Time"
+          },
+          {
+            "range": {
+              "length": 5,
+              "location": 23
+            },
+            "text": "after"
+          },
+          {
+            "range": {
+              "length": 4,
+              "location": 29
+            },
+            "text": "time"
+          },
+          {
+            "range": {
+              "length": 2,
+              "location": 35
+            },
+            "text": "we"
+          },
+          {
+            "range": {
+              "length": 4,
+              "location": 38
+            },
+            "text": "wait"
+          }
+        ]
+      },
+      "unit": {
+        "id": 1,
+        "surface": "Time after time",
+        "query": "time after time",
+        "kind": "expression",
+        "ranges": [
+          {
+            "location": 18,
+            "length": 15
+          }
+        ],
+        "words": [
+          {
+            "text": "Time",
+            "range": {
+              "location": 18,
+              "length": 4
+            }
+          },
+          {
+            "text": "after",
+            "range": {
+              "location": 23,
+              "length": 5
+            }
+          },
+          {
+            "text": "time",
+            "range": {
+              "location": 29,
+              "length": 4
+            }
+          }
+        ]
+      },
+      "clicked": {
+        "text": "time",
+        "range": {
+          "location": 29,
+          "length": 4
+        }
+      },
+      "app": "fixture.app",
+      "expected": {
+        "dictionaryForm": "time",
+        "example": {
+          "app": "fixture.app",
+          "completeness": "sentence",
+          "meaning": "",
+          "meaningLanguage": null,
+          "meaningOrigin": "captured",
+          "ranges": [
+            {
+              "length": 4,
+              "location": 11
+            }
+          ],
+          "text": "Time after time, we wait.",
+          "translation": "",
+          "translationLanguage": null
+        },
+        "expression": "time",
+        "input": {
+          "context": "Time after time, we wait.",
+          "contextKind": "sentence",
+          "dictionaryForm": "time",
+          "kind": "word",
+          "language": "en",
+          "occurrenceIdentity": "283998f3459d99ce318ac6f73876587ab7e763c2a0b0d76ec12a7c0a67944243",
+          "ranges": [
+            {
+              "length": 4,
+              "location": 11
+            }
+          ],
+          "target": "time"
+        },
+        "kind": "word",
+        "language": "en",
+        "meaning": "",
+        "meaningLanguage": null
+      }
+    },
+    {
+      "id": "nonmember-component",
+      "mode": "component",
+      "presentation": {
+        "source": "请随时告诉我最新进展。",
+        "translation": "Time after time, we wait.",
+        "sourceLanguage": "zh-Hans",
+        "targetLanguage": "en",
+        "status": "Ready"
+      },
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyCaptureFactory.swift",
+      "macSecondarySource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "nativeTextParity": true,
+      "facts": {
+        "language": "en",
+        "sentences": [
+          {
+            "length": 25,
+            "location": 0
+          }
+        ],
+        "text": "Time after time, we wait.",
+        "words": [
+          {
+            "range": {
+              "length": 4,
+              "location": 0
+            },
+            "text": "Time"
+          },
+          {
+            "range": {
+              "length": 5,
+              "location": 5
+            },
+            "text": "after"
+          },
+          {
+            "range": {
+              "length": 4,
+              "location": 11
+            },
+            "text": "time"
+          },
+          {
+            "range": {
+              "length": 2,
+              "location": 17
+            },
+            "text": "we"
+          },
+          {
+            "range": {
+              "length": 4,
+              "location": 20
+            },
+            "text": "wait"
+          }
+        ]
+      },
+      "unit": {
+        "id": 1,
+        "surface": "Time after time",
+        "query": "time after time",
+        "kind": "expression",
+        "ranges": [
+          {
+            "location": 0,
+            "length": 15
+          }
+        ],
+        "words": [
+          {
+            "text": "Time",
+            "range": {
+              "location": 0,
+              "length": 4
+            }
+          },
+          {
+            "text": "after",
+            "range": {
+              "location": 5,
+              "length": 5
+            }
+          },
+          {
+            "text": "time",
+            "range": {
+              "location": 11,
+              "length": 4
+            }
+          }
+        ]
+      },
+      "clicked": {
+        "text": "wait",
+        "range": {
+          "location": 20,
+          "length": 4
+        }
+      },
+      "app": "fixture.app",
+      "expected": null
+    },
+    {
+      "id": "component-does-not-search-text",
+      "mode": "component",
+      "presentation": {
+        "source": "请随时告诉我最新进展。",
+        "translation": "Time after time, we wait.",
+        "sourceLanguage": "zh-Hans",
+        "targetLanguage": "en",
+        "status": "Ready"
+      },
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyCaptureFactory.swift",
+      "macSecondarySource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "nativeTextParity": true,
+      "facts": {
+        "language": "en",
+        "sentences": [
+          {
+            "length": 25,
+            "location": 0
+          }
+        ],
+        "text": "Time after time, we wait.",
+        "words": [
+          {
+            "range": {
+              "length": 4,
+              "location": 0
+            },
+            "text": "Time"
+          },
+          {
+            "range": {
+              "length": 5,
+              "location": 5
+            },
+            "text": "after"
+          },
+          {
+            "range": {
+              "length": 4,
+              "location": 11
+            },
+            "text": "time"
+          },
+          {
+            "range": {
+              "length": 2,
+              "location": 17
+            },
+            "text": "we"
+          },
+          {
+            "range": {
+              "length": 4,
+              "location": 20
+            },
+            "text": "wait"
+          }
+        ]
+      },
+      "unit": {
+        "id": 1,
+        "surface": "Time after time",
+        "query": "time after time",
+        "kind": "expression",
+        "ranges": [
+          {
+            "location": 0,
+            "length": 15
+          }
+        ],
+        "words": [
+          {
+            "text": "Time",
+            "range": {
+              "location": 0,
+              "length": 4
+            }
+          },
+          {
+            "text": "after",
+            "range": {
+              "location": 5,
+              "length": 5
+            }
+          },
+          {
+            "text": "WRONG",
+            "range": {
+              "location": 11,
+              "length": 4
+            }
+          }
+        ]
+      },
+      "clicked": {
+        "text": "WRONG",
+        "range": {
+          "location": 11,
+          "length": 4
+        }
+      },
+      "app": "fixture.app",
+      "expected": null
+    },
+    {
+      "id": "expression-surface-target",
+      "mode": "unit",
+      "presentation": {
+        "source": "请随时告诉我最新进展。",
+        "translation": "Please keep me posted.",
+        "sourceLanguage": "zh-Hans",
+        "targetLanguage": "en",
+        "status": "Ready"
+      },
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyCaptureFactory.swift",
+      "macSecondarySource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "nativeTextParity": true,
+      "facts": {
+        "language": "en",
+        "sentences": [
+          {
+            "length": 22,
+            "location": 0
+          }
+        ],
+        "text": "Please keep me posted.",
+        "words": [
+          {
+            "range": {
+              "length": 6,
+              "location": 0
+            },
+            "text": "Please"
+          },
+          {
+            "range": {
+              "length": 4,
+              "location": 7
+            },
+            "text": "keep"
+          },
+          {
+            "range": {
+              "length": 2,
+              "location": 12
+            },
+            "text": "me"
+          },
+          {
+            "range": {
+              "length": 6,
+              "location": 15
+            },
+            "text": "posted"
+          }
+        ]
+      },
+      "unit": {
+        "id": 1,
+        "surface": "keep me posted",
+        "query": "keep somebody posted",
+        "kind": "expression",
+        "ranges": [
+          {
+            "location": 7,
+            "length": 14
+          }
+        ],
+        "words": []
+      },
+      "app": "fixture.app",
+      "expected": {
+        "dictionaryForm": "keep somebody posted",
+        "example": {
+          "app": "fixture.app",
+          "completeness": "sentence",
+          "meaning": "",
+          "meaningLanguage": "zh-Hans",
+          "meaningOrigin": "captured",
+          "ranges": [
+            {
+              "length": 14,
+              "location": 7
+            }
+          ],
+          "text": "Please keep me posted.",
+          "translation": "请随时告诉我最新进展。",
+          "translationLanguage": "zh-Hans"
+        },
+        "expression": "keep me posted",
+        "input": {
+          "context": "Please keep me posted.",
+          "contextKind": "sentence",
+          "dictionaryForm": "keep somebody posted",
+          "kind": "expression",
+          "language": "en",
+          "occurrenceIdentity": "c8f732c9fa36ab63d8b89ad97a1efb5826492067d7226eacfbe43284dc6c220d",
+          "ranges": [
+            {
+              "length": 14,
+              "location": 7
+            }
+          ],
+          "target": "keep me posted"
+        },
+        "kind": "expression",
+        "language": "en",
+        "meaning": "",
+        "meaningLanguage": "zh-Hans"
+      }
+    },
+    {
+      "id": "ordered-duplicate-ranges",
+      "mode": "unit",
+      "presentation": {
+        "source": "请随时告诉我最新进展。",
+        "translation": "Please keep me posted.",
+        "sourceLanguage": "zh-Hans",
+        "targetLanguage": "en",
+        "status": "Ready"
+      },
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyCaptureFactory.swift",
+      "macSecondarySource": "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "nativeTextParity": true,
+      "facts": {
+        "language": "en",
+        "sentences": [
+          {
+            "length": 22,
+            "location": 0
+          }
+        ],
+        "text": "Please keep me posted.",
+        "words": [
+          {
+            "range": {
+              "length": 6,
+              "location": 0
+            },
+            "text": "Please"
+          },
+          {
+            "range": {
+              "length": 4,
+              "location": 7
+            },
+            "text": "keep"
+          },
+          {
+            "range": {
+              "length": 2,
+              "location": 12
+            },
+            "text": "me"
+          },
+          {
+            "range": {
+              "length": 6,
+              "location": 15
+            },
+            "text": "posted"
+          }
+        ]
+      },
+      "unit": {
+        "id": 1,
+        "surface": "keep me posted",
+        "query": "keep someone posted",
+        "kind": "pattern",
+        "ranges": [
+          {
+            "location": 15,
+            "length": 6
+          },
+          {
+            "location": 7,
+            "length": 4
+          },
+          {
+            "location": 15,
+            "length": 6
+          }
+        ],
+        "words": []
+      },
+      "app": "fixture.app",
+      "expected": {
+        "dictionaryForm": "keep someone posted",
+        "example": {
+          "app": "fixture.app",
+          "completeness": "sentence",
+          "meaning": "",
+          "meaningLanguage": "zh-Hans",
+          "meaningOrigin": "captured",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 15
+            },
+            {
+              "length": 4,
+              "location": 7
+            },
+            {
+              "length": 6,
+              "location": 15
+            }
+          ],
+          "text": "Please keep me posted.",
+          "translation": "请随时告诉我最新进展。",
+          "translationLanguage": "zh-Hans"
+        },
+        "expression": "keep someone posted",
+        "input": {
+          "context": "Please keep me posted.",
+          "contextKind": "sentence",
+          "dictionaryForm": "keep someone posted",
+          "kind": "pattern",
+          "language": "en",
+          "occurrenceIdentity": "1e73a566bbd11fdd1c29cbc09172570a29a4fa856023b86c1445407ca9c87533",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 15
+            },
+            {
+              "length": 4,
+              "location": 7
+            },
+            {
+              "length": 6,
+              "location": 15
+            }
+          ],
+          "target": "keep someone posted"
+        },
+        "kind": "pattern",
+        "language": "en",
+        "meaning": "",
+        "meaningLanguage": "zh-Hans"
+      }
+    }
+  ]
+}

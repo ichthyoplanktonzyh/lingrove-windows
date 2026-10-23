@@ -119,33 +119,15 @@ def between(value, start, end):
     return value[value.index(start):value.index(end)]
 
 
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--mac-repo", type=Path, required=True)
-    parser.add_argument("--fixture", type=Path, default=Path(__file__).resolve().parents[1] / "fixtures/parity/learning-explanation-capture-v1.json")
-    parser.add_argument("--capture-output", type=Path, help="Write actual reference observations to a NEW authoring file")
-    args = parser.parse_args()
-    corpus = json.loads(args.fixture.read_text(encoding="utf-8"))
-    ids = [row.get("id") for row in corpus["cases"]]
-    if corpus.get("version") != 1 or corpus.get("macReference") != BASELINE or any(not value for value in ids) or len(set(ids)) != len(ids):
-        parser.error("Capture cases must use the pinned schema and unique IDs")
-    for row in corpus["cases"]:
-        if (row.get("mode") not in ("preview", "unit", "component") or type(row.get("nativeTextParity")) is not bool
-                or (row.get("nativeTextParity") and row["presentation"]["targetLanguage"] not in ("en", "es", "fr"))
-                or row.get("macSource") != "Cotabby/Support/Vocabulary/VocabularyCaptureFactory.swift"
-                or row.get("macSecondarySource") != "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift"
-                or row.get("provenanceKind") not in ("regression-adaptation", "source-policy-extension")
-                or (row.get("provenanceKind") == "regression-adaptation" and row.get("macTest") !=
-                    "CotabbyTests/Support/Vocabulary/VocabularyCaptureFactoryTests.swift")):
-            parser.error("Capture cases require explicit source/test/native-scope provenance")
-    vocabulary = source(args.mac_repo, "Cotabby/Models/Vocabulary/VocabularyModels.swift")
-    policy = source(args.mac_repo, "Cotabby/Support/Vocabulary/VocabularyPolicy.swift")
-    explanation = source(args.mac_repo, "Cotabby/Models/LanguageLearning/LearningExplanationModels.swift")
-    explanation_policy = source(args.mac_repo, "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift")
-    sentences = source(args.mac_repo, "Cotabby/Models/LanguageLearning/LearningSentenceModels.swift")
-    reading = source(args.mac_repo, "Cotabby/Models/LanguageLearning/LearningReadingSelection.swift")
-    units = source(args.mac_repo, "Cotabby/Models/LanguageLearning/LearningUnitModels.swift")
-    words = source(args.mac_repo, "Cotabby/Models/LanguageLearning/LearningDictionaryWord.swift")
+def reference_sources(repo):
+    vocabulary = source(repo, "Cotabby/Models/Vocabulary/VocabularyModels.swift")
+    policy = source(repo, "Cotabby/Support/Vocabulary/VocabularyPolicy.swift")
+    explanation = source(repo, "Cotabby/Models/LanguageLearning/LearningExplanationModels.swift")
+    explanation_policy = source(repo, "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift")
+    sentences = source(repo, "Cotabby/Models/LanguageLearning/LearningSentenceModels.swift")
+    reading = source(repo, "Cotabby/Models/LanguageLearning/LearningReadingSelection.swift")
+    units = source(repo, "Cotabby/Models/LanguageLearning/LearningUnitModels.swift")
+    words = source(repo, "Cotabby/Models/LanguageLearning/LearningDictionaryWord.swift")
     # The vocabulary declarations below are complete original types; notebook entry/sense/review
     # graphs are not needed by these capture methods and are omitted rather than stubbed.
     slices = ["import Foundation\n" + between(explanation, "nonisolated enum LearningExplanationContext:", "/// UI sessions borrow this app-owned boundary."),
@@ -164,9 +146,36 @@ def main():
             between(reading, "nonisolated enum LearningReadingSource:", "/// Memory-only read receipt."),
         "import Foundation\n" + between(units, "nonisolated struct LearningUnit:", "/// Recognition and lookup share a resource,") +
             between(words, "nonisolated struct LearningDictionaryWord:", "/// View-local geometry exists")]
+    return [source(repo, path) for path in SOURCES] + slices
+
+
+def validate_corpus(parser, corpus):
+    ids = [row.get("id") for row in corpus["cases"]]
+    if corpus.get("version") != 1 or corpus.get("macReference") != BASELINE or any(not value for value in ids) or len(set(ids)) != len(ids):
+        parser.error("Capture cases must use the pinned schema and unique IDs")
+    for row in corpus["cases"]:
+        if (row.get("mode") not in ("preview", "unit", "component") or type(row.get("nativeTextParity")) is not bool
+                or (row.get("nativeTextParity") and row["presentation"]["targetLanguage"] not in ("en", "es", "fr"))
+                or row.get("macSource") != "Cotabby/Support/Vocabulary/VocabularyCaptureFactory.swift"
+                or row.get("macSecondarySource") != "Cotabby/Support/LanguageLearning/LearningExplanationPolicy.swift"
+                or row.get("provenanceKind") not in ("regression-adaptation", "source-policy-extension")
+                or (row.get("provenanceKind") == "regression-adaptation" and row.get("macTest") !=
+                    "CotabbyTests/Support/Vocabulary/VocabularyCaptureFactoryTests.swift")):
+            parser.error("Capture cases require explicit source/test/native-scope provenance")
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--mac-repo", type=Path, required=True)
+    parser.add_argument("--fixture", type=Path, default=Path(__file__).resolve().parents[1] / "fixtures/parity/learning-explanation-capture-v1.json")
+    parser.add_argument("--capture-output", type=Path, help="Write actual reference observations to a NEW authoring file")
+    args = parser.parse_args()
+    corpus = json.loads(args.fixture.read_text(encoding="utf-8"))
+    validate_corpus(parser, corpus)
+    values = reference_sources(args.mac_repo)
     with tempfile.TemporaryDirectory(prefix="lingrove-capture-parity-") as temporary:
         root = Path(temporary); paths = []
-        for index, value in enumerate([source(args.mac_repo, path) for path in SOURCES] + slices):
+        for index, value in enumerate(values):
             path = root / f"source{index}.swift"; path.write_text(value, encoding="utf-8"); paths.append(str(path))
         driver = root / "main.swift"; driver.write_text(DRIVER, encoding="utf-8")
         binary = root / "capture-parity"

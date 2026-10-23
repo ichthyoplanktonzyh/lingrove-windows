@@ -213,3 +213,27 @@ sequences). The same Swift executable compiles both complete policies, plus thei
 insertion-safety dependencies; no implementation is stubbed. Portable C# compares the committed
 admission/heights observations. These are policy checks rather than WPF geometry/focus tests;
 [the card adaptation record](../../docs/LEARNING_WORD_PREVIEW.md) defines that boundary.
+
+## User-authored sense content
+
+`vocabulary-content-v1.json` contains 72 observations from the same fixed Mac revision. The complete
+content models (excluding backup), complete content policy, original VocabularyError enum and the
+exact original ReviewCardPolicy.html function execute in a temporary Swift binary. The driver
+constructs actual model values, validates before rendering, and projects validity, meaningfulness,
+ordered image filenames and exact HTML. No exercised algorithm is stubbed.
+
+```sh
+python3 scripts/verify-vocabulary-content-macos-parity.py --mac-repo /path/to/lingrove
+```
+
+Short HTML is recorded directly; longer outputs record SHA-256 plus UTF-8 byte count. Repetitive
+UTF-8 boundary inputs use a `repeating`/`count` text spec expanded by both test drivers. Defaults,
+formatting/escaping order, Foundation whitespace (including U+200B), distinct IDs, 64-block limit,
+image dimensions/digest/count, extreme 64-bit metadata and repeated-image aggregate are covered.
+Regression adaptations cite the actual content test/method; added boundary probes explicitly use
+`source-policy-extension`. Expected values were captured from actual Mac output and are never
+updated by normal verification. This is pure data/HTML evidence, not archive, PNG, UI or Anki testing.
+
+C# tests also reject null/unknown/malformed UTF-16 values that have no native Swift equivalent.
+Windows RenderHtml validates before interpolation; Mac archive/review callers validate before html.
+[The scope record](../../docs/VOCABULARY_CONTENT.md) lists the unfinished notebook/media boundaries.

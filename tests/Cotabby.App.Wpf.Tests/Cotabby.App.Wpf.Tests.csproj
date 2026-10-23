@@ -20,5 +20,7 @@
           Link="fixtures\parity\vocabulary-image-preparation-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\fixtures\parity\vocabulary-image-storage-v1.json"
           Link="fixtures\parity\vocabulary-image-storage-v1.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\fixtures\parity\vocabulary-media-transactions-v1.json"
+          Link="fixtures\parity\vocabulary-media-transactions-v1.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

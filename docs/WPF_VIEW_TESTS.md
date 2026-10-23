@@ -106,3 +106,7 @@ orientation/profile/multiframe and output-byte-ceiling cases have separate evide
 The [media storage library](VOCABULARY_IMAGE_STORAGE.md) adds 19 real file/WIC cases: twelve
 complete original Mac storage observations plus seven Windows ACL, identity, publication and path
 admission regressions. No editor import or archive media transaction is connected yet.
+
+The [archive media integration](VOCABULARY_MEDIA_TRANSACTIONS.md) adds 21 actual archive/WIC/SQLite
+cases: twelve complete original Mac actor observations and nine named-file acknowledgement, rollback,
+cancellation, cleanup, cross-owner lock and stale-revision regressions. Image editor UI remains open.

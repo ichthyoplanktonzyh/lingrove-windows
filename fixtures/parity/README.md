@@ -355,3 +355,10 @@ verifier supplies only inputs/driver calls; it does not replace storage or expec
 filesystem error types project as unavailable, and platform encoder bytes are not compared. Seven
 additional Windows cases exercise ACL/identity/publish/cleanup ownership protections independently. Archive
 transactions, backup/restore and editor image UI remain open.
+
+`vocabulary-media-transactions-v1.json` adds twelve complete original Mac archive/media actor
+observations with real memory SQLite and fixed PNG input. Its actual failing SQL trigger is test
+setup, not a replacement transaction. It covers stage/commit/cleanup, missing and ignored bytes,
+conflicts, pruning, budgets and original same-filename semantics. Nine separate Windows named-file
+cases cover native rollback/repair/cancellation/cleanup/locks/revisions; no claim of UI or backup
+integration follows from these observations.

@@ -11,10 +11,10 @@ namespace Cotabby.Win32.Vocabulary;
 /// with its database: null notebook means isolated memory, otherwise bytes live beside it in
 /// &lt;database filename&gt;.media. Construction and preparation create no directory or file. A write
 /// returns true only for new media, letting a failed metadata transaction remove its own additions
-/// while retaining a repaired pre-existing resource. This library does not yet connect the archive
-/// or editor. Call off the dispatcher and hold the archive's cross-process lock around transactions.
+/// while retaining a repaired pre-existing resource. The archive owns this library; future image
+/// presentation borrows archive operations. Call off the dispatcher and hold its transaction lock.
 /// </summary>
-internal sealed class WindowsVocabularyImageStorage
+internal sealed class WindowsVocabularyImageStorage : IVocabularyImageStorage
 {
     private readonly Dictionary<string, byte[]> _memory = new(StringComparer.Ordinal);
     private readonly Func<Guid> _stagingIdentity;
@@ -24,7 +24,8 @@ internal sealed class WindowsVocabularyImageStorage
     internal WindowsVocabularyImageStorage(string? notebook, Func<Guid> stagingIdentity)
     { DirectoryPath = notebook is null ? null : VocabularyWindowsFile.FullPath(notebook) + ".media"; _stagingIdentity = stagingIdentity; }
 
-    internal byte[] Read(VocabularyImageReference image) => ContentOperation(() =>
+    public VocabularyPreparedImage Prepare(ReadOnlySpan<byte> data, CancellationToken cancellationToken) => WindowsVocabularyImagePreparer.Prepare(data, cancellationToken);
+    public byte[] Read(VocabularyImageReference image) => ContentOperation(() =>
     {
         ValidateReference(image);
         if (DirectoryPath is null)
@@ -37,7 +38,7 @@ internal sealed class WindowsVocabularyImageStorage
         byte[] result = Read(file, image); root.Verify(); return result;
     });
 
-    internal bool Write(ReadOnlySpan<byte> data, VocabularyImageReference image)
+    public bool Write(ReadOnlySpan<byte> data, VocabularyImageReference image)
     {
         // Copy after the ceiling check so an inadmissible caller cannot force a second unbounded
         // allocation. Validate this detached copy before any filesystem mutation or reuse decision.
@@ -101,7 +102,7 @@ internal sealed class WindowsVocabularyImageStorage
         }
     }
 
-    internal void Remove(VocabularyImageReference image)
+    public void Remove(VocabularyImageReference image)
     {
         // Cleanup follows a successful SQL commit or rolls back new media. As on Mac, a cleanup
         // failure cannot undo acknowledged metadata; unsafe paths are left untouched, not followed.

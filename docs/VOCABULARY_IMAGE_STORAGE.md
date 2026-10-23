@@ -2,7 +2,8 @@
 
 This adapts the complete `Cotabby/Services/Vocabulary/VocabularyImageStorage.swift` at Mac pin
 `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`. It supplies real image bytes and filesystem behavior;
-archive transactions and notebook image UI are the next slice. Preparing an image, constructing
+the [archive transaction layer](VOCABULARY_MEDIA_TRANSACTIONS.md) now owns it; notebook image UI
+remains the next slice. Preparing an image, constructing
 storage, or failing to read missing media creates no directory or file. Nothing is sent or logged.
 
 `WindowsVocabularyImageStorage` is an internal synchronous owner, intended to live once inside the
@@ -31,8 +32,8 @@ so both owners use the same Windows admission rules. Its database/sidecar behavi
 Windows ACLs adapt new Mac 0700 directories and 0600 files; existing unsafe permissions fail closed
 without being modified. A repair publishes a newly private file. Read/repair/remove use regular
 private leaf handles; native IO errors become fixed invalid-content failures. Operations belong off
-the dispatcher and have no await while native handles are live. The eventual archive integration
-must first admit its database parent and hold `VocabularySQLiteDatabase.Access(true, ...)` across
+the dispatcher and have no await while native handles are live. The archive integration
+first admits its database parent and holds `VocabularySQLiteDatabase.Access(true, ...)` across
 media staging, SQL commit and rollback/cleanup. The storage class alone is not an independent
 cross-process transaction or a public arbitrary-path importer.
 
@@ -48,8 +49,8 @@ Seven additional Windows cases check private root/file ACLs and no-rewrite reuse
 file permission rejection, pinned-root rename prevention and ancestor-alias retarget detection,
 four owners under the existing archive lock publishing one complete PNG, and invalid digest path
 admission, plus a forced CREATE_NEW collision proving cleanup never deletes a file it did not
-create. The collision fixes an independent review finding. These are native tests, not filesystem fakes. They do not yet prove SQL rollback or
-shared-reference cleanup: the archive still rejects new editor image references. Backup/restore,
+create. The collision fixes an independent review finding. These are native tests using actual files. The [archive transaction tests](VOCABULARY_MEDIA_TRANSACTIONS.md) separately cover SQL rollback and
+shared-reference cleanup. Backup/restore,
 editor import/paste/drop, visible image loading and review/export media remain unconnected. Crash
 or hardware durability, adversarial mutation by the same Windows principal, broad codec/color
 equivalence and interactive desktop behavior remain outside this evidence.

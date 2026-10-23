@@ -1,0 +1,220 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "fresh",
+      "operation": "fresh",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularySQLiteDatabase.swift",
+      "expected": {
+        "applicationID": 1279743566,
+        "entries": 0,
+        "revision": 0,
+        "schema": 2
+      }
+    },
+    {
+      "id": "roundtrip",
+      "operation": "roundtrip",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularySQLiteDatabase.swift",
+      "expected": {
+        "equal": true,
+        "revision": 1
+      }
+    },
+    {
+      "id": "noteEdit",
+      "operation": "noteEdit",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularySQLiteDatabase.swift",
+      "expected": {
+        "equal": true,
+        "usageUnchanged": true,
+        "written": 2
+      }
+    },
+    {
+      "id": "noop",
+      "operation": "noop",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularySQLiteDatabase.swift",
+      "expected": {
+        "revision": 2,
+        "written": 1
+      }
+    },
+    {
+      "id": "moveUsage",
+      "operation": "moveUsage",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularySQLiteDatabase.swift",
+      "expected": {
+        "equal": true,
+        "revision": 2
+      }
+    },
+    {
+      "id": "moveReview",
+      "operation": "moveReview",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularySQLiteDatabase.swift",
+      "expected": {
+        "equal": true,
+        "revision": 2
+      }
+    },
+    {
+      "id": "replaceEntry",
+      "operation": "replaceEntry",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularySQLiteDatabase.swift",
+      "expected": {
+        "equal": true,
+        "revision": 2
+      }
+    },
+    {
+      "id": "stale",
+      "operation": "stale",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularySQLiteDatabase.swift",
+      "expected": {
+        "error": "editConflict",
+        "preserved": true,
+        "revision": 2
+      }
+    },
+    {
+      "id": "overflow",
+      "operation": "overflow",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularySQLiteDatabase.swift",
+      "expected": {
+        "error": "editConflict",
+        "preserved": true
+      }
+    },
+    {
+      "id": "rollback",
+      "operation": "rollback",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularySQLiteDatabase.swift",
+      "expected": {
+        "error": "invalidArchive",
+        "preserved": true,
+        "revision": 1
+      }
+    },
+    {
+      "id": "receipt",
+      "operation": "receipt",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularySQLiteDatabase.swift",
+      "expected": {
+        "matched": true,
+        "missing": true,
+        "revision": 2
+      }
+    },
+    {
+      "id": "receiptRollback",
+      "operation": "receiptRollback",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularySQLiteDatabase.swift",
+      "expected": {
+        "error": "invalidArchive",
+        "preserved": true,
+        "revision": 2
+      }
+    },
+    {
+      "id": "payloadCorrupt",
+      "operation": "payloadCorrupt",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularySQLiteDatabase.swift",
+      "expected": {
+        "error": "invalidArchive",
+        "preserved": true,
+        "revision": 1
+      }
+    },
+    {
+      "id": "payloadText",
+      "operation": "payloadText",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularySQLiteDatabase.swift",
+      "expected": {
+        "error": "invalidArchive",
+        "preserved": true,
+        "revision": 1
+      }
+    },
+    {
+      "id": "positionGap",
+      "operation": "positionGap",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularySQLiteDatabase.swift",
+      "expected": {
+        "error": "invalidArchive",
+        "preserved": true,
+        "revision": 1
+      }
+    },
+    {
+      "id": "positionReal",
+      "operation": "positionReal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularySQLiteDatabase.swift",
+      "expected": {
+        "error": "invalidArchive",
+        "preserved": true,
+        "revision": 1
+      }
+    },
+    {
+      "id": "indexedCorrupt",
+      "operation": "indexedCorrupt",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularySQLiteDatabase.swift",
+      "expected": {
+        "error": "invalidArchive",
+        "preserved": true,
+        "revision": 1
+      }
+    },
+    {
+      "id": "templateFlag",
+      "operation": "templateFlag",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularySQLiteDatabase.swift",
+      "expected": {
+        "error": "invalidArchive",
+        "preserved": true,
+        "revision": 1
+      }
+    },
+    {
+      "id": "foreignKey",
+      "operation": "foreignKey",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularySQLiteDatabase.swift",
+      "expected": {
+        "error": "invalidArchive",
+        "preserved": true
+      }
+    },
+    {
+      "id": "nestedAccess",
+      "operation": "nestedAccess",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularySQLiteDatabase.swift",
+      "expected": {
+        "error": "invalidContent",
+        "exclusive": 2,
+        "shared": 1
+      }
+    }
+  ]
+}

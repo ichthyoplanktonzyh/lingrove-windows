@@ -9,12 +9,15 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
     <PackageReference Include="xunit" Version="2.9.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.5" />
     <Using Include="Xunit" />
   </ItemGroup>
   <ItemGroup>
     <!-- Compile the actual non-WPF app boundaries for portable lifetime/settings tests. This is
          no replacement for compiling the complete WPF app or exercising a Windows desktop. -->
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.cs" Link="Production\AppSettings.cs" />
+    <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularySQLiteConnection.cs" Link="Production\VocabularySQLiteConnection.cs" />
+    <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularySQLiteDatabase.cs" Link="Production\VocabularySQLiteDatabase.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Explanation.cs" Link="Production\AppSettings.Explanation.cs" />
     <Compile Include="..\..\src\Cotabby.App\Learning\LearningExplanationController.cs" Link="Production\LearningExplanationController.cs" />
     <Compile Include="..\..\src\Cotabby.App\Learning\LearningTextCopyController.cs" Link="Production\LearningTextCopyController.cs" />
@@ -24,5 +27,10 @@
     <Compile Include="..\..\src\Cotabby.App\Learning\LearningDictionaryCardPolicy.cs" Link="Production\LearningDictionaryCardPolicy.cs" />
     <ProjectReference Include="..\..\src\Cotabby.Core\Cotabby.Core.csproj" />
     <ProjectReference Include="..\..\src\Cotabby.Inference\Cotabby.Inference.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\fixtures\parity\vocabulary-sqlite-v1.json" Link="fixtures\vocabulary-sqlite-v1.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\fixtures\parity\vocabulary-projection-v1.json" Link="fixtures\vocabulary-projection-v1.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\fixtures\parity\vocabulary-codec-v1.json" Link="fixtures\vocabulary-codec-v1.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

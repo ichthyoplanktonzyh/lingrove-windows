@@ -3,8 +3,8 @@
 Reference: macOS `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`,
 `Cotabby/Models/Vocabulary/VocabularyModels.swift` (`VocabularyDocument`) and
 `Cotabby/Models/Vocabulary/VocabularyContentModels.swift` (`VocabularyBackup`).
-This slice ports their complete portable representation. It does not yet connect backup or restore
-to archive IO, Store or notebook commands.
+This slice ports their complete portable representation. [Archive backup](VOCABULARY_BACKUP_ARCHIVE.md)
+now connects its snapshot and file effects separately; restore, Store and notebook commands remain work.
 
 `VocabularyBackup` owns the version, an immutable full document and copied media bytes. Public media
 access returns another detached map/arrays; only the synchronous trusted codec borrows private bytes.
@@ -58,6 +58,7 @@ python3 scripts/verify-vocabulary-backup-codec-macos-parity.py --mac-repo /path/
 DOTNET_ROOT="$PWD/.dotnet" .dotnet/dotnet test tests/Cotabby.Core.Tests/Cotabby.Core.Tests.csproj --configuration Release --filter FullyQualifiedName~VocabularyBackupCodec
 ```
 
-Atomic backup writing, bounded source reads, media snapshot locking, restored SQL revision
+Bounded restore source reads, restored SQL revision
 acknowledgement/rollback, Store lifetime and explicit UI replacement confirmation remain follow-up
-work. This library adds no file, clipboard, model or network effect and creates no downloadable build.
+work. The linked archive adapter owns backup snapshot locking and atomic writing. This library itself
+adds no file, clipboard, model or network effect and creates no downloadable build.

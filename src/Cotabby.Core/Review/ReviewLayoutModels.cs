@@ -23,6 +23,22 @@ public enum ReviewContentSource
     [JsonStringEnumMemberName("custom")] Custom,
 }
 
+/// <summary>Original source-slot labels used by fixed missing-content errors and previews.
+/// These English source strings remain separate from future interface localization.</summary>
+public static class ReviewContentSources
+{
+    public static string Label(this ReviewContentSource source) => source switch
+    {
+        ReviewContentSource.Expression => "Expression", ReviewContentSource.Meaning => "Core meaning",
+        ReviewContentSource.Sentence => "Example sentence", ReviewContentSource.Translation => "Example translation",
+        ReviewContentSource.ContextualMeaning => "Contextual meaning", ReviewContentSource.Explanation => "AI explanation",
+        ReviewContentSource.Notes => "Notes", ReviewContentSource.GapSentence => "Gap question",
+        ReviewContentSource.SenseText => "Explanation text", ReviewContentSource.SenseImage => "Explanation image",
+        ReviewContentSource.ExpressionAudio => ReviewAudioKind.Expression.Label(), ReviewContentSource.SentenceAudio => ReviewAudioKind.Sentence.Label(),
+        ReviewContentSource.Custom => "Custom content", _ => throw new ArgumentOutOfRangeException(nameof(source)),
+    };
+}
+
 /// <summary>
 /// An ordered front/back layout retained by a review plan or template. Projections preserve part
 /// and custom-content order, while audio kinds deliberately form a set. No template application,

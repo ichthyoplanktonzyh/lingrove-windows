@@ -14,6 +14,8 @@ public enum ReviewAudioKind
 /// <summary>Pure logical-field projection used by future review serialization; it starts no audio work.</summary>
 public static class ReviewAudioKinds
 {
+    public static string Label(this ReviewAudioKind kind) => kind switch
+    { ReviewAudioKind.Expression => "Expression audio", ReviewAudioKind.Sentence => "Example audio", _ => throw new ArgumentOutOfRangeException(nameof(kind)) };
     public static ReviewField Field(this ReviewAudioKind kind) => kind switch
     {
         ReviewAudioKind.Expression => ReviewField.ExpressionAudio,

@@ -24,16 +24,19 @@ that root. A sibling with a similar name is still a valid export folder.
 The user-selected folder need not satisfy SQLite's private-parent inheritance rule. A new random
 same-directory stage instead receives the existing protected current-user file ACL at `CREATE_NEW`,
 before writing its first byte. The worker writes the complete captured data, calls `Flush(true)`,
-closes the stage, repeats destination protection and checks cancellation before same-directory
-`MoveFileExW(REPLACE_EXISTING | WRITE_THROUGH)`. It never allows cross-volume copy/delete fallback.
-Only the stage successfully created by this operation is eligible for cleanup. No fallible action
+keeps its non-delete-sharing stage handle open, repeats destination protection and checks cancellation
+before `SetFileInformationByHandle(FileRenameInfo)` replaces the admitted leaf relative to the pinned
+parent. FullControl includes DELETE access for that handle-based rename. Failure cleanup marks the
+same stage handle with `FileDispositionInfo`; there is no pathname-based rename/deletion or cross-volume
+copy/delete fallback. A peer cannot swap the stage between fsync, publication and cleanup. No fallible action
 or cancellation check follows successful publication, preventing an acknowledged save being
 reported as cancelled after its destination has changed.
 
 Windows API references: [CreateFileW](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilew)
 for metadata/sharing/reparse/creation semantics, and
-[MoveFileExW](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-movefileexw)
-for replacement and same-volume movement. This adapts Mac inode/0600/fsync/rename to Windows
+[SetFileInformationByHandle](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-setfileinformationbyhandle)
+with [FILE_RENAME_INFO](https://learn.microsoft.com/en-us/windows/win32/api/winbase/ns-winbase-file_rename_info)
+for handle-based relative rename and disposition cleanup. This adapts Mac inode/0600/fsync/rename to Windows
 file IDs, protected ACLs, directory leases and native rename. It deliberately rejects ambiguous
 Windows leaves (ADS/trailing dot or space) and reparse leaves, including links unrelated to notebook
 storage; these unsupported aliases are explicit platform differences. Normal existing export files
@@ -49,9 +52,9 @@ bytes, protected-file preservation and absence of owned stages. Protected files 
 bytes, proving this save path does not open or modify SQLite; these are file-writing observations,
 not database-admission tests. Opaque ZIP attachment bytes make no PNG admission claim.
 
-Windows CI runs those same nineteen cases with real file IDs/ACLs/renames, plus 28 native adapter
+Windows CI runs those same nineteen cases with real file IDs/ACLs/renames, plus 30 native adapter
 regressions for metadata and aliases, ACL replacement, collision ownership, prewrite/postflush
-cancellation, rename failure, final target revalidation, parent pinning and alias retargeting.
+cancellation, rename failure, final target revalidation, parent pinning, alias retargeting and denied peer stage replacement/deletion before commit or cancellation.
 Four more archive regressions save a prepared TXT/CSV/JSON after actual memory-notebook deletion
 and reject saving after archive close. The narrow identity/precommit callbacks control timing only;
 all read/write/flush/rename operations remain actual Windows effects.

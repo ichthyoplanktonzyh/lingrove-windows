@@ -152,6 +152,23 @@ public sealed class VocabularyExportFileTests
         AssertInvalid(() => file.Write([1, 2, 3], default));
         Assert.Empty(Directory.GetFiles(first)); Assert.Empty(Directory.GetFiles(second));
     }
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void HeldStageCannotBeReplacedOrDeletedAfterFlush(bool cancelAfterAttempt)
+    {
+        using var folder = new Folder(); using var cancellation = new CancellationTokenSource();
+        Guid stageId = Guid.NewGuid(); string staging = System.IO.Path.Combine(folder.Path, ".notebook-" + stageId.ToString("D"));
+        string attacker = System.IO.Path.Combine(folder.Path, "peer-file"); File.WriteAllBytes(attacker, [9]);
+        using var file = new WindowsVocabularyExportFile(folder.Export, null, () => stageId, () => {
+            Assert.True(Record.Exception(() => File.Delete(staging)) is IOException or UnauthorizedAccessException);
+            Assert.True(Record.Exception(() => File.Move(attacker, staging, overwrite: true)) is IOException or UnauthorizedAccessException);
+            if (cancelAfterAttempt) cancellation.Cancel();
+        });
+        if (cancelAfterAttempt) Assert.Throws<OperationCanceledException>(() => file.Write([1, 2, 3], cancellation.Token));
+        else { file.Write([1, 2, 3], default); Assert.Equal(new byte[] { 1, 2, 3 }, File.ReadAllBytes(folder.Export)); }
+        Assert.Equal(new byte[] { 9 }, File.ReadAllBytes(attacker)); AssertNoStage(folder.Path);
+    }
     private static void AssertInvalid(Action action) => Assert.Equal(VocabularyFailure.InvalidContent, Assert.Throws<VocabularyException>(action).Failure);
     private static void AssertNoStage(string directory) => Assert.Empty(Directory.GetFiles(directory, ".notebook-*", SearchOption.AllDirectories));
     internal sealed class Folder : IDisposable

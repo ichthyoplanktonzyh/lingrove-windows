@@ -1,4 +1,5 @@
 using System.IO;
+using System.Buffers.Binary;
 using System.Runtime.InteropServices;
 using System.Security.AccessControl;
 using System.Text;
@@ -40,26 +41,54 @@ internal sealed class WindowsVocabularyExportFile : IDisposable
     {
         Verify();
         string staging = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Path)!, ".notebook-" + _stagingIdentity().ToString("D"));
-        bool owns = false;
+        FileStream? stream = null; bool committed = false;
         try
         {
-            using (var stream = new FileInfo(staging).Create(FileMode.CreateNew, FileSystemRights.FullControl,
-                FileShare.None, 65536, FileOptions.None, VocabularyWindowsFile.NewFileSecurity()))
-            {
-                owns = true; cancellationToken.ThrowIfCancellationRequested();
-                stream.Write(data); stream.Flush(flushToDisk: true);
-            }
-            // Tests may cancel or replace an offered path only at this explicit precommit seam.
-            // Production supplies no callback. Repeat identity/protection checks after fsync.
+            // FullControl includes DELETE access. Keeping this non-delete-sharing handle open
+            // pins the exact created file, even when the selected directory allows peer mutation.
+            stream = new FileInfo(staging).Create(FileMode.CreateNew, FileSystemRights.FullControl,
+                FileShare.None, 65536, FileOptions.None, VocabularyWindowsFile.NewFileSecurity());
+            cancellationToken.ThrowIfCancellationRequested();
+            stream.Write(data); stream.Flush(flushToDisk: true);
             _afterFlush?.Invoke(); Verify(); cancellationToken.ThrowIfCancellationRequested();
-            if (!VocabularyWindowsFile.Native.MoveFileExW(staging, Path, 8 | 1)) throw Invalid();
-            owns = false; // No fallible operation or cancellation check may follow this commit.
+            Rename(stream.SafeFileHandle);
+            committed = true; // No fallible operation or cancellation check follows this commit.
         }
         finally
         {
-            if (owns) { try { File.Delete(staging); } catch (IOException) { } catch (UnauthorizedAccessException) { } }
+            if (stream is not null)
+            {
+                // FileDispositionInfo marks THIS open file for deletion on close. A failed
+                // CREATE_NEW supplies no stream, so another creator's collision is never touched.
+                // Failure may leave a private orphan; never fall back to deleting by pathname.
+                if (!committed) _ = SetFileInformationByHandle(stream.SafeFileHandle, 4, [1], 1);
+                try { stream.Dispose(); } catch (IOException) { } catch (UnauthorizedAccessException) { }
+            }
         }
     }
+    private void Rename(SafeFileHandle stage)
+    {
+        // FILE_RENAME_INFO is a DWORD/BOOLEAN union, aligned HANDLE, DWORD byte count, UTF-16
+        // name. RootDirectory is retained through the call; only the admitted leaf is resolved
+        // relative to that pinned parent. The OS renames the stage HANDLE, not a re-opened name.
+        byte[] name = Encoding.Unicode.GetBytes(System.IO.Path.GetFileName(Path));
+        int rootOffset = IntPtr.Size, lengthOffset = rootOffset + IntPtr.Size, nameOffset = lengthOffset + 4;
+        byte[] info = new byte[Math.Max(nameOffset + name.Length + 2, IntPtr.Size == 8 ? 24 : 16)];
+        BinaryPrimitives.WriteUInt32LittleEndian(info, 1); // ReplaceIfExists, FileRenameInfo (3).
+        BinaryPrimitives.WriteUInt32LittleEndian(info.AsSpan(lengthOffset), (uint)name.Length);
+        name.CopyTo(info, nameOffset); bool retained = false;
+        try
+        {
+            _parent.DangerousAddRef(ref retained);
+            if (IntPtr.Size == 8) BinaryPrimitives.WriteInt64LittleEndian(info.AsSpan(rootOffset), _parent.DangerousGetHandle().ToInt64());
+            else BinaryPrimitives.WriteInt32LittleEndian(info.AsSpan(rootOffset), _parent.DangerousGetHandle().ToInt32());
+            if (!SetFileInformationByHandle(stage, 3, info, (uint)info.Length)) throw Invalid();
+        }
+        finally { if (retained) _parent.DangerousRelease(); }
+    }
+    [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool SetFileInformationByHandle(SafeFileHandle file, int informationClass, [In] byte[] info, uint size);
     private void Verify()
     {
         using var requested = OpenDirectory(_requestedParent);

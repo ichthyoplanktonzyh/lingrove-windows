@@ -13,7 +13,7 @@ public sealed class VocabularyDibPreparationTests(WpfDispatcher dispatcher)
         // Exercise the native boundary directly so a codec/HRESULT regression identifies the
         // failing WIC call instead of being hidden behind the product's fixed import message.
         using var frame = new WindowsVocabularyImageFrame(VocabularyClipboardDib.Wrap(VocabularyDibFixture.Image()));
-        Assert.Equal(new Guid("0af1d87e-fcfe-4188-bdeba7906471cbe3"), frame.Container);
+        Assert.Equal(new Guid("0af1d87e-fcfe-4188-bdeb-a7906471cbe3"), frame.Container);
         Assert.Equal(3, frame.Width); Assert.Equal(2, frame.Height);
         var output = frame.CopyPixels(3, 2, default); Assert.Equal(new byte[] { 0, 0, 255, 255 }, output.Pixels[..4]);
     });

@@ -45,7 +45,7 @@ internal sealed unsafe class WindowsVocabularyImageFrame : IDisposable
             // That failure alone proves nothing about color. Only a separately validated BMP
             // header with no profile and explicit/default RGB evidence can replace this query;
             // calibrated/unknown/profiled sources and every other codec/error stay fail-closed.
-            if (colors == unchecked((int)0x88982F81) && Container == new Guid("0af1d87e-fcfe-4188-bdeba7906471cbe3")
+            if (colors == unchecked((int)0x88982F81) && Container == new Guid("0af1d87e-fcfe-4188-bdeb-a7906471cbe3")
                 && VocabularyClipboardDib.HasProvenSrgbBitmap(data)) contexts = 0;
             else Check(colors);
             ColorContextCount = contexts;

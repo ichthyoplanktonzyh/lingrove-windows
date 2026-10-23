@@ -111,15 +111,17 @@ func observe(_ row: [String: Any]) -> [String: Any] {
     case "merge":
         let mode = row["mode"] as! String
         let nilNote = mode.hasPrefix("nullNote")
-        let a = binding(20, origin: 200, note: nilNote ? nil : 1)
+        let a = binding(20, origin: 200, note: nilNote ? nil : 1,
+            endpoint: mode == "canonicalScope" ? "loopback-cafe\u{301}" : "loopback", profile: mode == "canonicalScope" ? "cafe\u{301}" : "profile")
         let sameOrigin = mode == "sameOrigin" || mode == "nullNoteSameOrigin"
         let b = binding(30, origin: sameOrigin ? 200 : 300,
-            note: nilNote ? nil : mode == "sameOrigin" || mode == "independent" || mode == "duplicateSource" ? 2 : 1,
-            endpoint: mode == "otherEndpoint" ? "other" : "loopback", profile: mode == "otherProfile" ? "other" : "profile")
+            note: nilNote ? nil : mode == "sameOrigin" || mode == "independent" || (mode == "duplicateSource" || mode == "duplicateSourceIdentity") ? 2 : 1,
+            endpoint: mode == "otherEndpoint" ? "other" : mode == "canonicalScope" ? "loopback-café" : "loopback",
+            profile: mode == "otherProfile" ? "other" : mode == "canonicalScope" ? "café" : "profile")
         let target: VocabularyReview? = mode == "targetNil" || mode == "bothNil" ? nil : .init(plan: plan(1000),
-            bindings: mode == "noBindings" || mode == "duplicateSource" ? [] : [a], activeBindingID: a.id, preservedPlans: [plan(1001)])
+            bindings: mode == "noBindings" || mode == "duplicateSource" || mode == "duplicateSourceIdentity" ? [] : [a], activeBindingID: a.id, preservedPlans: [plan(1001)])
         let source: VocabularyReview? = mode == "sourceNil" || mode == "bothNil" ? nil : .init(plan: plan(2000),
-            bindings: mode == "noBindings" ? [] : mode == "duplicateSource" ? [b, b] : [b], activeBindingID: b.id, preservedPlans: [plan(2001)])
+            bindings: mode == "noBindings" ? [] : mode == "duplicateSource" ? [b, b] : mode == "duplicateSourceIdentity" ? [b, binding(31, origin: 301, note: 2)] : [b], activeBindingID: b.id, preservedPlans: [plan(2001)])
         guard let merged = AnkiReviewPolicy.merged(target, source) else { return ["absent": true] }
         return ["absent": false, "plan": string(merged.plan.id), "bindings": merged.bindings.map { string($0.id) },
             "origins": merged.bindings.map { string($0.originSenseID) }, "preserved": merged.preservedPlans.map { string($0.id) },

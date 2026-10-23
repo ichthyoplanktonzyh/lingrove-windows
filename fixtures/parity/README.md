@@ -262,7 +262,7 @@ tokenizer, save/merge, notebook schema/restart, media or native editor behavior.
 
 ## Notebook/review graph values
 
-`vocabulary-models-v1.json` adds 29 source-policy probes from the fixed Mac revision. The ninth
+`vocabulary-models-v1.json` adds 31 source-policy probes from the fixed Mac revision. The ninth
 verifier compiles complete notebook/content/review/layout model declarations, original audio values
 (excluding the speech-byte draft), explanation values and the exact original review merge function.
 The driver only constructs deterministic values and observes actual defaults, optional/collection

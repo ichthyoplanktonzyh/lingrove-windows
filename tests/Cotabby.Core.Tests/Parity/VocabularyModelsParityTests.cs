@@ -107,14 +107,16 @@ public sealed class VocabularyModelsParityTests
     private static object Merge(string mode)
     {
         bool nilNote = mode.StartsWith("nullNote", StringComparison.Ordinal);
-        var a = Binding(20, 200, nilNote ? null : 1);
+        var a = Binding(20, 200, nilNote ? null : 1,
+            mode == "canonicalScope" ? "loopback-cafe\u0301" : "loopback", mode == "canonicalScope" ? "cafe\u0301" : "profile");
         bool sameOrigin = mode is "sameOrigin" or "nullNoteSameOrigin";
-        var b = Binding(30, sameOrigin ? 200 : 300, nilNote ? null : mode is "sameOrigin" or "independent" or "duplicateSource" ? 2 : 1,
-            mode == "otherEndpoint" ? "other" : "loopback", mode == "otherProfile" ? "other" : "profile");
+        var b = Binding(30, sameOrigin ? 200 : 300, nilNote ? null : mode is "sameOrigin" or "independent" or "duplicateSource" or "duplicateSourceIdentity" ? 2 : 1,
+            mode == "otherEndpoint" ? "other" : mode == "canonicalScope" ? "loopback-café" : "loopback",
+            mode == "otherProfile" ? "other" : mode == "canonicalScope" ? "café" : "profile");
         VocabularyReview? target = mode is "targetNil" or "bothNil" ? null : new(Plan(1000),
-            mode is "noBindings" or "duplicateSource" ? [] : [a], a.Id, [Plan(1001)]);
+            mode is "noBindings" or "duplicateSource" or "duplicateSourceIdentity" ? [] : [a], a.Id, [Plan(1001)]);
         VocabularyReview? source = mode is "sourceNil" or "bothNil" ? null : new(Plan(2000),
-            mode == "noBindings" ? [] : mode == "duplicateSource" ? [b, b] : [b], b.Id, [Plan(2001)]);
+            mode == "noBindings" ? [] : mode == "duplicateSource" ? [b, b] : mode == "duplicateSourceIdentity" ? [b, Binding(31, 301, 2)] : [b], b.Id, [Plan(2001)]);
         if (AnkiReviewPolicy.Merged(target, source) is not { } merged) return new { absent = true };
         return new { absent = false, plan = Text(merged.Plan.Id), bindings = merged.Bindings.Select(binding => Text(binding.Id)),
             origins = merged.Bindings.Select(binding => Text(binding.OriginSenseId)), preserved = merged.PreservedPlans.Select(plan => Text(plan.Id)),

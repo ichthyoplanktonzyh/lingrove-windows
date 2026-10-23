@@ -51,10 +51,11 @@ Review merge keeps the target plan, existing retained plans, then the source pla
 plans. Bindings deduplicate only within the same endpoint/profile when either a non-null note ID
 matches or origin sense ID matches. The first binding survives; its original sense ID is retained.
 Multiple bindings clear active selection and require a choice. A single binding becomes active;
-empty bindings have no active value. Null source/target reviews retain the other immutable value.
+empty bindings have no active value. The executable corpus also checks canonical-equivalent
+endpoint/profile strings and different source binding UUIDs naming the same remote note. Null source/target reviews retain the other immutable value.
 This is not an acknowledged Anki write or proof of the current server profile.
 
-`fixtures/parity/vocabulary-models-v1.json` has 29 source-policy probes. The ninth Swift verifier
+`fixtures/parity/vocabulary-models-v1.json` has 31 source-policy probes. The ninth Swift verifier
 compiles complete pinned notebook/content/review/layout declarations (including native Codable
 conformance), original audio values excluding the speech-byte draft, explanation values and the
 exact original merge function. Driver code only constructs fixed values and observes real defaults,

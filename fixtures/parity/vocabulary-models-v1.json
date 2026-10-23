@@ -537,6 +537,54 @@
           "00000000-0000-0000-0000-0000000007d1"
         ]
       }
+    },
+    {
+      "id": "merge-canonicalScope",
+      "operation": "merge",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mode": "canonicalScope",
+      "expected": {
+        "absent": false,
+        "active": "00000000-0000-0000-0000-000000000014",
+        "bindings": [
+          "00000000-0000-0000-0000-000000000014"
+        ],
+        "needsChoice": false,
+        "origins": [
+          "00000000-0000-0000-0000-0000000000c8"
+        ],
+        "plan": "00000000-0000-0000-0000-0000000003e8",
+        "preserved": [
+          "00000000-0000-0000-0000-0000000003e9",
+          "00000000-0000-0000-0000-0000000007d0",
+          "00000000-0000-0000-0000-0000000007d1"
+        ]
+      }
+    },
+    {
+      "id": "merge-duplicateSourceIdentity",
+      "operation": "merge",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mode": "duplicateSourceIdentity",
+      "expected": {
+        "absent": false,
+        "active": "00000000-0000-0000-0000-00000000001e",
+        "bindings": [
+          "00000000-0000-0000-0000-00000000001e"
+        ],
+        "needsChoice": false,
+        "origins": [
+          "00000000-0000-0000-0000-00000000012c"
+        ],
+        "plan": "00000000-0000-0000-0000-0000000003e8",
+        "preserved": [
+          "00000000-0000-0000-0000-0000000003e9",
+          "00000000-0000-0000-0000-0000000007d0",
+          "00000000-0000-0000-0000-0000000007d1"
+        ]
+      }
     }
   ]
 }

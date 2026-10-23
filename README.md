@@ -129,7 +129,7 @@ python3 scripts/verify-vocabulary-models-macos-parity.py --mac-repo /path/to/mac
 
 The Swift verifiers require Xcode 26 and exercise 17 autocomplete, 64 learning, 45 local-learning,
 34 lexical, 19 dictionary-policy, 68 explanation, 52 explanation-model, 33 writing-capture,
-72 sense-content, 63 usage/capture and 29 notebook/review-model fixture cases/checks, plus pinned
+72 sense-content, 63 usage/capture and 31 notebook/review-model fixture cases/checks, plus pinned
 resource integrity/Codable checks
 against committed pure Mac policies. They do not build or launch the macOS app. Routine validation does not run the
 `Cotabby.Tools.*Smoke` projects: those may require an interactive Windows desktop or downloaded

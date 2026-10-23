@@ -147,7 +147,8 @@ the [serialized graph worker](docs/VOCABULARY_GRAPH_WORKER.md) now preserves epo
 the [graph preference/presentation library](docs/VOCABULARY_GRAPH_PRESENTATION.md) now preserves Codable settings and window-local state;
 the [compiled graph canvas component](docs/VOCABULARY_GRAPH_CANVAS.md) now adapts drawing/input/lifecycle/virtual peers;
 the [notebook graph integration](docs/VOCABULARY_GRAPH_NOTEBOOK.md) now connects original mode/chrome/settings and shared Store/detail selection;
-compressed/profiled bitmap variants, virtual/pixel drops, review and other dictionary providers remain work. Do not flatten senses into
+the [review card material](docs/REVIEW_CARD_MATERIAL.md) now resolves original card sources, layouts, static previews and JSON values;
+compressed/profiled bitmap variants, virtual/pixel drops, review UI/Anki transactions and other dictionary providers remain work. Do not flatten senses into
 one translation string, regenerate stable IDs during edits, or treat a generated explanation as the
 user's authored meaning. See the vocabulary models and porting gates in the linked docs. Storage
 compatibility with macOS is not assumed; migrations must be explicit and tested.
@@ -207,6 +208,7 @@ python3 scripts/verify-vocabulary-graph-macos-parity.py --mac-repo /path/to/macO
 python3 scripts/verify-vocabulary-graph-layout-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-vocabulary-graph-worker-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-vocabulary-graph-presentation-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
+python3 scripts/verify-review-card-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 ```
 
 The verifiers read the pinned macOS sources from Git and check the same JSON cases. The lexical
@@ -220,7 +222,7 @@ runner. This is ordinary compilation, not packaging or a release.
 The current `.github/workflows/ci.yml` has two validation jobs: Windows x64 restores and builds the
 full solution, then runs Core, portable App boundary and Inference tests, including noninteractive ICU sentence tests,
 and the compiled learning-card WPF view suite on its own STA dispatcher (see `docs/WPF_VIEW_TESTS.md`);
-macOS 26 x64 runs Core, portable App boundary tests and all forty-two Swift parity verifiers against a sparse checkout of the pinned Mac
+macOS 26 x64 runs Core, portable App boundary tests and all forty-three Swift parity verifiers against a sparse checkout of the pinned Mac
 Support, language-learning/vocabulary models/services, content-test provenance, language catalog and pinned expression resource files. The separate
 `.github/workflows/upstream-baseline.yml` checks the original Windows fork at commit
 `b1e4031c70aca1be21aae2c57b138fde5fc22bb1` with .NET 9 on manual dispatch. Its initial setup run is

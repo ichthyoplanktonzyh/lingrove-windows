@@ -362,3 +362,11 @@ setup, not a replacement transaction. It covers stage/commit/cleanup, missing an
 conflicts, pruning, budgets and original same-filename semantics. Nine separate Windows named-file
 cases cover native rollback/repair/cancellation/cleanup/locks/revisions; no claim of UI or backup
 integration follows from these observations.
+
+`review-card-v1.json` adds 175 actual observations from complete original review content/layout,
+static templates and JSON values. The native Swift input/output carrier preserves literal BOM and
+decomposed scalars; no NSString/JSONSerialization bridge supplies text-policy inputs. Encoding
+success measures the original JSONEncoder directly. Three extra Core cases cover detached/canonical
+values, closed enum admission and display-reference validation without changing stored-block
+identity rules. See [mapping and evidence limits](../../docs/REVIEW_CARD_MATERIAL.md). No review UI,
+Anki connection, remote mutation, audio generation or media upload is established by these cases.

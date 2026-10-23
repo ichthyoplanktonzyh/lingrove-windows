@@ -70,6 +70,19 @@ public static class VocabularyContentPolicy
     public static string RenderHtml(IReadOnlyList<VocabularyContentBlock> blocks)
     {
         Validate(blocks);
+        return RenderHtmlCore(blocks);
+    }
+
+    /// <summary>Resolved cards can reference one stored block on both sides. Validate each
+    /// occurrence's metadata/text before emitting paths/markup, but do not apply stored-block
+    /// identity or aggregate-storage budgets to a list of repeated display references.</summary>
+    internal static string RenderOccurrencesHtml(IReadOnlyList<VocabularyContentBlock> blocks)
+    {
+        foreach (var block in blocks) Validate([block]);
+        return RenderHtmlCore(blocks);
+    }
+    private static string RenderHtmlCore(IReadOnlyList<VocabularyContentBlock> blocks)
+    {
         if (blocks.Count == 0) return string.Empty;
         var body = new StringBuilder();
         foreach (var block in blocks)

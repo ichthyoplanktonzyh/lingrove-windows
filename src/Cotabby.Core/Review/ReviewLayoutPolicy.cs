@@ -3,11 +3,11 @@ using Cotabby.Core.Vocabulary;
 namespace Cotabby.Core.Review;
 
 /// <summary>
-/// Mac structural layout admission, shared by a future archive and card resolver. The layout owns
-/// ordered parts and card-only blocks; validating does not resolve source references or render a
-/// card. Missing source IDs remain a separate resolution concern, just as in the Mac implementation.
+/// Mac structural layout admission, shared by archive validation and the separate source resolver.
+/// The layout owns ordered parts and card-only blocks; validation does not silently repair missing
+/// source IDs. Resolution and rendering live in the companion partial, preserving that distinction.
 /// </summary>
-public static class ReviewLayoutPolicy
+public static partial class ReviewLayoutPolicy
 {
     public static void Validate(ReviewLayout layout)
     {

@@ -146,7 +146,7 @@ speech endpoint as distinct providers. Port history and its privacy/deletion con
 vocabulary CLI, settings/search, and interface localization. Preserve user-authored data through
 schema migrations and keep runtime identifiers stable unless a migration is explicitly designed.
 
-**Current library slice:** [sense-content values/policy](VOCABULARY_CONTENT.md) ports ordered stable block IDs, text/image metadata budgets and exact review HTML using 72 actual pinned Swift observations. It does not connect a notebook, media decoder, database or Anki server. The [usage/capture library](VOCABULARY_CAPTURE.md) now also preserves stable usage values and keys with 63 actual Mac probes; entry/sense/review graphs and save/merge/storage remain next boundaries.
+**Current library slice:** [sense-content values/policy](VOCABULARY_CONTENT.md) ports ordered stable block IDs, text/image metadata budgets and exact review HTML using 72 actual pinned Swift observations. It does not connect a notebook, media decoder, database or Anki server. The [usage/capture library](VOCABULARY_CAPTURE.md) now also preserves stable usage values and keys with 63 actual Mac probes; the [entry/sense/review in-memory graph](VOCABULARY_MODELS.md) now preserves optional ownership, layouts, retained plans and bindings with 31 actual Mac probes. Save/merge/move transactions, durable codec/storage and UI remain next boundaries.
 
 **Gate:** entry/sense/usage UUIDs survive edits, merges, export/import, and restart; Anki review IDs
 remain attached to the correct cards; image references survive export; deletion really removes data;

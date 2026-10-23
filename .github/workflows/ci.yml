@@ -73,6 +73,7 @@ jobs:
             Cotabby/Models/Context
             Cotabby/Models/LanguageLearning
             Cotabby/Models/Vocabulary
+            Cotabby/Models/Review
             Cotabby/Models/Runtime
             CotabbyTests/Services/Vocabulary/VocabularyContentTests.swift
             Cotabby/Services/LanguageLearning
@@ -96,6 +97,8 @@ jobs:
         run: python3 scripts/verify-vocabulary-content-macos-parity.py --mac-repo .mac-baseline
       - name: Verify vocabulary capture identity and validation against committed Mac policies
         run: python3 scripts/verify-vocabulary-capture-macos-parity.py --mac-repo .mac-baseline
+      - name: Verify notebook and review models against committed Mac values
+        run: python3 scripts/verify-vocabulary-models-macos-parity.py --mac-repo .mac-baseline
 
   # Routine CI stops after validation. Packaging, artifact uploads and releases
   # are deliberately absent; distribution is a separately authorized task.

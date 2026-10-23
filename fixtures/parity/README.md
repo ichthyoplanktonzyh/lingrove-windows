@@ -259,3 +259,22 @@ provenance independence, invalid/split ranges, empty/overlapping ranges permitte
 capture validator, and its NSString CR/LF range behavior. Expected values come from executing
 Mac source; the .NET implementation does not supply an oracle. These cases establish no sentence
 tokenizer, save/merge, notebook schema/restart, media or native editor behavior.
+
+## Notebook/review graph values
+
+`vocabulary-models-v1.json` adds 31 source-policy probes from the fixed Mac revision. The ninth
+verifier compiles complete notebook/content/review/layout model declarations, original audio values
+(excluding the speech-byte draft), explanation values and the exact original review merge function.
+The driver only constructs deterministic values and observes actual defaults, optional/collection
+equality, first-UUID explanation projections, ordered usage/layout slots and binding merge. It has
+no C# replacement oracle and performs no archive or native app operation.
+
+```sh
+python3 scripts/verify-vocabulary-models-macos-parity.py --mac-repo /path/to/lingrove
+```
+
+The fixtures preserve canonical map/set equality, absent-versus-empty extensions, legacy/flexible
+review coexistence, retained-plan traversal and endpoint/profile/origin/note deduplication. They
+are pure value/projection evidence, not a complete field-by-field model codec roundtrip. Explicit
+.NET snapshot mutation/hash and collection tests complement them. The [scope record](../../docs/VOCABULARY_MODELS.md)
+keeps Save/merge transactions, storage, media, template application and Anki transport unfinished.

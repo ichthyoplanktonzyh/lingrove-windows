@@ -51,6 +51,12 @@ internal sealed class VocabularyWindowsFile : IDisposable
     }
     internal static string FullPath(string path)
     {
+        if (string.IsNullOrEmpty(path)) throw Invalid();
+        string requestedLeaf = System.IO.Path.GetFileName(path);
+        // GetFullPath on Windows can remove a trailing dot/space. Inspect the caller's literal
+        // leaf first, or an ambiguous request would silently become a different file name.
+        if (requestedLeaf.Length == 0 || requestedLeaf.Contains(':') || requestedLeaf.EndsWith('.') || requestedLeaf.EndsWith(' ')) throw Invalid();
+        _ = new UTF8Encoding(false, true).GetByteCount(path);
         string full = System.IO.Path.GetFullPath(path), leaf = System.IO.Path.GetFileName(full);
         // Check before creating a parent/staging file: alternate streams and Win32-trimmed
         // aliases are not standalone database files, and must cause no storage mutation.

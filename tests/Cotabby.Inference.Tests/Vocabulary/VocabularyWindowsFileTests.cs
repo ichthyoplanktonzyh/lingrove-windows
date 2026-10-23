@@ -26,6 +26,8 @@ public sealed class VocabularyWindowsFileTests : IDisposable
     private static VocabularyDocument Note(VocabularyDocument doc, string note) => doc with
     { Entries = [doc.Entries[0] with { Senses = [doc.Entries[0].Senses[0] with { Note = note }] }] };
     private static void Failure(VocabularyFailure expected, Action action) => Assert.Equal(expected, Assert.Throws<VocabularyException>(action).Failure);
+    private static void OpenFailure(VocabularyFailure expected, string path) => Failure(expected, () =>
+    { using var unexpected = VocabularySQLiteDatabase.OpenFile(path); });
     private void NoStages() => Assert.Empty(Directory.GetFiles(_root, ".vocabulary-*", SearchOption.AllDirectories));
 
     [Fact]
@@ -68,7 +70,7 @@ public sealed class VocabularyWindowsFileTests : IDisposable
         security.AddAccessRule(new FileSystemAccessRule(new SecurityIdentifier(WellKnownSidType.WorldSid, null), FileSystemRights.ReadAndExecute,
             InheritanceFlags.ObjectInherit | InheritanceFlags.ContainerInherit, PropagationFlags.None, AccessControlType.Allow));
         directory.SetAccessControl(security); byte[] previous = directory.GetAccessControl().GetSecurityDescriptorBinaryForm();
-        Failure(VocabularyFailure.InvalidArchive, () => VocabularySQLiteDatabase.OpenFile(Path.Combine(folder, "vocabulary.sqlite")));
+        OpenFailure(VocabularyFailure.InvalidArchive, Path.Combine(folder, "vocabulary.sqlite"));
         Assert.Equal(previous, directory.GetAccessControl().GetSecurityDescriptorBinaryForm()); Assert.Empty(Directory.GetFiles(folder));
     }
     [Theory]
@@ -81,7 +83,7 @@ public sealed class VocabularyWindowsFileTests : IDisposable
         security.AddAccessRule(new FileSystemAccessRule(new SecurityIdentifier(WellKnownSidType.WorldSid, null), rights,
             InheritanceFlags.None, PropagationFlags.None, AccessControlType.Allow));
         directory.SetAccessControl(security); byte[] before = directory.GetAccessControl().GetSecurityDescriptorBinaryForm();
-        Failure(VocabularyFailure.InvalidArchive, () => VocabularySQLiteDatabase.OpenFile(FilePath));
+        OpenFailure(VocabularyFailure.InvalidArchive, FilePath);
         Assert.Equal(before, directory.GetAccessControl().GetSecurityDescriptorBinaryForm()); Assert.Empty(Directory.GetFiles(_root));
     }
     [Fact]
@@ -107,7 +109,7 @@ public sealed class VocabularyWindowsFileTests : IDisposable
         var file = new FileInfo(sidecar); var security = file.GetAccessControl();
         security.AddAccessRule(new FileSystemAccessRule(new SecurityIdentifier(WellKnownSidType.WorldSid, null), FileSystemRights.Read, AccessControlType.Allow));
         file.SetAccessControl(security); byte[] original = File.ReadAllBytes(FilePath);
-        Failure(VocabularyFailure.InvalidArchive, () => VocabularySQLiteDatabase.OpenFile(FilePath));
+        OpenFailure(VocabularyFailure.InvalidArchive, FilePath);
         Assert.Equal(bytes, File.ReadAllBytes(sidecar)); Assert.Equal(original, File.ReadAllBytes(FilePath));
     }
     [Theory]
@@ -117,14 +119,14 @@ public sealed class VocabularyWindowsFileTests : IDisposable
     {
         using (VocabularySQLiteDatabase.OpenFile(FilePath)) { }
         string target = Path.Combine(_root, "target"); File.WriteAllText(target, "preserved"); File.CreateSymbolicLink(FilePath + suffix, target);
-        Failure(VocabularyFailure.InvalidArchive, () => VocabularySQLiteDatabase.OpenFile(FilePath)); Assert.Equal("preserved", File.ReadAllText(target));
+        OpenFailure(VocabularyFailure.InvalidArchive, FilePath); Assert.Equal("preserved", File.ReadAllText(target));
     }
     [Fact]
     public void NamedConnectionCannotBypassFileLockThroughTheMemoryAdmissionHelper()
     {
         using (VocabularySQLiteDatabase.OpenFile(FilePath)) { }
         var connection = VocabularySQLiteConnection.OpenNamed(FilePath);
-        Failure(VocabularyFailure.InvalidArchive, () => VocabularySQLiteDatabase.Admit(connection));
+        Failure(VocabularyFailure.InvalidArchive, () => { using var unexpected = VocabularySQLiteDatabase.Admit(connection); });
         using var reopened = VocabularySQLiteDatabase.OpenFile(FilePath); Assert.Equal(0UL, reopened.Revision());
     }
     [Fact]
@@ -159,7 +161,7 @@ public sealed class VocabularyWindowsFileTests : IDisposable
     public void CorruptOriginalBytesArePreservedRatherThanReset()
     {
         byte[] bytes = [1, 2, 3, 4, 5]; File.WriteAllBytes(FilePath, bytes);
-        Failure(VocabularyFailure.InvalidArchive, () => VocabularySQLiteDatabase.OpenFile(FilePath)); Assert.Equal(bytes, File.ReadAllBytes(FilePath)); NoStages();
+        OpenFailure(VocabularyFailure.InvalidArchive, FilePath); Assert.Equal(bytes, File.ReadAllBytes(FilePath)); NoStages();
     }
     [Theory]
     [InlineData(0)]
@@ -169,7 +171,7 @@ public sealed class VocabularyWindowsFileTests : IDisposable
         using (var db = VocabularySQLiteDatabase.OpenFile(FilePath)) db.Write(Document(), new(), 0);
         using (var c = VocabularySQLiteConnection.OpenNamed(FilePath)) c.Execute("PRAGMA user_version=" + version);
         byte[] before = File.ReadAllBytes(FilePath);
-        Failure(VocabularyFailure.UnsupportedVersion, () => VocabularySQLiteDatabase.OpenFile(FilePath)); Assert.Equal(before, File.ReadAllBytes(FilePath)); NoStages();
+        OpenFailure(VocabularyFailure.UnsupportedVersion, FilePath); Assert.Equal(before, File.ReadAllBytes(FilePath)); NoStages();
     }
     [Fact]
     public void ExistingVersionOneFileUpgradesWithoutLosingContentOrRevision()
@@ -183,20 +185,20 @@ public sealed class VocabularyWindowsFileTests : IDisposable
     public void ADirectoryCannotBeOpenedOrOverwrittenAsTheDatabase()
     {
         Directory.CreateDirectory(FilePath); string marker = Path.Combine(FilePath, "marker"); File.WriteAllText(marker, "preserved");
-        Failure(VocabularyFailure.InvalidArchive, () => VocabularySQLiteDatabase.OpenFile(FilePath)); Assert.Equal("preserved", File.ReadAllText(marker)); NoStages();
+        OpenFailure(VocabularyFailure.InvalidArchive, FilePath); Assert.Equal("preserved", File.ReadAllText(marker)); NoStages();
     }
     [Fact]
     public void DatabaseLeafSymlinkIsRejectedWithoutTouchingItsTarget()
     {
         string target = Path.Combine(_root, "target"); byte[] bytes = [1, 2, 3]; File.WriteAllBytes(target, bytes); File.CreateSymbolicLink(FilePath, target);
-        Failure(VocabularyFailure.InvalidArchive, () => VocabularySQLiteDatabase.OpenFile(FilePath)); Assert.Equal(bytes, File.ReadAllBytes(target)); NoStages();
+        OpenFailure(VocabularyFailure.InvalidArchive, FilePath); Assert.Equal(bytes, File.ReadAllBytes(target)); NoStages();
     }
     [Fact]
     public void LockLeafSymlinkIsRejectedWithoutTouchingItsTarget()
     {
         using (VocabularySQLiteDatabase.OpenFile(FilePath)) { }
         string target = Path.Combine(_root, "target"); File.WriteAllText(target, "preserved"); File.Delete(FilePath + ".lock"); File.CreateSymbolicLink(FilePath + ".lock", target);
-        Failure(VocabularyFailure.InvalidArchive, () => VocabularySQLiteDatabase.OpenFile(FilePath)); Assert.Equal("preserved", File.ReadAllText(target));
+        OpenFailure(VocabularyFailure.InvalidArchive, FilePath); Assert.Equal("preserved", File.ReadAllText(target));
     }
     [Fact]
     public void ParentAliasResolvesWhileTheRegularDatabaseLeafRemainsChecked()
@@ -318,7 +320,7 @@ public sealed class VocabularyWindowsFileTests : IDisposable
     [InlineData("vocabulary.sqlite ")]
     public void AmbiguousStreamOrTrimmedLeafNamesAreRejectedBeforeCreatingFiles(string leaf)
     {
-        Failure(VocabularyFailure.InvalidArchive, () => VocabularySQLiteDatabase.OpenFile(Path.Combine(_root, leaf))); Assert.Empty(Directory.GetFileSystemEntries(_root));
+        OpenFailure(VocabularyFailure.InvalidArchive, Path.Combine(_root, leaf)); Assert.Empty(Directory.GetFileSystemEntries(_root));
     }
     public void Dispose() => Directory.Delete(_root, recursive: true);
 }

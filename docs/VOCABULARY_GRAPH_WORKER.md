@@ -51,7 +51,9 @@ particle or a measured performance claim. Small transcripts compare every positi
 matches the engine verifier (`1e-8` absolute or `1e-10` relative); keys/counts/running are exact.
 
 Two additional C# cases enqueue configure/ticks/suspend/reopen concurrently to check admission
-order/copied frames and verify completion without posting to the caller's UI context. Local
+order/copied frames and verify queued admission without posting to the caller's UI context. The latter test holds the real
+admission gate through a test-only reflection read so its await must suspend; it does not depend
+on the timing of a tiny graph. All transcript and queue waits are bounded at ten seconds. Local
 worker target: 29 passed, zero failures/skips. This portable library does not claim WPF interaction,
 a visible frame rate, UI automation accessibility, settings restoration or actual window occlusion
 behavior; those still require the canvas and its own host validation.

@@ -26,17 +26,17 @@ public sealed class VocabularyGraphWorkerParityTests
             ulong epoch = action.GetProperty("epoch").GetUInt64();
             switch (action.GetProperty("op").GetString())
             {
-                case "configure": actual.Add(await worker.ConfigureAsync(Graph(action), Settings(action), epoch)); break;
+                case "configure": actual.Add(await worker.ConfigureAsync(Graph(action), Settings(action), epoch).WaitAsync(TimeSpan.FromSeconds(10))); break;
                 case "advance":
                     VocabularyGraphNodeId? pinned = action.TryGetProperty("pinned", out var pin) ? Identity(pin.GetString()!) : null;
                     VocabularyGraphPoint? point = action.TryGetProperty("position", out var position) ? Point(position) : null;
                     int count = action.TryGetProperty("count", out var repeat) ? repeat.GetInt32() : 1;
                     VocabularyGraphFrame? frame = null;
-                    for (int i = 0; i < count; i++) frame = await worker.AdvanceAsync(epoch, pinned, point);
+                    for (int i = 0; i < count; i++) frame = await worker.AdvanceAsync(epoch, pinned, point).WaitAsync(TimeSpan.FromSeconds(10));
                     actual.Add(frame); break;
                 case "suspend":
                     await worker.SuspendAsync(epoch, action.TryGetProperty("finalNode", out var final) ? Identity(final.GetString()!) : null,
-                        action.TryGetProperty("finalPosition", out var finalPoint) ? Point(finalPoint) : null); actual.Add(null); break;
+                        action.TryGetProperty("finalPosition", out var finalPoint) ? Point(finalPoint) : null).WaitAsync(TimeSpan.FromSeconds(10)); actual.Add(null); break;
                 default: throw new InvalidOperationException("Unknown original worker action.");
             }
         }
@@ -50,24 +50,33 @@ public sealed class VocabularyGraphWorkerParityTests
         var configure = worker.ConfigureAsync(graph, new(), 1);
         var ticks = Enumerable.Range(0, 20).Select(_ => worker.AdvanceAsync(1)).ToArray();
         var suspend = worker.SuspendAsync(2); var reopen = worker.ConfigureAsync(graph, new(), 3);
-        var initial = await configure; var replies = await Task.WhenAll(ticks); await suspend; var restored = await reopen;
+        var initial = await configure.WaitAsync(TimeSpan.FromSeconds(10)); var replies = await Task.WhenAll(ticks).WaitAsync(TimeSpan.FromSeconds(10));
+        await suspend.WaitAsync(TimeSpan.FromSeconds(10)); var restored = await reopen.WaitAsync(TimeSpan.FromSeconds(10));
         AssertFrame(Row("advance").GetProperty("expected")[0], initial, null);
         AssertFrame(Row("advance").GetProperty("expected")[1], replies[^1], null);
         Assert.NotNull(replies[0]); var firstPositions = replies[0]!.Positions.ToDictionary();
-        for (int i = 0; i < 5; i++) _ = await worker.AdvanceAsync(3);
+        for (int i = 0; i < 5; i++) _ = await worker.AdvanceAsync(3).WaitAsync(TimeSpan.FromSeconds(10));
         Assert.Equal(firstPositions.OrderBy(p => Key(p.Key)), replies[0]!.Positions.OrderBy(p => Key(p.Key)));
         Assert.NotNull(restored); Assert.Equal(replies[^1]!.Positions.OrderBy(p => Key(p.Key)), restored.Positions.OrderBy(p => Key(p.Key)));
     }
     [Fact]
-    public async Task WorkerDoesNotRequireTheCallersUiSynchronizationContextToComplete()
+    public async Task QueuedAdmissionDoesNotRequireTheCallersUiSynchronizationContextToComplete()
     {
-        var context = new RecordingContext(); var previous = SynchronizationContext.Current; Task<VocabularyGraphFrame?> task;
+        var worker = new VocabularyGraphLayoutWorker();
+        // Hold the real admission gate so the first await MUST suspend under the recording
+        // context. Reflection is confined to this test; production gets no scheduling test hook.
+        var gate = Assert.IsType<SemaphoreSlim>(typeof(VocabularyGraphLayoutWorker)
+            .GetField("_gate", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!.GetValue(worker));
+        Assert.True(await gate.WaitAsync(TimeSpan.FromSeconds(10)));
+        var context = new RecordingContext(); var previous = SynchronizationContext.Current;
+        Task<VocabularyGraphFrame?> task;
         try
         {
             SynchronizationContext.SetSynchronizationContext(context);
-            task = new VocabularyGraphLayoutWorker().ConfigureAsync(Graph(Row("head-seeds").GetProperty("actions")[0]), new(), 1);
+            task = worker.ConfigureAsync(Graph(Row("head-seeds").GetProperty("actions")[0]), new(), 1);
+            Assert.False(task.IsCompleted);
         }
-        finally { SynchronizationContext.SetSynchronizationContext(previous); }
+        finally { SynchronizationContext.SetSynchronizationContext(previous); gate.Release(); }
         Assert.NotNull(await task.WaitAsync(TimeSpan.FromSeconds(10))); Assert.Equal(0, context.Posts);
     }
     private sealed class RecordingContext : SynchronizationContext

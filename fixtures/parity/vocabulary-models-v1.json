@@ -1,0 +1,542 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "defaults",
+      "operation": "defaults",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "aliases": 0,
+        "alternateMeanings": 0,
+        "answerAbsent": true,
+        "audioKindsAbsent": true,
+        "audioReceiptsAbsent": true,
+        "caption": false,
+        "cardsAbsent": true,
+        "contentAbsent": true,
+        "entries": 0,
+        "examples": 0,
+        "explanations": 0,
+        "gap": false,
+        "includeContentAbsent": true,
+        "includeExplanation": false,
+        "includeNotes": false,
+        "layoutAbsent": true,
+        "note": "",
+        "overrides": 0,
+        "partBlockAbsent": true,
+        "partContent": 0,
+        "recognition": true,
+        "reviewAbsent": true,
+        "revision": "18446744073709551615",
+        "senseOrigin": "captured",
+        "standalone": false,
+        "standaloneMeanings": 0,
+        "tags": 0,
+        "templatesAbsent": true,
+        "version": 3
+      }
+    },
+    {
+      "id": "optional-content",
+      "operation": "optional",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "field": "content",
+      "expected": {
+        "equal": false
+      }
+    },
+    {
+      "id": "optional-reviewCards",
+      "operation": "optional",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "field": "reviewCards",
+      "expected": {
+        "equal": false
+      }
+    },
+    {
+      "id": "optional-reviewTemplates",
+      "operation": "optional",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "field": "reviewTemplates",
+      "expected": {
+        "equal": false
+      }
+    },
+    {
+      "id": "optional-answer",
+      "operation": "optional",
+      "macSource": "Cotabby/Models/Review/ReviewModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "field": "answer",
+      "expected": {
+        "equal": false
+      }
+    },
+    {
+      "id": "optional-name",
+      "operation": "optional",
+      "macSource": "Cotabby/Models/Review/ReviewModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "field": "name",
+      "expected": {
+        "equal": false
+      }
+    },
+    {
+      "id": "optional-deck",
+      "operation": "optional",
+      "macSource": "Cotabby/Models/Review/ReviewModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "field": "deck",
+      "expected": {
+        "equal": false
+      }
+    },
+    {
+      "id": "optional-layout",
+      "operation": "optional",
+      "macSource": "Cotabby/Models/Review/ReviewModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "field": "layout",
+      "expected": {
+        "equal": false
+      }
+    },
+    {
+      "id": "optional-includeSenseContent",
+      "operation": "optional",
+      "macSource": "Cotabby/Models/Review/ReviewModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "field": "includeSenseContent",
+      "expected": {
+        "equal": false
+      }
+    },
+    {
+      "id": "optional-audioKinds",
+      "operation": "optional",
+      "macSource": "Cotabby/Models/Review/ReviewModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "field": "audioKinds",
+      "expected": {
+        "equal": false
+      }
+    },
+    {
+      "id": "optional-audioReceipts",
+      "operation": "optional",
+      "macSource": "Cotabby/Models/Review/ReviewModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "field": "audioReceipts",
+      "expected": {
+        "equal": false
+      }
+    },
+    {
+      "id": "collection-values",
+      "operation": "collections",
+      "macSource": "Cotabby/Models/Review/ReviewModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "canonicalTagsEqual": true,
+        "canonicalTemplateEqual": true,
+        "orderedLayoutEqual": false,
+        "planEqual": true
+      }
+    },
+    {
+      "id": "entry-projections",
+      "operation": "entry",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "emptyRecordsAbsent": true,
+        "meanings": [
+          "first wins",
+          "second",
+          "third"
+        ],
+        "nestedCount": 2,
+        "records": [
+          "00000000-0000-0000-0000-000000000028",
+          "00000000-0000-0000-0000-000000000029",
+          "00000000-0000-0000-0000-00000000002a"
+        ],
+        "usages": [
+          "00000000-0000-0000-0000-00000000003c",
+          "00000000-0000-0000-0000-00000000003d",
+          "00000000-0000-0000-0000-00000000003c"
+        ]
+      }
+    },
+    {
+      "id": "review-slot-legacy",
+      "operation": "slots",
+      "macSource": "Cotabby/Models/Review/ReviewLayout.swift",
+      "provenanceKind": "source-policy-extension",
+      "slot": "legacy",
+      "expected": {
+        "cards": [
+          "00000000-0000-0000-0000-000000000014"
+        ],
+        "layouts": [
+          "custom",
+          "meaning",
+          "translation"
+        ],
+        "legacy": "00000000-0000-0000-0000-00000000001e",
+        "originalCardCount": 1,
+        "selected": "00000000-0000-0000-0000-00000000001e"
+      }
+    },
+    {
+      "id": "review-slot-replace",
+      "operation": "slots",
+      "macSource": "Cotabby/Models/Review/ReviewLayout.swift",
+      "provenanceKind": "source-policy-extension",
+      "slot": "replace",
+      "expected": {
+        "cards": [
+          "00000000-0000-0000-0000-000000000014"
+        ],
+        "layouts": [
+          "expression",
+          "notes",
+          "custom"
+        ],
+        "legacy": "00000000-0000-0000-0000-00000000000a",
+        "originalCardCount": 1,
+        "selected": "00000000-0000-0000-0000-000000000014"
+      }
+    },
+    {
+      "id": "review-slot-append",
+      "operation": "slots",
+      "macSource": "Cotabby/Models/Review/ReviewLayout.swift",
+      "provenanceKind": "source-policy-extension",
+      "slot": "append",
+      "expected": {
+        "cards": [
+          "00000000-0000-0000-0000-000000000014",
+          "00000000-0000-0000-0000-00000000001e"
+        ],
+        "layouts": [
+          "expression",
+          "notes",
+          "meaning",
+          "translation",
+          "custom"
+        ],
+        "legacy": "00000000-0000-0000-0000-00000000000a",
+        "originalCardCount": 1,
+        "selected": "00000000-0000-0000-0000-00000000001e"
+      }
+    },
+    {
+      "id": "layout-projections",
+      "operation": "layout",
+      "macSource": "Cotabby/Models/Review/ReviewLayout.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "audio": [
+          "expression",
+          "sentence"
+        ],
+        "content": [
+          "00000000-0000-0000-0000-000000000064",
+          "00000000-0000-0000-0000-000000000065"
+        ],
+        "fields": [
+          "ExpressionAudio",
+          "SentenceAudio"
+        ],
+        "parts": [
+          "00000000-0000-0000-0000-00000000000a",
+          "00000000-0000-0000-0000-00000000000b",
+          "00000000-0000-0000-0000-00000000000c"
+        ]
+      }
+    },
+    {
+      "id": "merge-targetNil",
+      "operation": "merge",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mode": "targetNil",
+      "expected": {
+        "absent": false,
+        "active": "00000000-0000-0000-0000-00000000001e",
+        "bindings": [
+          "00000000-0000-0000-0000-00000000001e"
+        ],
+        "needsChoice": false,
+        "origins": [
+          "00000000-0000-0000-0000-00000000012c"
+        ],
+        "plan": "00000000-0000-0000-0000-0000000007d0",
+        "preserved": [
+          "00000000-0000-0000-0000-0000000007d1"
+        ]
+      }
+    },
+    {
+      "id": "merge-sourceNil",
+      "operation": "merge",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mode": "sourceNil",
+      "expected": {
+        "absent": false,
+        "active": "00000000-0000-0000-0000-000000000014",
+        "bindings": [
+          "00000000-0000-0000-0000-000000000014"
+        ],
+        "needsChoice": false,
+        "origins": [
+          "00000000-0000-0000-0000-0000000000c8"
+        ],
+        "plan": "00000000-0000-0000-0000-0000000003e8",
+        "preserved": [
+          "00000000-0000-0000-0000-0000000003e9"
+        ]
+      }
+    },
+    {
+      "id": "merge-bothNil",
+      "operation": "merge",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mode": "bothNil",
+      "expected": {
+        "absent": true
+      }
+    },
+    {
+      "id": "merge-sameNote",
+      "operation": "merge",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mode": "sameNote",
+      "expected": {
+        "absent": false,
+        "active": "00000000-0000-0000-0000-000000000014",
+        "bindings": [
+          "00000000-0000-0000-0000-000000000014"
+        ],
+        "needsChoice": false,
+        "origins": [
+          "00000000-0000-0000-0000-0000000000c8"
+        ],
+        "plan": "00000000-0000-0000-0000-0000000003e8",
+        "preserved": [
+          "00000000-0000-0000-0000-0000000003e9",
+          "00000000-0000-0000-0000-0000000007d0",
+          "00000000-0000-0000-0000-0000000007d1"
+        ]
+      }
+    },
+    {
+      "id": "merge-sameOrigin",
+      "operation": "merge",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mode": "sameOrigin",
+      "expected": {
+        "absent": false,
+        "active": "00000000-0000-0000-0000-000000000014",
+        "bindings": [
+          "00000000-0000-0000-0000-000000000014"
+        ],
+        "needsChoice": false,
+        "origins": [
+          "00000000-0000-0000-0000-0000000000c8"
+        ],
+        "plan": "00000000-0000-0000-0000-0000000003e8",
+        "preserved": [
+          "00000000-0000-0000-0000-0000000003e9",
+          "00000000-0000-0000-0000-0000000007d0",
+          "00000000-0000-0000-0000-0000000007d1"
+        ]
+      }
+    },
+    {
+      "id": "merge-otherProfile",
+      "operation": "merge",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mode": "otherProfile",
+      "expected": {
+        "absent": false,
+        "active": null,
+        "bindings": [
+          "00000000-0000-0000-0000-000000000014",
+          "00000000-0000-0000-0000-00000000001e"
+        ],
+        "needsChoice": true,
+        "origins": [
+          "00000000-0000-0000-0000-0000000000c8",
+          "00000000-0000-0000-0000-00000000012c"
+        ],
+        "plan": "00000000-0000-0000-0000-0000000003e8",
+        "preserved": [
+          "00000000-0000-0000-0000-0000000003e9",
+          "00000000-0000-0000-0000-0000000007d0",
+          "00000000-0000-0000-0000-0000000007d1"
+        ]
+      }
+    },
+    {
+      "id": "merge-otherEndpoint",
+      "operation": "merge",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mode": "otherEndpoint",
+      "expected": {
+        "absent": false,
+        "active": null,
+        "bindings": [
+          "00000000-0000-0000-0000-000000000014",
+          "00000000-0000-0000-0000-00000000001e"
+        ],
+        "needsChoice": true,
+        "origins": [
+          "00000000-0000-0000-0000-0000000000c8",
+          "00000000-0000-0000-0000-00000000012c"
+        ],
+        "plan": "00000000-0000-0000-0000-0000000003e8",
+        "preserved": [
+          "00000000-0000-0000-0000-0000000003e9",
+          "00000000-0000-0000-0000-0000000007d0",
+          "00000000-0000-0000-0000-0000000007d1"
+        ]
+      }
+    },
+    {
+      "id": "merge-nullNoteSameOrigin",
+      "operation": "merge",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mode": "nullNoteSameOrigin",
+      "expected": {
+        "absent": false,
+        "active": "00000000-0000-0000-0000-000000000014",
+        "bindings": [
+          "00000000-0000-0000-0000-000000000014"
+        ],
+        "needsChoice": false,
+        "origins": [
+          "00000000-0000-0000-0000-0000000000c8"
+        ],
+        "plan": "00000000-0000-0000-0000-0000000003e8",
+        "preserved": [
+          "00000000-0000-0000-0000-0000000003e9",
+          "00000000-0000-0000-0000-0000000007d0",
+          "00000000-0000-0000-0000-0000000007d1"
+        ]
+      }
+    },
+    {
+      "id": "merge-nullNoteOtherOrigin",
+      "operation": "merge",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mode": "nullNoteOtherOrigin",
+      "expected": {
+        "absent": false,
+        "active": null,
+        "bindings": [
+          "00000000-0000-0000-0000-000000000014",
+          "00000000-0000-0000-0000-00000000001e"
+        ],
+        "needsChoice": true,
+        "origins": [
+          "00000000-0000-0000-0000-0000000000c8",
+          "00000000-0000-0000-0000-00000000012c"
+        ],
+        "plan": "00000000-0000-0000-0000-0000000003e8",
+        "preserved": [
+          "00000000-0000-0000-0000-0000000003e9",
+          "00000000-0000-0000-0000-0000000007d0",
+          "00000000-0000-0000-0000-0000000007d1"
+        ]
+      }
+    },
+    {
+      "id": "merge-independent",
+      "operation": "merge",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mode": "independent",
+      "expected": {
+        "absent": false,
+        "active": null,
+        "bindings": [
+          "00000000-0000-0000-0000-000000000014",
+          "00000000-0000-0000-0000-00000000001e"
+        ],
+        "needsChoice": true,
+        "origins": [
+          "00000000-0000-0000-0000-0000000000c8",
+          "00000000-0000-0000-0000-00000000012c"
+        ],
+        "plan": "00000000-0000-0000-0000-0000000003e8",
+        "preserved": [
+          "00000000-0000-0000-0000-0000000003e9",
+          "00000000-0000-0000-0000-0000000007d0",
+          "00000000-0000-0000-0000-0000000007d1"
+        ]
+      }
+    },
+    {
+      "id": "merge-duplicateSource",
+      "operation": "merge",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mode": "duplicateSource",
+      "expected": {
+        "absent": false,
+        "active": "00000000-0000-0000-0000-00000000001e",
+        "bindings": [
+          "00000000-0000-0000-0000-00000000001e"
+        ],
+        "needsChoice": false,
+        "origins": [
+          "00000000-0000-0000-0000-00000000012c"
+        ],
+        "plan": "00000000-0000-0000-0000-0000000003e8",
+        "preserved": [
+          "00000000-0000-0000-0000-0000000003e9",
+          "00000000-0000-0000-0000-0000000007d0",
+          "00000000-0000-0000-0000-0000000007d1"
+        ]
+      }
+    },
+    {
+      "id": "merge-noBindings",
+      "operation": "merge",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mode": "noBindings",
+      "expected": {
+        "absent": false,
+        "active": null,
+        "bindings": [],
+        "needsChoice": false,
+        "origins": [],
+        "plan": "00000000-0000-0000-0000-0000000003e8",
+        "preserved": [
+          "00000000-0000-0000-0000-0000000003e9",
+          "00000000-0000-0000-0000-0000000007d0",
+          "00000000-0000-0000-0000-0000000007d1"
+        ]
+      }
+    }
+  ]
+}

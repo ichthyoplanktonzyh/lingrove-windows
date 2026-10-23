@@ -124,15 +124,22 @@ python3 scripts/verify-learning-explanation-macos-parity.py --mac-repo /path/to/
 python3 scripts/verify-learning-capture-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-vocabulary-content-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-vocabulary-capture-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
+python3 scripts/verify-vocabulary-models-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 ```
 
 The Swift verifiers require Xcode 26 and exercise 17 autocomplete, 64 learning, 45 local-learning,
-34 lexical, 19 dictionary-policy, 68 explanation, 52 explanation-model 33 writing-capture 72 sense-content and 63 usage/capture fixture cases/checks, plus pinned resource integrity/Codable checks
+34 lexical, 19 dictionary-policy, 68 explanation, 52 explanation-model, 33 writing-capture,
+72 sense-content, 63 usage/capture and 29 notebook/review-model fixture cases/checks, plus pinned
+resource integrity/Codable checks
 against committed pure Mac policies. They do not build or launch the macOS app. Routine validation does not run the
 `Cotabby.Tools.*Smoke` projects: those may require an interactive Windows desktop or downloaded
 model weights.
 
-The [sense-content library](docs/VOCABULARY_CONTENT.md) ports stable text/image block values, UTF-8/media metadata budgets and literal review HTML. The [usage/capture values and keys](docs/VOCABULARY_CAPTURE.md) retain exact encounter/provenance and share explanation receipts. Notebook storage, image preparation and Anki remain unfinished.
+The [sense-content library](docs/VOCABULARY_CONTENT.md) ports stable text/image block values,
+UTF-8/media metadata budgets and literal review HTML. The [usage/capture values and keys](docs/VOCABULARY_CAPTURE.md)
+retain exact encounter/provenance and share explanation receipts. The [notebook/review values](docs/VOCABULARY_MODELS.md)
+now preserve full sense ownership, retained plans and binding identity. Notebook storage, image
+preparation and Anki transport remain unfinished.
 
 Windows CI also executes the [compiled WPF learning-view suite](docs/WPF_VIEW_TESTS.md): actual
 XAML/resource loading, window layout, in-memory rendering, native no-activation styles and

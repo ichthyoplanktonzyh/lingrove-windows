@@ -149,7 +149,8 @@ connects one inert AppHost owner, explicit connection controls and normal-quit d
 card preparation and the send transaction remain open. The [PCM foundation](docs/SPEECH_PCM_FOUNDATION.md)
 now adapts bounded Float32 blocks and playback queue accounting. The [frame decoder](docs/SPEECH_FRAME_DECODER.md)
 adds bounded fragmented helper-stream admission. The [export buffer](docs/SPEECH_EXPORT_BUFFER.md)
-now serializes request-owned audio accumulation/packaging; live speech remains work.
+now serializes request-owned audio accumulation/packaging. The [provider metadata rules](docs/SPEECH_PROVIDER_METADATA.md)
+preserve exact Qwen companions, local language support and voice-tag compatibility; catalog selection and live speech remain work.
 
 Windows CI also executes the [compiled WPF learning-view suite](docs/WPF_VIEW_TESTS.md): actual
 XAML/resource loading, window layout, in-memory rendering, native no-activation styles and

@@ -1,0 +1,3204 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "pair-0-0",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base-Q4_K_M.gguf",
+      "decoder": "mmproj-Qwen3-TTS-12Hz-1.7B-Base-Q8_0.gguf",
+      "filename": "mmproj-Qwen3-TTS-12Hz-1.7B-Base-Q8_0.gguf",
+      "expected": {
+        "decoders": [
+          "mmproj-Qwen3-TTS-12Hz-1.7B-Base-Q8_0.gguf"
+        ],
+        "displayName": "Qwen3-TTS 1.7B audio decoder · Q8_0",
+        "known": true,
+        "mismatch": false,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "pair-0-1",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base-Q4_K_M.gguf",
+      "decoder": "mmproj-Qwen3-TTS-12Hz-0.6B-Base-Q8_0.gguf",
+      "filename": "mmproj-Qwen3-TTS-12Hz-0.6B-Base-Q8_0.gguf",
+      "expected": {
+        "decoders": [
+          "mmproj-Qwen3-TTS-12Hz-1.7B-Base-Q8_0.gguf"
+        ],
+        "displayName": "Qwen3-TTS 0.6B audio decoder · Q8_0",
+        "known": true,
+        "mismatch": true,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "pair-0-2",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base-Q4_K_M.gguf",
+      "decoder": "Qwen3-TTS-12Hz-0.6B-Base.mmproj-Q8_0.gguf",
+      "filename": "Qwen3-TTS-12Hz-0.6B-Base.mmproj-Q8_0.gguf",
+      "expected": {
+        "decoders": [
+          "mmproj-Qwen3-TTS-12Hz-1.7B-Base-Q8_0.gguf"
+        ],
+        "displayName": "Qwen3-TTS 0.6B audio decoder · Q8_0",
+        "known": true,
+        "mismatch": true,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "pair-0-3",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base-Q4_K_M.gguf",
+      "decoder": "custom-decoder.gguf",
+      "filename": "custom-decoder.gguf",
+      "expected": {
+        "decoders": [
+          "mmproj-Qwen3-TTS-12Hz-1.7B-Base-Q8_0.gguf"
+        ],
+        "known": false,
+        "mismatch": false,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "pair-0-4",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base-Q4_K_M.gguf",
+      "decoder": "",
+      "filename": "",
+      "expected": {
+        "decoders": [
+          "mmproj-Qwen3-TTS-12Hz-1.7B-Base-Q8_0.gguf"
+        ],
+        "known": false,
+        "mismatch": false,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "pair-0-5",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base-Q4_K_M.gguf",
+      "decoder": "MMPROJ-QWEN3-TTS-12HZ-1.7B-BASE-Q8_0.GGUF",
+      "filename": "MMPROJ-QWEN3-TTS-12HZ-1.7B-BASE-Q8_0.GGUF",
+      "expected": {
+        "decoders": [
+          "mmproj-Qwen3-TTS-12Hz-1.7B-Base-Q8_0.gguf"
+        ],
+        "known": false,
+        "mismatch": false,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "pair-1-0",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "Qwen3-TTS-12Hz-0.6B-Base.Q4_K_M.gguf",
+      "decoder": "mmproj-Qwen3-TTS-12Hz-1.7B-Base-Q8_0.gguf",
+      "filename": "mmproj-Qwen3-TTS-12Hz-1.7B-Base-Q8_0.gguf",
+      "expected": {
+        "decoders": [
+          "mmproj-Qwen3-TTS-12Hz-0.6B-Base-Q8_0.gguf",
+          "Qwen3-TTS-12Hz-0.6B-Base.mmproj-Q8_0.gguf"
+        ],
+        "displayName": "Qwen3-TTS 1.7B audio decoder · Q8_0",
+        "known": true,
+        "mismatch": true,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "pair-1-1",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "Qwen3-TTS-12Hz-0.6B-Base.Q4_K_M.gguf",
+      "decoder": "mmproj-Qwen3-TTS-12Hz-0.6B-Base-Q8_0.gguf",
+      "filename": "mmproj-Qwen3-TTS-12Hz-0.6B-Base-Q8_0.gguf",
+      "expected": {
+        "decoders": [
+          "mmproj-Qwen3-TTS-12Hz-0.6B-Base-Q8_0.gguf",
+          "Qwen3-TTS-12Hz-0.6B-Base.mmproj-Q8_0.gguf"
+        ],
+        "displayName": "Qwen3-TTS 0.6B audio decoder · Q8_0",
+        "known": true,
+        "mismatch": false,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "pair-1-2",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "Qwen3-TTS-12Hz-0.6B-Base.Q4_K_M.gguf",
+      "decoder": "Qwen3-TTS-12Hz-0.6B-Base.mmproj-Q8_0.gguf",
+      "filename": "Qwen3-TTS-12Hz-0.6B-Base.mmproj-Q8_0.gguf",
+      "expected": {
+        "decoders": [
+          "mmproj-Qwen3-TTS-12Hz-0.6B-Base-Q8_0.gguf",
+          "Qwen3-TTS-12Hz-0.6B-Base.mmproj-Q8_0.gguf"
+        ],
+        "displayName": "Qwen3-TTS 0.6B audio decoder · Q8_0",
+        "known": true,
+        "mismatch": false,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "pair-1-3",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "Qwen3-TTS-12Hz-0.6B-Base.Q4_K_M.gguf",
+      "decoder": "custom-decoder.gguf",
+      "filename": "custom-decoder.gguf",
+      "expected": {
+        "decoders": [
+          "mmproj-Qwen3-TTS-12Hz-0.6B-Base-Q8_0.gguf",
+          "Qwen3-TTS-12Hz-0.6B-Base.mmproj-Q8_0.gguf"
+        ],
+        "known": false,
+        "mismatch": false,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "pair-1-4",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "Qwen3-TTS-12Hz-0.6B-Base.Q4_K_M.gguf",
+      "decoder": "",
+      "filename": "",
+      "expected": {
+        "decoders": [
+          "mmproj-Qwen3-TTS-12Hz-0.6B-Base-Q8_0.gguf",
+          "Qwen3-TTS-12Hz-0.6B-Base.mmproj-Q8_0.gguf"
+        ],
+        "known": false,
+        "mismatch": false,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "pair-1-5",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "Qwen3-TTS-12Hz-0.6B-Base.Q4_K_M.gguf",
+      "decoder": "MMPROJ-QWEN3-TTS-12HZ-1.7B-BASE-Q8_0.GGUF",
+      "filename": "MMPROJ-QWEN3-TTS-12HZ-1.7B-BASE-Q8_0.GGUF",
+      "expected": {
+        "decoders": [
+          "mmproj-Qwen3-TTS-12Hz-0.6B-Base-Q8_0.gguf",
+          "Qwen3-TTS-12Hz-0.6B-Base.mmproj-Q8_0.gguf"
+        ],
+        "known": false,
+        "mismatch": false,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "pair-2-0",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "custom.gguf",
+      "decoder": "mmproj-Qwen3-TTS-12Hz-1.7B-Base-Q8_0.gguf",
+      "filename": "mmproj-Qwen3-TTS-12Hz-1.7B-Base-Q8_0.gguf",
+      "expected": {
+        "decoders": [],
+        "displayName": "Qwen3-TTS 1.7B audio decoder · Q8_0",
+        "known": true,
+        "mismatch": false,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "pair-2-1",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "custom.gguf",
+      "decoder": "mmproj-Qwen3-TTS-12Hz-0.6B-Base-Q8_0.gguf",
+      "filename": "mmproj-Qwen3-TTS-12Hz-0.6B-Base-Q8_0.gguf",
+      "expected": {
+        "decoders": [],
+        "displayName": "Qwen3-TTS 0.6B audio decoder · Q8_0",
+        "known": true,
+        "mismatch": false,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "pair-2-2",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "custom.gguf",
+      "decoder": "Qwen3-TTS-12Hz-0.6B-Base.mmproj-Q8_0.gguf",
+      "filename": "Qwen3-TTS-12Hz-0.6B-Base.mmproj-Q8_0.gguf",
+      "expected": {
+        "decoders": [],
+        "displayName": "Qwen3-TTS 0.6B audio decoder · Q8_0",
+        "known": true,
+        "mismatch": false,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "pair-2-3",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "custom.gguf",
+      "decoder": "custom-decoder.gguf",
+      "filename": "custom-decoder.gguf",
+      "expected": {
+        "decoders": [],
+        "known": false,
+        "mismatch": false,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "pair-2-4",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "custom.gguf",
+      "decoder": "",
+      "filename": "",
+      "expected": {
+        "decoders": [],
+        "known": false,
+        "mismatch": false,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "pair-2-5",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "custom.gguf",
+      "decoder": "MMPROJ-QWEN3-TTS-12HZ-1.7B-BASE-Q8_0.GGUF",
+      "filename": "MMPROJ-QWEN3-TTS-12HZ-1.7B-BASE-Q8_0.GGUF",
+      "expected": {
+        "decoders": [],
+        "known": false,
+        "mismatch": false,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "pair-3-0",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "",
+      "decoder": "mmproj-Qwen3-TTS-12Hz-1.7B-Base-Q8_0.gguf",
+      "filename": "mmproj-Qwen3-TTS-12Hz-1.7B-Base-Q8_0.gguf",
+      "expected": {
+        "decoders": [],
+        "displayName": "Qwen3-TTS 1.7B audio decoder · Q8_0",
+        "known": true,
+        "mismatch": false,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "pair-3-1",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "",
+      "decoder": "mmproj-Qwen3-TTS-12Hz-0.6B-Base-Q8_0.gguf",
+      "filename": "mmproj-Qwen3-TTS-12Hz-0.6B-Base-Q8_0.gguf",
+      "expected": {
+        "decoders": [],
+        "displayName": "Qwen3-TTS 0.6B audio decoder · Q8_0",
+        "known": true,
+        "mismatch": false,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "pair-3-2",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "",
+      "decoder": "Qwen3-TTS-12Hz-0.6B-Base.mmproj-Q8_0.gguf",
+      "filename": "Qwen3-TTS-12Hz-0.6B-Base.mmproj-Q8_0.gguf",
+      "expected": {
+        "decoders": [],
+        "displayName": "Qwen3-TTS 0.6B audio decoder · Q8_0",
+        "known": true,
+        "mismatch": false,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "pair-3-3",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "",
+      "decoder": "custom-decoder.gguf",
+      "filename": "custom-decoder.gguf",
+      "expected": {
+        "decoders": [],
+        "known": false,
+        "mismatch": false,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "pair-3-4",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "",
+      "decoder": "",
+      "filename": "",
+      "expected": {
+        "decoders": [],
+        "known": false,
+        "mismatch": false,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "pair-3-5",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "",
+      "decoder": "MMPROJ-QWEN3-TTS-12HZ-1.7B-BASE-Q8_0.GGUF",
+      "filename": "MMPROJ-QWEN3-TTS-12HZ-1.7B-BASE-Q8_0.GGUF",
+      "expected": {
+        "decoders": [],
+        "known": false,
+        "mismatch": false,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "pair-4-0",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "Qwen3-TTS-12Hz-0.6B-Base-Q4_K_M.gguf",
+      "decoder": "mmproj-Qwen3-TTS-12Hz-1.7B-Base-Q8_0.gguf",
+      "filename": "mmproj-Qwen3-TTS-12Hz-1.7B-Base-Q8_0.gguf",
+      "expected": {
+        "decoders": [],
+        "displayName": "Qwen3-TTS 1.7B audio decoder · Q8_0",
+        "known": true,
+        "mismatch": false,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "pair-4-1",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "Qwen3-TTS-12Hz-0.6B-Base-Q4_K_M.gguf",
+      "decoder": "mmproj-Qwen3-TTS-12Hz-0.6B-Base-Q8_0.gguf",
+      "filename": "mmproj-Qwen3-TTS-12Hz-0.6B-Base-Q8_0.gguf",
+      "expected": {
+        "decoders": [],
+        "displayName": "Qwen3-TTS 0.6B audio decoder · Q8_0",
+        "known": true,
+        "mismatch": false,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "pair-4-2",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "Qwen3-TTS-12Hz-0.6B-Base-Q4_K_M.gguf",
+      "decoder": "Qwen3-TTS-12Hz-0.6B-Base.mmproj-Q8_0.gguf",
+      "filename": "Qwen3-TTS-12Hz-0.6B-Base.mmproj-Q8_0.gguf",
+      "expected": {
+        "decoders": [],
+        "displayName": "Qwen3-TTS 0.6B audio decoder · Q8_0",
+        "known": true,
+        "mismatch": false,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "pair-4-3",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "Qwen3-TTS-12Hz-0.6B-Base-Q4_K_M.gguf",
+      "decoder": "custom-decoder.gguf",
+      "filename": "custom-decoder.gguf",
+      "expected": {
+        "decoders": [],
+        "known": false,
+        "mismatch": false,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "pair-4-4",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "Qwen3-TTS-12Hz-0.6B-Base-Q4_K_M.gguf",
+      "decoder": "",
+      "filename": "",
+      "expected": {
+        "decoders": [],
+        "known": false,
+        "mismatch": false,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "pair-4-5",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "Qwen3-TTS-12Hz-0.6B-Base-Q4_K_M.gguf",
+      "decoder": "MMPROJ-QWEN3-TTS-12HZ-1.7B-BASE-Q8_0.GGUF",
+      "filename": "MMPROJ-QWEN3-TTS-12HZ-1.7B-BASE-Q8_0.GGUF",
+      "expected": {
+        "decoders": [],
+        "known": false,
+        "mismatch": false,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "display-0",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base-Q4_K_M.gguf",
+      "decoder": "Qwen3-TTS-12Hz-1.7B-Base-Q4_K_M.gguf",
+      "filename": "Qwen3-TTS-12Hz-1.7B-Base-Q4_K_M.gguf",
+      "expected": {
+        "decoders": [
+          "mmproj-Qwen3-TTS-12Hz-1.7B-Base-Q8_0.gguf"
+        ],
+        "displayName": "Qwen3-TTS 1.7B Base · Q4_K_M",
+        "known": false,
+        "mismatch": false,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "display-1",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "Qwen3-TTS-12Hz-0.6B-Base.Q4_K_M.gguf",
+      "decoder": "Qwen3-TTS-12Hz-0.6B-Base.Q4_K_M.gguf",
+      "filename": "Qwen3-TTS-12Hz-0.6B-Base.Q4_K_M.gguf",
+      "expected": {
+        "decoders": [
+          "mmproj-Qwen3-TTS-12Hz-0.6B-Base-Q8_0.gguf",
+          "Qwen3-TTS-12Hz-0.6B-Base.mmproj-Q8_0.gguf"
+        ],
+        "displayName": "Qwen3-TTS 0.6B Base · Q4_K_M",
+        "known": false,
+        "mismatch": false,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "display-2",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "mmproj-Qwen3-TTS-12Hz-1.7B-Base-Q8_0.gguf",
+      "decoder": "mmproj-Qwen3-TTS-12Hz-1.7B-Base-Q8_0.gguf",
+      "filename": "mmproj-Qwen3-TTS-12Hz-1.7B-Base-Q8_0.gguf",
+      "expected": {
+        "decoders": [],
+        "displayName": "Qwen3-TTS 1.7B audio decoder · Q8_0",
+        "known": true,
+        "mismatch": false,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "display-3",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "mmproj-Qwen3-TTS-12Hz-0.6B-Base-Q8_0.gguf",
+      "decoder": "mmproj-Qwen3-TTS-12Hz-0.6B-Base-Q8_0.gguf",
+      "filename": "mmproj-Qwen3-TTS-12Hz-0.6B-Base-Q8_0.gguf",
+      "expected": {
+        "decoders": [],
+        "displayName": "Qwen3-TTS 0.6B audio decoder · Q8_0",
+        "known": true,
+        "mismatch": false,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "display-4",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "Qwen3-TTS-12Hz-0.6B-Base.mmproj-Q8_0.gguf",
+      "decoder": "Qwen3-TTS-12Hz-0.6B-Base.mmproj-Q8_0.gguf",
+      "filename": "Qwen3-TTS-12Hz-0.6B-Base.mmproj-Q8_0.gguf",
+      "expected": {
+        "decoders": [],
+        "displayName": "Qwen3-TTS 0.6B audio decoder · Q8_0",
+        "known": true,
+        "mismatch": false,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "display-5",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "Qwen3-TTS-12Hz-1.7B-Base-Q4_K_M.gguf\n",
+      "decoder": "Qwen3-TTS-12Hz-1.7B-Base-Q4_K_M.gguf\n",
+      "filename": "Qwen3-TTS-12Hz-1.7B-Base-Q4_K_M.gguf\n",
+      "expected": {
+        "decoders": [],
+        "known": false,
+        "mismatch": false,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "display-6",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": " Qwen3-TTS-12Hz-1.7B-Base-Q4_K_M.gguf",
+      "decoder": " Qwen3-TTS-12Hz-1.7B-Base-Q4_K_M.gguf",
+      "filename": " Qwen3-TTS-12Hz-1.7B-Base-Q4_K_M.gguf",
+      "expected": {
+        "decoders": [],
+        "known": false,
+        "mismatch": false,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "display-7",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "/models/Qwen3-TTS-12Hz-1.7B-Base-Q4_K_M.gguf",
+      "decoder": "/models/Qwen3-TTS-12Hz-1.7B-Base-Q4_K_M.gguf",
+      "filename": "/models/Qwen3-TTS-12Hz-1.7B-Base-Q4_K_M.gguf",
+      "expected": {
+        "decoders": [],
+        "known": false,
+        "mismatch": false,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "display-8",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "QWEN3-TTS-12HZ-0.6B-BASE.Q4_K_M.GGUF",
+      "decoder": "QWEN3-TTS-12HZ-0.6B-BASE.Q4_K_M.GGUF",
+      "filename": "QWEN3-TTS-12HZ-0.6B-BASE.Q4_K_M.GGUF",
+      "expected": {
+        "decoders": [],
+        "known": false,
+        "mismatch": false,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "display-9",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "custom.gguf",
+      "decoder": "custom.gguf",
+      "filename": "custom.gguf",
+      "expected": {
+        "decoders": [],
+        "known": false,
+        "mismatch": false,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "display-10",
+      "kind": "pair",
+      "macSource": "Cotabby/Support/Speech/SpeechModelPairingPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "model": "",
+      "decoder": "",
+      "filename": "",
+      "expected": {
+        "decoders": [],
+        "known": false,
+        "mismatch": false,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "local-en",
+      "kind": "local",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "en",
+      "expected": {
+        "code": "en",
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "match": null
+      }
+    },
+    {
+      "id": "match-en-0",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "en",
+      "tag": "en",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-en-1",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "en",
+      "tag": "EN",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-en-2",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "en",
+      "tag": " \ten\n",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-en-3",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "en",
+      "tag": "en-XX",
+      "expected": {
+        "match": 1,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-en-4",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "en",
+      "tag": "wrong-Language",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "match-en-5",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "en",
+      "tag": "",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "local-es",
+      "kind": "local",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "es",
+      "expected": {
+        "code": "es",
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "match": null
+      }
+    },
+    {
+      "id": "match-es-0",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "es",
+      "tag": "es",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-es-1",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "es",
+      "tag": "ES",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-es-2",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "es",
+      "tag": " \tes\n",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-es-3",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "es",
+      "tag": "es-XX",
+      "expected": {
+        "match": 1,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-es-4",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "es",
+      "tag": "wrong-Language",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "match-es-5",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "es",
+      "tag": "",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "local-fr",
+      "kind": "local",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "fr",
+      "expected": {
+        "code": "fr",
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "match": null
+      }
+    },
+    {
+      "id": "match-fr-0",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "fr",
+      "tag": "fr",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-fr-1",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "fr",
+      "tag": "FR",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-fr-2",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "fr",
+      "tag": " \tfr\n",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-fr-3",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "fr",
+      "tag": "fr-XX",
+      "expected": {
+        "match": 1,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-fr-4",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "fr",
+      "tag": "wrong-Language",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "match-fr-5",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "fr",
+      "tag": "",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "local-de",
+      "kind": "local",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "de",
+      "expected": {
+        "code": "de",
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "match": null
+      }
+    },
+    {
+      "id": "match-de-0",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "de",
+      "tag": "de",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-de-1",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "de",
+      "tag": "DE",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-de-2",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "de",
+      "tag": " \tde\n",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-de-3",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "de",
+      "tag": "de-XX",
+      "expected": {
+        "match": 1,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-de-4",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "de",
+      "tag": "wrong-Language",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "match-de-5",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "de",
+      "tag": "",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "local-it",
+      "kind": "local",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "it",
+      "expected": {
+        "code": "it",
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "match": null
+      }
+    },
+    {
+      "id": "match-it-0",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "it",
+      "tag": "it",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-it-1",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "it",
+      "tag": "IT",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-it-2",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "it",
+      "tag": " \tit\n",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-it-3",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "it",
+      "tag": "it-XX",
+      "expected": {
+        "match": 1,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-it-4",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "it",
+      "tag": "wrong-Language",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "match-it-5",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "it",
+      "tag": "",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "local-pt",
+      "kind": "local",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "pt",
+      "expected": {
+        "code": "pt",
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "match": null
+      }
+    },
+    {
+      "id": "match-pt-0",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "pt",
+      "tag": "pt",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-pt-1",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "pt",
+      "tag": "PT",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-pt-2",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "pt",
+      "tag": " \tpt\n",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-pt-3",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "pt",
+      "tag": "pt-XX",
+      "expected": {
+        "match": 1,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-pt-4",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "pt",
+      "tag": "wrong-Language",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "match-pt-5",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "pt",
+      "tag": "",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "local-nl",
+      "kind": "local",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "nl",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "match-nl-0",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "nl",
+      "tag": "nl",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-nl-1",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "nl",
+      "tag": "NL",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-nl-2",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "nl",
+      "tag": " \tnl\n",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-nl-3",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "nl",
+      "tag": "nl-XX",
+      "expected": {
+        "match": 1,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-nl-4",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "nl",
+      "tag": "wrong-Language",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "match-nl-5",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "nl",
+      "tag": "",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "local-ru",
+      "kind": "local",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "ru",
+      "expected": {
+        "code": "ru",
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "match": null
+      }
+    },
+    {
+      "id": "match-ru-0",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "ru",
+      "tag": "ru",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-ru-1",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "ru",
+      "tag": "RU",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-ru-2",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "ru",
+      "tag": " \tru\n",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-ru-3",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "ru",
+      "tag": "ru-XX",
+      "expected": {
+        "match": 1,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-ru-4",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "ru",
+      "tag": "wrong-Language",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "match-ru-5",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "ru",
+      "tag": "",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "local-zh-Hans",
+      "kind": "local",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hans",
+      "expected": {
+        "code": "zh",
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "match": null
+      }
+    },
+    {
+      "id": "match-zh-Hans-0",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hans",
+      "tag": "zh-Hans",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-zh-Hans-1",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hans",
+      "tag": "ZH_HANS",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-zh-Hans-2",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hans",
+      "tag": " \tzh-Hans\n",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-zh-Hans-3",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hans",
+      "tag": "zh-Hans-XX",
+      "expected": {
+        "match": 1,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-zh-Hans-4",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hans",
+      "tag": "wrong-Language",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "match-zh-Hans-5",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hans",
+      "tag": "",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "local-zh-Hant",
+      "kind": "local",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hant",
+      "expected": {
+        "code": "zh",
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "match": null
+      }
+    },
+    {
+      "id": "match-zh-Hant-0",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hant",
+      "tag": "zh-Hant",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-zh-Hant-1",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hant",
+      "tag": "ZH_HANT",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-zh-Hant-2",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hant",
+      "tag": " \tzh-Hant\n",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-zh-Hant-3",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hant",
+      "tag": "zh-Hant-XX",
+      "expected": {
+        "match": 1,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-zh-Hant-4",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hant",
+      "tag": "wrong-Language",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "match-zh-Hant-5",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hant",
+      "tag": "",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "local-ja",
+      "kind": "local",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "ja",
+      "expected": {
+        "code": "ja",
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "match": null
+      }
+    },
+    {
+      "id": "match-ja-0",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "ja",
+      "tag": "ja",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-ja-1",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "ja",
+      "tag": "JA",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-ja-2",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "ja",
+      "tag": " \tja\n",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-ja-3",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "ja",
+      "tag": "ja-XX",
+      "expected": {
+        "match": 1,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-ja-4",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "ja",
+      "tag": "wrong-Language",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "match-ja-5",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "ja",
+      "tag": "",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "local-ko",
+      "kind": "local",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "ko",
+      "expected": {
+        "code": "ko",
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "match": null
+      }
+    },
+    {
+      "id": "match-ko-0",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "ko",
+      "tag": "ko",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-ko-1",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "ko",
+      "tag": "KO",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-ko-2",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "ko",
+      "tag": " \tko\n",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-ko-3",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "ko",
+      "tag": "ko-XX",
+      "expected": {
+        "match": 1,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-ko-4",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "ko",
+      "tag": "wrong-Language",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "match-ko-5",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "ko",
+      "tag": "",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "local-hi",
+      "kind": "local",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "hi",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "match-hi-0",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "hi",
+      "tag": "hi",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-hi-1",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "hi",
+      "tag": "HI",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-hi-2",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "hi",
+      "tag": " \thi\n",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-hi-3",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "hi",
+      "tag": "hi-XX",
+      "expected": {
+        "match": 1,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-hi-4",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "hi",
+      "tag": "wrong-Language",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "match-hi-5",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "hi",
+      "tag": "",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "local-ar",
+      "kind": "local",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "ar",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "match-ar-0",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "ar",
+      "tag": "ar",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-ar-1",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "ar",
+      "tag": "AR",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-ar-2",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "ar",
+      "tag": " \tar\n",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-ar-3",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "ar",
+      "tag": "ar-XX",
+      "expected": {
+        "match": 1,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "match-ar-4",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "ar",
+      "tag": "wrong-Language",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "match-ar-5",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "ar",
+      "tag": "",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hans-0",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hans",
+      "tag": "zh",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hans-1",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hans",
+      "tag": "zh-CN",
+      "expected": {
+        "match": 1,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hans-2",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hans",
+      "tag": "zh-SG",
+      "expected": {
+        "match": 1,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hans-3",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hans",
+      "tag": "zh-TW",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hans-4",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hans",
+      "tag": "zh-HK",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hans-5",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hans",
+      "tag": "zh-MO",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hans-6",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hans",
+      "tag": "zh-Hans",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hans-7",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hans",
+      "tag": "zh-Hant",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hans-8",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hans",
+      "tag": "zh_hant_tw",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hans-9",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hans",
+      "tag": "zh-Hans-TW",
+      "expected": {
+        "match": 1,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hans-10",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hans",
+      "tag": "zh-Hant-CN",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hans-11",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hans",
+      "tag": "zh-Hans-Hant",
+      "expected": {
+        "match": 1,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hans-12",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hans",
+      "tag": "zh-Hant-Hans",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hans-13",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hans",
+      "tag": "zh-XX-CN",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hans-14",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hans",
+      "tag": "zh-😀😀-CN",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hans-15",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hans",
+      "tag": "zh-👨‍👩‍👧‍👦x-CN",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hans-16",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hans",
+      "tag": "zh-419-TW",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hans-17",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hans",
+      "tag": "zh-foo-TW",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hans-18",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hans",
+      "tag": "--zh--CN--",
+      "expected": {
+        "match": 1,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hans-19",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hans",
+      "tag": "zh-CN-Hant",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hans-20",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hans",
+      "tag": "zh-CHS",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hans-21",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hans",
+      "tag": "zh-CHT",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hans-22",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hans",
+      "tag": "zh-ćn-CN",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hans-23",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hans",
+      "tag": "zh-𐐀𐐁-CN",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hant-0",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hant",
+      "tag": "zh",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hant-1",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hant",
+      "tag": "zh-CN",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hant-2",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hant",
+      "tag": "zh-SG",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hant-3",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hant",
+      "tag": "zh-TW",
+      "expected": {
+        "match": 1,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hant-4",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hant",
+      "tag": "zh-HK",
+      "expected": {
+        "match": 1,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hant-5",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hant",
+      "tag": "zh-MO",
+      "expected": {
+        "match": 1,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hant-6",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hant",
+      "tag": "zh-Hans",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hant-7",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hant",
+      "tag": "zh-Hant",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hant-8",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hant",
+      "tag": "zh_hant_tw",
+      "expected": {
+        "match": 1,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hant-9",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hant",
+      "tag": "zh-Hans-TW",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hant-10",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hant",
+      "tag": "zh-Hant-CN",
+      "expected": {
+        "match": 1,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hant-11",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hant",
+      "tag": "zh-Hans-Hant",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hant-12",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hant",
+      "tag": "zh-Hant-Hans",
+      "expected": {
+        "match": 1,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hant-13",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hant",
+      "tag": "zh-XX-CN",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hant-14",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hant",
+      "tag": "zh-😀😀-CN",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hant-15",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hant",
+      "tag": "zh-👨‍👩‍👧‍👦x-CN",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hant-16",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hant",
+      "tag": "zh-419-TW",
+      "expected": {
+        "match": 1,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hant-17",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hant",
+      "tag": "zh-foo-TW",
+      "expected": {
+        "match": 1,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hant-18",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hant",
+      "tag": "--zh--CN--",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hant-19",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hant",
+      "tag": "zh-CN-Hant",
+      "expected": {
+        "match": 1,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hant-20",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hant",
+      "tag": "zh-CHS",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hant-21",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hant",
+      "tag": "zh-CHT",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hant-22",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hant",
+      "tag": "zh-ćn-CN",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "chinese-zh-Hant-23",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "zh-Hant",
+      "tag": "zh-𐐀𐐁-CN",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "tag-edge-0",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "en",
+      "tag": "​en​",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "tag-edge-1",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "en",
+      "tag": "﻿en",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "tag-edge-2",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "en",
+      "tag": "--en---",
+      "expected": {
+        "match": 1,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "tag-edge-3",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "en",
+      "tag": " EN_US　",
+      "expected": {
+        "match": 1,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "tag-edge-4",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "en",
+      "tag": "en\u0000",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "tag-edge-5",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "ko",
+      "tag": "KO",
+      "expected": {
+        "match": 0,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "tag-edge-6",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "it",
+      "tag": "İT",
+      "expected": {
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null,
+        "match": null
+      }
+    },
+    {
+      "id": "tag-edge-7",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "en",
+      "tag": "en-419",
+      "expected": {
+        "match": 1,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    },
+    {
+      "id": "tag-edge-8",
+      "kind": "match",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "language": "en",
+      "tag": "___en___",
+      "expected": {
+        "match": 1,
+        "decoders": null,
+        "known": null,
+        "mismatch": null,
+        "displayName": null,
+        "code": null
+      }
+    }
+  ]
+}

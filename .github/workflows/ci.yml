@@ -252,3 +252,6 @@ jobs:
 
       - name: Verify complete original speech export actor with in-memory audio
         run: python3 scripts/verify-speech-buffer-macos-parity.py --mac-repo .mac-baseline
+
+      - name: Verify original speech companion metadata and voice-language compatibility
+        run: python3 scripts/verify-speech-metadata-macos-parity.py --mac-repo .mac-baseline

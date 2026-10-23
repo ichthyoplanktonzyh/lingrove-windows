@@ -27,7 +27,6 @@ public sealed class VocabularyClipboardTransferTests
     [InlineData("truncated")]
     [InlineData("trailing")]
     [InlineData("nonzero-exit")]
-    [InlineData("stderr-budget")]
     public async Task MalformedFaultedOrUnboundedRepliesUseTheFixedContentFailure(string mode)
     {
         byte[] bytes = VocabularyClipboardReaderTests.Frame(1, [4]);
@@ -37,11 +36,30 @@ public sealed class VocabularyClipboardTransferTests
             "truncated" => Reply(bytes[..8]),
             "trailing" => Reply([.. bytes, 5]),
             "nonzero-exit" => Reply(bytes) + "; exit 3",
-            _ => "$payload=[byte[]]::new(40000); $pipe=[Console]::OpenStandardError(); $pipe.Write($payload,0,$payload.Length); $pipe.Flush(); [Threading.Thread]::Sleep(-1)"
+            _ => throw new ArgumentOutOfRangeException(nameof(mode))
         };
         await using var transfer = new WindowsVocabularyClipboardTransfer(_ => Start(script), TimeSpan.FromSeconds(30));
-        // A stalled reply must fail from the stderr budget, not satisfy this assertion by timeout.
+        // Protocol rejection must finish before the operation's fallback deadline.
         var failure = await Assert.ThrowsAsync<VocabularyException>(() => transfer.ReadAsync(42).WaitAsync(TimeSpan.FromSeconds(12))); Assert.Equal(VocabularyFailure.InvalidContent, failure.Failure);
+    }
+    [Fact]
+    public async Task StderrBudgetKillsAStartedChildBeforeTheOperationDeadline()
+    {
+        using var fixture = new BlockedChild();
+        await using var transfer = new WindowsVocabularyClipboardTransfer(_ => Start(fixture.StderrBudgetScript), TimeSpan.FromSeconds(60));
+        var read = transfer.ReadAsync(42);
+        using var child = await fixture.WaitForProcess(read, TimeSpan.FromSeconds(15));
+        try
+        {
+            // PowerShell startup is a separate observation: the child publishes its PID before
+            // waiting for release. Only then does the 12-second pipe-drain assertion begin. The
+            // 60-second operation deadline cannot satisfy it, even at the startup bound.
+            fixture.ReleaseStderr();
+            var failure = await Assert.ThrowsAsync<VocabularyException>(() => read.WaitAsync(TimeSpan.FromSeconds(12)));
+            Assert.Equal(VocabularyFailure.InvalidContent, failure.Failure);
+            Assert.True(child.HasExited);
+        }
+        finally { await transfer.DisposeAsync(); KillIfRunning(child); }
     }
     [Fact]
     public async Task CancellationKillsTheExactBlockedChildAndReleasesSingleFlightForNextRead()
@@ -106,12 +124,17 @@ public sealed class VocabularyClipboardTransferTests
     {
         private readonly string _directory = Path.Combine(Path.GetTempPath(), "lingrove-transfer-" + Guid.NewGuid().ToString("N"));
         private string Marker => Path.Combine(_directory, "child.pid");
-        internal string Script => "[IO.File]::WriteAllText('" + Marker.Replace("'", "''") + "', $PID.ToString()); [Threading.Thread]::Sleep(-1)";
+        private string ReleaseMarker => Path.Combine(_directory, "write-stderr");
+        private string PublishPid => "[IO.File]::WriteAllText('" + Marker.Replace("'", "''") + "', $PID.ToString()); ";
+        internal string Script => PublishPid + "[Threading.Thread]::Sleep(-1)";
+        internal string StderrBudgetScript => PublishPid + "while (-not [IO.File]::Exists('" + ReleaseMarker.Replace("'", "''") + "')) { [Threading.Thread]::Sleep(25) }; " +
+            "$payload=[byte[]]::new(40000); $pipe=[Console]::OpenStandardError(); $pipe.Write($payload,0,$payload.Length); $pipe.Flush(); [Threading.Thread]::Sleep(-1)";
+        internal void ReleaseStderr() => File.WriteAllText(ReleaseMarker, "go");
         internal BlockedChild() => Directory.CreateDirectory(_directory);
-        internal async Task<Process> WaitForProcess(Task reading)
+        internal async Task<Process> WaitForProcess(Task reading, TimeSpan? startupLimit = null)
         {
             var watch = Stopwatch.StartNew();
-            while (watch.Elapsed < TimeSpan.FromSeconds(6))
+            while (watch.Elapsed < (startupLimit ?? TimeSpan.FromSeconds(6)))
             {
                 if (File.Exists(Marker) && int.TryParse(await File.ReadAllTextAsync(Marker), out int pid))
                 { var process = Process.GetProcessById(pid); _ = process.Handle; return process; }

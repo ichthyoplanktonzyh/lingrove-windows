@@ -85,3 +85,9 @@ The [notebook session library](VOCABULARY_NOTEBOOK_SESSION.md) adds 33 dispatche
 assembly cases total): 24 original Swift observations and nine transition/worker regressions. They
 execute real App/Core sessions without constructing a notebook window. This count does not imply
 that the notebook UI has been connected to explanations/dictionary, or that native input was tested.
+
+[Notebook contextual explanations](VOCABULARY_EXPLANATION_UI.md) add eight actual window/archive
+cases (103 total): explicit generation/stop, meaning precedence/proposal/adoption, retained Details
+and selection, hide/reopen/reset, detached/removed targets, configuration and retirement during a
+blocked durable adoption. Fake generators remain external boundaries; real model/native input is
+not tested. Dictionary disclosure integration remains open.

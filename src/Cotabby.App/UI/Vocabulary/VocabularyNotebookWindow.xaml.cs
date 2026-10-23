@@ -39,16 +39,18 @@ public partial class VocabularyNotebookWindow : Window
     private sealed record LanguageOption(LearningLanguage? Value, string Label);
     private sealed record TagOption(string Value, string Label);
 
-    internal VocabularyNotebookWindow(VocabularyStore store, IVocabularyTextSearching textSearch)
+    internal VocabularyNotebookWindow(VocabularyStore store, IVocabularyTextSearching textSearch,
+        VocabularyNotebookSession? learning = null, Action? configureExplanation = null)
     {
-        _store = store; _textSearch = textSearch; InitializeComponent(); WindowTheme.Follow(this);
+        _store = store; _textSearch = textSearch; _learning = learning; _configureExplanation = configureExplanation;
+        InitializeComponent(); WindowTheme.Follow(this);
         _presenting = true;
         LanguageFilter.ItemsSource = new[] { new LanguageOption(null, "All languages") }
             .Concat(LearningLanguages.All.Select(language => new LanguageOption(language, language.Label()))).ToArray();
         LanguageFilter.SelectedIndex = 0; _presenting = false;
         _store.Changed += OnStoreChanged;
         Closing += OnClosing;
-        Closed += (_, _) => { _retired = true; _store.Changed -= OnStoreChanged; CancelFiltering(); RetireActions(); };
+        Closed += (_, _) => { _retired = true; _store.Changed -= OnStoreChanged; CancelFiltering(); RetireActions(); RetireLearning(); };
         RequestRefresh();
     }
     internal void Reveal(VocabularySelection? selection)
@@ -57,10 +59,21 @@ public partial class VocabularyNotebookWindow : Window
         if (_retired) return;
         if (selection is { } value)
         {
+            ClearLearningRows(); _hasRenderedDetail = false;
             _presenting = true; SearchText.Text = ""; LanguageFilter.SelectedIndex = 0; _selectedTag = ""; _newestFirst = true;
             _presenting = false; _requested = value; _expanded.Add(value.EntryId);
+            // Explicit navigation cannot leave an old generation alive while list filtering
+            // runs. Resolve the acknowledged detail synchronously; filtering still runs away
+            // from WPF and a cold Store keeps the request for its eventual loaded snapshot.
+            var document = _store.Snapshot.Document;
+            var entry = document.Entries.FirstOrDefault(candidate => candidate.Id == value.EntryId);
+            _selection = entry is null ? null : VocabularySensePolicy.Index(value.SenseId, entry) is { } index
+                ? entry.Senses[index].Id : entry.Senses.FirstOrDefault()?.Id;
+            RenderDetail(document);
         }
         RequestRefresh();
+        foreach (var row in _explanationRows.Values) row.Refresh();
+        _ = _learning?.Resume();
     }
     private void OnStoreChanged() { if (!_retired) RequestRefresh(); }
     private void OnFiltersChanged(object sender, RoutedEventArgs args)
@@ -160,17 +173,19 @@ public partial class VocabularyNotebookWindow : Window
         var selection = VocabularyNotebookPolicy.ResolveSelection(document, _selection);
         var entry = selection is null ? null : document.Entries.Single(value => value.Id == selection.Value.EntryId);
         var sense = entry?.Senses.Single(value => value.Id == selection!.Value.SenseId);
-        UpdateActions();
         var key = entry is null || sense is null ? null : new DetailKey(entry.Id, entry.Expression, entry.DictionaryForm, entry.Language, entry.Kind, sense);
         // Unrelated saves/filter changes keep the same literal controls, scroll and selection.
-        if (_hasRenderedDetail && key == _renderedDetail) return;
+        if (_hasRenderedDetail && key == _renderedDetail) { UpdateActions(); return; }
+        SelectLearning(entry, sense);
+        UpdateActions();
         CloseActionMenus(); ++_detailVersion;
         _hasRenderedDetail = true; _renderedDetail = key; DetailContent.Children.Clear();
         if (entry is null || sense is null) { DetailContent.Children.Add(Label("Vocabulary", 22, bold: true)); return; }
         DetailContent.Children.Add(Literal(entry.Expression, 22, entry.Language, bold: true));
         DetailContent.Children.Add(Label(entry.Language.Label() + " · " + entry.Kind, 12));
         if (entry.DictionaryForm != entry.Expression) DetailContent.Children.Add(Literal(entry.DictionaryForm, 14, entry.Language));
-        if (sense.Meaning.Length > 0) Section(sense.IsSavedWithoutContext ? "Meaning" : "Core meaning", Literal(sense.Meaning, 14, sense.MeaningLanguage));
+        if (sense.IsSavedWithoutContext && ExplanationRow(entry, sense, null) is { } general) DetailContent.Children.Add(general);
+        else if (sense.Meaning.Length > 0) Section(sense.IsSavedWithoutContext ? "Meaning" : "Core meaning", Literal(sense.Meaning, 14, sense.MeaningLanguage));
         if (sense.Content is { Count: > 0 })
         {
             var content = new StackPanel();
@@ -212,8 +227,9 @@ public partial class VocabularyNotebookWindow : Window
             if (example.Translation.Length > 0) content.Children.Add(Literal(example.Translation, 13, example.TranslationLanguage));
             foreach (var variant in example.TranslationVariants.Where(value => value.Text != example.Translation || value.Language != example.TranslationLanguage))
                 content.Children.Add(Literal(variant.Text, 13, variant.Language));
-            if (example.Meaning.Length > 0) content.Children.Add(Literal(example.Meaning, 13, example.MeaningLanguage));
             content.Children.Add(MoveUsageButton(new(entry.Id, sense.Id), example.Id));
+            if (ExplanationRow(entry, sense, example) is { } explanation) content.Children.Add(explanation);
+            else if (example.Meaning.Length > 0) content.Children.Add(Literal(example.Meaning, 13, example.MeaningLanguage));
             Section(example.Completeness == VocabularyExampleCompleteness.Sentence ? "Example sentence" : "Context fragment", content);
         }
         DetailContent.Children.Add(Label(sense.CreatedAt.ToLocalTime().ToString("d"), 11));
@@ -248,7 +264,7 @@ public partial class VocabularyNotebookWindow : Window
     }
     private void OnClosing(object? sender, CancelEventArgs args)
     {
-        if (_closing) return; args.Cancel = true; CloseActionMenus(); Hide(); CancelFiltering(); ++_version;
+        if (_closing) return; args.Cancel = true; CloseActionMenus(); _learning?.Cancel(); Hide(); CancelFiltering(); ++_version;
     }
     private void CancelFiltering()
     {
@@ -262,7 +278,7 @@ public partial class VocabularyNotebookWindow : Window
         if (!_retired)
         {
             _retired = true; _store.Changed -= OnStoreChanged; CancelFiltering(); ++_version;
-            RetireActions();
+            RetireActions(); RetireLearning();
             if (_editor is { } editor) Track(editor.RetireAsync());
             _closing = true; Close();
         }

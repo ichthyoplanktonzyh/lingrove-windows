@@ -20,6 +20,7 @@
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularySQLiteDatabase.cs" Link="Production\VocabularySQLiteDatabase.cs" />
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularyArchive.cs" Link="Production\VocabularyArchive.cs" />
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularyArchive.Images.cs" Link="Production\VocabularyArchive.Images.cs" />
+    <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularyArchive.Export.cs" Link="Production\VocabularyArchive.Export.cs" />
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\IVocabularyImageStorage.cs" Link="Production\IVocabularyImageStorage.cs" />
     <Compile Include="..\..\src\Cotabby.App\Vocabulary\VocabularyStore.cs" Link="Production\VocabularyStore.cs" />
     <Compile Include="..\..\src\Cotabby.App\Vocabulary\VocabularyStore.Images.cs" Link="Production\VocabularyStore.Images.cs" />

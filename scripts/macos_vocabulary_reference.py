@@ -185,3 +185,13 @@ def export_sources(repo):
         "Cotabby/Models/Vocabulary/VocabularyExportModels.swift",
         "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
         "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift")]
+
+
+def archive_export_sources(repo):
+    """Complete real archive plus original export/ZIP declarations; no replacement IO bodies."""
+    return database_archive_sources(repo) + [source(repo, path) for path in (
+        "Cotabby/Models/Vocabulary/VocabularyExportModels.swift",
+        "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+        "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+        "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
+        "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift")]

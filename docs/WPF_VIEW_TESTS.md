@@ -131,3 +131,7 @@ The [DIB adapter](VOCABULARY_CLIPBOARD_DIB.md) adds thirteen actual WIC/archive/
 alpha and opaque-spare-byte cases with literal bitmap bytes. These never open a clipboard or claim real producer
 interoperability; 52 structure/color-evidence cases and six additional reader cases run in Inference.Tests. One
 direct native frame test exposes WIC failures independently of the fixed UI error.
+
+The [export snapshot suite](VOCABULARY_EXPORT_SNAPSHOT.md) adds nineteen actual archive/SQLite/WIC
+fixture cases and one named-file shared-lock regression. These run without external editors, models
+or clipboard access; their execution requires Windows and does not establish desktop export UI.

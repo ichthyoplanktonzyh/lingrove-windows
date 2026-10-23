@@ -1,0 +1,356 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "input": "iVBORw0KGgoAAAANSUhEUgAAAFAAAAAoCAYAAABpYH0BAAAAX0lEQVR4nO3QMQ0AIADAMHSgFrXYAA88ZEmP/UvHXPvovfF7oB5AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgH+7T3Y1UlqIbeIAAAAASUVORK5CYII=",
+  "cases": [
+    {
+      "id": "normal-json",
+      "mode": "normal",
+      "format": "json",
+      "images": true,
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "package": {
+          "byteCount": 1606,
+          "entryCount": 1,
+          "exampleCount": 1,
+          "filename": "Lingrove-vocabulary.zip",
+          "imageHashes": {
+            "lg-image-8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53.png": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53"
+          },
+          "imageNames": [
+            "lg-image-8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53.png"
+          ],
+          "senseCount": 1,
+          "sha256": "23445a0585d59ccc8ca2f633608895bece7d9169c3e00c459c7d8fa362859510"
+        },
+        "revisionUnchanged": true
+      }
+    },
+    {
+      "id": "missing-json",
+      "mode": "missing",
+      "format": "json",
+      "images": true,
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "error": "missingImage",
+        "revisionUnchanged": true
+      }
+    },
+    {
+      "id": "mismatch-json",
+      "mode": "mismatch",
+      "format": "json",
+      "images": true,
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "error": "missingImage",
+        "revisionUnchanged": true
+      }
+    },
+    {
+      "id": "metadataOnly-json",
+      "mode": "metadataOnly",
+      "format": "json",
+      "images": false,
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "package": {
+          "byteCount": 1599,
+          "entryCount": 1,
+          "exampleCount": 1,
+          "filename": "Lingrove-vocabulary.json",
+          "imageHashes": {},
+          "imageNames": [],
+          "senseCount": 1,
+          "sha256": "a1ae9e2b869d6a8bdd645674b752917bb98345d86a9485bb106f78391019659e"
+        },
+        "revisionUnchanged": true
+      }
+    },
+    {
+      "id": "otherSense-json",
+      "mode": "otherSense",
+      "format": "json",
+      "images": true,
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "package": {
+          "byteCount": 1136,
+          "entryCount": 1,
+          "exampleCount": 1,
+          "filename": "Lingrove-vocabulary.zip",
+          "imageHashes": {},
+          "imageNames": [],
+          "senseCount": 1,
+          "sha256": "86d2ab7eb88ca526271cfa8df865ffb94b4fd9b0ffb441a4a42ba089c0262acc"
+        },
+        "revisionUnchanged": true
+      }
+    },
+    {
+      "id": "shared-json",
+      "mode": "shared",
+      "format": "json",
+      "images": true,
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "package": {
+          "byteCount": 2884,
+          "entryCount": 1,
+          "exampleCount": 1,
+          "filename": "Lingrove-vocabulary.zip",
+          "imageHashes": {
+            "lg-image-8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53.png": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53"
+          },
+          "imageNames": [
+            "lg-image-8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53.png"
+          ],
+          "senseCount": 2,
+          "sha256": "93f43ee97be2f8c21660972b50624b76e5bf12d72fc1c14959b1576d36709172"
+        },
+        "revisionUnchanged": true
+      }
+    },
+    {
+      "id": "ordered-json",
+      "mode": "ordered",
+      "format": "json",
+      "images": true,
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "package": {
+          "byteCount": 1942,
+          "entryCount": 1,
+          "exampleCount": 1,
+          "filename": "Lingrove-vocabulary.zip",
+          "imageHashes": {
+            "lg-image-8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53.png": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53"
+          },
+          "imageNames": [
+            "lg-image-8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53.png"
+          ],
+          "senseCount": 2,
+          "sha256": "2dc634546e1a366742b9681436370ed53d47622684a6c8c92406c7bbc100b2c1"
+        },
+        "revisionUnchanged": true
+      }
+    },
+    {
+      "id": "duplicate-json",
+      "mode": "duplicate",
+      "format": "json",
+      "images": true,
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "package": {
+          "byteCount": 1606,
+          "entryCount": 1,
+          "exampleCount": 1,
+          "filename": "Lingrove-vocabulary.zip",
+          "imageHashes": {
+            "lg-image-8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53.png": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53"
+          },
+          "imageNames": [
+            "lg-image-8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53.png"
+          ],
+          "senseCount": 1,
+          "sha256": "23445a0585d59ccc8ca2f633608895bece7d9169c3e00c459c7d8fa362859510"
+        },
+        "revisionUnchanged": true
+      }
+    },
+    {
+      "id": "removeAfter-json",
+      "mode": "removeAfter",
+      "format": "json",
+      "images": true,
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "entriesAfter": 0,
+        "package": {
+          "byteCount": 1606,
+          "entryCount": 1,
+          "exampleCount": 1,
+          "filename": "Lingrove-vocabulary.zip",
+          "imageHashes": {
+            "lg-image-8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53.png": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53"
+          },
+          "imageNames": [
+            "lg-image-8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53.png"
+          ],
+          "senseCount": 1,
+          "sha256": "23445a0585d59ccc8ca2f633608895bece7d9169c3e00c459c7d8fa362859510"
+        },
+        "revisionUnchanged": true,
+        "sourceAvailable": false
+      }
+    },
+    {
+      "id": "empty-json",
+      "mode": "empty",
+      "format": "json",
+      "images": true,
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "error": "empty",
+        "revisionUnchanged": true
+      }
+    },
+    {
+      "id": "staleEntry-json",
+      "mode": "staleEntry",
+      "format": "json",
+      "images": true,
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "error": "changed",
+        "revisionUnchanged": true
+      }
+    },
+    {
+      "id": "staleSense-json",
+      "mode": "staleSense",
+      "format": "json",
+      "images": true,
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "error": "changed",
+        "revisionUnchanged": true
+      }
+    },
+    {
+      "id": "alias-json",
+      "mode": "alias",
+      "format": "json",
+      "images": true,
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "error": "changed",
+        "revisionUnchanged": true
+      }
+    },
+    {
+      "id": "cancelled-json",
+      "mode": "cancelled",
+      "format": "json",
+      "images": true,
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "error": "cancelled",
+        "revisionUnchanged": true
+      }
+    },
+    {
+      "id": "cancelledEmpty-json",
+      "mode": "cancelledEmpty",
+      "format": "json",
+      "images": true,
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "error": "empty",
+        "revisionUnchanged": true
+      }
+    },
+    {
+      "id": "budget-json",
+      "mode": "budget",
+      "format": "json",
+      "images": true,
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "error": "tooLarge",
+        "revisionUnchanged": true
+      }
+    },
+    {
+      "id": "normal-text",
+      "mode": "normal",
+      "format": "text",
+      "images": true,
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "package": {
+          "byteCount": 297,
+          "entryCount": 1,
+          "exampleCount": 1,
+          "filename": "Lingrove-vocabulary.zip",
+          "imageHashes": {
+            "lg-image-8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53.png": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53"
+          },
+          "imageNames": [
+            "lg-image-8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53.png"
+          ],
+          "senseCount": 1,
+          "sha256": "ff3403d471bf2977b37c6d3d8e9aadc512702f8ab81eb94e9396f6472f6a4f13"
+        },
+        "revisionUnchanged": true
+      }
+    },
+    {
+      "id": "normal-csv",
+      "mode": "normal",
+      "format": "csv",
+      "images": true,
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "package": {
+          "byteCount": 695,
+          "entryCount": 1,
+          "exampleCount": 1,
+          "filename": "Lingrove-vocabulary.zip",
+          "imageHashes": {
+            "lg-image-8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53.png": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53"
+          },
+          "imageNames": [
+            "lg-image-8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53.png"
+          ],
+          "senseCount": 1,
+          "sha256": "c0afa218892c33cac1035c298f563afe1febceac4ee69787a7fe008da2513b63"
+        },
+        "revisionUnchanged": true
+      }
+    },
+    {
+      "id": "contentDisabled-json",
+      "mode": "contentDisabled",
+      "format": "json",
+      "images": true,
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "provenanceKind": "source-policy-extension",
+      "content": false,
+      "expected": {
+        "package": {
+          "byteCount": 1098,
+          "entryCount": 1,
+          "exampleCount": 1,
+          "filename": "Lingrove-vocabulary.json",
+          "imageHashes": {},
+          "imageNames": [],
+          "senseCount": 1,
+          "sha256": "22ee578bfdf535953d7042147b6e58aaddc6a47dcec3ab4e6df03f4d2b728d13"
+        },
+        "revisionUnchanged": true
+      }
+    }
+  ]
+}

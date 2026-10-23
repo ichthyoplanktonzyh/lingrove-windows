@@ -49,9 +49,12 @@
             </Grid>
             <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="{DynamicResource CardBorder}" />
             <DockPanel Grid.Column="2">
-                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Right" Margin="12,8">
+                <WrapPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Right" Margin="12,8">
                     <Button x:Name="EditButton" Content="Edit" Click="OnEdit" Padding="12,4" IsEnabled="False" />
-                </StackPanel>
+                    <Button x:Name="NewSenseButton" Content="New sense" Click="OnNewSense" Padding="12,4" Margin="6,0,0,0" IsEnabled="False" />
+                    <Button x:Name="MergeSenseButton" Content="Merge sense" Click="OnMergeSense" Padding="12,4" Margin="6,0,0,0" IsEnabled="False" />
+                    <Button x:Name="DeleteSenseButton" Content="Delete" Click="OnDeleteSense" Padding="12,4" Margin="6,0,0,0" IsEnabled="False" />
+                </WrapPanel>
                 <ScrollViewer x:Name="DetailViewport" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                     <StackPanel x:Name="DetailContent" Margin="24" />
                 </ScrollViewer>

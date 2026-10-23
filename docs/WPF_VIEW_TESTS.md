@@ -74,3 +74,9 @@ captures, text formatting/order, existing image-reference preservation, pending-
 and the actual modal route from a filtered browser. A graph-only reference fixture does not prove
 media bytes; a controlled TimeProvider blocks scheduling of a real archive operation. Views still
 use actual Store/SQLite and no external editor, model or clipboard.
+
+The [sense and usage actions](VOCABULARY_ACTIONS.md) add eight cases (62 total): actual New/Merge/
+Move/Delete commands, owned confirmation Cancel, stable identities, empty-source retention,
+retired menus, fixed failures/recovery, later browsing during a blocked mutation and draining an
+admitted transaction during retirement. These cases keep native physical input and popup-focus
+verification separate from routed events and actual archive acknowledgements.

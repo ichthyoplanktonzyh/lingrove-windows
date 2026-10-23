@@ -68,6 +68,34 @@ public sealed class SelectableTextViewTests(WpfDispatcher dispatcher)
     });
 
     [Fact]
+    public Task RunsCreatedBeforeFirstMeasureSupportSelectionAndSelectAllWithoutWarmingTheTextProperty() => dispatcher.Run(() =>
+    {
+        var text = new NonactivatingSelectableText { DocumentIdentity = Guid.NewGuid() };
+        text.UpdateLiteralContent(() =>
+        {
+            text.Inlines.Add(new Run("keep ") { FontWeight = FontWeights.SemiBold });
+            text.Inlines.Add(new Run("me posted"));
+        });
+        var window = new Window { ShowActivated = false, Focusable = false, Content = text };
+        try
+        {
+            window.Show(); window.UpdateLayout();
+            text.Select(5, 7);
+            var lease = text.RequestCopy()!;
+            Assert.NotNull(lease); Assert.Equal("me", lease.Text);
+            text.OpenCopyMenu();
+            var buttons = Assert.IsType<StackPanel>(Assert.IsType<Border>(text.CopyMenu!.Child).Child).Children.OfType<Button>().ToArray();
+            Click(buttons[1]);
+            Assert.Equal("keep me posted", text.Selection!.Text); Assert.False(lease.IsCurrent);
+            var all = text.RequestCopy()!;
+            Assert.Equal("keep me posted", all.Text);
+            text.Inlines.Add(new Run("!"));
+            Assert.False(all.IsCurrent); Assert.Null(text.Selection);
+        }
+        finally { window.Close(); }
+    });
+
+    [Fact]
     public Task EqualLiteralRebuildRetainsSelectionButChangedRawUnicodeRevokesIt() => dispatcher.Run(() =>
     {
         var (window, text) = Show("cafe\u0301");

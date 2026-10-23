@@ -29,7 +29,10 @@ There is no call to Focus, global Ctrl+C interception, editor read or clipboard 
 | `SelectedTextCopyLease` / event args | Copy emits detached selected text, the owner-supplied document identity and an atomic current flag. Changed text/document/selection, hide and unload revoke pending receipts. It contains no WPF TextPointer, field or provider. |
 
 `UpdateLiteralContent` brackets a renderer's synchronous annotation rebuild. Equal raw text keeps
-its selection and index; changed text drops both. Direct Text/Run/inline changes must revoke any
+its selection and index; changed text drops both. The index reads the actual literal Runs, not
+TextBlock.Text: WPF installs its text-container listeners only at first measure, so initial Runs
+can paint while that dependency property still holds an empty value. Content notifications and
+wrapped refreshes update the index; dragging does not concatenate/resegment the whole document. Direct Text/Run/inline changes must revoke any
 already-issued receipt as well, with dedicated Windows regression cases. Cards must supply an
 immutable identity and validate their current capture/target when granting an eventual native copy;
 a lease alone is not editor or document authority. Once the native writer has admitted its one-shot

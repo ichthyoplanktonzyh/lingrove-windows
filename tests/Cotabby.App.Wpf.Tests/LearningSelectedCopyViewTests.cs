@@ -53,9 +53,7 @@ public sealed class LearningSelectedCopyViewTests(WpfDispatcher dispatcher)
             var example = Find<NonactivatingSelectableText>(window, "ContextualExampleText");
             example.Select(5, 7);
             Assert.True(example.IsVisible, "The contextual example must be visible to emit Copy.");
-            Assert.True(example.Selection is not null,
-                $"Missing selection: Text='{example.Text}' length={example.Text.Length}; raw='{Text(example)}'; "
-                + $"inlines={string.Join(',', example.Inlines.Select(run => run.GetType().Name))}; identity={example.DocumentIdentity}");
+            Assert.NotNull(example.Selection);
             var lease = example.RequestCopy()!;
             Assert.NotNull(lease);
             Assert.Same(lease, emitted); Assert.Same(state, owner); Assert.Equal("me", lease.Text);

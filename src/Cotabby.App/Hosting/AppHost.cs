@@ -121,6 +121,7 @@ public sealed class AppHost : IAsyncDisposable
         sc.AddSingleton<ILearningSentenceTokenizer, IcuLearningSentenceTokenizer>();
         sc.AddSingleton<ILearningEvidenceSentenceTokenizer, IcuLearningEvidenceSentenceTokenizer>();
         sc.AddSingleton<LearningExplanationInputFactory>();
+        sc.AddSingleton<VocabularyCaptureFactory>();
         // Recognition and dictionary cards share one store. Bundle resolution checks availability;
         // resource parsing/indexing and ICU calls remain lazy and run on the service worker.
         sc.AddSingleton<ILearningLexicalText, IcuLearningLexicalText>();
@@ -213,7 +214,9 @@ public sealed class AppHost : IAsyncDisposable
             explanationService: LearningExplanation.Service,
             explanationInputs: _services.GetRequiredService<LearningExplanationInputFactory>(),
             configureExplanation: () => SettingsWindow.ShowLearning(this),
-            clipboardWriter: _services.GetRequiredService<IClipboardTextWriter>());
+            clipboardWriter: _services.GetRequiredService<IClipboardTextWriter>(),
+            vocabulary: Vocabulary,
+            vocabularyCaptures: _services.GetRequiredService<VocabularyCaptureFactory>());
 
         SystemEvents.PowerModeChanged += OnPowerModeChanged;
         ApplySettings();

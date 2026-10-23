@@ -6,6 +6,8 @@ using Cotabby.App.UI;
 using Cotabby.App.Learning;
 using Cotabby.Core.Focus;
 using Cotabby.Core.LanguageLearning;
+using Cotabby.Core.Vocabulary;
+using Cotabby.App.Vocabulary;
 
 namespace Cotabby.App.UI.Learning;
 
@@ -27,6 +29,8 @@ public partial class LearningPreviewWindow : Window
     public LearningPreviewWindow()
     {
         InitializeComponent();
+        FavoriteButton.FailureChanged += message =>
+        { VocabularyStatus.Text = message ?? ""; VocabularyStatus.Visibility = message is null ? Visibility.Collapsed : Visibility.Visible; };
         InstallSelection();
         WindowTheme.Follow(this);
         SourceInitialized += (_, _) => LearningPanelPlacement.Install(this);
@@ -42,7 +46,8 @@ public partial class LearningPreviewWindow : Window
     public void ShowState(LearningPreviewState state, ScreenRect anchor, bool canRetry)
     {
         Dispatcher.VerifyAccess();
-        if (!LearningExplanationCardPolicy.SameDocument(_displayedPreview, state)) ClearExplanation();
+        if (!LearningExplanationCardPolicy.SameDocument(_displayedPreview, state)) { ClearExplanation(); FavoriteButton.Clear(); }
+        if (state.Status != LearningPreviewStatus.Ready) FavoriteButton.Clear();
         _displayedPreview = state;
         PresentCopyActions(state, anchor);
         // Mac's error branch replaces the details body. Keep the captured source out of that
@@ -122,6 +127,7 @@ public partial class LearningPreviewWindow : Window
     {
         Dispatcher.VerifyAccess();
         _displayedPreview = null;
+        FavoriteButton.Clear();
         ClearCopyActions();
         ClearExplanation();
         SourceSection.Visibility = Visibility.Collapsed;
@@ -149,6 +155,7 @@ public partial class LearningPreviewWindow : Window
         }
 
         Hide();
+        FavoriteButton.Clear();
         _displayedPreview = null;
         ClearCopyActions();
         // This long-lived window is reused. Retiring the capture also drops the literal editor
@@ -201,6 +208,14 @@ public partial class LearningPreviewWindow : Window
         ExplanationText.Text = string.Empty;
         ExplanationStatus.Text = string.Empty;
         ExplanationProgress.Visibility = Visibility.Collapsed;
+    }
+
+    internal void BindVocabulary(VocabularyStore store, VocabularyCapture capture, string documentId, Func<bool> canAct)
+    {
+        Dispatcher.VerifyAccess();
+        if (!IsVisible || _displayedPreview is not { Status: LearningPreviewStatus.Ready } state || state.RequestId != documentId) return;
+        FavoriteButton.Bind(store, capture, () => IsVisible && _displayedPreview?.RequestId == documentId
+            && _displayedPreview.Status == LearningPreviewStatus.Ready && canAct());
     }
 
     private void OnExplanationClick(object sender, RoutedEventArgs e)

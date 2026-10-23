@@ -2,8 +2,8 @@
 
 AppHost now owns one `VocabularyStore` and its one `VocabularyArchive` for the process lifetime.
 This adapts the UI-facing store in the pinned Mac product; it does not introduce a new learning
-workflow. Cards and the future notebook borrow this owner. The Save button/notebook UI remains
-unconnected in this round; saved explanation lookup is the first consumer.
+workflow. Cards and the future notebook borrow this owner. [Writing-card favorites](VOCABULARY_FAVORITES.md) now connect Save/exact Remove; notebook
+navigation/UI remains open.
 
 Reference: `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`.
 
@@ -53,7 +53,7 @@ retired-dispatcher acknowledgement, store drain, enrichment failure, explanation
 record through the explanation service with zero engine creation. They do not run a model or a
 Windows desktop. CI also retains the Windows archive/file and WPF card checks.
 
-Unfinished: card Save/remove/show actions, notebook browsing/editing UI, review/template facade,
+Unfinished: notebook show/browsing/editing UI, review/template facade,
 images/media, backup/restore/export/CLI, and full localization. Native UIA/IME/insertion/ghost/GPU
 verification remains separate. This is an application-owned persistence integration, not complete
 Mac product parity.

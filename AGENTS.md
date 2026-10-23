@@ -108,7 +108,8 @@ against isolated in-memory databases. The [Windows file adapter](docs/VOCABULARY
 adds named-file identity, locks and private ACL admission. The [serialized archive owner](docs/VOCABULARY_ARCHIVE.md)
 now joins graph validation and revision acknowledgement. The [shared Store](docs/VOCABULARY_STORE.md)
 is owned once by AppHost and restores/persists saved explanations. The [writing capture factory](docs/VOCABULARY_CARD_CAPTURE.md)
-now preserves full example translations/provenance; card Save and notebook UI remain separate work. Do not flatten senses into
+now preserves full example translations/provenance. [Writing-card favorites](docs/VOCABULARY_FAVORITES.md)
+connect Save and exact Remove to the shared Store; notebook navigation/UI remain separate work. Do not flatten senses into
 one translation string, regenerate stable IDs during edits, or treat a generated explanation as the
 user's authored meaning. See the vocabulary models and porting gates in the linked docs. Storage
 compatibility with macOS is not assumed; migrations must be explicit and tested.

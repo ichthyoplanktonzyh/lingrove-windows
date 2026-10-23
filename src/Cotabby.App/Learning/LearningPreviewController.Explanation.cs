@@ -138,6 +138,7 @@ internal sealed partial class LearningPreviewController
     // Caller holds the intent gate, so a queued ICU/UIA result cannot reopen a hidden target.
     private void RetireExplanationLocked()
     {
+        RetireVocabularyLocked();
         ++_explanationPreparationRevision;
         _explanationPresentation = null;
         _explanationSession?.Clear();

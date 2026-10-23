@@ -2,8 +2,8 @@
 
 `Core/Vocabulary/VocabularyCaptureFactory.cs` now adapts the writing branches of Mac
 `VocabularyCaptureFactory.preview`, `.unit`, `.component` and `VocabularyPolicy.example`. It
-turns a completed immutable writing preview into a detached save intent. The next UI slice will
-connect that intent to the existing shared Store; this round does not expose a Save button.
+turns a completed immutable writing preview into a detached save intent. [Writing-card favorites](VOCABULARY_FAVORITES.md) now connect that intent to the existing shared
+Store for completed sentence and dictionary targets.
 
 Reference: `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`.
 
@@ -42,7 +42,7 @@ provider failure tests continue to exercise the compatibility boundary.
 
 Only the existing manual caret-sentence writing flow is represented: no reading source, no
 selection target and no OCR crop boundaries. Reading/selection/context acquisition, original-text
-fallback, UI favorite actions and notebook navigation remain migration work. No fake dictionary,
+fallback and notebook navigation remain migration work. No fake dictionary,
 model result, production tokenizer or notebook is supplied by the new factory.
 
 ```sh

@@ -5,6 +5,8 @@ using System.Windows.Documents;
 using Cotabby.App.Learning;
 using Cotabby.Core.Focus;
 using Cotabby.Core.LanguageLearning;
+using Cotabby.Core.Vocabulary;
+using Cotabby.App.Vocabulary;
 
 namespace Cotabby.App.UI.Learning;
 
@@ -22,6 +24,8 @@ public partial class LearningDictionaryWindow : Window
     public LearningDictionaryWindow()
     {
         InitializeComponent();
+        FavoriteButton.FailureChanged += message =>
+        { VocabularyStatus.Text = message ?? ""; VocabularyStatus.Visibility = message is null ? Visibility.Collapsed : Visibility.Visible; };
         InstallSelection();
         WindowTheme.Follow(this);
         SourceInitialized += (_, _) => LearningPanelPlacement.Install(this);
@@ -35,6 +39,7 @@ public partial class LearningDictionaryWindow : Window
     internal void ShowState(LearningDictionaryState state, ScreenRect anchor, LearningContextExampleTranslation? exampleTranslation = null)
     {
         Dispatcher.VerifyAccess();
+        if (_state?.TargetIdentity != state.TargetIdentity) FavoriteButton.Clear();
         SetSelectionTarget(state.TargetIdentity, state.Page);
         _state = state;
         _anchor = anchor;
@@ -115,6 +120,7 @@ public partial class LearningDictionaryWindow : Window
 
     public void HideCard()
     {
+        FavoriteButton.Clear();
         _state = null; _viewport = new(); _contextInput = null;
         ContextualMeaning.DocumentIdentity = ContextualExampleText.DocumentIdentity =
             ContextualExampleTranslation.DocumentIdentity = ExplanationProse.DocumentIdentity = null;
@@ -126,6 +132,12 @@ public partial class LearningDictionaryWindow : Window
         ContextualExampleText.Inlines.Clear(); DictionaryExampleText.Inlines.Clear();
         ExplanationDetails.IsExpanded = false;
         Hide();
+    }
+    internal void BindVocabulary(VocabularyStore store, VocabularyCapture capture, Guid target, Func<bool> canAct)
+    {
+        Dispatcher.VerifyAccess();
+        if (!IsVisible || _state?.TargetIdentity != target) return;
+        FavoriteButton.Bind(store, capture, () => IsVisible && _state?.TargetIdentity == target && canAct());
     }
     private void AddText(string text, bool secondary = false, bool bold = false)
     {

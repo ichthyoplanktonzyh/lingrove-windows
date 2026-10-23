@@ -53,3 +53,10 @@ including actual TextPointer hit testing, popup styles, scrolled clipping and in
 differences for selection paint. Card integration cases now verify immutable document/target events,
 selection retention across refresh/annotations, attribution-safe feedback and page/target/hide
 retirement. These cases leave physical pointer/native-host selection gates open.
+
+The vocabulary favorite slice adds six archive-backed WPF tests (41 total compiled view cases).
+They render the original fish geometry and verify acknowledgement, pending, exact Remove, fixed
+errors, stable selection routing and retirement of reused sentence/dictionary bindings. SQLite
+is isolated in memory. An async fixture helper pumps the same STA dispatcher while these real
+archive tasks complete. [Favorite scope](VOCABULARY_FAVORITES.md) keeps notebook and native
+physical-input verification gaps explicit.

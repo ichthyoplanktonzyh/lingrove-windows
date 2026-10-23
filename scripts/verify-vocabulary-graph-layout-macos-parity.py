@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """Run the complete pinned GraphSimulation and unchanged vendored Grape package, without UI/model/network."""
 import argparse
-import hashlib
 import json
 import math
 from pathlib import Path
 import subprocess
 import tempfile
-from macos_vocabulary_reference import BASELINE, source
+from macos_vocabulary_reference import BASELINE
+from macos_graph_reference import build_graph_reference
 
 SOURCE = 'Packages/LingroveGraphLayout/Sources/LingroveGraphLayout/GraphSimulation.swift'
 CASES = ('single-origin','single-offset','single-velocity','pair-unlinked','pair-linked','pair-close','pair-coincident',
@@ -61,28 +61,8 @@ def main():
     if corpus.get('version') != 1 or corpus.get('macReference') != BASELINE or [r.get('id') for r in rows] != list(CASES):parser.error('All 31 original solver case IDs are required')
     if any(r.get('macSource') != SOURCE or r.get('provenanceKind') != 'source-policy-extension' for r in rows):parser.error('Exact simulation provenance required')
     if not args.capture_output and any('expected' not in r for r in rows):parser.error('Source observations required')
-    package = 'Packages/LingroveGraphLayout/'
-    paths = subprocess.check_output(['git','-C',str(args.mac_repo),'ls-tree','-r','--name-only',BASELINE,package+'Sources'],text=True).splitlines()
-    originals = {p:source(args.mac_repo,p) for p in paths if p.endswith('.swift')}
-    # Verify all vendored force sources against the pinned package's own upstream checksum table.
-    provenance = source(args.mac_repo,package+'UPSTREAM.md')
-    for line in provenance.splitlines():
-        if len(line.split()) == 2 and line.split()[1].startswith('Sources/ForceSimulation/'):
-            digest, relative = line.split()
-            if hashlib.sha256(originals[package+relative].encode()).hexdigest() != digest:raise SystemExit('Original Grape source hash mismatch: '+relative)
     with tempfile.TemporaryDirectory(prefix='lingrove-original-grape-') as temporary:
-        root = Path(temporary)
-        for path, text in originals.items():
-            target = root / path.removeprefix(package);target.parent.mkdir(parents=True,exist_ok=True);target.write_text(text,encoding='utf-8')
-        # Only the package manifest adds an executable driver. Force and adapter bodies are unchanged.
-        manifest = source(args.mac_repo,package+'Package.swift')
-        marker = '.target(name: "LingroveGraphLayout", dependencies: ["ForceSimulation"])'
-        if manifest.count(marker) != 1:raise SystemExit('Pinned package target boundary changed')
-        (root/'Package.swift').write_text(manifest.replace(marker,marker+',\n        .executableTarget(name: "GraphParity", dependencies: ["LingroveGraphLayout"])'),encoding='utf-8')
-        driver = root/'Sources/GraphParity/main.swift';driver.parent.mkdir();driver.write_text(DRIVER,encoding='utf-8')
-        result = subprocess.run(['swift','build','--package-path',str(root),'--scratch-path',str(root/'build'),'-c','release','--product','GraphParity'],capture_output=True,text=True)
-        if result.returncode:raise SystemExit(result.stdout+result.stderr)
-        binary = root/'build/release/GraphParity'
+        binary = build_graph_reference(args.mac_repo,Path(temporary),DRIVER)
         actual = json.loads(subprocess.check_output([str(binary),str(args.fixture.resolve())]))
     if args.capture_output:
         with args.capture_output.open('x',encoding='utf-8') as output:json.dump(actual,output,ensure_ascii=False,indent=2);output.write('\n')

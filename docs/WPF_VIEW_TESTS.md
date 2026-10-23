@@ -152,3 +152,9 @@ cases with real Store/archive data and controlled human picker replies, includin
 failed/save/retry path. Eleven native Shell startup/configuration/admission cases instantiate the
 actual COM dialog without Show. These 23 cases bring the suite to 363; physical modal Shell
 interaction remains a separate Windows desktop gate. No package or artifact is produced.
+
+The [full backup archive](VOCABULARY_BACKUP_ARCHIVE.md) adds 22 actual-source file/snapshot
+comparisons and three native closed/deduplicated/lifetime cases (388 total). Tests use real private
+SQLite/media and the atomic file adapter, with a scheduling-only wrapper for one real native reader.
+Foundation's missing-file exception versus Windows fixed InvalidContent is documented explicitly.
+The corpus uses small images and does not establish exact full-backup byte-limit boundaries.

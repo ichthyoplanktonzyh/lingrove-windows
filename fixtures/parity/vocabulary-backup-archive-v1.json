@@ -1,0 +1,1550 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "input": "iVBORw0KGgoAAAANSUhEUgAAAFAAAAAoCAYAAABpYH0BAAAAX0lEQVR4nO3QMQ0AIADAMHSgFrXYAA88ZEmP/UvHXPvovfF7oB5AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgH+7T3Y1UlqIbeIAAAAASUVORK5CYII=",
+  "cases": [
+    {
+      "id": "plain",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "backup": {
+          "document": {
+            "entries": [
+              {
+                "createdAt": -978307200,
+                "dictionaryForm": "bank",
+                "expression": "bank",
+                "id": "00000000-0000-0000-0000-000000000001",
+                "kind": "word",
+                "language": "en",
+                "senses": [
+                  {
+                    "alternateMeanings": [],
+                    "createdAt": -978307200,
+                    "examples": [
+                      {
+                        "completeness": "sentence",
+                        "createdAt": -978307200,
+                        "explanations": [],
+                        "id": "00000000-0000-0000-0000-000000000003",
+                        "meaning": "context",
+                        "meaningOrigin": "captured",
+                        "ranges": [
+                          {
+                            "length": 4,
+                            "location": 4
+                          }
+                        ],
+                        "text": "The bank.",
+                        "translation": "原句",
+                        "translationVariants": []
+                      }
+                    ],
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000002",
+                    "isSavedWithoutContext": false,
+                    "meaning": "core",
+                    "meaningOrigin": "captured",
+                    "mergedFrom": [
+                      "00000000-0000-0000-0000-00000000005A"
+                    ],
+                    "note": "note",
+                    "standaloneMeanings": [],
+                    "tags": [
+                      "Work"
+                    ],
+                    "updatedAt": -978307200
+                  },
+                  {
+                    "alternateMeanings": [],
+                    "createdAt": -978307200,
+                    "examples": [],
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000004",
+                    "isSavedWithoutContext": false,
+                    "meaning": "second",
+                    "meaningOrigin": "captured",
+                    "mergedFrom": [],
+                    "note": "",
+                    "standaloneMeanings": [],
+                    "tags": [],
+                    "updatedAt": -978307200
+                  }
+                ],
+                "updatedAt": -978307200
+              }
+            ],
+            "schemaVersion": 3
+          },
+          "images": {},
+          "version": 1
+        },
+        "error": null,
+        "notebookExists": true,
+        "protectedUnchanged": true,
+        "revisionUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "sense",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "backup": {
+          "document": {
+            "entries": [
+              {
+                "createdAt": -978307200,
+                "dictionaryForm": "bank",
+                "expression": "bank",
+                "id": "00000000-0000-0000-0000-000000000001",
+                "kind": "word",
+                "language": "en",
+                "senses": [
+                  {
+                    "alternateMeanings": [],
+                    "content": [
+                      {
+                        "content": {
+                          "image": {
+                            "_0": {
+                              "byteCount": 152,
+                              "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                              "height": 40,
+                              "width": 80
+                            },
+                            "caption": "river"
+                          }
+                        },
+                        "id": "00000000-0000-0000-0000-000000000014"
+                      }
+                    ],
+                    "createdAt": -978307200,
+                    "examples": [
+                      {
+                        "completeness": "sentence",
+                        "createdAt": -978307200,
+                        "explanations": [],
+                        "id": "00000000-0000-0000-0000-000000000003",
+                        "meaning": "context",
+                        "meaningOrigin": "captured",
+                        "ranges": [
+                          {
+                            "length": 4,
+                            "location": 4
+                          }
+                        ],
+                        "text": "The bank.",
+                        "translation": "原句",
+                        "translationVariants": []
+                      }
+                    ],
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000002",
+                    "isSavedWithoutContext": false,
+                    "meaning": "core",
+                    "meaningOrigin": "captured",
+                    "mergedFrom": [
+                      "00000000-0000-0000-0000-00000000005A"
+                    ],
+                    "note": "note",
+                    "standaloneMeanings": [],
+                    "tags": [
+                      "Work"
+                    ],
+                    "updatedAt": -978307200
+                  },
+                  {
+                    "alternateMeanings": [],
+                    "createdAt": -978307200,
+                    "examples": [],
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000004",
+                    "isSavedWithoutContext": false,
+                    "meaning": "second",
+                    "meaningOrigin": "captured",
+                    "mergedFrom": [],
+                    "note": "",
+                    "standaloneMeanings": [],
+                    "tags": [],
+                    "updatedAt": -978307200
+                  }
+                ],
+                "updatedAt": -978307200
+              }
+            ],
+            "schemaVersion": 3
+          },
+          "images": {
+            "lg-image-8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53.png": "iVBORw0KGgoAAAANSUhEUgAAAFAAAAAoCAYAAABpYH0BAAAAX0lEQVR4nO3QMQ0AIADAMHSgFrXYAA88ZEmP/UvHXPvovfF7oB5AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgH+7T3Y1UlqIbeIAAAAASUVORK5CYII="
+          },
+          "version": 1
+        },
+        "error": null,
+        "notebookExists": true,
+        "protectedUnchanged": true,
+        "revisionUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "shared",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "backup": {
+          "document": {
+            "entries": [
+              {
+                "createdAt": -978307200,
+                "dictionaryForm": "bank",
+                "expression": "bank",
+                "id": "00000000-0000-0000-0000-000000000001",
+                "kind": "word",
+                "language": "en",
+                "senses": [
+                  {
+                    "alternateMeanings": [],
+                    "content": [
+                      {
+                        "content": {
+                          "image": {
+                            "_0": {
+                              "byteCount": 152,
+                              "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                              "height": 40,
+                              "width": 80
+                            },
+                            "caption": "river"
+                          }
+                        },
+                        "id": "00000000-0000-0000-0000-000000000014"
+                      }
+                    ],
+                    "createdAt": -978307200,
+                    "examples": [
+                      {
+                        "completeness": "sentence",
+                        "createdAt": -978307200,
+                        "explanations": [],
+                        "id": "00000000-0000-0000-0000-000000000003",
+                        "meaning": "context",
+                        "meaningOrigin": "captured",
+                        "ranges": [
+                          {
+                            "length": 4,
+                            "location": 4
+                          }
+                        ],
+                        "text": "The bank.",
+                        "translation": "原句",
+                        "translationVariants": []
+                      }
+                    ],
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000002",
+                    "isSavedWithoutContext": false,
+                    "meaning": "core",
+                    "meaningOrigin": "captured",
+                    "mergedFrom": [
+                      "00000000-0000-0000-0000-00000000005A"
+                    ],
+                    "note": "note",
+                    "standaloneMeanings": [],
+                    "tags": [
+                      "Work"
+                    ],
+                    "updatedAt": -978307200
+                  },
+                  {
+                    "alternateMeanings": [],
+                    "content": [
+                      {
+                        "content": {
+                          "image": {
+                            "_0": {
+                              "byteCount": 152,
+                              "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                              "height": 40,
+                              "width": 80
+                            },
+                            "caption": "river"
+                          }
+                        },
+                        "id": "00000000-0000-0000-0000-000000000015"
+                      }
+                    ],
+                    "createdAt": -978307200,
+                    "examples": [],
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000004",
+                    "isSavedWithoutContext": false,
+                    "meaning": "second",
+                    "meaningOrigin": "captured",
+                    "mergedFrom": [],
+                    "note": "",
+                    "standaloneMeanings": [],
+                    "tags": [],
+                    "updatedAt": -978307200
+                  }
+                ],
+                "updatedAt": -978307200
+              }
+            ],
+            "schemaVersion": 3
+          },
+          "images": {
+            "lg-image-8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53.png": "iVBORw0KGgoAAAANSUhEUgAAAFAAAAAoCAYAAABpYH0BAAAAX0lEQVR4nO3QMQ0AIADAMHSgFrXYAA88ZEmP/UvHXPvovfF7oB5AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgH+7T3Y1UlqIbeIAAAAASUVORK5CYII="
+          },
+          "version": 1
+        },
+        "error": null,
+        "notebookExists": true,
+        "protectedUnchanged": true,
+        "revisionUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "legacy",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "backup": {
+          "document": {
+            "entries": [
+              {
+                "createdAt": -978307200,
+                "dictionaryForm": "bank",
+                "expression": "bank",
+                "id": "00000000-0000-0000-0000-000000000001",
+                "kind": "word",
+                "language": "en",
+                "senses": [
+                  {
+                    "alternateMeanings": [],
+                    "createdAt": -978307200,
+                    "examples": [
+                      {
+                        "completeness": "sentence",
+                        "createdAt": -978307200,
+                        "explanations": [],
+                        "id": "00000000-0000-0000-0000-000000000003",
+                        "meaning": "context",
+                        "meaningOrigin": "captured",
+                        "ranges": [
+                          {
+                            "length": 4,
+                            "location": 4
+                          }
+                        ],
+                        "text": "The bank.",
+                        "translation": "原句",
+                        "translationVariants": []
+                      }
+                    ],
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000002",
+                    "isSavedWithoutContext": false,
+                    "meaning": "core",
+                    "meaningOrigin": "captured",
+                    "mergedFrom": [
+                      "00000000-0000-0000-0000-00000000005A"
+                    ],
+                    "note": "note",
+                    "review": {
+                      "activeBindingID": "00000000-0000-0000-0000-000000000028",
+                      "bindings": [
+                        {
+                          "deck": "Default",
+                          "endpoint": "http://localhost",
+                          "fields": {
+                            "ID": "00000000-0000-0000-0000-000000000002"
+                          },
+                          "id": "00000000-0000-0000-0000-000000000028",
+                          "identityField": "ID",
+                          "mapping": [
+                            "LingroveID",
+                            "ID"
+                          ],
+                          "model": "Basic",
+                          "noteID": 7,
+                          "originSenseID": "00000000-0000-0000-0000-000000000002",
+                          "profile": "fixture"
+                        }
+                      ],
+                      "plan": {
+                        "fieldOverrides": {},
+                        "gap": false,
+                        "id": "00000000-0000-0000-0000-00000000001E",
+                        "includeExplanation": false,
+                        "includeNotes": false,
+                        "layout": {
+                          "back": [],
+                          "front": [
+                            {
+                              "content": [
+                                {
+                                  "content": {
+                                    "image": {
+                                      "_0": {
+                                        "byteCount": 152,
+                                        "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                        "height": 40,
+                                        "width": 80
+                                      },
+                                      "caption": "river"
+                                    }
+                                  },
+                                  "id": "00000000-0000-0000-0000-000000000016"
+                                }
+                              ],
+                              "id": "00000000-0000-0000-0000-000000000032",
+                              "showCaption": false,
+                              "source": "custom"
+                            }
+                          ]
+                        },
+                        "recognition": true
+                      },
+                      "preservedPlans": []
+                    },
+                    "standaloneMeanings": [],
+                    "tags": [
+                      "Work"
+                    ],
+                    "updatedAt": -978307200
+                  },
+                  {
+                    "alternateMeanings": [],
+                    "createdAt": -978307200,
+                    "examples": [],
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000004",
+                    "isSavedWithoutContext": false,
+                    "meaning": "second",
+                    "meaningOrigin": "captured",
+                    "mergedFrom": [],
+                    "note": "",
+                    "standaloneMeanings": [],
+                    "tags": [],
+                    "updatedAt": -978307200
+                  }
+                ],
+                "updatedAt": -978307200
+              }
+            ],
+            "schemaVersion": 3
+          },
+          "images": {
+            "lg-image-8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53.png": "iVBORw0KGgoAAAANSUhEUgAAAFAAAAAoCAYAAABpYH0BAAAAX0lEQVR4nO3QMQ0AIADAMHSgFrXYAA88ZEmP/UvHXPvovfF7oB5AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgH+7T3Y1UlqIbeIAAAAASUVORK5CYII="
+          },
+          "version": 1
+        },
+        "error": null,
+        "notebookExists": true,
+        "protectedUnchanged": true,
+        "revisionUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "preserved",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "backup": {
+          "document": {
+            "entries": [
+              {
+                "createdAt": -978307200,
+                "dictionaryForm": "bank",
+                "expression": "bank",
+                "id": "00000000-0000-0000-0000-000000000001",
+                "kind": "word",
+                "language": "en",
+                "senses": [
+                  {
+                    "alternateMeanings": [],
+                    "createdAt": -978307200,
+                    "examples": [
+                      {
+                        "completeness": "sentence",
+                        "createdAt": -978307200,
+                        "explanations": [],
+                        "id": "00000000-0000-0000-0000-000000000003",
+                        "meaning": "context",
+                        "meaningOrigin": "captured",
+                        "ranges": [
+                          {
+                            "length": 4,
+                            "location": 4
+                          }
+                        ],
+                        "text": "The bank.",
+                        "translation": "原句",
+                        "translationVariants": []
+                      }
+                    ],
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000002",
+                    "isSavedWithoutContext": false,
+                    "meaning": "core",
+                    "meaningOrigin": "captured",
+                    "mergedFrom": [
+                      "00000000-0000-0000-0000-00000000005A"
+                    ],
+                    "note": "note",
+                    "review": {
+                      "activeBindingID": "00000000-0000-0000-0000-000000000028",
+                      "bindings": [
+                        {
+                          "deck": "Default",
+                          "endpoint": "http://localhost",
+                          "fields": {
+                            "ID": "00000000-0000-0000-0000-000000000002"
+                          },
+                          "id": "00000000-0000-0000-0000-000000000028",
+                          "identityField": "ID",
+                          "mapping": [
+                            "LingroveID",
+                            "ID"
+                          ],
+                          "model": "Basic",
+                          "noteID": 7,
+                          "originSenseID": "00000000-0000-0000-0000-000000000002",
+                          "profile": "fixture"
+                        }
+                      ],
+                      "plan": {
+                        "fieldOverrides": {},
+                        "gap": false,
+                        "id": "00000000-0000-0000-0000-00000000001E",
+                        "includeExplanation": false,
+                        "includeNotes": false,
+                        "recognition": true
+                      },
+                      "preservedPlans": [
+                        {
+                          "fieldOverrides": {},
+                          "gap": false,
+                          "id": "00000000-0000-0000-0000-00000000001F",
+                          "includeExplanation": false,
+                          "includeNotes": false,
+                          "layout": {
+                            "back": [],
+                            "front": [
+                              {
+                                "content": [
+                                  {
+                                    "content": {
+                                      "image": {
+                                        "_0": {
+                                          "byteCount": 152,
+                                          "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                          "height": 40,
+                                          "width": 80
+                                        },
+                                        "caption": "river"
+                                      }
+                                    },
+                                    "id": "00000000-0000-0000-0000-000000000017"
+                                  }
+                                ],
+                                "id": "00000000-0000-0000-0000-000000000033",
+                                "showCaption": false,
+                                "source": "custom"
+                              }
+                            ]
+                          },
+                          "recognition": true
+                        }
+                      ]
+                    },
+                    "standaloneMeanings": [],
+                    "tags": [
+                      "Work"
+                    ],
+                    "updatedAt": -978307200
+                  },
+                  {
+                    "alternateMeanings": [],
+                    "createdAt": -978307200,
+                    "examples": [],
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000004",
+                    "isSavedWithoutContext": false,
+                    "meaning": "second",
+                    "meaningOrigin": "captured",
+                    "mergedFrom": [],
+                    "note": "",
+                    "standaloneMeanings": [],
+                    "tags": [],
+                    "updatedAt": -978307200
+                  }
+                ],
+                "updatedAt": -978307200
+              }
+            ],
+            "schemaVersion": 3
+          },
+          "images": {
+            "lg-image-8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53.png": "iVBORw0KGgoAAAANSUhEUgAAAFAAAAAoCAYAAABpYH0BAAAAX0lEQVR4nO3QMQ0AIADAMHSgFrXYAA88ZEmP/UvHXPvovfF7oB5AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgH+7T3Y1UlqIbeIAAAAASUVORK5CYII="
+          },
+          "version": 1
+        },
+        "error": null,
+        "notebookExists": true,
+        "protectedUnchanged": true,
+        "revisionUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "card",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "backup": {
+          "document": {
+            "entries": [
+              {
+                "createdAt": -978307200,
+                "dictionaryForm": "bank",
+                "expression": "bank",
+                "id": "00000000-0000-0000-0000-000000000001",
+                "kind": "word",
+                "language": "en",
+                "senses": [
+                  {
+                    "alternateMeanings": [],
+                    "createdAt": -978307200,
+                    "examples": [
+                      {
+                        "completeness": "sentence",
+                        "createdAt": -978307200,
+                        "explanations": [],
+                        "id": "00000000-0000-0000-0000-000000000003",
+                        "meaning": "context",
+                        "meaningOrigin": "captured",
+                        "ranges": [
+                          {
+                            "length": 4,
+                            "location": 4
+                          }
+                        ],
+                        "text": "The bank.",
+                        "translation": "原句",
+                        "translationVariants": []
+                      }
+                    ],
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000002",
+                    "isSavedWithoutContext": false,
+                    "meaning": "core",
+                    "meaningOrigin": "captured",
+                    "mergedFrom": [
+                      "00000000-0000-0000-0000-00000000005A"
+                    ],
+                    "note": "note",
+                    "reviewCards": [
+                      {
+                        "bindings": [],
+                        "plan": {
+                          "fieldOverrides": {},
+                          "gap": false,
+                          "id": "00000000-0000-0000-0000-000000000020",
+                          "includeExplanation": false,
+                          "includeNotes": false,
+                          "layout": {
+                            "back": [],
+                            "front": [
+                              {
+                                "content": [
+                                  {
+                                    "content": {
+                                      "image": {
+                                        "_0": {
+                                          "byteCount": 152,
+                                          "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                          "height": 40,
+                                          "width": 80
+                                        },
+                                        "caption": "river"
+                                      }
+                                    },
+                                    "id": "00000000-0000-0000-0000-000000000018"
+                                  }
+                                ],
+                                "id": "00000000-0000-0000-0000-000000000034",
+                                "showCaption": false,
+                                "source": "custom"
+                              }
+                            ]
+                          },
+                          "recognition": true
+                        },
+                        "preservedPlans": []
+                      }
+                    ],
+                    "standaloneMeanings": [],
+                    "tags": [
+                      "Work"
+                    ],
+                    "updatedAt": -978307200
+                  },
+                  {
+                    "alternateMeanings": [],
+                    "createdAt": -978307200,
+                    "examples": [],
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000004",
+                    "isSavedWithoutContext": false,
+                    "meaning": "second",
+                    "meaningOrigin": "captured",
+                    "mergedFrom": [],
+                    "note": "",
+                    "standaloneMeanings": [],
+                    "tags": [],
+                    "updatedAt": -978307200
+                  }
+                ],
+                "updatedAt": -978307200
+              }
+            ],
+            "schemaVersion": 3
+          },
+          "images": {
+            "lg-image-8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53.png": "iVBORw0KGgoAAAANSUhEUgAAAFAAAAAoCAYAAABpYH0BAAAAX0lEQVR4nO3QMQ0AIADAMHSgFrXYAA88ZEmP/UvHXPvovfF7oB5AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgH+7T3Y1UlqIbeIAAAAASUVORK5CYII="
+          },
+          "version": 1
+        },
+        "error": null,
+        "notebookExists": true,
+        "protectedUnchanged": true,
+        "revisionUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "template",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "backup": {
+          "document": {
+            "entries": [
+              {
+                "createdAt": -978307200,
+                "dictionaryForm": "bank",
+                "expression": "bank",
+                "id": "00000000-0000-0000-0000-000000000001",
+                "kind": "word",
+                "language": "en",
+                "senses": [
+                  {
+                    "alternateMeanings": [],
+                    "createdAt": -978307200,
+                    "examples": [
+                      {
+                        "completeness": "sentence",
+                        "createdAt": -978307200,
+                        "explanations": [],
+                        "id": "00000000-0000-0000-0000-000000000003",
+                        "meaning": "context",
+                        "meaningOrigin": "captured",
+                        "ranges": [
+                          {
+                            "length": 4,
+                            "location": 4
+                          }
+                        ],
+                        "text": "The bank.",
+                        "translation": "原句",
+                        "translationVariants": []
+                      }
+                    ],
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000002",
+                    "isSavedWithoutContext": false,
+                    "meaning": "core",
+                    "meaningOrigin": "captured",
+                    "mergedFrom": [
+                      "00000000-0000-0000-0000-00000000005A"
+                    ],
+                    "note": "note",
+                    "standaloneMeanings": [],
+                    "tags": [
+                      "Work"
+                    ],
+                    "updatedAt": -978307200
+                  },
+                  {
+                    "alternateMeanings": [],
+                    "createdAt": -978307200,
+                    "examples": [],
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000004",
+                    "isSavedWithoutContext": false,
+                    "meaning": "second",
+                    "meaningOrigin": "captured",
+                    "mergedFrom": [],
+                    "note": "",
+                    "standaloneMeanings": [],
+                    "tags": [],
+                    "updatedAt": -978307200
+                  }
+                ],
+                "updatedAt": -978307200
+              }
+            ],
+            "reviewTemplates": [
+              {
+                "id": "00000000-0000-0000-0000-000000000046",
+                "layout": {
+                  "back": [],
+                  "front": [
+                    {
+                      "content": [
+                        {
+                          "content": {
+                            "image": {
+                              "_0": {
+                                "byteCount": 152,
+                                "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                "height": 40,
+                                "width": 80
+                              },
+                              "caption": "river"
+                            }
+                          },
+                          "id": "00000000-0000-0000-0000-000000000019"
+                        }
+                      ],
+                      "id": "00000000-0000-0000-0000-000000000035",
+                      "showCaption": false,
+                      "source": "custom"
+                    }
+                  ]
+                },
+                "name": "Template"
+              }
+            ],
+            "schemaVersion": 3
+          },
+          "images": {
+            "lg-image-8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53.png": "iVBORw0KGgoAAAANSUhEUgAAAFAAAAAoCAYAAABpYH0BAAAAX0lEQVR4nO3QMQ0AIADAMHSgFrXYAA88ZEmP/UvHXPvovfF7oB5AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgH+7T3Y1UlqIbeIAAAAASUVORK5CYII="
+          },
+          "version": 1
+        },
+        "error": null,
+        "notebookExists": true,
+        "protectedUnchanged": true,
+        "revisionUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "all",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "backup": {
+          "document": {
+            "entries": [
+              {
+                "createdAt": -978307200,
+                "dictionaryForm": "bank",
+                "expression": "bank",
+                "id": "00000000-0000-0000-0000-000000000001",
+                "kind": "word",
+                "language": "en",
+                "senses": [
+                  {
+                    "alternateMeanings": [],
+                    "content": [
+                      {
+                        "content": {
+                          "image": {
+                            "_0": {
+                              "byteCount": 152,
+                              "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                              "height": 40,
+                              "width": 80
+                            },
+                            "caption": "river"
+                          }
+                        },
+                        "id": "00000000-0000-0000-0000-000000000014"
+                      }
+                    ],
+                    "createdAt": -978307200,
+                    "examples": [
+                      {
+                        "completeness": "sentence",
+                        "createdAt": -978307200,
+                        "explanations": [],
+                        "id": "00000000-0000-0000-0000-000000000003",
+                        "meaning": "context",
+                        "meaningOrigin": "captured",
+                        "ranges": [
+                          {
+                            "length": 4,
+                            "location": 4
+                          }
+                        ],
+                        "text": "The bank.",
+                        "translation": "原句",
+                        "translationVariants": []
+                      }
+                    ],
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000002",
+                    "isSavedWithoutContext": false,
+                    "meaning": "core",
+                    "meaningOrigin": "captured",
+                    "mergedFrom": [
+                      "00000000-0000-0000-0000-00000000005A"
+                    ],
+                    "note": "note",
+                    "review": {
+                      "activeBindingID": "00000000-0000-0000-0000-000000000028",
+                      "bindings": [
+                        {
+                          "deck": "Default",
+                          "endpoint": "http://localhost",
+                          "fields": {
+                            "ID": "00000000-0000-0000-0000-000000000002"
+                          },
+                          "id": "00000000-0000-0000-0000-000000000028",
+                          "identityField": "ID",
+                          "mapping": [
+                            "LingroveID",
+                            "ID"
+                          ],
+                          "model": "Basic",
+                          "noteID": 7,
+                          "originSenseID": "00000000-0000-0000-0000-000000000002",
+                          "profile": "fixture"
+                        }
+                      ],
+                      "plan": {
+                        "fieldOverrides": {},
+                        "gap": false,
+                        "id": "00000000-0000-0000-0000-00000000001E",
+                        "includeExplanation": false,
+                        "includeNotes": false,
+                        "layout": {
+                          "back": [],
+                          "front": [
+                            {
+                              "content": [
+                                {
+                                  "content": {
+                                    "image": {
+                                      "_0": {
+                                        "byteCount": 152,
+                                        "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                        "height": 40,
+                                        "width": 80
+                                      },
+                                      "caption": "river"
+                                    }
+                                  },
+                                  "id": "00000000-0000-0000-0000-000000000016"
+                                }
+                              ],
+                              "id": "00000000-0000-0000-0000-000000000032",
+                              "showCaption": false,
+                              "source": "custom"
+                            }
+                          ]
+                        },
+                        "recognition": true
+                      },
+                      "preservedPlans": [
+                        {
+                          "fieldOverrides": {},
+                          "gap": false,
+                          "id": "00000000-0000-0000-0000-00000000001F",
+                          "includeExplanation": false,
+                          "includeNotes": false,
+                          "layout": {
+                            "back": [],
+                            "front": [
+                              {
+                                "content": [
+                                  {
+                                    "content": {
+                                      "image": {
+                                        "_0": {
+                                          "byteCount": 152,
+                                          "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                          "height": 40,
+                                          "width": 80
+                                        },
+                                        "caption": "river"
+                                      }
+                                    },
+                                    "id": "00000000-0000-0000-0000-000000000017"
+                                  }
+                                ],
+                                "id": "00000000-0000-0000-0000-000000000033",
+                                "showCaption": false,
+                                "source": "custom"
+                              }
+                            ]
+                          },
+                          "recognition": true
+                        }
+                      ]
+                    },
+                    "reviewCards": [
+                      {
+                        "bindings": [],
+                        "plan": {
+                          "fieldOverrides": {},
+                          "gap": false,
+                          "id": "00000000-0000-0000-0000-000000000020",
+                          "includeExplanation": false,
+                          "includeNotes": false,
+                          "layout": {
+                            "back": [],
+                            "front": [
+                              {
+                                "content": [
+                                  {
+                                    "content": {
+                                      "image": {
+                                        "_0": {
+                                          "byteCount": 152,
+                                          "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                          "height": 40,
+                                          "width": 80
+                                        },
+                                        "caption": "river"
+                                      }
+                                    },
+                                    "id": "00000000-0000-0000-0000-000000000018"
+                                  }
+                                ],
+                                "id": "00000000-0000-0000-0000-000000000034",
+                                "showCaption": false,
+                                "source": "custom"
+                              }
+                            ]
+                          },
+                          "recognition": true
+                        },
+                        "preservedPlans": []
+                      }
+                    ],
+                    "standaloneMeanings": [],
+                    "tags": [
+                      "Work"
+                    ],
+                    "updatedAt": -978307200
+                  },
+                  {
+                    "alternateMeanings": [],
+                    "content": [
+                      {
+                        "content": {
+                          "image": {
+                            "_0": {
+                              "byteCount": 152,
+                              "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                              "height": 40,
+                              "width": 80
+                            },
+                            "caption": "river"
+                          }
+                        },
+                        "id": "00000000-0000-0000-0000-000000000015"
+                      }
+                    ],
+                    "createdAt": -978307200,
+                    "examples": [],
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000004",
+                    "isSavedWithoutContext": false,
+                    "meaning": "second",
+                    "meaningOrigin": "captured",
+                    "mergedFrom": [],
+                    "note": "",
+                    "standaloneMeanings": [],
+                    "tags": [],
+                    "updatedAt": -978307200
+                  }
+                ],
+                "updatedAt": -978307200
+              }
+            ],
+            "reviewTemplates": [
+              {
+                "id": "00000000-0000-0000-0000-000000000046",
+                "layout": {
+                  "back": [],
+                  "front": [
+                    {
+                      "content": [
+                        {
+                          "content": {
+                            "image": {
+                              "_0": {
+                                "byteCount": 152,
+                                "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                "height": 40,
+                                "width": 80
+                              },
+                              "caption": "river"
+                            }
+                          },
+                          "id": "00000000-0000-0000-0000-000000000019"
+                        }
+                      ],
+                      "id": "00000000-0000-0000-0000-000000000035",
+                      "showCaption": false,
+                      "source": "custom"
+                    }
+                  ]
+                },
+                "name": "Template"
+              }
+            ],
+            "schemaVersion": 3
+          },
+          "images": {
+            "lg-image-8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53.png": "iVBORw0KGgoAAAANSUhEUgAAAFAAAAAoCAYAAABpYH0BAAAAX0lEQVR4nO3QMQ0AIADAMHSgFrXYAA88ZEmP/UvHXPvovfF7oB5AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgH+7T3Y1UlqIbeIAAAAASUVORK5CYII="
+          },
+          "version": 1
+        },
+        "error": null,
+        "notebookExists": true,
+        "protectedUnchanged": true,
+        "revisionUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "missing",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "backup": null,
+        "error": "io",
+        "notebookExists": true,
+        "protectedUnchanged": true,
+        "revisionUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "mismatch",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "backup": null,
+        "error": "invalidContent",
+        "notebookExists": true,
+        "protectedUnchanged": true,
+        "revisionUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "unreferenced",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "backup": {
+          "document": {
+            "entries": [
+              {
+                "createdAt": -978307200,
+                "dictionaryForm": "bank",
+                "expression": "bank",
+                "id": "00000000-0000-0000-0000-000000000001",
+                "kind": "word",
+                "language": "en",
+                "senses": [
+                  {
+                    "alternateMeanings": [],
+                    "createdAt": -978307200,
+                    "examples": [
+                      {
+                        "completeness": "sentence",
+                        "createdAt": -978307200,
+                        "explanations": [],
+                        "id": "00000000-0000-0000-0000-000000000003",
+                        "meaning": "context",
+                        "meaningOrigin": "captured",
+                        "ranges": [
+                          {
+                            "length": 4,
+                            "location": 4
+                          }
+                        ],
+                        "text": "The bank.",
+                        "translation": "原句",
+                        "translationVariants": []
+                      }
+                    ],
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000002",
+                    "isSavedWithoutContext": false,
+                    "meaning": "core",
+                    "meaningOrigin": "captured",
+                    "mergedFrom": [
+                      "00000000-0000-0000-0000-00000000005A"
+                    ],
+                    "note": "note",
+                    "standaloneMeanings": [],
+                    "tags": [
+                      "Work"
+                    ],
+                    "updatedAt": -978307200
+                  },
+                  {
+                    "alternateMeanings": [],
+                    "createdAt": -978307200,
+                    "examples": [],
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000004",
+                    "isSavedWithoutContext": false,
+                    "meaning": "second",
+                    "meaningOrigin": "captured",
+                    "mergedFrom": [],
+                    "note": "",
+                    "standaloneMeanings": [],
+                    "tags": [],
+                    "updatedAt": -978307200
+                  }
+                ],
+                "updatedAt": -978307200
+              }
+            ],
+            "schemaVersion": 3
+          },
+          "images": {},
+          "version": 1
+        },
+        "error": null,
+        "notebookExists": true,
+        "protectedUnchanged": true,
+        "revisionUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "replace",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "backup": {
+          "document": {
+            "entries": [
+              {
+                "createdAt": -978307200,
+                "dictionaryForm": "bank",
+                "expression": "bank",
+                "id": "00000000-0000-0000-0000-000000000001",
+                "kind": "word",
+                "language": "en",
+                "senses": [
+                  {
+                    "alternateMeanings": [],
+                    "content": [
+                      {
+                        "content": {
+                          "image": {
+                            "_0": {
+                              "byteCount": 152,
+                              "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                              "height": 40,
+                              "width": 80
+                            },
+                            "caption": "river"
+                          }
+                        },
+                        "id": "00000000-0000-0000-0000-000000000014"
+                      }
+                    ],
+                    "createdAt": -978307200,
+                    "examples": [
+                      {
+                        "completeness": "sentence",
+                        "createdAt": -978307200,
+                        "explanations": [],
+                        "id": "00000000-0000-0000-0000-000000000003",
+                        "meaning": "context",
+                        "meaningOrigin": "captured",
+                        "ranges": [
+                          {
+                            "length": 4,
+                            "location": 4
+                          }
+                        ],
+                        "text": "The bank.",
+                        "translation": "原句",
+                        "translationVariants": []
+                      }
+                    ],
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000002",
+                    "isSavedWithoutContext": false,
+                    "meaning": "core",
+                    "meaningOrigin": "captured",
+                    "mergedFrom": [
+                      "00000000-0000-0000-0000-00000000005A"
+                    ],
+                    "note": "note",
+                    "standaloneMeanings": [],
+                    "tags": [
+                      "Work"
+                    ],
+                    "updatedAt": -978307200
+                  },
+                  {
+                    "alternateMeanings": [],
+                    "createdAt": -978307200,
+                    "examples": [],
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000004",
+                    "isSavedWithoutContext": false,
+                    "meaning": "second",
+                    "meaningOrigin": "captured",
+                    "mergedFrom": [],
+                    "note": "",
+                    "standaloneMeanings": [],
+                    "tags": [],
+                    "updatedAt": -978307200
+                  }
+                ],
+                "updatedAt": -978307200
+              }
+            ],
+            "schemaVersion": 3
+          },
+          "images": {
+            "lg-image-8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53.png": "iVBORw0KGgoAAAANSUhEUgAAAFAAAAAoCAYAAABpYH0BAAAAX0lEQVR4nO3QMQ0AIADAMHSgFrXYAA88ZEmP/UvHXPvovfF7oB5AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgH+7T3Y1UlqIbeIAAAAASUVORK5CYII="
+          },
+          "version": 1
+        },
+        "error": null,
+        "notebookExists": true,
+        "protectedUnchanged": true,
+        "revisionUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "media-sibling",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "backup": {
+          "document": {
+            "entries": [
+              {
+                "createdAt": -978307200,
+                "dictionaryForm": "bank",
+                "expression": "bank",
+                "id": "00000000-0000-0000-0000-000000000001",
+                "kind": "word",
+                "language": "en",
+                "senses": [
+                  {
+                    "alternateMeanings": [],
+                    "createdAt": -978307200,
+                    "examples": [
+                      {
+                        "completeness": "sentence",
+                        "createdAt": -978307200,
+                        "explanations": [],
+                        "id": "00000000-0000-0000-0000-000000000003",
+                        "meaning": "context",
+                        "meaningOrigin": "captured",
+                        "ranges": [
+                          {
+                            "length": 4,
+                            "location": 4
+                          }
+                        ],
+                        "text": "The bank.",
+                        "translation": "原句",
+                        "translationVariants": []
+                      }
+                    ],
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000002",
+                    "isSavedWithoutContext": false,
+                    "meaning": "core",
+                    "meaningOrigin": "captured",
+                    "mergedFrom": [
+                      "00000000-0000-0000-0000-00000000005A"
+                    ],
+                    "note": "note",
+                    "standaloneMeanings": [],
+                    "tags": [
+                      "Work"
+                    ],
+                    "updatedAt": -978307200
+                  },
+                  {
+                    "alternateMeanings": [],
+                    "createdAt": -978307200,
+                    "examples": [],
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000004",
+                    "isSavedWithoutContext": false,
+                    "meaning": "second",
+                    "meaningOrigin": "captured",
+                    "mergedFrom": [],
+                    "note": "",
+                    "standaloneMeanings": [],
+                    "tags": [],
+                    "updatedAt": -978307200
+                  }
+                ],
+                "updatedAt": -978307200
+              }
+            ],
+            "schemaVersion": 3
+          },
+          "images": {},
+          "version": 1
+        },
+        "error": null,
+        "notebookExists": true,
+        "protectedUnchanged": true,
+        "revisionUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "protected-database",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift",
+      "provenanceKind": "source-policy-extension",
+      "suffix": "",
+      "expected": {
+        "backup": null,
+        "error": "invalidContent",
+        "notebookExists": true,
+        "protectedUnchanged": true,
+        "revisionUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "protected-wal",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift",
+      "provenanceKind": "source-policy-extension",
+      "suffix": "-wal",
+      "expected": {
+        "backup": null,
+        "error": "invalidContent",
+        "notebookExists": false,
+        "protectedUnchanged": true,
+        "revisionUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "protected-shm",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift",
+      "provenanceKind": "source-policy-extension",
+      "suffix": "-shm",
+      "expected": {
+        "backup": null,
+        "error": "invalidContent",
+        "notebookExists": false,
+        "protectedUnchanged": true,
+        "revisionUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "protected-journal",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift",
+      "provenanceKind": "source-policy-extension",
+      "suffix": "-journal",
+      "expected": {
+        "backup": null,
+        "error": "invalidContent",
+        "notebookExists": false,
+        "protectedUnchanged": true,
+        "revisionUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "protected-lock",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift",
+      "provenanceKind": "source-policy-extension",
+      "suffix": ".lock",
+      "expected": {
+        "backup": null,
+        "error": "invalidContent",
+        "notebookExists": false,
+        "protectedUnchanged": true,
+        "revisionUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "hard-link",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "backup": null,
+        "error": "invalidContent",
+        "notebookExists": true,
+        "protectedUnchanged": true,
+        "revisionUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "symbolic-link",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "backup": null,
+        "error": "invalidContent",
+        "notebookExists": true,
+        "protectedUnchanged": true,
+        "revisionUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "media-root",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "backup": null,
+        "error": "invalidContent",
+        "notebookExists": false,
+        "protectedUnchanged": true,
+        "revisionUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "media-child",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "backup": null,
+        "error": "invalidContent",
+        "notebookExists": false,
+        "protectedUnchanged": true,
+        "revisionUnchanged": true,
+        "stages": 0
+      }
+    }
+  ]
+}

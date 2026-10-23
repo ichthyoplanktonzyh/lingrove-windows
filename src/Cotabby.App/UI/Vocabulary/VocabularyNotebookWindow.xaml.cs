@@ -196,8 +196,10 @@ public partial class VocabularyNotebookWindow : Window
     private void OnSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> args)
     {
         if (_presenting || _retired || args.NewValue is not VocabularySenseRow row) return;
-        _pendingGraphReconciliation = null;
-        if (_selection != row.Selection.SenseId) DetailViewport.ScrollToTop();
+        // Rebuilding TreeView containers can replay their projected IsSelected binding after
+        // _presenting ends. Only an actual logical choice cancels an earlier filter intent;
+        // repeating the same selection (including its current merged alias) is not navigation.
+        if (Selection != row.Selection) { _pendingGraphReconciliation = null; DetailViewport.ScrollToTop(); }
         _selection = row.Selection.SenseId; RenderDetail(_store.Snapshot.Document);
     }
     private void RenderDetail(VocabularyDocument document)

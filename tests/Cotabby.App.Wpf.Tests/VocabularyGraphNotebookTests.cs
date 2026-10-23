@@ -353,7 +353,14 @@ public sealed class VocabularyGraphNotebookTests(WpfDispatcher dispatcher)
         {
             window.Reveal(Bank); window.Show(); await Refresh(window); var input = Find<TextBox>(window, "SearchText");
             input.Text = first; var original = window.LastRefresh; await search.Entered.Task.WaitAsync(TimeSpan.FromSeconds(10));
-            if (toList) Mode(window, false);
+            if (toList)
+            {
+                Mode(window, false);
+                var tree = Find<TreeView>(window, "EntriesTree");
+                // WPF may replay an already selected row while generating visible containers.
+                // This routed event must not count as a new user choice or cancel graph edits.
+                tree.RaiseEvent(new RoutedPropertyChangedEventArgs<object?>(null, Rows(window).Single(row => row.Selection == Bank), TreeView.SelectedItemChangedEvent));
+            }
             input.Text = second; search.Release.TrySetResult(); await Refresh(window); await original.WaitAsync(TimeSpan.FromSeconds(10));
             Assert.Equal(cleared ? null : Bank, window.Selection);
             Assert.Equal(toList, !window.IsGraphMode);

@@ -49,6 +49,8 @@ constraints before Store can publish Changed. This claims the command's detail i
 operation fails; it does not select unacknowledged values. A pre-merge filter cannot follow a new
 alias and clear the target between commit notification and command acknowledgement.
 Stale worker replies cannot publish or clear that later choice.
+TreeView container regeneration may replay the already selected row after the projection callback;
+that same logical selection (including its current alias) does not cancel a pending graph edit.
 
 During pending browse, the old drawing can remain visible for continuity but graph controls and
 node intents are disabled. Virtual peers report disabled and reject direct Invoke; queued invocation

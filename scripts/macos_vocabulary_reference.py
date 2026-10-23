@@ -90,3 +90,9 @@ def archive_edit_sources(repo):
     wrapper += between(archive, "        for index in next.entries.indices {", "        try validate(next)")
     wrapper += "        return next\n    }\n}\n"
     return sense_policy_sources(repo) + [wrapper]
+
+
+def database_projection_sources(repo):
+    return sense_policy_sources(repo) + [source(repo, path) for path in (
+        "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+        "Cotabby/Support/Vocabulary/VocabularyDatabaseProjection.swift")]

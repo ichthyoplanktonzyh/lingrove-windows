@@ -70,6 +70,6 @@ DOTNET_ROOT="$PWD/.dotnet" .dotnet/dotnet test tests/Cotabby.Core.Tests/Cotabby.
 python3 scripts/verify-vocabulary-validation-macos-parity.py --mac-repo /path/to/macOS-lingrove
 ```
 
-[Concurrent edit merging and stale-record pruning](VOCABULARY_ARCHIVE_DRAFTS.md) now exist as pure draft rules. Remaining dependencies are relational projection,
+[Concurrent edit merging and stale-record pruning](VOCABULARY_ARCHIVE_DRAFTS.md) now exist as pure draft rules. [Relational projection](VOCABULARY_RELATIONAL_PROJECTION.md) is also ported. Remaining dependencies are
 codec/date handling, SQLite revision comparison and durable acknowledgement, then the app-owned store
 and Save/notebook UI. Validation alone establishes none of those persistence guarantees.

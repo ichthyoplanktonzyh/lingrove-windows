@@ -63,6 +63,6 @@ DOTNET_ROOT="$PWD/.dotnet" .dotnet/dotnet test tests/Cotabby.Core.Tests/Cotabby.
 python3 scripts/verify-vocabulary-edit-macos-parity.py --mac-repo /path/to/macOS-lingrove
 ```
 
-Relational projection, codec/date/schema handling, SQLite file safety/revision comparison, media
+[Relational projection](VOCABULARY_RELATIONAL_PROJECTION.md) is now ported. Codec/date/schema handling, SQLite file safety/revision comparison, media
 staging/rollback and acknowledged store/UI updates still remain. None is implied by the pure draft
 operations or the passing helper probes.

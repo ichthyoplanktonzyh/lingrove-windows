@@ -6,7 +6,7 @@ This adapts two existing deterministic rules in `Cotabby.Core/Vocabulary/Vocabul
 The [TXT/CSV renderer](VOCABULARY_EXPORT_NOTES.md), [JSON encoder](VOCABULARY_EXPORT_JSON.md),
 [prepared package](VOCABULARY_EXPORT_PACKAGE.md), [archive snapshot](VOCABULARY_EXPORT_SNAPSHOT.md)
 and [ZIP encoder](VOCABULARY_EXPORT_ZIP.md) each have separate adapters and evidence.
-Destination writing and export UI remain work.
+[Destination writing](VOCABULARY_EXPORT_SAVE.md) has a separate adapter; export UI remains work.
 
 The renderer owns the reduced [portable document](VOCABULARY_EXPORT_PROJECTION.md). These
 stateless helpers own only one CSV cell or a bounded byte preview; they neither query notebook state

@@ -25,5 +25,6 @@
           Link="fixtures\parity\vocabulary-media-transactions-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\fixtures\parity\vocabulary-export-snapshot-v1.json"
           Link="fixtures\parity\vocabulary-export-snapshot-v1.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\fixtures\parity\vocabulary-export-save-v1.json" Link="fixtures\parity\vocabulary-export-save-v1.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

@@ -6,7 +6,7 @@ namespace Cotabby.Win32.Vocabulary;
 /// Mac archive export snapshot boundary. The archive's serialized worker and one shared storage
 /// access span capture exact senses plus validated media before rendering. The returned package
 /// owns all selected bytes; queued edits/GC and later source deletion cannot change that value.
-/// Destination validation, writing and ZIP are separate later effects, not part of preparation.
+/// Destination validation, writing and ZIP encoding are separate effects outside preparation.
 /// </summary>
 public sealed partial class VocabularyArchive
 {

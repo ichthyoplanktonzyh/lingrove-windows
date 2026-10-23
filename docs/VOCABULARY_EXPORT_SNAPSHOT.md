@@ -3,8 +3,8 @@
 Reference: macOS `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`,
 `Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift`, `prepareExport` and `exportSnapshot`.
 The original archive/storage actor, image owner, policy, encoders and package declarations remain
-the behavior reference. ZIP has a [separate adapter](VOCABULARY_EXPORT_ZIP.md); destination validation and `writeExport`
-remain follow-up effects outside snapshot preparation.
+the behavior reference. ZIP and [destination writing](VOCABULARY_EXPORT_SAVE.md) have separate adapters outside snapshot
+preparation.
 
 `VocabularyArchive.Export.cs` adds `PrepareExportAsync` to the existing serialized archive owner.
 The call freezes offered selection IDs before queueing. On its worker, one shared persistence access
@@ -60,7 +60,6 @@ dotnet test tests/Cotabby.App.Wpf.Tests/Cotabby.App.Wpf.Tests.csproj --configura
 ```
 
 The Windows test execution is established by final-head CI, not by cross-compilation. The
-[ZIP adapter](VOCABULARY_EXPORT_ZIP.md) separately covers the stored byte format. Destination/path
-admission, atomic save/cancellation, backup/restore, stale save-session guards and the export window
-remain follow-up work. Physical desktop UIA/IME/overlay/insertion and model/GPU
+[ZIP adapter](VOCABULARY_EXPORT_ZIP.md) separately covers the stored byte format. [Destination/path admission and atomic save](VOCABULARY_EXPORT_SAVE.md) have a separate adapter.
+Backup/restore, stale save-session guards and the export window remain follow-up work. Physical desktop UIA/IME/overlay/insertion and model/GPU
 gates remain open.

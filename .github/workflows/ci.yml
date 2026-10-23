@@ -50,7 +50,7 @@ jobs:
     # The pinned Swift policies use Swift 6.2 syntax supplied by Xcode 26.
     runs-on: macos-26
     # Each verifier compiles actual pinned Swift declarations in an isolated temporary binary.
-    timeout-minutes: 15
+    timeout-minutes: 18
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
@@ -164,6 +164,9 @@ jobs:
 
       - name: Verify stored ZIP bytes and bounds against complete original Mac encoder
         run: python3 scripts/verify-vocabulary-export-zip-macos-parity.py --mac-repo .mac-baseline
+
+      - name: Verify export save and destination protection against original Mac effects
+        run: python3 scripts/verify-vocabulary-export-save-macos-parity.py --mac-repo .mac-baseline
 
   # Routine CI stops after validation. Packaging, artifact uploads and releases
   # are deliberately absent; distribution is a separately authorized task.

@@ -16,5 +16,7 @@
     <Compile Include="..\Shared\VocabularyReferenceGraph.cs" Link="Shared\VocabularyReferenceGraph.cs" />
     <None Include="..\..\fixtures\parity\vocabulary-notebook-session-v1.json"
           Link="fixtures\parity\vocabulary-notebook-session-v1.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\fixtures\parity\vocabulary-image-preparation-v1.json"
+          Link="fixtures\parity\vocabulary-image-preparation-v1.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

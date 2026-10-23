@@ -339,3 +339,10 @@ separately captured native word facts accompany explicit dictionary queries. Sou
 fallback is outside this first-successful-hit scope. C# runs the same operations against the real
 App session and Core children on a Windows dispatcher; the twenty-first Swift verifier checks the
 original sessions. [Session scope](../../docs/VOCABULARY_NOTEBOOK_SESSION.md) keeps UI integration open.
+
+`vocabulary-image-preparation-v1.json` adds ten complete original ImageIO prepare/validate
+observations on fixed byte inputs (the input-size case is generated as equal repeated bytes).
+Dimensions, rejection and returned-reference self-consistency are compared; codec PNG bytes are
+platform-owned. The oversized-area header is also a malformed pixel payload and only establishes
+rejection. EXIF/profile/multiframe/output-size Windows cases remain separate native-adapter
+regressions. [Image preparation scope](../../docs/VOCABULARY_IMAGE_PREPARATION.md) leaves media/UI open.

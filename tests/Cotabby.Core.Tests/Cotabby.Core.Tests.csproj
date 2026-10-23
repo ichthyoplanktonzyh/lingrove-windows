@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <Using Include="Xunit" />
+    <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\WindowsVocabularyTextSearch.cs" Link="Platform\WindowsVocabularyTextSearch.cs" />
     <Compile Include="..\Shared\LearningLexicalCorpus.cs" Link="Shared\LearningLexicalCorpus.cs" />
     <Compile Include="..\Shared\LearningExplanationCaptureCorpus.cs" Link="Shared\LearningExplanationCaptureCorpus.cs" />
     <!-- This platform file boundary uses only managed IO; compile the actual source to exercise

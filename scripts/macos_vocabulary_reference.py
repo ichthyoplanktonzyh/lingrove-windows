@@ -144,3 +144,36 @@ extension VocabularyStore {
 }
 '''
     return database_archive_sources(repo) + [wrapper]
+
+
+def notebook_browse_sources(repo):
+    """Original notebook computed properties in an immutable document input wrapper."""
+    view = source(repo, 'Cotabby/UI/Vocabulary/VocabularyNotebookView.swift')
+    wrapper = '''import Foundation
+struct NotebookBrowseReference {
+    var store: VocabularyDocument
+    var query = ""
+    var language: LearningLanguage?
+    var selectedTag = ""
+    var newestFirst = true
+    var selection: UUID?
+'''
+    wrapper += between(view, '    private var visibleEntries:', '    private var graphSelection:')
+    wrapper += between(view, '    private var selectedEntry:', '    private func selections(')
+    wrapper += '''
+    func visibleProbe() -> [VocabularyEntry] { visibleEntries }
+    func selectionProbe() -> VocabularySelection? {
+        guard let entry = selectedEntry, let sense = selectedSense else { return nil }
+        return .init(entryID: entry.id, senseID: sense.id)
+    }
+}
+'''
+    policy = source(repo, 'Cotabby/Support/Vocabulary/VocabularyPolicy.swift')
+    fields = between(policy, '        let terms = query.split(whereSeparator:', '        return terms.allSatisfy')
+    wrapper += "\nfunc notebookSearchFacts(_ entry: VocabularyEntry, query: String) -> [[String: Any]] {\n" + fields
+    wrapper += '        return terms.flatMap { term in fields.map { ["field": $0, "term": String(term), "contains": $0.localizedStandardContains(term)] } }\n}\n'
+    wrapper += "\nimport SwiftUI\nstruct NotebookHighlightReference {\n" + between(view,
+        '    private func highlighted(_ example:', '\n}\n\nextension VocabularyEntry.Kind')
+    wrapper += "\n    func probe(_ example: VocabularyExample) -> [[String: Any]] {\n        let value = highlighted(example)\n"
+    wrapper += '        return value.runs.map { ["text": String(value[$0.range].characters), "target": $0.font != nil] }\n    }\n}\n'
+    return sense_policy_sources(repo) + [wrapper]

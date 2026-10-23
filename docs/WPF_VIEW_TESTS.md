@@ -60,3 +60,10 @@ errors, stable selection routing and retirement of reused sentence/dictionary bi
 is isolated in memory. An async fixture helper pumps the same STA dispatcher while these real
 archive tasks complete. [Favorite scope](VOCABULARY_FAVORITES.md) keeps notebook and native
 physical-input verification gaps explicit.
+
+The [notebook browser](VOCABULARY_NOTEBOOK.md) adds six archive-backed cases (47 total view cases):
+activating window styles, literal long examples, filters/global selection, close/reopen, directed
+cold load, merged aliases/deletion, latest-wins workers and draining, and the shared single-window
+route. Its render check uses the actual wider notebook bounds. Native activation styles establish
+the intended window type, not physical activation behavior in another app. No model or notebook
+file is used by these view tests.

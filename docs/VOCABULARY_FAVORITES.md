@@ -31,9 +31,9 @@ Fixed archive errors appear inline and in accessible help, adapting Mac's alert 
 nonactivating Windows card. Parent view text is not populated from native exception strings.
 
 The source-equivalent `Store.Show` route resolves stable entry/sense IDs. The Show-in-vocabulary
-menu item appears when the notebook composition registers that route. This round connects Save and
-exact Remove; the notebook window/route remains the next slice, so the current app omits that menu
-item rather than presenting an action with no destination. Explicit meaning adoption UI, speech,
+menu item appears when the notebook composition registers that route. The app now registers the
+[reusable notebook browser](VOCABULARY_NOTEBOOK.md), so saved cards can open their actual sense.
+Explicit meaning adoption UI, speech,
 reading/selection/OCR favorites and full localization also remain open.
 
 Six added compiled WPF cases use the real in-memory archive and shared Store: acknowledged Save

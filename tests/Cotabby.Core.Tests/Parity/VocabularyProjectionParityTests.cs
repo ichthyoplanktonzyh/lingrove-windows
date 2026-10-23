@@ -74,7 +74,7 @@ public sealed class VocabularyProjectionParityTests
         }
         catch (VocabularyException error) when (error.Failure == VocabularyFailure.InvalidArchive) { return new { error = "invalidArchive" }; }
     }
-    private static VocabularyDocument Document()
+    internal static VocabularyDocument Document()
     {
         var usage = new VocabularyExample(Id(3), "The bank.", "原句", [new(4, 4)], VocabularyExampleCompleteness.Sentence, "context", Now);
         var sense = new VocabularySense(Id(2), "core", Now, Now) { Note = "note", Tags = ["Work"], IsSavedWithoutContext = true };

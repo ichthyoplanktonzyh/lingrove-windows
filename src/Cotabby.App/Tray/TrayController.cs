@@ -59,6 +59,8 @@ public sealed class TrayController : IDisposable
         settingsItem.Click += (_, _) => SettingsWindow.ShowOrFocus(host);
         var translateItem = new MenuItem { Header = "Translate Current Sentence…" };
         translateItem.Click += (_, _) => host.LearningPreview.RequestFromCurrentField();
+        var vocabularyItem = new MenuItem { Header = "Vocabulary…" };
+        vocabularyItem.Click += (_, _) => host.VocabularyWindow.Show();
         var welcomeItem = new MenuItem { Header = "Run welcome again…" };
         welcomeItem.Click += (_, _) => WelcomeWindow.ShowFor(host);
         var quitItem = new MenuItem { Header = "Quit Cotabby" };
@@ -69,7 +71,7 @@ public sealed class TrayController : IDisposable
                  {
                      _statusItem, _wordCountItem, new Separator(),
                      _enabledItem, _pauseMenu, _resumeItem, _modelMenu, _lengthMenu, new Separator(),
-                     translateItem, settingsItem, welcomeItem, new Separator(), quitItem,
+                     translateItem, vocabularyItem, settingsItem, welcomeItem, new Separator(), quitItem,
                  })
         {
             menu.Items.Add(item);

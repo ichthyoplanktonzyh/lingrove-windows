@@ -315,3 +315,11 @@ NLTokenizer facts correspond to the earlier explanation-capture corpus; each old
 remained unchanged. Expected values come from native execution. Random encounter identity/time are
 checked separately, not copied into expected JSON. [Writing-capture scope](../../docs/VOCABULARY_CARD_CAPTURE.md)
 keeps reading/selection/OCR and UI work explicit.
+
+`vocabulary-notebook-v1.json` records 51 actual pinned Mac notebook view/policy observations and
+independent Foundation substring facts. The nineteenth verifier executes original search fields,
+visible-entry/global-selection computed properties, sense titles and SwiftUI highlight runs.
+Each case identifies the view, VocabularyPolicy and VocabularySensePolicy sources. Pure C# policy
+consumers use explicit native facts; an additional 26 cases execute the actual Windows text adapter.
+The three observed collation differences are explicitly locked by verifier ID; they are not native
+successes. See [notebook scope and provider gaps](../../docs/VOCABULARY_NOTEBOOK.md).

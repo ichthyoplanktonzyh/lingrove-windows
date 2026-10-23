@@ -1,0 +1,2403 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "search-expression",
+      "operation": "matches",
+      "field": "expression",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "matches": true
+      },
+      "windowsTextParity": true,
+      "facts": [
+        {
+          "contains": true,
+          "field": "Needle",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "core",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "note",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "Work",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "literal",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "The bank.",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "原句",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "Needle"
+        }
+      ],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "search-dictionaryForm",
+      "operation": "matches",
+      "field": "dictionaryForm",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "matches": true
+      },
+      "windowsTextParity": true,
+      "facts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "Needle"
+        },
+        {
+          "contains": true,
+          "field": "Needle",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "core",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "note",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "Work",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "literal",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "The bank.",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "原句",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "Needle"
+        }
+      ],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "search-meaning",
+      "operation": "matches",
+      "field": "meaning",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "matches": true
+      },
+      "windowsTextParity": true,
+      "facts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "Needle"
+        },
+        {
+          "contains": true,
+          "field": "Needle",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "note",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "Work",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "literal",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "The bank.",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "原句",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "Needle"
+        }
+      ],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "search-note",
+      "operation": "matches",
+      "field": "note",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "matches": true
+      },
+      "windowsTextParity": true,
+      "facts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "core",
+          "term": "Needle"
+        },
+        {
+          "contains": true,
+          "field": "Needle",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "Work",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "literal",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "The bank.",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "原句",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "Needle"
+        }
+      ],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "search-tag",
+      "operation": "matches",
+      "field": "tag",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "matches": true
+      },
+      "windowsTextParity": true,
+      "facts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "core",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "note",
+          "term": "Needle"
+        },
+        {
+          "contains": true,
+          "field": "Needle",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "literal",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "The bank.",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "原句",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "Needle"
+        }
+      ],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "search-standalone",
+      "operation": "matches",
+      "field": "standalone",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "matches": true
+      },
+      "windowsTextParity": true,
+      "facts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "core",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "note",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "Work",
+          "term": "Needle"
+        },
+        {
+          "contains": true,
+          "field": "Needle",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "literal",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "The bank.",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "原句",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "Needle"
+        }
+      ],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "search-alternate",
+      "operation": "matches",
+      "field": "alternate",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "matches": true
+      },
+      "windowsTextParity": true,
+      "facts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "core",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "note",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "Work",
+          "term": "Needle"
+        },
+        {
+          "contains": true,
+          "field": "Needle",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "literal",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "The bank.",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "原句",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "Needle"
+        }
+      ],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "search-text",
+      "operation": "matches",
+      "field": "text",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "matches": true
+      },
+      "windowsTextParity": true,
+      "facts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "core",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "note",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "Work",
+          "term": "Needle"
+        },
+        {
+          "contains": true,
+          "field": "Needle",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "The bank.",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "原句",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "Needle"
+        }
+      ],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "search-caption",
+      "operation": "matches",
+      "field": "caption",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "matches": true
+      },
+      "windowsTextParity": true,
+      "facts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "core",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "note",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "Work",
+          "term": "Needle"
+        },
+        {
+          "contains": true,
+          "field": "Needle",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "The bank.",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "原句",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "Needle"
+        }
+      ],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "search-usageText",
+      "operation": "matches",
+      "field": "usageText",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "matches": true
+      },
+      "windowsTextParity": true,
+      "facts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "core",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "note",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "Work",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "literal",
+          "term": "Needle"
+        },
+        {
+          "contains": true,
+          "field": "Needle",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "原句",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "Needle"
+        }
+      ],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "search-translation",
+      "operation": "matches",
+      "field": "translation",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "matches": true
+      },
+      "windowsTextParity": true,
+      "facts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "core",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "note",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "Work",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "literal",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "The bank.",
+          "term": "Needle"
+        },
+        {
+          "contains": true,
+          "field": "Needle",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "Needle"
+        }
+      ],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "search-usageMeaning",
+      "operation": "matches",
+      "field": "usageMeaning",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "matches": true
+      },
+      "windowsTextParity": true,
+      "facts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "core",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "note",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "Work",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "literal",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "The bank.",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "原句",
+          "term": "Needle"
+        },
+        {
+          "contains": true,
+          "field": "Needle",
+          "term": "Needle"
+        }
+      ],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "search-variant",
+      "operation": "matches",
+      "field": "variant",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "matches": true
+      },
+      "windowsTextParity": true,
+      "facts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "core",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "note",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "Work",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "literal",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "The bank.",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "原句",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "Needle"
+        },
+        {
+          "contains": true,
+          "field": "Needle",
+          "term": "Needle"
+        }
+      ],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "search-explanation",
+      "operation": "matches",
+      "field": "explanation",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "matches": false
+      },
+      "windowsTextParity": true,
+      "facts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "core",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "note",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "Work",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "literal",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "The bank.",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "原句",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "Needle"
+        }
+      ],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "accent",
+      "operation": "matches",
+      "field": "note",
+      "value": "café",
+      "query": "CAFE",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "matches": true
+      },
+      "windowsTextParity": true,
+      "facts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "CAFE"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "CAFE"
+        },
+        {
+          "contains": false,
+          "field": "core",
+          "term": "CAFE"
+        },
+        {
+          "contains": true,
+          "field": "café",
+          "term": "CAFE"
+        },
+        {
+          "contains": false,
+          "field": "Work",
+          "term": "CAFE"
+        },
+        {
+          "contains": false,
+          "field": "literal",
+          "term": "CAFE"
+        },
+        {
+          "contains": false,
+          "field": "The bank.",
+          "term": "CAFE"
+        },
+        {
+          "contains": false,
+          "field": "原句",
+          "term": "CAFE"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "CAFE"
+        }
+      ],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "canonical",
+      "operation": "matches",
+      "field": "note",
+      "value": "café",
+      "query": "CAFÉ",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "matches": true
+      },
+      "windowsTextParity": true,
+      "facts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "CAFÉ"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "CAFÉ"
+        },
+        {
+          "contains": false,
+          "field": "core",
+          "term": "CAFÉ"
+        },
+        {
+          "contains": true,
+          "field": "café",
+          "term": "CAFÉ"
+        },
+        {
+          "contains": false,
+          "field": "Work",
+          "term": "CAFÉ"
+        },
+        {
+          "contains": false,
+          "field": "literal",
+          "term": "CAFÉ"
+        },
+        {
+          "contains": false,
+          "field": "The bank.",
+          "term": "CAFÉ"
+        },
+        {
+          "contains": false,
+          "field": "原句",
+          "term": "CAFÉ"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "CAFÉ"
+        }
+      ],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "width",
+      "operation": "matches",
+      "field": "note",
+      "value": "ＡＢＣ",
+      "query": "abc",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "matches": false
+      },
+      "windowsTextParity": true,
+      "facts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "abc"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "abc"
+        },
+        {
+          "contains": false,
+          "field": "core",
+          "term": "abc"
+        },
+        {
+          "contains": false,
+          "field": "ＡＢＣ",
+          "term": "abc"
+        },
+        {
+          "contains": false,
+          "field": "Work",
+          "term": "abc"
+        },
+        {
+          "contains": false,
+          "field": "literal",
+          "term": "abc"
+        },
+        {
+          "contains": false,
+          "field": "The bank.",
+          "term": "abc"
+        },
+        {
+          "contains": false,
+          "field": "原句",
+          "term": "abc"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "abc"
+        }
+      ],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "terms",
+      "operation": "matches",
+      "field": "note",
+      "value": "One needle",
+      "query": "One Needle",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "matches": true
+      },
+      "windowsTextParity": true,
+      "facts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "One"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "One"
+        },
+        {
+          "contains": false,
+          "field": "core",
+          "term": "One"
+        },
+        {
+          "contains": true,
+          "field": "One needle",
+          "term": "One"
+        },
+        {
+          "contains": false,
+          "field": "Work",
+          "term": "One"
+        },
+        {
+          "contains": false,
+          "field": "literal",
+          "term": "One"
+        },
+        {
+          "contains": false,
+          "field": "The bank.",
+          "term": "One"
+        },
+        {
+          "contains": false,
+          "field": "原句",
+          "term": "One"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "One"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "core",
+          "term": "Needle"
+        },
+        {
+          "contains": true,
+          "field": "One needle",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "Work",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "literal",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "The bank.",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "原句",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "Needle"
+        }
+      ],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "crossFields",
+      "operation": "matches",
+      "field": "note",
+      "value": "Needle",
+      "query": "bank Needle",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "matches": true
+      },
+      "windowsTextParity": true,
+      "facts": [
+        {
+          "contains": true,
+          "field": "bank",
+          "term": "bank"
+        },
+        {
+          "contains": true,
+          "field": "bank",
+          "term": "bank"
+        },
+        {
+          "contains": false,
+          "field": "core",
+          "term": "bank"
+        },
+        {
+          "contains": false,
+          "field": "Needle",
+          "term": "bank"
+        },
+        {
+          "contains": false,
+          "field": "Work",
+          "term": "bank"
+        },
+        {
+          "contains": false,
+          "field": "literal",
+          "term": "bank"
+        },
+        {
+          "contains": true,
+          "field": "The bank.",
+          "term": "bank"
+        },
+        {
+          "contains": false,
+          "field": "原句",
+          "term": "bank"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "bank"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "core",
+          "term": "Needle"
+        },
+        {
+          "contains": true,
+          "field": "Needle",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "Work",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "literal",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "The bank.",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "原句",
+          "term": "Needle"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "Needle"
+        }
+      ],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "missingTerm",
+      "operation": "matches",
+      "field": "note",
+      "value": "Needle",
+      "query": "bank absent",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "matches": false
+      },
+      "windowsTextParity": true,
+      "facts": [
+        {
+          "contains": true,
+          "field": "bank",
+          "term": "bank"
+        },
+        {
+          "contains": true,
+          "field": "bank",
+          "term": "bank"
+        },
+        {
+          "contains": false,
+          "field": "core",
+          "term": "bank"
+        },
+        {
+          "contains": false,
+          "field": "Needle",
+          "term": "bank"
+        },
+        {
+          "contains": false,
+          "field": "Work",
+          "term": "bank"
+        },
+        {
+          "contains": false,
+          "field": "literal",
+          "term": "bank"
+        },
+        {
+          "contains": true,
+          "field": "The bank.",
+          "term": "bank"
+        },
+        {
+          "contains": false,
+          "field": "原句",
+          "term": "bank"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "bank"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "absent"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "absent"
+        },
+        {
+          "contains": false,
+          "field": "core",
+          "term": "absent"
+        },
+        {
+          "contains": false,
+          "field": "Needle",
+          "term": "absent"
+        },
+        {
+          "contains": false,
+          "field": "Work",
+          "term": "absent"
+        },
+        {
+          "contains": false,
+          "field": "literal",
+          "term": "absent"
+        },
+        {
+          "contains": false,
+          "field": "The bank.",
+          "term": "absent"
+        },
+        {
+          "contains": false,
+          "field": "原句",
+          "term": "absent"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "absent"
+        }
+      ],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "whitespace",
+      "operation": "matches",
+      "field": "note",
+      "value": "Needle",
+      "query": " \n\t ",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "matches": true
+      },
+      "windowsTextParity": true,
+      "facts": [],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "zeroWidthSpace",
+      "operation": "matches",
+      "field": "note",
+      "value": "Needle",
+      "query": "​",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "matches": false
+      },
+      "windowsTextParity": true,
+      "facts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "​"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "​"
+        },
+        {
+          "contains": false,
+          "field": "core",
+          "term": "​"
+        },
+        {
+          "contains": false,
+          "field": "Needle",
+          "term": "​"
+        },
+        {
+          "contains": false,
+          "field": "Work",
+          "term": "​"
+        },
+        {
+          "contains": false,
+          "field": "literal",
+          "term": "​"
+        },
+        {
+          "contains": false,
+          "field": "The bank.",
+          "term": "​"
+        },
+        {
+          "contains": false,
+          "field": "原句",
+          "term": "​"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "​"
+        }
+      ],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "title-meaning",
+      "operation": "title",
+      "shape": "meaning",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "title": "  literal  "
+      },
+      "windowsTextParity": true,
+      "facts": [],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "title-text",
+      "operation": "title",
+      "shape": "text",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "title": "  literal  "
+      },
+      "windowsTextParity": true,
+      "facts": [],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "title-usage",
+      "operation": "title",
+      "shape": "usage",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "title": "usage"
+      },
+      "windowsTextParity": true,
+      "facts": [],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "title-image",
+      "operation": "title",
+      "shape": "image",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "title": "Image explanation"
+      },
+      "windowsTextParity": true,
+      "facts": [],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "title-empty",
+      "operation": "title",
+      "shape": "empty",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "title": "Meaning pending"
+      },
+      "windowsTextParity": true,
+      "facts": [],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "newest",
+      "operation": "visible",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "entries": [
+          "00000000-0000-0000-0000-00000000000a",
+          "00000000-0000-0000-0000-000000000001"
+        ],
+        "originalSenses": 2,
+        "senses": [
+          [
+            "00000000-0000-0000-0000-00000000000c"
+          ],
+          [
+            "00000000-0000-0000-0000-000000000002",
+            "00000000-0000-0000-0000-000000000004"
+          ]
+        ]
+      },
+      "windowsTextParity": true,
+      "facts": [],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "oldest",
+      "operation": "visible",
+      "newestFirst": false,
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "entries": [
+          "00000000-0000-0000-0000-000000000001",
+          "00000000-0000-0000-0000-00000000000a"
+        ],
+        "originalSenses": 2,
+        "senses": [
+          [
+            "00000000-0000-0000-0000-000000000002",
+            "00000000-0000-0000-0000-000000000004"
+          ],
+          [
+            "00000000-0000-0000-0000-00000000000c"
+          ]
+        ]
+      },
+      "windowsTextParity": true,
+      "facts": [],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "language",
+      "operation": "visible",
+      "language": "en",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "entries": [
+          "00000000-0000-0000-0000-000000000001"
+        ],
+        "originalSenses": 2,
+        "senses": [
+          [
+            "00000000-0000-0000-0000-000000000002",
+            "00000000-0000-0000-0000-000000000004"
+          ]
+        ]
+      },
+      "windowsTextParity": true,
+      "facts": [],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "tag",
+      "operation": "visible",
+      "tag": "Work",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "entries": [
+          "00000000-0000-0000-0000-00000000000a",
+          "00000000-0000-0000-0000-000000000001"
+        ],
+        "originalSenses": 2,
+        "senses": [
+          [
+            "00000000-0000-0000-0000-00000000000c"
+          ],
+          [
+            "00000000-0000-0000-0000-000000000002"
+          ]
+        ]
+      },
+      "windowsTextParity": true,
+      "facts": [],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "caseTag",
+      "operation": "visible",
+      "tag": "work",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "entries": [],
+        "originalSenses": 2,
+        "senses": []
+      },
+      "windowsTextParity": true,
+      "facts": [],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "queryAfterTag",
+      "operation": "visible",
+      "tag": "Work",
+      "query": "other",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "entries": [],
+        "originalSenses": 2,
+        "senses": []
+      },
+      "windowsTextParity": true,
+      "facts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "other"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "other"
+        },
+        {
+          "contains": false,
+          "field": "core",
+          "term": "other"
+        },
+        {
+          "contains": false,
+          "field": "note",
+          "term": "other"
+        },
+        {
+          "contains": false,
+          "field": "Work",
+          "term": "other"
+        },
+        {
+          "contains": false,
+          "field": "literal",
+          "term": "other"
+        },
+        {
+          "contains": false,
+          "field": "The bank.",
+          "term": "other"
+        },
+        {
+          "contains": false,
+          "field": "原句",
+          "term": "other"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "other"
+        },
+        {
+          "contains": true,
+          "field": "other",
+          "term": "other"
+        },
+        {
+          "contains": false,
+          "field": "",
+          "term": "other"
+        },
+        {
+          "contains": false,
+          "field": "Home",
+          "term": "other"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "other"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "other"
+        },
+        {
+          "contains": false,
+          "field": "coffee",
+          "term": "other"
+        },
+        {
+          "contains": false,
+          "field": "",
+          "term": "other"
+        },
+        {
+          "contains": false,
+          "field": "Work",
+          "term": "other"
+        }
+      ],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "canonicalTag",
+      "operation": "visible",
+      "tag": "Wórk",
+      "firstTag": "Wórk",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "entries": [
+          "00000000-0000-0000-0000-000000000001"
+        ],
+        "originalSenses": 2,
+        "senses": [
+          [
+            "00000000-0000-0000-0000-000000000002"
+          ]
+        ]
+      },
+      "windowsTextParity": true,
+      "facts": [],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "selection-None",
+      "operation": "selection",
+      "sense": null,
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "entry": null,
+        "sense": null
+      },
+      "windowsTextParity": true,
+      "facts": [],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "selection-2",
+      "operation": "selection",
+      "sense": 2,
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "entry": "00000000-0000-0000-0000-000000000001",
+        "sense": "00000000-0000-0000-0000-000000000002"
+      },
+      "windowsTextParity": true,
+      "facts": [],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "selection-4",
+      "operation": "selection",
+      "sense": 4,
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "entry": "00000000-0000-0000-0000-000000000001",
+        "sense": "00000000-0000-0000-0000-000000000004"
+      },
+      "windowsTextParity": true,
+      "facts": [],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "selection-99",
+      "operation": "selection",
+      "sense": 99,
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "entry": "00000000-0000-0000-0000-000000000001",
+        "sense": "00000000-0000-0000-0000-000000000002"
+      },
+      "windowsTextParity": true,
+      "facts": [],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "selection-12",
+      "operation": "selection",
+      "sense": 12,
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "entry": "00000000-0000-0000-0000-00000000000a",
+        "sense": "00000000-0000-0000-0000-00000000000c"
+      },
+      "windowsTextParity": true,
+      "facts": [],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "selection-999",
+      "operation": "selection",
+      "sense": 999,
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "entry": null,
+        "sense": null
+      },
+      "windowsTextParity": true,
+      "facts": [],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "zeroLiteral",
+      "operation": "matches",
+      "field": "note",
+      "value": "a​b",
+      "query": "​",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "matches": true
+      },
+      "windowsTextParity": true,
+      "facts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "​"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "​"
+        },
+        {
+          "contains": false,
+          "field": "core",
+          "term": "​"
+        },
+        {
+          "contains": true,
+          "field": "a​b",
+          "term": "​"
+        },
+        {
+          "contains": false,
+          "field": "Work",
+          "term": "​"
+        },
+        {
+          "contains": false,
+          "field": "literal",
+          "term": "​"
+        },
+        {
+          "contains": false,
+          "field": "The bank.",
+          "term": "​"
+        },
+        {
+          "contains": false,
+          "field": "原句",
+          "term": "​"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "​"
+        }
+      ],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "zeroInside",
+      "operation": "matches",
+      "field": "note",
+      "value": "a​b",
+      "query": "ab",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "matches": false
+      },
+      "windowsTextParity": false,
+      "facts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "ab"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "ab"
+        },
+        {
+          "contains": false,
+          "field": "core",
+          "term": "ab"
+        },
+        {
+          "contains": false,
+          "field": "a​b",
+          "term": "ab"
+        },
+        {
+          "contains": false,
+          "field": "Work",
+          "term": "ab"
+        },
+        {
+          "contains": false,
+          "field": "literal",
+          "term": "ab"
+        },
+        {
+          "contains": false,
+          "field": "The bank.",
+          "term": "ab"
+        },
+        {
+          "contains": false,
+          "field": "原句",
+          "term": "ab"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "ab"
+        }
+      ],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "zeroQuery",
+      "operation": "matches",
+      "field": "note",
+      "value": "ab",
+      "query": "a​b",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "matches": false
+      },
+      "windowsTextParity": false,
+      "facts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "a​b"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "a​b"
+        },
+        {
+          "contains": false,
+          "field": "core",
+          "term": "a​b"
+        },
+        {
+          "contains": false,
+          "field": "ab",
+          "term": "a​b"
+        },
+        {
+          "contains": false,
+          "field": "Work",
+          "term": "a​b"
+        },
+        {
+          "contains": false,
+          "field": "literal",
+          "term": "a​b"
+        },
+        {
+          "contains": false,
+          "field": "The bank.",
+          "term": "a​b"
+        },
+        {
+          "contains": false,
+          "field": "原句",
+          "term": "a​b"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "a​b"
+        }
+      ],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "kanaWidth",
+      "operation": "matches",
+      "field": "note",
+      "value": "ｱ",
+      "query": "ア",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "matches": false
+      },
+      "windowsTextParity": true,
+      "facts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "ア"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "ア"
+        },
+        {
+          "contains": false,
+          "field": "core",
+          "term": "ア"
+        },
+        {
+          "contains": false,
+          "field": "ｱ",
+          "term": "ア"
+        },
+        {
+          "contains": false,
+          "field": "Work",
+          "term": "ア"
+        },
+        {
+          "contains": false,
+          "field": "literal",
+          "term": "ア"
+        },
+        {
+          "contains": false,
+          "field": "The bank.",
+          "term": "ア"
+        },
+        {
+          "contains": false,
+          "field": "原句",
+          "term": "ア"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "ア"
+        }
+      ],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "ligature",
+      "operation": "matches",
+      "field": "note",
+      "value": "œuvre",
+      "query": "oeuvre",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "matches": false
+      },
+      "windowsTextParity": false,
+      "facts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "oeuvre"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "oeuvre"
+        },
+        {
+          "contains": false,
+          "field": "core",
+          "term": "oeuvre"
+        },
+        {
+          "contains": false,
+          "field": "œuvre",
+          "term": "oeuvre"
+        },
+        {
+          "contains": false,
+          "field": "Work",
+          "term": "oeuvre"
+        },
+        {
+          "contains": false,
+          "field": "literal",
+          "term": "oeuvre"
+        },
+        {
+          "contains": false,
+          "field": "The bank.",
+          "term": "oeuvre"
+        },
+        {
+          "contains": false,
+          "field": "原句",
+          "term": "oeuvre"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "oeuvre"
+        }
+      ],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "sharpS",
+      "operation": "matches",
+      "field": "note",
+      "value": "straße",
+      "query": "strasse",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "matches": true
+      },
+      "windowsTextParity": true,
+      "facts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "strasse"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "strasse"
+        },
+        {
+          "contains": false,
+          "field": "core",
+          "term": "strasse"
+        },
+        {
+          "contains": true,
+          "field": "straße",
+          "term": "strasse"
+        },
+        {
+          "contains": false,
+          "field": "Work",
+          "term": "strasse"
+        },
+        {
+          "contains": false,
+          "field": "literal",
+          "term": "strasse"
+        },
+        {
+          "contains": false,
+          "field": "The bank.",
+          "term": "strasse"
+        },
+        {
+          "contains": false,
+          "field": "原句",
+          "term": "strasse"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "strasse"
+        }
+      ],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "variation",
+      "operation": "matches",
+      "field": "note",
+      "value": "a️b",
+      "query": "ab",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "matches": true
+      },
+      "windowsTextParity": true,
+      "facts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "ab"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "ab"
+        },
+        {
+          "contains": false,
+          "field": "core",
+          "term": "ab"
+        },
+        {
+          "contains": true,
+          "field": "a️b",
+          "term": "ab"
+        },
+        {
+          "contains": false,
+          "field": "Work",
+          "term": "ab"
+        },
+        {
+          "contains": false,
+          "field": "literal",
+          "term": "ab"
+        },
+        {
+          "contains": false,
+          "field": "The bank.",
+          "term": "ab"
+        },
+        {
+          "contains": false,
+          "field": "原句",
+          "term": "ab"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "ab"
+        }
+      ],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "highlight-discontinuous",
+      "operation": "highlight",
+      "ranges": [
+        [
+          0,
+          4
+        ],
+        [
+          8,
+          6
+        ]
+      ],
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "windowsTextParity": true,
+      "text": "keep me posted",
+      "expected": {
+        "runs": [
+          {
+            "target": true,
+            "text": "keep"
+          },
+          {
+            "target": false,
+            "text": " me "
+          },
+          {
+            "target": true,
+            "text": "posted"
+          }
+        ]
+      },
+      "facts": [],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "highlight-overlap",
+      "operation": "highlight",
+      "ranges": [
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "windowsTextParity": true,
+      "text": "abcd",
+      "expected": {
+        "runs": [
+          {
+            "target": true,
+            "text": "abcd"
+          }
+        ]
+      },
+      "facts": [],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "highlight-invalidGrapheme",
+      "operation": "highlight",
+      "ranges": [
+        [
+          0,
+          1
+        ]
+      ],
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "windowsTextParity": true,
+      "text": "é!",
+      "expected": {
+        "runs": [
+          {
+            "target": false,
+            "text": "é!"
+          }
+        ]
+      },
+      "facts": [],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    },
+    {
+      "id": "highlight-long",
+      "operation": "highlight",
+      "ranges": [
+        [
+          12000,
+          4
+        ]
+      ],
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyNotebookView.swift",
+      "provenanceKind": "source-policy-extension",
+      "windowsTextParity": true,
+      "expected": {
+        "runs": [
+          {
+            "target": false,
+            "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+          },
+          {
+            "target": true,
+            "text": "bank"
+          }
+        ]
+      },
+      "facts": [],
+      "macSecondarySource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "macSenseSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift"
+    }
+  ]
+}

@@ -94,6 +94,7 @@ jobs:
             CotabbyTests/Services/Vocabulary/VocabularyContentTests.swift
             CotabbyTests/Support/Review/ReviewCardPolicyTests.swift
             CotabbyTests/Support/Speech/SpeechTextPolicyTests.swift
+            CotabbyTests/Support/Speech/SpeechVoicePolicyTests.swift
             Cotabby/Services/Vocabulary/VocabularyArchive.swift
             Cotabby/Services/Vocabulary/VocabularyGraphLayoutWorker.swift
             Cotabby/Services/Vocabulary/VocabularyArchive+ReviewCards.swift
@@ -258,3 +259,6 @@ jobs:
 
       - name: Verify complete original speech language resolver with scripted unrestricted scores
         run: python3 scripts/verify-speech-language-macos-parity.py --mac-repo .mac-baseline
+
+      - name: Verify complete original voice ranking with explicit source locale comparison
+        run: python3 scripts/verify-speech-voices-macos-parity.py --mac-repo .mac-baseline

@@ -28,5 +28,6 @@
     <None Include="..\..\fixtures\parity\vocabulary-export-save-v1.json" Link="fixtures\parity\vocabulary-export-save-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\fixtures\parity\vocabulary-export-session-v1.json" Link="fixtures\parity\vocabulary-export-session-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\fixtures\parity\vocabulary-backup-archive-v1.json" Link="fixtures\parity\vocabulary-backup-archive-v1.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\fixtures\parity\vocabulary-restore-v1.json" Link="fixtures\parity\vocabulary-restore-v1.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

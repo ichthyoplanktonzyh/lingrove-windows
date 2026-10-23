@@ -98,9 +98,7 @@ public sealed partial class VocabularyArchive : IAsyncDisposable
         if (index < 0) throw new VocabularyException(VocabularyFailure.InvalidContent);
         entries[index] = change(entries[index]); return document with { Entries = entries };
     }
-    private static IEnumerable<VocabularyImageReference> Images(VocabularyDocument document) => document.Entries.SelectMany(entry => entry.Senses)
-        .SelectMany(sense => VocabularyContentPolicy.Images(sense.Content ?? []).Concat(sense.ReviewLayouts.SelectMany(layout => VocabularyContentPolicy.Images(layout.CustomContent))))
-        .Concat((document.ReviewTemplates ?? []).SelectMany(template => VocabularyContentPolicy.Images(template.Layout.CustomContent)));
+    private static IEnumerable<VocabularyImageReference> Images(VocabularyDocument document) => VocabularyArchiveMediaPolicy.References(document);
 
     private Task<T> Run<T>(Func<T> operation)
     {

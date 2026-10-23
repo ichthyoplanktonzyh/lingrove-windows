@@ -1,0 +1,4720 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "p-overview",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyGraphProjection.swift",
+      "document": {
+        "entries": [
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "banking",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000002",
+                "isSavedWithoutContext": false,
+                "meaning": "银行",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "Workplace",
+                "standaloneMeanings": [],
+                "tags": [
+                  "Finance"
+                ],
+                "updatedAt": -978307200
+              },
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [
+                  {
+                    "completeness": "sentence",
+                    "createdAt": -978307200,
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "meaning": "context",
+                    "meaningOrigin": "captured",
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "河岸",
+                    "translationVariants": []
+                  }
+                ],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "isSavedWithoutContext": false,
+                "meaning": "河岸",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "river",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          },
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "café",
+            "expression": "café",
+            "id": "00000000-0000-0000-0000-00000000000A",
+            "kind": "word",
+            "language": "fr",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-00000000000C",
+                "isSavedWithoutContext": false,
+                "meaning": "coffee",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          }
+        ],
+        "schemaVersion": 3
+      },
+      "expanded": [],
+      "expected": {
+        "edges": [],
+        "headwordCount": 2,
+        "matches": [],
+        "nodes": [
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "label": "bank"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": null
+            },
+            "label": "café"
+          }
+        ],
+        "query": ""
+      },
+      "headFacts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": ""
+        },
+        {
+          "contains": false,
+          "field": "banking",
+          "term": ""
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": ""
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": ""
+        }
+      ],
+      "query": "",
+      "senseFacts": []
+    },
+    {
+      "id": "p-expand-first",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyGraphProjection.swift",
+      "document": {
+        "entries": [
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "banking",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000002",
+                "isSavedWithoutContext": false,
+                "meaning": "银行",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "Workplace",
+                "standaloneMeanings": [],
+                "tags": [
+                  "Finance"
+                ],
+                "updatedAt": -978307200
+              },
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [
+                  {
+                    "completeness": "sentence",
+                    "createdAt": -978307200,
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "meaning": "context",
+                    "meaningOrigin": "captured",
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "河岸",
+                    "translationVariants": []
+                  }
+                ],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "isSavedWithoutContext": false,
+                "meaning": "河岸",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "river",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          },
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "café",
+            "expression": "café",
+            "id": "00000000-0000-0000-0000-00000000000A",
+            "kind": "word",
+            "language": "fr",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-00000000000C",
+                "isSavedWithoutContext": false,
+                "meaning": "coffee",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          }
+        ],
+        "schemaVersion": 3
+      },
+      "expanded": [
+        "00000000-0000-0000-0000-000000000001"
+      ],
+      "expected": {
+        "edges": [
+          {
+            "source": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "target": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000002"
+            }
+          },
+          {
+            "source": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "target": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000004"
+            }
+          }
+        ],
+        "headwordCount": 2,
+        "matches": [],
+        "nodes": [
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "label": "bank"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000002"
+            },
+            "label": "银行"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000004"
+            },
+            "label": "河岸"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": null
+            },
+            "label": "café"
+          }
+        ],
+        "query": ""
+      },
+      "headFacts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": ""
+        },
+        {
+          "contains": false,
+          "field": "banking",
+          "term": ""
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": ""
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": ""
+        }
+      ],
+      "query": "",
+      "senseFacts": []
+    },
+    {
+      "id": "p-expand-all",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyGraphProjection.swift",
+      "document": {
+        "entries": [
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "banking",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000002",
+                "isSavedWithoutContext": false,
+                "meaning": "银行",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "Workplace",
+                "standaloneMeanings": [],
+                "tags": [
+                  "Finance"
+                ],
+                "updatedAt": -978307200
+              },
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [
+                  {
+                    "completeness": "sentence",
+                    "createdAt": -978307200,
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "meaning": "context",
+                    "meaningOrigin": "captured",
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "河岸",
+                    "translationVariants": []
+                  }
+                ],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "isSavedWithoutContext": false,
+                "meaning": "河岸",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "river",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          },
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "café",
+            "expression": "café",
+            "id": "00000000-0000-0000-0000-00000000000A",
+            "kind": "word",
+            "language": "fr",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-00000000000C",
+                "isSavedWithoutContext": false,
+                "meaning": "coffee",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          }
+        ],
+        "schemaVersion": 3
+      },
+      "expanded": [
+        "00000000-0000-0000-0000-000000000001",
+        "00000000-0000-0000-0000-00000000000a"
+      ],
+      "expected": {
+        "edges": [
+          {
+            "source": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "target": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000002"
+            }
+          },
+          {
+            "source": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "target": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000004"
+            }
+          },
+          {
+            "source": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": null
+            },
+            "target": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": "00000000-0000-0000-0000-00000000000c"
+            }
+          }
+        ],
+        "headwordCount": 2,
+        "matches": [],
+        "nodes": [
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "label": "bank"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000002"
+            },
+            "label": "银行"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000004"
+            },
+            "label": "河岸"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": null
+            },
+            "label": "café"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": "00000000-0000-0000-0000-00000000000c"
+            },
+            "label": "coffee"
+          }
+        ],
+        "query": ""
+      },
+      "headFacts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": ""
+        },
+        {
+          "contains": false,
+          "field": "banking",
+          "term": ""
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": ""
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": ""
+        }
+      ],
+      "query": "",
+      "senseFacts": []
+    },
+    {
+      "id": "p-head-query",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyGraphProjection.swift",
+      "document": {
+        "entries": [
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "banking",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000002",
+                "isSavedWithoutContext": false,
+                "meaning": "银行",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "Workplace",
+                "standaloneMeanings": [],
+                "tags": [
+                  "Finance"
+                ],
+                "updatedAt": -978307200
+              },
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [
+                  {
+                    "completeness": "sentence",
+                    "createdAt": -978307200,
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "meaning": "context",
+                    "meaningOrigin": "captured",
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "河岸",
+                    "translationVariants": []
+                  }
+                ],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "isSavedWithoutContext": false,
+                "meaning": "河岸",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "river",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          },
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "café",
+            "expression": "café",
+            "id": "00000000-0000-0000-0000-00000000000A",
+            "kind": "word",
+            "language": "fr",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-00000000000C",
+                "isSavedWithoutContext": false,
+                "meaning": "coffee",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          }
+        ],
+        "schemaVersion": 3
+      },
+      "expanded": [],
+      "expected": {
+        "edges": [
+          {
+            "source": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": null
+            },
+            "target": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": "00000000-0000-0000-0000-00000000000c"
+            }
+          }
+        ],
+        "headwordCount": 2,
+        "matches": [
+          {
+            "entry": "00000000-0000-0000-0000-000000000001",
+            "sense": null
+          }
+        ],
+        "nodes": [
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "label": "bank"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": null
+            },
+            "label": "café"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": "00000000-0000-0000-0000-00000000000c"
+            },
+            "label": "coffee"
+          }
+        ],
+        "query": "BANK"
+      },
+      "headFacts": [
+        {
+          "contains": true,
+          "field": "bank",
+          "term": "BANK"
+        },
+        {
+          "contains": true,
+          "field": "banking",
+          "term": "BANK"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "BANK"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "BANK"
+        }
+      ],
+      "query": "BANK",
+      "senseFacts": [
+        {
+          "contains": true,
+          "field": "bank",
+          "term": "BANK"
+        },
+        {
+          "contains": true,
+          "field": "banking",
+          "term": "BANK"
+        },
+        {
+          "contains": false,
+          "field": "银行",
+          "term": "BANK"
+        },
+        {
+          "contains": false,
+          "field": "Workplace",
+          "term": "BANK"
+        },
+        {
+          "contains": false,
+          "field": "Finance",
+          "term": "BANK"
+        },
+        {
+          "contains": true,
+          "field": "bank",
+          "term": "BANK"
+        },
+        {
+          "contains": true,
+          "field": "banking",
+          "term": "BANK"
+        },
+        {
+          "contains": false,
+          "field": "河岸",
+          "term": "BANK"
+        },
+        {
+          "contains": false,
+          "field": "river",
+          "term": "BANK"
+        },
+        {
+          "contains": true,
+          "field": "The bank.",
+          "term": "BANK"
+        },
+        {
+          "contains": false,
+          "field": "河岸",
+          "term": "BANK"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "BANK"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "BANK"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "BANK"
+        },
+        {
+          "contains": false,
+          "field": "coffee",
+          "term": "BANK"
+        },
+        {
+          "contains": false,
+          "field": "",
+          "term": "BANK"
+        }
+      ]
+    },
+    {
+      "id": "p-head-expanded",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyGraphProjection.swift",
+      "document": {
+        "entries": [
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "banking",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000002",
+                "isSavedWithoutContext": false,
+                "meaning": "银行",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "Workplace",
+                "standaloneMeanings": [],
+                "tags": [
+                  "Finance"
+                ],
+                "updatedAt": -978307200
+              },
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [
+                  {
+                    "completeness": "sentence",
+                    "createdAt": -978307200,
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "meaning": "context",
+                    "meaningOrigin": "captured",
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "河岸",
+                    "translationVariants": []
+                  }
+                ],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "isSavedWithoutContext": false,
+                "meaning": "河岸",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "river",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          },
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "café",
+            "expression": "café",
+            "id": "00000000-0000-0000-0000-00000000000A",
+            "kind": "word",
+            "language": "fr",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-00000000000C",
+                "isSavedWithoutContext": false,
+                "meaning": "coffee",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          }
+        ],
+        "schemaVersion": 3
+      },
+      "expanded": [
+        "00000000-0000-0000-0000-000000000001"
+      ],
+      "expected": {
+        "edges": [
+          {
+            "source": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "target": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000002"
+            }
+          },
+          {
+            "source": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "target": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000004"
+            }
+          },
+          {
+            "source": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": null
+            },
+            "target": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": "00000000-0000-0000-0000-00000000000c"
+            }
+          }
+        ],
+        "headwordCount": 2,
+        "matches": [
+          {
+            "entry": "00000000-0000-0000-0000-000000000001",
+            "sense": null
+          }
+        ],
+        "nodes": [
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "label": "bank"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000002"
+            },
+            "label": "银行"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000004"
+            },
+            "label": "河岸"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": null
+            },
+            "label": "café"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": "00000000-0000-0000-0000-00000000000c"
+            },
+            "label": "coffee"
+          }
+        ],
+        "query": "bank"
+      },
+      "headFacts": [
+        {
+          "contains": true,
+          "field": "bank",
+          "term": "bank"
+        },
+        {
+          "contains": true,
+          "field": "banking",
+          "term": "bank"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "bank"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "bank"
+        }
+      ],
+      "query": "bank",
+      "senseFacts": [
+        {
+          "contains": true,
+          "field": "bank",
+          "term": "bank"
+        },
+        {
+          "contains": true,
+          "field": "banking",
+          "term": "bank"
+        },
+        {
+          "contains": false,
+          "field": "银行",
+          "term": "bank"
+        },
+        {
+          "contains": false,
+          "field": "Workplace",
+          "term": "bank"
+        },
+        {
+          "contains": false,
+          "field": "Finance",
+          "term": "bank"
+        },
+        {
+          "contains": true,
+          "field": "bank",
+          "term": "bank"
+        },
+        {
+          "contains": true,
+          "field": "banking",
+          "term": "bank"
+        },
+        {
+          "contains": false,
+          "field": "河岸",
+          "term": "bank"
+        },
+        {
+          "contains": false,
+          "field": "river",
+          "term": "bank"
+        },
+        {
+          "contains": true,
+          "field": "The bank.",
+          "term": "bank"
+        },
+        {
+          "contains": false,
+          "field": "河岸",
+          "term": "bank"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "bank"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "bank"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "bank"
+        },
+        {
+          "contains": false,
+          "field": "coffee",
+          "term": "bank"
+        },
+        {
+          "contains": false,
+          "field": "",
+          "term": "bank"
+        }
+      ]
+    },
+    {
+      "id": "p-form-query",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyGraphProjection.swift",
+      "document": {
+        "entries": [
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "banking",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000002",
+                "isSavedWithoutContext": false,
+                "meaning": "银行",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "Workplace",
+                "standaloneMeanings": [],
+                "tags": [
+                  "Finance"
+                ],
+                "updatedAt": -978307200
+              },
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [
+                  {
+                    "completeness": "sentence",
+                    "createdAt": -978307200,
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "meaning": "context",
+                    "meaningOrigin": "captured",
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "河岸",
+                    "translationVariants": []
+                  }
+                ],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "isSavedWithoutContext": false,
+                "meaning": "河岸",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "river",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          },
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "café",
+            "expression": "café",
+            "id": "00000000-0000-0000-0000-00000000000A",
+            "kind": "word",
+            "language": "fr",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-00000000000C",
+                "isSavedWithoutContext": false,
+                "meaning": "coffee",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          }
+        ],
+        "schemaVersion": 3
+      },
+      "expanded": [],
+      "expected": {
+        "edges": [
+          {
+            "source": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": null
+            },
+            "target": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": "00000000-0000-0000-0000-00000000000c"
+            }
+          }
+        ],
+        "headwordCount": 2,
+        "matches": [
+          {
+            "entry": "00000000-0000-0000-0000-000000000001",
+            "sense": null
+          }
+        ],
+        "nodes": [
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "label": "bank"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": null
+            },
+            "label": "café"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": "00000000-0000-0000-0000-00000000000c"
+            },
+            "label": "coffee"
+          }
+        ],
+        "query": "banking"
+      },
+      "headFacts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "banking"
+        },
+        {
+          "contains": true,
+          "field": "banking",
+          "term": "banking"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "banking"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "banking"
+        }
+      ],
+      "query": "banking",
+      "senseFacts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "banking"
+        },
+        {
+          "contains": true,
+          "field": "banking",
+          "term": "banking"
+        },
+        {
+          "contains": false,
+          "field": "银行",
+          "term": "banking"
+        },
+        {
+          "contains": false,
+          "field": "Workplace",
+          "term": "banking"
+        },
+        {
+          "contains": false,
+          "field": "Finance",
+          "term": "banking"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "banking"
+        },
+        {
+          "contains": true,
+          "field": "banking",
+          "term": "banking"
+        },
+        {
+          "contains": false,
+          "field": "河岸",
+          "term": "banking"
+        },
+        {
+          "contains": false,
+          "field": "river",
+          "term": "banking"
+        },
+        {
+          "contains": false,
+          "field": "The bank.",
+          "term": "banking"
+        },
+        {
+          "contains": false,
+          "field": "河岸",
+          "term": "banking"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "banking"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "banking"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "banking"
+        },
+        {
+          "contains": false,
+          "field": "coffee",
+          "term": "banking"
+        },
+        {
+          "contains": false,
+          "field": "",
+          "term": "banking"
+        }
+      ]
+    },
+    {
+      "id": "p-sense-query",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyGraphProjection.swift",
+      "document": {
+        "entries": [
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "banking",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000002",
+                "isSavedWithoutContext": false,
+                "meaning": "银行",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "Workplace",
+                "standaloneMeanings": [],
+                "tags": [
+                  "Finance"
+                ],
+                "updatedAt": -978307200
+              },
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [
+                  {
+                    "completeness": "sentence",
+                    "createdAt": -978307200,
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "meaning": "context",
+                    "meaningOrigin": "captured",
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "河岸",
+                    "translationVariants": []
+                  }
+                ],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "isSavedWithoutContext": false,
+                "meaning": "河岸",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "river",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          },
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "café",
+            "expression": "café",
+            "id": "00000000-0000-0000-0000-00000000000A",
+            "kind": "word",
+            "language": "fr",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-00000000000C",
+                "isSavedWithoutContext": false,
+                "meaning": "coffee",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          }
+        ],
+        "schemaVersion": 3
+      },
+      "expanded": [],
+      "expected": {
+        "edges": [
+          {
+            "source": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "target": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000002"
+            }
+          },
+          {
+            "source": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "target": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000004"
+            }
+          },
+          {
+            "source": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": null
+            },
+            "target": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": "00000000-0000-0000-0000-00000000000c"
+            }
+          }
+        ],
+        "headwordCount": 2,
+        "matches": [
+          {
+            "entry": "00000000-0000-0000-0000-000000000001",
+            "sense": "00000000-0000-0000-0000-000000000004"
+          }
+        ],
+        "nodes": [
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "label": "bank"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000002"
+            },
+            "label": "银行"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000004"
+            },
+            "label": "河岸"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": null
+            },
+            "label": "café"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": "00000000-0000-0000-0000-00000000000c"
+            },
+            "label": "coffee"
+          }
+        ],
+        "query": "河岸"
+      },
+      "headFacts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "河岸"
+        },
+        {
+          "contains": false,
+          "field": "banking",
+          "term": "河岸"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "河岸"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "河岸"
+        }
+      ],
+      "query": "河岸",
+      "senseFacts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "河岸"
+        },
+        {
+          "contains": false,
+          "field": "banking",
+          "term": "河岸"
+        },
+        {
+          "contains": false,
+          "field": "银行",
+          "term": "河岸"
+        },
+        {
+          "contains": false,
+          "field": "Workplace",
+          "term": "河岸"
+        },
+        {
+          "contains": false,
+          "field": "Finance",
+          "term": "河岸"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "河岸"
+        },
+        {
+          "contains": false,
+          "field": "banking",
+          "term": "河岸"
+        },
+        {
+          "contains": true,
+          "field": "河岸",
+          "term": "河岸"
+        },
+        {
+          "contains": false,
+          "field": "river",
+          "term": "河岸"
+        },
+        {
+          "contains": false,
+          "field": "The bank.",
+          "term": "河岸"
+        },
+        {
+          "contains": true,
+          "field": "河岸",
+          "term": "河岸"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "河岸"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "河岸"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "河岸"
+        },
+        {
+          "contains": false,
+          "field": "coffee",
+          "term": "河岸"
+        },
+        {
+          "contains": false,
+          "field": "",
+          "term": "河岸"
+        }
+      ]
+    },
+    {
+      "id": "p-note-query",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyGraphProjection.swift",
+      "document": {
+        "entries": [
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "banking",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000002",
+                "isSavedWithoutContext": false,
+                "meaning": "银行",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "Workplace",
+                "standaloneMeanings": [],
+                "tags": [
+                  "Finance"
+                ],
+                "updatedAt": -978307200
+              },
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [
+                  {
+                    "completeness": "sentence",
+                    "createdAt": -978307200,
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "meaning": "context",
+                    "meaningOrigin": "captured",
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "河岸",
+                    "translationVariants": []
+                  }
+                ],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "isSavedWithoutContext": false,
+                "meaning": "河岸",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "river",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          },
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "café",
+            "expression": "café",
+            "id": "00000000-0000-0000-0000-00000000000A",
+            "kind": "word",
+            "language": "fr",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-00000000000C",
+                "isSavedWithoutContext": false,
+                "meaning": "coffee",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          }
+        ],
+        "schemaVersion": 3
+      },
+      "expanded": [],
+      "expected": {
+        "edges": [
+          {
+            "source": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "target": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000002"
+            }
+          },
+          {
+            "source": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "target": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000004"
+            }
+          },
+          {
+            "source": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": null
+            },
+            "target": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": "00000000-0000-0000-0000-00000000000c"
+            }
+          }
+        ],
+        "headwordCount": 2,
+        "matches": [
+          {
+            "entry": "00000000-0000-0000-0000-000000000001",
+            "sense": "00000000-0000-0000-0000-000000000002"
+          }
+        ],
+        "nodes": [
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "label": "bank"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000002"
+            },
+            "label": "银行"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000004"
+            },
+            "label": "河岸"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": null
+            },
+            "label": "café"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": "00000000-0000-0000-0000-00000000000c"
+            },
+            "label": "coffee"
+          }
+        ],
+        "query": "Workplace"
+      },
+      "headFacts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "Workplace"
+        },
+        {
+          "contains": false,
+          "field": "banking",
+          "term": "Workplace"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "Workplace"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "Workplace"
+        }
+      ],
+      "query": "Workplace",
+      "senseFacts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "Workplace"
+        },
+        {
+          "contains": false,
+          "field": "banking",
+          "term": "Workplace"
+        },
+        {
+          "contains": false,
+          "field": "银行",
+          "term": "Workplace"
+        },
+        {
+          "contains": true,
+          "field": "Workplace",
+          "term": "Workplace"
+        },
+        {
+          "contains": false,
+          "field": "Finance",
+          "term": "Workplace"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "Workplace"
+        },
+        {
+          "contains": false,
+          "field": "banking",
+          "term": "Workplace"
+        },
+        {
+          "contains": false,
+          "field": "河岸",
+          "term": "Workplace"
+        },
+        {
+          "contains": false,
+          "field": "river",
+          "term": "Workplace"
+        },
+        {
+          "contains": false,
+          "field": "The bank.",
+          "term": "Workplace"
+        },
+        {
+          "contains": false,
+          "field": "河岸",
+          "term": "Workplace"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "Workplace"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "Workplace"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "Workplace"
+        },
+        {
+          "contains": false,
+          "field": "coffee",
+          "term": "Workplace"
+        },
+        {
+          "contains": false,
+          "field": "",
+          "term": "Workplace"
+        }
+      ]
+    },
+    {
+      "id": "p-usage-query",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyGraphProjection.swift",
+      "document": {
+        "entries": [
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "banking",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000002",
+                "isSavedWithoutContext": false,
+                "meaning": "银行",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "Workplace",
+                "standaloneMeanings": [],
+                "tags": [
+                  "Finance"
+                ],
+                "updatedAt": -978307200
+              },
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [
+                  {
+                    "completeness": "sentence",
+                    "createdAt": -978307200,
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "meaning": "context",
+                    "meaningOrigin": "captured",
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "河岸",
+                    "translationVariants": []
+                  }
+                ],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "isSavedWithoutContext": false,
+                "meaning": "河岸",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "river",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          },
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "café",
+            "expression": "café",
+            "id": "00000000-0000-0000-0000-00000000000A",
+            "kind": "word",
+            "language": "fr",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-00000000000C",
+                "isSavedWithoutContext": false,
+                "meaning": "coffee",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          }
+        ],
+        "schemaVersion": 3
+      },
+      "expanded": [],
+      "expected": {
+        "edges": [
+          {
+            "source": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "target": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000002"
+            }
+          },
+          {
+            "source": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "target": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000004"
+            }
+          },
+          {
+            "source": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": null
+            },
+            "target": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": "00000000-0000-0000-0000-00000000000c"
+            }
+          }
+        ],
+        "headwordCount": 2,
+        "matches": [
+          {
+            "entry": "00000000-0000-0000-0000-000000000001",
+            "sense": "00000000-0000-0000-0000-000000000004"
+          }
+        ],
+        "nodes": [
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "label": "bank"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000002"
+            },
+            "label": "银行"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000004"
+            },
+            "label": "河岸"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": null
+            },
+            "label": "café"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": "00000000-0000-0000-0000-00000000000c"
+            },
+            "label": "coffee"
+          }
+        ],
+        "query": "context"
+      },
+      "headFacts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "context"
+        },
+        {
+          "contains": false,
+          "field": "banking",
+          "term": "context"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "context"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "context"
+        }
+      ],
+      "query": "context",
+      "senseFacts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "context"
+        },
+        {
+          "contains": false,
+          "field": "banking",
+          "term": "context"
+        },
+        {
+          "contains": false,
+          "field": "银行",
+          "term": "context"
+        },
+        {
+          "contains": false,
+          "field": "Workplace",
+          "term": "context"
+        },
+        {
+          "contains": false,
+          "field": "Finance",
+          "term": "context"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "context"
+        },
+        {
+          "contains": false,
+          "field": "banking",
+          "term": "context"
+        },
+        {
+          "contains": false,
+          "field": "河岸",
+          "term": "context"
+        },
+        {
+          "contains": false,
+          "field": "river",
+          "term": "context"
+        },
+        {
+          "contains": false,
+          "field": "The bank.",
+          "term": "context"
+        },
+        {
+          "contains": false,
+          "field": "河岸",
+          "term": "context"
+        },
+        {
+          "contains": true,
+          "field": "context",
+          "term": "context"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "context"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "context"
+        },
+        {
+          "contains": false,
+          "field": "coffee",
+          "term": "context"
+        },
+        {
+          "contains": false,
+          "field": "",
+          "term": "context"
+        }
+      ]
+    },
+    {
+      "id": "p-no-match",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyGraphProjection.swift",
+      "document": {
+        "entries": [
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "banking",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000002",
+                "isSavedWithoutContext": false,
+                "meaning": "银行",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "Workplace",
+                "standaloneMeanings": [],
+                "tags": [
+                  "Finance"
+                ],
+                "updatedAt": -978307200
+              },
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [
+                  {
+                    "completeness": "sentence",
+                    "createdAt": -978307200,
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "meaning": "context",
+                    "meaningOrigin": "captured",
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "河岸",
+                    "translationVariants": []
+                  }
+                ],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "isSavedWithoutContext": false,
+                "meaning": "河岸",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "river",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          },
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "café",
+            "expression": "café",
+            "id": "00000000-0000-0000-0000-00000000000A",
+            "kind": "word",
+            "language": "fr",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-00000000000C",
+                "isSavedWithoutContext": false,
+                "meaning": "coffee",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          }
+        ],
+        "schemaVersion": 3
+      },
+      "expanded": [],
+      "expected": {
+        "edges": [
+          {
+            "source": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "target": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000002"
+            }
+          },
+          {
+            "source": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "target": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000004"
+            }
+          },
+          {
+            "source": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": null
+            },
+            "target": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": "00000000-0000-0000-0000-00000000000c"
+            }
+          }
+        ],
+        "headwordCount": 2,
+        "matches": [],
+        "nodes": [
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "label": "bank"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000002"
+            },
+            "label": "银行"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000004"
+            },
+            "label": "河岸"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": null
+            },
+            "label": "café"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": "00000000-0000-0000-0000-00000000000c"
+            },
+            "label": "coffee"
+          }
+        ],
+        "query": "not found"
+      },
+      "headFacts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "not found"
+        },
+        {
+          "contains": false,
+          "field": "banking",
+          "term": "not found"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "not found"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "not found"
+        }
+      ],
+      "query": "not found",
+      "senseFacts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "not"
+        },
+        {
+          "contains": false,
+          "field": "banking",
+          "term": "not"
+        },
+        {
+          "contains": false,
+          "field": "银行",
+          "term": "not"
+        },
+        {
+          "contains": false,
+          "field": "Workplace",
+          "term": "not"
+        },
+        {
+          "contains": false,
+          "field": "Finance",
+          "term": "not"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "found"
+        },
+        {
+          "contains": false,
+          "field": "banking",
+          "term": "found"
+        },
+        {
+          "contains": false,
+          "field": "银行",
+          "term": "found"
+        },
+        {
+          "contains": false,
+          "field": "Workplace",
+          "term": "found"
+        },
+        {
+          "contains": false,
+          "field": "Finance",
+          "term": "found"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "not"
+        },
+        {
+          "contains": false,
+          "field": "banking",
+          "term": "not"
+        },
+        {
+          "contains": false,
+          "field": "河岸",
+          "term": "not"
+        },
+        {
+          "contains": false,
+          "field": "river",
+          "term": "not"
+        },
+        {
+          "contains": false,
+          "field": "The bank.",
+          "term": "not"
+        },
+        {
+          "contains": false,
+          "field": "河岸",
+          "term": "not"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "not"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "found"
+        },
+        {
+          "contains": false,
+          "field": "banking",
+          "term": "found"
+        },
+        {
+          "contains": false,
+          "field": "河岸",
+          "term": "found"
+        },
+        {
+          "contains": false,
+          "field": "river",
+          "term": "found"
+        },
+        {
+          "contains": false,
+          "field": "The bank.",
+          "term": "found"
+        },
+        {
+          "contains": false,
+          "field": "河岸",
+          "term": "found"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "found"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "not"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "not"
+        },
+        {
+          "contains": false,
+          "field": "coffee",
+          "term": "not"
+        },
+        {
+          "contains": false,
+          "field": "",
+          "term": "not"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "found"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "found"
+        },
+        {
+          "contains": false,
+          "field": "coffee",
+          "term": "found"
+        },
+        {
+          "contains": false,
+          "field": "",
+          "term": "found"
+        }
+      ]
+    },
+    {
+      "id": "p-trim-query",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyGraphProjection.swift",
+      "document": {
+        "entries": [
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "banking",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000002",
+                "isSavedWithoutContext": false,
+                "meaning": "银行",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "Workplace",
+                "standaloneMeanings": [],
+                "tags": [
+                  "Finance"
+                ],
+                "updatedAt": -978307200
+              },
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [
+                  {
+                    "completeness": "sentence",
+                    "createdAt": -978307200,
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "meaning": "context",
+                    "meaningOrigin": "captured",
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "河岸",
+                    "translationVariants": []
+                  }
+                ],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "isSavedWithoutContext": false,
+                "meaning": "河岸",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "river",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          },
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "café",
+            "expression": "café",
+            "id": "00000000-0000-0000-0000-00000000000A",
+            "kind": "word",
+            "language": "fr",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-00000000000C",
+                "isSavedWithoutContext": false,
+                "meaning": "coffee",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          }
+        ],
+        "schemaVersion": 3
+      },
+      "expanded": [],
+      "expected": {
+        "edges": [
+          {
+            "source": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": null
+            },
+            "target": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": "00000000-0000-0000-0000-00000000000c"
+            }
+          }
+        ],
+        "headwordCount": 2,
+        "matches": [
+          {
+            "entry": "00000000-0000-0000-0000-000000000001",
+            "sense": null
+          }
+        ],
+        "nodes": [
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "label": "bank"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": null
+            },
+            "label": "café"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": "00000000-0000-0000-0000-00000000000c"
+            },
+            "label": "coffee"
+          }
+        ],
+        "query": "BANK"
+      },
+      "headFacts": [
+        {
+          "contains": true,
+          "field": "bank",
+          "term": "BANK"
+        },
+        {
+          "contains": true,
+          "field": "banking",
+          "term": "BANK"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "BANK"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "BANK"
+        }
+      ],
+      "query": "​ BANK\n",
+      "senseFacts": [
+        {
+          "contains": true,
+          "field": "bank",
+          "term": "BANK"
+        },
+        {
+          "contains": true,
+          "field": "banking",
+          "term": "BANK"
+        },
+        {
+          "contains": false,
+          "field": "银行",
+          "term": "BANK"
+        },
+        {
+          "contains": false,
+          "field": "Workplace",
+          "term": "BANK"
+        },
+        {
+          "contains": false,
+          "field": "Finance",
+          "term": "BANK"
+        },
+        {
+          "contains": true,
+          "field": "bank",
+          "term": "BANK"
+        },
+        {
+          "contains": true,
+          "field": "banking",
+          "term": "BANK"
+        },
+        {
+          "contains": false,
+          "field": "河岸",
+          "term": "BANK"
+        },
+        {
+          "contains": false,
+          "field": "river",
+          "term": "BANK"
+        },
+        {
+          "contains": true,
+          "field": "The bank.",
+          "term": "BANK"
+        },
+        {
+          "contains": false,
+          "field": "河岸",
+          "term": "BANK"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "BANK"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "BANK"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "BANK"
+        },
+        {
+          "contains": false,
+          "field": "coffee",
+          "term": "BANK"
+        },
+        {
+          "contains": false,
+          "field": "",
+          "term": "BANK"
+        }
+      ]
+    },
+    {
+      "id": "p-blank-query",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyGraphProjection.swift",
+      "document": {
+        "entries": [
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "banking",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000002",
+                "isSavedWithoutContext": false,
+                "meaning": "银行",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "Workplace",
+                "standaloneMeanings": [],
+                "tags": [
+                  "Finance"
+                ],
+                "updatedAt": -978307200
+              },
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [
+                  {
+                    "completeness": "sentence",
+                    "createdAt": -978307200,
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "meaning": "context",
+                    "meaningOrigin": "captured",
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "河岸",
+                    "translationVariants": []
+                  }
+                ],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "isSavedWithoutContext": false,
+                "meaning": "河岸",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "river",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          },
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "café",
+            "expression": "café",
+            "id": "00000000-0000-0000-0000-00000000000A",
+            "kind": "word",
+            "language": "fr",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-00000000000C",
+                "isSavedWithoutContext": false,
+                "meaning": "coffee",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          }
+        ],
+        "schemaVersion": 3
+      },
+      "expanded": [],
+      "expected": {
+        "edges": [],
+        "headwordCount": 2,
+        "matches": [],
+        "nodes": [
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "label": "bank"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": null
+            },
+            "label": "café"
+          }
+        ],
+        "query": ""
+      },
+      "headFacts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": ""
+        },
+        {
+          "contains": false,
+          "field": "banking",
+          "term": ""
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": ""
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": ""
+        }
+      ],
+      "query": "​ \n\t",
+      "senseFacts": []
+    },
+    {
+      "id": "p-head-accent",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyGraphProjection.swift",
+      "document": {
+        "entries": [
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "café",
+            "expression": "café",
+            "id": "00000000-0000-0000-0000-00000000000A",
+            "kind": "word",
+            "language": "fr",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-00000000000C",
+                "isSavedWithoutContext": false,
+                "meaning": "coffee",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          }
+        ],
+        "schemaVersion": 3
+      },
+      "expanded": [],
+      "expected": {
+        "edges": [
+          {
+            "source": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": null
+            },
+            "target": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": "00000000-0000-0000-0000-00000000000c"
+            }
+          }
+        ],
+        "headwordCount": 1,
+        "matches": [
+          {
+            "entry": "00000000-0000-0000-0000-00000000000a",
+            "sense": "00000000-0000-0000-0000-00000000000c"
+          }
+        ],
+        "nodes": [
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": null
+            },
+            "label": "café"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": "00000000-0000-0000-0000-00000000000c"
+            },
+            "label": "coffee"
+          }
+        ],
+        "query": "cafe"
+      },
+      "headFacts": [
+        {
+          "contains": false,
+          "field": "café",
+          "term": "cafe"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "cafe"
+        }
+      ],
+      "query": "cafe",
+      "senseFacts": [
+        {
+          "contains": true,
+          "field": "café",
+          "term": "cafe"
+        },
+        {
+          "contains": true,
+          "field": "café",
+          "term": "cafe"
+        },
+        {
+          "contains": false,
+          "field": "coffee",
+          "term": "cafe"
+        },
+        {
+          "contains": false,
+          "field": "",
+          "term": "cafe"
+        }
+      ]
+    },
+    {
+      "id": "p-sense-accent",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyGraphProjection.swift",
+      "document": {
+        "entries": [
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "banking",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000002",
+                "isSavedWithoutContext": false,
+                "meaning": "café",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "Workplace",
+                "standaloneMeanings": [],
+                "tags": [
+                  "Finance"
+                ],
+                "updatedAt": -978307200
+              },
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [
+                  {
+                    "completeness": "sentence",
+                    "createdAt": -978307200,
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "meaning": "context",
+                    "meaningOrigin": "captured",
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "河岸",
+                    "translationVariants": []
+                  }
+                ],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "isSavedWithoutContext": false,
+                "meaning": "河岸",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "river",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          },
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "café",
+            "expression": "café",
+            "id": "00000000-0000-0000-0000-00000000000A",
+            "kind": "word",
+            "language": "fr",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-00000000000C",
+                "isSavedWithoutContext": false,
+                "meaning": "coffee",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          }
+        ],
+        "schemaVersion": 3
+      },
+      "expanded": [],
+      "expected": {
+        "edges": [
+          {
+            "source": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "target": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000002"
+            }
+          },
+          {
+            "source": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "target": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000004"
+            }
+          },
+          {
+            "source": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": null
+            },
+            "target": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": "00000000-0000-0000-0000-00000000000c"
+            }
+          }
+        ],
+        "headwordCount": 2,
+        "matches": [
+          {
+            "entry": "00000000-0000-0000-0000-000000000001",
+            "sense": "00000000-0000-0000-0000-000000000002"
+          },
+          {
+            "entry": "00000000-0000-0000-0000-00000000000a",
+            "sense": "00000000-0000-0000-0000-00000000000c"
+          }
+        ],
+        "nodes": [
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "label": "bank"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000002"
+            },
+            "label": "café"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000004"
+            },
+            "label": "河岸"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": null
+            },
+            "label": "café"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": "00000000-0000-0000-0000-00000000000c"
+            },
+            "label": "coffee"
+          }
+        ],
+        "query": "cafe"
+      },
+      "headFacts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "cafe"
+        },
+        {
+          "contains": false,
+          "field": "banking",
+          "term": "cafe"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "cafe"
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": "cafe"
+        }
+      ],
+      "query": "cafe",
+      "senseFacts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "cafe"
+        },
+        {
+          "contains": false,
+          "field": "banking",
+          "term": "cafe"
+        },
+        {
+          "contains": true,
+          "field": "café",
+          "term": "cafe"
+        },
+        {
+          "contains": false,
+          "field": "Workplace",
+          "term": "cafe"
+        },
+        {
+          "contains": false,
+          "field": "Finance",
+          "term": "cafe"
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": "cafe"
+        },
+        {
+          "contains": false,
+          "field": "banking",
+          "term": "cafe"
+        },
+        {
+          "contains": false,
+          "field": "河岸",
+          "term": "cafe"
+        },
+        {
+          "contains": false,
+          "field": "river",
+          "term": "cafe"
+        },
+        {
+          "contains": false,
+          "field": "The bank.",
+          "term": "cafe"
+        },
+        {
+          "contains": false,
+          "field": "河岸",
+          "term": "cafe"
+        },
+        {
+          "contains": false,
+          "field": "context",
+          "term": "cafe"
+        },
+        {
+          "contains": true,
+          "field": "café",
+          "term": "cafe"
+        },
+        {
+          "contains": true,
+          "field": "café",
+          "term": "cafe"
+        },
+        {
+          "contains": false,
+          "field": "coffee",
+          "term": "cafe"
+        },
+        {
+          "contains": false,
+          "field": "",
+          "term": "cafe"
+        }
+      ]
+    },
+    {
+      "id": "p-order",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyGraphProjection.swift",
+      "document": {
+        "entries": [
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "café",
+            "expression": "café",
+            "id": "00000000-0000-0000-0000-00000000000A",
+            "kind": "word",
+            "language": "fr",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-00000000000C",
+                "isSavedWithoutContext": false,
+                "meaning": "coffee",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          },
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "banking",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000002",
+                "isSavedWithoutContext": false,
+                "meaning": "银行",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "Workplace",
+                "standaloneMeanings": [],
+                "tags": [
+                  "Finance"
+                ],
+                "updatedAt": -978307200
+              },
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [
+                  {
+                    "completeness": "sentence",
+                    "createdAt": -978307200,
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "meaning": "context",
+                    "meaningOrigin": "captured",
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "河岸",
+                    "translationVariants": []
+                  }
+                ],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "isSavedWithoutContext": false,
+                "meaning": "河岸",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "river",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          }
+        ],
+        "schemaVersion": 3
+      },
+      "expanded": [
+        "00000000-0000-0000-0000-000000000001",
+        "00000000-0000-0000-0000-00000000000a"
+      ],
+      "expected": {
+        "edges": [
+          {
+            "source": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "target": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000002"
+            }
+          },
+          {
+            "source": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "target": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000004"
+            }
+          },
+          {
+            "source": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": null
+            },
+            "target": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": "00000000-0000-0000-0000-00000000000c"
+            }
+          }
+        ],
+        "headwordCount": 2,
+        "matches": [],
+        "nodes": [
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "label": "bank"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000002"
+            },
+            "label": "银行"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000004"
+            },
+            "label": "河岸"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": null
+            },
+            "label": "café"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": "00000000-0000-0000-0000-00000000000c"
+            },
+            "label": "coffee"
+          }
+        ],
+        "query": ""
+      },
+      "headFacts": [
+        {
+          "contains": false,
+          "field": "café",
+          "term": ""
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": ""
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": ""
+        },
+        {
+          "contains": false,
+          "field": "banking",
+          "term": ""
+        }
+      ],
+      "query": "",
+      "senseFacts": []
+    },
+    {
+      "id": "p-reverse-senses",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyGraphProjection.swift",
+      "document": {
+        "entries": [
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "banking",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [
+                  {
+                    "completeness": "sentence",
+                    "createdAt": -978307200,
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "meaning": "context",
+                    "meaningOrigin": "captured",
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "河岸",
+                    "translationVariants": []
+                  }
+                ],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "isSavedWithoutContext": false,
+                "meaning": "河岸",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "river",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              },
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000002",
+                "isSavedWithoutContext": false,
+                "meaning": "银行",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "Workplace",
+                "standaloneMeanings": [],
+                "tags": [
+                  "Finance"
+                ],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          },
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "café",
+            "expression": "café",
+            "id": "00000000-0000-0000-0000-00000000000A",
+            "kind": "word",
+            "language": "fr",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-00000000000C",
+                "isSavedWithoutContext": false,
+                "meaning": "coffee",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          }
+        ],
+        "schemaVersion": 3
+      },
+      "expanded": [
+        "00000000-0000-0000-0000-000000000001"
+      ],
+      "expected": {
+        "edges": [
+          {
+            "source": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "target": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000004"
+            }
+          },
+          {
+            "source": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "target": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000002"
+            }
+          }
+        ],
+        "headwordCount": 2,
+        "matches": [],
+        "nodes": [
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "label": "bank"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000004"
+            },
+            "label": "河岸"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000002"
+            },
+            "label": "银行"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": null
+            },
+            "label": "café"
+          }
+        ],
+        "query": ""
+      },
+      "headFacts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": ""
+        },
+        {
+          "contains": false,
+          "field": "banking",
+          "term": ""
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": ""
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": ""
+        }
+      ],
+      "query": "",
+      "senseFacts": []
+    },
+    {
+      "id": "p-empty",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyGraphProjection.swift",
+      "document": {
+        "entries": [],
+        "schemaVersion": 3
+      },
+      "expanded": [],
+      "expected": {
+        "edges": [],
+        "headwordCount": 0,
+        "matches": [],
+        "nodes": [],
+        "query": ""
+      },
+      "headFacts": [],
+      "query": "",
+      "senseFacts": []
+    },
+    {
+      "id": "p-duplicate-labels",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyGraphProjection.swift",
+      "document": {
+        "entries": [
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "banking",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000002",
+                "isSavedWithoutContext": false,
+                "meaning": "same",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "Workplace",
+                "standaloneMeanings": [],
+                "tags": [
+                  "Finance"
+                ],
+                "updatedAt": -978307200
+              },
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [
+                  {
+                    "completeness": "sentence",
+                    "createdAt": -978307200,
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "meaning": "context",
+                    "meaningOrigin": "captured",
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "河岸",
+                    "translationVariants": []
+                  }
+                ],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "isSavedWithoutContext": false,
+                "meaning": "河岸",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "river",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          },
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "café",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-00000000000A",
+            "kind": "word",
+            "language": "fr",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-00000000000C",
+                "isSavedWithoutContext": false,
+                "meaning": "same",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          }
+        ],
+        "schemaVersion": 3
+      },
+      "expanded": [
+        "00000000-0000-0000-0000-000000000001",
+        "00000000-0000-0000-0000-00000000000a"
+      ],
+      "expected": {
+        "edges": [
+          {
+            "source": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "target": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000002"
+            }
+          },
+          {
+            "source": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "target": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000004"
+            }
+          },
+          {
+            "source": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": null
+            },
+            "target": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": "00000000-0000-0000-0000-00000000000c"
+            }
+          }
+        ],
+        "headwordCount": 2,
+        "matches": [],
+        "nodes": [
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "label": "bank"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000002"
+            },
+            "label": "same"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000004"
+            },
+            "label": "河岸"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": null
+            },
+            "label": "bank"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": "00000000-0000-0000-0000-00000000000c"
+            },
+            "label": "same"
+          }
+        ],
+        "query": ""
+      },
+      "headFacts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": ""
+        },
+        {
+          "contains": false,
+          "field": "banking",
+          "term": ""
+        },
+        {
+          "contains": false,
+          "field": "bank",
+          "term": ""
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": ""
+        }
+      ],
+      "query": "",
+      "senseFacts": []
+    },
+    {
+      "id": "p-projected-sense",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyGraphProjection.swift",
+      "document": {
+        "entries": [
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "banking",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [
+                  {
+                    "completeness": "sentence",
+                    "createdAt": -978307200,
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "meaning": "context",
+                    "meaningOrigin": "captured",
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "河岸",
+                    "translationVariants": []
+                  }
+                ],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "isSavedWithoutContext": false,
+                "meaning": "河岸",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "river",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          },
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "café",
+            "expression": "café",
+            "id": "00000000-0000-0000-0000-00000000000A",
+            "kind": "word",
+            "language": "fr",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-00000000000C",
+                "isSavedWithoutContext": false,
+                "meaning": "coffee",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          }
+        ],
+        "schemaVersion": 3
+      },
+      "expanded": [
+        "00000000-0000-0000-0000-000000000001"
+      ],
+      "expected": {
+        "edges": [
+          {
+            "source": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "target": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000004"
+            }
+          }
+        ],
+        "headwordCount": 2,
+        "matches": [],
+        "nodes": [
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "label": "bank"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000004"
+            },
+            "label": "河岸"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": null
+            },
+            "label": "café"
+          }
+        ],
+        "query": ""
+      },
+      "headFacts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": ""
+        },
+        {
+          "contains": false,
+          "field": "banking",
+          "term": ""
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": ""
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": ""
+        }
+      ],
+      "query": "",
+      "senseFacts": []
+    },
+    {
+      "id": "p-title-content",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyGraphProjection.swift",
+      "document": {
+        "entries": [
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "banking",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "content": [
+                  {
+                    "content": {
+                      "text": {
+                        "_0": {
+                          "bold": false,
+                          "italic": false,
+                          "style": "paragraph",
+                          "text": "  authored title  "
+                        }
+                      }
+                    },
+                    "id": "00000000-0000-0000-0000-000000000014"
+                  }
+                ],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000002",
+                "isSavedWithoutContext": false,
+                "meaning": "",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "Workplace",
+                "standaloneMeanings": [],
+                "tags": [
+                  "Finance"
+                ],
+                "updatedAt": -978307200
+              },
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [
+                  {
+                    "completeness": "sentence",
+                    "createdAt": -978307200,
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "meaning": "context",
+                    "meaningOrigin": "captured",
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "河岸",
+                    "translationVariants": []
+                  }
+                ],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "isSavedWithoutContext": false,
+                "meaning": "河岸",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "river",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          },
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "café",
+            "expression": "café",
+            "id": "00000000-0000-0000-0000-00000000000A",
+            "kind": "word",
+            "language": "fr",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-00000000000C",
+                "isSavedWithoutContext": false,
+                "meaning": "coffee",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          }
+        ],
+        "schemaVersion": 3
+      },
+      "expanded": [
+        "00000000-0000-0000-0000-000000000001"
+      ],
+      "expected": {
+        "edges": [
+          {
+            "source": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "target": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000002"
+            }
+          },
+          {
+            "source": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "target": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000004"
+            }
+          }
+        ],
+        "headwordCount": 2,
+        "matches": [],
+        "nodes": [
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": null
+            },
+            "label": "bank"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000002"
+            },
+            "label": "  authored title  "
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-000000000001",
+              "sense": "00000000-0000-0000-0000-000000000004"
+            },
+            "label": "河岸"
+          },
+          {
+            "id": {
+              "entry": "00000000-0000-0000-0000-00000000000a",
+              "sense": null
+            },
+            "label": "café"
+          }
+        ],
+        "query": ""
+      },
+      "headFacts": [
+        {
+          "contains": false,
+          "field": "bank",
+          "term": ""
+        },
+        {
+          "contains": false,
+          "field": "banking",
+          "term": ""
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": ""
+        },
+        {
+          "contains": false,
+          "field": "café",
+          "term": ""
+        }
+      ],
+      "query": "",
+      "senseFacts": []
+    },
+    {
+      "id": "s-default",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "expected": {
+        "center": 0.008,
+        "labels": "automatic",
+        "linkDistance": 105,
+        "linkStrength": 0.14,
+        "linkWidth": 1,
+        "nodeSize": 17,
+        "repulsion": 320
+      }
+    },
+    {
+      "id": "s-low",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "expected": {
+        "center": 0,
+        "labels": "automatic",
+        "linkDistance": 60,
+        "linkStrength": 0,
+        "linkWidth": 0.5,
+        "nodeSize": 8,
+        "repulsion": 10
+      }
+    },
+    {
+      "id": "s-high",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "expected": {
+        "center": 0.08,
+        "labels": "automatic",
+        "linkDistance": 240,
+        "linkStrength": 0.7,
+        "linkWidth": 3,
+        "nodeSize": 28,
+        "repulsion": 1200
+      }
+    },
+    {
+      "id": "s-finite",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "expected": {
+        "center": 0.04,
+        "labels": "automatic",
+        "linkDistance": 140,
+        "linkStrength": 0.3,
+        "linkWidth": 2.3,
+        "nodeSize": 21.5,
+        "repulsion": 333
+      }
+    },
+    {
+      "id": "s-nonfinite",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "expected": {
+        "center": 0.008,
+        "labels": "automatic",
+        "linkDistance": 105,
+        "linkStrength": 0.14,
+        "linkWidth": 1,
+        "nodeSize": 17,
+        "repulsion": 320
+      }
+    },
+    {
+      "id": "s-label-all",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "expected": {
+        "center": 0.008,
+        "labels": "all",
+        "linkDistance": 105,
+        "linkStrength": 0.14,
+        "linkWidth": 1,
+        "nodeSize": 17,
+        "repulsion": 320
+      }
+    },
+    {
+      "id": "s-label-focused",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "expected": {
+        "center": 0.008,
+        "labels": "focused",
+        "linkDistance": 105,
+        "linkStrength": 0.14,
+        "linkWidth": 1,
+        "nodeSize": 17,
+        "repulsion": 320
+      }
+    },
+    {
+      "id": "c-screen",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "expected": {
+        "point": [
+          460,
+          280
+        ]
+      }
+    },
+    {
+      "id": "c-world",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "expected": {
+        "point": [
+          -178.5,
+          -13.5
+        ]
+      }
+    },
+    {
+      "id": "c-zoom-anchor",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "expected": {
+        "after": [
+          -327,
+          -67
+        ],
+        "before": [
+          -327,
+          -67
+        ],
+        "camera": {
+          "offset": [
+            327,
+            67
+          ],
+          "scale": 2
+        }
+      }
+    },
+    {
+      "id": "c-zoom-min",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "expected": {
+        "after": [
+          -327.0000000000001,
+          -66.99999999999999
+        ],
+        "before": [
+          -327,
+          -67
+        ],
+        "camera": {
+          "offset": [
+            -277.95,
+            -56.95
+          ],
+          "scale": 0.15
+        }
+      }
+    },
+    {
+      "id": "c-zoom-max",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "expected": {
+        "after": [
+          -327,
+          -67
+        ],
+        "before": [
+          -327,
+          -67
+        ],
+        "camera": {
+          "offset": [
+            981,
+            201
+          ],
+          "scale": 4
+        }
+      }
+    },
+    {
+      "id": "c-zoom-zero",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "expected": {
+        "after": [
+          -327,
+          -67
+        ],
+        "before": [
+          -327,
+          -67
+        ],
+        "camera": {
+          "offset": [
+            0,
+            0
+          ],
+          "scale": 1
+        }
+      }
+    },
+    {
+      "id": "c-zoom-negative",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "expected": {
+        "after": [
+          -327,
+          -67
+        ],
+        "before": [
+          -327,
+          -67
+        ],
+        "camera": {
+          "offset": [
+            0,
+            0
+          ],
+          "scale": 1
+        }
+      }
+    },
+    {
+      "id": "c-zoom-nan",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "expected": {
+        "after": [
+          -327,
+          -67
+        ],
+        "before": [
+          -327,
+          -67
+        ],
+        "camera": {
+          "offset": [
+            0,
+            0
+          ],
+          "scale": 1
+        }
+      }
+    },
+    {
+      "id": "c-zoom-infinite",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "expected": {
+        "after": [
+          -327,
+          -67
+        ],
+        "before": [
+          -327,
+          -67
+        ],
+        "camera": {
+          "offset": [
+            0,
+            0
+          ],
+          "scale": 1
+        }
+      }
+    },
+    {
+      "id": "c-fit-empty",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "expected": {
+        "camera": {
+          "offset": [
+            12,
+            34
+          ],
+          "scale": 1.3
+        },
+        "screen": []
+      }
+    },
+    {
+      "id": "c-fit-single",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "expected": {
+        "camera": {
+          "offset": [
+            -720,
+            90
+          ],
+          "scale": 1.8
+        },
+        "screen": [
+          [
+            450,
+            300
+          ]
+        ]
+      }
+    },
+    {
+      "id": "c-fit-pair",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "expected": {
+        "camera": {
+          "offset": [
+            -90.009,
+            22.5
+          ],
+          "scale": 1.8
+        },
+        "screen": [
+          [
+            179.99099999999999,
+            412.5
+          ],
+          [
+            719.991,
+            187.5
+          ]
+        ]
+      }
+    },
+    {
+      "id": "c-fit-reverse",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "expected": {
+        "camera": {
+          "offset": [
+            -90,
+            22.49100000000001
+          ],
+          "scale": 1.8
+        },
+        "screen": [
+          [
+            720,
+            187.49099999999999
+          ],
+          [
+            180,
+            412.491
+          ]
+        ]
+      }
+    },
+    {
+      "id": "c-fit-small",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "expected": {
+        "camera": {
+          "offset": [
+            -7.500749999999999,
+            1.875
+          ],
+          "scale": 0.15
+        },
+        "screen": [
+          [
+            27.499250000000004,
+            49.375
+          ],
+          [
+            72.49925,
+            30.625
+          ]
+        ]
+      }
+    },
+    {
+      "id": "c-fit-zero-width",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "expected": {
+        "camera": {
+          "offset": [
+            0,
+            0
+          ],
+          "scale": 1
+        },
+        "screen": [
+          [
+            -100,
+            350
+          ],
+          [
+            200,
+            225
+          ]
+        ]
+      }
+    },
+    {
+      "id": "c-fit-zero-height",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "expected": {
+        "camera": {
+          "offset": [
+            0,
+            0
+          ],
+          "scale": 1
+        },
+        "screen": [
+          [
+            350,
+            50
+          ],
+          [
+            650,
+            -75
+          ]
+        ]
+      }
+    },
+    {
+      "id": "c-fit-large",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "expected": {
+        "camera": {
+          "offset": [
+            -0.0007500000001527951,
+            -0.0007500000000163709
+          ],
+          "scale": 0.15
+        },
+        "screen": [
+          [
+            -1050.0007500000002,
+            -450.00075000000004
+          ],
+          [
+            1949.9992499999998,
+            1049.9992499999998
+          ]
+        ]
+      }
+    },
+    {
+      "id": "c-fit-repeated",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "expected": {
+        "camera": {
+          "offset": [
+            -720.009,
+            89.99100000000001
+          ],
+          "scale": 1.8
+        },
+        "screen": [
+          [
+            449.991,
+            299.991
+          ],
+          [
+            449.991,
+            299.991
+          ]
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+using System.Collections.Frozen;
+using Cotabby.Core.Support;
+
+namespace Cotabby.Core.Vocabulary;
+
+/// <summary>Window-local graph identity is the original durable headword or exact sense identity,
+/// never its label/position. A null sense identifies the headword; graph values invent no relation.</summary>
+public readonly record struct VocabularyGraphNodeId(Guid EntryId, Guid? SenseId = null)
+{
+    public VocabularySelection? Selection => SenseId is { } id ? new(EntryId, id) : null;
+    public static VocabularyGraphNodeId Headword(Guid id) => new(id);
+    public static VocabularyGraphNodeId Sense(VocabularySelection selection) => new(selection.EntryId, selection.SenseId);
+}
+
+/// <summary>Projection-owned ID and literal display label travel together in a copied snapshot;
+/// equal labels do not collapse distinct learning items, and labels retain canonical equality.</summary>
+public sealed record VocabularyGraphNode(VocabularyGraphNodeId Id, string Label)
+{
+    public bool Equals(VocabularyGraphNode? other) => other is not null && Id == other.Id && CollectionValues.Same(Label, other.Label);
+    public override int GetHashCode() => HashCode.Combine(Id, CollectionValues.StringHash(Label));
+}
+/// <summary>A copied explicit ownership branch, with no inferred similarity or model relationship.</summary>
+public readonly record struct VocabularyGraphEdge(VocabularyGraphNodeId Source, VocabularyGraphNodeId Target);
+
+/// <summary>Detached rendering projection owned by one notebook window. Rich content, archive
+/// handles and model sessions stay outside this graph and any future per-frame simulation.</summary>
+public sealed record VocabularyGraphSnapshot
+{
+    private IReadOnlyList<VocabularyGraphNode> _nodes = [];
+    private IReadOnlyList<VocabularyGraphEdge> _edges = [];
+    private IReadOnlySet<VocabularyGraphNodeId> _matches = FrozenSet<VocabularyGraphNodeId>.Empty;
+    public IReadOnlyList<VocabularyGraphNode> Nodes { get => _nodes; init => _nodes = CollectionValues.List(value); }
+    public IReadOnlyList<VocabularyGraphEdge> Edges { get => _edges; init => _edges = CollectionValues.List(value); }
+    public int HeadwordCount { get; init; }
+    public IReadOnlySet<VocabularyGraphNodeId> Matches { get => _matches; init => _matches = value.ToFrozenSet(); }
+    public string SearchQuery { get; init; } = "";
+    public bool Equals(VocabularyGraphSnapshot? other) => other is not null && HeadwordCount == other.HeadwordCount
+        && CollectionValues.Same(SearchQuery, other.SearchQuery) && CollectionValues.SequenceEqual(Nodes, other.Nodes)
+        && CollectionValues.SequenceEqual(Edges, other.Edges) && CollectionValues.SetEqual(Matches, other.Matches);
+    public override int GetHashCode() => HashCode.Combine(HeadwordCount, CollectionValues.StringHash(SearchQuery),
+        CollectionValues.SequenceHash(Nodes), CollectionValues.SequenceHash(Edges), CollectionValues.SetHash(Matches));
+}
+
+/// <summary>Copied layout output. A future serialized worker owns the mutable solver; consumers
+/// receive these immutable positions and running state, without borrowing native buffers.</summary>
+public sealed record VocabularyGraphFrame
+{
+    private IReadOnlyDictionary<VocabularyGraphNodeId, VocabularyGraphPoint> _positions = CollectionValues.Map<VocabularyGraphNodeId, VocabularyGraphPoint>([]);
+    public IReadOnlyDictionary<VocabularyGraphNodeId, VocabularyGraphPoint> Positions { get => _positions; init => _positions = CollectionValues.Map(value); }
+    public bool IsRunning { get; init; }
+    public bool Equals(VocabularyGraphFrame? other) => other is not null && IsRunning == other.IsRunning && CollectionValues.MapEqual(Positions, other.Positions);
+    public override int GetHashCode() => HashCode.Combine(IsRunning, CollectionValues.MapHash(Positions));
+}

@@ -52,7 +52,9 @@ jobs:
     # image has the same macOS/Xcode generation; these are portable/source checks, not GPU tests.
     runs-on: macos-26-intel
     # Each verifier compiles actual pinned Swift declarations in an isolated temporary binary.
-    timeout-minutes: 35
+    # A 40-verifier run exhausted 35m on a slow hosted runner; the 41-verifier sibling passed
+    # in 22m24s. Leave capacity for the full source suite without weakening case assertions.
+    timeout-minutes: 50
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:

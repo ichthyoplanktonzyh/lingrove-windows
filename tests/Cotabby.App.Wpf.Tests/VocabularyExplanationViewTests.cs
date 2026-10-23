@@ -26,11 +26,17 @@ public sealed class VocabularyExplanationViewTests(WpfDispatcher dispatcher)
     private static async Task<(VocabularyStore Store, VocabularyEntry Entry)> Seed(bool standalone = true, bool userMeaning = true, VocabularyArchive? archive = null)
     {
         var store = new VocabularyStore(archive ?? new VocabularyArchive((string?)null), new DispatcherSynchronizationContext(Dispatcher.CurrentDispatcher));
-        Assert.True(await store.SaveAsync(Capture())); var entry = Assert.Single(store.Entries); var sense = Assert.Single(entry.Senses);
         var origin = userMeaning ? VocabularyMeaningOrigin.User : VocabularyMeaningOrigin.Ai;
-        var edited = entry with { Senses = [sense with { IsSavedWithoutContext = standalone, Meaning = "authored general", MeaningLanguage = LearningLanguage.Chinese, MeaningOrigin = origin,
-            Examples = [sense.Examples[0] with { Meaning = "authored context", MeaningLanguage = LearningLanguage.Chinese, MeaningOrigin = origin }] }] };
-        Assert.True(await store.UpdateAsync(edited, entry)); return (store, Assert.Single(store.Entries));
+        var capture = Capture(); capture = capture with { Example = capture.Example! with
+            { Meaning = "authored context", MeaningLanguage = LearningLanguage.Chinese, MeaningOrigin = origin } };
+        Assert.True(await store.SaveAsync(capture)); var entry = Assert.Single(store.Entries); var sense = Assert.Single(entry.Senses);
+        // Standalone membership is capture identity, not an editable text field. Exercise the
+        // actual Save path; the three-way editor correctly ignores a draft toggling this flag.
+        if (standalone) Assert.True(await store.SaveAsync(new("bank", "bank", LearningLanguage.English, VocabularyEntryKind.Word, SenseId: sense.Id)));
+        entry = Assert.Single(store.Entries); sense = Assert.Single(entry.Senses);
+        Assert.True(await store.UpdateAsync(entry with { Senses = [sense with { Meaning = "authored general", MeaningLanguage = LearningLanguage.Chinese }] }, entry));
+        entry = Assert.Single(store.Entries); Assert.Equal(standalone, entry.Senses[0].IsSavedWithoutContext); Assert.Equal(origin, entry.Examples[0].MeaningOrigin);
+        return (store, entry);
     }
     private static VocabularyNotebookWindow Window(VocabularyStore store, VocabularyNotebookSession session, VocabularyEntry entry, Action? configure = null)
     { var window = new VocabularyNotebookWindow(store, new WindowsVocabularyTextSearch(), session, configure); window.Reveal(new(entry.Id, entry.Senses[0].Id)); window.Show(); return window; }

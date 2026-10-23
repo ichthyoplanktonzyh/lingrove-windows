@@ -147,7 +147,8 @@ status and guarded navigation/template updates. [Review/template persistence](do
 now supplies card CAS and acknowledged receipt storage. The [review settings adapter](docs/ANKI_REVIEW_SETTINGS_UI.md)
 connects one inert AppHost owner, explicit connection controls and normal-quit drain. Review navigation,
 card preparation and the send transaction remain open. The [PCM foundation](docs/SPEECH_PCM_FOUNDATION.md)
-now adapts bounded Float32 blocks and playback queue accounting; live speech remains work.
+now adapts bounded Float32 blocks and playback queue accounting. The [frame decoder](docs/SPEECH_FRAME_DECODER.md)
+adds bounded fragmented helper-stream admission; live speech remains work.
 
 Windows CI also executes the [compiled WPF learning-view suite](docs/WPF_VIEW_TESTS.md): actual
 XAML/resource loading, window layout, in-memory rendering, native no-activation styles and

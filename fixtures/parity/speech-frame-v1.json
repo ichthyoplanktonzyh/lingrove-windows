@@ -1,0 +1,5811 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "ready",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 42
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"protocol_version\":2}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "ready",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": 2,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": null
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "full",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 160
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"chunk\",\"protocol_version\":2,\"id\":\"seq\",\"sequence\":3,\"sample_rate\":24000,\"samples\":1,\"payload_bytes\":4,\"ok\":true,\"format\":\"f32le\",\"channels\":1}",
+          "zeros": 4
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 4,
+          "header": {
+            "channels": 1,
+            "event": "chunk",
+            "format": "f32le",
+            "id": "seq",
+            "ok": true,
+            "payloadBytes": 4,
+            "protocolVersion": 2,
+            "sampleRate": 24000,
+            "samples": 1,
+            "sequence": 3
+          },
+          "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "empty-event",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 16
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"\"}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": null
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "unknown-event",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 28
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"unrecognized\"}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "unrecognized",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": null
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "null-optionals",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 166
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"protocol_version\":null,\"id\":null,\"sequence\":null,\"sample_rate\":null,\"samples\":null,\"payload_bytes\":null,\"ok\":null,\"format\":null,\"channels\":null}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "ready",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": null
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "byte-fragmentation",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 1,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 2,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 3,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 4,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 5,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 6,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 7,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 8,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 9,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 10,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 11,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 12,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 13,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 14,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 15,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 16,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 17,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 18,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 19,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 20,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 21,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 22,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 23,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 24,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 25,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 26,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 27,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 28,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 29,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 30,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 31,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 32,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 33,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 34,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 35,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 36,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 37,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 38,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 39,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 40,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 41,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 42,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 43,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 44,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 45,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 46,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"chunk\",\"payload_bytes\":8}",
+          "zeros": 8
+        }
+      ],
+      "expected": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        {
+          "bytes": 8,
+          "header": {
+            "channels": null,
+            "event": "chunk",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": 8,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": null
+          },
+          "sha256": "af5570f5a1810b7af78caf4bc70a660f0df51e42baf91d4de5b2328de0e83dfc"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "partial-payload-finish-then-complete",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "count": 46
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        },
+        {
+          "op": "append",
+          "offset": 46,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"chunk\",\"payload_bytes\":8}",
+          "zeros": 8
+        }
+      ],
+      "expected": [
+        null,
+        null,
+        {
+          "error": "invalidAudio"
+        },
+        null,
+        {
+          "bytes": 8,
+          "header": {
+            "channels": null,
+            "event": "chunk",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": 8,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": null
+          },
+          "sha256": "af5570f5a1810b7af78caf4bc70a660f0df51e42baf91d4de5b2328de0e83dfc"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "coalesced-frames",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"protocol_version\":2}"
+        },
+        {
+          "header": "{\"event\":\"chunk\",\"payload_bytes\":4}",
+          "payload": "AACAPw=="
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "ready",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": 2,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": null
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "bytes": 4,
+          "header": {
+            "channels": null,
+            "event": "chunk",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": 4,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": null
+          },
+          "sha256": "e00e5eb9444182f352323374ef4e08ebcb784725fdd4fd612d7730540b3e0c8c"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "length-prefix-0",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 4
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "raw": "AAAAAA==",
+      "expected": [
+        null,
+        {
+          "error": "invalidAudio"
+        },
+        {
+          "error": "invalidAudio"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "length-prefix-1",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 4
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "raw": "AAAAAQ==",
+      "expected": [
+        null,
+        null,
+        null,
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "length-prefix-4096",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 4
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "raw": "AAAQAA==",
+      "expected": [
+        null,
+        null,
+        null,
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "length-prefix-4097",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 4
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "raw": "AAAQAQ==",
+      "expected": [
+        null,
+        {
+          "error": "invalidAudio"
+        },
+        {
+          "error": "invalidAudio"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "length-prefix-4294967295",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 4
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "raw": "/////w==",
+      "expected": [
+        null,
+        {
+          "error": "invalidAudio"
+        },
+        {
+          "error": "invalidAudio"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "partial-prefix-0",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "raw": "",
+      "expected": [
+        null,
+        null
+      ]
+    },
+    {
+      "id": "partial-prefix-1",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 1
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "raw": "AA==",
+      "expected": [
+        null,
+        null,
+        null,
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "partial-prefix-2",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 2
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "raw": "AAA=",
+      "expected": [
+        null,
+        null,
+        null,
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "partial-prefix-3",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 3
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "raw": "AAAA",
+      "expected": [
+        null,
+        null,
+        null,
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "append-limit-0",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "zeros": 0
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "expected": [
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": "append-limit-16384",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "zeros": 16384
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "invalidAudio"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "append-limit-16385",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "zeros": 16385
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "expected": [
+        {
+          "error": "invalidAudio"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "aggregate-limit",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "zeros": 16384
+        },
+        {
+          "op": "append",
+          "zeros": 16384
+        },
+        {
+          "op": "append",
+          "zeros": 16384
+        },
+        {
+          "op": "append",
+          "zeros": 16384
+        },
+        {
+          "op": "append",
+          "zeros": 16384
+        },
+        {
+          "op": "append",
+          "zeros": 16384
+        },
+        {
+          "op": "append",
+          "zeros": 16384
+        },
+        {
+          "op": "append",
+          "zeros": 16384
+        },
+        {
+          "op": "append",
+          "zeros": 16384
+        },
+        {
+          "op": "append",
+          "zeros": 16384
+        },
+        {
+          "op": "append",
+          "zeros": 16384
+        },
+        {
+          "op": "append",
+          "zeros": 16384
+        },
+        {
+          "op": "append",
+          "zeros": 16384
+        },
+        {
+          "op": "append",
+          "zeros": 16384
+        },
+        {
+          "op": "append",
+          "zeros": 16384
+        },
+        {
+          "op": "append",
+          "zeros": 16384
+        },
+        {
+          "op": "append",
+          "zeros": 16384
+        },
+        {
+          "op": "append",
+          "zeros": 4100
+        },
+        {
+          "op": "append",
+          "zeros": 1
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "expected": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        {
+          "error": "invalidAudio"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "payload--1",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 40
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"chunk\",\"payload_bytes\":-1}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "invalidAudio"
+        },
+        {
+          "error": "invalidAudio"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "payload-0",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 39
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"chunk\",\"payload_bytes\":0}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "chunk",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": 0,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": null
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "payload--0",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 40
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"chunk\",\"payload_bytes\":-0}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "chunk",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": 0,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": null
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "payload-4",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 43
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"chunk\",\"payload_bytes\":4}",
+          "zeros": 4
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 4,
+          "header": {
+            "channels": null,
+            "event": "chunk",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": 4,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": null
+          },
+          "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "payload-262144",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 44
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"chunk\",\"payload_bytes\":262144}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        null,
+        null,
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "payload-262145",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 44
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"chunk\",\"payload_bytes\":262145}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "invalidAudio"
+        },
+        {
+          "error": "invalidAudio"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "payload-9223372036854775807",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 57
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"chunk\",\"payload_bytes\":9223372036854775807}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "invalidAudio"
+        },
+        {
+          "error": "invalidAudio"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "payload--9223372036854775808",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 58
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"chunk\",\"payload_bytes\":-9223372036854775808}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "invalidAudio"
+        },
+        {
+          "error": "invalidAudio"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "payload-9223372036854775808",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 57
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"chunk\",\"payload_bytes\":9223372036854775808}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "payload-1.0",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 41
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"chunk\",\"payload_bytes\":1.0}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        null,
+        null,
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "payload-1e1",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 41
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"chunk\",\"payload_bytes\":1e1}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        null,
+        null,
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "payload-1.5",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 41
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"chunk\",\"payload_bytes\":1.5}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "payload-true",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 42
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"chunk\",\"payload_bytes\":true}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "payload-\"4\"",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 41
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"chunk\",\"payload_bytes\":\"4\"}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "payload-null",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 42
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"chunk\",\"payload_bytes\":null}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "chunk",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": null
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "payload-0e999999999",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 49
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"chunk\",\"payload_bytes\":0e999999999}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "chunk",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": 0,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": null
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "payload-1.00000000000000000000000000001",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 69
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"chunk\",\"payload_bytes\":1.00000000000000000000000000001}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        null,
+        null,
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "maximum-payload",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 16384
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 16384,
+          "count": 16384
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 32768,
+          "count": 16384
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 49152,
+          "count": 16384
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 65536,
+          "count": 16384
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 81920,
+          "count": 16384
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 98304,
+          "count": 16384
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 114688,
+          "count": 16384
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 131072,
+          "count": 16384
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 147456,
+          "count": 16384
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 163840,
+          "count": 16384
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 180224,
+          "count": 16384
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 196608,
+          "count": 16384
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 212992,
+          "count": 16384
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 229376,
+          "count": 16384
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 245760,
+          "count": 16384
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "append",
+          "offset": 262144,
+          "count": 44
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"chunk\",\"payload_bytes\":262144}",
+          "zeros": 262144
+        }
+      ],
+      "expected": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        {
+          "bytes": 262144,
+          "header": {
+            "channels": null,
+            "event": "chunk",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": 262144,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": null
+          },
+          "sha256": "8a39d2abd3999ab73c34db2476849cddf303ce389b35826850f9a700589b4a90"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "other-event-payload",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 43
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"Chunk\",\"payload_bytes\":4}",
+          "zeros": 4
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "invalidAudio"
+        },
+        {
+          "error": "invalidAudio"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "root-array",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 6
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "[]",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "root-null",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 8
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "null",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "root-number",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 5
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "0",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "missing-event",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 6
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "null-event",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 18
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":null}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "numeric-event",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 15
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":1}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "boolean-event",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 18
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":true}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "unterminated",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 20
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\"",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "trailing-garbage",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 25
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\"}oops",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "trailing-whitespace",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 23
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\"}\r\n",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "ready",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": null
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "duplicate-first-event",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 32
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"event\":42}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "ready",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": null
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "duplicate-first-payload",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 58
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"chunk\",\"payload_bytes\":0,\"payload_bytes\":-1}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "chunk",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": 0,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": null
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "camel-case",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 58
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"chunk\",\"payloadBytes\":0,\"protocolVersion\":2}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "chunk",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": 0,
+            "protocolVersion": 2,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": null
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "snake-duplicate",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 57
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"chunk\",\"payload_bytes\":0,\"payloadBytes\":-1}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "chunk",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": 0,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": null
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "snake-multiple",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 61
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"chunk\",\"payload__bytes\":0,\"sample__rate\":24000}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "chunk",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": 0,
+            "protocolVersion": null,
+            "sampleRate": 24000,
+            "samples": null,
+            "sequence": null
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "edge-underscore",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 42
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"_payload_bytes_\":-1}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "ready",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": null
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "invalid-surrogate",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 22
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"\\ud800\"}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "unicode-event",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 26
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"你好😀\"}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "你好😀",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": null
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "protocol_version-true",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 45
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"protocol_version\":true}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "protocol_version-\"1\"",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 44
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"protocol_version\":\"1\"}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "protocol_version-1.0",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 44
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"protocol_version\":1.0}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "ready",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": 1,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": null
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "protocol_version-1.2",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 44
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"protocol_version\":1.2}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "protocol_version-9223372036854775807",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 60
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"protocol_version\":9223372036854775807}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "ready",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": 9223372036854775807,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": null
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "sequence-true",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 37
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"sequence\":true}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "sequence-\"1\"",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 36
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"sequence\":\"1\"}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "sequence-1.0",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 36
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"sequence\":1.0}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "ready",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": 1
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "sequence-1.2",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 36
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"sequence\":1.2}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "sequence-9223372036854775807",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 52
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"sequence\":9223372036854775807}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "ready",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": 9223372036854775807
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "sample_rate-true",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 40
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"sample_rate\":true}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "sample_rate-\"1\"",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 39
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"sample_rate\":\"1\"}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "sample_rate-1.0",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 39
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"sample_rate\":1.0}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "ready",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": null,
+            "sampleRate": 1,
+            "samples": null,
+            "sequence": null
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "sample_rate-1.2",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 39
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"sample_rate\":1.2}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "sample_rate-9223372036854775807",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 55
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"sample_rate\":9223372036854775807}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "ready",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": null,
+            "sampleRate": 9223372036854775807,
+            "samples": null,
+            "sequence": null
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "samples-true",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 36
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"samples\":true}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "samples-\"1\"",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 35
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"samples\":\"1\"}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "samples-1.0",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 35
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"samples\":1.0}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "ready",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": 1,
+            "sequence": null
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "samples-1.2",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 35
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"samples\":1.2}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "samples-9223372036854775807",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 51
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"samples\":9223372036854775807}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "ready",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": 9223372036854775807,
+            "sequence": null
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "channels-true",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 37
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"channels\":true}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "channels-\"1\"",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 36
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"channels\":\"1\"}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "channels-1.0",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 36
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"channels\":1.0}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": 1,
+            "event": "ready",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": null
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "channels-1.2",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 36
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"channels\":1.2}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "channels-9223372036854775807",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 52
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"channels\":9223372036854775807}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": 9223372036854775807,
+            "event": "ready",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": null
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "optional-id-1",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 28
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"id\":1}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "optional-format-true",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 35
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"format\":true}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "optional-ok-1",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 28
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"ok\":1}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "optional-ok-\"true\"",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 33
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"ok\":\"true\"}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "header-bom",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 24
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "headerBytes": "77u/eyJldmVudCI6InJlYWR5In0="
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "ready",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": null
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "header-utf16",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 40
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "headerBytes": "//57ACIAZQB2AGUAbgB0ACIAOgAiAHIAZQBhAGQAeQAiAH0A"
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "ready",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": null
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "header-invalid-utf8",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 17
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "headerBytes": "eyJldmVudCI6Iv8ifQ=="
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "header-size-4096",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 4100
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"padding\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "ready",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": null
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "header-size-4097",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 4101
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"padding\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "invalidAudio"
+        },
+        {
+          "error": "invalidAudio"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "depth-511",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 1055
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"ignored\":[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[0]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "ready",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": null
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "depth-512",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 1057
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"ignored\":[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[0]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "depth-513",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 1059
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"ignored\":[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[0]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "ignored-invalid-utf8",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 35
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "headerBytes": "eyJldmVudCI6InJlYWR5IiwiaWdub3JlZCI6Iv8ifQ=="
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "ready",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": null
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "key-invalid-utf8",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 32
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "headerBytes": "eyJldmVudCI6InJlYWR5Iiwiaf8iOiJmb28ifQ=="
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "id-invalid-utf8",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 30
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "headerBytes": "eyJldmVudCI6InJlYWR5IiwiaWQiOiL/In0="
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "duplicate-invalid-utf8",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 33
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "headerBytes": "eyJldmVudCI6InJlYWR5IiwiZXZlbnQiOiL/In0="
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "ready",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": null
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "ignored-invalid-surrogate",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 40
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"ignored\":\"\\ud800\"}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "ready",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": null
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "integer-rounded",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 64
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"sequence\":1.00000000000000000000000000001}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "ready",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": 1
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "int64-max-decimal",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 54
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"sequence\":9223372036854775807.0}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "upper-snake",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 62
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"PROTOCOL_VERSION\":2,\"SAMPLE_RATE\":24000}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "ready",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": 2,
+            "sampleRate": 24000,
+            "samples": null,
+            "sequence": null
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "integer-min-decimal",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 55
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"sequence\":-9223372036854775808.0}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "integer-min-exponent",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 54
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"sequence\":-9.223372036854776e18}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "integer-min-rounded-fraction",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 55
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"sequence\":-9223372036854775807.9}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "integer-min-plus-decimal",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 55
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"sequence\":-9223372036854775807.0}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "ready",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": -9223372036854775807
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "integer-min-raw",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 53
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"sequence\":-9223372036854775808}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "ready",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": -9223372036854775808
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "integer-min-next-double",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 55
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"sequence\":-9223372036854774784.0}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "ready",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": -9223372036854774784
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "integer-max-prev-double",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 54
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"sequence\":9223372036854774784.0}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "ready",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": 9223372036854774784
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "integer-decimal-probe-0",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 53
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"sequence\":-9223372036854775809}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "integer-decimal-probe-1",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 51
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"sequence\":9007199254740991.9}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "ready",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": 9007199254740991
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "integer-decimal-probe-2",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 51
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"sequence\":9007199254740992.5}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "ready",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": 9007199254740992
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "integer-decimal-probe-3",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 51
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"sequence\":9007199254740993.1}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "ready",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": 9007199254740993
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "integer-decimal-probe-4",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 54
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"sequence\":1000000000000000000.5}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "ready",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": 1000000000000000000
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "integer-decimal-probe-5",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 55
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"sequence\":-1000000000000000000.5}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "ready",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": -1000000000000000000
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "integer-decimal-probe-6",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 54
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"sequence\":9223372036854775806.0}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "integer-decimal-probe-7",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 56
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"sequence\":9223372036854775807.000}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "integer-decimal-probe-8",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 56
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"sequence\":9.223372036854775807e18}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "integer-decimal-probe-9",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 53
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"sequence\":9.007199254740993e15}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "ready",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": 9007199254740993
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "integer-decimal-probe-10",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 73
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"sequence\":9007199254740993.00000000000000000000001}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "bytes": 0,
+          "header": {
+            "channels": null,
+            "event": "ready",
+            "format": null,
+            "id": null,
+            "ok": null,
+            "payloadBytes": null,
+            "protocolVersion": null,
+            "sampleRate": null,
+            "samples": null,
+            "sequence": 9007199254740993
+          },
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "integer-decimal-probe-11",
+      "macSource": "Cotabby/Support/Speech/SpeechAudioFrameDecoder.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "append",
+          "offset": 0,
+          "count": 77
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "next"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "wires": [
+        {
+          "header": "{\"event\":\"ready\",\"sequence\":0.000000000000000000000000000000000000000001}",
+          "zeros": 0
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "error": "decode"
+        },
+        {
+          "error": "decode"
+        },
+        {
+          "error": "invalidAudio"
+        }
+      ]
+    }
+  ]
+}

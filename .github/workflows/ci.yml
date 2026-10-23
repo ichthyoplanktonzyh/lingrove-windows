@@ -244,3 +244,6 @@ jobs:
 
       - name: Verify original PCM block admission and playback queue accounting
         run: python3 scripts/verify-speech-pcm-macos-parity.py --mac-repo .mac-baseline
+
+      - name: Verify complete original speech pipe frame decoder with synthetic byte streams
+        run: python3 scripts/verify-speech-frame-macos-parity.py --mac-repo .mac-baseline

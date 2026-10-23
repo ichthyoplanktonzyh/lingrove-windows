@@ -30,7 +30,7 @@ public sealed class AnkiReviewSessionTests
     private static Guid Id(int n) => Guid.Parse($"00000000-0000-0000-0000-{n:x12}");
     private static bool Flag(JsonElement r, string key) => r.TryGetProperty(key, out var v) && v.ValueKind == JsonValueKind.True;
     private static string Text(JsonElement r, string key, string fallback = "") => r.TryGetProperty(key, out var v) ? v.GetString() ?? fallback : fallback;
-    private static VocabularyDocument Seed(JsonElement row)
+    internal static VocabularyDocument Seed(JsonElement row)
     {
         var time = DateTimeOffset.UnixEpoch;
         var usage = new VocabularyExample(Id(3), "The bank opened early.", "银行很早开门。", [new(4, 4)], VocabularyExampleCompleteness.Sentence, "银行", time);
@@ -62,7 +62,7 @@ public sealed class AnkiReviewSessionTests
         var images = new Images(); if (Flag(row, "imageAvailable")) images.Write(ImageBytes, ImageReference);
         var archive = new VocabularyArchive(VocabularySQLiteDatabase.CreateMemory, images: images); await using var store = new VocabularyStore(archive, new SynchronizationContext());
         await archive.CommitAsync(Seed(row)); await store.LoadAsync();
-        var app = new AppSettings(); var settings = new AnkiReviewSettings(() => app, () => { }, new Credentials()); var client = new SessionTestServer(); var speech = new Speech();
+        var app = new AppSettings(); var settings = new AnkiReviewSettings(() => app, () => { }, new Credentials()); var client = new SessionTestServer(); var speech = new SessionTestSpeech();
         if (row.TryGetProperty("settings", out var initial)) Preferences(initial, settings);
         var controller = new AnkiReviewController(settings, store, client, speech: Flag(row, "speech") ? speech : null); var entry = store.Entries[0];
         var session = new AnkiReviewSession(controller, entry, entry.Senses[0], cardId: Flag(row, "card") ? Id(4) : null);
@@ -145,7 +145,7 @@ public sealed class AnkiReviewSessionTests
         var expected = JsonNode.Parse(row.GetProperty("expected").GetRawText());
         Assert.True(JsonNode.DeepEquals(expected, actual), id + "\n" + string.Join("\n", Differences(expected, actual).Take(30)));
     }
-    private static IEnumerable<string> Differences(JsonNode? expected, JsonNode? actual, string path = "$")
+    internal static IEnumerable<string> Differences(JsonNode? expected, JsonNode? actual, string path = "$")
     {
         if (JsonNode.DeepEquals(expected, actual)) yield break;
         if (expected is JsonObject e && actual is JsonObject a)
@@ -157,6 +157,9 @@ public sealed class AnkiReviewSessionTests
         { for (int i = 0; i < es.Count; i++) foreach (string difference in Differences(es[i], aa[i], path + "[" + i + "]")) yield return difference; }
         else yield return path + ": expected " + expected + "; actual " + actual;
     }
+    // The batch oracle executes the same domain graph and uses the same explicit observation
+    // projection. Share that projection without duplicating a second normalizer's assumptions.
+    internal static JsonNode? NormalizeObservation(JsonNode? node) => Canonical(node, new(), new(), GeneratedIds(node));
     private static HashSet<string> GeneratedIds(JsonNode? node)
     {
         var result = new HashSet<string>(StringComparer.Ordinal);
@@ -213,24 +216,6 @@ public sealed class AnkiReviewSessionTests
         if (a.TryGetProperty("address", out var address)) settings.Address = address.GetString()!;
         if (a.TryGetProperty("recognition", out var recognition)) settings.DefaultRecognition = recognition.GetBoolean();
         if (a.TryGetProperty("gap", out var gap)) settings.DefaultGap = gap.GetBoolean();
-    }
-    private sealed class Speech : ISpeechExporting
-    {
-        public int Exports { get; private set; }
-        public bool Pause { get; set; }
-        public TaskCompletionSource Entered { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        public string ExportConfigurationId => "fixture";
-        public SpeechExportRequest ExportRequest(string text, LearningLanguage language, string? context = null) => new(text, language, SpeechExportPolicy.Digest(Encoding.UTF8.GetBytes(text)), new SpeechExportRequest.Source.System("fixture"));
-        public async Task<SpeechExportAudio> ExportAudioAsync(SpeechExportRequest request, CancellationToken cancellationToken = default)
-        {
-            cancellationToken.ThrowIfCancellationRequested(); Exports++; Entered.TrySetResult();
-            if (Pause) await Task.Delay(Timeout.Infinite, cancellationToken);
-            byte[] bytes = new byte[2400 * sizeof(float)]; float sample = Exports / 100f;
-            for (int i = 0; i < 2400; i++) BitConverter.TryWriteBytes(bytes.AsSpan(i * sizeof(float)), sample);
-            return SpeechExportPolicy.Wav(bytes, 24000);
-        }
-        public void Audition(SpeechExportAudio audio, Guid ownerId, LearningLanguage language) { }
-        public void Stop(Guid ownerId) { }
     }
     private static readonly byte[] ImageBytes = Convert.FromBase64String(Corpus.GetProperty("imagePng").GetString()!);
     private static VocabularyImageReference ImageReference => new(SpeechExportPolicy.Digest(ImageBytes), 80, 40, ImageBytes.Length);

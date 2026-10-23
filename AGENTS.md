@@ -161,6 +161,7 @@ the [speech language resolver](docs/SPEECH_LANGUAGE_RESOLUTION.md) preserves bou
 the [voice selector](docs/SPEECH_VOICE_SELECTION.md) preserves ranking and compatible preference with required platform collation, without an installed catalog;
 the [recording preparation library](docs/REVIEW_AUDIO_PREPARATION.md) preserves sheet-local cache, busy/cancellation and borrowed speech contracts without a sheet/provider;
 the [review session library](docs/ANKI_REVIEW_SESSION.md) preserves draft/CAS, guarded sends, conflicts and media sequencing without a preparation window;
+the [serial batch library](docs/ANKI_REVIEW_BATCH.md) adds frozen rows, per-item retries/options and cancellation through the original single-session transaction;
 compressed/profiled bitmap variants, virtual/pixel drops, review navigation/preparation/batch UI and other dictionary providers remain work. Do not flatten senses into
 one translation string, regenerate stable IDs during edits, or treat a generated explanation as the
 user's authored meaning. See the vocabulary models and porting gates in the linked docs. Storage

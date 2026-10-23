@@ -93,6 +93,7 @@ jobs:
             Cotabby/Services/Review/ReviewAudioPreparation.swift
             Cotabby/Services/Review/AnkiReviewSession.swift
             Cotabby/Services/Review/AnkiReviewSession+Images.swift
+            Cotabby/Services/Review/AnkiReviewBatchSession.swift
             CotabbyTests/Services/Review/AnkiReviewTests.swift
             Cotabby/Services/LanguageLearning/LearningEndpointSession.swift
             CotabbyTests/Services/Vocabulary/VocabularyContentTests.swift
@@ -272,3 +273,6 @@ jobs:
 
       - name: Verify complete original review sessions over isolated archive SQLite and media
         run: python3 scripts/verify-anki-session-macos-parity.py --mac-repo .mac-baseline
+
+      - name: Verify complete original serial review batches and durable per-item transactions
+        run: python3 scripts/verify-anki-batch-macos-parity.py --mac-repo .mac-baseline

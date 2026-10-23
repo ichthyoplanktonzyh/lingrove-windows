@@ -1,0 +1,2243 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "empty",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [],
+      "expected": {
+        "html": "",
+        "htmlBytes": 0,
+        "htmlSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "images": [],
+        "meaningful": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "text-defaults",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text"
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><p></p></div>",
+        "htmlBytes": 85,
+        "htmlSHA256": "06ca7c2915b7b08fa03b010b4b05b78479ca6ace34462d08cfac17748fc0101c",
+        "images": [],
+        "meaningful": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "literal-html",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "regression-adaptation",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": "<script>&\"'\n\r\nالعربية café 👩🏽‍💻",
+          "style": "bullet",
+          "bold": true,
+          "italic": true
+        }
+      ],
+      "macTest": "CotabbyTests/Services/Vocabulary/VocabularyContentTests.swift",
+      "macTestMethod": "formattingEscapesTextAndLegacyPlansRemainUnchanged",
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><ul><li><em><strong>&lt;script&gt;&amp;&quot;&#39;<br>\r<br>العربية café 👩🏽‍💻</strong></em></li></ul></div>",
+        "htmlBytes": 198,
+        "htmlSHA256": "9b2ba27373a64020f5cad9065be5b25ec645df5633993b511f32195485f1e1dc",
+        "images": [],
+        "meaningful": true,
+        "valid": true
+      }
+    },
+    {
+      "id": "style-paragraph-0-0",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": " A&B ",
+          "style": "paragraph",
+          "bold": false,
+          "italic": false
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><p> A&amp;B </p></div>",
+        "htmlBytes": 94,
+        "htmlSHA256": "d94f76e24f2d319c0da0dc5fe4fbee5a7277c103a21f29457267d7b7a9473c38",
+        "images": [],
+        "meaningful": true,
+        "valid": true
+      }
+    },
+    {
+      "id": "style-paragraph-1-0",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": " A&B ",
+          "style": "paragraph",
+          "bold": true,
+          "italic": false
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><p><strong> A&amp;B </strong></p></div>",
+        "htmlBytes": 111,
+        "htmlSHA256": "5cedefe958ab2823d2e69c0879114c340d10dbc1fbc08c2c4f413b35f55594a5",
+        "images": [],
+        "meaningful": true,
+        "valid": true
+      }
+    },
+    {
+      "id": "style-paragraph-0-1",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": " A&B ",
+          "style": "paragraph",
+          "bold": false,
+          "italic": true
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><p><em> A&amp;B </em></p></div>",
+        "htmlBytes": 103,
+        "htmlSHA256": "cd887738baa6e6f4077530fa25d2cc111d03a826ecd04d47e572eb3129f39de9",
+        "images": [],
+        "meaningful": true,
+        "valid": true
+      }
+    },
+    {
+      "id": "style-paragraph-1-1",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": " A&B ",
+          "style": "paragraph",
+          "bold": true,
+          "italic": true
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><p><em><strong> A&amp;B </strong></em></p></div>",
+        "htmlBytes": 120,
+        "htmlSHA256": "4e5854bf3df2bb106b7c8a883ff270489e70cab87b6455f1c04c22b337a25013",
+        "images": [],
+        "meaningful": true,
+        "valid": true
+      }
+    },
+    {
+      "id": "style-heading-0-0",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": " A&B ",
+          "style": "heading",
+          "bold": false,
+          "italic": false
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><h3> A&amp;B </h3></div>",
+        "htmlBytes": 96,
+        "htmlSHA256": "d2a0f5c91cf61b25d5a567e658553ffeda4de0b94651ef44ffd7ec5c4af8bbbd",
+        "images": [],
+        "meaningful": true,
+        "valid": true
+      }
+    },
+    {
+      "id": "style-heading-1-0",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": " A&B ",
+          "style": "heading",
+          "bold": true,
+          "italic": false
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><h3><strong> A&amp;B </strong></h3></div>",
+        "htmlBytes": 113,
+        "htmlSHA256": "e44a149dee7b7286097ef170547a24f832a22e3c3e6c604a2fb1bd2334f3d042",
+        "images": [],
+        "meaningful": true,
+        "valid": true
+      }
+    },
+    {
+      "id": "style-heading-0-1",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": " A&B ",
+          "style": "heading",
+          "bold": false,
+          "italic": true
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><h3><em> A&amp;B </em></h3></div>",
+        "htmlBytes": 105,
+        "htmlSHA256": "5df592e9d4c5786a8c05cf880d1da7666ab742aa398b67b43baca19d039aedad",
+        "images": [],
+        "meaningful": true,
+        "valid": true
+      }
+    },
+    {
+      "id": "style-heading-1-1",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": " A&B ",
+          "style": "heading",
+          "bold": true,
+          "italic": true
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><h3><em><strong> A&amp;B </strong></em></h3></div>",
+        "htmlBytes": 122,
+        "htmlSHA256": "811576d04bd43ac129ee8b5099aace61b528de4f7fb60dc92d507250f68ae626",
+        "images": [],
+        "meaningful": true,
+        "valid": true
+      }
+    },
+    {
+      "id": "style-bullet-0-0",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": " A&B ",
+          "style": "bullet",
+          "bold": false,
+          "italic": false
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><ul><li> A&amp;B </li></ul></div>",
+        "htmlBytes": 105,
+        "htmlSHA256": "3bdc9ca978269f3ddc16e5fc04b8423fbd5d3b5b9889715c645f86f43d71a2c1",
+        "images": [],
+        "meaningful": true,
+        "valid": true
+      }
+    },
+    {
+      "id": "style-bullet-1-0",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": " A&B ",
+          "style": "bullet",
+          "bold": true,
+          "italic": false
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><ul><li><strong> A&amp;B </strong></li></ul></div>",
+        "htmlBytes": 122,
+        "htmlSHA256": "3889ce9205413a15a0e2dade984d73f0d4c48665ea22d467b9dedf48b94c26a3",
+        "images": [],
+        "meaningful": true,
+        "valid": true
+      }
+    },
+    {
+      "id": "style-bullet-0-1",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": " A&B ",
+          "style": "bullet",
+          "bold": false,
+          "italic": true
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><ul><li><em> A&amp;B </em></li></ul></div>",
+        "htmlBytes": 114,
+        "htmlSHA256": "ec9244cd3b9b5fa380f7ae276b7de9caa451aba4ad3686699508f58b0c4d9715",
+        "images": [],
+        "meaningful": true,
+        "valid": true
+      }
+    },
+    {
+      "id": "style-bullet-1-1",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": " A&B ",
+          "style": "bullet",
+          "bold": true,
+          "italic": true
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><ul><li><em><strong> A&amp;B </strong></em></li></ul></div>",
+        "htmlBytes": 131,
+        "htmlSHA256": "93881032286234f39f6af14fb4f4269f4e9a46a55bc7cecbb2d3c3c7befa777c",
+        "images": [],
+        "meaningful": true,
+        "valid": true
+      }
+    },
+    {
+      "id": "meaningful-u0000",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": "\u0000"
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><p>\u0000</p></div>",
+        "htmlBytes": 86,
+        "htmlSHA256": "98c13bd974b4efbf338fca2efa06b70850760dfca27dcae4203da47c1ad1761c",
+        "images": [],
+        "meaningful": true,
+        "valid": true
+      }
+    },
+    {
+      "id": "meaningful-u0009",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": "\t"
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><p>\t</p></div>",
+        "htmlBytes": 86,
+        "htmlSHA256": "ced8c07c8649308f8ec9c558fd52f0e3245cb4a3f1e7eab369771ed624c66373",
+        "images": [],
+        "meaningful": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "meaningful-u000a",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": "\n"
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><p><br></p></div>",
+        "htmlBytes": 89,
+        "htmlSHA256": "235bb67865e0bc382d75a5b92b65cec932899a3f61c265e7ba3d5799ec6200df",
+        "images": [],
+        "meaningful": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "meaningful-u000b",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": "\u000b"
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><p>\u000b</p></div>",
+        "htmlBytes": 86,
+        "htmlSHA256": "666561fe26ecd5bc544cdd3dce25dcbef9b211b979ec7177397adef61811d2e6",
+        "images": [],
+        "meaningful": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "meaningful-u000c",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": "\f"
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><p>\f</p></div>",
+        "htmlBytes": 86,
+        "htmlSHA256": "1bc265bdcc6841d8f00fb8449098ebeac39055d0d8daa00d331e0a546a747d19",
+        "images": [],
+        "meaningful": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "meaningful-u000d",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": "\r"
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><p>\r</p></div>",
+        "htmlBytes": 86,
+        "htmlSHA256": "788a706d59d28009858e140cd0fd49b1fcaf304cb63a4e626be303934333bd2e",
+        "images": [],
+        "meaningful": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "meaningful-u001c",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": "\u001c"
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><p>\u001c</p></div>",
+        "htmlBytes": 86,
+        "htmlSHA256": "c5fa9bc571329f8570618d02b2e2f81c0729e8eb9ab570f5a5c4d47ab5096519",
+        "images": [],
+        "meaningful": true,
+        "valid": true
+      }
+    },
+    {
+      "id": "meaningful-u0020",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": " "
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><p> </p></div>",
+        "htmlBytes": 86,
+        "htmlSHA256": "f38be68260d20724195ec24901216158c58eed36005e3cf7884f689e9e437403",
+        "images": [],
+        "meaningful": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "meaningful-u0085",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": ""
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><p></p></div>",
+        "htmlBytes": 87,
+        "htmlSHA256": "faa0f39ce73fb96cd4cfb562dfeb704da8bd8076ee21c5d1db6b740542b7a3dd",
+        "images": [],
+        "meaningful": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "meaningful-u00a0",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": " "
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><p> </p></div>",
+        "htmlBytes": 87,
+        "htmlSHA256": "42703ae48498db59612ffe54ac043c14822b7f9702a9d35c251af8081314418e",
+        "images": [],
+        "meaningful": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "meaningful-u1680",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": " "
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><p> </p></div>",
+        "htmlBytes": 88,
+        "htmlSHA256": "cd22f8601d4721d8e4800df1b7fe28e80972baedc0cb10e617256f7641744362",
+        "images": [],
+        "meaningful": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "meaningful-u180e",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": "᠎"
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><p>᠎</p></div>",
+        "htmlBytes": 88,
+        "htmlSHA256": "8f94e902e073730b4f991ece363f53f4ee11a8a1a55970defda0e4fa368d6989",
+        "images": [],
+        "meaningful": true,
+        "valid": true
+      }
+    },
+    {
+      "id": "meaningful-u2000",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": " "
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><p> </p></div>",
+        "htmlBytes": 88,
+        "htmlSHA256": "e282c463d92160f22acd8ae605dfb696855730932c44aaaac8c6ed880e4f5f32",
+        "images": [],
+        "meaningful": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "meaningful-u200b",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": "​"
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><p>​</p></div>",
+        "htmlBytes": 88,
+        "htmlSHA256": "b0c63ebeec636ea4d09d9e86941cea1c864cf8bc1b602a2cd39a0f673ddae3f7",
+        "images": [],
+        "meaningful": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "meaningful-u2028",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": " "
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><p> </p></div>",
+        "htmlBytes": 88,
+        "htmlSHA256": "7dcdad1033ead767e22cd6304526f419ffe631d8e413463c19412bcea9076a42",
+        "images": [],
+        "meaningful": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "meaningful-u2029",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": " "
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><p> </p></div>",
+        "htmlBytes": 88,
+        "htmlSHA256": "3233bc858bd4dcdd2606fcdbf9a3e6944f43a03f32ce524645331151aa994ebe",
+        "images": [],
+        "meaningful": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "meaningful-u202f",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": " "
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><p> </p></div>",
+        "htmlBytes": 88,
+        "htmlSHA256": "9095fcf3749345c8f69d0c24b30d11d93cfb7be137c4f386d9778afbaea6fa88",
+        "images": [],
+        "meaningful": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "meaningful-u205f",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": " "
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><p> </p></div>",
+        "htmlBytes": 88,
+        "htmlSHA256": "aa139acc204339222b31b8c876764005a2333d9472cc01e4bc166d37a796f714",
+        "images": [],
+        "meaningful": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "meaningful-u3000",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": "　"
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><p>　</p></div>",
+        "htmlBytes": 88,
+        "htmlSHA256": "c61d0af65f6ffed597f0a18172928d95a0b2be4baedd093109d1af4acefb2c23",
+        "images": [],
+        "meaningful": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "meaningful-ufeff",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": "﻿"
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><p>﻿</p></div>",
+        "htmlBytes": 88,
+        "htmlSHA256": "c41f1667a7e21fce333548e5e3e08be7d426926278705a59f6a84eb36de2f0ef",
+        "images": [],
+        "meaningful": true,
+        "valid": true
+      }
+    },
+    {
+      "id": "caption-escaping",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "regression-adaptation",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "image",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "width": 1,
+          "height": 1,
+          "byteCount": 1,
+          "caption": "<river> & \"bank\" '岸'\n"
+        }
+      ],
+      "macTest": "CotabbyTests/Services/Vocabulary/VocabularyContentTests.swift",
+      "macTestMethod": "imageOnlyReviewHasAnswerMediaAndGapFrontNeverRevealsIt",
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><figure style=\"margin:12px 0\"><img src=\"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\" style=\"max-width:100%;height:auto\" alt=\"&lt;river&gt; &amp; &quot;bank&quot; &#39;岸&#39;<br>\"><figcaption>&lt;river&gt; &amp; &quot;bank&quot; &#39;岸&#39;<br></figcaption></figure></div>",
+        "htmlBytes": 381,
+        "htmlSHA256": "522773a6e4fb27b61dd0c8cfe9a199d00a5538dadd888c3b6cae016f4e5c59ba",
+        "images": [
+          "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png"
+        ],
+        "meaningful": true,
+        "valid": true
+      }
+    },
+    {
+      "id": "image-no-caption",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "image",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "width": 1,
+          "height": 1,
+          "byteCount": 1
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><figure style=\"margin:12px 0\"><img src=\"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\" style=\"max-width:100%;height:auto\" alt=\"\"></figure></div>",
+        "htmlBytes": 248,
+        "htmlSHA256": "7c5d33e4ccdafb6a2fda51d583e5bdf44160d0dd2bc3f86110cb10d71ffb36ab",
+        "images": [
+          "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png"
+        ],
+        "meaningful": true,
+        "valid": true
+      }
+    },
+    {
+      "id": "ordered-text-image",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": "Before"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000002",
+          "kind": "image",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "width": 1,
+          "height": 1,
+          "byteCount": 1,
+          "caption": "Middle"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000003",
+          "kind": "text",
+          "text": "After"
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><p>Before</p><figure style=\"margin:12px 0\"><img src=\"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\" style=\"max-width:100%;height:auto\" alt=\"Middle\"><figcaption>Middle</figcaption></figure><p>After</p></div>",
+        "htmlBytes": 310,
+        "htmlSHA256": "996b5168caf752d8fb5943152ad67008e5605ba07e05ae6a79c11d0d5288e36c",
+        "images": [
+          "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png"
+        ],
+        "meaningful": true,
+        "valid": true
+      }
+    },
+    {
+      "id": "bad-digest-path",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "regression-adaptation",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "image",
+          "digest": "../outside",
+          "width": 1,
+          "height": 1,
+          "byteCount": 1
+        }
+      ],
+      "macTest": "CotabbyTests/Services/Vocabulary/VocabularyContentTests.swift",
+      "macTestMethod": "malformedOrMissingBackupMediaCannotReplaceNotebook",
+      "expected": {
+        "html": null,
+        "htmlBytes": null,
+        "htmlSHA256": null,
+        "images": [
+          "lg-image-../outside.png"
+        ],
+        "meaningful": true,
+        "valid": false
+      }
+    },
+    {
+      "id": "bad-digest-uppercase",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "image",
+          "digest": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+          "width": 1,
+          "height": 1,
+          "byteCount": 1
+        }
+      ],
+      "expected": {
+        "html": null,
+        "htmlBytes": null,
+        "htmlSHA256": null,
+        "images": [
+          "lg-image-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.png"
+        ],
+        "meaningful": true,
+        "valid": false
+      }
+    },
+    {
+      "id": "bad-digest-fullwidth",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "image",
+          "digest": "ａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａ",
+          "width": 1,
+          "height": 1,
+          "byteCount": 1
+        }
+      ],
+      "expected": {
+        "html": null,
+        "htmlBytes": null,
+        "htmlSHA256": null,
+        "images": [
+          "lg-image-ａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａ.png"
+        ],
+        "meaningful": true,
+        "valid": false
+      }
+    },
+    {
+      "id": "bad-digest-63",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "image",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "width": 1,
+          "height": 1,
+          "byteCount": 1
+        }
+      ],
+      "expected": {
+        "html": null,
+        "htmlBytes": null,
+        "htmlSHA256": null,
+        "images": [
+          "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png"
+        ],
+        "meaningful": true,
+        "valid": false
+      }
+    },
+    {
+      "id": "bad-digest-65",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "image",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "width": 1,
+          "height": 1,
+          "byteCount": 1
+        }
+      ],
+      "expected": {
+        "html": null,
+        "htmlBytes": null,
+        "htmlSHA256": null,
+        "images": [
+          "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png"
+        ],
+        "meaningful": true,
+        "valid": false
+      }
+    },
+    {
+      "id": "digest-lower-bound",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "image",
+          "digest": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+          "width": 1,
+          "height": 1,
+          "byteCount": 1
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><figure style=\"margin:12px 0\"><img src=\"lg-image-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef.png\" style=\"max-width:100%;height:auto\" alt=\"\"></figure></div>",
+        "htmlBytes": 248,
+        "htmlSHA256": "75b249c1775df6d4c929b6bf1d79fc02563b7b80bded7f022f139b61e2edc729",
+        "images": [
+          "lg-image-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef.png"
+        ],
+        "meaningful": true,
+        "valid": true
+      }
+    },
+    {
+      "id": "width-zero",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "image",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "width": 0,
+          "height": 1,
+          "byteCount": 1
+        }
+      ],
+      "expected": {
+        "html": null,
+        "htmlBytes": null,
+        "htmlSHA256": null,
+        "images": [
+          "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png"
+        ],
+        "meaningful": true,
+        "valid": false
+      }
+    },
+    {
+      "id": "width-negative",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "image",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "width": -1,
+          "height": 1,
+          "byteCount": 1
+        }
+      ],
+      "expected": {
+        "html": null,
+        "htmlBytes": null,
+        "htmlSHA256": null,
+        "images": [
+          "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png"
+        ],
+        "meaningful": true,
+        "valid": false
+      }
+    },
+    {
+      "id": "width-limit",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "image",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "width": 1600,
+          "height": 1,
+          "byteCount": 1
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><figure style=\"margin:12px 0\"><img src=\"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\" style=\"max-width:100%;height:auto\" alt=\"\"></figure></div>",
+        "htmlBytes": 248,
+        "htmlSHA256": "7c5d33e4ccdafb6a2fda51d583e5bdf44160d0dd2bc3f86110cb10d71ffb36ab",
+        "images": [
+          "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png"
+        ],
+        "meaningful": true,
+        "valid": true
+      }
+    },
+    {
+      "id": "width-over",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "image",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "width": 1601,
+          "height": 1,
+          "byteCount": 1
+        }
+      ],
+      "expected": {
+        "html": null,
+        "htmlBytes": null,
+        "htmlSHA256": null,
+        "images": [
+          "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png"
+        ],
+        "meaningful": true,
+        "valid": false
+      }
+    },
+    {
+      "id": "height-over",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "image",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "width": 1,
+          "height": 1601,
+          "byteCount": 1
+        }
+      ],
+      "expected": {
+        "html": null,
+        "htmlBytes": null,
+        "htmlSHA256": null,
+        "images": [
+          "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png"
+        ],
+        "meaningful": true,
+        "valid": false
+      }
+    },
+    {
+      "id": "dimensions-int64",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "image",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "width": 9223372036854775807,
+          "height": 9223372036854775807,
+          "byteCount": 1
+        }
+      ],
+      "expected": {
+        "html": null,
+        "htmlBytes": null,
+        "htmlSHA256": null,
+        "images": [
+          "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png"
+        ],
+        "meaningful": true,
+        "valid": false
+      }
+    },
+    {
+      "id": "bytes-zero",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "image",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "width": 1,
+          "height": 1,
+          "byteCount": 0
+        }
+      ],
+      "expected": {
+        "html": null,
+        "htmlBytes": null,
+        "htmlSHA256": null,
+        "images": [
+          "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png"
+        ],
+        "meaningful": true,
+        "valid": false
+      }
+    },
+    {
+      "id": "bytes-negative",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "image",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "width": 1,
+          "height": 1,
+          "byteCount": -1
+        }
+      ],
+      "expected": {
+        "html": null,
+        "htmlBytes": null,
+        "htmlSHA256": null,
+        "images": [
+          "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png"
+        ],
+        "meaningful": true,
+        "valid": false
+      }
+    },
+    {
+      "id": "bytes-limit",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "image",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "width": 1,
+          "height": 1,
+          "byteCount": 4194304
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><figure style=\"margin:12px 0\"><img src=\"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\" style=\"max-width:100%;height:auto\" alt=\"\"></figure></div>",
+        "htmlBytes": 248,
+        "htmlSHA256": "7c5d33e4ccdafb6a2fda51d583e5bdf44160d0dd2bc3f86110cb10d71ffb36ab",
+        "images": [
+          "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png"
+        ],
+        "meaningful": true,
+        "valid": true
+      }
+    },
+    {
+      "id": "bytes-over",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "image",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "width": 1,
+          "height": 1,
+          "byteCount": 4194305
+        }
+      ],
+      "expected": {
+        "html": null,
+        "htmlBytes": null,
+        "htmlSHA256": null,
+        "images": [
+          "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png"
+        ],
+        "meaningful": true,
+        "valid": false
+      }
+    },
+    {
+      "id": "bytes-int64",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "image",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "width": 1,
+          "height": 1,
+          "byteCount": 9223372036854775807
+        }
+      ],
+      "expected": {
+        "html": null,
+        "htmlBytes": null,
+        "htmlSHA256": null,
+        "images": [
+          "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png"
+        ],
+        "meaningful": true,
+        "valid": false
+      }
+    },
+    {
+      "id": "two-int64-counts",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "regression-adaptation",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "image",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "width": 1,
+          "height": 1,
+          "byteCount": 9223372036854775807
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000002",
+          "kind": "image",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "width": 1,
+          "height": 1,
+          "byteCount": 9223372036854775807
+        }
+      ],
+      "macTest": "CotabbyTests/Services/Vocabulary/VocabularyContentTests.swift",
+      "macTestMethod": "invalidCountsAndOversizedReadsThrowInsteadOfAllocatingOrOverflowing",
+      "expected": {
+        "html": null,
+        "htmlBytes": null,
+        "htmlSHA256": null,
+        "images": [
+          "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+          "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png"
+        ],
+        "meaningful": true,
+        "valid": false
+      }
+    },
+    {
+      "id": "reused-image-4-occurrences",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "image",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "width": 1,
+          "height": 1,
+          "byteCount": 4194304
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000002",
+          "kind": "image",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "width": 1,
+          "height": 1,
+          "byteCount": 4194304
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000003",
+          "kind": "image",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "width": 1,
+          "height": 1,
+          "byteCount": 4194304
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000004",
+          "kind": "image",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "width": 1,
+          "height": 1,
+          "byteCount": 4194304
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><figure style=\"margin:12px 0\"><img src=\"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\" style=\"max-width:100%;height:auto\" alt=\"\"></figure><figure style=\"margin:12px 0\"><img src=\"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\" style=\"max-width:100%;height:auto\" alt=\"\"></figure><figure style=\"margin:12px 0\"><img src=\"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\" style=\"max-width:100%;height:auto\" alt=\"\"></figure><figure style=\"margin:12px 0\"><img src=\"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\" style=\"max-width:100%;height:auto\" alt=\"\"></figure></div>",
+        "htmlBytes": 758,
+        "htmlSHA256": "50cff7ef2c27ad061e66a2c868d029f97844a5e24bea30b7b6fcbe3fa6fa0f06",
+        "images": [
+          "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+          "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+          "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+          "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png"
+        ],
+        "meaningful": true,
+        "valid": true
+      }
+    },
+    {
+      "id": "reused-image-5-occurrences",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "image",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "width": 1,
+          "height": 1,
+          "byteCount": 4194304
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000002",
+          "kind": "image",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "width": 1,
+          "height": 1,
+          "byteCount": 4194304
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000003",
+          "kind": "image",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "width": 1,
+          "height": 1,
+          "byteCount": 4194304
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000004",
+          "kind": "image",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "width": 1,
+          "height": 1,
+          "byteCount": 4194304
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000005",
+          "kind": "image",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "width": 1,
+          "height": 1,
+          "byteCount": 4194304
+        }
+      ],
+      "expected": {
+        "html": null,
+        "htmlBytes": null,
+        "htmlSHA256": null,
+        "images": [
+          "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+          "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+          "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+          "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+          "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png"
+        ],
+        "meaningful": true,
+        "valid": false
+      }
+    },
+    {
+      "id": "block-count-64",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000002",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000003",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000004",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000005",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000006",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000007",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000008",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000009",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000000a",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000000b",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000000c",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000000d",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000000e",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000000f",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000010",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000011",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000012",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000013",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000014",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000015",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000016",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000017",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000018",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000019",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000001a",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000001b",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000001c",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000001d",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000001e",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000001f",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000020",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000021",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000022",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000023",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000024",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000025",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000026",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000027",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000028",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000029",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000002a",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000002b",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000002c",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000002d",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000002e",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000002f",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000030",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000031",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000032",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000033",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000034",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000035",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000036",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000037",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000038",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000039",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000003a",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000003b",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000003c",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000003d",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000003e",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000003f",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000040",
+          "kind": "text"
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p></div>",
+        "htmlBytes": 526,
+        "htmlSHA256": "5fddb76a0896f06e53f974aa1f08c09296a0ed0fc68c3b8657caedfb7b5c842c",
+        "images": [],
+        "meaningful": false,
+        "valid": true
+      }
+    },
+    {
+      "id": "block-count-65",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000002",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000003",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000004",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000005",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000006",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000007",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000008",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000009",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000000a",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000000b",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000000c",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000000d",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000000e",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000000f",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000010",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000011",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000012",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000013",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000014",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000015",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000016",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000017",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000018",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000019",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000001a",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000001b",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000001c",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000001d",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000001e",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000001f",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000020",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000021",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000022",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000023",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000024",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000025",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000026",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000027",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000028",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000029",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000002a",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000002b",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000002c",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000002d",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000002e",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000002f",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000030",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000031",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000032",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000033",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000034",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000035",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000036",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000037",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000038",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000039",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000003a",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000003b",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000003c",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000003d",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000003e",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-00000000003f",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000040",
+          "kind": "text"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000041",
+          "kind": "text"
+        }
+      ],
+      "expected": {
+        "html": null,
+        "htmlBytes": null,
+        "htmlSHA256": null,
+        "images": [],
+        "meaningful": false,
+        "valid": false
+      }
+    },
+    {
+      "id": "duplicate-id-different-content",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": "first"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "image",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "width": 1,
+          "height": 1,
+          "byteCount": 1
+        }
+      ],
+      "expected": {
+        "html": null,
+        "htmlBytes": null,
+        "htmlSHA256": null,
+        "images": [
+          "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png"
+        ],
+        "meaningful": true,
+        "valid": false
+      }
+    },
+    {
+      "id": "zero-uuid-retained",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000000",
+          "kind": "text",
+          "text": "original"
+        }
+      ],
+      "expected": {
+        "html": "<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><p>original</p></div>",
+        "htmlBytes": 93,
+        "htmlSHA256": "9b8c35ce56d733043e35567bf38ffcfdd3ad47634945f4191cc4b1d040689084",
+        "images": [],
+        "meaningful": true,
+        "valid": true
+      }
+    },
+    {
+      "id": "text-ascii-262144",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": {
+            "repeating": "a",
+            "count": 262144
+          }
+        }
+      ],
+      "expected": {
+        "html": null,
+        "htmlBytes": 262229,
+        "htmlSHA256": "c2419674a737afc8238a6149d1d33e0588ab3f63eccf615c363fb94ef40cb58b",
+        "images": [],
+        "meaningful": true,
+        "valid": true
+      }
+    },
+    {
+      "id": "text-ascii-262145",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": {
+            "repeating": "a",
+            "count": 262145
+          }
+        }
+      ],
+      "expected": {
+        "html": null,
+        "htmlBytes": null,
+        "htmlSHA256": null,
+        "images": [],
+        "meaningful": true,
+        "valid": false
+      }
+    },
+    {
+      "id": "text-two-byte-131072",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": {
+            "repeating": "é",
+            "count": 131072
+          }
+        }
+      ],
+      "expected": {
+        "html": null,
+        "htmlBytes": 262229,
+        "htmlSHA256": "6fb816af8e2d41550313dced989bf2a5f791f75964cbdb31ef0df7b12aab8057",
+        "images": [],
+        "meaningful": true,
+        "valid": true
+      }
+    },
+    {
+      "id": "text-two-byte-131073",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": {
+            "repeating": "é",
+            "count": 131073
+          }
+        }
+      ],
+      "expected": {
+        "html": null,
+        "htmlBytes": null,
+        "htmlSHA256": null,
+        "images": [],
+        "meaningful": true,
+        "valid": false
+      }
+    },
+    {
+      "id": "text-emoji-65536",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": {
+            "repeating": "😀",
+            "count": 65536
+          }
+        }
+      ],
+      "expected": {
+        "html": null,
+        "htmlBytes": 262229,
+        "htmlSHA256": "640d2020ccf23da757db00b12118269b542256f491fc721aba642511dd78542e",
+        "images": [],
+        "meaningful": true,
+        "valid": true
+      }
+    },
+    {
+      "id": "text-emoji-65537",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": {
+            "repeating": "😀",
+            "count": 65537
+          }
+        }
+      ],
+      "expected": {
+        "html": null,
+        "htmlBytes": null,
+        "htmlSHA256": null,
+        "images": [],
+        "meaningful": true,
+        "valid": false
+      }
+    },
+    {
+      "id": "text-decomposed-87381",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": {
+            "repeating": "é",
+            "count": 87381
+          }
+        }
+      ],
+      "expected": {
+        "html": null,
+        "htmlBytes": 262228,
+        "htmlSHA256": "f0d384469d25a160c33642cf0991152374932c6f785ee81899a9dfb847f609a7",
+        "images": [],
+        "meaningful": true,
+        "valid": true
+      }
+    },
+    {
+      "id": "text-decomposed-87382",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "text",
+          "text": {
+            "repeating": "é",
+            "count": 87382
+          }
+        }
+      ],
+      "expected": {
+        "html": null,
+        "htmlBytes": null,
+        "htmlSHA256": null,
+        "images": [],
+        "meaningful": true,
+        "valid": false
+      }
+    },
+    {
+      "id": "caption-two-byte-8192",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "image",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "width": 1,
+          "height": 1,
+          "byteCount": 1,
+          "caption": {
+            "repeating": "é",
+            "count": 8192
+          }
+        }
+      ],
+      "expected": {
+        "html": null,
+        "htmlBytes": 33041,
+        "htmlSHA256": "b8bb310fe91ecbc91f0660bd749fcf39e134954379bd46fbbe292a1661ad4228",
+        "images": [
+          "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png"
+        ],
+        "meaningful": true,
+        "valid": true
+      }
+    },
+    {
+      "id": "caption-two-byte-8193",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyContentPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": [
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "image",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "width": 1,
+          "height": 1,
+          "byteCount": 1,
+          "caption": {
+            "repeating": "é",
+            "count": 8193
+          }
+        }
+      ],
+      "expected": {
+        "html": null,
+        "htmlBytes": null,
+        "htmlSHA256": null,
+        "images": [
+          "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png"
+        ],
+        "meaningful": true,
+        "valid": false
+      }
+    }
+  ]
+}

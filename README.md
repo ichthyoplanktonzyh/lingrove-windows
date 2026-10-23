@@ -122,13 +122,16 @@ python3 scripts/verify-learning-local-macos-parity.py --mac-repo /path/to/macOS-
 python3 scripts/verify-learning-lexical-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-learning-explanation-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-learning-capture-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
+python3 scripts/verify-vocabulary-content-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 ```
 
 The Swift verifiers require Xcode 26 and exercise 17 autocomplete, 64 learning, 45 local-learning,
-34 lexical, 19 dictionary-policy, 68 explanation, 52 explanation-model and 33 writing-capture fixture cases/checks, plus pinned resource integrity/Codable checks
+34 lexical, 19 dictionary-policy, 68 explanation, 52 explanation-model 33 writing-capture and 72 sense-content fixture cases/checks, plus pinned resource integrity/Codable checks
 against committed pure Mac policies. They do not build or launch the macOS app. Routine validation does not run the
 `Cotabby.Tools.*Smoke` projects: those may require an interactive Windows desktop or downloaded
 model weights.
+
+The [sense-content library](docs/VOCABULARY_CONTENT.md) ports stable text/image block values, UTF-8/media metadata budgets and literal review HTML. Notebook storage, image preparation and Anki remain unfinished.
 
 Windows CI also executes the [compiled WPF learning-view suite](docs/WPF_VIEW_TESTS.md): actual
 XAML/resource loading, window layout, in-memory rendering, native no-activation styles and

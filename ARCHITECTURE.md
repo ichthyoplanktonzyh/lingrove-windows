@@ -194,7 +194,7 @@ immutable dataset, Chinese language sharing, lookup and cancellation contracts.
 The durable vocabulary model is separate from transient translation output. The macOS reference uses
 stable entry UUIDs, stable sense UUIDs, example/usage UUIDs with source ranges and provenance, and
 independent review-card identities. Preserve those semantics in any Windows schema and migration.
-Generated explanations can be refreshed; user-authored notes and identity cannot be overwritten by a
+The [sense-content library](docs/VOCABULARY_CONTENT.md) now owns immutable text/image blocks and pure validation/HTML rules in Core. It supplies no archive, media or UI effects. Generated explanations can be refreshed; user-authored notes and identity cannot be overwritten by a
 refresh. Notebook images, graph relationships, and exports belong to a vocabulary store service,
 not to a translation prompt or WPF window. No cloud sync is planned.
 

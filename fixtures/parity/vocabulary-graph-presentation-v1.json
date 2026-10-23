@@ -1,0 +1,1948 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "c-default",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "data": "eyJub2RlU2l6ZSI6MTcsImxpbmtXaWR0aCI6MSwibGFiZWxzIjoiYXV0b21hdGljIiwiY2VudGVyIjowLjAwOCwicmVwdWxzaW9uIjozMjAsImxpbmtTdHJlbmd0aCI6MC4xNCwibGlua0Rpc3RhbmNlIjoxMDV9",
+      "expected": {
+        "decoded": {
+          "center": 0.008,
+          "labels": "automatic",
+          "linkDistance": 105,
+          "linkStrength": 0.14,
+          "linkWidth": 1,
+          "nodeSize": 17,
+          "repulsion": 320
+        },
+        "normalized": {
+          "center": 0.008,
+          "labels": "automatic",
+          "linkDistance": 105,
+          "linkStrength": 0.14,
+          "linkWidth": 1,
+          "nodeSize": 17,
+          "repulsion": 320
+        }
+      }
+    },
+    {
+      "id": "c-custom",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "data": "eyJub2RlU2l6ZSI6MjEuNSwibGlua1dpZHRoIjoyLjMsImxhYmVscyI6ImZvY3VzZWQiLCJjZW50ZXIiOjAuMDQsInJlcHVsc2lvbiI6MzMzLCJsaW5rU3RyZW5ndGgiOjAuMywibGlua0Rpc3RhbmNlIjoxNDB9",
+      "expected": {
+        "decoded": {
+          "center": 0.04,
+          "labels": "focused",
+          "linkDistance": 140,
+          "linkStrength": 0.3,
+          "linkWidth": 2.3,
+          "nodeSize": 21.5,
+          "repulsion": 333
+        },
+        "normalized": {
+          "center": 0.04,
+          "labels": "focused",
+          "linkDistance": 140,
+          "linkStrength": 0.3,
+          "linkWidth": 2.3,
+          "nodeSize": 21.5,
+          "repulsion": 333
+        }
+      }
+    },
+    {
+      "id": "c-clamp",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "data": "eyJub2RlU2l6ZSI6OTk5LCJsaW5rV2lkdGgiOi0xLCJsYWJlbHMiOiJhbGwiLCJjZW50ZXIiOi0xLCJyZXB1bHNpb24iOjk5OTksImxpbmtTdHJlbmd0aCI6OTksImxpbmtEaXN0YW5jZSI6LTF9",
+      "expected": {
+        "decoded": {
+          "center": -1,
+          "labels": "all",
+          "linkDistance": -1,
+          "linkStrength": 99,
+          "linkWidth": -1,
+          "nodeSize": 999,
+          "repulsion": 9999
+        },
+        "normalized": {
+          "center": 0,
+          "labels": "all",
+          "linkDistance": 60,
+          "linkStrength": 0.7,
+          "linkWidth": 0.5,
+          "nodeSize": 28,
+          "repulsion": 1200
+        }
+      }
+    },
+    {
+      "id": "c-partial",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "data": "e30=",
+      "expected": {
+        "decoded": null,
+        "normalized": null
+      }
+    },
+    {
+      "id": "c-missing-node",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "data": "eyJsaW5rV2lkdGgiOjEsImxhYmVscyI6ImF1dG9tYXRpYyIsImNlbnRlciI6MC4wMDgsInJlcHVsc2lvbiI6MzIwLCJsaW5rU3RyZW5ndGgiOjAuMTQsImxpbmtEaXN0YW5jZSI6MTA1fQ==",
+      "expected": {
+        "decoded": null,
+        "normalized": null
+      }
+    },
+    {
+      "id": "c-wrong-root",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "data": "W10=",
+      "expected": {
+        "decoded": null,
+        "normalized": null
+      }
+    },
+    {
+      "id": "c-bool-number",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "data": "eyJub2RlU2l6ZSI6dHJ1ZSwibGlua1dpZHRoIjoxLCJsYWJlbHMiOiJhdXRvbWF0aWMiLCJjZW50ZXIiOjAuMDA4LCJyZXB1bHNpb24iOjMyMCwibGlua1N0cmVuZ3RoIjowLjE0LCJsaW5rRGlzdGFuY2UiOjEwNX0=",
+      "expected": {
+        "decoded": null,
+        "normalized": null
+      }
+    },
+    {
+      "id": "c-string-number",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "data": "eyJub2RlU2l6ZSI6IjE3IiwibGlua1dpZHRoIjoxLCJsYWJlbHMiOiJhdXRvbWF0aWMiLCJjZW50ZXIiOjAuMDA4LCJyZXB1bHNpb24iOjMyMCwibGlua1N0cmVuZ3RoIjowLjE0LCJsaW5rRGlzdGFuY2UiOjEwNX0=",
+      "expected": {
+        "decoded": null,
+        "normalized": null
+      }
+    },
+    {
+      "id": "c-null-number",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "data": "eyJub2RlU2l6ZSI6bnVsbCwibGlua1dpZHRoIjoxLCJsYWJlbHMiOiJhdXRvbWF0aWMiLCJjZW50ZXIiOjAuMDA4LCJyZXB1bHNpb24iOjMyMCwibGlua1N0cmVuZ3RoIjowLjE0LCJsaW5rRGlzdGFuY2UiOjEwNX0=",
+      "expected": {
+        "decoded": null,
+        "normalized": null
+      }
+    },
+    {
+      "id": "c-overflow",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "data": "eyJub2RlU2l6ZSI6MWU0MDAsImxpbmtXaWR0aCI6MSwibGFiZWxzIjoiYXV0b21hdGljIiwiY2VudGVyIjowLjAwOCwicmVwdWxzaW9uIjozMjAsImxpbmtTdHJlbmd0aCI6MC4xNCwibGlua0Rpc3RhbmNlIjoxMDV9",
+      "expected": {
+        "decoded": null,
+        "normalized": null
+      }
+    },
+    {
+      "id": "c-unknown-label",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "data": "eyJub2RlU2l6ZSI6MTcsImxpbmtXaWR0aCI6MSwibGFiZWxzIjoidW5rbm93biIsImNlbnRlciI6MC4wMDgsInJlcHVsc2lvbiI6MzIwLCJsaW5rU3RyZW5ndGgiOjAuMTQsImxpbmtEaXN0YW5jZSI6MTA1fQ==",
+      "expected": {
+        "decoded": null,
+        "normalized": null
+      }
+    },
+    {
+      "id": "c-case-label",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "data": "eyJub2RlU2l6ZSI6MTcsImxpbmtXaWR0aCI6MSwibGFiZWxzIjoiQXV0b21hdGljIiwiY2VudGVyIjowLjAwOCwicmVwdWxzaW9uIjozMjAsImxpbmtTdHJlbmd0aCI6MC4xNCwibGlua0Rpc3RhbmNlIjoxMDV9",
+      "expected": {
+        "decoded": null,
+        "normalized": null
+      }
+    },
+    {
+      "id": "c-number-label",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "data": "eyJub2RlU2l6ZSI6MTcsImxpbmtXaWR0aCI6MSwibGFiZWxzIjowLCJjZW50ZXIiOjAuMDA4LCJyZXB1bHNpb24iOjMyMCwibGlua1N0cmVuZ3RoIjowLjE0LCJsaW5rRGlzdGFuY2UiOjEwNX0=",
+      "expected": {
+        "decoded": null,
+        "normalized": null
+      }
+    },
+    {
+      "id": "c-null-label",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "data": "eyJub2RlU2l6ZSI6MTcsImxpbmtXaWR0aCI6MSwibGFiZWxzIjpudWxsLCJjZW50ZXIiOjAuMDA4LCJyZXB1bHNpb24iOjMyMCwibGlua1N0cmVuZ3RoIjowLjE0LCJsaW5rRGlzdGFuY2UiOjEwNX0=",
+      "expected": {
+        "decoded": null,
+        "normalized": null
+      }
+    },
+    {
+      "id": "c-extra",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "data": "eyJub2RlU2l6ZSI6MTcsImxpbmtXaWR0aCI6MSwibGFiZWxzIjoiYXV0b21hdGljIiwiY2VudGVyIjowLjAwOCwicmVwdWxzaW9uIjozMjAsImxpbmtTdHJlbmd0aCI6MC4xNCwibGlua0Rpc3RhbmNlIjoxMDUsImZ1dHVyZSI6InJldGFpbmVkIG9ubHkgaW4gaW5pdGlhbCByYXcgcHJlZmVyZW5jZSJ9",
+      "expected": {
+        "decoded": {
+          "center": 0.008,
+          "labels": "automatic",
+          "linkDistance": 105,
+          "linkStrength": 0.14,
+          "linkWidth": 1,
+          "nodeSize": 17,
+          "repulsion": 320
+        },
+        "normalized": {
+          "center": 0.008,
+          "labels": "automatic",
+          "linkDistance": 105,
+          "linkStrength": 0.14,
+          "linkWidth": 1,
+          "nodeSize": 17,
+          "repulsion": 320
+        }
+      }
+    },
+    {
+      "id": "c-duplicate",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "data": "eyJub2RlU2l6ZSI6MTcsImxpbmtXaWR0aCI6MSwibGFiZWxzIjoiYXV0b21hdGljIiwiY2VudGVyIjowLjAwOCwicmVwdWxzaW9uIjozMjAsImxpbmtTdHJlbmd0aCI6MC4xNCwibGlua0Rpc3RhbmNlIjoxMDUsIm5vZGVTaXplIjoyMn0=",
+      "expected": {
+        "decoded": {
+          "center": 0.008,
+          "labels": "automatic",
+          "linkDistance": 105,
+          "linkStrength": 0.14,
+          "linkWidth": 1,
+          "nodeSize": 17,
+          "repulsion": 320
+        },
+        "normalized": {
+          "center": 0.008,
+          "labels": "automatic",
+          "linkDistance": 105,
+          "linkStrength": 0.14,
+          "linkWidth": 1,
+          "nodeSize": 17,
+          "repulsion": 320
+        }
+      }
+    },
+    {
+      "id": "c-duplicate-invalid-first",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "data": "eyJub2RlU2l6ZSI6ImJhZCIsIm5vZGVTaXplIjoxNywibGlua1dpZHRoIjoxLCJsYWJlbHMiOiJhdXRvbWF0aWMiLCJjZW50ZXIiOjAuMDA4LCJyZXB1bHNpb24iOjMyMCwibGlua1N0cmVuZ3RoIjowLjE0LCJsaW5rRGlzdGFuY2UiOjEwNX0=",
+      "expected": {
+        "decoded": null,
+        "normalized": null
+      }
+    },
+    {
+      "id": "c-duplicate-invalid-last",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "data": "eyJub2RlU2l6ZSI6MTcsImxpbmtXaWR0aCI6MSwibGFiZWxzIjoiYXV0b21hdGljIiwiY2VudGVyIjowLjAwOCwicmVwdWxzaW9uIjozMjAsImxpbmtTdHJlbmd0aCI6MC4xNCwibGlua0Rpc3RhbmNlIjoxMDUsIm5vZGVTaXplIjoiYmFkIn0=",
+      "expected": {
+        "decoded": {
+          "center": 0.008,
+          "labels": "automatic",
+          "linkDistance": 105,
+          "linkStrength": 0.14,
+          "linkWidth": 1,
+          "nodeSize": 17,
+          "repulsion": 320
+        },
+        "normalized": {
+          "center": 0.008,
+          "labels": "automatic",
+          "linkDistance": 105,
+          "linkStrength": 0.14,
+          "linkWidth": 1,
+          "nodeSize": 17,
+          "repulsion": 320
+        }
+      }
+    },
+    {
+      "id": "c-utf8-bom",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "data": "77u/eyJub2RlU2l6ZSI6MTcsImxpbmtXaWR0aCI6MSwibGFiZWxzIjoiYXV0b21hdGljIiwiY2VudGVyIjowLjAwOCwicmVwdWxzaW9uIjozMjAsImxpbmtTdHJlbmd0aCI6MC4xNCwibGlua0Rpc3RhbmNlIjoxMDV9",
+      "expected": {
+        "decoded": {
+          "center": 0.008,
+          "labels": "automatic",
+          "linkDistance": 105,
+          "linkStrength": 0.14,
+          "linkWidth": 1,
+          "nodeSize": 17,
+          "repulsion": 320
+        },
+        "normalized": {
+          "center": 0.008,
+          "labels": "automatic",
+          "linkDistance": 105,
+          "linkStrength": 0.14,
+          "linkWidth": 1,
+          "nodeSize": 17,
+          "repulsion": 320
+        }
+      }
+    },
+    {
+      "id": "c-utf16-be",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyGraphModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "data": "/v8AewAiAG4AbwBkAGUAUwBpAHoAZQAiADoAMQA3ACwAIgBsAGkAbgBrAFcAaQBkAHQAaAAiADoAMQAsACIAbABhAGIAZQBsAHMAIgA6ACIAYQB1AHQAbwBtAGEAdABpAGMAIgAsACIAYwBlAG4AdABlAHIAIgA6ADAALgAwADAAOAAsACIAcgBlAHAAdQBsAHMAaQBvAG4AIgA6ADMAMgAwACwAIgBsAGkAbgBrAFMAdAByAGUAbgBnAHQAaAAiADoAMAAuADEANAAsACIAbABpAG4AawBEAGkAcwB0AGEAbgBjAGUAIgA6ADEAMAA1AH0=",
+      "expected": {
+        "decoded": {
+          "center": 0.008,
+          "labels": "automatic",
+          "linkDistance": 105,
+          "linkStrength": 0.14,
+          "linkWidth": 1,
+          "nodeSize": 17,
+          "repulsion": 320
+        },
+        "normalized": {
+          "center": 0.008,
+          "labels": "automatic",
+          "linkDistance": 105,
+          "linkStrength": 0.14,
+          "linkWidth": 1,
+          "nodeSize": 17,
+          "repulsion": 320
+        }
+      }
+    },
+    {
+      "id": "p-default",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyGraphPresentation.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [],
+      "expected": [
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "fit",
+          "epoch": null,
+          "expanded": [],
+          "fitsInitial": true,
+          "focused": null,
+          "hasCamera": false,
+          "hasData": false,
+          "saved": null,
+          "serial": 0,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        }
+      ]
+    },
+    {
+      "id": "p-valid-init",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyGraphPresentation.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [],
+      "data": "eyJub2RlU2l6ZSI6MjEuNSwibGlua1dpZHRoIjoyLjMsImxhYmVscyI6ImZvY3VzZWQiLCJjZW50ZXIiOjAuMDQsInJlcHVsc2lvbiI6MzMzLCJsaW5rU3RyZW5ndGgiOjAuMywibGlua0Rpc3RhbmNlIjoxNDB9",
+      "expected": [
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "fit",
+          "epoch": null,
+          "expanded": [],
+          "fitsInitial": true,
+          "focused": null,
+          "hasCamera": false,
+          "hasData": true,
+          "saved": {
+            "center": 0.04,
+            "labels": "focused",
+            "linkDistance": 140,
+            "linkStrength": 0.3,
+            "linkWidth": 2.3,
+            "nodeSize": 21.5,
+            "repulsion": 333
+          },
+          "serial": 0,
+          "settings": {
+            "center": 0.04,
+            "labels": "focused",
+            "linkDistance": 140,
+            "linkStrength": 0.3,
+            "linkWidth": 2.3,
+            "nodeSize": 21.5,
+            "repulsion": 333
+          }
+        }
+      ]
+    },
+    {
+      "id": "p-invalid-init",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyGraphPresentation.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [],
+      "data": "aW52YWxpZCBwcml2YXRlIGRhdGE=",
+      "expected": [
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "fit",
+          "epoch": null,
+          "expanded": [],
+          "fitsInitial": true,
+          "focused": null,
+          "hasCamera": false,
+          "hasData": true,
+          "saved": null,
+          "serial": 0,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        }
+      ]
+    },
+    {
+      "id": "p-normalized-init",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyGraphPresentation.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [],
+      "data": "eyJub2RlU2l6ZSI6OTk5LCJsaW5rV2lkdGgiOi0xLCJsYWJlbHMiOiJhbGwiLCJjZW50ZXIiOi0xLCJyZXB1bHNpb24iOjk5OTksImxpbmtTdHJlbmd0aCI6OTksImxpbmtEaXN0YW5jZSI6LTF9",
+      "expected": [
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "fit",
+          "epoch": null,
+          "expanded": [],
+          "fitsInitial": true,
+          "focused": null,
+          "hasCamera": false,
+          "hasData": true,
+          "saved": {
+            "center": -1,
+            "labels": "all",
+            "linkDistance": -1,
+            "linkStrength": 99,
+            "linkWidth": -1,
+            "nodeSize": 999,
+            "repulsion": 9999
+          },
+          "serial": 0,
+          "settings": {
+            "center": 0,
+            "labels": "all",
+            "linkDistance": 60,
+            "linkStrength": 0.7,
+            "linkWidth": 0.5,
+            "nodeSize": 28,
+            "repulsion": 1200
+          }
+        }
+      ]
+    },
+    {
+      "id": "p-toggle",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyGraphPresentation.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "toggle",
+          "entry": 1
+        },
+        {
+          "op": "toggle",
+          "entry": 1
+        }
+      ],
+      "expected": [
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "fit",
+          "epoch": null,
+          "expanded": [],
+          "fitsInitial": true,
+          "focused": null,
+          "hasCamera": false,
+          "hasData": false,
+          "saved": null,
+          "serial": 0,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        },
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "fit",
+          "epoch": null,
+          "expanded": [
+            "00000000-0000-0000-0000-000000000001"
+          ],
+          "fitsInitial": true,
+          "focused": "00000000-0000-0000-0000-000000000001",
+          "hasCamera": false,
+          "hasData": false,
+          "saved": null,
+          "serial": 0,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        },
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "fit",
+          "epoch": null,
+          "expanded": [],
+          "fitsInitial": true,
+          "focused": null,
+          "hasCamera": false,
+          "hasData": false,
+          "saved": null,
+          "serial": 0,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        }
+      ]
+    },
+    {
+      "id": "p-toggle-other",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyGraphPresentation.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "toggle",
+          "entry": 1
+        },
+        {
+          "op": "toggle",
+          "entry": 2
+        },
+        {
+          "op": "toggle",
+          "entry": 1
+        }
+      ],
+      "expected": [
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "fit",
+          "epoch": null,
+          "expanded": [],
+          "fitsInitial": true,
+          "focused": null,
+          "hasCamera": false,
+          "hasData": false,
+          "saved": null,
+          "serial": 0,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        },
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "fit",
+          "epoch": null,
+          "expanded": [
+            "00000000-0000-0000-0000-000000000001"
+          ],
+          "fitsInitial": true,
+          "focused": "00000000-0000-0000-0000-000000000001",
+          "hasCamera": false,
+          "hasData": false,
+          "saved": null,
+          "serial": 0,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        },
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "fit",
+          "epoch": null,
+          "expanded": [
+            "00000000-0000-0000-0000-000000000001",
+            "00000000-0000-0000-0000-000000000002"
+          ],
+          "fitsInitial": true,
+          "focused": "00000000-0000-0000-0000-000000000002",
+          "hasCamera": false,
+          "hasData": false,
+          "saved": null,
+          "serial": 0,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        },
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "fit",
+          "epoch": null,
+          "expanded": [
+            "00000000-0000-0000-0000-000000000002"
+          ],
+          "fitsInitial": true,
+          "focused": "00000000-0000-0000-0000-000000000002",
+          "hasCamera": false,
+          "hasData": false,
+          "saved": null,
+          "serial": 0,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        }
+      ]
+    },
+    {
+      "id": "p-reveal",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyGraphPresentation.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "reveal",
+          "entry": 1,
+          "sense": 2
+        },
+        {
+          "op": "reveal",
+          "entry": 1,
+          "sense": 3
+        },
+        {
+          "op": "reveal",
+          "entry": 2,
+          "sense": 4
+        }
+      ],
+      "expected": [
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "fit",
+          "epoch": null,
+          "expanded": [],
+          "fitsInitial": true,
+          "focused": null,
+          "hasCamera": false,
+          "hasData": false,
+          "saved": null,
+          "serial": 0,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        },
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "fit",
+          "epoch": null,
+          "expanded": [
+            "00000000-0000-0000-0000-000000000001"
+          ],
+          "fitsInitial": true,
+          "focused": "00000000-0000-0000-0000-000000000001",
+          "hasCamera": false,
+          "hasData": false,
+          "saved": null,
+          "serial": 0,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        },
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "fit",
+          "epoch": null,
+          "expanded": [
+            "00000000-0000-0000-0000-000000000001"
+          ],
+          "fitsInitial": true,
+          "focused": "00000000-0000-0000-0000-000000000001",
+          "hasCamera": false,
+          "hasData": false,
+          "saved": null,
+          "serial": 0,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        },
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "fit",
+          "epoch": null,
+          "expanded": [
+            "00000000-0000-0000-0000-000000000001",
+            "00000000-0000-0000-0000-000000000002"
+          ],
+          "fitsInitial": true,
+          "focused": "00000000-0000-0000-0000-000000000002",
+          "hasCamera": false,
+          "hasData": false,
+          "saved": null,
+          "serial": 0,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        }
+      ]
+    },
+    {
+      "id": "p-reveal-nil",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyGraphPresentation.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "reveal"
+        },
+        {
+          "op": "toggle",
+          "entry": 1
+        },
+        {
+          "op": "reveal"
+        }
+      ],
+      "expected": [
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "fit",
+          "epoch": null,
+          "expanded": [],
+          "fitsInitial": true,
+          "focused": null,
+          "hasCamera": false,
+          "hasData": false,
+          "saved": null,
+          "serial": 0,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        },
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "fit",
+          "epoch": null,
+          "expanded": [],
+          "fitsInitial": true,
+          "focused": null,
+          "hasCamera": false,
+          "hasData": false,
+          "saved": null,
+          "serial": 0,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        },
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "fit",
+          "epoch": null,
+          "expanded": [
+            "00000000-0000-0000-0000-000000000001"
+          ],
+          "fitsInitial": true,
+          "focused": "00000000-0000-0000-0000-000000000001",
+          "hasCamera": false,
+          "hasData": false,
+          "saved": null,
+          "serial": 0,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        },
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "fit",
+          "epoch": null,
+          "expanded": [
+            "00000000-0000-0000-0000-000000000001"
+          ],
+          "fitsInitial": true,
+          "focused": "00000000-0000-0000-0000-000000000001",
+          "hasCamera": false,
+          "hasData": false,
+          "saved": null,
+          "serial": 0,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        }
+      ]
+    },
+    {
+      "id": "p-collapse",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyGraphPresentation.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "toggle",
+          "entry": 1
+        },
+        {
+          "op": "toggle",
+          "entry": 2
+        },
+        {
+          "op": "camera"
+        },
+        {
+          "op": "collapse"
+        }
+      ],
+      "expected": [
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "fit",
+          "epoch": null,
+          "expanded": [],
+          "fitsInitial": true,
+          "focused": null,
+          "hasCamera": false,
+          "hasData": false,
+          "saved": null,
+          "serial": 0,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        },
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "fit",
+          "epoch": null,
+          "expanded": [
+            "00000000-0000-0000-0000-000000000001"
+          ],
+          "fitsInitial": true,
+          "focused": "00000000-0000-0000-0000-000000000001",
+          "hasCamera": false,
+          "hasData": false,
+          "saved": null,
+          "serial": 0,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        },
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "fit",
+          "epoch": null,
+          "expanded": [
+            "00000000-0000-0000-0000-000000000001",
+            "00000000-0000-0000-0000-000000000002"
+          ],
+          "fitsInitial": true,
+          "focused": "00000000-0000-0000-0000-000000000002",
+          "hasCamera": false,
+          "hasData": false,
+          "saved": null,
+          "serial": 0,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        },
+        {
+          "camera": {
+            "offset": [
+              30,
+              -40
+            ],
+            "scale": 2
+          },
+          "command": "fit",
+          "epoch": null,
+          "expanded": [
+            "00000000-0000-0000-0000-000000000001",
+            "00000000-0000-0000-0000-000000000002"
+          ],
+          "fitsInitial": false,
+          "focused": "00000000-0000-0000-0000-000000000002",
+          "hasCamera": true,
+          "hasData": false,
+          "saved": null,
+          "serial": 0,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        },
+        {
+          "camera": {
+            "offset": [
+              30,
+              -40
+            ],
+            "scale": 2
+          },
+          "command": "fit",
+          "epoch": null,
+          "expanded": [],
+          "fitsInitial": false,
+          "focused": null,
+          "hasCamera": true,
+          "hasData": false,
+          "saved": null,
+          "serial": 0,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        }
+      ]
+    },
+    {
+      "id": "p-clear",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyGraphPresentation.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "toggle",
+          "entry": 1
+        },
+        {
+          "op": "clear"
+        }
+      ],
+      "expected": [
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "fit",
+          "epoch": null,
+          "expanded": [],
+          "fitsInitial": true,
+          "focused": null,
+          "hasCamera": false,
+          "hasData": false,
+          "saved": null,
+          "serial": 0,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        },
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "fit",
+          "epoch": null,
+          "expanded": [
+            "00000000-0000-0000-0000-000000000001"
+          ],
+          "fitsInitial": true,
+          "focused": "00000000-0000-0000-0000-000000000001",
+          "hasCamera": false,
+          "hasData": false,
+          "saved": null,
+          "serial": 0,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        },
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "fit",
+          "epoch": null,
+          "expanded": [
+            "00000000-0000-0000-0000-000000000001"
+          ],
+          "fitsInitial": true,
+          "focused": null,
+          "hasCamera": false,
+          "hasData": false,
+          "saved": null,
+          "serial": 0,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        }
+      ]
+    },
+    {
+      "id": "p-commands",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyGraphPresentation.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "send",
+          "command": "zoomIn"
+        },
+        {
+          "op": "send",
+          "command": "zoomOut"
+        },
+        {
+          "op": "send",
+          "command": "fit"
+        },
+        {
+          "op": "send",
+          "command": "locate"
+        }
+      ],
+      "expected": [
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "fit",
+          "epoch": null,
+          "expanded": [],
+          "fitsInitial": true,
+          "focused": null,
+          "hasCamera": false,
+          "hasData": false,
+          "saved": null,
+          "serial": 0,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        },
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "zoomIn",
+          "epoch": null,
+          "expanded": [],
+          "fitsInitial": true,
+          "focused": null,
+          "hasCamera": false,
+          "hasData": false,
+          "saved": null,
+          "serial": 1,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        },
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "zoomOut",
+          "epoch": null,
+          "expanded": [],
+          "fitsInitial": true,
+          "focused": null,
+          "hasCamera": false,
+          "hasData": false,
+          "saved": null,
+          "serial": 2,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        },
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "fit",
+          "epoch": null,
+          "expanded": [],
+          "fitsInitial": true,
+          "focused": null,
+          "hasCamera": false,
+          "hasData": false,
+          "saved": null,
+          "serial": 3,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        },
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "locate",
+          "epoch": null,
+          "expanded": [],
+          "fitsInitial": true,
+          "focused": null,
+          "hasCamera": false,
+          "hasData": false,
+          "saved": null,
+          "serial": 4,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        }
+      ]
+    },
+    {
+      "id": "p-epochs",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyGraphPresentation.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "epoch"
+        },
+        {
+          "op": "toggle",
+          "entry": 1
+        },
+        {
+          "op": "epoch"
+        },
+        {
+          "op": "epoch"
+        }
+      ],
+      "expected": [
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "fit",
+          "epoch": null,
+          "expanded": [],
+          "fitsInitial": true,
+          "focused": null,
+          "hasCamera": false,
+          "hasData": false,
+          "saved": null,
+          "serial": 0,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        },
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "fit",
+          "epoch": 1,
+          "expanded": [],
+          "fitsInitial": true,
+          "focused": null,
+          "hasCamera": false,
+          "hasData": false,
+          "saved": null,
+          "serial": 0,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        },
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "fit",
+          "epoch": null,
+          "expanded": [
+            "00000000-0000-0000-0000-000000000001"
+          ],
+          "fitsInitial": true,
+          "focused": "00000000-0000-0000-0000-000000000001",
+          "hasCamera": false,
+          "hasData": false,
+          "saved": null,
+          "serial": 0,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        },
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "fit",
+          "epoch": 2,
+          "expanded": [
+            "00000000-0000-0000-0000-000000000001"
+          ],
+          "fitsInitial": true,
+          "focused": "00000000-0000-0000-0000-000000000001",
+          "hasCamera": false,
+          "hasData": false,
+          "saved": null,
+          "serial": 0,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        },
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "fit",
+          "epoch": 3,
+          "expanded": [
+            "00000000-0000-0000-0000-000000000001"
+          ],
+          "fitsInitial": true,
+          "focused": "00000000-0000-0000-0000-000000000001",
+          "hasCamera": false,
+          "hasData": false,
+          "saved": null,
+          "serial": 0,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        }
+      ]
+    },
+    {
+      "id": "p-update-settings",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyGraphPresentation.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "settings",
+          "data": "eyJub2RlU2l6ZSI6OTk5LCJsaW5rV2lkdGgiOi0xLCJsYWJlbHMiOiJhbGwiLCJjZW50ZXIiOi0xLCJyZXB1bHNpb24iOjk5OTksImxpbmtTdHJlbmd0aCI6OTksImxpbmtEaXN0YW5jZSI6LTF9"
+        },
+        {
+          "op": "settings",
+          "data": "eyJub2RlU2l6ZSI6MjEuNSwibGlua1dpZHRoIjoyLjMsImxhYmVscyI6ImZvY3VzZWQiLCJjZW50ZXIiOjAuMDQsInJlcHVsc2lvbiI6MzMzLCJsaW5rU3RyZW5ndGgiOjAuMywibGlua0Rpc3RhbmNlIjoxNDB9"
+        }
+      ],
+      "expected": [
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "fit",
+          "epoch": null,
+          "expanded": [],
+          "fitsInitial": true,
+          "focused": null,
+          "hasCamera": false,
+          "hasData": false,
+          "saved": null,
+          "serial": 0,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        },
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "fit",
+          "epoch": null,
+          "expanded": [],
+          "fitsInitial": true,
+          "focused": null,
+          "hasCamera": false,
+          "hasData": true,
+          "saved": {
+            "center": 0,
+            "labels": "all",
+            "linkDistance": 60,
+            "linkStrength": 0.7,
+            "linkWidth": 0.5,
+            "nodeSize": 28,
+            "repulsion": 1200
+          },
+          "serial": 0,
+          "settings": {
+            "center": 0,
+            "labels": "all",
+            "linkDistance": 60,
+            "linkStrength": 0.7,
+            "linkWidth": 0.5,
+            "nodeSize": 28,
+            "repulsion": 1200
+          }
+        },
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "fit",
+          "epoch": null,
+          "expanded": [],
+          "fitsInitial": true,
+          "focused": null,
+          "hasCamera": false,
+          "hasData": true,
+          "saved": {
+            "center": 0.04,
+            "labels": "focused",
+            "linkDistance": 140,
+            "linkStrength": 0.3,
+            "linkWidth": 2.3,
+            "nodeSize": 21.5,
+            "repulsion": 333
+          },
+          "serial": 0,
+          "settings": {
+            "center": 0.04,
+            "labels": "focused",
+            "linkDistance": 140,
+            "linkStrength": 0.3,
+            "linkWidth": 2.3,
+            "nodeSize": 21.5,
+            "repulsion": 333
+          }
+        }
+      ]
+    },
+    {
+      "id": "p-restart",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyGraphPresentation.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "toggle",
+          "entry": 1
+        },
+        {
+          "op": "camera"
+        },
+        {
+          "op": "send",
+          "command": "zoomIn"
+        },
+        {
+          "op": "epoch"
+        },
+        {
+          "op": "settings",
+          "data": "eyJub2RlU2l6ZSI6MjEuNSwibGlua1dpZHRoIjoyLjMsImxhYmVscyI6ImZvY3VzZWQiLCJjZW50ZXIiOjAuMDQsInJlcHVsc2lvbiI6MzMzLCJsaW5rU3RyZW5ndGgiOjAuMywibGlua0Rpc3RhbmNlIjoxNDB9"
+        },
+        {
+          "op": "restart"
+        }
+      ],
+      "expected": [
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "fit",
+          "epoch": null,
+          "expanded": [],
+          "fitsInitial": true,
+          "focused": null,
+          "hasCamera": false,
+          "hasData": false,
+          "saved": null,
+          "serial": 0,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        },
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "fit",
+          "epoch": null,
+          "expanded": [
+            "00000000-0000-0000-0000-000000000001"
+          ],
+          "fitsInitial": true,
+          "focused": "00000000-0000-0000-0000-000000000001",
+          "hasCamera": false,
+          "hasData": false,
+          "saved": null,
+          "serial": 0,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        },
+        {
+          "camera": {
+            "offset": [
+              30,
+              -40
+            ],
+            "scale": 2
+          },
+          "command": "fit",
+          "epoch": null,
+          "expanded": [
+            "00000000-0000-0000-0000-000000000001"
+          ],
+          "fitsInitial": false,
+          "focused": "00000000-0000-0000-0000-000000000001",
+          "hasCamera": true,
+          "hasData": false,
+          "saved": null,
+          "serial": 0,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        },
+        {
+          "camera": {
+            "offset": [
+              30,
+              -40
+            ],
+            "scale": 2
+          },
+          "command": "zoomIn",
+          "epoch": null,
+          "expanded": [
+            "00000000-0000-0000-0000-000000000001"
+          ],
+          "fitsInitial": false,
+          "focused": "00000000-0000-0000-0000-000000000001",
+          "hasCamera": true,
+          "hasData": false,
+          "saved": null,
+          "serial": 1,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        },
+        {
+          "camera": {
+            "offset": [
+              30,
+              -40
+            ],
+            "scale": 2
+          },
+          "command": "zoomIn",
+          "epoch": 1,
+          "expanded": [
+            "00000000-0000-0000-0000-000000000001"
+          ],
+          "fitsInitial": false,
+          "focused": "00000000-0000-0000-0000-000000000001",
+          "hasCamera": true,
+          "hasData": false,
+          "saved": null,
+          "serial": 1,
+          "settings": {
+            "center": 0.008,
+            "labels": "automatic",
+            "linkDistance": 105,
+            "linkStrength": 0.14,
+            "linkWidth": 1,
+            "nodeSize": 17,
+            "repulsion": 320
+          }
+        },
+        {
+          "camera": {
+            "offset": [
+              30,
+              -40
+            ],
+            "scale": 2
+          },
+          "command": "zoomIn",
+          "epoch": null,
+          "expanded": [
+            "00000000-0000-0000-0000-000000000001"
+          ],
+          "fitsInitial": false,
+          "focused": "00000000-0000-0000-0000-000000000001",
+          "hasCamera": true,
+          "hasData": true,
+          "saved": {
+            "center": 0.04,
+            "labels": "focused",
+            "linkDistance": 140,
+            "linkStrength": 0.3,
+            "linkWidth": 2.3,
+            "nodeSize": 21.5,
+            "repulsion": 333
+          },
+          "serial": 1,
+          "settings": {
+            "center": 0.04,
+            "labels": "focused",
+            "linkDistance": 140,
+            "linkStrength": 0.3,
+            "linkWidth": 2.3,
+            "nodeSize": 21.5,
+            "repulsion": 333
+          }
+        },
+        {
+          "camera": {
+            "offset": [
+              0,
+              0
+            ],
+            "scale": 1
+          },
+          "command": "fit",
+          "epoch": null,
+          "expanded": [],
+          "fitsInitial": true,
+          "focused": null,
+          "hasCamera": false,
+          "hasData": true,
+          "saved": {
+            "center": 0.04,
+            "labels": "focused",
+            "linkDistance": 140,
+            "linkStrength": 0.3,
+            "linkWidth": 2.3,
+            "nodeSize": 21.5,
+            "repulsion": 333
+          },
+          "serial": 0,
+          "settings": {
+            "center": 0.04,
+            "labels": "focused",
+            "linkDistance": 140,
+            "linkStrength": 0.3,
+            "linkWidth": 2.3,
+            "nodeSize": 21.5,
+            "repulsion": 333
+          }
+        }
+      ]
+    }
+  ]
+}

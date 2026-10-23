@@ -93,6 +93,7 @@ jobs:
             Cotabby/Services/Vocabulary/VocabularySQLiteDatabase.swift
             Cotabby/Services/Vocabulary/VocabularySQLiteFileLock.swift
             Cotabby/UI/Vocabulary/VocabularyNotebookView.swift
+            Cotabby/UI/Vocabulary/VocabularyGraphPresentation.swift
             Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift
             Cotabby/UI/Vocabulary/VocabularyContentEditor.swift
             Cotabby/Services/LanguageLearning
@@ -200,3 +201,5 @@ jobs:
         run: python3 scripts/verify-vocabulary-graph-layout-macos-parity.py --mac-repo .mac-baseline
       - name: Verify graph epoch/cache worker against complete original actor and Grape
         run: python3 scripts/verify-vocabulary-graph-worker-macos-parity.py --mac-repo .mac-baseline
+      - name: Verify graph preferences and window state against complete original presentation
+        run: python3 scripts/verify-vocabulary-graph-presentation-macos-parity.py --mac-repo .mac-baseline

@@ -4,7 +4,7 @@ public enum VocabularyGraphLabels { Automatic, All, Focused }
 
 /// <summary>Original appearance/force preferences, independent of notebook learning content.
 /// Normalization keeps damaged/nonfinite numeric defaults away from the eventual layout solver.
-/// This value does not yet provide settings persistence or a force implementation.</summary>
+/// This value owns no disk or simulation; a separate codec handles its Codable payload.</summary>
 public sealed record VocabularyGraphSettings
 {
     public double NodeSize { get; init; } = 17;
@@ -16,6 +16,9 @@ public sealed record VocabularyGraphSettings
     public double LinkDistance { get; init; } = 105;
     public VocabularyGraphSettings Normalized => this with
     {
+        // Swift's closed enum cannot represent a numeric outsider; .NET can, so close that
+        // extra boundary before preferences or a label picker can observe an invalid case.
+        Labels = Enum.IsDefined(Labels) ? Labels : VocabularyGraphLabels.Automatic,
         NodeSize = Bound(NodeSize, 8, 28, 17), LinkWidth = Bound(LinkWidth, .5, 3, 1), Center = Bound(Center, 0, .08, .008),
         Repulsion = Bound(Repulsion, 10, 1200, 320), LinkStrength = Bound(LinkStrength, 0, .7, .14), LinkDistance = Bound(LinkDistance, 60, 240, 105)
     };

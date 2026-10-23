@@ -19,8 +19,21 @@ public sealed class VocabularyClipboardTransferTests
     public async Task ReturnsOnlyOneCompleteBoundedSuccessfulReply(string mode)
     {
         byte[]? expected = mode == "data" ? [5, 6, 7] : mode == "empty" ? [] : null;
-        await using var transfer = new WindowsVocabularyClipboardTransfer(_ => Start(Reply(VocabularyClipboardReaderTests.Frame(expected?.Length ?? -1, expected ?? []))), TimeSpan.FromSeconds(15));
-        Assert.Equal(expected, await transfer.ReadAsync(42));
+        using var fixture = new BlockedChild();
+        await using var transfer = new WindowsVocabularyClipboardTransfer(_ => Start(fixture.ReplyScript(
+            Reply(VocabularyClipboardReaderTests.Frame(expected?.Length ?? -1, expected ?? [])))), TimeSpan.FromSeconds(60));
+        var read = transfer.ReadAsync(42);
+        using var child = await fixture.WaitForProcess(read, TimeSpan.FromSeconds(30));
+        try
+        {
+            // A successful frame is not a PowerShell startup benchmark. Observe this exact
+            // child before releasing bytes; reply/EOF/exit must then complete within 12 seconds.
+            // The 60-second fallback cannot turn a missing reply into a successful null result.
+            fixture.ReleaseReply();
+            Assert.Equal(expected, await read.WaitAsync(TimeSpan.FromSeconds(12)));
+            Assert.True(child.HasExited);
+        }
+        finally { await transfer.DisposeAsync(); KillIfRunning(child); }
     }
     [Theory]
     [InlineData("failure")]
@@ -125,10 +138,13 @@ public sealed class VocabularyClipboardTransferTests
         private readonly string _directory = Path.Combine(Path.GetTempPath(), "lingrove-transfer-" + Guid.NewGuid().ToString("N"));
         private string Marker => Path.Combine(_directory, "child.pid");
         private string ReleaseMarker => Path.Combine(_directory, "write-stderr");
+        private string ReplyMarker => Path.Combine(_directory, "write-reply");
         private string PublishPid => "[IO.File]::WriteAllText('" + Marker.Replace("'", "''") + "', $PID.ToString()); ";
         internal string Script => PublishPid + "[Threading.Thread]::Sleep(-1)";
         internal string StderrBudgetScript => PublishPid + "while (-not [IO.File]::Exists('" + ReleaseMarker.Replace("'", "''") + "')) { [Threading.Thread]::Sleep(25) }; " +
             "$payload=[byte[]]::new(40000); $pipe=[Console]::OpenStandardError(); $pipe.Write($payload,0,$payload.Length); $pipe.Flush(); [Threading.Thread]::Sleep(-1)";
+        internal string ReplyScript(string reply) => PublishPid + "while (-not [IO.File]::Exists('" + ReplyMarker.Replace("'", "''") + "')) { [Threading.Thread]::Sleep(25) }; " + reply;
+        internal void ReleaseReply() => File.WriteAllText(ReplyMarker, "go");
         internal void ReleaseStderr() => File.WriteAllText(ReleaseMarker, "go");
         internal BlockedChild() => Directory.CreateDirectory(_directory);
         internal async Task<Process> WaitForProcess(Task reading, TimeSpan? startupLimit = null)

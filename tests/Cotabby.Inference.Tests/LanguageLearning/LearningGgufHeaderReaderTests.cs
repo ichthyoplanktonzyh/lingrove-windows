@@ -127,7 +127,7 @@ public sealed class LearningGgufHeaderReaderTests
     [InlineData("qwen3", true)]
     public void ProductionPreflightReadsMetadataForManualExplanationBeforeAnyNativeLoad(string architecture, bool allowed)
     {
-        string path = Path.GetTempFileName();
+        using var folder = new ModelFolder(); string path = folder.ModelPath;
         try
         {
             using var header = Header(1, writer => TextField(writer, "general.architecture", architecture));
@@ -150,7 +150,7 @@ public sealed class LearningGgufHeaderReaderTests
     [Fact]
     public void WindowsModelReadLeaseDeniesWritesAndReplacementUntilReleased()
     {
-        string path = Path.GetTempFileName(), destination = path + ".moved";
+        using var folder = new ModelFolder(); string path = folder.ModelPath, destination = path + ".moved";
         try
         {
             using var header = Header(1, writer => TextField(writer, "general.architecture", "qwen3"));
@@ -183,6 +183,15 @@ public sealed class LearningGgufHeaderReaderTests
     }
 
     private sealed class DisposalAction(Action action) : IDisposable { public void Dispose() => action(); }
+
+    private sealed class ModelFolder : IDisposable
+    {
+        private readonly string _directory = Directory.CreateTempSubdirectory("lingrove-gguf-").FullName;
+        // These tests exercise header/lease evidence, not filename heuristics. An arbitrary OS
+        // temporary basename can accidentally contain a rejected specialist hint such as HyMT.
+        internal string ModelPath => Path.Combine(_directory, "renamed.gguf");
+        public void Dispose() => Directory.Delete(_directory, recursive: true);
+    }
 
     private static MemoryStream Header(ulong entries, Action<BinaryWriter> content)
     {

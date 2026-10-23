@@ -1,0 +1,1270 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "encode-entries-default",
+      "operation": "encode",
+      "table": "entries",
+      "mode": "default",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "{\"createdAt\":-978307200,\"dictionaryForm\":\"bank\",\"expression\":\"bank\",\"id\":\"00000000-0000-0000-0000-000000000001\",\"kind\":\"word\",\"language\":\"en\",\"senses\":[],\"updatedAt\":-978307200}",
+      "expected": {
+        "identity": "00000000-0000-0000-0000-000000000001",
+        "json": {
+          "createdAt": -978307200,
+          "dictionaryForm": "bank",
+          "expression": "bank",
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "word",
+          "language": "en",
+          "senses": [],
+          "updatedAt": -978307200
+        },
+        "unixTime": 0,
+        "valid": true
+      },
+      "inputBase64": "eyJjcmVhdGVkQXQiOi05NzgzMDcyMDAsImRpY3Rpb25hcnlGb3JtIjoiYmFuayIsImV4cHJlc3Npb24iOiJiYW5rIiwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDEiLCJraW5kIjoid29yZCIsImxhbmd1YWdlIjoiZW4iLCJzZW5zZXMiOltdLCJ1cGRhdGVkQXQiOi05NzgzMDcyMDB9"
+    },
+    {
+      "id": "encode-senses-default",
+      "operation": "encode",
+      "table": "senses",
+      "mode": "default",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "{\"alternateMeanings\":[],\"content\":[],\"createdAt\":-978307200,\"examples\":[],\"explanations\":[],\"id\":\"00000000-0000-0000-0000-000000000002\",\"isSavedWithoutContext\":true,\"meaning\":\"core\",\"meaningOrigin\":\"captured\",\"mergedFrom\":[],\"note\":\"note\",\"reviewCards\":[],\"standaloneMeanings\":[],\"tags\":[\"Work\"],\"updatedAt\":-978307200}",
+      "expected": {
+        "identity": "00000000-0000-0000-0000-000000000002",
+        "json": {
+          "alternateMeanings": [],
+          "content": [],
+          "createdAt": -978307200,
+          "examples": [],
+          "explanations": [],
+          "id": "00000000-0000-0000-0000-000000000002",
+          "isSavedWithoutContext": true,
+          "meaning": "core",
+          "meaningOrigin": "captured",
+          "mergedFrom": [],
+          "note": "note",
+          "reviewCards": [],
+          "standaloneMeanings": [],
+          "tags": [
+            "Work"
+          ],
+          "updatedAt": -978307200
+        },
+        "unixTime": 0,
+        "valid": true
+      },
+      "inputBase64": "eyJhbHRlcm5hdGVNZWFuaW5ncyI6W10sImNvbnRlbnQiOltdLCJjcmVhdGVkQXQiOi05NzgzMDcyMDAsImV4YW1wbGVzIjpbXSwiZXhwbGFuYXRpb25zIjpbXSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDIiLCJpc1NhdmVkV2l0aG91dENvbnRleHQiOnRydWUsIm1lYW5pbmciOiJjb3JlIiwibWVhbmluZ09yaWdpbiI6ImNhcHR1cmVkIiwibWVyZ2VkRnJvbSI6W10sIm5vdGUiOiJub3RlIiwicmV2aWV3Q2FyZHMiOltdLCJzdGFuZGFsb25lTWVhbmluZ3MiOltdLCJ0YWdzIjpbIldvcmsiXSwidXBkYXRlZEF0IjotOTc4MzA3MjAwfQ=="
+    },
+    {
+      "id": "encode-usages-default",
+      "operation": "encode",
+      "table": "usages",
+      "mode": "default",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "{\"completeness\":\"sentence\",\"createdAt\":-978307200,\"explanations\":[],\"id\":\"00000000-0000-0000-0000-000000000003\",\"meaning\":\"context\",\"meaningOrigin\":\"captured\",\"ranges\":[{\"length\":4,\"location\":4}],\"text\":\"The bank.\",\"translation\":\"原句\",\"translationVariants\":[]}",
+      "expected": {
+        "identity": "00000000-0000-0000-0000-000000000003",
+        "json": {
+          "completeness": "sentence",
+          "createdAt": -978307200,
+          "explanations": [],
+          "id": "00000000-0000-0000-0000-000000000003",
+          "meaning": "context",
+          "meaningOrigin": "captured",
+          "ranges": [
+            {
+              "length": 4,
+              "location": 4
+            }
+          ],
+          "text": "The bank.",
+          "translation": "原句",
+          "translationVariants": []
+        },
+        "unixTime": 0,
+        "valid": true
+      },
+      "inputBase64": "eyJjb21wbGV0ZW5lc3MiOiJzZW50ZW5jZSIsImNyZWF0ZWRBdCI6LTk3ODMwNzIwMCwiZXhwbGFuYXRpb25zIjpbXSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDMiLCJtZWFuaW5nIjoiY29udGV4dCIsIm1lYW5pbmdPcmlnaW4iOiJjYXB0dXJlZCIsInJhbmdlcyI6W3sibGVuZ3RoIjo0LCJsb2NhdGlvbiI6NH1dLCJ0ZXh0IjoiVGhlIGJhbmsuIiwidHJhbnNsYXRpb24iOiLljp/lj6UiLCJ0cmFuc2xhdGlvblZhcmlhbnRzIjpbXX0="
+    },
+    {
+      "id": "encode-sense_explanations-default",
+      "operation": "encode",
+      "table": "sense_explanations",
+      "mode": "default",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "{\"createdAt\":-978307200,\"id\":\"00000000-0000-0000-0000-000000000064\",\"input\":{\"context\":\"bank\",\"contextKind\":\"none\",\"dictionaryForm\":\"bank\",\"kind\":\"word\",\"language\":\"en\",\"ranges\":[{\"length\":4,\"location\":0}],\"target\":\"bank\"},\"language\":\"zh-Hans\",\"model\":\"fixture\",\"result\":{\"explanation\":\"explanation\",\"meaning\":\"meaning\"}}",
+      "expected": {
+        "identity": "00000000-0000-0000-0000-000000000064",
+        "json": {
+          "createdAt": -978307200,
+          "id": "00000000-0000-0000-0000-000000000064",
+          "input": {
+            "context": "bank",
+            "contextKind": "none",
+            "dictionaryForm": "bank",
+            "kind": "word",
+            "language": "en",
+            "ranges": [
+              {
+                "length": 4,
+                "location": 0
+              }
+            ],
+            "target": "bank"
+          },
+          "language": "zh-Hans",
+          "model": "fixture",
+          "result": {
+            "explanation": "explanation",
+            "meaning": "meaning"
+          }
+        },
+        "unixTime": 0,
+        "valid": true
+      },
+      "inputBase64": "eyJjcmVhdGVkQXQiOi05NzgzMDcyMDAsImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDY0IiwiaW5wdXQiOnsiY29udGV4dCI6ImJhbmsiLCJjb250ZXh0S2luZCI6Im5vbmUiLCJkaWN0aW9uYXJ5Rm9ybSI6ImJhbmsiLCJraW5kIjoid29yZCIsImxhbmd1YWdlIjoiZW4iLCJyYW5nZXMiOlt7Imxlbmd0aCI6NCwibG9jYXRpb24iOjB9XSwidGFyZ2V0IjoiYmFuayJ9LCJsYW5ndWFnZSI6InpoLUhhbnMiLCJtb2RlbCI6ImZpeHR1cmUiLCJyZXN1bHQiOnsiZXhwbGFuYXRpb24iOiJleHBsYW5hdGlvbiIsIm1lYW5pbmciOiJtZWFuaW5nIn19"
+    },
+    {
+      "id": "encode-usage_explanations-default",
+      "operation": "encode",
+      "table": "usage_explanations",
+      "mode": "default",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "{\"createdAt\":-978307200,\"id\":\"00000000-0000-0000-0000-000000000064\",\"input\":{\"context\":\"The bank.\",\"contextKind\":\"sentence\",\"dictionaryForm\":\"bank\",\"kind\":\"word\",\"language\":\"en\",\"occurrenceIdentity\":\"385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef\",\"ranges\":[{\"length\":4,\"location\":4}],\"target\":\"bank\"},\"language\":\"zh-Hans\",\"model\":\"fixture\",\"result\":{\"explanation\":\"explanation\",\"meaning\":\"meaning\"}}",
+      "expected": {
+        "identity": "00000000-0000-0000-0000-000000000064",
+        "json": {
+          "createdAt": -978307200,
+          "id": "00000000-0000-0000-0000-000000000064",
+          "input": {
+            "context": "The bank.",
+            "contextKind": "sentence",
+            "dictionaryForm": "bank",
+            "kind": "word",
+            "language": "en",
+            "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+            "ranges": [
+              {
+                "length": 4,
+                "location": 4
+              }
+            ],
+            "target": "bank"
+          },
+          "language": "zh-Hans",
+          "model": "fixture",
+          "result": {
+            "explanation": "explanation",
+            "meaning": "meaning"
+          }
+        },
+        "unixTime": 0,
+        "valid": true
+      },
+      "inputBase64": "eyJjcmVhdGVkQXQiOi05NzgzMDcyMDAsImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDY0IiwiaW5wdXQiOnsiY29udGV4dCI6IlRoZSBiYW5rLiIsImNvbnRleHRLaW5kIjoic2VudGVuY2UiLCJkaWN0aW9uYXJ5Rm9ybSI6ImJhbmsiLCJraW5kIjoid29yZCIsImxhbmd1YWdlIjoiZW4iLCJvY2N1cnJlbmNlSWRlbnRpdHkiOiIzODUyMzlmNWEyNzhkY2E0YTA3MWQzMzk2Y2FkOGU0ZWQ1NTIxOWJmYTRiZmMyMWM4MjM2ZTk0MGU1NjE1NGVmIiwicmFuZ2VzIjpbeyJsZW5ndGgiOjQsImxvY2F0aW9uIjo0fV0sInRhcmdldCI6ImJhbmsifSwibGFuZ3VhZ2UiOiJ6aC1IYW5zIiwibW9kZWwiOiJmaXh0dXJlIiwicmVzdWx0Ijp7ImV4cGxhbmF0aW9uIjoiZXhwbGFuYXRpb24iLCJtZWFuaW5nIjoibWVhbmluZyJ9fQ=="
+    },
+    {
+      "id": "encode-blocks-default",
+      "operation": "encode",
+      "table": "blocks",
+      "mode": "default",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "{\"content\":{\"text\":{\"_0\":{\"bold\":false,\"italic\":false,\"style\":\"paragraph\",\"text\":\"literal\"}}},\"id\":\"00000000-0000-0000-0000-000000000014\"}",
+      "expected": {
+        "identity": "00000000-0000-0000-0000-000000000014",
+        "json": {
+          "content": {
+            "text": {
+              "_0": {
+                "bold": false,
+                "italic": false,
+                "style": "paragraph",
+                "text": "literal"
+              }
+            }
+          },
+          "id": "00000000-0000-0000-0000-000000000014"
+        },
+        "unixTime": null,
+        "valid": true
+      },
+      "inputBase64": "eyJjb250ZW50Ijp7InRleHQiOnsiXzAiOnsiYm9sZCI6ZmFsc2UsIml0YWxpYyI6ZmFsc2UsInN0eWxlIjoicGFyYWdyYXBoIiwidGV4dCI6ImxpdGVyYWwifX19LCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAxNCJ9"
+    },
+    {
+      "id": "encode-reviews-default",
+      "operation": "encode",
+      "table": "reviews",
+      "mode": "default",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "{\"activeBindingID\":\"00000000-0000-0000-0000-000000000028\",\"bindings\":[],\"plan\":{\"fieldOverrides\":{},\"gap\":false,\"id\":\"00000000-0000-0000-0000-00000000001E\",\"includeExplanation\":false,\"includeNotes\":false,\"layout\":{\"back\":[],\"front\":[{\"content\":[{\"content\":{\"text\":{\"_0\":{\"bold\":false,\"italic\":false,\"style\":\"paragraph\",\"text\":\"literal\"}}},\"id\":\"00000000-0000-0000-0000-00000000003C\"}],\"id\":\"00000000-0000-0000-0000-000000000032\",\"showCaption\":false,\"source\":\"custom\"}]},\"recognition\":true},\"preservedPlans\":[{\"fieldOverrides\":{},\"gap\":false,\"id\":\"00000000-0000-0000-0000-00000000001F\",\"includeExplanation\":false,\"includeNotes\":false,\"recognition\":true}]}",
+      "expected": {
+        "identity": "00000000-0000-0000-0000-00000000001e",
+        "json": {
+          "activeBindingID": "00000000-0000-0000-0000-000000000028",
+          "bindings": [],
+          "plan": {
+            "fieldOverrides": {},
+            "gap": false,
+            "id": "00000000-0000-0000-0000-00000000001E",
+            "includeExplanation": false,
+            "includeNotes": false,
+            "layout": {
+              "back": [],
+              "front": [
+                {
+                  "content": [
+                    {
+                      "content": {
+                        "text": {
+                          "_0": {
+                            "bold": false,
+                            "italic": false,
+                            "style": "paragraph",
+                            "text": "literal"
+                          }
+                        }
+                      },
+                      "id": "00000000-0000-0000-0000-00000000003C"
+                    }
+                  ],
+                  "id": "00000000-0000-0000-0000-000000000032",
+                  "showCaption": false,
+                  "source": "custom"
+                }
+              ]
+            },
+            "recognition": true
+          },
+          "preservedPlans": [
+            {
+              "fieldOverrides": {},
+              "gap": false,
+              "id": "00000000-0000-0000-0000-00000000001F",
+              "includeExplanation": false,
+              "includeNotes": false,
+              "recognition": true
+            }
+          ]
+        },
+        "unixTime": null,
+        "valid": true
+      },
+      "inputBase64": "eyJhY3RpdmVCaW5kaW5nSUQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMjgiLCJiaW5kaW5ncyI6W10sInBsYW4iOnsiZmllbGRPdmVycmlkZXMiOnt9LCJnYXAiOmZhbHNlLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAxRSIsImluY2x1ZGVFeHBsYW5hdGlvbiI6ZmFsc2UsImluY2x1ZGVOb3RlcyI6ZmFsc2UsImxheW91dCI6eyJiYWNrIjpbXSwiZnJvbnQiOlt7ImNvbnRlbnQiOlt7ImNvbnRlbnQiOnsidGV4dCI6eyJfMCI6eyJib2xkIjpmYWxzZSwiaXRhbGljIjpmYWxzZSwic3R5bGUiOiJwYXJhZ3JhcGgiLCJ0ZXh0IjoibGl0ZXJhbCJ9fX0sImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDNDIn1dLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAzMiIsInNob3dDYXB0aW9uIjpmYWxzZSwic291cmNlIjoiY3VzdG9tIn1dfSwicmVjb2duaXRpb24iOnRydWV9LCJwcmVzZXJ2ZWRQbGFucyI6W3siZmllbGRPdmVycmlkZXMiOnt9LCJnYXAiOmZhbHNlLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAxRiIsImluY2x1ZGVFeHBsYW5hdGlvbiI6ZmFsc2UsImluY2x1ZGVOb3RlcyI6ZmFsc2UsInJlY29nbml0aW9uIjp0cnVlfV19"
+    },
+    {
+      "id": "encode-bindings-default",
+      "operation": "encode",
+      "table": "bindings",
+      "mode": "default",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "{\"deck\":\"deck\",\"endpoint\":\"http:\\/\\/localhost\",\"fields\":{\"ID\":\"00000000-0000-0000-0000-000000000063\"},\"id\":\"00000000-0000-0000-0000-000000000028\",\"identityField\":\"ID\",\"mapping\":[\"LingroveID\",\"ID\"],\"model\":\"model\",\"noteID\":1,\"originSenseID\":\"00000000-0000-0000-0000-000000000063\",\"profile\":\"profile\"}",
+      "expected": {
+        "identity": "00000000-0000-0000-0000-000000000028",
+        "json": {
+          "deck": "deck",
+          "endpoint": "http://localhost",
+          "fields": {
+            "ID": "00000000-0000-0000-0000-000000000063"
+          },
+          "id": "00000000-0000-0000-0000-000000000028",
+          "identityField": "ID",
+          "mapping": [
+            "LingroveID",
+            "ID"
+          ],
+          "model": "model",
+          "noteID": 1,
+          "originSenseID": "00000000-0000-0000-0000-000000000063",
+          "profile": "profile"
+        },
+        "unixTime": null,
+        "valid": true
+      },
+      "inputBase64": "eyJkZWNrIjoiZGVjayIsImVuZHBvaW50IjoiaHR0cDpcL1wvbG9jYWxob3N0IiwiZmllbGRzIjp7IklEIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDYzIn0sImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDI4IiwiaWRlbnRpdHlGaWVsZCI6IklEIiwibWFwcGluZyI6WyJMaW5ncm92ZUlEIiwiSUQiXSwibW9kZWwiOiJtb2RlbCIsIm5vdGVJRCI6MSwib3JpZ2luU2Vuc2VJRCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDA2MyIsInByb2ZpbGUiOiJwcm9maWxlIn0="
+    },
+    {
+      "id": "encode-templates-default",
+      "operation": "encode",
+      "table": "templates",
+      "mode": "default",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "{\"id\":\"00000000-0000-0000-0000-000000000046\",\"layout\":{\"back\":[],\"front\":[{\"content\":[{\"content\":{\"text\":{\"_0\":{\"bold\":false,\"italic\":false,\"style\":\"paragraph\",\"text\":\"literal\"}}},\"id\":\"00000000-0000-0000-0000-00000000003C\"}],\"id\":\"00000000-0000-0000-0000-000000000032\",\"showCaption\":false,\"source\":\"custom\"}]},\"name\":\"Template\"}",
+      "expected": {
+        "identity": "00000000-0000-0000-0000-000000000046",
+        "json": {
+          "id": "00000000-0000-0000-0000-000000000046",
+          "layout": {
+            "back": [],
+            "front": [
+              {
+                "content": [
+                  {
+                    "content": {
+                      "text": {
+                        "_0": {
+                          "bold": false,
+                          "italic": false,
+                          "style": "paragraph",
+                          "text": "literal"
+                        }
+                      }
+                    },
+                    "id": "00000000-0000-0000-0000-00000000003C"
+                  }
+                ],
+                "id": "00000000-0000-0000-0000-000000000032",
+                "showCaption": false,
+                "source": "custom"
+              }
+            ]
+          },
+          "name": "Template"
+        },
+        "unixTime": null,
+        "valid": true
+      },
+      "inputBase64": "eyJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDA0NiIsImxheW91dCI6eyJiYWNrIjpbXSwiZnJvbnQiOlt7ImNvbnRlbnQiOlt7ImNvbnRlbnQiOnsidGV4dCI6eyJfMCI6eyJib2xkIjpmYWxzZSwiaXRhbGljIjpmYWxzZSwic3R5bGUiOiJwYXJhZ3JhcGgiLCJ0ZXh0IjoibGl0ZXJhbCJ9fX0sImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDNDIn1dLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAzMiIsInNob3dDYXB0aW9uIjpmYWxzZSwic291cmNlIjoiY3VzdG9tIn1dfSwibmFtZSI6IlRlbXBsYXRlIn0="
+    },
+    {
+      "id": "encode-blocks-image",
+      "operation": "encode",
+      "table": "blocks",
+      "mode": "image",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "{\"content\":{\"image\":{\"_0\":{\"byteCount\":4,\"digest\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"height\":3,\"width\":2},\"caption\":\"Caption\"}},\"id\":\"00000000-0000-0000-0000-000000000015\"}",
+      "expected": {
+        "identity": "00000000-0000-0000-0000-000000000015",
+        "json": {
+          "content": {
+            "image": {
+              "_0": {
+                "byteCount": 4,
+                "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "height": 3,
+                "width": 2
+              },
+              "caption": "Caption"
+            }
+          },
+          "id": "00000000-0000-0000-0000-000000000015"
+        },
+        "unixTime": null,
+        "valid": true
+      },
+      "inputBase64": "eyJjb250ZW50Ijp7ImltYWdlIjp7Il8wIjp7ImJ5dGVDb3VudCI6NCwiZGlnZXN0IjoiYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYSIsImhlaWdodCI6Mywid2lkdGgiOjJ9LCJjYXB0aW9uIjoiQ2FwdGlvbiJ9fSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMTUifQ=="
+    },
+    {
+      "id": "encode-blocks-heading",
+      "operation": "encode",
+      "table": "blocks",
+      "mode": "heading",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "{\"content\":{\"text\":{\"_0\":{\"bold\":true,\"italic\":true,\"style\":\"heading\",\"text\":\"café\"}}},\"id\":\"00000000-0000-0000-0000-000000000015\"}",
+      "expected": {
+        "identity": "00000000-0000-0000-0000-000000000015",
+        "json": {
+          "content": {
+            "text": {
+              "_0": {
+                "bold": true,
+                "italic": true,
+                "style": "heading",
+                "text": "café"
+              }
+            }
+          },
+          "id": "00000000-0000-0000-0000-000000000015"
+        },
+        "unixTime": null,
+        "valid": true
+      },
+      "inputBase64": "eyJjb250ZW50Ijp7InRleHQiOnsiXzAiOnsiYm9sZCI6dHJ1ZSwiaXRhbGljIjp0cnVlLCJzdHlsZSI6ImhlYWRpbmciLCJ0ZXh0IjoiY2FmZcyBIn19fSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMTUifQ=="
+    },
+    {
+      "id": "encode-reviews-audio",
+      "operation": "encode",
+      "table": "reviews",
+      "mode": "audio",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "{\"bindings\":[],\"plan\":{\"answer\":\"\",\"audioKinds\":[\"expression\"],\"audioReceipts\":[\"expression\",{\"endpoint\":\"http:\\/\\/localhost\",\"filename\":\"lingrove-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.wav\",\"fingerprint\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"profile\":\"profile\",\"textHash\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}],\"fieldOverrides\":{},\"gap\":false,\"id\":\"00000000-0000-0000-0000-00000000001E\",\"includeExplanation\":false,\"includeNotes\":false,\"includeSenseContent\":false,\"name\":\"\",\"recognition\":true},\"preservedPlans\":[]}",
+      "expected": {
+        "identity": "00000000-0000-0000-0000-00000000001e",
+        "json": {
+          "bindings": [],
+          "plan": {
+            "answer": "",
+            "audioKinds": [
+              "expression"
+            ],
+            "audioReceipts": [
+              "expression",
+              {
+                "endpoint": "http://localhost",
+                "filename": "lingrove-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.wav",
+                "fingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "profile": "profile",
+                "textHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+              }
+            ],
+            "fieldOverrides": {},
+            "gap": false,
+            "id": "00000000-0000-0000-0000-00000000001E",
+            "includeExplanation": false,
+            "includeNotes": false,
+            "includeSenseContent": false,
+            "name": "",
+            "recognition": true
+          },
+          "preservedPlans": []
+        },
+        "unixTime": null,
+        "valid": true
+      },
+      "inputBase64": "eyJiaW5kaW5ncyI6W10sInBsYW4iOnsiYW5zd2VyIjoiIiwiYXVkaW9LaW5kcyI6WyJleHByZXNzaW9uIl0sImF1ZGlvUmVjZWlwdHMiOlsiZXhwcmVzc2lvbiIseyJlbmRwb2ludCI6Imh0dHA6XC9cL2xvY2FsaG9zdCIsImZpbGVuYW1lIjoibGluZ3JvdmUtYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYS53YXYiLCJmaW5nZXJwcmludCI6ImFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWEiLCJwcm9maWxlIjoicHJvZmlsZSIsInRleHRIYXNoIjoiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYiJ9XSwiZmllbGRPdmVycmlkZXMiOnt9LCJnYXAiOmZhbHNlLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAxRSIsImluY2x1ZGVFeHBsYW5hdGlvbiI6ZmFsc2UsImluY2x1ZGVOb3RlcyI6ZmFsc2UsImluY2x1ZGVTZW5zZUNvbnRlbnQiOmZhbHNlLCJuYW1lIjoiIiwicmVjb2duaXRpb24iOnRydWV9LCJwcmVzZXJ2ZWRQbGFucyI6W119"
+    },
+    {
+      "id": "encode-senses-meaningNil",
+      "operation": "encode",
+      "table": "senses",
+      "mode": "meaningNil",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "{\"alternateMeanings\":[],\"content\":[{\"content\":{\"text\":{\"_0\":{\"bold\":false,\"italic\":false,\"style\":\"paragraph\",\"text\":\"literal\"}}},\"id\":\"00000000-0000-0000-0000-000000000014\"}],\"createdAt\":-978307200,\"examples\":[{\"completeness\":\"sentence\",\"createdAt\":-978307200,\"explanations\":[{\"createdAt\":-978307200,\"id\":\"00000000-0000-0000-0000-000000000064\",\"input\":{\"context\":\"The bank.\",\"contextKind\":\"sentence\",\"dictionaryForm\":\"bank\",\"kind\":\"word\",\"language\":\"en\",\"occurrenceIdentity\":\"385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef\",\"ranges\":[{\"length\":4,\"location\":4}],\"target\":\"bank\"},\"language\":\"zh-Hans\",\"model\":\"fixture\",\"result\":{\"explanation\":\"explanation\",\"meaning\":\"meaning\"}}],\"id\":\"00000000-0000-0000-0000-000000000003\",\"meaning\":\"context\",\"meaningOrigin\":\"captured\",\"ranges\":[{\"length\":4,\"location\":4}],\"text\":\"The bank.\",\"translation\":\"原句\",\"translationVariants\":[]}],\"explanations\":[{\"createdAt\":-978307200,\"id\":\"00000000-0000-0000-0000-000000000064\",\"input\":{\"context\":\"bank\",\"contextKind\":\"none\",\"dictionaryForm\":\"bank\",\"kind\":\"word\",\"language\":\"en\",\"ranges\":[{\"length\":4,\"location\":0}],\"target\":\"bank\"},\"language\":\"zh-Hans\",\"model\":\"fixture\",\"result\":{\"explanation\":\"explanation\",\"meaning\":\"meaning\"}}],\"id\":\"00000000-0000-0000-0000-000000000002\",\"isSavedWithoutContext\":true,\"meaning\":\"core\",\"meaningOrigin\":\"captured\",\"mergedFrom\":[],\"note\":\"note\",\"review\":{\"activeBindingID\":\"00000000-0000-0000-0000-000000000028\",\"bindings\":[{\"deck\":\"deck\",\"endpoint\":\"http:\\/\\/localhost\",\"fields\":{\"ID\":\"00000000-0000-0000-0000-000000000063\"},\"id\":\"00000000-0000-0000-0000-000000000028\",\"identityField\":\"ID\",\"mapping\":[\"LingroveID\",\"ID\"],\"model\":\"model\",\"noteID\":1,\"originSenseID\":\"00000000-0000-0000-0000-000000000063\",\"profile\":\"profile\"}],\"plan\":{\"fieldOverrides\":{},\"gap\":false,\"id\":\"00000000-0000-0000-0000-00000000001E\",\"includeExplanation\":false,\"includeNotes\":false,\"layout\":{\"back\":[],\"front\":[{\"content\":[{\"content\":{\"text\":{\"_0\":{\"bold\":false,\"italic\":false,\"style\":\"paragraph\",\"text\":\"literal\"}}},\"id\":\"00000000-0000-0000-0000-00000000003C\"}],\"id\":\"00000000-0000-0000-0000-000000000032\",\"showCaption\":false,\"source\":\"custom\"}]},\"recognition\":true},\"preservedPlans\":[{\"fieldOverrides\":{},\"gap\":false,\"id\":\"00000000-0000-0000-0000-00000000001F\",\"includeExplanation\":false,\"includeNotes\":false,\"recognition\":true}]},\"reviewCards\":[{\"activeBindingID\":\"00000000-0000-0000-0000-000000000028\",\"bindings\":[{\"deck\":\"deck\",\"endpoint\":\"http:\\/\\/localhost\",\"fields\":{\"ID\":\"00000000-0000-0000-0000-000000000063\"},\"id\":\"00000000-0000-0000-0000-000000000028\",\"identityField\":\"ID\",\"mapping\":[\"LingroveID\",\"ID\"],\"model\":\"model\",\"noteID\":1,\"originSenseID\":\"00000000-0000-0000-0000-000000000063\",\"profile\":\"profile\"}],\"plan\":{\"fieldOverrides\":{},\"gap\":false,\"id\":\"00000000-0000-0000-0000-00000000001E\",\"includeExplanation\":false,\"includeNotes\":false,\"layout\":{\"back\":[],\"front\":[{\"content\":[{\"content\":{\"text\":{\"_0\":{\"bold\":false,\"italic\":false,\"style\":\"paragraph\",\"text\":\"literal\"}}},\"id\":\"00000000-0000-0000-0000-00000000003C\"}],\"id\":\"00000000-0000-0000-0000-000000000032\",\"showCaption\":false,\"source\":\"custom\"}]},\"recognition\":true},\"preservedPlans\":[{\"fieldOverrides\":{},\"gap\":false,\"id\":\"00000000-0000-0000-0000-00000000001F\",\"includeExplanation\":false,\"includeNotes\":false,\"recognition\":true}]}],\"standaloneMeanings\":[{\"text\":\"variant\"}],\"tags\":[\"Work\"],\"updatedAt\":-978307200}",
+      "expected": {
+        "identity": "00000000-0000-0000-0000-000000000002",
+        "json": {
+          "alternateMeanings": [],
+          "content": [
+            {
+              "content": {
+                "text": {
+                  "_0": {
+                    "bold": false,
+                    "italic": false,
+                    "style": "paragraph",
+                    "text": "literal"
+                  }
+                }
+              },
+              "id": "00000000-0000-0000-0000-000000000014"
+            }
+          ],
+          "createdAt": -978307200,
+          "examples": [
+            {
+              "completeness": "sentence",
+              "createdAt": -978307200,
+              "explanations": [
+                {
+                  "createdAt": -978307200,
+                  "id": "00000000-0000-0000-0000-000000000064",
+                  "input": {
+                    "context": "The bank.",
+                    "contextKind": "sentence",
+                    "dictionaryForm": "bank",
+                    "kind": "word",
+                    "language": "en",
+                    "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "target": "bank"
+                  },
+                  "language": "zh-Hans",
+                  "model": "fixture",
+                  "result": {
+                    "explanation": "explanation",
+                    "meaning": "meaning"
+                  }
+                }
+              ],
+              "id": "00000000-0000-0000-0000-000000000003",
+              "meaning": "context",
+              "meaningOrigin": "captured",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 4
+                }
+              ],
+              "text": "The bank.",
+              "translation": "原句",
+              "translationVariants": []
+            }
+          ],
+          "explanations": [
+            {
+              "createdAt": -978307200,
+              "id": "00000000-0000-0000-0000-000000000064",
+              "input": {
+                "context": "bank",
+                "contextKind": "none",
+                "dictionaryForm": "bank",
+                "kind": "word",
+                "language": "en",
+                "ranges": [
+                  {
+                    "length": 4,
+                    "location": 0
+                  }
+                ],
+                "target": "bank"
+              },
+              "language": "zh-Hans",
+              "model": "fixture",
+              "result": {
+                "explanation": "explanation",
+                "meaning": "meaning"
+              }
+            }
+          ],
+          "id": "00000000-0000-0000-0000-000000000002",
+          "isSavedWithoutContext": true,
+          "meaning": "core",
+          "meaningOrigin": "captured",
+          "mergedFrom": [],
+          "note": "note",
+          "review": {
+            "activeBindingID": "00000000-0000-0000-0000-000000000028",
+            "bindings": [
+              {
+                "deck": "deck",
+                "endpoint": "http://localhost",
+                "fields": {
+                  "ID": "00000000-0000-0000-0000-000000000063"
+                },
+                "id": "00000000-0000-0000-0000-000000000028",
+                "identityField": "ID",
+                "mapping": [
+                  "LingroveID",
+                  "ID"
+                ],
+                "model": "model",
+                "noteID": 1,
+                "originSenseID": "00000000-0000-0000-0000-000000000063",
+                "profile": "profile"
+              }
+            ],
+            "plan": {
+              "fieldOverrides": {},
+              "gap": false,
+              "id": "00000000-0000-0000-0000-00000000001E",
+              "includeExplanation": false,
+              "includeNotes": false,
+              "layout": {
+                "back": [],
+                "front": [
+                  {
+                    "content": [
+                      {
+                        "content": {
+                          "text": {
+                            "_0": {
+                              "bold": false,
+                              "italic": false,
+                              "style": "paragraph",
+                              "text": "literal"
+                            }
+                          }
+                        },
+                        "id": "00000000-0000-0000-0000-00000000003C"
+                      }
+                    ],
+                    "id": "00000000-0000-0000-0000-000000000032",
+                    "showCaption": false,
+                    "source": "custom"
+                  }
+                ]
+              },
+              "recognition": true
+            },
+            "preservedPlans": [
+              {
+                "fieldOverrides": {},
+                "gap": false,
+                "id": "00000000-0000-0000-0000-00000000001F",
+                "includeExplanation": false,
+                "includeNotes": false,
+                "recognition": true
+              }
+            ]
+          },
+          "reviewCards": [
+            {
+              "activeBindingID": "00000000-0000-0000-0000-000000000028",
+              "bindings": [
+                {
+                  "deck": "deck",
+                  "endpoint": "http://localhost",
+                  "fields": {
+                    "ID": "00000000-0000-0000-0000-000000000063"
+                  },
+                  "id": "00000000-0000-0000-0000-000000000028",
+                  "identityField": "ID",
+                  "mapping": [
+                    "LingroveID",
+                    "ID"
+                  ],
+                  "model": "model",
+                  "noteID": 1,
+                  "originSenseID": "00000000-0000-0000-0000-000000000063",
+                  "profile": "profile"
+                }
+              ],
+              "plan": {
+                "fieldOverrides": {},
+                "gap": false,
+                "id": "00000000-0000-0000-0000-00000000001E",
+                "includeExplanation": false,
+                "includeNotes": false,
+                "layout": {
+                  "back": [],
+                  "front": [
+                    {
+                      "content": [
+                        {
+                          "content": {
+                            "text": {
+                              "_0": {
+                                "bold": false,
+                                "italic": false,
+                                "style": "paragraph",
+                                "text": "literal"
+                              }
+                            }
+                          },
+                          "id": "00000000-0000-0000-0000-00000000003C"
+                        }
+                      ],
+                      "id": "00000000-0000-0000-0000-000000000032",
+                      "showCaption": false,
+                      "source": "custom"
+                    }
+                  ]
+                },
+                "recognition": true
+              },
+              "preservedPlans": [
+                {
+                  "fieldOverrides": {},
+                  "gap": false,
+                  "id": "00000000-0000-0000-0000-00000000001F",
+                  "includeExplanation": false,
+                  "includeNotes": false,
+                  "recognition": true
+                }
+              ]
+            }
+          ],
+          "standaloneMeanings": [
+            {
+              "text": "variant"
+            }
+          ],
+          "tags": [
+            "Work"
+          ],
+          "updatedAt": -978307200
+        },
+        "unixTime": 0,
+        "valid": true
+      },
+      "inputBase64": "eyJhbHRlcm5hdGVNZWFuaW5ncyI6W10sImNvbnRlbnQiOlt7ImNvbnRlbnQiOnsidGV4dCI6eyJfMCI6eyJib2xkIjpmYWxzZSwiaXRhbGljIjpmYWxzZSwic3R5bGUiOiJwYXJhZ3JhcGgiLCJ0ZXh0IjoibGl0ZXJhbCJ9fX0sImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDE0In1dLCJjcmVhdGVkQXQiOi05NzgzMDcyMDAsImV4YW1wbGVzIjpbeyJjb21wbGV0ZW5lc3MiOiJzZW50ZW5jZSIsImNyZWF0ZWRBdCI6LTk3ODMwNzIwMCwiZXhwbGFuYXRpb25zIjpbeyJjcmVhdGVkQXQiOi05NzgzMDcyMDAsImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDY0IiwiaW5wdXQiOnsiY29udGV4dCI6IlRoZSBiYW5rLiIsImNvbnRleHRLaW5kIjoic2VudGVuY2UiLCJkaWN0aW9uYXJ5Rm9ybSI6ImJhbmsiLCJraW5kIjoid29yZCIsImxhbmd1YWdlIjoiZW4iLCJvY2N1cnJlbmNlSWRlbnRpdHkiOiIzODUyMzlmNWEyNzhkY2E0YTA3MWQzMzk2Y2FkOGU0ZWQ1NTIxOWJmYTRiZmMyMWM4MjM2ZTk0MGU1NjE1NGVmIiwicmFuZ2VzIjpbeyJsZW5ndGgiOjQsImxvY2F0aW9uIjo0fV0sInRhcmdldCI6ImJhbmsifSwibGFuZ3VhZ2UiOiJ6aC1IYW5zIiwibW9kZWwiOiJmaXh0dXJlIiwicmVzdWx0Ijp7ImV4cGxhbmF0aW9uIjoiZXhwbGFuYXRpb24iLCJtZWFuaW5nIjoibWVhbmluZyJ9fV0sImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAzIiwibWVhbmluZyI6ImNvbnRleHQiLCJtZWFuaW5nT3JpZ2luIjoiY2FwdHVyZWQiLCJyYW5nZXMiOlt7Imxlbmd0aCI6NCwibG9jYXRpb24iOjR9XSwidGV4dCI6IlRoZSBiYW5rLiIsInRyYW5zbGF0aW9uIjoi5Y6f5Y+lIiwidHJhbnNsYXRpb25WYXJpYW50cyI6W119XSwiZXhwbGFuYXRpb25zIjpbeyJjcmVhdGVkQXQiOi05NzgzMDcyMDAsImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDY0IiwiaW5wdXQiOnsiY29udGV4dCI6ImJhbmsiLCJjb250ZXh0S2luZCI6Im5vbmUiLCJkaWN0aW9uYXJ5Rm9ybSI6ImJhbmsiLCJraW5kIjoid29yZCIsImxhbmd1YWdlIjoiZW4iLCJyYW5nZXMiOlt7Imxlbmd0aCI6NCwibG9jYXRpb24iOjB9XSwidGFyZ2V0IjoiYmFuayJ9LCJsYW5ndWFnZSI6InpoLUhhbnMiLCJtb2RlbCI6ImZpeHR1cmUiLCJyZXN1bHQiOnsiZXhwbGFuYXRpb24iOiJleHBsYW5hdGlvbiIsIm1lYW5pbmciOiJtZWFuaW5nIn19XSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDIiLCJpc1NhdmVkV2l0aG91dENvbnRleHQiOnRydWUsIm1lYW5pbmciOiJjb3JlIiwibWVhbmluZ09yaWdpbiI6ImNhcHR1cmVkIiwibWVyZ2VkRnJvbSI6W10sIm5vdGUiOiJub3RlIiwicmV2aWV3Ijp7ImFjdGl2ZUJpbmRpbmdJRCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAyOCIsImJpbmRpbmdzIjpbeyJkZWNrIjoiZGVjayIsImVuZHBvaW50IjoiaHR0cDpcL1wvbG9jYWxob3N0IiwiZmllbGRzIjp7IklEIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDYzIn0sImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDI4IiwiaWRlbnRpdHlGaWVsZCI6IklEIiwibWFwcGluZyI6WyJMaW5ncm92ZUlEIiwiSUQiXSwibW9kZWwiOiJtb2RlbCIsIm5vdGVJRCI6MSwib3JpZ2luU2Vuc2VJRCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDA2MyIsInByb2ZpbGUiOiJwcm9maWxlIn1dLCJwbGFuIjp7ImZpZWxkT3ZlcnJpZGVzIjp7fSwiZ2FwIjpmYWxzZSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMUUiLCJpbmNsdWRlRXhwbGFuYXRpb24iOmZhbHNlLCJpbmNsdWRlTm90ZXMiOmZhbHNlLCJsYXlvdXQiOnsiYmFjayI6W10sImZyb250IjpbeyJjb250ZW50IjpbeyJjb250ZW50Ijp7InRleHQiOnsiXzAiOnsiYm9sZCI6ZmFsc2UsIml0YWxpYyI6ZmFsc2UsInN0eWxlIjoicGFyYWdyYXBoIiwidGV4dCI6ImxpdGVyYWwifX19LCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAzQyJ9XSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMzIiLCJzaG93Q2FwdGlvbiI6ZmFsc2UsInNvdXJjZSI6ImN1c3RvbSJ9XX0sInJlY29nbml0aW9uIjp0cnVlfSwicHJlc2VydmVkUGxhbnMiOlt7ImZpZWxkT3ZlcnJpZGVzIjp7fSwiZ2FwIjpmYWxzZSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMUYiLCJpbmNsdWRlRXhwbGFuYXRpb24iOmZhbHNlLCJpbmNsdWRlTm90ZXMiOmZhbHNlLCJyZWNvZ25pdGlvbiI6dHJ1ZX1dfSwicmV2aWV3Q2FyZHMiOlt7ImFjdGl2ZUJpbmRpbmdJRCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAyOCIsImJpbmRpbmdzIjpbeyJkZWNrIjoiZGVjayIsImVuZHBvaW50IjoiaHR0cDpcL1wvbG9jYWxob3N0IiwiZmllbGRzIjp7IklEIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDYzIn0sImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDI4IiwiaWRlbnRpdHlGaWVsZCI6IklEIiwibWFwcGluZyI6WyJMaW5ncm92ZUlEIiwiSUQiXSwibW9kZWwiOiJtb2RlbCIsIm5vdGVJRCI6MSwib3JpZ2luU2Vuc2VJRCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDA2MyIsInByb2ZpbGUiOiJwcm9maWxlIn1dLCJwbGFuIjp7ImZpZWxkT3ZlcnJpZGVzIjp7fSwiZ2FwIjpmYWxzZSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMUUiLCJpbmNsdWRlRXhwbGFuYXRpb24iOmZhbHNlLCJpbmNsdWRlTm90ZXMiOmZhbHNlLCJsYXlvdXQiOnsiYmFjayI6W10sImZyb250IjpbeyJjb250ZW50IjpbeyJjb250ZW50Ijp7InRleHQiOnsiXzAiOnsiYm9sZCI6ZmFsc2UsIml0YWxpYyI6ZmFsc2UsInN0eWxlIjoicGFyYWdyYXBoIiwidGV4dCI6ImxpdGVyYWwifX19LCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAzQyJ9XSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMzIiLCJzaG93Q2FwdGlvbiI6ZmFsc2UsInNvdXJjZSI6ImN1c3RvbSJ9XX0sInJlY29nbml0aW9uIjp0cnVlfSwicHJlc2VydmVkUGxhbnMiOlt7ImZpZWxkT3ZlcnJpZGVzIjp7fSwiZ2FwIjpmYWxzZSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMUYiLCJpbmNsdWRlRXhwbGFuYXRpb24iOmZhbHNlLCJpbmNsdWRlTm90ZXMiOmZhbHNlLCJyZWNvZ25pdGlvbiI6dHJ1ZX1dfV0sInN0YW5kYWxvbmVNZWFuaW5ncyI6W3sidGV4dCI6InZhcmlhbnQifV0sInRhZ3MiOlsiV29yayJdLCJ1cGRhdGVkQXQiOi05NzgzMDcyMDB9"
+    },
+    {
+      "id": "encode-usages-provenance",
+      "operation": "encode",
+      "table": "usages",
+      "mode": "provenance",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "{\"appBundleIdentifier\":\"fixture.app\",\"completeness\":\"sentence\",\"createdAt\":-978307200,\"explanations\":[{\"createdAt\":-978307200,\"id\":\"00000000-0000-0000-0000-000000000064\",\"input\":{\"context\":\"The bank.\",\"contextKind\":\"sentence\",\"dictionaryForm\":\"bank\",\"kind\":\"word\",\"language\":\"en\",\"occurrenceIdentity\":\"385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef\",\"ranges\":[{\"length\":4,\"location\":4}],\"target\":\"bank\"},\"language\":\"zh-Hans\",\"model\":\"fixture\",\"result\":{\"explanation\":\"explanation\",\"meaning\":\"meaning\"}}],\"id\":\"00000000-0000-0000-0000-000000000003\",\"meaning\":\"context\",\"meaningOrigin\":\"captured\",\"ranges\":[{\"length\":4,\"location\":4}],\"text\":\"The bank.\",\"translation\":\"原句\",\"translationVariants\":[]}",
+      "expected": {
+        "identity": "00000000-0000-0000-0000-000000000003",
+        "json": {
+          "appBundleIdentifier": "fixture.app",
+          "completeness": "sentence",
+          "createdAt": -978307200,
+          "explanations": [
+            {
+              "createdAt": -978307200,
+              "id": "00000000-0000-0000-0000-000000000064",
+              "input": {
+                "context": "The bank.",
+                "contextKind": "sentence",
+                "dictionaryForm": "bank",
+                "kind": "word",
+                "language": "en",
+                "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+                "ranges": [
+                  {
+                    "length": 4,
+                    "location": 4
+                  }
+                ],
+                "target": "bank"
+              },
+              "language": "zh-Hans",
+              "model": "fixture",
+              "result": {
+                "explanation": "explanation",
+                "meaning": "meaning"
+              }
+            }
+          ],
+          "id": "00000000-0000-0000-0000-000000000003",
+          "meaning": "context",
+          "meaningOrigin": "captured",
+          "ranges": [
+            {
+              "length": 4,
+              "location": 4
+            }
+          ],
+          "text": "The bank.",
+          "translation": "原句",
+          "translationVariants": []
+        },
+        "unixTime": 0,
+        "valid": true
+      },
+      "inputBase64": "eyJhcHBCdW5kbGVJZGVudGlmaWVyIjoiZml4dHVyZS5hcHAiLCJjb21wbGV0ZW5lc3MiOiJzZW50ZW5jZSIsImNyZWF0ZWRBdCI6LTk3ODMwNzIwMCwiZXhwbGFuYXRpb25zIjpbeyJjcmVhdGVkQXQiOi05NzgzMDcyMDAsImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDY0IiwiaW5wdXQiOnsiY29udGV4dCI6IlRoZSBiYW5rLiIsImNvbnRleHRLaW5kIjoic2VudGVuY2UiLCJkaWN0aW9uYXJ5Rm9ybSI6ImJhbmsiLCJraW5kIjoid29yZCIsImxhbmd1YWdlIjoiZW4iLCJvY2N1cnJlbmNlSWRlbnRpdHkiOiIzODUyMzlmNWEyNzhkY2E0YTA3MWQzMzk2Y2FkOGU0ZWQ1NTIxOWJmYTRiZmMyMWM4MjM2ZTk0MGU1NjE1NGVmIiwicmFuZ2VzIjpbeyJsZW5ndGgiOjQsImxvY2F0aW9uIjo0fV0sInRhcmdldCI6ImJhbmsifSwibGFuZ3VhZ2UiOiJ6aC1IYW5zIiwibW9kZWwiOiJmaXh0dXJlIiwicmVzdWx0Ijp7ImV4cGxhbmF0aW9uIjoiZXhwbGFuYXRpb24iLCJtZWFuaW5nIjoibWVhbmluZyJ9fV0sImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAzIiwibWVhbmluZyI6ImNvbnRleHQiLCJtZWFuaW5nT3JpZ2luIjoiY2FwdHVyZWQiLCJyYW5nZXMiOlt7Imxlbmd0aCI6NCwibG9jYXRpb24iOjR9XSwidGV4dCI6IlRoZSBiYW5rLiIsInRyYW5zbGF0aW9uIjoi5Y6f5Y+lIiwidHJhbnNsYXRpb25WYXJpYW50cyI6W119"
+    },
+    {
+      "id": "encode-entries-fractionDate",
+      "operation": "encode",
+      "table": "entries",
+      "mode": "fractionDate",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "{\"createdAt\":-978307199.875,\"dictionaryForm\":\"bank\",\"expression\":\"bank\",\"id\":\"00000000-0000-0000-0000-000000000001\",\"kind\":\"word\",\"language\":\"en\",\"senses\":[],\"updatedAt\":-978307200}",
+      "expected": {
+        "identity": "00000000-0000-0000-0000-000000000001",
+        "json": {
+          "createdAt": -978307199.875,
+          "dictionaryForm": "bank",
+          "expression": "bank",
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "word",
+          "language": "en",
+          "senses": [],
+          "updatedAt": -978307200
+        },
+        "unixTime": 0.125,
+        "valid": true
+      },
+      "inputBase64": "eyJjcmVhdGVkQXQiOi05NzgzMDcxOTkuODc1LCJkaWN0aW9uYXJ5Rm9ybSI6ImJhbmsiLCJleHByZXNzaW9uIjoiYmFuayIsImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAxIiwia2luZCI6IndvcmQiLCJsYW5ndWFnZSI6ImVuIiwic2Vuc2VzIjpbXSwidXBkYXRlZEF0IjotOTc4MzA3MjAwfQ=="
+    },
+    {
+      "id": "decode-entries-missingId",
+      "operation": "decode",
+      "table": "entries",
+      "mode": "missingId",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "{\"createdAt\":-978307200,\"dictionaryForm\":\"bank\",\"expression\":\"bank\",\"kind\":\"word\",\"language\":\"en\",\"senses\":[],\"updatedAt\":-978307200}",
+      "expected": {
+        "valid": false
+      },
+      "inputBase64": "eyJjcmVhdGVkQXQiOi05NzgzMDcyMDAsImRpY3Rpb25hcnlGb3JtIjoiYmFuayIsImV4cHJlc3Npb24iOiJiYW5rIiwia2luZCI6IndvcmQiLCJsYW5ndWFnZSI6ImVuIiwic2Vuc2VzIjpbXSwidXBkYXRlZEF0IjotOTc4MzA3MjAwfQ=="
+    },
+    {
+      "id": "decode-entries-unknownField",
+      "operation": "decode",
+      "table": "entries",
+      "mode": "unknownField",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "{\"createdAt\":-978307200,\"dictionaryForm\":\"bank\",\"expression\":\"bank\",\"future\":{\"literal\":true},\"id\":\"00000000-0000-0000-0000-000000000001\",\"kind\":\"word\",\"language\":\"en\",\"senses\":[],\"updatedAt\":-978307200}",
+      "expected": {
+        "identity": "00000000-0000-0000-0000-000000000001",
+        "json": {
+          "createdAt": -978307200,
+          "dictionaryForm": "bank",
+          "expression": "bank",
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "word",
+          "language": "en",
+          "senses": [],
+          "updatedAt": -978307200
+        },
+        "unixTime": 0,
+        "valid": true
+      },
+      "inputBase64": "eyJjcmVhdGVkQXQiOi05NzgzMDcyMDAsImRpY3Rpb25hcnlGb3JtIjoiYmFuayIsImV4cHJlc3Npb24iOiJiYW5rIiwiZnV0dXJlIjp7ImxpdGVyYWwiOnRydWV9LCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMSIsImtpbmQiOiJ3b3JkIiwibGFuZ3VhZ2UiOiJlbiIsInNlbnNlcyI6W10sInVwZGF0ZWRBdCI6LTk3ODMwNzIwMH0="
+    },
+    {
+      "id": "decode-entries-enumCase",
+      "operation": "decode",
+      "table": "entries",
+      "mode": "enumCase",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "{\"createdAt\":-978307200,\"dictionaryForm\":\"bank\",\"expression\":\"bank\",\"id\":\"00000000-0000-0000-0000-000000000001\",\"kind\":\"WORD\",\"language\":\"en\",\"senses\":[],\"updatedAt\":-978307200}",
+      "expected": {
+        "valid": false
+      },
+      "inputBase64": "eyJjcmVhdGVkQXQiOi05NzgzMDcyMDAsImRpY3Rpb25hcnlGb3JtIjoiYmFuayIsImV4cHJlc3Npb24iOiJiYW5rIiwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDEiLCJraW5kIjoiV09SRCIsImxhbmd1YWdlIjoiZW4iLCJzZW5zZXMiOltdLCJ1cGRhdGVkQXQiOi05NzgzMDcyMDB9"
+    },
+    {
+      "id": "decode-entries-enumInteger",
+      "operation": "decode",
+      "table": "entries",
+      "mode": "enumInteger",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "{\"createdAt\":-978307200,\"dictionaryForm\":\"bank\",\"expression\":\"bank\",\"id\":\"00000000-0000-0000-0000-000000000001\",\"kind\":0,\"language\":\"en\",\"senses\":[],\"updatedAt\":-978307200}",
+      "expected": {
+        "valid": false
+      },
+      "inputBase64": "eyJjcmVhdGVkQXQiOi05NzgzMDcyMDAsImRpY3Rpb25hcnlGb3JtIjoiYmFuayIsImV4cHJlc3Npb24iOiJiYW5rIiwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDEiLCJraW5kIjowLCJsYW5ndWFnZSI6ImVuIiwic2Vuc2VzIjpbXSwidXBkYXRlZEF0IjotOTc4MzA3MjAwfQ=="
+    },
+    {
+      "id": "decode-senses-missingNote",
+      "operation": "decode",
+      "table": "senses",
+      "mode": "missingNote",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "{\"alternateMeanings\":[],\"content\":[],\"createdAt\":-978307200,\"examples\":[],\"explanations\":[],\"id\":\"00000000-0000-0000-0000-000000000002\",\"isSavedWithoutContext\":true,\"meaning\":\"core\",\"meaningOrigin\":\"captured\",\"mergedFrom\":[],\"reviewCards\":[],\"standaloneMeanings\":[],\"tags\":[\"Work\"],\"updatedAt\":-978307200}",
+      "expected": {
+        "valid": false
+      },
+      "inputBase64": "eyJhbHRlcm5hdGVNZWFuaW5ncyI6W10sImNvbnRlbnQiOltdLCJjcmVhdGVkQXQiOi05NzgzMDcyMDAsImV4YW1wbGVzIjpbXSwiZXhwbGFuYXRpb25zIjpbXSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDIiLCJpc1NhdmVkV2l0aG91dENvbnRleHQiOnRydWUsIm1lYW5pbmciOiJjb3JlIiwibWVhbmluZ09yaWdpbiI6ImNhcHR1cmVkIiwibWVyZ2VkRnJvbSI6W10sInJldmlld0NhcmRzIjpbXSwic3RhbmRhbG9uZU1lYW5pbmdzIjpbXSwidGFncyI6WyJXb3JrIl0sInVwZGF0ZWRBdCI6LTk3ODMwNzIwMH0="
+    },
+    {
+      "id": "decode-senses-duplicateNote",
+      "operation": "decode",
+      "table": "senses",
+      "mode": "duplicateNote",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "{\"alternateMeanings\":[],\"content\":[],\"createdAt\":-978307200,\"examples\":[],\"explanations\":[],\"id\":\"00000000-0000-0000-0000-000000000002\",\"isSavedWithoutContext\":true,\"meaning\":\"core\",\"meaningOrigin\":\"captured\",\"mergedFrom\":[],\"note\":\"first\",\"note\":\"last\",\"reviewCards\":[],\"standaloneMeanings\":[],\"tags\":[\"Work\"],\"updatedAt\":-978307200}",
+      "expected": {
+        "identity": "00000000-0000-0000-0000-000000000002",
+        "json": {
+          "alternateMeanings": [],
+          "content": [],
+          "createdAt": -978307200,
+          "examples": [],
+          "explanations": [],
+          "id": "00000000-0000-0000-0000-000000000002",
+          "isSavedWithoutContext": true,
+          "meaning": "core",
+          "meaningOrigin": "captured",
+          "mergedFrom": [],
+          "note": "first",
+          "reviewCards": [],
+          "standaloneMeanings": [],
+          "tags": [
+            "Work"
+          ],
+          "updatedAt": -978307200
+        },
+        "unixTime": 0,
+        "valid": true
+      },
+      "inputBase64": "eyJhbHRlcm5hdGVNZWFuaW5ncyI6W10sImNvbnRlbnQiOltdLCJjcmVhdGVkQXQiOi05NzgzMDcyMDAsImV4YW1wbGVzIjpbXSwiZXhwbGFuYXRpb25zIjpbXSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDIiLCJpc1NhdmVkV2l0aG91dENvbnRleHQiOnRydWUsIm1lYW5pbmciOiJjb3JlIiwibWVhbmluZ09yaWdpbiI6ImNhcHR1cmVkIiwibWVyZ2VkRnJvbSI6W10sIm5vdGUiOiJmaXJzdCIsIm5vdGUiOiJsYXN0IiwicmV2aWV3Q2FyZHMiOltdLCJzdGFuZGFsb25lTWVhbmluZ3MiOltdLCJ0YWdzIjpbIldvcmsiXSwidXBkYXRlZEF0IjotOTc4MzA3MjAwfQ=="
+    },
+    {
+      "id": "decode-bindings-mappingCase",
+      "operation": "decode",
+      "table": "bindings",
+      "mode": "mappingCase",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "{\"deck\":\"deck\",\"endpoint\":\"http:\\/\\/localhost\",\"fields\":{\"ID\":\"00000000-0000-0000-0000-000000000063\"},\"id\":\"00000000-0000-0000-0000-000000000028\",\"identityField\":\"ID\",\"mapping\":[\"lingroveid\",\"ID\"],\"model\":\"model\",\"noteID\":1,\"originSenseID\":\"00000000-0000-0000-0000-000000000063\",\"profile\":\"profile\"}",
+      "expected": {
+        "valid": false
+      },
+      "inputBase64": "eyJkZWNrIjoiZGVjayIsImVuZHBvaW50IjoiaHR0cDpcL1wvbG9jYWxob3N0IiwiZmllbGRzIjp7IklEIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDYzIn0sImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDI4IiwiaWRlbnRpdHlGaWVsZCI6IklEIiwibWFwcGluZyI6WyJsaW5ncm92ZWlkIiwiSUQiXSwibW9kZWwiOiJtb2RlbCIsIm5vdGVJRCI6MSwib3JpZ2luU2Vuc2VJRCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDA2MyIsInByb2ZpbGUiOiJwcm9maWxlIn0="
+    },
+    {
+      "id": "decode-bindings-mappingObject",
+      "operation": "decode",
+      "table": "bindings",
+      "mode": "mappingObject",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "{\"deck\":\"deck\",\"endpoint\":\"http:\\/\\/localhost\",\"fields\":{\"ID\":\"00000000-0000-0000-0000-000000000063\"},\"id\":\"00000000-0000-0000-0000-000000000028\",\"identityField\":\"ID\",\"mapping\":{\"LingroveID\":\"ID\"},\"model\":\"model\",\"noteID\":1,\"originSenseID\":\"00000000-0000-0000-0000-000000000063\",\"profile\":\"profile\"}",
+      "expected": {
+        "valid": false
+      },
+      "inputBase64": "eyJkZWNrIjoiZGVjayIsImVuZHBvaW50IjoiaHR0cDpcL1wvbG9jYWxob3N0IiwiZmllbGRzIjp7IklEIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDYzIn0sImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDI4IiwiaWRlbnRpdHlGaWVsZCI6IklEIiwibWFwcGluZyI6eyJMaW5ncm92ZUlEIjoiSUQifSwibW9kZWwiOiJtb2RlbCIsIm5vdGVJRCI6MSwib3JpZ2luU2Vuc2VJRCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDA2MyIsInByb2ZpbGUiOiJwcm9maWxlIn0="
+    },
+    {
+      "id": "decode-bindings-mappingOdd",
+      "operation": "decode",
+      "table": "bindings",
+      "mode": "mappingOdd",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "{\"deck\":\"deck\",\"endpoint\":\"http:\\/\\/localhost\",\"fields\":{\"ID\":\"00000000-0000-0000-0000-000000000063\"},\"id\":\"00000000-0000-0000-0000-000000000028\",\"identityField\":\"ID\",\"mapping\":[\"LingroveID\"],\"model\":\"model\",\"noteID\":1,\"originSenseID\":\"00000000-0000-0000-0000-000000000063\",\"profile\":\"profile\"}",
+      "expected": {
+        "valid": false
+      },
+      "inputBase64": "eyJkZWNrIjoiZGVjayIsImVuZHBvaW50IjoiaHR0cDpcL1wvbG9jYWxob3N0IiwiZmllbGRzIjp7IklEIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDYzIn0sImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDI4IiwiaWRlbnRpdHlGaWVsZCI6IklEIiwibWFwcGluZyI6WyJMaW5ncm92ZUlEIl0sIm1vZGVsIjoibW9kZWwiLCJub3RlSUQiOjEsIm9yaWdpblNlbnNlSUQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwNjMiLCJwcm9maWxlIjoicHJvZmlsZSJ9"
+    },
+    {
+      "id": "decode-bindings-mappingDuplicate",
+      "operation": "decode",
+      "table": "bindings",
+      "mode": "mappingDuplicate",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "{\"deck\":\"deck\",\"endpoint\":\"http:\\/\\/localhost\",\"fields\":{\"ID\":\"00000000-0000-0000-0000-000000000063\"},\"id\":\"00000000-0000-0000-0000-000000000028\",\"identityField\":\"ID\",\"mapping\":[\"LingroveID\",\"first\",\"LingroveID\",\"last\"],\"model\":\"model\",\"noteID\":1,\"originSenseID\":\"00000000-0000-0000-0000-000000000063\",\"profile\":\"profile\"}",
+      "expected": {
+        "identity": "00000000-0000-0000-0000-000000000028",
+        "json": {
+          "deck": "deck",
+          "endpoint": "http://localhost",
+          "fields": {
+            "ID": "00000000-0000-0000-0000-000000000063"
+          },
+          "id": "00000000-0000-0000-0000-000000000028",
+          "identityField": "ID",
+          "mapping": [
+            "LingroveID",
+            "last"
+          ],
+          "model": "model",
+          "noteID": 1,
+          "originSenseID": "00000000-0000-0000-0000-000000000063",
+          "profile": "profile"
+        },
+        "unixTime": null,
+        "valid": true
+      },
+      "inputBase64": "eyJkZWNrIjoiZGVjayIsImVuZHBvaW50IjoiaHR0cDpcL1wvbG9jYWxob3N0IiwiZmllbGRzIjp7IklEIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDYzIn0sImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDI4IiwiaWRlbnRpdHlGaWVsZCI6IklEIiwibWFwcGluZyI6WyJMaW5ncm92ZUlEIiwiZmlyc3QiLCJMaW5ncm92ZUlEIiwibGFzdCJdLCJtb2RlbCI6Im1vZGVsIiwibm90ZUlEIjoxLCJvcmlnaW5TZW5zZUlEIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDYzIiwicHJvZmlsZSI6InByb2ZpbGUifQ=="
+    },
+    {
+      "id": "decode-blocks-unionBoth",
+      "operation": "decode",
+      "table": "blocks",
+      "mode": "unionBoth",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "{\"content\":{\"image\":{},\"text\":{\"_0\":{\"bold\":false,\"italic\":false,\"style\":\"paragraph\",\"text\":\"x\"}}},\"id\":\"00000000-0000-0000-0000-000000000014\"}",
+      "expected": {
+        "valid": false
+      },
+      "inputBase64": "eyJjb250ZW50Ijp7ImltYWdlIjp7fSwidGV4dCI6eyJfMCI6eyJib2xkIjpmYWxzZSwiaXRhbGljIjpmYWxzZSwic3R5bGUiOiJwYXJhZ3JhcGgiLCJ0ZXh0IjoieCJ9fX0sImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDE0In0="
+    },
+    {
+      "id": "decode-blocks-unionUnknown",
+      "operation": "decode",
+      "table": "blocks",
+      "mode": "unionUnknown",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "{\"content\":{\"other\":{}},\"id\":\"00000000-0000-0000-0000-000000000014\"}",
+      "expected": {
+        "valid": false
+      },
+      "inputBase64": "eyJjb250ZW50Ijp7Im90aGVyIjp7fX0sImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDE0In0="
+    },
+    {
+      "id": "decode-blocks-styleCase",
+      "operation": "decode",
+      "table": "blocks",
+      "mode": "styleCase",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "{\"content\":{\"text\":{\"_0\":{\"bold\":false,\"italic\":false,\"style\":\"HEADING\",\"text\":\"x\"}}},\"id\":\"00000000-0000-0000-0000-000000000014\"}",
+      "expected": {
+        "valid": false
+      },
+      "inputBase64": "eyJjb250ZW50Ijp7InRleHQiOnsiXzAiOnsiYm9sZCI6ZmFsc2UsIml0YWxpYyI6ZmFsc2UsInN0eWxlIjoiSEVBRElORyIsInRleHQiOiJ4In19fSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMTQifQ=="
+    },
+    {
+      "id": "decode-blocks-missingStyle",
+      "operation": "decode",
+      "table": "blocks",
+      "mode": "missingStyle",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "{\"content\":{\"text\":{\"_0\":{\"bold\":false,\"italic\":false,\"text\":\"x\"}}},\"id\":\"00000000-0000-0000-0000-000000000014\"}",
+      "expected": {
+        "valid": false
+      },
+      "inputBase64": "eyJjb250ZW50Ijp7InRleHQiOnsiXzAiOnsiYm9sZCI6ZmFsc2UsIml0YWxpYyI6ZmFsc2UsInRleHQiOiJ4In19fSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMTQifQ=="
+    },
+    {
+      "id": "decode-entries-bom",
+      "operation": "decode",
+      "table": "entries",
+      "mode": "bom",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "{\"createdAt\":-978307200,\"dictionaryForm\":\"bank\",\"expression\":\"bank\",\"id\":\"00000000-0000-0000-0000-000000000001\",\"kind\":\"word\",\"language\":\"en\",\"senses\":[],\"updatedAt\":-978307200}",
+      "inputBase64": "77u/eyJjcmVhdGVkQXQiOi05NzgzMDcyMDAsImRpY3Rpb25hcnlGb3JtIjoiYmFuayIsImV4cHJlc3Npb24iOiJiYW5rIiwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDEiLCJraW5kIjoid29yZCIsImxhbmd1YWdlIjoiZW4iLCJzZW5zZXMiOltdLCJ1cGRhdGVkQXQiOi05NzgzMDcyMDB9",
+      "expected": {
+        "identity": "00000000-0000-0000-0000-000000000001",
+        "json": {
+          "createdAt": -978307200,
+          "dictionaryForm": "bank",
+          "expression": "bank",
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "word",
+          "language": "en",
+          "senses": [],
+          "updatedAt": -978307200
+        },
+        "unixTime": 0,
+        "valid": true
+      }
+    },
+    {
+      "id": "decode-entries-utf16LE",
+      "operation": "decode",
+      "table": "entries",
+      "mode": "utf16LE",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "",
+      "inputBase64": "//57ACIAYwByAGUAYQB0AGUAZABBAHQAIgA6AC0AOQA3ADgAMwAwADcAMgAwADAALAAiAGQAaQBjAHQAaQBvAG4AYQByAHkARgBvAHIAbQAiADoAIgBiAGEAbgBrACIALAAiAGUAeABwAHIAZQBzAHMAaQBvAG4AIgA6ACIAYgBhAG4AawAiACwAIgBpAGQAIgA6ACIAMAAwADAAMAAwADAAMAAwAC0AMAAwADAAMAAtADAAMAAwADAALQAwADAAMAAwAC0AMAAwADAAMAAwADAAMAAwADAAMAAwADEAIgAsACIAawBpAG4AZAAiADoAIgB3AG8AcgBkACIALAAiAGwAYQBuAGcAdQBhAGcAZQAiADoAIgBlAG4AIgAsACIAcwBlAG4AcwBlAHMAIgA6AFsAXQAsACIAdQBwAGQAYQB0AGUAZABBAHQAIgA6AC0AOQA3ADgAMwAwADcAMgAwADAAfQA=",
+      "expected": {
+        "identity": "00000000-0000-0000-0000-000000000001",
+        "json": {
+          "createdAt": -978307200,
+          "dictionaryForm": "bank",
+          "expression": "bank",
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "word",
+          "language": "en",
+          "senses": [],
+          "updatedAt": -978307200
+        },
+        "unixTime": 0,
+        "valid": true
+      }
+    },
+    {
+      "id": "decode-entries-utf32LE",
+      "operation": "decode",
+      "table": "entries",
+      "mode": "utf32LE",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "",
+      "inputBase64": "//4AAHsAAAAiAAAAYwAAAHIAAABlAAAAYQAAAHQAAABlAAAAZAAAAEEAAAB0AAAAIgAAADoAAAAtAAAAOQAAADcAAAA4AAAAMwAAADAAAAA3AAAAMgAAADAAAAAwAAAALAAAACIAAABkAAAAaQAAAGMAAAB0AAAAaQAAAG8AAABuAAAAYQAAAHIAAAB5AAAARgAAAG8AAAByAAAAbQAAACIAAAA6AAAAIgAAAGIAAABhAAAAbgAAAGsAAAAiAAAALAAAACIAAABlAAAAeAAAAHAAAAByAAAAZQAAAHMAAABzAAAAaQAAAG8AAABuAAAAIgAAADoAAAAiAAAAYgAAAGEAAABuAAAAawAAACIAAAAsAAAAIgAAAGkAAABkAAAAIgAAADoAAAAiAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAtAAAAMAAAADAAAAAwAAAAMAAAAC0AAAAwAAAAMAAAADAAAAAwAAAALQAAADAAAAAwAAAAMAAAADAAAAAtAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAxAAAAIgAAACwAAAAiAAAAawAAAGkAAABuAAAAZAAAACIAAAA6AAAAIgAAAHcAAABvAAAAcgAAAGQAAAAiAAAALAAAACIAAABsAAAAYQAAAG4AAABnAAAAdQAAAGEAAABnAAAAZQAAACIAAAA6AAAAIgAAAGUAAABuAAAAIgAAACwAAAAiAAAAcwAAAGUAAABuAAAAcwAAAGUAAABzAAAAIgAAADoAAABbAAAAXQAAACwAAAAiAAAAdQAAAHAAAABkAAAAYQAAAHQAAABlAAAAZAAAAEEAAAB0AAAAIgAAADoAAAAtAAAAOQAAADcAAAA4AAAAMwAAADAAAAA3AAAAMgAAADAAAAAwAAAAfQAAAA==",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "decode-entries-utf16BE",
+      "operation": "decode",
+      "table": "entries",
+      "mode": "utf16BE",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "",
+      "inputBase64": "/v8AewAiAGMAcgBlAGEAdABlAGQAQQB0ACIAOgAtADkANwA4ADMAMAA3ADIAMAAwACwAIgBkAGkAYwB0AGkAbwBuAGEAcgB5AEYAbwByAG0AIgA6ACIAYgBhAG4AawAiACwAIgBlAHgAcAByAGUAcwBzAGkAbwBuACIAOgAiAGIAYQBuAGsAIgAsACIAaQBkACIAOgAiADAAMAAwADAAMAAwADAAMAAtADAAMAAwADAALQAwADAAMAAwAC0AMAAwADAAMAAtADAAMAAwADAAMAAwADAAMAAwADAAMAAxACIALAAiAGsAaQBuAGQAIgA6ACIAdwBvAHIAZAAiACwAIgBsAGEAbgBnAHUAYQBnAGUAIgA6ACIAZQBuACIALAAiAHMAZQBuAHMAZQBzACIAOgBbAF0ALAAiAHUAcABkAGEAdABlAGQAQQB0ACIAOgAtADkANwA4ADMAMAA3ADIAMAAwAH0=",
+      "expected": {
+        "identity": "00000000-0000-0000-0000-000000000001",
+        "json": {
+          "createdAt": -978307200,
+          "dictionaryForm": "bank",
+          "expression": "bank",
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "word",
+          "language": "en",
+          "senses": [],
+          "updatedAt": -978307200
+        },
+        "unixTime": 0,
+        "valid": true
+      }
+    },
+    {
+      "id": "decode-entries-utf16NoBomLE",
+      "operation": "decode",
+      "table": "entries",
+      "mode": "utf16NoBomLE",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "{\u0000\"\u0000c\u0000r\u0000e\u0000a\u0000t\u0000e\u0000d\u0000A\u0000t\u0000\"\u0000:\u0000-\u00009\u00007\u00008\u00003\u00000\u00007\u00002\u00000\u00000\u0000,\u0000\"\u0000d\u0000i\u0000c\u0000t\u0000i\u0000o\u0000n\u0000a\u0000r\u0000y\u0000F\u0000o\u0000r\u0000m\u0000\"\u0000:\u0000\"\u0000b\u0000a\u0000n\u0000k\u0000\"\u0000,\u0000\"\u0000e\u0000x\u0000p\u0000r\u0000e\u0000s\u0000s\u0000i\u0000o\u0000n\u0000\"\u0000:\u0000\"\u0000b\u0000a\u0000n\u0000k\u0000\"\u0000,\u0000\"\u0000i\u0000d\u0000\"\u0000:\u0000\"\u00000\u00000\u00000\u00000\u00000\u00000\u00000\u00000\u0000-\u00000\u00000\u00000\u00000\u0000-\u00000\u00000\u00000\u00000\u0000-\u00000\u00000\u00000\u00000\u0000-\u00000\u00000\u00000\u00000\u00000\u00000\u00000\u00000\u00000\u00000\u00000\u00001\u0000\"\u0000,\u0000\"\u0000k\u0000i\u0000n\u0000d\u0000\"\u0000:\u0000\"\u0000w\u0000o\u0000r\u0000d\u0000\"\u0000,\u0000\"\u0000l\u0000a\u0000n\u0000g\u0000u\u0000a\u0000g\u0000e\u0000\"\u0000:\u0000\"\u0000e\u0000n\u0000\"\u0000,\u0000\"\u0000s\u0000e\u0000n\u0000s\u0000e\u0000s\u0000\"\u0000:\u0000[\u0000]\u0000,\u0000\"\u0000u\u0000p\u0000d\u0000a\u0000t\u0000e\u0000d\u0000A\u0000t\u0000\"\u0000:\u0000-\u00009\u00007\u00008\u00003\u00000\u00007\u00002\u00000\u00000\u0000}\u0000",
+      "inputBase64": "ewAiAGMAcgBlAGEAdABlAGQAQQB0ACIAOgAtADkANwA4ADMAMAA3ADIAMAAwACwAIgBkAGkAYwB0AGkAbwBuAGEAcgB5AEYAbwByAG0AIgA6ACIAYgBhAG4AawAiACwAIgBlAHgAcAByAGUAcwBzAGkAbwBuACIAOgAiAGIAYQBuAGsAIgAsACIAaQBkACIAOgAiADAAMAAwADAAMAAwADAAMAAtADAAMAAwADAALQAwADAAMAAwAC0AMAAwADAAMAAtADAAMAAwADAAMAAwADAAMAAwADAAMAAxACIALAAiAGsAaQBuAGQAIgA6ACIAdwBvAHIAZAAiACwAIgBsAGEAbgBnAHUAYQBnAGUAIgA6ACIAZQBuACIALAAiAHMAZQBuAHMAZQBzACIAOgBbAF0ALAAiAHUAcABkAGEAdABlAGQAQQB0ACIAOgAtADkANwA4ADMAMAA3ADIAMAAwAH0A",
+      "expected": {
+        "identity": "00000000-0000-0000-0000-000000000001",
+        "json": {
+          "createdAt": -978307200,
+          "dictionaryForm": "bank",
+          "expression": "bank",
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "word",
+          "language": "en",
+          "senses": [],
+          "updatedAt": -978307200
+        },
+        "unixTime": 0,
+        "valid": true
+      }
+    },
+    {
+      "id": "decode-entries-utf16NoBomBE",
+      "operation": "decode",
+      "table": "entries",
+      "mode": "utf16NoBomBE",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "\u0000{\u0000\"\u0000c\u0000r\u0000e\u0000a\u0000t\u0000e\u0000d\u0000A\u0000t\u0000\"\u0000:\u0000-\u00009\u00007\u00008\u00003\u00000\u00007\u00002\u00000\u00000\u0000,\u0000\"\u0000d\u0000i\u0000c\u0000t\u0000i\u0000o\u0000n\u0000a\u0000r\u0000y\u0000F\u0000o\u0000r\u0000m\u0000\"\u0000:\u0000\"\u0000b\u0000a\u0000n\u0000k\u0000\"\u0000,\u0000\"\u0000e\u0000x\u0000p\u0000r\u0000e\u0000s\u0000s\u0000i\u0000o\u0000n\u0000\"\u0000:\u0000\"\u0000b\u0000a\u0000n\u0000k\u0000\"\u0000,\u0000\"\u0000i\u0000d\u0000\"\u0000:\u0000\"\u00000\u00000\u00000\u00000\u00000\u00000\u00000\u00000\u0000-\u00000\u00000\u00000\u00000\u0000-\u00000\u00000\u00000\u00000\u0000-\u00000\u00000\u00000\u00000\u0000-\u00000\u00000\u00000\u00000\u00000\u00000\u00000\u00000\u00000\u00000\u00000\u00001\u0000\"\u0000,\u0000\"\u0000k\u0000i\u0000n\u0000d\u0000\"\u0000:\u0000\"\u0000w\u0000o\u0000r\u0000d\u0000\"\u0000,\u0000\"\u0000l\u0000a\u0000n\u0000g\u0000u\u0000a\u0000g\u0000e\u0000\"\u0000:\u0000\"\u0000e\u0000n\u0000\"\u0000,\u0000\"\u0000s\u0000e\u0000n\u0000s\u0000e\u0000s\u0000\"\u0000:\u0000[\u0000]\u0000,\u0000\"\u0000u\u0000p\u0000d\u0000a\u0000t\u0000e\u0000d\u0000A\u0000t\u0000\"\u0000:\u0000-\u00009\u00007\u00008\u00003\u00000\u00007\u00002\u00000\u00000\u0000}",
+      "inputBase64": "AHsAIgBjAHIAZQBhAHQAZQBkAEEAdAAiADoALQA5ADcAOAAzADAANwAyADAAMAAsACIAZABpAGMAdABpAG8AbgBhAHIAeQBGAG8AcgBtACIAOgAiAGIAYQBuAGsAIgAsACIAZQB4AHAAcgBlAHMAcwBpAG8AbgAiADoAIgBiAGEAbgBrACIALAAiAGkAZAAiADoAIgAwADAAMAAwADAAMAAwADAALQAwADAAMAAwAC0AMAAwADAAMAAtADAAMAAwADAALQAwADAAMAAwADAAMAAwADAAMAAwADAAMQAiACwAIgBrAGkAbgBkACIAOgAiAHcAbwByAGQAIgAsACIAbABhAG4AZwB1AGEAZwBlACIAOgAiAGUAbgAiACwAIgBzAGUAbgBzAGUAcwAiADoAWwBdACwAIgB1AHAAZABhAHQAZQBkAEEAdAAiADoALQA5ADcAOAAzADAANwAyADAAMAB9",
+      "expected": {
+        "identity": "00000000-0000-0000-0000-000000000001",
+        "json": {
+          "createdAt": -978307200,
+          "dictionaryForm": "bank",
+          "expression": "bank",
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "word",
+          "language": "en",
+          "senses": [],
+          "updatedAt": -978307200
+        },
+        "unixTime": 0,
+        "valid": true
+      }
+    },
+    {
+      "id": "decode-entries-utf32BE",
+      "operation": "decode",
+      "table": "entries",
+      "mode": "utf32BE",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "",
+      "inputBase64": "AAD+/wAAAHsAAAAiAAAAYwAAAHIAAABlAAAAYQAAAHQAAABlAAAAZAAAAEEAAAB0AAAAIgAAADoAAAAtAAAAOQAAADcAAAA4AAAAMwAAADAAAAA3AAAAMgAAADAAAAAwAAAALAAAACIAAABkAAAAaQAAAGMAAAB0AAAAaQAAAG8AAABuAAAAYQAAAHIAAAB5AAAARgAAAG8AAAByAAAAbQAAACIAAAA6AAAAIgAAAGIAAABhAAAAbgAAAGsAAAAiAAAALAAAACIAAABlAAAAeAAAAHAAAAByAAAAZQAAAHMAAABzAAAAaQAAAG8AAABuAAAAIgAAADoAAAAiAAAAYgAAAGEAAABuAAAAawAAACIAAAAsAAAAIgAAAGkAAABkAAAAIgAAADoAAAAiAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAtAAAAMAAAADAAAAAwAAAAMAAAAC0AAAAwAAAAMAAAADAAAAAwAAAALQAAADAAAAAwAAAAMAAAADAAAAAtAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAxAAAAIgAAACwAAAAiAAAAawAAAGkAAABuAAAAZAAAACIAAAA6AAAAIgAAAHcAAABvAAAAcgAAAGQAAAAiAAAALAAAACIAAABsAAAAYQAAAG4AAABnAAAAdQAAAGEAAABnAAAAZQAAACIAAAA6AAAAIgAAAGUAAABuAAAAIgAAACwAAAAiAAAAcwAAAGUAAABuAAAAcwAAAGUAAABzAAAAIgAAADoAAABbAAAAXQAAACwAAAAiAAAAdQAAAHAAAABkAAAAYQAAAHQAAABlAAAAZAAAAEEAAAB0AAAAIgAAADoAAAAtAAAAOQAAADcAAAA4AAAAMwAAADAAAAA3AAAAMgAAADAAAAAwAAAAfQ==",
+      "expected": {
+        "identity": "00000000-0000-0000-0000-000000000001",
+        "json": {
+          "createdAt": -978307200,
+          "dictionaryForm": "bank",
+          "expression": "bank",
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "word",
+          "language": "en",
+          "senses": [],
+          "updatedAt": -978307200
+        },
+        "unixTime": 0,
+        "valid": true
+      }
+    },
+    {
+      "id": "decode-entries-utf32NoBomLE",
+      "operation": "decode",
+      "table": "entries",
+      "mode": "utf32NoBomLE",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "{\u0000\u0000\u0000\"\u0000\u0000\u0000c\u0000\u0000\u0000r\u0000\u0000\u0000e\u0000\u0000\u0000a\u0000\u0000\u0000t\u0000\u0000\u0000e\u0000\u0000\u0000d\u0000\u0000\u0000A\u0000\u0000\u0000t\u0000\u0000\u0000\"\u0000\u0000\u0000:\u0000\u0000\u0000-\u0000\u0000\u00009\u0000\u0000\u00007\u0000\u0000\u00008\u0000\u0000\u00003\u0000\u0000\u00000\u0000\u0000\u00007\u0000\u0000\u00002\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u0000,\u0000\u0000\u0000\"\u0000\u0000\u0000d\u0000\u0000\u0000i\u0000\u0000\u0000c\u0000\u0000\u0000t\u0000\u0000\u0000i\u0000\u0000\u0000o\u0000\u0000\u0000n\u0000\u0000\u0000a\u0000\u0000\u0000r\u0000\u0000\u0000y\u0000\u0000\u0000F\u0000\u0000\u0000o\u0000\u0000\u0000r\u0000\u0000\u0000m\u0000\u0000\u0000\"\u0000\u0000\u0000:\u0000\u0000\u0000\"\u0000\u0000\u0000b\u0000\u0000\u0000a\u0000\u0000\u0000n\u0000\u0000\u0000k\u0000\u0000\u0000\"\u0000\u0000\u0000,\u0000\u0000\u0000\"\u0000\u0000\u0000e\u0000\u0000\u0000x\u0000\u0000\u0000p\u0000\u0000\u0000r\u0000\u0000\u0000e\u0000\u0000\u0000s\u0000\u0000\u0000s\u0000\u0000\u0000i\u0000\u0000\u0000o\u0000\u0000\u0000n\u0000\u0000\u0000\"\u0000\u0000\u0000:\u0000\u0000\u0000\"\u0000\u0000\u0000b\u0000\u0000\u0000a\u0000\u0000\u0000n\u0000\u0000\u0000k\u0000\u0000\u0000\"\u0000\u0000\u0000,\u0000\u0000\u0000\"\u0000\u0000\u0000i\u0000\u0000\u0000d\u0000\u0000\u0000\"\u0000\u0000\u0000:\u0000\u0000\u0000\"\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u0000-\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u0000-\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u0000-\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u0000-\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00001\u0000\u0000\u0000\"\u0000\u0000\u0000,\u0000\u0000\u0000\"\u0000\u0000\u0000k\u0000\u0000\u0000i\u0000\u0000\u0000n\u0000\u0000\u0000d\u0000\u0000\u0000\"\u0000\u0000\u0000:\u0000\u0000\u0000\"\u0000\u0000\u0000w\u0000\u0000\u0000o\u0000\u0000\u0000r\u0000\u0000\u0000d\u0000\u0000\u0000\"\u0000\u0000\u0000,\u0000\u0000\u0000\"\u0000\u0000\u0000l\u0000\u0000\u0000a\u0000\u0000\u0000n\u0000\u0000\u0000g\u0000\u0000\u0000u\u0000\u0000\u0000a\u0000\u0000\u0000g\u0000\u0000\u0000e\u0000\u0000\u0000\"\u0000\u0000\u0000:\u0000\u0000\u0000\"\u0000\u0000\u0000e\u0000\u0000\u0000n\u0000\u0000\u0000\"\u0000\u0000\u0000,\u0000\u0000\u0000\"\u0000\u0000\u0000s\u0000\u0000\u0000e\u0000\u0000\u0000n\u0000\u0000\u0000s\u0000\u0000\u0000e\u0000\u0000\u0000s\u0000\u0000\u0000\"\u0000\u0000\u0000:\u0000\u0000\u0000[\u0000\u0000\u0000]\u0000\u0000\u0000,\u0000\u0000\u0000\"\u0000\u0000\u0000u\u0000\u0000\u0000p\u0000\u0000\u0000d\u0000\u0000\u0000a\u0000\u0000\u0000t\u0000\u0000\u0000e\u0000\u0000\u0000d\u0000\u0000\u0000A\u0000\u0000\u0000t\u0000\u0000\u0000\"\u0000\u0000\u0000:\u0000\u0000\u0000-\u0000\u0000\u00009\u0000\u0000\u00007\u0000\u0000\u00008\u0000\u0000\u00003\u0000\u0000\u00000\u0000\u0000\u00007\u0000\u0000\u00002\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u0000}\u0000\u0000\u0000",
+      "inputBase64": "ewAAACIAAABjAAAAcgAAAGUAAABhAAAAdAAAAGUAAABkAAAAQQAAAHQAAAAiAAAAOgAAAC0AAAA5AAAANwAAADgAAAAzAAAAMAAAADcAAAAyAAAAMAAAADAAAAAsAAAAIgAAAGQAAABpAAAAYwAAAHQAAABpAAAAbwAAAG4AAABhAAAAcgAAAHkAAABGAAAAbwAAAHIAAABtAAAAIgAAADoAAAAiAAAAYgAAAGEAAABuAAAAawAAACIAAAAsAAAAIgAAAGUAAAB4AAAAcAAAAHIAAABlAAAAcwAAAHMAAABpAAAAbwAAAG4AAAAiAAAAOgAAACIAAABiAAAAYQAAAG4AAABrAAAAIgAAACwAAAAiAAAAaQAAAGQAAAAiAAAAOgAAACIAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAAC0AAAAwAAAAMAAAADAAAAAwAAAALQAAADAAAAAwAAAAMAAAADAAAAAtAAAAMAAAADAAAAAwAAAAMAAAAC0AAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADEAAAAiAAAALAAAACIAAABrAAAAaQAAAG4AAABkAAAAIgAAADoAAAAiAAAAdwAAAG8AAAByAAAAZAAAACIAAAAsAAAAIgAAAGwAAABhAAAAbgAAAGcAAAB1AAAAYQAAAGcAAABlAAAAIgAAADoAAAAiAAAAZQAAAG4AAAAiAAAALAAAACIAAABzAAAAZQAAAG4AAABzAAAAZQAAAHMAAAAiAAAAOgAAAFsAAABdAAAALAAAACIAAAB1AAAAcAAAAGQAAABhAAAAdAAAAGUAAABkAAAAQQAAAHQAAAAiAAAAOgAAAC0AAAA5AAAANwAAADgAAAAzAAAAMAAAADcAAAAyAAAAMAAAADAAAAB9AAAA",
+      "expected": {
+        "identity": "00000000-0000-0000-0000-000000000001",
+        "json": {
+          "createdAt": -978307200,
+          "dictionaryForm": "bank",
+          "expression": "bank",
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "word",
+          "language": "en",
+          "senses": [],
+          "updatedAt": -978307200
+        },
+        "unixTime": 0,
+        "valid": true
+      }
+    },
+    {
+      "id": "decode-entries-utf32NoBomBE",
+      "operation": "decode",
+      "table": "entries",
+      "mode": "utf32NoBomBE",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "\u0000\u0000\u0000{\u0000\u0000\u0000\"\u0000\u0000\u0000c\u0000\u0000\u0000r\u0000\u0000\u0000e\u0000\u0000\u0000a\u0000\u0000\u0000t\u0000\u0000\u0000e\u0000\u0000\u0000d\u0000\u0000\u0000A\u0000\u0000\u0000t\u0000\u0000\u0000\"\u0000\u0000\u0000:\u0000\u0000\u0000-\u0000\u0000\u00009\u0000\u0000\u00007\u0000\u0000\u00008\u0000\u0000\u00003\u0000\u0000\u00000\u0000\u0000\u00007\u0000\u0000\u00002\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u0000,\u0000\u0000\u0000\"\u0000\u0000\u0000d\u0000\u0000\u0000i\u0000\u0000\u0000c\u0000\u0000\u0000t\u0000\u0000\u0000i\u0000\u0000\u0000o\u0000\u0000\u0000n\u0000\u0000\u0000a\u0000\u0000\u0000r\u0000\u0000\u0000y\u0000\u0000\u0000F\u0000\u0000\u0000o\u0000\u0000\u0000r\u0000\u0000\u0000m\u0000\u0000\u0000\"\u0000\u0000\u0000:\u0000\u0000\u0000\"\u0000\u0000\u0000b\u0000\u0000\u0000a\u0000\u0000\u0000n\u0000\u0000\u0000k\u0000\u0000\u0000\"\u0000\u0000\u0000,\u0000\u0000\u0000\"\u0000\u0000\u0000e\u0000\u0000\u0000x\u0000\u0000\u0000p\u0000\u0000\u0000r\u0000\u0000\u0000e\u0000\u0000\u0000s\u0000\u0000\u0000s\u0000\u0000\u0000i\u0000\u0000\u0000o\u0000\u0000\u0000n\u0000\u0000\u0000\"\u0000\u0000\u0000:\u0000\u0000\u0000\"\u0000\u0000\u0000b\u0000\u0000\u0000a\u0000\u0000\u0000n\u0000\u0000\u0000k\u0000\u0000\u0000\"\u0000\u0000\u0000,\u0000\u0000\u0000\"\u0000\u0000\u0000i\u0000\u0000\u0000d\u0000\u0000\u0000\"\u0000\u0000\u0000:\u0000\u0000\u0000\"\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u0000-\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u0000-\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u0000-\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u0000-\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u00001\u0000\u0000\u0000\"\u0000\u0000\u0000,\u0000\u0000\u0000\"\u0000\u0000\u0000k\u0000\u0000\u0000i\u0000\u0000\u0000n\u0000\u0000\u0000d\u0000\u0000\u0000\"\u0000\u0000\u0000:\u0000\u0000\u0000\"\u0000\u0000\u0000w\u0000\u0000\u0000o\u0000\u0000\u0000r\u0000\u0000\u0000d\u0000\u0000\u0000\"\u0000\u0000\u0000,\u0000\u0000\u0000\"\u0000\u0000\u0000l\u0000\u0000\u0000a\u0000\u0000\u0000n\u0000\u0000\u0000g\u0000\u0000\u0000u\u0000\u0000\u0000a\u0000\u0000\u0000g\u0000\u0000\u0000e\u0000\u0000\u0000\"\u0000\u0000\u0000:\u0000\u0000\u0000\"\u0000\u0000\u0000e\u0000\u0000\u0000n\u0000\u0000\u0000\"\u0000\u0000\u0000,\u0000\u0000\u0000\"\u0000\u0000\u0000s\u0000\u0000\u0000e\u0000\u0000\u0000n\u0000\u0000\u0000s\u0000\u0000\u0000e\u0000\u0000\u0000s\u0000\u0000\u0000\"\u0000\u0000\u0000:\u0000\u0000\u0000[\u0000\u0000\u0000]\u0000\u0000\u0000,\u0000\u0000\u0000\"\u0000\u0000\u0000u\u0000\u0000\u0000p\u0000\u0000\u0000d\u0000\u0000\u0000a\u0000\u0000\u0000t\u0000\u0000\u0000e\u0000\u0000\u0000d\u0000\u0000\u0000A\u0000\u0000\u0000t\u0000\u0000\u0000\"\u0000\u0000\u0000:\u0000\u0000\u0000-\u0000\u0000\u00009\u0000\u0000\u00007\u0000\u0000\u00008\u0000\u0000\u00003\u0000\u0000\u00000\u0000\u0000\u00007\u0000\u0000\u00002\u0000\u0000\u00000\u0000\u0000\u00000\u0000\u0000\u0000}",
+      "inputBase64": "AAAAewAAACIAAABjAAAAcgAAAGUAAABhAAAAdAAAAGUAAABkAAAAQQAAAHQAAAAiAAAAOgAAAC0AAAA5AAAANwAAADgAAAAzAAAAMAAAADcAAAAyAAAAMAAAADAAAAAsAAAAIgAAAGQAAABpAAAAYwAAAHQAAABpAAAAbwAAAG4AAABhAAAAcgAAAHkAAABGAAAAbwAAAHIAAABtAAAAIgAAADoAAAAiAAAAYgAAAGEAAABuAAAAawAAACIAAAAsAAAAIgAAAGUAAAB4AAAAcAAAAHIAAABlAAAAcwAAAHMAAABpAAAAbwAAAG4AAAAiAAAAOgAAACIAAABiAAAAYQAAAG4AAABrAAAAIgAAACwAAAAiAAAAaQAAAGQAAAAiAAAAOgAAACIAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAAC0AAAAwAAAAMAAAADAAAAAwAAAALQAAADAAAAAwAAAAMAAAADAAAAAtAAAAMAAAADAAAAAwAAAAMAAAAC0AAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADEAAAAiAAAALAAAACIAAABrAAAAaQAAAG4AAABkAAAAIgAAADoAAAAiAAAAdwAAAG8AAAByAAAAZAAAACIAAAAsAAAAIgAAAGwAAABhAAAAbgAAAGcAAAB1AAAAYQAAAGcAAABlAAAAIgAAADoAAAAiAAAAZQAAAG4AAAAiAAAALAAAACIAAABzAAAAZQAAAG4AAABzAAAAZQAAAHMAAAAiAAAAOgAAAFsAAABdAAAALAAAACIAAAB1AAAAcAAAAGQAAABhAAAAdAAAAGUAAABkAAAAQQAAAHQAAAAiAAAAOgAAAC0AAAA5AAAANwAAADgAAAAzAAAAMAAAADcAAAAyAAAAMAAAADAAAAB9",
+      "expected": {
+        "identity": "00000000-0000-0000-0000-000000000001",
+        "json": {
+          "createdAt": -978307200,
+          "dictionaryForm": "bank",
+          "expression": "bank",
+          "id": "00000000-0000-0000-0000-000000000001",
+          "kind": "word",
+          "language": "en",
+          "senses": [],
+          "updatedAt": -978307200
+        },
+        "unixTime": 0,
+        "valid": true
+      }
+    },
+    {
+      "id": "decode-senses-escapedLone",
+      "operation": "decode",
+      "table": "senses",
+      "mode": "escapedLone",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "{\"alternateMeanings\":[],\"content\":[],\"createdAt\":-978307200,\"examples\":[],\"explanations\":[],\"id\":\"00000000-0000-0000-0000-000000000002\",\"isSavedWithoutContext\":true,\"meaning\":\"core\",\"meaningOrigin\":\"captured\",\"mergedFrom\":[],\"note\":\"\\uD800\",\"reviewCards\":[],\"standaloneMeanings\":[],\"tags\":[\"Work\"],\"updatedAt\":-978307200}",
+      "inputBase64": "eyJhbHRlcm5hdGVNZWFuaW5ncyI6W10sImNvbnRlbnQiOltdLCJjcmVhdGVkQXQiOi05NzgzMDcyMDAsImV4YW1wbGVzIjpbXSwiZXhwbGFuYXRpb25zIjpbXSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDIiLCJpc1NhdmVkV2l0aG91dENvbnRleHQiOnRydWUsIm1lYW5pbmciOiJjb3JlIiwibWVhbmluZ09yaWdpbiI6ImNhcHR1cmVkIiwibWVyZ2VkRnJvbSI6W10sIm5vdGUiOiJcdUQ4MDAiLCJyZXZpZXdDYXJkcyI6W10sInN0YW5kYWxvbmVNZWFuaW5ncyI6W10sInRhZ3MiOlsiV29yayJdLCJ1cGRhdGVkQXQiOi05NzgzMDcyMDB9",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "decode-bindings-canonicalFields",
+      "operation": "decode",
+      "table": "bindings",
+      "mode": "canonicalFields",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "input": "{\"deck\":\"deck\",\"endpoint\":\"http:\\/\\/localhost\",\"fields\":{\"caf\\u00e9\":\"first\",\"cafe\\u0301\":\"last\"},\"id\":\"00000000-0000-0000-0000-000000000028\",\"identityField\":\"ID\",\"mapping\":[\"LingroveID\",\"ID\"],\"model\":\"model\",\"noteID\":1,\"originSenseID\":\"00000000-0000-0000-0000-000000000063\",\"profile\":\"profile\"}",
+      "inputBase64": "eyJkZWNrIjoiZGVjayIsImVuZHBvaW50IjoiaHR0cDpcL1wvbG9jYWxob3N0IiwiZmllbGRzIjp7ImNhZlx1MDBlOSI6ImZpcnN0IiwiY2FmZVx1MDMwMSI6Imxhc3QifSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMjgiLCJpZGVudGl0eUZpZWxkIjoiSUQiLCJtYXBwaW5nIjpbIkxpbmdyb3ZlSUQiLCJJRCJdLCJtb2RlbCI6Im1vZGVsIiwibm90ZUlEIjoxLCJvcmlnaW5TZW5zZUlEIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDYzIiwicHJvZmlsZSI6InByb2ZpbGUifQ==",
+      "expected": {
+        "identity": "00000000-0000-0000-0000-000000000028",
+        "json": {
+          "deck": "deck",
+          "endpoint": "http://localhost",
+          "fields": {
+            "café": "first"
+          },
+          "id": "00000000-0000-0000-0000-000000000028",
+          "identityField": "ID",
+          "mapping": [
+            "LingroveID",
+            "ID"
+          ],
+          "model": "model",
+          "noteID": 1,
+          "originSenseID": "00000000-0000-0000-0000-000000000063",
+          "profile": "profile"
+        },
+        "unixTime": null,
+        "valid": true
+      }
+    }
+  ]
+}

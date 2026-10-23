@@ -30,13 +30,13 @@ decoding admits decimal/exponent spellings, retains the reference decoder's smal
 rounding, and checks Double overflow before recovering a large value from its decimal spelling.
 Lexical coefficient/scale conversion retains the reference's truncation toward zero on that path,
 without System.Decimal rounding a long fractional suffix into the next integer. Actual observations
-include bare Int64.MaxValue (accepted), its `.0` spelling (rejected), `4503599627370495.1` (rounded
+include bare Int64.MaxValue (accepted), either Int64 boundary’s `.0` spelling (rejected), `4503599627370495.1` (rounded
 and accepted), and `9007199254740993.0` (accepted with its exact integer value above Double's exact
 range). Large positive/negative fractional spellings are also captured. These record observed
 Codable behavior rather than assuming mathematical JSON-number equivalence. Other graph Int32 fields retain their
 current bounds; arbitrary out-of-range raw JSON is not a claim of cross-runtime numeric compatibility.
 
-Fifty probes compile the complete original document/backup model declarations and actual leaf
+Fifty-three probes compile the complete original document/backup model declarations and actual leaf
 dependencies. The driver reuses only fixed graph construction from the projection corpus and uses
 Foundation's real JSONEncoder/JSONDecoder. Generated input is canonicalized for stable fixture
 storage; raw duplicate/UTF/numeric mutations are applied afterward. Expected results are captured

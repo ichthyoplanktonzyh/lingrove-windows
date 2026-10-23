@@ -311,10 +311,10 @@ public static class VocabularyPayloadCodec
             // goes through Double; at 2^53 and above we must not round a neighbouring integer into
             // another identity/version. Parse that bounded decimal value before narrowing.
             if (double.IsFinite(number) && Math.Abs(number) < 9007199254740992d && Math.Truncate(number) == number) return (long)number;
-            // The reference decoder's non-integer-spelling path first requires an exactly
-            // representable Int64 Double. Int64.MaxValue.0 rounds to +2^63 and is rejected,
-            // although the bare integer token takes the successful fast path above.
-            if (!double.IsFinite(number) || Math.Truncate(number) != number || number < -9223372036854775808d || number >= 9223372036854775808d) throw new JsonException();
+            // The reference decoder's non-integer-spelling path uses strict Double bounds.
+            // MaxValue.0 rounds to +2^63; MinValue.0 is -2^63. Both are rejected, although
+            // either bare integer token takes the successful exact fast path above.
+            if (!double.IsFinite(number) || Math.Truncate(number) != number || number <= -9223372036854775808d || number >= 9223372036854775808d) throw new JsonException();
             // System.Decimal has fewer significant digits than Foundation Decimal and could round
             // a long fractional suffix into the next integer. Inspect the coefficient/scale instead;
             // the reference's large-number path truncates its decimal toward zero after the

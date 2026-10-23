@@ -2175,6 +2175,41 @@
         },
         "valid": true
       }
+    },
+    {
+      "id": "minimum-version",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbXSwic2NoZW1hVmVyc2lvbiI6M30sImltYWdlcyI6e30sInZlcnNpb24iOi05MjIzMzcyMDM2ODU0Nzc1ODA4fQ==",
+      "expected": {
+        "json": {
+          "document": {
+            "entries": [],
+            "schemaVersion": 3
+          },
+          "images": {},
+          "version": -9223372036854775808
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "minimum-decimal",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbXSwic2NoZW1hVmVyc2lvbiI6M30sImltYWdlcyI6e30sInZlcnNpb24iOi05MjIzMzcyMDM2ODU0Nzc1ODA4LjB9",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "near-minimum-fraction",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbXSwic2NoZW1hVmVyc2lvbiI6M30sImltYWdlcyI6e30sInZlcnNpb24iOi05MjIzMzcyMDM2ODU0Nzc1ODA3Ljl9",
+      "expected": {
+        "valid": false
+      }
     }
   ]
 }

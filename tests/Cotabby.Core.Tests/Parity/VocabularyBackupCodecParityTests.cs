@@ -15,7 +15,7 @@ public sealed class VocabularyBackupCodecParityTests
     [MemberData(nameof(Cases))]
     public void OriginalCodableOwnsWholeDocumentEnvelopeAndBase64Acceptance(string id)
     {
-        Assert.Equal(1, Corpus.GetProperty("version").GetInt32()); Assert.Equal(50, Corpus.GetProperty("cases").GetArrayLength());
+        Assert.Equal(1, Corpus.GetProperty("version").GetInt32()); Assert.Equal(53, Corpus.GetProperty("cases").GetArrayLength());
         Assert.Equal("43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f", Corpus.GetProperty("macReference").GetString());
         var row = Corpus.GetProperty("cases").EnumerateArray().Single(value => value.GetProperty("id").GetString() == id);
         Assert.Equal("source-policy-extension", row.GetProperty("provenanceKind").GetString());

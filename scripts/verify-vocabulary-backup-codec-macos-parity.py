@@ -22,6 +22,7 @@ CASES = (
     'rounded-small-fraction',
     'rounded-large-neighbor', 'exact-large-decimal',
     'truncated-large-fraction', 'truncated-negative-fraction',
+    'minimum-version', 'minimum-decimal', 'near-minimum-fraction',
 )
 _spec = importlib.util.spec_from_file_location('backup_inputs', Path(__file__).with_name('verify-vocabulary-projection-macos-parity.py'))
 _inputs = importlib.util.module_from_spec(_spec); _spec.loader.exec_module(_inputs)
@@ -62,6 +63,7 @@ func observe(_ mode: String) throws -> [String: Any] {
     case "url-base64": root["images"] = ["x":"-_8="]
     case "image-number": root["images"] = ["x":123]
     case "large-version": root["version"] = Int64.max
+    case "minimum-version": root["version"] = Int64.min
     case "large-schema":
         var value = root["document"] as! [String:Any];value["schemaVersion"] = Int64.max;root["document"] = value
     case "missing-schema","missing-entries":
@@ -84,6 +86,9 @@ func observe(_ mode: String) throws -> [String: Any] {
     }
     if mode == "truncated-large-fraction" || mode == "truncated-negative-fraction" {
         input = Data(String(data:input,encoding:.utf8)!.replacingOccurrences(of:"\"version\":1",with:mode == "truncated-large-fraction" ? "\"version\":9007199254740993.1" : "\"version\":-9007199254740993.9").utf8)
+    }
+    if mode == "minimum-decimal" || mode == "near-minimum-fraction" {
+        input = Data(String(data:input,encoding:.utf8)!.replacingOccurrences(of:"\"version\":1",with:mode == "minimum-decimal" ? "\"version\":-9223372036854775808.0" : "\"version\":-9223372036854775807.9").utf8)
     }
     if mode == "duplicate-version" { input = Data(("{\"version\":2," + String(data:input,encoding:.utf8)!.dropFirst()).utf8) }
     if mode == "duplicate-images" {
@@ -116,7 +121,7 @@ def main():
     parser.add_argument('--capture-output', type=Path, help='Write actual source observations into a NEW file')
     args = parser.parse_args(); corpus = json.loads(args.fixture.read_text(encoding='utf-8')); rows = corpus['cases']
     if corpus.get('version') != 1 or corpus.get('macReference') != BASELINE or [row.get('id') for row in rows] != list(CASES):
-        parser.error('All 50 pinned codec coverage cases are required in source order')
+        parser.error('All 53 pinned codec coverage cases are required in source order')
     for row in rows:
         path = 'Cotabby/Models/Vocabulary/VocabularyModels.swift' if row['id'].startswith('document-') else 'Cotabby/Models/Vocabulary/VocabularyContentModels.swift'
         if row.get('macSource') != path or row.get('provenanceKind') != 'source-policy-extension': parser.error('Exact original Codable provenance is required')

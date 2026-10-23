@@ -23,6 +23,6 @@ public sealed class VocabularyBackup
     public VocabularyDocument Document { get; }
     public IReadOnlyDictionary<string, byte[]> CopyImages() => CollectionValues.Map(
         _images.Select(pair => new KeyValuePair<string, byte[]>(pair.Key, pair.Value.ToArray())));
-    // Only the trusted codec borrows private arrays, synchronously; public consumers get copies.
+    // Trusted codec/admission rules borrow private arrays synchronously; effect owners get copies.
     internal IReadOnlyDictionary<string, byte[]> ImageBytes => _images;
 }

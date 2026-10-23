@@ -50,7 +50,8 @@ python3 scripts/verify-vocabulary-backup-archive-macos-parity.py --mac-repo /pat
 dotnet test tests/Cotabby.App.Wpf.Tests/Cotabby.App.Wpf.Tests.csproj --configuration Release --filter FullyQualifiedName~VocabularyBackupArchiveTests
 ```
 
-Bounded restore source reads, version/whole-graph/exact-media admission, media staging and SQL restore
-acknowledgement, Store commands and the UI's explicit replacement confirmation remain work. Physical
+The [restore transaction](VOCABULARY_RESTORE.md) now adds bounded source reads, version/whole-graph/
+exact-media admission and acknowledged staged replacement. Store commands and the UI's explicit
+replacement confirmation remain work. Physical
 native picker interaction and UIA/IME/ghost/insertion/GPU gates remain open. Backup writes are only
 user-requested local effects; no model, clipboard, network, installer or downloadable build is added.

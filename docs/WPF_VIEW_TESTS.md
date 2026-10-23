@@ -158,3 +158,9 @@ comparisons and three native closed/deduplicated/lifetime cases (388 total). Tes
 SQLite/media and the atomic file adapter, with a scheduling-only wrapper for one real native reader.
 Foundation's missing-file exception versus Windows fixed InvalidContent is documented explicitly.
 The corpus uses small images and does not establish exact full-backup byte-limit boundaries.
+
+The [archive restore](VOCABULARY_RESTORE.md) adds 27 complete actual Mac transaction counterparts
+and five cancelled/stale/retired-owner cases (420 total). Real Windows source handles, WIC, media
+and SQLite verify unchanged failures, full replacement/reopen, repaired images, orphan removal
+and conflict rollback. The oversized source uses a length extension; the exact limit and aggregate-media boundary
+are not exercised. Store commands and physical confirmation/chooser interaction remain work.

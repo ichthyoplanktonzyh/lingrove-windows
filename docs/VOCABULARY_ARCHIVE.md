@@ -33,12 +33,12 @@ original policy's protection for user-authored meanings.
 SQLite on a worker. Hiding a view does not cancel a half-completed durable edit. Repeated disposal
 shares the same task. New calls after closing receive a fixed archive failure.
 
-Media is deliberately incomplete. Text edits can retain existing image references; adding a new
-reference is rejected until verified image preparation/storage is ported. The full original Mac
-actor's missing-image failure is covered. Imported image bytes, media cleanup, review/template
-mutations, backup/export and CLI operations are not exposed here. The internal commit entry point
-is for restore/fixture composition and still prunes, validates and performs revision CAS; it is not
-a public media importer. This round does not assert cross-platform notebook file compatibility.
+The [media transaction layer](VOCABULARY_MEDIA_TRANSACTIONS.md) now validates prepared image bytes,
+stages them under the exclusive archive lock and joins SQL acknowledgement with rollback and old
+resource cleanup. Existing text-only edits still retain old image references without rereading every
+file. The internal metadata commit boundary remains for fixtures; it is not a public media importer.
+Editor image UI, review/template mutations, backup/export and CLI remain unconnected. This does not
+assert cross-platform notebook file compatibility.
 
 `vocabulary-archive-v1.json` contains 22 observations captured by executing the complete original
 Mac actor, actual SQLite classes and original image storage in isolated memory mode. The verifier

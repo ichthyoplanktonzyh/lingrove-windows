@@ -19,6 +19,8 @@
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularySQLiteConnection.cs" Link="Production\VocabularySQLiteConnection.cs" />
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularySQLiteDatabase.cs" Link="Production\VocabularySQLiteDatabase.cs" />
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularyArchive.cs" Link="Production\VocabularyArchive.cs" />
+    <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularyArchive.Images.cs" Link="Production\VocabularyArchive.Images.cs" />
+    <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\IVocabularyImageStorage.cs" Link="Production\IVocabularyImageStorage.cs" />
     <Compile Include="..\..\src\Cotabby.App\Vocabulary\VocabularyStore.cs" Link="Production\VocabularyStore.cs" />
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularyWindowsFile.cs" Link="Production\VocabularyWindowsFile.cs" />
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularyWindowsFileLock.cs" Link="Production\VocabularyWindowsFileLock.cs" />

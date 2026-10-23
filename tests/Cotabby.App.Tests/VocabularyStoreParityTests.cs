@@ -23,7 +23,7 @@ public sealed class VocabularyStoreParityTests
     }
     private static async Task<object> Observe(string mode)
     {
-        var archive = new VocabularyArchive((string?)null); await using var store = new VocabularyStore(archive, new SynchronizationContext());
+        var archive = new VocabularyArchive(VocabularySQLiteDatabase.CreateMemory); await using var store = new VocabularyStore(archive, new SynchronizationContext());
         var old = VocabularySQLiteParityTests.Document(); var capture = VocabularyArchiveParityTests.Capture();
         if (mode == "fresh")
         {
@@ -102,7 +102,7 @@ public sealed class VocabularyStoreParityTests
     {
         var first = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously); var second = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var firstEntered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously); var secondEntered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-        var archive = new VocabularyArchive((string?)null); await using var store = new VocabularyStore(archive, new SynchronizationContext());
+        var archive = new VocabularyArchive(VocabularySQLiteDatabase.CreateMemory); await using var store = new VocabularyStore(archive, new SynchronizationContext());
         var capture = VocabularyArchiveParityTests.Capture();
         // Exactly the Swift probe: identical captures enter original change twice; the gates
         // postpone only the actual archive save, without changing annotation or saved content.

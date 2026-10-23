@@ -144,7 +144,7 @@ internal sealed class VocabularySQLiteDatabase : IDisposable
         var changed = newRows.Values.Where(row => !oldRows.TryGetValue(row.Key, out var old) || old != row).ToArray();
         var removed = oldRows.Values.Where(row => !newRows.ContainsKey(row.Key)).ToArray();
         long before = _connection.TotalChanges;
-        ulong revision = _connection.Transaction(true, () =>
+        var (revision, writtenRows) = _connection.Transaction(true, () =>
         {
             if (Revision() != expectedRevision || expectedRevision >= long.MaxValue)
                 throw new VocabularyException(VocabularyFailure.EditConflict);
@@ -167,9 +167,12 @@ internal sealed class VocabularySQLiteDatabase : IDisposable
                 new Value.Text(receipt.Key), new Value.Text(receipt.Fingerprint), new Value.Blob(receipt.Result));
             _connection.Execute("UPDATE state SET revision=?,has_templates=? WHERE singleton=1",
                 new Value.Integer((long)result), new Value.Integer(next.ReviewTemplates is null ? 0 : 1));
-            return result;
+            // This diagnostic is fallible SQL too. Evaluate it before COMMIT so an error still
+            // rolls back metadata; a media owner must never delete staged files after committed
+            // metadata only because a post-COMMIT counter query failed.
+            return (result, _connection.TotalChanges - before);
         });
-        LastWrittenRows = _connection.TotalChanges - before;
+        LastWrittenRows = writtenRows;
         return revision;
     });
     private void Upsert(VocabularyDatabaseRecord row)

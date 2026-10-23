@@ -20,7 +20,7 @@ public sealed class VocabularyStoreLifetimeTests
     [Fact]
     public async Task RetiredDispatcherCannotTurnAcknowledgedSaveIntoFailure()
     {
-        await using var store = new VocabularyStore(new VocabularyArchive((string?)null), new RetiredUi());
+        await using var store = new VocabularyStore(new VocabularyArchive(VocabularySQLiteDatabase.CreateMemory), new RetiredUi());
         var capture = VocabularyArchiveParityTests.Capture(); Assert.True(await store.SaveAsync(capture));
         Assert.True(store.Contains(capture)); Assert.False(store.IsPending(capture)); Assert.Null(store.ErrorMessage);
     }
@@ -55,7 +55,7 @@ public sealed class VocabularyStoreLifetimeTests
     [Fact]
     public async Task NotificationsRunThroughUiContextAndRetiredQueuedNotificationsAreIgnored()
     {
-        var ui = new UiQueue(); var store = new VocabularyStore(new VocabularyArchive((string?)null), ui);
+        var ui = new UiQueue(); var store = new VocabularyStore(new VocabularyArchive(VocabularySQLiteDatabase.CreateMemory), ui);
         int events = 0, eventThread = 0; store.Changed += () => { events++; eventThread = Environment.CurrentManagedThreadId; };
         await store.SaveAsync(VocabularyArchiveParityTests.Capture()); Assert.Equal(0, events);
         int uiThread = Environment.CurrentManagedThreadId; ui.Drain(); Assert.True(events > 0); Assert.Equal(uiThread, eventThread);
@@ -84,7 +84,7 @@ public sealed class VocabularyStoreLifetimeTests
     [Fact]
     public async Task CallbackFailureClearsPendingWithoutLeakingForeignErrorText()
     {
-        await using var store = new VocabularyStore(new VocabularyArchive((string?)null), new UiQueue());
+        await using var store = new VocabularyStore(new VocabularyArchive(VocabularySQLiteDatabase.CreateMemory), new UiQueue());
         var capture = VocabularyArchiveParityTests.Capture(); store.EnrichCapture = _ => throw new IOException("secret text");
         Assert.False(await store.SaveAsync(capture)); Assert.False(store.IsPending(capture)); Assert.DoesNotContain("secret", store.ErrorMessage!);
         store.EnrichCapture = null; Assert.True(await store.SaveAsync(capture)); Assert.Null(store.ErrorMessage);
@@ -92,7 +92,7 @@ public sealed class VocabularyStoreLifetimeTests
     [Fact]
     public async Task SavedExplanationRestoresFromActualNotebookWithoutCreatingAnEngine()
     {
-        var archive = new VocabularyArchive((string?)null); await archive.CommitAsync(VocabularySQLiteParityTests.Document());
+        var archive = new VocabularyArchive(VocabularySQLiteDatabase.CreateMemory); await archive.CommitAsync(VocabularySQLiteParityTests.Document());
         await using var store = new VocabularyStore(archive, new UiQueue()); int engines = 0;
         await using var service = new LearningExplanationService(new(), LearningLanguage.Chinese, _ => { engines++; throw new InvalidOperationException(); });
         service.LoadPersisted = async (input, language) => { await store.LoadAsync(); return store.Explanation(input, language); };

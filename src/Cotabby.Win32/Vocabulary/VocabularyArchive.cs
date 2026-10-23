@@ -9,22 +9,22 @@ namespace Cotabby.Win32.Vocabulary;
 /// only after COMMIT succeeds. Captures are already detached from the editor. Construction is inert,
 /// null path means an isolated test notebook, and no observer/model/network is started here.
 /// </summary>
-public sealed class VocabularyArchive : IAsyncDisposable
+public sealed partial class VocabularyArchive : IAsyncDisposable
 {
     private readonly object _lifetime = new();
     private readonly SemaphoreSlim _serial = new(1);
     private readonly HashSet<Task> _work = [];
     private readonly Func<VocabularySQLiteDatabase> _open;
     private readonly TimeProvider _clock;
+    private readonly IVocabularyImageStorage? _images;
     private VocabularySQLiteDatabase? _database;
     private VocabularyDocument? _document;
     private ulong _revision;
     private Task? _disposal;
 
-    public VocabularyArchive(string? path) : this(() => path is null ? VocabularySQLiteDatabase.CreateMemory() : VocabularySQLiteDatabase.OpenFile(path), TimeProvider.System) { }
     /// <summary>Tests may supply an actual isolated SQLite owner and clock; ownership transfers to this archive.</summary>
-    internal VocabularyArchive(Func<VocabularySQLiteDatabase> open, TimeProvider? clock = null)
-    { _open = open; _clock = clock ?? TimeProvider.System; }
+    internal VocabularyArchive(Func<VocabularySQLiteDatabase> open, TimeProvider? clock = null, IVocabularyImageStorage? images = null)
+    { _open = open; _clock = clock ?? TimeProvider.System; _images = images; }
 
     public Task<VocabularySnapshot> LoadAsync() => Run(Load);
     public Task<VocabularySnapshot> SaveAsync(VocabularyCapture capture) => Run(() =>
@@ -45,16 +45,19 @@ public sealed class VocabularyArchive : IAsyncDisposable
         Commit(ChangeEntry(Load().Document, entryId, entry => VocabularySensePolicy.Merge(source, target, entry, _clock.GetUtcNow()))));
     public Task<VocabularySnapshot> MoveExampleAsync(Guid entryId, Guid exampleId, Guid source, Guid? target) => Run(() =>
         Commit(ChangeEntry(Load().Document, entryId, entry => VocabularySensePolicy.Move(exampleId, source, target, entry, _clock.GetUtcNow()).Entry)));
-    public Task<VocabularySnapshot> UpdateAsync(VocabularyEntry edited, VocabularyEntry baseline) => Run(() =>
+    public Task<VocabularySnapshot> UpdateAsync(VocabularyEntry edited, VocabularyEntry baseline,
+        IReadOnlyDictionary<string, VocabularyPreparedImage>? importedImages = null, CancellationToken cancellationToken = default)
     {
-        var current = Load().Document;
-        var next = VocabularyArchiveDraftPolicy.Update(edited, baseline, current, _clock.GetUtcNow());
-        // Imported image staging is a separate pending adapter. Existing references survive;
-        // a text-only editor cannot acknowledge a new image whose bytes we have never verified.
-        var existing = Images(current).ToHashSet();
-        if (Images(next).Any(image => !existing.Contains(image))) throw new VocabularyException(VocabularyFailure.InvalidContent);
-        return Commit(next);
-    });
+        // Prepared images own immutable byte copies. Snapshot the dictionary at admission so
+        // queued work cannot observe a draft being cleared when its editor disappears.
+        var supplied = importedImages is null ? new Dictionary<string, VocabularyPreparedImage>(StringComparer.Ordinal)
+            : new Dictionary<string, VocabularyPreparedImage>(importedImages, StringComparer.Ordinal);
+        return Run(() =>
+        {
+            var next = VocabularyArchiveDraftPolicy.Update(edited, baseline, Load().Document, _clock.GetUtcNow());
+            return CommitWithImages(next, supplied, cancellationToken);
+        });
+    }
     public Task<VocabularySnapshot> SaveExplanationAsync(LearningExplanationRecord record) => Run(() =>
     {
         if (record is null || record.Input is null || record.Result is null) throw new VocabularyException(VocabularyFailure.InvalidContent);
@@ -80,8 +83,13 @@ public sealed class VocabularyArchive : IAsyncDisposable
         // would disguise its commit as our baseline and silently overwrite its changes.
         var baseline = _document is { } cached ? new VocabularySnapshot(_revision, cached) : Load();
         var next = VocabularyArchiveDraftPolicy.PruneExplanations(document); VocabularyArchiveValidation.Validate(next);
+        var retained = Images(next).Select(image => image.Filename).ToHashSet(StringComparer.Ordinal);
+        var removedImages = Images(baseline.Document).Where(image => !retained.Contains(image.Filename)).ToArray();
         ulong revision = Persistence().Write(next, baseline.Document, baseline.Revision);
         _document = next; _revision = revision;
+        // Metadata is committed and published before orphan cleanup. A failed deletion leaves
+        // an orphan; it can never report an acknowledged SQL edit as failed or delete shared media.
+        foreach (var image in removedImages) RemoveImage(image);
         return new VocabularySnapshot(revision, next);
     });
     private static VocabularyDocument ChangeEntry(VocabularyDocument document, Guid id, Func<VocabularyEntry, VocabularyEntry> change)

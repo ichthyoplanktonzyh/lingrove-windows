@@ -1,0 +1,145 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "input": "iVBORw0KGgoAAAANSUhEUgAAAFAAAAAoCAYAAABpYH0BAAAAX0lEQVR4nO3QMQ0AIADAMHSgFrXYAA88ZEmP/UvHXPvovfF7oB5AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgH+7T3Y1UlqIbeIAAAAASUVORK5CYII=",
+  "cases": [
+    {
+      "id": "draft-only",
+      "operation": "draft-only",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": false,
+        "height": 40,
+        "revision": 0,
+        "width": 80
+      }
+    },
+    {
+      "id": "import",
+      "operation": "import",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "content": true,
+        "exact": true,
+        "revision": 2
+      }
+    },
+    {
+      "id": "missing",
+      "operation": "missing",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": false,
+        "error": "invalidContent",
+        "revision": 1
+      }
+    },
+    {
+      "id": "extra",
+      "operation": "extra",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": false,
+        "note": "edited",
+        "revision": 2
+      }
+    },
+    {
+      "id": "remove",
+      "operation": "remove",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": false,
+        "blocks": 0,
+        "revision": 3
+      }
+    },
+    {
+      "id": "shared",
+      "operation": "shared",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": false,
+        "blocksRetained": true,
+        "entries": 0,
+        "revision": 5,
+        "sharedAvailable": true
+      }
+    },
+    {
+      "id": "conflict",
+      "operation": "conflict",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": false,
+        "error": "editConflict",
+        "preserved": true,
+        "revision": 2
+      }
+    },
+    {
+      "id": "sql-rollback",
+      "operation": "sql-rollback",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": false,
+        "error": "invalidArchive",
+        "preserved": true,
+        "revision": 1
+      }
+    },
+    {
+      "id": "existing-missing",
+      "operation": "existing-missing",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "available": false,
+        "note": "metadata",
+        "revision": 3
+      }
+    },
+    {
+      "id": "prune",
+      "operation": "prune",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "after": 0,
+        "available": true,
+        "before": 1,
+        "revision": 3
+      }
+    },
+    {
+      "id": "budget",
+      "operation": "budget",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "error": "oversizedArchive",
+        "revision": 1,
+        "senses": 1
+      }
+    },
+    {
+      "id": "filename-retention",
+      "operation": "filename-retention",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "mismatchAvailable": false,
+        "revision": 4,
+        "validAvailable": true
+      }
+    }
+  ]
+}

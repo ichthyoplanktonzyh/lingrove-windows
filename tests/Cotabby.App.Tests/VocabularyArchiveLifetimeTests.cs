@@ -88,7 +88,7 @@ public sealed class VocabularyArchiveLifetimeTests
     [Fact]
     public async Task FailedEditReleasesQueueAndDisposeStillFinishes()
     {
-        var archive = new VocabularyArchive((string?)null);
+        var archive = new VocabularyArchive(VocabularySQLiteDatabase.CreateMemory);
         await archive.SaveAsync(Capture(0));
         await Assert.ThrowsAsync<VocabularyException>(() => archive.RemoveSenseAsync(Guid.NewGuid(), Guid.NewGuid()));
         var saved = await archive.SaveAsync(Capture(1)); Assert.Equal(2ul, saved.Revision); Assert.Equal(2, saved.Document.Entries.Count);

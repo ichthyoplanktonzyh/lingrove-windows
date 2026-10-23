@@ -25,6 +25,7 @@ public partial class VocabularyNotebookWindow : Window
     private VocabularySelection? _requested;
     private Guid? _selection;
     private bool _newestFirst = true, _presenting, _retired, _closing;
+    private VocabularyEntryEditorWindow? _editor;
     private long _version;
     private string _selectedTag = "";
     private sealed record BrowseRequest(VocabularyDocument Document, string Query, LearningLanguage? Language, string Tag,
@@ -77,6 +78,10 @@ public partial class VocabularyNotebookWindow : Window
         var language = (LanguageFilter.SelectedItem as LanguageOption)?.Value;
         var request = new BrowseRequest(document, query, language, _selectedTag, _newestFirst, state.IsLoaded, state.ErrorMessage, version, source);
         var work = RefreshAsync(request); LastRefresh = work;
+        Track(work);
+    }
+    private void Track(Task work)
+    {
         lock (_work) _work.Add(work);
         _ = work.ContinueWith(completed => { lock (_work) _work.Remove(completed); }, CancellationToken.None,
             TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
@@ -155,6 +160,7 @@ public partial class VocabularyNotebookWindow : Window
         var selection = VocabularyNotebookPolicy.ResolveSelection(document, _selection);
         var entry = selection is null ? null : document.Entries.Single(value => value.Id == selection.Value.EntryId);
         var sense = entry?.Senses.Single(value => value.Id == selection!.Value.SenseId);
+        EditButton.IsEnabled = entry is not null && sense is not null;
         var key = entry is null || sense is null ? null : new DetailKey(entry.Id, entry.Expression, entry.DictionaryForm, entry.Language, entry.Kind, sense);
         // Unrelated saves/filter changes keep the same literal controls, scroll and selection.
         if (_hasRenderedDetail && key == _renderedDetail) return;
@@ -226,6 +232,18 @@ public partial class VocabularyNotebookWindow : Window
         var border = new Border { Child = panel, Padding = new Thickness(14), CornerRadius = new CornerRadius(10), Margin = new Thickness(0, 12, 0, 0) };
         border.SetResourceReference(Border.BackgroundProperty, "CardBg"); DetailContent.Children.Add(border);
     }
+    private void OnEdit(object sender, RoutedEventArgs args)
+    {
+        if (_retired || _editor is not null || Selection is not { } selected) return;
+        // Resolve against the full acknowledged graph. A filtered row intentionally contains
+        // fewer senses and would delete hidden ownership if it became an editor baseline.
+        var entry = _store.Snapshot.Document.Entries.FirstOrDefault(value => value.Id == selected.EntryId);
+        if (entry is null) return;
+        var editor = new VocabularyEntryEditorWindow(_store, entry, selected.SenseId) { Owner = this }; _editor = editor;
+        editor.OperationStarted += Track;
+        try { editor.ShowDialog(); }
+        finally { editor.OperationStarted -= Track; Track(editor.LastOperation); _editor = null; }
+    }
     private void OnClosing(object? sender, CancelEventArgs args)
     {
         if (_closing) return; args.Cancel = true; Hide(); CancelFiltering(); ++_version;
@@ -242,6 +260,7 @@ public partial class VocabularyNotebookWindow : Window
         if (!_retired)
         {
             _retired = true; _store.Changed -= OnStoreChanged; CancelFiltering(); ++_version;
+            if (_editor is { } editor) Track(editor.RetireAsync());
             _closing = true; Close();
         }
         // Work finishes independently of dispatcher continuations, so application shutdown can

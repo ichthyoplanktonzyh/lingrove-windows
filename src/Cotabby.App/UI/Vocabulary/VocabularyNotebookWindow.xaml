@@ -48,9 +48,14 @@
                            Foreground="{DynamicResource TextSecondary}" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" />
             </Grid>
             <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="{DynamicResource CardBorder}" />
-            <ScrollViewer x:Name="DetailViewport" Grid.Column="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                <StackPanel x:Name="DetailContent" Margin="24" />
-            </ScrollViewer>
+            <DockPanel Grid.Column="2">
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Right" Margin="12,8">
+                    <Button x:Name="EditButton" Content="Edit" Click="OnEdit" Padding="12,4" IsEnabled="False" />
+                </StackPanel>
+                <ScrollViewer x:Name="DetailViewport" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel x:Name="DetailContent" Margin="24" />
+                </ScrollViewer>
+            </DockPanel>
         </Grid>
     </DockPanel>
 </Window>

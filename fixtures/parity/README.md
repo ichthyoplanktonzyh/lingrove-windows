@@ -323,3 +323,11 @@ Each case identifies the view, VocabularyPolicy and VocabularySensePolicy source
 consumers use explicit native facts; an additional 26 cases execute the actual Windows text adapter.
 The three observed collation differences are explicitly locked by verifier ID; they are not native
 successes. See [notebook scope and provider gaps](../../docs/VOCABULARY_NOTEBOOK.md).
+
+`vocabulary-editor-v1.json` records 29 outcomes of actual pinned editor snippets: tag parsing,
+source-text annotation retirement, both Save-disable predicates and stable-ID content movement.
+The twentieth verifier compiles original closure bodies with a plain-value exposure wrapper;
+only the State-to-value mutation qualifier changes. The original Swift equality condition supplies
+onChange scheduling. Save cases evaluate source admission predicates, not a rendered SwiftUI button.
+Expected values are independent of C#. [Editor mapping/evidence](../../docs/VOCABULARY_EDITOR.md)
+keeps native UI, media and remaining notebook actions explicit.

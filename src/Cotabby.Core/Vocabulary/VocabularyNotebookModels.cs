@@ -121,7 +121,9 @@ public sealed record VocabularyDocument
 {
     private IReadOnlyList<VocabularyEntry> _entries = Array.Empty<VocabularyEntry>();
     private IReadOnlyList<ReviewLayoutTemplate>? _reviewTemplates;
-    public int SchemaVersion { get; init; } = 3;
+    // Swift Int is 64-bit on the reference Mac. Preserve its wire range before archive validation
+    // rejects unsupported versions; narrowing during decode would change that failure boundary.
+    public long SchemaVersion { get; init; } = 3;
     public IReadOnlyList<VocabularyEntry> Entries { get => _entries; init => _entries = CollectionValues.List(value); }
     public IReadOnlyList<ReviewLayoutTemplate>? ReviewTemplates { get => _reviewTemplates; init => _reviewTemplates = CollectionValues.OptionalList(value); }
     public bool Equals(VocabularyDocument? other) => other is not null && SchemaVersion == other.SchemaVersion

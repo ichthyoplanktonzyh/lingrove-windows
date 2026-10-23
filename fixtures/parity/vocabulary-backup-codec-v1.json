@@ -1,0 +1,2180 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "empty",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbXSwic2NoZW1hVmVyc2lvbiI6M30sImltYWdlcyI6e30sInZlcnNpb24iOjF9",
+      "expected": {
+        "json": {
+          "document": {
+            "entries": [],
+            "schemaVersion": 3
+          },
+          "images": {},
+          "version": 1
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "empty-templates",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbXSwicmV2aWV3VGVtcGxhdGVzIjpbXSwic2NoZW1hVmVyc2lvbiI6M30sImltYWdlcyI6e30sInZlcnNpb24iOjF9",
+      "expected": {
+        "json": {
+          "document": {
+            "entries": [],
+            "reviewTemplates": [],
+            "schemaVersion": 3
+          },
+          "images": {},
+          "version": 1
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "rich",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbeyJjcmVhdGVkQXQiOi05NzgzMDcyMDAsImRpY3Rpb25hcnlGb3JtIjoiYmFuayIsImV4cHJlc3Npb24iOiJiYW5rIiwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDEiLCJraW5kIjoid29yZCIsImxhbmd1YWdlIjoiZW4iLCJzZW5zZXMiOlt7ImFsdGVybmF0ZU1lYW5pbmdzIjpbXSwiY29udGVudCI6W3siY29udGVudCI6eyJ0ZXh0Ijp7Il8wIjp7ImJvbGQiOmZhbHNlLCJpdGFsaWMiOmZhbHNlLCJzdHlsZSI6InBhcmFncmFwaCIsInRleHQiOiJsaXRlcmFsIn19fSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMTQifV0sImNyZWF0ZWRBdCI6LTk3ODMwNzIwMCwiZXhhbXBsZXMiOlt7ImNvbXBsZXRlbmVzcyI6InNlbnRlbmNlIiwiY3JlYXRlZEF0IjotOTc4MzA3MjAwLCJleHBsYW5hdGlvbnMiOlt7ImNyZWF0ZWRBdCI6LTk3ODMwNzIwMCwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwNjQiLCJpbnB1dCI6eyJjb250ZXh0IjoiVGhlIGJhbmsuIiwiY29udGV4dEtpbmQiOiJzZW50ZW5jZSIsImRpY3Rpb25hcnlGb3JtIjoiYmFuayIsImtpbmQiOiJ3b3JkIiwibGFuZ3VhZ2UiOiJlbiIsIm9jY3VycmVuY2VJZGVudGl0eSI6IjM4NTIzOWY1YTI3OGRjYTRhMDcxZDMzOTZjYWQ4ZTRlZDU1MjE5YmZhNGJmYzIxYzgyMzZlOTQwZTU2MTU0ZWYiLCJyYW5nZXMiOlt7Imxlbmd0aCI6NCwibG9jYXRpb24iOjR9XSwidGFyZ2V0IjoiYmFuayJ9LCJsYW5ndWFnZSI6InpoLUhhbnMiLCJtb2RlbCI6ImZpeHR1cmUiLCJyZXN1bHQiOnsiZXhwbGFuYXRpb24iOiJleHBsYW5hdGlvbiIsIm1lYW5pbmciOiJtZWFuaW5nIn19XSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDMiLCJtZWFuaW5nIjoiY29udGV4dCIsIm1lYW5pbmdPcmlnaW4iOiJjYXB0dXJlZCIsInJhbmdlcyI6W3sibGVuZ3RoIjo0LCJsb2NhdGlvbiI6NH1dLCJ0ZXh0IjoiVGhlIGJhbmsuIiwidHJhbnNsYXRpb24iOiLljp/lj6UiLCJ0cmFuc2xhdGlvblZhcmlhbnRzIjpbXX1dLCJleHBsYW5hdGlvbnMiOlt7ImNyZWF0ZWRBdCI6LTk3ODMwNzIwMCwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwNjQiLCJpbnB1dCI6eyJjb250ZXh0IjoiYmFuayIsImNvbnRleHRLaW5kIjoibm9uZSIsImRpY3Rpb25hcnlGb3JtIjoiYmFuayIsImtpbmQiOiJ3b3JkIiwibGFuZ3VhZ2UiOiJlbiIsInJhbmdlcyI6W3sibGVuZ3RoIjo0LCJsb2NhdGlvbiI6MH1dLCJ0YXJnZXQiOiJiYW5rIn0sImxhbmd1YWdlIjoiemgtSGFucyIsIm1vZGVsIjoiZml4dHVyZSIsInJlc3VsdCI6eyJleHBsYW5hdGlvbiI6ImV4cGxhbmF0aW9uIiwibWVhbmluZyI6Im1lYW5pbmcifX1dLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMiIsImlzU2F2ZWRXaXRob3V0Q29udGV4dCI6dHJ1ZSwibWVhbmluZyI6ImNvcmUiLCJtZWFuaW5nT3JpZ2luIjoiY2FwdHVyZWQiLCJtZXJnZWRGcm9tIjpbXSwibm90ZSI6Im5vdGUiLCJyZXZpZXciOnsiYWN0aXZlQmluZGluZ0lEIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDI4IiwiYmluZGluZ3MiOlt7ImRlY2siOiJkZWNrIiwiZW5kcG9pbnQiOiJodHRwOlwvXC9sb2NhbGhvc3QiLCJmaWVsZHMiOnsiSUQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwNjMifSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMjgiLCJpZGVudGl0eUZpZWxkIjoiSUQiLCJtYXBwaW5nIjpbIkxpbmdyb3ZlSUQiLCJJRCJdLCJtb2RlbCI6Im1vZGVsIiwibm90ZUlEIjoxLCJvcmlnaW5TZW5zZUlEIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDYzIiwicHJvZmlsZSI6InByb2ZpbGUifV0sInBsYW4iOnsiZmllbGRPdmVycmlkZXMiOnt9LCJnYXAiOmZhbHNlLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAxRSIsImluY2x1ZGVFeHBsYW5hdGlvbiI6ZmFsc2UsImluY2x1ZGVOb3RlcyI6ZmFsc2UsImxheW91dCI6eyJiYWNrIjpbXSwiZnJvbnQiOlt7ImNvbnRlbnQiOlt7ImNvbnRlbnQiOnsidGV4dCI6eyJfMCI6eyJib2xkIjpmYWxzZSwiaXRhbGljIjpmYWxzZSwic3R5bGUiOiJwYXJhZ3JhcGgiLCJ0ZXh0IjoibGl0ZXJhbCJ9fX0sImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDNDIn1dLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAzMiIsInNob3dDYXB0aW9uIjpmYWxzZSwic291cmNlIjoiY3VzdG9tIn1dfSwicmVjb2duaXRpb24iOnRydWV9LCJwcmVzZXJ2ZWRQbGFucyI6W3siZmllbGRPdmVycmlkZXMiOnt9LCJnYXAiOmZhbHNlLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAxRiIsImluY2x1ZGVFeHBsYW5hdGlvbiI6ZmFsc2UsImluY2x1ZGVOb3RlcyI6ZmFsc2UsInJlY29nbml0aW9uIjp0cnVlfV19LCJyZXZpZXdDYXJkcyI6W3siYWN0aXZlQmluZGluZ0lEIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDI4IiwiYmluZGluZ3MiOlt7ImRlY2siOiJkZWNrIiwiZW5kcG9pbnQiOiJodHRwOlwvXC9sb2NhbGhvc3QiLCJmaWVsZHMiOnsiSUQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwNjMifSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMjgiLCJpZGVudGl0eUZpZWxkIjoiSUQiLCJtYXBwaW5nIjpbIkxpbmdyb3ZlSUQiLCJJRCJdLCJtb2RlbCI6Im1vZGVsIiwibm90ZUlEIjoxLCJvcmlnaW5TZW5zZUlEIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDYzIiwicHJvZmlsZSI6InByb2ZpbGUifV0sInBsYW4iOnsiZmllbGRPdmVycmlkZXMiOnt9LCJnYXAiOmZhbHNlLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAxRSIsImluY2x1ZGVFeHBsYW5hdGlvbiI6ZmFsc2UsImluY2x1ZGVOb3RlcyI6ZmFsc2UsImxheW91dCI6eyJiYWNrIjpbXSwiZnJvbnQiOlt7ImNvbnRlbnQiOlt7ImNvbnRlbnQiOnsidGV4dCI6eyJfMCI6eyJib2xkIjpmYWxzZSwiaXRhbGljIjpmYWxzZSwic3R5bGUiOiJwYXJhZ3JhcGgiLCJ0ZXh0IjoibGl0ZXJhbCJ9fX0sImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDNDIn1dLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAzMiIsInNob3dDYXB0aW9uIjpmYWxzZSwic291cmNlIjoiY3VzdG9tIn1dfSwicmVjb2duaXRpb24iOnRydWV9LCJwcmVzZXJ2ZWRQbGFucyI6W3siZmllbGRPdmVycmlkZXMiOnt9LCJnYXAiOmZhbHNlLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAxRiIsImluY2x1ZGVFeHBsYW5hdGlvbiI6ZmFsc2UsImluY2x1ZGVOb3RlcyI6ZmFsc2UsInJlY29nbml0aW9uIjp0cnVlfV19XSwic3RhbmRhbG9uZU1lYW5pbmdzIjpbXSwidGFncyI6WyJXb3JrIl0sInVwZGF0ZWRBdCI6LTk3ODMwNzIwMH1dLCJ1cGRhdGVkQXQiOi05NzgzMDcyMDB9XSwicmV2aWV3VGVtcGxhdGVzIjpbeyJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDA0NiIsImxheW91dCI6eyJiYWNrIjpbXSwiZnJvbnQiOlt7ImNvbnRlbnQiOlt7ImNvbnRlbnQiOnsidGV4dCI6eyJfMCI6eyJib2xkIjpmYWxzZSwiaXRhbGljIjpmYWxzZSwic3R5bGUiOiJwYXJhZ3JhcGgiLCJ0ZXh0IjoibGl0ZXJhbCJ9fX0sImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDNDIn1dLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAzMiIsInNob3dDYXB0aW9uIjpmYWxzZSwic291cmNlIjoiY3VzdG9tIn1dfSwibmFtZSI6IlRlbXBsYXRlIn1dLCJzY2hlbWFWZXJzaW9uIjozfSwiaW1hZ2VzIjp7fSwidmVyc2lvbiI6MX0=",
+      "expected": {
+        "json": {
+          "document": {
+            "entries": [
+              {
+                "createdAt": -978307200,
+                "dictionaryForm": "bank",
+                "expression": "bank",
+                "id": "00000000-0000-0000-0000-000000000001",
+                "kind": "word",
+                "language": "en",
+                "senses": [
+                  {
+                    "alternateMeanings": [],
+                    "content": [
+                      {
+                        "content": {
+                          "text": {
+                            "_0": {
+                              "bold": false,
+                              "italic": false,
+                              "style": "paragraph",
+                              "text": "literal"
+                            }
+                          }
+                        },
+                        "id": "00000000-0000-0000-0000-000000000014"
+                      }
+                    ],
+                    "createdAt": -978307200,
+                    "examples": [
+                      {
+                        "completeness": "sentence",
+                        "createdAt": -978307200,
+                        "explanations": [
+                          {
+                            "createdAt": -978307200,
+                            "id": "00000000-0000-0000-0000-000000000064",
+                            "input": {
+                              "context": "The bank.",
+                              "contextKind": "sentence",
+                              "dictionaryForm": "bank",
+                              "kind": "word",
+                              "language": "en",
+                              "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+                              "ranges": [
+                                {
+                                  "length": 4,
+                                  "location": 4
+                                }
+                              ],
+                              "target": "bank"
+                            },
+                            "language": "zh-Hans",
+                            "model": "fixture",
+                            "result": {
+                              "explanation": "explanation",
+                              "meaning": "meaning"
+                            }
+                          }
+                        ],
+                        "id": "00000000-0000-0000-0000-000000000003",
+                        "meaning": "context",
+                        "meaningOrigin": "captured",
+                        "ranges": [
+                          {
+                            "length": 4,
+                            "location": 4
+                          }
+                        ],
+                        "text": "The bank.",
+                        "translation": "原句",
+                        "translationVariants": []
+                      }
+                    ],
+                    "explanations": [
+                      {
+                        "createdAt": -978307200,
+                        "id": "00000000-0000-0000-0000-000000000064",
+                        "input": {
+                          "context": "bank",
+                          "contextKind": "none",
+                          "dictionaryForm": "bank",
+                          "kind": "word",
+                          "language": "en",
+                          "ranges": [
+                            {
+                              "length": 4,
+                              "location": 0
+                            }
+                          ],
+                          "target": "bank"
+                        },
+                        "language": "zh-Hans",
+                        "model": "fixture",
+                        "result": {
+                          "explanation": "explanation",
+                          "meaning": "meaning"
+                        }
+                      }
+                    ],
+                    "id": "00000000-0000-0000-0000-000000000002",
+                    "isSavedWithoutContext": true,
+                    "meaning": "core",
+                    "meaningOrigin": "captured",
+                    "mergedFrom": [],
+                    "note": "note",
+                    "review": {
+                      "activeBindingID": "00000000-0000-0000-0000-000000000028",
+                      "bindings": [
+                        {
+                          "deck": "deck",
+                          "endpoint": "http://localhost",
+                          "fields": {
+                            "ID": "00000000-0000-0000-0000-000000000063"
+                          },
+                          "id": "00000000-0000-0000-0000-000000000028",
+                          "identityField": "ID",
+                          "mapping": [
+                            "LingroveID",
+                            "ID"
+                          ],
+                          "model": "model",
+                          "noteID": 1,
+                          "originSenseID": "00000000-0000-0000-0000-000000000063",
+                          "profile": "profile"
+                        }
+                      ],
+                      "plan": {
+                        "fieldOverrides": {},
+                        "gap": false,
+                        "id": "00000000-0000-0000-0000-00000000001E",
+                        "includeExplanation": false,
+                        "includeNotes": false,
+                        "layout": {
+                          "back": [],
+                          "front": [
+                            {
+                              "content": [
+                                {
+                                  "content": {
+                                    "text": {
+                                      "_0": {
+                                        "bold": false,
+                                        "italic": false,
+                                        "style": "paragraph",
+                                        "text": "literal"
+                                      }
+                                    }
+                                  },
+                                  "id": "00000000-0000-0000-0000-00000000003C"
+                                }
+                              ],
+                              "id": "00000000-0000-0000-0000-000000000032",
+                              "showCaption": false,
+                              "source": "custom"
+                            }
+                          ]
+                        },
+                        "recognition": true
+                      },
+                      "preservedPlans": [
+                        {
+                          "fieldOverrides": {},
+                          "gap": false,
+                          "id": "00000000-0000-0000-0000-00000000001F",
+                          "includeExplanation": false,
+                          "includeNotes": false,
+                          "recognition": true
+                        }
+                      ]
+                    },
+                    "reviewCards": [
+                      {
+                        "activeBindingID": "00000000-0000-0000-0000-000000000028",
+                        "bindings": [
+                          {
+                            "deck": "deck",
+                            "endpoint": "http://localhost",
+                            "fields": {
+                              "ID": "00000000-0000-0000-0000-000000000063"
+                            },
+                            "id": "00000000-0000-0000-0000-000000000028",
+                            "identityField": "ID",
+                            "mapping": [
+                              "LingroveID",
+                              "ID"
+                            ],
+                            "model": "model",
+                            "noteID": 1,
+                            "originSenseID": "00000000-0000-0000-0000-000000000063",
+                            "profile": "profile"
+                          }
+                        ],
+                        "plan": {
+                          "fieldOverrides": {},
+                          "gap": false,
+                          "id": "00000000-0000-0000-0000-00000000001E",
+                          "includeExplanation": false,
+                          "includeNotes": false,
+                          "layout": {
+                            "back": [],
+                            "front": [
+                              {
+                                "content": [
+                                  {
+                                    "content": {
+                                      "text": {
+                                        "_0": {
+                                          "bold": false,
+                                          "italic": false,
+                                          "style": "paragraph",
+                                          "text": "literal"
+                                        }
+                                      }
+                                    },
+                                    "id": "00000000-0000-0000-0000-00000000003C"
+                                  }
+                                ],
+                                "id": "00000000-0000-0000-0000-000000000032",
+                                "showCaption": false,
+                                "source": "custom"
+                              }
+                            ]
+                          },
+                          "recognition": true
+                        },
+                        "preservedPlans": [
+                          {
+                            "fieldOverrides": {},
+                            "gap": false,
+                            "id": "00000000-0000-0000-0000-00000000001F",
+                            "includeExplanation": false,
+                            "includeNotes": false,
+                            "recognition": true
+                          }
+                        ]
+                      }
+                    ],
+                    "standaloneMeanings": [],
+                    "tags": [
+                      "Work"
+                    ],
+                    "updatedAt": -978307200
+                  }
+                ],
+                "updatedAt": -978307200
+              }
+            ],
+            "reviewTemplates": [
+              {
+                "id": "00000000-0000-0000-0000-000000000046",
+                "layout": {
+                  "back": [],
+                  "front": [
+                    {
+                      "content": [
+                        {
+                          "content": {
+                            "text": {
+                              "_0": {
+                                "bold": false,
+                                "italic": false,
+                                "style": "paragraph",
+                                "text": "literal"
+                              }
+                            }
+                          },
+                          "id": "00000000-0000-0000-0000-00000000003C"
+                        }
+                      ],
+                      "id": "00000000-0000-0000-0000-000000000032",
+                      "showCaption": false,
+                      "source": "custom"
+                    }
+                  ]
+                },
+                "name": "Template"
+              }
+            ],
+            "schemaVersion": 3
+          },
+          "images": {},
+          "version": 1
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "media",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbXSwic2NoZW1hVmVyc2lvbiI6M30sImltYWdlcyI6eyJsZy1pbWFnZS1maXh0dXJlLnBuZyI6IkFBRUNcL3Y4PSIsIm90aGVyIjoiQXdRPSJ9LCJ2ZXJzaW9uIjoxfQ==",
+      "expected": {
+        "json": {
+          "document": {
+            "entries": [],
+            "schemaVersion": 3
+          },
+          "images": {
+            "lg-image-fixture.png": "AAEC/v8=",
+            "other": "AwQ="
+          },
+          "version": 1
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "content-absent",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbeyJjcmVhdGVkQXQiOi05NzgzMDcyMDAsImRpY3Rpb25hcnlGb3JtIjoiYmFuayIsImV4cHJlc3Npb24iOiJiYW5rIiwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDEiLCJraW5kIjoid29yZCIsImxhbmd1YWdlIjoiZW4iLCJzZW5zZXMiOlt7ImFsdGVybmF0ZU1lYW5pbmdzIjpbXSwiY3JlYXRlZEF0IjotOTc4MzA3MjAwLCJleGFtcGxlcyI6W3siY29tcGxldGVuZXNzIjoic2VudGVuY2UiLCJjcmVhdGVkQXQiOi05NzgzMDcyMDAsImV4cGxhbmF0aW9ucyI6W3siY3JlYXRlZEF0IjotOTc4MzA3MjAwLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDA2NCIsImlucHV0Ijp7ImNvbnRleHQiOiJUaGUgYmFuay4iLCJjb250ZXh0S2luZCI6InNlbnRlbmNlIiwiZGljdGlvbmFyeUZvcm0iOiJiYW5rIiwia2luZCI6IndvcmQiLCJsYW5ndWFnZSI6ImVuIiwib2NjdXJyZW5jZUlkZW50aXR5IjoiMzg1MjM5ZjVhMjc4ZGNhNGEwNzFkMzM5NmNhZDhlNGVkNTUyMTliZmE0YmZjMjFjODIzNmU5NDBlNTYxNTRlZiIsInJhbmdlcyI6W3sibGVuZ3RoIjo0LCJsb2NhdGlvbiI6NH1dLCJ0YXJnZXQiOiJiYW5rIn0sImxhbmd1YWdlIjoiemgtSGFucyIsIm1vZGVsIjoiZml4dHVyZSIsInJlc3VsdCI6eyJleHBsYW5hdGlvbiI6ImV4cGxhbmF0aW9uIiwibWVhbmluZyI6Im1lYW5pbmcifX1dLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMyIsIm1lYW5pbmciOiJjb250ZXh0IiwibWVhbmluZ09yaWdpbiI6ImNhcHR1cmVkIiwicmFuZ2VzIjpbeyJsZW5ndGgiOjQsImxvY2F0aW9uIjo0fV0sInRleHQiOiJUaGUgYmFuay4iLCJ0cmFuc2xhdGlvbiI6IuWOn+WPpSIsInRyYW5zbGF0aW9uVmFyaWFudHMiOltdfV0sImV4cGxhbmF0aW9ucyI6W3siY3JlYXRlZEF0IjotOTc4MzA3MjAwLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDA2NCIsImlucHV0Ijp7ImNvbnRleHQiOiJiYW5rIiwiY29udGV4dEtpbmQiOiJub25lIiwiZGljdGlvbmFyeUZvcm0iOiJiYW5rIiwia2luZCI6IndvcmQiLCJsYW5ndWFnZSI6ImVuIiwicmFuZ2VzIjpbeyJsZW5ndGgiOjQsImxvY2F0aW9uIjowfV0sInRhcmdldCI6ImJhbmsifSwibGFuZ3VhZ2UiOiJ6aC1IYW5zIiwibW9kZWwiOiJmaXh0dXJlIiwicmVzdWx0Ijp7ImV4cGxhbmF0aW9uIjoiZXhwbGFuYXRpb24iLCJtZWFuaW5nIjoibWVhbmluZyJ9fV0sImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAyIiwiaXNTYXZlZFdpdGhvdXRDb250ZXh0Ijp0cnVlLCJtZWFuaW5nIjoiY29yZSIsIm1lYW5pbmdPcmlnaW4iOiJjYXB0dXJlZCIsIm1lcmdlZEZyb20iOltdLCJub3RlIjoibm90ZSIsInJldmlldyI6eyJhY3RpdmVCaW5kaW5nSUQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMjgiLCJiaW5kaW5ncyI6W3siZGVjayI6ImRlY2siLCJlbmRwb2ludCI6Imh0dHA6XC9cL2xvY2FsaG9zdCIsImZpZWxkcyI6eyJJRCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDA2MyJ9LCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAyOCIsImlkZW50aXR5RmllbGQiOiJJRCIsIm1hcHBpbmciOlsiTGluZ3JvdmVJRCIsIklEIl0sIm1vZGVsIjoibW9kZWwiLCJub3RlSUQiOjEsIm9yaWdpblNlbnNlSUQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwNjMiLCJwcm9maWxlIjoicHJvZmlsZSJ9XSwicGxhbiI6eyJmaWVsZE92ZXJyaWRlcyI6e30sImdhcCI6ZmFsc2UsImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDFFIiwiaW5jbHVkZUV4cGxhbmF0aW9uIjpmYWxzZSwiaW5jbHVkZU5vdGVzIjpmYWxzZSwibGF5b3V0Ijp7ImJhY2siOltdLCJmcm9udCI6W3siY29udGVudCI6W3siY29udGVudCI6eyJ0ZXh0Ijp7Il8wIjp7ImJvbGQiOmZhbHNlLCJpdGFsaWMiOmZhbHNlLCJzdHlsZSI6InBhcmFncmFwaCIsInRleHQiOiJsaXRlcmFsIn19fSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwM0MifV0sImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDMyIiwic2hvd0NhcHRpb24iOmZhbHNlLCJzb3VyY2UiOiJjdXN0b20ifV19LCJyZWNvZ25pdGlvbiI6dHJ1ZX0sInByZXNlcnZlZFBsYW5zIjpbeyJmaWVsZE92ZXJyaWRlcyI6e30sImdhcCI6ZmFsc2UsImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDFGIiwiaW5jbHVkZUV4cGxhbmF0aW9uIjpmYWxzZSwiaW5jbHVkZU5vdGVzIjpmYWxzZSwicmVjb2duaXRpb24iOnRydWV9XX0sInJldmlld0NhcmRzIjpbeyJhY3RpdmVCaW5kaW5nSUQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMjgiLCJiaW5kaW5ncyI6W3siZGVjayI6ImRlY2siLCJlbmRwb2ludCI6Imh0dHA6XC9cL2xvY2FsaG9zdCIsImZpZWxkcyI6eyJJRCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDA2MyJ9LCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAyOCIsImlkZW50aXR5RmllbGQiOiJJRCIsIm1hcHBpbmciOlsiTGluZ3JvdmVJRCIsIklEIl0sIm1vZGVsIjoibW9kZWwiLCJub3RlSUQiOjEsIm9yaWdpblNlbnNlSUQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwNjMiLCJwcm9maWxlIjoicHJvZmlsZSJ9XSwicGxhbiI6eyJmaWVsZE92ZXJyaWRlcyI6e30sImdhcCI6ZmFsc2UsImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDFFIiwiaW5jbHVkZUV4cGxhbmF0aW9uIjpmYWxzZSwiaW5jbHVkZU5vdGVzIjpmYWxzZSwibGF5b3V0Ijp7ImJhY2siOltdLCJmcm9udCI6W3siY29udGVudCI6W3siY29udGVudCI6eyJ0ZXh0Ijp7Il8wIjp7ImJvbGQiOmZhbHNlLCJpdGFsaWMiOmZhbHNlLCJzdHlsZSI6InBhcmFncmFwaCIsInRleHQiOiJsaXRlcmFsIn19fSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwM0MifV0sImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDMyIiwic2hvd0NhcHRpb24iOmZhbHNlLCJzb3VyY2UiOiJjdXN0b20ifV19LCJyZWNvZ25pdGlvbiI6dHJ1ZX0sInByZXNlcnZlZFBsYW5zIjpbeyJmaWVsZE92ZXJyaWRlcyI6e30sImdhcCI6ZmFsc2UsImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDFGIiwiaW5jbHVkZUV4cGxhbmF0aW9uIjpmYWxzZSwiaW5jbHVkZU5vdGVzIjpmYWxzZSwicmVjb2duaXRpb24iOnRydWV9XX1dLCJzdGFuZGFsb25lTWVhbmluZ3MiOltdLCJ0YWdzIjpbIldvcmsiXSwidXBkYXRlZEF0IjotOTc4MzA3MjAwfV0sInVwZGF0ZWRBdCI6LTk3ODMwNzIwMH1dLCJyZXZpZXdUZW1wbGF0ZXMiOlt7ImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDQ2IiwibGF5b3V0Ijp7ImJhY2siOltdLCJmcm9udCI6W3siY29udGVudCI6W3siY29udGVudCI6eyJ0ZXh0Ijp7Il8wIjp7ImJvbGQiOmZhbHNlLCJpdGFsaWMiOmZhbHNlLCJzdHlsZSI6InBhcmFncmFwaCIsInRleHQiOiJsaXRlcmFsIn19fSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwM0MifV0sImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDMyIiwic2hvd0NhcHRpb24iOmZhbHNlLCJzb3VyY2UiOiJjdXN0b20ifV19LCJuYW1lIjoiVGVtcGxhdGUifV0sInNjaGVtYVZlcnNpb24iOjN9LCJpbWFnZXMiOnt9LCJ2ZXJzaW9uIjoxfQ==",
+      "expected": {
+        "json": {
+          "document": {
+            "entries": [
+              {
+                "createdAt": -978307200,
+                "dictionaryForm": "bank",
+                "expression": "bank",
+                "id": "00000000-0000-0000-0000-000000000001",
+                "kind": "word",
+                "language": "en",
+                "senses": [
+                  {
+                    "alternateMeanings": [],
+                    "createdAt": -978307200,
+                    "examples": [
+                      {
+                        "completeness": "sentence",
+                        "createdAt": -978307200,
+                        "explanations": [
+                          {
+                            "createdAt": -978307200,
+                            "id": "00000000-0000-0000-0000-000000000064",
+                            "input": {
+                              "context": "The bank.",
+                              "contextKind": "sentence",
+                              "dictionaryForm": "bank",
+                              "kind": "word",
+                              "language": "en",
+                              "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+                              "ranges": [
+                                {
+                                  "length": 4,
+                                  "location": 4
+                                }
+                              ],
+                              "target": "bank"
+                            },
+                            "language": "zh-Hans",
+                            "model": "fixture",
+                            "result": {
+                              "explanation": "explanation",
+                              "meaning": "meaning"
+                            }
+                          }
+                        ],
+                        "id": "00000000-0000-0000-0000-000000000003",
+                        "meaning": "context",
+                        "meaningOrigin": "captured",
+                        "ranges": [
+                          {
+                            "length": 4,
+                            "location": 4
+                          }
+                        ],
+                        "text": "The bank.",
+                        "translation": "原句",
+                        "translationVariants": []
+                      }
+                    ],
+                    "explanations": [
+                      {
+                        "createdAt": -978307200,
+                        "id": "00000000-0000-0000-0000-000000000064",
+                        "input": {
+                          "context": "bank",
+                          "contextKind": "none",
+                          "dictionaryForm": "bank",
+                          "kind": "word",
+                          "language": "en",
+                          "ranges": [
+                            {
+                              "length": 4,
+                              "location": 0
+                            }
+                          ],
+                          "target": "bank"
+                        },
+                        "language": "zh-Hans",
+                        "model": "fixture",
+                        "result": {
+                          "explanation": "explanation",
+                          "meaning": "meaning"
+                        }
+                      }
+                    ],
+                    "id": "00000000-0000-0000-0000-000000000002",
+                    "isSavedWithoutContext": true,
+                    "meaning": "core",
+                    "meaningOrigin": "captured",
+                    "mergedFrom": [],
+                    "note": "note",
+                    "review": {
+                      "activeBindingID": "00000000-0000-0000-0000-000000000028",
+                      "bindings": [
+                        {
+                          "deck": "deck",
+                          "endpoint": "http://localhost",
+                          "fields": {
+                            "ID": "00000000-0000-0000-0000-000000000063"
+                          },
+                          "id": "00000000-0000-0000-0000-000000000028",
+                          "identityField": "ID",
+                          "mapping": [
+                            "LingroveID",
+                            "ID"
+                          ],
+                          "model": "model",
+                          "noteID": 1,
+                          "originSenseID": "00000000-0000-0000-0000-000000000063",
+                          "profile": "profile"
+                        }
+                      ],
+                      "plan": {
+                        "fieldOverrides": {},
+                        "gap": false,
+                        "id": "00000000-0000-0000-0000-00000000001E",
+                        "includeExplanation": false,
+                        "includeNotes": false,
+                        "layout": {
+                          "back": [],
+                          "front": [
+                            {
+                              "content": [
+                                {
+                                  "content": {
+                                    "text": {
+                                      "_0": {
+                                        "bold": false,
+                                        "italic": false,
+                                        "style": "paragraph",
+                                        "text": "literal"
+                                      }
+                                    }
+                                  },
+                                  "id": "00000000-0000-0000-0000-00000000003C"
+                                }
+                              ],
+                              "id": "00000000-0000-0000-0000-000000000032",
+                              "showCaption": false,
+                              "source": "custom"
+                            }
+                          ]
+                        },
+                        "recognition": true
+                      },
+                      "preservedPlans": [
+                        {
+                          "fieldOverrides": {},
+                          "gap": false,
+                          "id": "00000000-0000-0000-0000-00000000001F",
+                          "includeExplanation": false,
+                          "includeNotes": false,
+                          "recognition": true
+                        }
+                      ]
+                    },
+                    "reviewCards": [
+                      {
+                        "activeBindingID": "00000000-0000-0000-0000-000000000028",
+                        "bindings": [
+                          {
+                            "deck": "deck",
+                            "endpoint": "http://localhost",
+                            "fields": {
+                              "ID": "00000000-0000-0000-0000-000000000063"
+                            },
+                            "id": "00000000-0000-0000-0000-000000000028",
+                            "identityField": "ID",
+                            "mapping": [
+                              "LingroveID",
+                              "ID"
+                            ],
+                            "model": "model",
+                            "noteID": 1,
+                            "originSenseID": "00000000-0000-0000-0000-000000000063",
+                            "profile": "profile"
+                          }
+                        ],
+                        "plan": {
+                          "fieldOverrides": {},
+                          "gap": false,
+                          "id": "00000000-0000-0000-0000-00000000001E",
+                          "includeExplanation": false,
+                          "includeNotes": false,
+                          "layout": {
+                            "back": [],
+                            "front": [
+                              {
+                                "content": [
+                                  {
+                                    "content": {
+                                      "text": {
+                                        "_0": {
+                                          "bold": false,
+                                          "italic": false,
+                                          "style": "paragraph",
+                                          "text": "literal"
+                                        }
+                                      }
+                                    },
+                                    "id": "00000000-0000-0000-0000-00000000003C"
+                                  }
+                                ],
+                                "id": "00000000-0000-0000-0000-000000000032",
+                                "showCaption": false,
+                                "source": "custom"
+                              }
+                            ]
+                          },
+                          "recognition": true
+                        },
+                        "preservedPlans": [
+                          {
+                            "fieldOverrides": {},
+                            "gap": false,
+                            "id": "00000000-0000-0000-0000-00000000001F",
+                            "includeExplanation": false,
+                            "includeNotes": false,
+                            "recognition": true
+                          }
+                        ]
+                      }
+                    ],
+                    "standaloneMeanings": [],
+                    "tags": [
+                      "Work"
+                    ],
+                    "updatedAt": -978307200
+                  }
+                ],
+                "updatedAt": -978307200
+              }
+            ],
+            "reviewTemplates": [
+              {
+                "id": "00000000-0000-0000-0000-000000000046",
+                "layout": {
+                  "back": [],
+                  "front": [
+                    {
+                      "content": [
+                        {
+                          "content": {
+                            "text": {
+                              "_0": {
+                                "bold": false,
+                                "italic": false,
+                                "style": "paragraph",
+                                "text": "literal"
+                              }
+                            }
+                          },
+                          "id": "00000000-0000-0000-0000-00000000003C"
+                        }
+                      ],
+                      "id": "00000000-0000-0000-0000-000000000032",
+                      "showCaption": false,
+                      "source": "custom"
+                    }
+                  ]
+                },
+                "name": "Template"
+              }
+            ],
+            "schemaVersion": 3
+          },
+          "images": {},
+          "version": 1
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "content-empty",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbeyJjcmVhdGVkQXQiOi05NzgzMDcyMDAsImRpY3Rpb25hcnlGb3JtIjoiYmFuayIsImV4cHJlc3Npb24iOiJiYW5rIiwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDEiLCJraW5kIjoid29yZCIsImxhbmd1YWdlIjoiZW4iLCJzZW5zZXMiOlt7ImFsdGVybmF0ZU1lYW5pbmdzIjpbXSwiY29udGVudCI6W10sImNyZWF0ZWRBdCI6LTk3ODMwNzIwMCwiZXhhbXBsZXMiOlt7ImNvbXBsZXRlbmVzcyI6InNlbnRlbmNlIiwiY3JlYXRlZEF0IjotOTc4MzA3MjAwLCJleHBsYW5hdGlvbnMiOlt7ImNyZWF0ZWRBdCI6LTk3ODMwNzIwMCwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwNjQiLCJpbnB1dCI6eyJjb250ZXh0IjoiVGhlIGJhbmsuIiwiY29udGV4dEtpbmQiOiJzZW50ZW5jZSIsImRpY3Rpb25hcnlGb3JtIjoiYmFuayIsImtpbmQiOiJ3b3JkIiwibGFuZ3VhZ2UiOiJlbiIsIm9jY3VycmVuY2VJZGVudGl0eSI6IjM4NTIzOWY1YTI3OGRjYTRhMDcxZDMzOTZjYWQ4ZTRlZDU1MjE5YmZhNGJmYzIxYzgyMzZlOTQwZTU2MTU0ZWYiLCJyYW5nZXMiOlt7Imxlbmd0aCI6NCwibG9jYXRpb24iOjR9XSwidGFyZ2V0IjoiYmFuayJ9LCJsYW5ndWFnZSI6InpoLUhhbnMiLCJtb2RlbCI6ImZpeHR1cmUiLCJyZXN1bHQiOnsiZXhwbGFuYXRpb24iOiJleHBsYW5hdGlvbiIsIm1lYW5pbmciOiJtZWFuaW5nIn19XSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDMiLCJtZWFuaW5nIjoiY29udGV4dCIsIm1lYW5pbmdPcmlnaW4iOiJjYXB0dXJlZCIsInJhbmdlcyI6W3sibGVuZ3RoIjo0LCJsb2NhdGlvbiI6NH1dLCJ0ZXh0IjoiVGhlIGJhbmsuIiwidHJhbnNsYXRpb24iOiLljp/lj6UiLCJ0cmFuc2xhdGlvblZhcmlhbnRzIjpbXX1dLCJleHBsYW5hdGlvbnMiOlt7ImNyZWF0ZWRBdCI6LTk3ODMwNzIwMCwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwNjQiLCJpbnB1dCI6eyJjb250ZXh0IjoiYmFuayIsImNvbnRleHRLaW5kIjoibm9uZSIsImRpY3Rpb25hcnlGb3JtIjoiYmFuayIsImtpbmQiOiJ3b3JkIiwibGFuZ3VhZ2UiOiJlbiIsInJhbmdlcyI6W3sibGVuZ3RoIjo0LCJsb2NhdGlvbiI6MH1dLCJ0YXJnZXQiOiJiYW5rIn0sImxhbmd1YWdlIjoiemgtSGFucyIsIm1vZGVsIjoiZml4dHVyZSIsInJlc3VsdCI6eyJleHBsYW5hdGlvbiI6ImV4cGxhbmF0aW9uIiwibWVhbmluZyI6Im1lYW5pbmcifX1dLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMiIsImlzU2F2ZWRXaXRob3V0Q29udGV4dCI6dHJ1ZSwibWVhbmluZyI6ImNvcmUiLCJtZWFuaW5nT3JpZ2luIjoiY2FwdHVyZWQiLCJtZXJnZWRGcm9tIjpbXSwibm90ZSI6Im5vdGUiLCJyZXZpZXciOnsiYWN0aXZlQmluZGluZ0lEIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDI4IiwiYmluZGluZ3MiOlt7ImRlY2siOiJkZWNrIiwiZW5kcG9pbnQiOiJodHRwOlwvXC9sb2NhbGhvc3QiLCJmaWVsZHMiOnsiSUQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwNjMifSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMjgiLCJpZGVudGl0eUZpZWxkIjoiSUQiLCJtYXBwaW5nIjpbIkxpbmdyb3ZlSUQiLCJJRCJdLCJtb2RlbCI6Im1vZGVsIiwibm90ZUlEIjoxLCJvcmlnaW5TZW5zZUlEIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDYzIiwicHJvZmlsZSI6InByb2ZpbGUifV0sInBsYW4iOnsiZmllbGRPdmVycmlkZXMiOnt9LCJnYXAiOmZhbHNlLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAxRSIsImluY2x1ZGVFeHBsYW5hdGlvbiI6ZmFsc2UsImluY2x1ZGVOb3RlcyI6ZmFsc2UsImxheW91dCI6eyJiYWNrIjpbXSwiZnJvbnQiOlt7ImNvbnRlbnQiOlt7ImNvbnRlbnQiOnsidGV4dCI6eyJfMCI6eyJib2xkIjpmYWxzZSwiaXRhbGljIjpmYWxzZSwic3R5bGUiOiJwYXJhZ3JhcGgiLCJ0ZXh0IjoibGl0ZXJhbCJ9fX0sImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDNDIn1dLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAzMiIsInNob3dDYXB0aW9uIjpmYWxzZSwic291cmNlIjoiY3VzdG9tIn1dfSwicmVjb2duaXRpb24iOnRydWV9LCJwcmVzZXJ2ZWRQbGFucyI6W3siZmllbGRPdmVycmlkZXMiOnt9LCJnYXAiOmZhbHNlLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAxRiIsImluY2x1ZGVFeHBsYW5hdGlvbiI6ZmFsc2UsImluY2x1ZGVOb3RlcyI6ZmFsc2UsInJlY29nbml0aW9uIjp0cnVlfV19LCJyZXZpZXdDYXJkcyI6W3siYWN0aXZlQmluZGluZ0lEIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDI4IiwiYmluZGluZ3MiOlt7ImRlY2siOiJkZWNrIiwiZW5kcG9pbnQiOiJodHRwOlwvXC9sb2NhbGhvc3QiLCJmaWVsZHMiOnsiSUQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwNjMifSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMjgiLCJpZGVudGl0eUZpZWxkIjoiSUQiLCJtYXBwaW5nIjpbIkxpbmdyb3ZlSUQiLCJJRCJdLCJtb2RlbCI6Im1vZGVsIiwibm90ZUlEIjoxLCJvcmlnaW5TZW5zZUlEIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDYzIiwicHJvZmlsZSI6InByb2ZpbGUifV0sInBsYW4iOnsiZmllbGRPdmVycmlkZXMiOnt9LCJnYXAiOmZhbHNlLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAxRSIsImluY2x1ZGVFeHBsYW5hdGlvbiI6ZmFsc2UsImluY2x1ZGVOb3RlcyI6ZmFsc2UsImxheW91dCI6eyJiYWNrIjpbXSwiZnJvbnQiOlt7ImNvbnRlbnQiOlt7ImNvbnRlbnQiOnsidGV4dCI6eyJfMCI6eyJib2xkIjpmYWxzZSwiaXRhbGljIjpmYWxzZSwic3R5bGUiOiJwYXJhZ3JhcGgiLCJ0ZXh0IjoibGl0ZXJhbCJ9fX0sImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDNDIn1dLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAzMiIsInNob3dDYXB0aW9uIjpmYWxzZSwic291cmNlIjoiY3VzdG9tIn1dfSwicmVjb2duaXRpb24iOnRydWV9LCJwcmVzZXJ2ZWRQbGFucyI6W3siZmllbGRPdmVycmlkZXMiOnt9LCJnYXAiOmZhbHNlLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAxRiIsImluY2x1ZGVFeHBsYW5hdGlvbiI6ZmFsc2UsImluY2x1ZGVOb3RlcyI6ZmFsc2UsInJlY29nbml0aW9uIjp0cnVlfV19XSwic3RhbmRhbG9uZU1lYW5pbmdzIjpbXSwidGFncyI6WyJXb3JrIl0sInVwZGF0ZWRBdCI6LTk3ODMwNzIwMH1dLCJ1cGRhdGVkQXQiOi05NzgzMDcyMDB9XSwicmV2aWV3VGVtcGxhdGVzIjpbeyJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDA0NiIsImxheW91dCI6eyJiYWNrIjpbXSwiZnJvbnQiOlt7ImNvbnRlbnQiOlt7ImNvbnRlbnQiOnsidGV4dCI6eyJfMCI6eyJib2xkIjpmYWxzZSwiaXRhbGljIjpmYWxzZSwic3R5bGUiOiJwYXJhZ3JhcGgiLCJ0ZXh0IjoibGl0ZXJhbCJ9fX0sImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDNDIn1dLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAzMiIsInNob3dDYXB0aW9uIjpmYWxzZSwic291cmNlIjoiY3VzdG9tIn1dfSwibmFtZSI6IlRlbXBsYXRlIn1dLCJzY2hlbWFWZXJzaW9uIjozfSwiaW1hZ2VzIjp7fSwidmVyc2lvbiI6MX0=",
+      "expected": {
+        "json": {
+          "document": {
+            "entries": [
+              {
+                "createdAt": -978307200,
+                "dictionaryForm": "bank",
+                "expression": "bank",
+                "id": "00000000-0000-0000-0000-000000000001",
+                "kind": "word",
+                "language": "en",
+                "senses": [
+                  {
+                    "alternateMeanings": [],
+                    "content": [],
+                    "createdAt": -978307200,
+                    "examples": [
+                      {
+                        "completeness": "sentence",
+                        "createdAt": -978307200,
+                        "explanations": [
+                          {
+                            "createdAt": -978307200,
+                            "id": "00000000-0000-0000-0000-000000000064",
+                            "input": {
+                              "context": "The bank.",
+                              "contextKind": "sentence",
+                              "dictionaryForm": "bank",
+                              "kind": "word",
+                              "language": "en",
+                              "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+                              "ranges": [
+                                {
+                                  "length": 4,
+                                  "location": 4
+                                }
+                              ],
+                              "target": "bank"
+                            },
+                            "language": "zh-Hans",
+                            "model": "fixture",
+                            "result": {
+                              "explanation": "explanation",
+                              "meaning": "meaning"
+                            }
+                          }
+                        ],
+                        "id": "00000000-0000-0000-0000-000000000003",
+                        "meaning": "context",
+                        "meaningOrigin": "captured",
+                        "ranges": [
+                          {
+                            "length": 4,
+                            "location": 4
+                          }
+                        ],
+                        "text": "The bank.",
+                        "translation": "原句",
+                        "translationVariants": []
+                      }
+                    ],
+                    "explanations": [
+                      {
+                        "createdAt": -978307200,
+                        "id": "00000000-0000-0000-0000-000000000064",
+                        "input": {
+                          "context": "bank",
+                          "contextKind": "none",
+                          "dictionaryForm": "bank",
+                          "kind": "word",
+                          "language": "en",
+                          "ranges": [
+                            {
+                              "length": 4,
+                              "location": 0
+                            }
+                          ],
+                          "target": "bank"
+                        },
+                        "language": "zh-Hans",
+                        "model": "fixture",
+                        "result": {
+                          "explanation": "explanation",
+                          "meaning": "meaning"
+                        }
+                      }
+                    ],
+                    "id": "00000000-0000-0000-0000-000000000002",
+                    "isSavedWithoutContext": true,
+                    "meaning": "core",
+                    "meaningOrigin": "captured",
+                    "mergedFrom": [],
+                    "note": "note",
+                    "review": {
+                      "activeBindingID": "00000000-0000-0000-0000-000000000028",
+                      "bindings": [
+                        {
+                          "deck": "deck",
+                          "endpoint": "http://localhost",
+                          "fields": {
+                            "ID": "00000000-0000-0000-0000-000000000063"
+                          },
+                          "id": "00000000-0000-0000-0000-000000000028",
+                          "identityField": "ID",
+                          "mapping": [
+                            "LingroveID",
+                            "ID"
+                          ],
+                          "model": "model",
+                          "noteID": 1,
+                          "originSenseID": "00000000-0000-0000-0000-000000000063",
+                          "profile": "profile"
+                        }
+                      ],
+                      "plan": {
+                        "fieldOverrides": {},
+                        "gap": false,
+                        "id": "00000000-0000-0000-0000-00000000001E",
+                        "includeExplanation": false,
+                        "includeNotes": false,
+                        "layout": {
+                          "back": [],
+                          "front": [
+                            {
+                              "content": [
+                                {
+                                  "content": {
+                                    "text": {
+                                      "_0": {
+                                        "bold": false,
+                                        "italic": false,
+                                        "style": "paragraph",
+                                        "text": "literal"
+                                      }
+                                    }
+                                  },
+                                  "id": "00000000-0000-0000-0000-00000000003C"
+                                }
+                              ],
+                              "id": "00000000-0000-0000-0000-000000000032",
+                              "showCaption": false,
+                              "source": "custom"
+                            }
+                          ]
+                        },
+                        "recognition": true
+                      },
+                      "preservedPlans": [
+                        {
+                          "fieldOverrides": {},
+                          "gap": false,
+                          "id": "00000000-0000-0000-0000-00000000001F",
+                          "includeExplanation": false,
+                          "includeNotes": false,
+                          "recognition": true
+                        }
+                      ]
+                    },
+                    "reviewCards": [
+                      {
+                        "activeBindingID": "00000000-0000-0000-0000-000000000028",
+                        "bindings": [
+                          {
+                            "deck": "deck",
+                            "endpoint": "http://localhost",
+                            "fields": {
+                              "ID": "00000000-0000-0000-0000-000000000063"
+                            },
+                            "id": "00000000-0000-0000-0000-000000000028",
+                            "identityField": "ID",
+                            "mapping": [
+                              "LingroveID",
+                              "ID"
+                            ],
+                            "model": "model",
+                            "noteID": 1,
+                            "originSenseID": "00000000-0000-0000-0000-000000000063",
+                            "profile": "profile"
+                          }
+                        ],
+                        "plan": {
+                          "fieldOverrides": {},
+                          "gap": false,
+                          "id": "00000000-0000-0000-0000-00000000001E",
+                          "includeExplanation": false,
+                          "includeNotes": false,
+                          "layout": {
+                            "back": [],
+                            "front": [
+                              {
+                                "content": [
+                                  {
+                                    "content": {
+                                      "text": {
+                                        "_0": {
+                                          "bold": false,
+                                          "italic": false,
+                                          "style": "paragraph",
+                                          "text": "literal"
+                                        }
+                                      }
+                                    },
+                                    "id": "00000000-0000-0000-0000-00000000003C"
+                                  }
+                                ],
+                                "id": "00000000-0000-0000-0000-000000000032",
+                                "showCaption": false,
+                                "source": "custom"
+                              }
+                            ]
+                          },
+                          "recognition": true
+                        },
+                        "preservedPlans": [
+                          {
+                            "fieldOverrides": {},
+                            "gap": false,
+                            "id": "00000000-0000-0000-0000-00000000001F",
+                            "includeExplanation": false,
+                            "includeNotes": false,
+                            "recognition": true
+                          }
+                        ]
+                      }
+                    ],
+                    "standaloneMeanings": [],
+                    "tags": [
+                      "Work"
+                    ],
+                    "updatedAt": -978307200
+                  }
+                ],
+                "updatedAt": -978307200
+              }
+            ],
+            "reviewTemplates": [
+              {
+                "id": "00000000-0000-0000-0000-000000000046",
+                "layout": {
+                  "back": [],
+                  "front": [
+                    {
+                      "content": [
+                        {
+                          "content": {
+                            "text": {
+                              "_0": {
+                                "bold": false,
+                                "italic": false,
+                                "style": "paragraph",
+                                "text": "literal"
+                              }
+                            }
+                          },
+                          "id": "00000000-0000-0000-0000-00000000003C"
+                        }
+                      ],
+                      "id": "00000000-0000-0000-0000-000000000032",
+                      "showCaption": false,
+                      "source": "custom"
+                    }
+                  ]
+                },
+                "name": "Template"
+              }
+            ],
+            "schemaVersion": 3
+          },
+          "images": {},
+          "version": 1
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "cards-absent",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbeyJjcmVhdGVkQXQiOi05NzgzMDcyMDAsImRpY3Rpb25hcnlGb3JtIjoiYmFuayIsImV4cHJlc3Npb24iOiJiYW5rIiwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDEiLCJraW5kIjoid29yZCIsImxhbmd1YWdlIjoiZW4iLCJzZW5zZXMiOlt7ImFsdGVybmF0ZU1lYW5pbmdzIjpbXSwiY29udGVudCI6W3siY29udGVudCI6eyJ0ZXh0Ijp7Il8wIjp7ImJvbGQiOmZhbHNlLCJpdGFsaWMiOmZhbHNlLCJzdHlsZSI6InBhcmFncmFwaCIsInRleHQiOiJsaXRlcmFsIn19fSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMTQifV0sImNyZWF0ZWRBdCI6LTk3ODMwNzIwMCwiZXhhbXBsZXMiOlt7ImNvbXBsZXRlbmVzcyI6InNlbnRlbmNlIiwiY3JlYXRlZEF0IjotOTc4MzA3MjAwLCJleHBsYW5hdGlvbnMiOlt7ImNyZWF0ZWRBdCI6LTk3ODMwNzIwMCwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwNjQiLCJpbnB1dCI6eyJjb250ZXh0IjoiVGhlIGJhbmsuIiwiY29udGV4dEtpbmQiOiJzZW50ZW5jZSIsImRpY3Rpb25hcnlGb3JtIjoiYmFuayIsImtpbmQiOiJ3b3JkIiwibGFuZ3VhZ2UiOiJlbiIsIm9jY3VycmVuY2VJZGVudGl0eSI6IjM4NTIzOWY1YTI3OGRjYTRhMDcxZDMzOTZjYWQ4ZTRlZDU1MjE5YmZhNGJmYzIxYzgyMzZlOTQwZTU2MTU0ZWYiLCJyYW5nZXMiOlt7Imxlbmd0aCI6NCwibG9jYXRpb24iOjR9XSwidGFyZ2V0IjoiYmFuayJ9LCJsYW5ndWFnZSI6InpoLUhhbnMiLCJtb2RlbCI6ImZpeHR1cmUiLCJyZXN1bHQiOnsiZXhwbGFuYXRpb24iOiJleHBsYW5hdGlvbiIsIm1lYW5pbmciOiJtZWFuaW5nIn19XSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDMiLCJtZWFuaW5nIjoiY29udGV4dCIsIm1lYW5pbmdPcmlnaW4iOiJjYXB0dXJlZCIsInJhbmdlcyI6W3sibGVuZ3RoIjo0LCJsb2NhdGlvbiI6NH1dLCJ0ZXh0IjoiVGhlIGJhbmsuIiwidHJhbnNsYXRpb24iOiLljp/lj6UiLCJ0cmFuc2xhdGlvblZhcmlhbnRzIjpbXX1dLCJleHBsYW5hdGlvbnMiOlt7ImNyZWF0ZWRBdCI6LTk3ODMwNzIwMCwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwNjQiLCJpbnB1dCI6eyJjb250ZXh0IjoiYmFuayIsImNvbnRleHRLaW5kIjoibm9uZSIsImRpY3Rpb25hcnlGb3JtIjoiYmFuayIsImtpbmQiOiJ3b3JkIiwibGFuZ3VhZ2UiOiJlbiIsInJhbmdlcyI6W3sibGVuZ3RoIjo0LCJsb2NhdGlvbiI6MH1dLCJ0YXJnZXQiOiJiYW5rIn0sImxhbmd1YWdlIjoiemgtSGFucyIsIm1vZGVsIjoiZml4dHVyZSIsInJlc3VsdCI6eyJleHBsYW5hdGlvbiI6ImV4cGxhbmF0aW9uIiwibWVhbmluZyI6Im1lYW5pbmcifX1dLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMiIsImlzU2F2ZWRXaXRob3V0Q29udGV4dCI6dHJ1ZSwibWVhbmluZyI6ImNvcmUiLCJtZWFuaW5nT3JpZ2luIjoiY2FwdHVyZWQiLCJtZXJnZWRGcm9tIjpbXSwibm90ZSI6Im5vdGUiLCJyZXZpZXciOnsiYWN0aXZlQmluZGluZ0lEIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDI4IiwiYmluZGluZ3MiOlt7ImRlY2siOiJkZWNrIiwiZW5kcG9pbnQiOiJodHRwOlwvXC9sb2NhbGhvc3QiLCJmaWVsZHMiOnsiSUQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwNjMifSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMjgiLCJpZGVudGl0eUZpZWxkIjoiSUQiLCJtYXBwaW5nIjpbIkxpbmdyb3ZlSUQiLCJJRCJdLCJtb2RlbCI6Im1vZGVsIiwibm90ZUlEIjoxLCJvcmlnaW5TZW5zZUlEIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDYzIiwicHJvZmlsZSI6InByb2ZpbGUifV0sInBsYW4iOnsiZmllbGRPdmVycmlkZXMiOnt9LCJnYXAiOmZhbHNlLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAxRSIsImluY2x1ZGVFeHBsYW5hdGlvbiI6ZmFsc2UsImluY2x1ZGVOb3RlcyI6ZmFsc2UsImxheW91dCI6eyJiYWNrIjpbXSwiZnJvbnQiOlt7ImNvbnRlbnQiOlt7ImNvbnRlbnQiOnsidGV4dCI6eyJfMCI6eyJib2xkIjpmYWxzZSwiaXRhbGljIjpmYWxzZSwic3R5bGUiOiJwYXJhZ3JhcGgiLCJ0ZXh0IjoibGl0ZXJhbCJ9fX0sImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDNDIn1dLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAzMiIsInNob3dDYXB0aW9uIjpmYWxzZSwic291cmNlIjoiY3VzdG9tIn1dfSwicmVjb2duaXRpb24iOnRydWV9LCJwcmVzZXJ2ZWRQbGFucyI6W3siZmllbGRPdmVycmlkZXMiOnt9LCJnYXAiOmZhbHNlLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAxRiIsImluY2x1ZGVFeHBsYW5hdGlvbiI6ZmFsc2UsImluY2x1ZGVOb3RlcyI6ZmFsc2UsInJlY29nbml0aW9uIjp0cnVlfV19LCJzdGFuZGFsb25lTWVhbmluZ3MiOltdLCJ0YWdzIjpbIldvcmsiXSwidXBkYXRlZEF0IjotOTc4MzA3MjAwfV0sInVwZGF0ZWRBdCI6LTk3ODMwNzIwMH1dLCJyZXZpZXdUZW1wbGF0ZXMiOlt7ImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDQ2IiwibGF5b3V0Ijp7ImJhY2siOltdLCJmcm9udCI6W3siY29udGVudCI6W3siY29udGVudCI6eyJ0ZXh0Ijp7Il8wIjp7ImJvbGQiOmZhbHNlLCJpdGFsaWMiOmZhbHNlLCJzdHlsZSI6InBhcmFncmFwaCIsInRleHQiOiJsaXRlcmFsIn19fSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwM0MifV0sImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDMyIiwic2hvd0NhcHRpb24iOmZhbHNlLCJzb3VyY2UiOiJjdXN0b20ifV19LCJuYW1lIjoiVGVtcGxhdGUifV0sInNjaGVtYVZlcnNpb24iOjN9LCJpbWFnZXMiOnt9LCJ2ZXJzaW9uIjoxfQ==",
+      "expected": {
+        "json": {
+          "document": {
+            "entries": [
+              {
+                "createdAt": -978307200,
+                "dictionaryForm": "bank",
+                "expression": "bank",
+                "id": "00000000-0000-0000-0000-000000000001",
+                "kind": "word",
+                "language": "en",
+                "senses": [
+                  {
+                    "alternateMeanings": [],
+                    "content": [
+                      {
+                        "content": {
+                          "text": {
+                            "_0": {
+                              "bold": false,
+                              "italic": false,
+                              "style": "paragraph",
+                              "text": "literal"
+                            }
+                          }
+                        },
+                        "id": "00000000-0000-0000-0000-000000000014"
+                      }
+                    ],
+                    "createdAt": -978307200,
+                    "examples": [
+                      {
+                        "completeness": "sentence",
+                        "createdAt": -978307200,
+                        "explanations": [
+                          {
+                            "createdAt": -978307200,
+                            "id": "00000000-0000-0000-0000-000000000064",
+                            "input": {
+                              "context": "The bank.",
+                              "contextKind": "sentence",
+                              "dictionaryForm": "bank",
+                              "kind": "word",
+                              "language": "en",
+                              "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+                              "ranges": [
+                                {
+                                  "length": 4,
+                                  "location": 4
+                                }
+                              ],
+                              "target": "bank"
+                            },
+                            "language": "zh-Hans",
+                            "model": "fixture",
+                            "result": {
+                              "explanation": "explanation",
+                              "meaning": "meaning"
+                            }
+                          }
+                        ],
+                        "id": "00000000-0000-0000-0000-000000000003",
+                        "meaning": "context",
+                        "meaningOrigin": "captured",
+                        "ranges": [
+                          {
+                            "length": 4,
+                            "location": 4
+                          }
+                        ],
+                        "text": "The bank.",
+                        "translation": "原句",
+                        "translationVariants": []
+                      }
+                    ],
+                    "explanations": [
+                      {
+                        "createdAt": -978307200,
+                        "id": "00000000-0000-0000-0000-000000000064",
+                        "input": {
+                          "context": "bank",
+                          "contextKind": "none",
+                          "dictionaryForm": "bank",
+                          "kind": "word",
+                          "language": "en",
+                          "ranges": [
+                            {
+                              "length": 4,
+                              "location": 0
+                            }
+                          ],
+                          "target": "bank"
+                        },
+                        "language": "zh-Hans",
+                        "model": "fixture",
+                        "result": {
+                          "explanation": "explanation",
+                          "meaning": "meaning"
+                        }
+                      }
+                    ],
+                    "id": "00000000-0000-0000-0000-000000000002",
+                    "isSavedWithoutContext": true,
+                    "meaning": "core",
+                    "meaningOrigin": "captured",
+                    "mergedFrom": [],
+                    "note": "note",
+                    "review": {
+                      "activeBindingID": "00000000-0000-0000-0000-000000000028",
+                      "bindings": [
+                        {
+                          "deck": "deck",
+                          "endpoint": "http://localhost",
+                          "fields": {
+                            "ID": "00000000-0000-0000-0000-000000000063"
+                          },
+                          "id": "00000000-0000-0000-0000-000000000028",
+                          "identityField": "ID",
+                          "mapping": [
+                            "LingroveID",
+                            "ID"
+                          ],
+                          "model": "model",
+                          "noteID": 1,
+                          "originSenseID": "00000000-0000-0000-0000-000000000063",
+                          "profile": "profile"
+                        }
+                      ],
+                      "plan": {
+                        "fieldOverrides": {},
+                        "gap": false,
+                        "id": "00000000-0000-0000-0000-00000000001E",
+                        "includeExplanation": false,
+                        "includeNotes": false,
+                        "layout": {
+                          "back": [],
+                          "front": [
+                            {
+                              "content": [
+                                {
+                                  "content": {
+                                    "text": {
+                                      "_0": {
+                                        "bold": false,
+                                        "italic": false,
+                                        "style": "paragraph",
+                                        "text": "literal"
+                                      }
+                                    }
+                                  },
+                                  "id": "00000000-0000-0000-0000-00000000003C"
+                                }
+                              ],
+                              "id": "00000000-0000-0000-0000-000000000032",
+                              "showCaption": false,
+                              "source": "custom"
+                            }
+                          ]
+                        },
+                        "recognition": true
+                      },
+                      "preservedPlans": [
+                        {
+                          "fieldOverrides": {},
+                          "gap": false,
+                          "id": "00000000-0000-0000-0000-00000000001F",
+                          "includeExplanation": false,
+                          "includeNotes": false,
+                          "recognition": true
+                        }
+                      ]
+                    },
+                    "standaloneMeanings": [],
+                    "tags": [
+                      "Work"
+                    ],
+                    "updatedAt": -978307200
+                  }
+                ],
+                "updatedAt": -978307200
+              }
+            ],
+            "reviewTemplates": [
+              {
+                "id": "00000000-0000-0000-0000-000000000046",
+                "layout": {
+                  "back": [],
+                  "front": [
+                    {
+                      "content": [
+                        {
+                          "content": {
+                            "text": {
+                              "_0": {
+                                "bold": false,
+                                "italic": false,
+                                "style": "paragraph",
+                                "text": "literal"
+                              }
+                            }
+                          },
+                          "id": "00000000-0000-0000-0000-00000000003C"
+                        }
+                      ],
+                      "id": "00000000-0000-0000-0000-000000000032",
+                      "showCaption": false,
+                      "source": "custom"
+                    }
+                  ]
+                },
+                "name": "Template"
+              }
+            ],
+            "schemaVersion": 3
+          },
+          "images": {},
+          "version": 1
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "cards-empty",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbeyJjcmVhdGVkQXQiOi05NzgzMDcyMDAsImRpY3Rpb25hcnlGb3JtIjoiYmFuayIsImV4cHJlc3Npb24iOiJiYW5rIiwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDEiLCJraW5kIjoid29yZCIsImxhbmd1YWdlIjoiZW4iLCJzZW5zZXMiOlt7ImFsdGVybmF0ZU1lYW5pbmdzIjpbXSwiY29udGVudCI6W3siY29udGVudCI6eyJ0ZXh0Ijp7Il8wIjp7ImJvbGQiOmZhbHNlLCJpdGFsaWMiOmZhbHNlLCJzdHlsZSI6InBhcmFncmFwaCIsInRleHQiOiJsaXRlcmFsIn19fSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMTQifV0sImNyZWF0ZWRBdCI6LTk3ODMwNzIwMCwiZXhhbXBsZXMiOlt7ImNvbXBsZXRlbmVzcyI6InNlbnRlbmNlIiwiY3JlYXRlZEF0IjotOTc4MzA3MjAwLCJleHBsYW5hdGlvbnMiOlt7ImNyZWF0ZWRBdCI6LTk3ODMwNzIwMCwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwNjQiLCJpbnB1dCI6eyJjb250ZXh0IjoiVGhlIGJhbmsuIiwiY29udGV4dEtpbmQiOiJzZW50ZW5jZSIsImRpY3Rpb25hcnlGb3JtIjoiYmFuayIsImtpbmQiOiJ3b3JkIiwibGFuZ3VhZ2UiOiJlbiIsIm9jY3VycmVuY2VJZGVudGl0eSI6IjM4NTIzOWY1YTI3OGRjYTRhMDcxZDMzOTZjYWQ4ZTRlZDU1MjE5YmZhNGJmYzIxYzgyMzZlOTQwZTU2MTU0ZWYiLCJyYW5nZXMiOlt7Imxlbmd0aCI6NCwibG9jYXRpb24iOjR9XSwidGFyZ2V0IjoiYmFuayJ9LCJsYW5ndWFnZSI6InpoLUhhbnMiLCJtb2RlbCI6ImZpeHR1cmUiLCJyZXN1bHQiOnsiZXhwbGFuYXRpb24iOiJleHBsYW5hdGlvbiIsIm1lYW5pbmciOiJtZWFuaW5nIn19XSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDMiLCJtZWFuaW5nIjoiY29udGV4dCIsIm1lYW5pbmdPcmlnaW4iOiJjYXB0dXJlZCIsInJhbmdlcyI6W3sibGVuZ3RoIjo0LCJsb2NhdGlvbiI6NH1dLCJ0ZXh0IjoiVGhlIGJhbmsuIiwidHJhbnNsYXRpb24iOiLljp/lj6UiLCJ0cmFuc2xhdGlvblZhcmlhbnRzIjpbXX1dLCJleHBsYW5hdGlvbnMiOlt7ImNyZWF0ZWRBdCI6LTk3ODMwNzIwMCwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwNjQiLCJpbnB1dCI6eyJjb250ZXh0IjoiYmFuayIsImNvbnRleHRLaW5kIjoibm9uZSIsImRpY3Rpb25hcnlGb3JtIjoiYmFuayIsImtpbmQiOiJ3b3JkIiwibGFuZ3VhZ2UiOiJlbiIsInJhbmdlcyI6W3sibGVuZ3RoIjo0LCJsb2NhdGlvbiI6MH1dLCJ0YXJnZXQiOiJiYW5rIn0sImxhbmd1YWdlIjoiemgtSGFucyIsIm1vZGVsIjoiZml4dHVyZSIsInJlc3VsdCI6eyJleHBsYW5hdGlvbiI6ImV4cGxhbmF0aW9uIiwibWVhbmluZyI6Im1lYW5pbmcifX1dLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMiIsImlzU2F2ZWRXaXRob3V0Q29udGV4dCI6dHJ1ZSwibWVhbmluZyI6ImNvcmUiLCJtZWFuaW5nT3JpZ2luIjoiY2FwdHVyZWQiLCJtZXJnZWRGcm9tIjpbXSwibm90ZSI6Im5vdGUiLCJyZXZpZXciOnsiYWN0aXZlQmluZGluZ0lEIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDI4IiwiYmluZGluZ3MiOlt7ImRlY2siOiJkZWNrIiwiZW5kcG9pbnQiOiJodHRwOlwvXC9sb2NhbGhvc3QiLCJmaWVsZHMiOnsiSUQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwNjMifSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMjgiLCJpZGVudGl0eUZpZWxkIjoiSUQiLCJtYXBwaW5nIjpbIkxpbmdyb3ZlSUQiLCJJRCJdLCJtb2RlbCI6Im1vZGVsIiwibm90ZUlEIjoxLCJvcmlnaW5TZW5zZUlEIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDYzIiwicHJvZmlsZSI6InByb2ZpbGUifV0sInBsYW4iOnsiZmllbGRPdmVycmlkZXMiOnt9LCJnYXAiOmZhbHNlLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAxRSIsImluY2x1ZGVFeHBsYW5hdGlvbiI6ZmFsc2UsImluY2x1ZGVOb3RlcyI6ZmFsc2UsImxheW91dCI6eyJiYWNrIjpbXSwiZnJvbnQiOlt7ImNvbnRlbnQiOlt7ImNvbnRlbnQiOnsidGV4dCI6eyJfMCI6eyJib2xkIjpmYWxzZSwiaXRhbGljIjpmYWxzZSwic3R5bGUiOiJwYXJhZ3JhcGgiLCJ0ZXh0IjoibGl0ZXJhbCJ9fX0sImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDNDIn1dLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAzMiIsInNob3dDYXB0aW9uIjpmYWxzZSwic291cmNlIjoiY3VzdG9tIn1dfSwicmVjb2duaXRpb24iOnRydWV9LCJwcmVzZXJ2ZWRQbGFucyI6W3siZmllbGRPdmVycmlkZXMiOnt9LCJnYXAiOmZhbHNlLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAxRiIsImluY2x1ZGVFeHBsYW5hdGlvbiI6ZmFsc2UsImluY2x1ZGVOb3RlcyI6ZmFsc2UsInJlY29nbml0aW9uIjp0cnVlfV19LCJyZXZpZXdDYXJkcyI6W10sInN0YW5kYWxvbmVNZWFuaW5ncyI6W10sInRhZ3MiOlsiV29yayJdLCJ1cGRhdGVkQXQiOi05NzgzMDcyMDB9XSwidXBkYXRlZEF0IjotOTc4MzA3MjAwfV0sInJldmlld1RlbXBsYXRlcyI6W3siaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwNDYiLCJsYXlvdXQiOnsiYmFjayI6W10sImZyb250IjpbeyJjb250ZW50IjpbeyJjb250ZW50Ijp7InRleHQiOnsiXzAiOnsiYm9sZCI6ZmFsc2UsIml0YWxpYyI6ZmFsc2UsInN0eWxlIjoicGFyYWdyYXBoIiwidGV4dCI6ImxpdGVyYWwifX19LCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAzQyJ9XSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMzIiLCJzaG93Q2FwdGlvbiI6ZmFsc2UsInNvdXJjZSI6ImN1c3RvbSJ9XX0sIm5hbWUiOiJUZW1wbGF0ZSJ9XSwic2NoZW1hVmVyc2lvbiI6M30sImltYWdlcyI6e30sInZlcnNpb24iOjF9",
+      "expected": {
+        "json": {
+          "document": {
+            "entries": [
+              {
+                "createdAt": -978307200,
+                "dictionaryForm": "bank",
+                "expression": "bank",
+                "id": "00000000-0000-0000-0000-000000000001",
+                "kind": "word",
+                "language": "en",
+                "senses": [
+                  {
+                    "alternateMeanings": [],
+                    "content": [
+                      {
+                        "content": {
+                          "text": {
+                            "_0": {
+                              "bold": false,
+                              "italic": false,
+                              "style": "paragraph",
+                              "text": "literal"
+                            }
+                          }
+                        },
+                        "id": "00000000-0000-0000-0000-000000000014"
+                      }
+                    ],
+                    "createdAt": -978307200,
+                    "examples": [
+                      {
+                        "completeness": "sentence",
+                        "createdAt": -978307200,
+                        "explanations": [
+                          {
+                            "createdAt": -978307200,
+                            "id": "00000000-0000-0000-0000-000000000064",
+                            "input": {
+                              "context": "The bank.",
+                              "contextKind": "sentence",
+                              "dictionaryForm": "bank",
+                              "kind": "word",
+                              "language": "en",
+                              "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+                              "ranges": [
+                                {
+                                  "length": 4,
+                                  "location": 4
+                                }
+                              ],
+                              "target": "bank"
+                            },
+                            "language": "zh-Hans",
+                            "model": "fixture",
+                            "result": {
+                              "explanation": "explanation",
+                              "meaning": "meaning"
+                            }
+                          }
+                        ],
+                        "id": "00000000-0000-0000-0000-000000000003",
+                        "meaning": "context",
+                        "meaningOrigin": "captured",
+                        "ranges": [
+                          {
+                            "length": 4,
+                            "location": 4
+                          }
+                        ],
+                        "text": "The bank.",
+                        "translation": "原句",
+                        "translationVariants": []
+                      }
+                    ],
+                    "explanations": [
+                      {
+                        "createdAt": -978307200,
+                        "id": "00000000-0000-0000-0000-000000000064",
+                        "input": {
+                          "context": "bank",
+                          "contextKind": "none",
+                          "dictionaryForm": "bank",
+                          "kind": "word",
+                          "language": "en",
+                          "ranges": [
+                            {
+                              "length": 4,
+                              "location": 0
+                            }
+                          ],
+                          "target": "bank"
+                        },
+                        "language": "zh-Hans",
+                        "model": "fixture",
+                        "result": {
+                          "explanation": "explanation",
+                          "meaning": "meaning"
+                        }
+                      }
+                    ],
+                    "id": "00000000-0000-0000-0000-000000000002",
+                    "isSavedWithoutContext": true,
+                    "meaning": "core",
+                    "meaningOrigin": "captured",
+                    "mergedFrom": [],
+                    "note": "note",
+                    "review": {
+                      "activeBindingID": "00000000-0000-0000-0000-000000000028",
+                      "bindings": [
+                        {
+                          "deck": "deck",
+                          "endpoint": "http://localhost",
+                          "fields": {
+                            "ID": "00000000-0000-0000-0000-000000000063"
+                          },
+                          "id": "00000000-0000-0000-0000-000000000028",
+                          "identityField": "ID",
+                          "mapping": [
+                            "LingroveID",
+                            "ID"
+                          ],
+                          "model": "model",
+                          "noteID": 1,
+                          "originSenseID": "00000000-0000-0000-0000-000000000063",
+                          "profile": "profile"
+                        }
+                      ],
+                      "plan": {
+                        "fieldOverrides": {},
+                        "gap": false,
+                        "id": "00000000-0000-0000-0000-00000000001E",
+                        "includeExplanation": false,
+                        "includeNotes": false,
+                        "layout": {
+                          "back": [],
+                          "front": [
+                            {
+                              "content": [
+                                {
+                                  "content": {
+                                    "text": {
+                                      "_0": {
+                                        "bold": false,
+                                        "italic": false,
+                                        "style": "paragraph",
+                                        "text": "literal"
+                                      }
+                                    }
+                                  },
+                                  "id": "00000000-0000-0000-0000-00000000003C"
+                                }
+                              ],
+                              "id": "00000000-0000-0000-0000-000000000032",
+                              "showCaption": false,
+                              "source": "custom"
+                            }
+                          ]
+                        },
+                        "recognition": true
+                      },
+                      "preservedPlans": [
+                        {
+                          "fieldOverrides": {},
+                          "gap": false,
+                          "id": "00000000-0000-0000-0000-00000000001F",
+                          "includeExplanation": false,
+                          "includeNotes": false,
+                          "recognition": true
+                        }
+                      ]
+                    },
+                    "reviewCards": [],
+                    "standaloneMeanings": [],
+                    "tags": [
+                      "Work"
+                    ],
+                    "updatedAt": -978307200
+                  }
+                ],
+                "updatedAt": -978307200
+              }
+            ],
+            "reviewTemplates": [
+              {
+                "id": "00000000-0000-0000-0000-000000000046",
+                "layout": {
+                  "back": [],
+                  "front": [
+                    {
+                      "content": [
+                        {
+                          "content": {
+                            "text": {
+                              "_0": {
+                                "bold": false,
+                                "italic": false,
+                                "style": "paragraph",
+                                "text": "literal"
+                              }
+                            }
+                          },
+                          "id": "00000000-0000-0000-0000-00000000003C"
+                        }
+                      ],
+                      "id": "00000000-0000-0000-0000-000000000032",
+                      "showCaption": false,
+                      "source": "custom"
+                    }
+                  ]
+                },
+                "name": "Template"
+              }
+            ],
+            "schemaVersion": 3
+          },
+          "images": {},
+          "version": 1
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "future-version",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbXSwic2NoZW1hVmVyc2lvbiI6M30sImltYWdlcyI6e30sInZlcnNpb24iOjJ9",
+      "expected": {
+        "json": {
+          "document": {
+            "entries": [],
+            "schemaVersion": 3
+          },
+          "images": {},
+          "version": 2
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "future-schema",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbXSwic2NoZW1hVmVyc2lvbiI6OTl9LCJpbWFnZXMiOnt9LCJ2ZXJzaW9uIjoxfQ==",
+      "expected": {
+        "json": {
+          "document": {
+            "entries": [],
+            "schemaVersion": 99
+          },
+          "images": {},
+          "version": 1
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "empty-data",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbXSwic2NoZW1hVmVyc2lvbiI6M30sImltYWdlcyI6eyJlbXB0eSI6IiJ9LCJ2ZXJzaW9uIjoxfQ==",
+      "expected": {
+        "json": {
+          "document": {
+            "entries": [],
+            "schemaVersion": 3
+          },
+          "images": {
+            "empty": ""
+          },
+          "version": 1
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "all-byte-values",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbXSwic2NoZW1hVmVyc2lvbiI6M30sImltYWdlcyI6eyJhbGwiOiJBQUVDQXdRRkJnY0lDUW9MREEwT0R4QVJFaE1VRlJZWEdCa2FHeHdkSGg4Z0lTSWpKQ1VtSnlncEtpc3NMUzR2TURFeU16UTFOamM0T1RvN1BEMCtQMEJCUWtORVJVWkhTRWxLUzB4TlRrOVFVVkpUVkZWV1YxaFpXbHRjWFY1ZllHRmlZMlJsWm1kb2FXcHJiRzF1YjNCeGNuTjBkWFozZUhsNmUzeDlmbitBZ1lLRGhJV0doNGlKaW91TWpZNlBrSkdTazVTVmxwZVltWnFibkoyZW42Q2hvcU9rcGFhbnFLbXFxNnl0cnErd3NiS3p0TFcydDdpNXVydTh2YjZcL3dNSEN3OFRGeHNmSXljckx6TTNPejlEUjB0UFUxZGJYMk5uYTI5emQzdFwvZzRlTGo1T1htNStqcDZ1dnM3ZTd2OFBIeThcL1QxOXZmNCtmcjdcL1AzK1wvdz09In0sInZlcnNpb24iOjF9",
+      "expected": {
+        "json": {
+          "document": {
+            "entries": [],
+            "schemaVersion": 3
+          },
+          "images": {
+            "all": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIjJCUmJygpKissLS4vMDEyMzQ1Njc4OTo7PD0+P0BBQkNERUZHSElKS0xNTk9QUVJTVFVWV1hZWltcXV5fYGFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6e3x9fn+AgYKDhIWGh4iJiouMjY6PkJGSk5SVlpeYmZqbnJ2en6ChoqOkpaanqKmqq6ytrq+wsbKztLW2t7i5uru8vb6/wMHCw8TFxsfIycrLzM3Oz9DR0tPU1dbX2Nna29zd3t/g4eLj5OXm5+jp6uvs7e7v8PHy8/T19vf4+fr7/P3+/w=="
+          },
+          "version": 1
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "unknown-fields",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbXSwic2NoZW1hVmVyc2lvbiI6M30sImZ1dHVyZSI6eyJpZ25vcmVkIjp0cnVlfSwiaW1hZ2VzIjp7fSwidmVyc2lvbiI6MX0=",
+      "expected": {
+        "json": {
+          "document": {
+            "entries": [],
+            "schemaVersion": 3
+          },
+          "images": {},
+          "version": 1
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "missing-version",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbXSwic2NoZW1hVmVyc2lvbiI6M30sImltYWdlcyI6e319",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "null-version",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbXSwic2NoZW1hVmVyc2lvbiI6M30sImltYWdlcyI6e30sInZlcnNpb24iOm51bGx9",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "fraction-version",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbXSwic2NoZW1hVmVyc2lvbiI6M30sImltYWdlcyI6e30sInZlcnNpb24iOjEuNX0=",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "missing-document",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJpbWFnZXMiOnt9LCJ2ZXJzaW9uIjoxfQ==",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "null-document",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6bnVsbCwiaW1hZ2VzIjp7fSwidmVyc2lvbiI6MX0=",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "missing-images",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbXSwic2NoZW1hVmVyc2lvbiI6M30sInZlcnNpb24iOjF9",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "null-images",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbXSwic2NoZW1hVmVyc2lvbiI6M30sImltYWdlcyI6bnVsbCwidmVyc2lvbiI6MX0=",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "images-array",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbXSwic2NoZW1hVmVyc2lvbiI6M30sImltYWdlcyI6W10sInZlcnNpb24iOjF9",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "bad-base64",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbXSwic2NoZW1hVmVyc2lvbiI6M30sImltYWdlcyI6eyJ4IjoiQEBAPSJ9LCJ2ZXJzaW9uIjoxfQ==",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "whitespace-base64",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbXSwic2NoZW1hVmVyc2lvbiI6M30sImltYWdlcyI6eyJ4IjoiQVEgSURcbiJ9LCJ2ZXJzaW9uIjoxfQ==",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "unpadded-base64",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbXSwic2NoZW1hVmVyc2lvbiI6M30sImltYWdlcyI6eyJ4IjoiQVEifSwidmVyc2lvbiI6MX0=",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "url-base64",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbXSwic2NoZW1hVmVyc2lvbiI6M30sImltYWdlcyI6eyJ4IjoiLV84PSJ9LCJ2ZXJzaW9uIjoxfQ==",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "image-number",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbXSwic2NoZW1hVmVyc2lvbiI6M30sImltYWdlcyI6eyJ4IjoxMjN9LCJ2ZXJzaW9uIjoxfQ==",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "missing-schema",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbXX0sImltYWdlcyI6e30sInZlcnNpb24iOjF9",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "missing-entries",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJzY2hlbWFWZXJzaW9uIjozfSwiaW1hZ2VzIjp7fSwidmVyc2lvbiI6MX0=",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "document-only",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJlbnRyaWVzIjpbXSwic2NoZW1hVmVyc2lvbiI6M30=",
+      "expected": {
+        "json": {
+          "entries": [],
+          "schemaVersion": 3
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "document-rich",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJlbnRyaWVzIjpbeyJjcmVhdGVkQXQiOi05NzgzMDcyMDAsImRpY3Rpb25hcnlGb3JtIjoiYmFuayIsImV4cHJlc3Npb24iOiJiYW5rIiwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDEiLCJraW5kIjoid29yZCIsImxhbmd1YWdlIjoiZW4iLCJzZW5zZXMiOlt7ImFsdGVybmF0ZU1lYW5pbmdzIjpbXSwiY29udGVudCI6W3siY29udGVudCI6eyJ0ZXh0Ijp7Il8wIjp7ImJvbGQiOmZhbHNlLCJpdGFsaWMiOmZhbHNlLCJzdHlsZSI6InBhcmFncmFwaCIsInRleHQiOiJsaXRlcmFsIn19fSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMTQifV0sImNyZWF0ZWRBdCI6LTk3ODMwNzIwMCwiZXhhbXBsZXMiOlt7ImNvbXBsZXRlbmVzcyI6InNlbnRlbmNlIiwiY3JlYXRlZEF0IjotOTc4MzA3MjAwLCJleHBsYW5hdGlvbnMiOlt7ImNyZWF0ZWRBdCI6LTk3ODMwNzIwMCwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwNjQiLCJpbnB1dCI6eyJjb250ZXh0IjoiVGhlIGJhbmsuIiwiY29udGV4dEtpbmQiOiJzZW50ZW5jZSIsImRpY3Rpb25hcnlGb3JtIjoiYmFuayIsImtpbmQiOiJ3b3JkIiwibGFuZ3VhZ2UiOiJlbiIsIm9jY3VycmVuY2VJZGVudGl0eSI6IjM4NTIzOWY1YTI3OGRjYTRhMDcxZDMzOTZjYWQ4ZTRlZDU1MjE5YmZhNGJmYzIxYzgyMzZlOTQwZTU2MTU0ZWYiLCJyYW5nZXMiOlt7Imxlbmd0aCI6NCwibG9jYXRpb24iOjR9XSwidGFyZ2V0IjoiYmFuayJ9LCJsYW5ndWFnZSI6InpoLUhhbnMiLCJtb2RlbCI6ImZpeHR1cmUiLCJyZXN1bHQiOnsiZXhwbGFuYXRpb24iOiJleHBsYW5hdGlvbiIsIm1lYW5pbmciOiJtZWFuaW5nIn19XSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDMiLCJtZWFuaW5nIjoiY29udGV4dCIsIm1lYW5pbmdPcmlnaW4iOiJjYXB0dXJlZCIsInJhbmdlcyI6W3sibGVuZ3RoIjo0LCJsb2NhdGlvbiI6NH1dLCJ0ZXh0IjoiVGhlIGJhbmsuIiwidHJhbnNsYXRpb24iOiLljp/lj6UiLCJ0cmFuc2xhdGlvblZhcmlhbnRzIjpbXX1dLCJleHBsYW5hdGlvbnMiOlt7ImNyZWF0ZWRBdCI6LTk3ODMwNzIwMCwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwNjQiLCJpbnB1dCI6eyJjb250ZXh0IjoiYmFuayIsImNvbnRleHRLaW5kIjoibm9uZSIsImRpY3Rpb25hcnlGb3JtIjoiYmFuayIsImtpbmQiOiJ3b3JkIiwibGFuZ3VhZ2UiOiJlbiIsInJhbmdlcyI6W3sibGVuZ3RoIjo0LCJsb2NhdGlvbiI6MH1dLCJ0YXJnZXQiOiJiYW5rIn0sImxhbmd1YWdlIjoiemgtSGFucyIsIm1vZGVsIjoiZml4dHVyZSIsInJlc3VsdCI6eyJleHBsYW5hdGlvbiI6ImV4cGxhbmF0aW9uIiwibWVhbmluZyI6Im1lYW5pbmcifX1dLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMiIsImlzU2F2ZWRXaXRob3V0Q29udGV4dCI6dHJ1ZSwibWVhbmluZyI6ImNvcmUiLCJtZWFuaW5nT3JpZ2luIjoiY2FwdHVyZWQiLCJtZXJnZWRGcm9tIjpbXSwibm90ZSI6Im5vdGUiLCJyZXZpZXciOnsiYWN0aXZlQmluZGluZ0lEIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDI4IiwiYmluZGluZ3MiOlt7ImRlY2siOiJkZWNrIiwiZW5kcG9pbnQiOiJodHRwOlwvXC9sb2NhbGhvc3QiLCJmaWVsZHMiOnsiSUQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwNjMifSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMjgiLCJpZGVudGl0eUZpZWxkIjoiSUQiLCJtYXBwaW5nIjpbIkxpbmdyb3ZlSUQiLCJJRCJdLCJtb2RlbCI6Im1vZGVsIiwibm90ZUlEIjoxLCJvcmlnaW5TZW5zZUlEIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDYzIiwicHJvZmlsZSI6InByb2ZpbGUifV0sInBsYW4iOnsiZmllbGRPdmVycmlkZXMiOnt9LCJnYXAiOmZhbHNlLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAxRSIsImluY2x1ZGVFeHBsYW5hdGlvbiI6ZmFsc2UsImluY2x1ZGVOb3RlcyI6ZmFsc2UsImxheW91dCI6eyJiYWNrIjpbXSwiZnJvbnQiOlt7ImNvbnRlbnQiOlt7ImNvbnRlbnQiOnsidGV4dCI6eyJfMCI6eyJib2xkIjpmYWxzZSwiaXRhbGljIjpmYWxzZSwic3R5bGUiOiJwYXJhZ3JhcGgiLCJ0ZXh0IjoibGl0ZXJhbCJ9fX0sImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDNDIn1dLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAzMiIsInNob3dDYXB0aW9uIjpmYWxzZSwic291cmNlIjoiY3VzdG9tIn1dfSwicmVjb2duaXRpb24iOnRydWV9LCJwcmVzZXJ2ZWRQbGFucyI6W3siZmllbGRPdmVycmlkZXMiOnt9LCJnYXAiOmZhbHNlLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAxRiIsImluY2x1ZGVFeHBsYW5hdGlvbiI6ZmFsc2UsImluY2x1ZGVOb3RlcyI6ZmFsc2UsInJlY29nbml0aW9uIjp0cnVlfV19LCJyZXZpZXdDYXJkcyI6W3siYWN0aXZlQmluZGluZ0lEIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDI4IiwiYmluZGluZ3MiOlt7ImRlY2siOiJkZWNrIiwiZW5kcG9pbnQiOiJodHRwOlwvXC9sb2NhbGhvc3QiLCJmaWVsZHMiOnsiSUQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwNjMifSwiaWQiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMjgiLCJpZGVudGl0eUZpZWxkIjoiSUQiLCJtYXBwaW5nIjpbIkxpbmdyb3ZlSUQiLCJJRCJdLCJtb2RlbCI6Im1vZGVsIiwibm90ZUlEIjoxLCJvcmlnaW5TZW5zZUlEIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDYzIiwicHJvZmlsZSI6InByb2ZpbGUifV0sInBsYW4iOnsiZmllbGRPdmVycmlkZXMiOnt9LCJnYXAiOmZhbHNlLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAxRSIsImluY2x1ZGVFeHBsYW5hdGlvbiI6ZmFsc2UsImluY2x1ZGVOb3RlcyI6ZmFsc2UsImxheW91dCI6eyJiYWNrIjpbXSwiZnJvbnQiOlt7ImNvbnRlbnQiOlt7ImNvbnRlbnQiOnsidGV4dCI6eyJfMCI6eyJib2xkIjpmYWxzZSwiaXRhbGljIjpmYWxzZSwic3R5bGUiOiJwYXJhZ3JhcGgiLCJ0ZXh0IjoibGl0ZXJhbCJ9fX0sImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDNDIn1dLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAzMiIsInNob3dDYXB0aW9uIjpmYWxzZSwic291cmNlIjoiY3VzdG9tIn1dfSwicmVjb2duaXRpb24iOnRydWV9LCJwcmVzZXJ2ZWRQbGFucyI6W3siZmllbGRPdmVycmlkZXMiOnt9LCJnYXAiOmZhbHNlLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAxRiIsImluY2x1ZGVFeHBsYW5hdGlvbiI6ZmFsc2UsImluY2x1ZGVOb3RlcyI6ZmFsc2UsInJlY29nbml0aW9uIjp0cnVlfV19XSwic3RhbmRhbG9uZU1lYW5pbmdzIjpbXSwidGFncyI6WyJXb3JrIl0sInVwZGF0ZWRBdCI6LTk3ODMwNzIwMH1dLCJ1cGRhdGVkQXQiOi05NzgzMDcyMDB9XSwicmV2aWV3VGVtcGxhdGVzIjpbeyJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDA0NiIsImxheW91dCI6eyJiYWNrIjpbXSwiZnJvbnQiOlt7ImNvbnRlbnQiOlt7ImNvbnRlbnQiOnsidGV4dCI6eyJfMCI6eyJib2xkIjpmYWxzZSwiaXRhbGljIjpmYWxzZSwic3R5bGUiOiJwYXJhZ3JhcGgiLCJ0ZXh0IjoibGl0ZXJhbCJ9fX0sImlkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDNDIn1dLCJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAzMiIsInNob3dDYXB0aW9uIjpmYWxzZSwic291cmNlIjoiY3VzdG9tIn1dfSwibmFtZSI6IlRlbXBsYXRlIn1dLCJzY2hlbWFWZXJzaW9uIjozfQ==",
+      "expected": {
+        "json": {
+          "entries": [
+            {
+              "createdAt": -978307200,
+              "dictionaryForm": "bank",
+              "expression": "bank",
+              "id": "00000000-0000-0000-0000-000000000001",
+              "kind": "word",
+              "language": "en",
+              "senses": [
+                {
+                  "alternateMeanings": [],
+                  "content": [
+                    {
+                      "content": {
+                        "text": {
+                          "_0": {
+                            "bold": false,
+                            "italic": false,
+                            "style": "paragraph",
+                            "text": "literal"
+                          }
+                        }
+                      },
+                      "id": "00000000-0000-0000-0000-000000000014"
+                    }
+                  ],
+                  "createdAt": -978307200,
+                  "examples": [
+                    {
+                      "completeness": "sentence",
+                      "createdAt": -978307200,
+                      "explanations": [
+                        {
+                          "createdAt": -978307200,
+                          "id": "00000000-0000-0000-0000-000000000064",
+                          "input": {
+                            "context": "The bank.",
+                            "contextKind": "sentence",
+                            "dictionaryForm": "bank",
+                            "kind": "word",
+                            "language": "en",
+                            "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+                            "ranges": [
+                              {
+                                "length": 4,
+                                "location": 4
+                              }
+                            ],
+                            "target": "bank"
+                          },
+                          "language": "zh-Hans",
+                          "model": "fixture",
+                          "result": {
+                            "explanation": "explanation",
+                            "meaning": "meaning"
+                          }
+                        }
+                      ],
+                      "id": "00000000-0000-0000-0000-000000000003",
+                      "meaning": "context",
+                      "meaningOrigin": "captured",
+                      "ranges": [
+                        {
+                          "length": 4,
+                          "location": 4
+                        }
+                      ],
+                      "text": "The bank.",
+                      "translation": "原句",
+                      "translationVariants": []
+                    }
+                  ],
+                  "explanations": [
+                    {
+                      "createdAt": -978307200,
+                      "id": "00000000-0000-0000-0000-000000000064",
+                      "input": {
+                        "context": "bank",
+                        "contextKind": "none",
+                        "dictionaryForm": "bank",
+                        "kind": "word",
+                        "language": "en",
+                        "ranges": [
+                          {
+                            "length": 4,
+                            "location": 0
+                          }
+                        ],
+                        "target": "bank"
+                      },
+                      "language": "zh-Hans",
+                      "model": "fixture",
+                      "result": {
+                        "explanation": "explanation",
+                        "meaning": "meaning"
+                      }
+                    }
+                  ],
+                  "id": "00000000-0000-0000-0000-000000000002",
+                  "isSavedWithoutContext": true,
+                  "meaning": "core",
+                  "meaningOrigin": "captured",
+                  "mergedFrom": [],
+                  "note": "note",
+                  "review": {
+                    "activeBindingID": "00000000-0000-0000-0000-000000000028",
+                    "bindings": [
+                      {
+                        "deck": "deck",
+                        "endpoint": "http://localhost",
+                        "fields": {
+                          "ID": "00000000-0000-0000-0000-000000000063"
+                        },
+                        "id": "00000000-0000-0000-0000-000000000028",
+                        "identityField": "ID",
+                        "mapping": [
+                          "LingroveID",
+                          "ID"
+                        ],
+                        "model": "model",
+                        "noteID": 1,
+                        "originSenseID": "00000000-0000-0000-0000-000000000063",
+                        "profile": "profile"
+                      }
+                    ],
+                    "plan": {
+                      "fieldOverrides": {},
+                      "gap": false,
+                      "id": "00000000-0000-0000-0000-00000000001E",
+                      "includeExplanation": false,
+                      "includeNotes": false,
+                      "layout": {
+                        "back": [],
+                        "front": [
+                          {
+                            "content": [
+                              {
+                                "content": {
+                                  "text": {
+                                    "_0": {
+                                      "bold": false,
+                                      "italic": false,
+                                      "style": "paragraph",
+                                      "text": "literal"
+                                    }
+                                  }
+                                },
+                                "id": "00000000-0000-0000-0000-00000000003C"
+                              }
+                            ],
+                            "id": "00000000-0000-0000-0000-000000000032",
+                            "showCaption": false,
+                            "source": "custom"
+                          }
+                        ]
+                      },
+                      "recognition": true
+                    },
+                    "preservedPlans": [
+                      {
+                        "fieldOverrides": {},
+                        "gap": false,
+                        "id": "00000000-0000-0000-0000-00000000001F",
+                        "includeExplanation": false,
+                        "includeNotes": false,
+                        "recognition": true
+                      }
+                    ]
+                  },
+                  "reviewCards": [
+                    {
+                      "activeBindingID": "00000000-0000-0000-0000-000000000028",
+                      "bindings": [
+                        {
+                          "deck": "deck",
+                          "endpoint": "http://localhost",
+                          "fields": {
+                            "ID": "00000000-0000-0000-0000-000000000063"
+                          },
+                          "id": "00000000-0000-0000-0000-000000000028",
+                          "identityField": "ID",
+                          "mapping": [
+                            "LingroveID",
+                            "ID"
+                          ],
+                          "model": "model",
+                          "noteID": 1,
+                          "originSenseID": "00000000-0000-0000-0000-000000000063",
+                          "profile": "profile"
+                        }
+                      ],
+                      "plan": {
+                        "fieldOverrides": {},
+                        "gap": false,
+                        "id": "00000000-0000-0000-0000-00000000001E",
+                        "includeExplanation": false,
+                        "includeNotes": false,
+                        "layout": {
+                          "back": [],
+                          "front": [
+                            {
+                              "content": [
+                                {
+                                  "content": {
+                                    "text": {
+                                      "_0": {
+                                        "bold": false,
+                                        "italic": false,
+                                        "style": "paragraph",
+                                        "text": "literal"
+                                      }
+                                    }
+                                  },
+                                  "id": "00000000-0000-0000-0000-00000000003C"
+                                }
+                              ],
+                              "id": "00000000-0000-0000-0000-000000000032",
+                              "showCaption": false,
+                              "source": "custom"
+                            }
+                          ]
+                        },
+                        "recognition": true
+                      },
+                      "preservedPlans": [
+                        {
+                          "fieldOverrides": {},
+                          "gap": false,
+                          "id": "00000000-0000-0000-0000-00000000001F",
+                          "includeExplanation": false,
+                          "includeNotes": false,
+                          "recognition": true
+                        }
+                      ]
+                    }
+                  ],
+                  "standaloneMeanings": [],
+                  "tags": [
+                    "Work"
+                  ],
+                  "updatedAt": -978307200
+                }
+              ],
+              "updatedAt": -978307200
+            }
+          ],
+          "reviewTemplates": [
+            {
+              "id": "00000000-0000-0000-0000-000000000046",
+              "layout": {
+                "back": [],
+                "front": [
+                  {
+                    "content": [
+                      {
+                        "content": {
+                          "text": {
+                            "_0": {
+                              "bold": false,
+                              "italic": false,
+                              "style": "paragraph",
+                              "text": "literal"
+                            }
+                          }
+                        },
+                        "id": "00000000-0000-0000-0000-00000000003C"
+                      }
+                    ],
+                    "id": "00000000-0000-0000-0000-000000000032",
+                    "showCaption": false,
+                    "source": "custom"
+                  }
+                ]
+              },
+              "name": "Template"
+            }
+          ],
+          "schemaVersion": 3
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "document-missing-schema",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJlbnRyaWVzIjpbXX0=",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "document-missing-entries",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJzY2hlbWFWZXJzaW9uIjozfQ==",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "document-null-templates",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJlbnRyaWVzIjpbXSwicmV2aWV3VGVtcGxhdGVzIjpudWxsLCJzY2hlbWFWZXJzaW9uIjozfQ==",
+      "expected": {
+        "json": {
+          "entries": [],
+          "schemaVersion": 3
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "duplicate-version",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJ2ZXJzaW9uIjoyLCJkb2N1bWVudCI6eyJlbnRyaWVzIjpbXSwic2NoZW1hVmVyc2lvbiI6M30sImltYWdlcyI6e30sInZlcnNpb24iOjF9",
+      "expected": {
+        "json": {
+          "document": {
+            "entries": [],
+            "schemaVersion": 3
+          },
+          "images": {},
+          "version": 2
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "duplicate-images",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJpbWFnZXMiOnsic2FtZSI6IkFRPT0ifSwiaW1hZ2VzIjp7InNhbWUiOiJBZz09In0sImRvY3VtZW50Ijp7ImVudHJpZXMiOltdLCJzY2hlbWFWZXJzaW9uIjozfSwidmVyc2lvbiI6MX0=",
+      "expected": {
+        "json": {
+          "document": {
+            "entries": [],
+            "schemaVersion": 3
+          },
+          "images": {
+            "same": "AQ=="
+          },
+          "version": 1
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "root-array",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "W10=",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "utf16-le",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "//57ACIAZABvAGMAdQBtAGUAbgB0ACIAOgB7ACIAZQBuAHQAcgBpAGUAcwAiADoAWwBdACwAIgBzAGMAaABlAG0AYQBWAGUAcgBzAGkAbwBuACIAOgAzAH0ALAAiAGkAbQBhAGcAZQBzACIAOgB7AH0ALAAiAHYAZQByAHMAaQBvAG4AIgA6ADEAfQA=",
+      "expected": {
+        "json": {
+          "document": {
+            "entries": [],
+            "schemaVersion": 3
+          },
+          "images": {},
+          "version": 1
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "utf8-bom",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "77u/eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbXSwic2NoZW1hVmVyc2lvbiI6M30sImltYWdlcyI6e30sInZlcnNpb24iOjF9",
+      "expected": {
+        "json": {
+          "document": {
+            "entries": [],
+            "schemaVersion": 3
+          },
+          "images": {},
+          "version": 1
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "invalid-utf8",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "/3siZG9jdW1lbnQiOnsiZW50cmllcyI6W10sInNjaGVtYVZlcnNpb24iOjN9LCJpbWFnZXMiOnt9LCJ2ZXJzaW9uIjoxfQ==",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "integral-version",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbXSwic2NoZW1hVmVyc2lvbiI6M30sImltYWdlcyI6e30sInZlcnNpb24iOjEuMH0=",
+      "expected": {
+        "json": {
+          "document": {
+            "entries": [],
+            "schemaVersion": 3
+          },
+          "images": {},
+          "version": 1
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "exponent-version",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbXSwic2NoZW1hVmVyc2lvbiI6M30sImltYWdlcyI6e30sInZlcnNpb24iOjFlMH0=",
+      "expected": {
+        "json": {
+          "document": {
+            "entries": [],
+            "schemaVersion": 3
+          },
+          "images": {},
+          "version": 1
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "large-version",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbXSwic2NoZW1hVmVyc2lvbiI6M30sImltYWdlcyI6e30sInZlcnNpb24iOjkyMjMzNzIwMzY4NTQ3NzU4MDd9",
+      "expected": {
+        "json": {
+          "document": {
+            "entries": [],
+            "schemaVersion": 3
+          },
+          "images": {},
+          "version": 9223372036854775807
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "large-schema",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbXSwic2NoZW1hVmVyc2lvbiI6OTIyMzM3MjAzNjg1NDc3NTgwN30sImltYWdlcyI6e30sInZlcnNpb24iOjF9",
+      "expected": {
+        "json": {
+          "document": {
+            "entries": [],
+            "schemaVersion": 9223372036854775807
+          },
+          "images": {},
+          "version": 1
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "large-fraction",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbXSwic2NoZW1hVmVyc2lvbiI6M30sImltYWdlcyI6e30sInZlcnNpb24iOjkyMjMzNzIwMzY4NTQ3NzU4MDcuMDAwMDAwMDAwMX0=",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "large-integral-decimal",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbXSwic2NoZW1hVmVyc2lvbiI6M30sImltYWdlcyI6e30sInZlcnNpb24iOjkyMjMzNzIwMzY4NTQ3NzU4MDcuMH0=",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "rounded-small-fraction",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbXSwic2NoZW1hVmVyc2lvbiI6M30sImltYWdlcyI6e30sInZlcnNpb24iOjQ1MDM1OTk2MjczNzA0OTUuMX0=",
+      "expected": {
+        "json": {
+          "document": {
+            "entries": [],
+            "schemaVersion": 3
+          },
+          "images": {},
+          "version": 4503599627370495
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "rounded-large-neighbor",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbXSwic2NoZW1hVmVyc2lvbiI6M30sImltYWdlcyI6e30sInZlcnNpb24iOjkwMDcxOTkyNTQ3NDA5OTMuMH0=",
+      "expected": {
+        "json": {
+          "document": {
+            "entries": [],
+            "schemaVersion": 3
+          },
+          "images": {},
+          "version": 9007199254740993
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "exact-large-decimal",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbXSwic2NoZW1hVmVyc2lvbiI6M30sImltYWdlcyI6e30sInZlcnNpb24iOjkwMDcxOTkyNTQ3NDA5OTIuMH0=",
+      "expected": {
+        "json": {
+          "document": {
+            "entries": [],
+            "schemaVersion": 3
+          },
+          "images": {},
+          "version": 9007199254740992
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "truncated-large-fraction",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbXSwic2NoZW1hVmVyc2lvbiI6M30sImltYWdlcyI6e30sInZlcnNpb24iOjkwMDcxOTkyNTQ3NDA5OTMuMX0=",
+      "expected": {
+        "json": {
+          "document": {
+            "entries": [],
+            "schemaVersion": 3
+          },
+          "images": {},
+          "version": 9007199254740993
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "truncated-negative-fraction",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "inputBase64": "eyJkb2N1bWVudCI6eyJlbnRyaWVzIjpbXSwic2NoZW1hVmVyc2lvbiI6M30sImltYWdlcyI6e30sInZlcnNpb24iOi05MDA3MTk5MjU0NzQwOTkzLjl9",
+      "expected": {
+        "json": {
+          "document": {
+            "entries": [],
+            "schemaVersion": 3
+          },
+          "images": {},
+          "version": -9007199254740993
+        },
+        "valid": true
+      }
+    }
+  ]
+}

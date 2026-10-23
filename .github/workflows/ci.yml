@@ -177,5 +177,8 @@ jobs:
       - name: Verify frozen notebook export offers against original Mac view methods
         run: python3 scripts/verify-vocabulary-export-offer-macos-parity.py --mac-repo .mac-baseline
 
+      - name: Verify full notebook and backup Codable against original Mac declarations
+        run: python3 scripts/verify-vocabulary-backup-codec-macos-parity.py --mac-repo .mac-baseline
+
   # Routine CI stops after validation. Packaging, artifact uploads and releases
   # are deliberately absent; distribution is a separately authorized task.

@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Collections;
+using System.Globalization;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -14,7 +15,7 @@ namespace Cotabby.Core.Vocabulary;
 /// <summary>
 /// Typed Mac row-leaf JSON boundary, independent of disk or SQLite. Table selects the payload
 /// alternative; there is no extra type tag. Source field names, optional absence, enum dictionary
-/// arrays, content union and 2001 date epoch stay explicit. A future archive still reconstructs
+/// arrays, content union and 2001 date epoch stay explicit. The archive still reconstructs
 /// and validates the complete graph before accepting these decoded values.
 /// </summary>
 public static class VocabularyPayloadCodec
@@ -110,6 +111,21 @@ public static class VocabularyPayloadCodec
         ValidateShape(normalized.RootElement, typeof(T));
         return normalized.RootElement.Deserialize<T>(Options) ?? throw Invalid();
     }
+    /// <summary>The whole-notebook codec shares the same Codable leaf rules without projecting
+    /// through relational rows (which intentionally strip child ownership). These internal calls
+    /// retain strict UTF input, required fields, first duplicate keys and fixed decode failures.</summary>
+    internal static byte[] EncodePortableValue<T>(T value)
+    {
+        try { return Serialize(value); }
+        catch (Exception error) when (error is JsonException or NotSupportedException or ArgumentException or InvalidOperationException or OverflowException or FormatException or KeyNotFoundException)
+        { throw Invalid(); }
+    }
+    internal static T DecodePortableValue<T>(ReadOnlyMemory<byte> bytes)
+    {
+        try { return Deserialize<T>(Utf8Input(bytes)); }
+        catch (Exception error) when (error is JsonException or NotSupportedException or ArgumentException or InvalidOperationException or OverflowException or FormatException or KeyNotFoundException)
+        { throw Invalid(); }
+    }
     private static bool HasDuplicateKeys(JsonElement value)
     {
         if (value.ValueKind == JsonValueKind.Array) return value.EnumerateArray().Any(HasDuplicateKeys);
@@ -139,6 +155,8 @@ public static class VocabularyPayloadCodec
             RespectNullableAnnotations = true, MaxDepth = 512, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
         };
         result.Converters.Add(new ContentConverter()); result.Converters.Add(new EpochDateConverter()); result.Converters.Add(new UpperUuidConverter());
+        result.Converters.Add(new FoundationDataConverter());
+        result.Converters.Add(new FoundationInt64Converter());
         result.Converters.Add(new EnumDictionaryConverterFactory()); result.Converters.Add(new AudioSetConverter());
         // A broad enum factory would override LearningLanguage's existing code converter (en,
         // zh-Hans, ...). Only the content style needs a new camel-case adapter here.
@@ -268,6 +286,59 @@ public static class VocabularyPayloadCodec
     {
         public override Guid Read(ref Utf8JsonReader reader, Type type, JsonSerializerOptions options) => reader.GetGuid();
         public override void Write(Utf8JsonWriter writer, Guid value, JsonSerializerOptions options) => writer.WriteStringValue(value.ToString("D").ToUpperInvariant());
+    }
+    private sealed class FoundationDataConverter : JsonConverter<byte[]>
+    {
+        public override byte[] Read(ref Utf8JsonReader reader, Type type, JsonSerializerOptions options)
+        {
+            string text = reader.TokenType == JsonTokenType.String ? reader.GetString()! : throw new JsonException();
+            // .NET base64 decoding ignores whitespace; Foundation's default Data strategy does
+            // not. Reject it before decoding instead of silently broadening backup admission.
+            foreach (char value in text)
+                if (value is not (>= 'A' and <= 'Z' or >= 'a' and <= 'z' or >= '0' and <= '9' or '+' or '/' or '=')) throw new JsonException();
+            return Convert.FromBase64String(text);
+        }
+        public override void Write(Utf8JsonWriter writer, byte[] value, JsonSerializerOptions options) => writer.WriteBase64StringValue(value);
+    }
+    private sealed class FoundationInt64Converter : JsonConverter<long>
+    {
+        public override long Read(ref Utf8JsonReader reader, Type type, JsonSerializerOptions options)
+        {
+            if (reader.TokenType != JsonTokenType.Number) throw new JsonException();
+            if (reader.TryGetInt64(out long integer)) return integer;
+            double number = reader.GetDouble();
+            // Foundation accepts integral decimal/exponent spellings. Its small-number fallback
+            // goes through Double; at 2^53 and above we must not round a neighbouring integer into
+            // another identity/version. Parse that bounded decimal value before narrowing.
+            if (double.IsFinite(number) && Math.Abs(number) < 9007199254740992d && Math.Truncate(number) == number) return (long)number;
+            // The reference decoder's non-integer-spelling path first requires an exactly
+            // representable Int64 Double. Int64.MaxValue.0 rounds to +2^63 and is rejected,
+            // although the bare integer token takes the successful fast path above.
+            if (!double.IsFinite(number) || Math.Truncate(number) != number || number < -9223372036854775808d || number >= 9223372036854775808d) throw new JsonException();
+            // System.Decimal has fewer significant digits than Foundation Decimal and could round
+            // a long fractional suffix into the next integer. Inspect the coefficient/scale instead;
+            // the reference's large-number path truncates its decimal toward zero after the
+            // Double range check. The source corpus records this Foundation-specific behavior.
+            using var token = JsonDocument.ParseValue(ref reader);
+            string raw = token.RootElement.GetRawText(); int exponentIndex = raw.IndexOfAny(['e', 'E']);
+            string mantissa = exponentIndex < 0 ? raw : raw[..exponentIndex]; int exponent = 0;
+            if (exponentIndex >= 0 && !int.TryParse(raw.AsSpan(exponentIndex + 1), NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out exponent)) throw new JsonException();
+            int dot = mantissa.IndexOf('.'); long scale = (long)exponent - (dot < 0 ? 0 : mantissa.Length - dot - 1);
+            bool negative = mantissa[0] == '-'; string digits = mantissa.Replace(".", "", StringComparison.Ordinal).TrimStart('-').TrimStart('0');
+            if (digits.Length == 0) return 0;
+            if (scale < 0)
+            {
+                long discarded = -scale; if (discarded >= digits.Length) throw new JsonException();
+                int retained = digits.Length - (int)discarded;
+                digits = digits[..retained]; scale = 0;
+            }
+            if (digits.Length + scale > 19) throw new JsonException();
+            ulong magnitude = ulong.Parse(digits, CultureInfo.InvariantCulture);
+            for (int i = 0; i < scale; i++) magnitude *= 10;
+            if (magnitude > (negative ? 9223372036854775808UL : long.MaxValue)) throw new JsonException();
+            return negative ? magnitude == 9223372036854775808UL ? long.MinValue : -(long)magnitude : (long)magnitude;
+        }
+        public override void Write(Utf8JsonWriter writer, long value, JsonSerializerOptions options) => writer.WriteNumberValue(value);
     }
     private sealed class EpochDateConverter : JsonConverter<DateTimeOffset>
     {

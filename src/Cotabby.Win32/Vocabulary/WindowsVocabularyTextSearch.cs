@@ -9,12 +9,13 @@ namespace Cotabby.Win32.Vocabulary;
 /// source fixtures explicitly distinguish policy parity from native text-provider parity.
 /// Durable spelling and identity keys are never folded through this presentation-only search.
 /// </summary>
-public sealed class WindowsVocabularyTextSearch(CultureInfo? culture = null) : IVocabularyTextSearching
+public sealed class WindowsVocabularyTextSearch(CultureInfo? culture = null) : IVocabularyGraphTextSearching
 {
     private readonly CompareInfo _comparison = (culture ?? CultureInfo.CurrentCulture).CompareInfo;
-    public bool Contains(string field, string term)
+    public bool Contains(string field, string term) => Contains(field, term, CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace);
+    public bool HeadwordContains(string field, string term) => Contains(field, term, CompareOptions.IgnoreCase);
+    private bool Contains(string field, string term, CompareOptions options)
     {
-        const CompareOptions options = CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace;
         // Foundation does not turn a literal all-ignorable query (for example U+200B) into an
         // empty match. Preserve that case instead of letting IndexOf report every field at zero.
         return _comparison.Compare(term, "", options) == 0 ? field.Contains(term, StringComparison.Ordinal)

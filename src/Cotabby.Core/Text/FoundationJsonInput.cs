@@ -2,13 +2,14 @@ using System.Text;
 
 namespace Cotabby.Core.Text;
 
-/// <summary>Foundation JSON byte admission shared by notebook storage and the local Anki wire.
-/// It only detects/transcodes strict UTF input; each consumer retains its own shape, depth and
-/// failure mapping. Keeping this boundary shared prevents two subtly different BOM policies.</summary>
+/// <summary>Foundation JSON encoding detection shared by notebook storage, local Anki and speech
+/// framing. Existing callers eagerly validate UTF-8; a Decodable-shaped reader can opt into lazy
+/// string validation and validate each key/known string itself. Transcoding remains strict, and
+/// consumers retain shape/depth/error policy. One boundary preserves observed BOM precedence.</summary>
 internal static class FoundationJsonInput
 {
     private static readonly UTF8Encoding StrictUtf8 = new(false, true);
-    public static ReadOnlyMemory<byte> Utf8Input(ReadOnlyMemory<byte> input)
+    public static ReadOnlyMemory<byte> Utf8Input(ReadOnlyMemory<byte> input, bool validateUtf8 = true)
     {
         // Foundation detects UTF-16/32 as well as UTF-8. Preserve the observed BOM precedence:
         // FF FE is consumed as UTF-16, so a UTF-32LE BOM fails, although unmarked UTF-32LE works.
@@ -27,8 +28,9 @@ internal static class FoundationJsonInput
             else if (bytes[1] == 0 && bytes[3] == 0) encoding = new UnicodeEncoding(false, false, true);
         }
         if (encoding is not null) return StrictUtf8.GetBytes(encoding.GetString(bytes[skip..]));
-        // JsonDocument can defer string decoding. Validate every byte, including future fields.
-        _ = StrictUtf8.GetCharCount(bytes[skip..]);
+        // Eager JSON consumers validate all UTF-8, including unknown fields. The speech header
+        // reader explicitly opts out and validates keys/known strings when they are decoded.
+        if (validateUtf8) _ = StrictUtf8.GetCharCount(bytes[skip..]);
         return input[skip..];
     }
 }

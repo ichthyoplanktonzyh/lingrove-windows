@@ -145,5 +145,8 @@ jobs:
       - name: Verify export scope and portable material projection against actual Mac methods
         run: python3 scripts/verify-vocabulary-export-projection-macos-parity.py --mac-repo .mac-baseline
 
+      - name: Verify CSV cell and UTF-8 preview against actual Mac formatter methods
+        run: python3 scripts/verify-vocabulary-export-text-macos-parity.py --mac-repo .mac-baseline
+
   # Routine CI stops after validation. Packaging, artifact uploads and releases
   # are deliberately absent; distribution is a separately authorized task.

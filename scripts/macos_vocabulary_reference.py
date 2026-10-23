@@ -177,3 +177,11 @@ struct NotebookBrowseReference {
     wrapper += "\n    func probe(_ example: VocabularyExample) -> [[String: Any]] {\n        let value = highlighted(example)\n"
     wrapper += '        return value.runs.map { ["text": String(value[$0.range].characters), "target": $0.font != nil] }\n    }\n}\n'
     return sense_policy_sources(repo) + [wrapper]
+
+
+def export_sources(repo):
+    """Complete original export declarations, with real renderer dependency and no archive IO."""
+    return sense_policy_sources(repo) + [source(repo, path) for path in (
+        "Cotabby/Models/Vocabulary/VocabularyExportModels.swift",
+        "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+        "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift")]

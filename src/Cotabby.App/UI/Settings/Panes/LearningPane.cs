@@ -36,12 +36,17 @@ internal static class LearningPane
     public static SettingsPane Build(Rows rows)
     {
         var context = rows.Context;
+        var review = new AnkiReviewSettingsSection(context.Host.Review);
+        context.Closed += review.Close;
         var destination = Ui.Text("", "Caption");
         destination.Margin = new Thickness(0, 10, 0, 0);
         context.OnRefresh(() => UpdateDestination(context.Settings, destination));
 
         return new SettingsPane("Learning", "\uE8A5", "Translate the current sentence while writing",
         [
+            new SettingsCard("Anki review",
+                new SettingsRow("Anki review", "Connection, default deck and saved card templates", review)
+                    .Tagged("anki review ankiConnect address API key connection deck note type templates")),
             new SettingsCard("Manual sentence preview",
                 rows.Toggle("Enable Sentence Translation",
                     "The configured shortcut reads the complete current sentence from a supported field and opens a read-only preview.",

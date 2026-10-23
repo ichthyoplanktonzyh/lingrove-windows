@@ -1,0 +1,1127 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "empty-appearance-unchanged",
+      "stored": "",
+      "actions": [
+        {
+          "op": "appear"
+        },
+        {
+          "op": "save"
+        }
+      ],
+      "macSource": "Cotabby/UI/Settings/Panes/LearningReviewSettingsSection.swift",
+      "provenanceKind": "source-method-extension",
+      "expected": [
+        {
+          "invalidations": 0,
+          "key": "",
+          "reads": 0,
+          "savedKey": "",
+          "stored": "",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "",
+          "reads": 1,
+          "savedKey": "",
+          "stored": "",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "",
+          "reads": 1,
+          "savedKey": "",
+          "stored": "",
+          "writes": 0,
+          "keyError": null
+        }
+      ]
+    },
+    {
+      "id": "read-existing-unchanged",
+      "stored": "fixture",
+      "actions": [
+        {
+          "op": "appear"
+        },
+        {
+          "op": "save"
+        },
+        {
+          "op": "save"
+        }
+      ],
+      "macSource": "Cotabby/UI/Settings/Panes/LearningReviewSettingsSection.swift",
+      "provenanceKind": "source-method-extension",
+      "expected": [
+        {
+          "invalidations": 0,
+          "key": "",
+          "reads": 0,
+          "savedKey": "",
+          "stored": "fixture",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "fixture",
+          "reads": 1,
+          "savedKey": "fixture",
+          "stored": "fixture",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "fixture",
+          "reads": 1,
+          "savedKey": "fixture",
+          "stored": "fixture",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "fixture",
+          "reads": 1,
+          "savedKey": "fixture",
+          "stored": "fixture",
+          "writes": 0,
+          "keyError": null
+        }
+      ]
+    },
+    {
+      "id": "save-before-appearance",
+      "stored": "old",
+      "actions": [
+        {
+          "op": "edit",
+          "value": "typed"
+        },
+        {
+          "op": "save"
+        }
+      ],
+      "macSource": "Cotabby/UI/Settings/Panes/LearningReviewSettingsSection.swift",
+      "provenanceKind": "source-method-extension",
+      "expected": [
+        {
+          "invalidations": 0,
+          "key": "",
+          "reads": 0,
+          "savedKey": "",
+          "stored": "old",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "typed",
+          "reads": 0,
+          "savedKey": "",
+          "stored": "old",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 1,
+          "key": "typed",
+          "reads": 0,
+          "savedKey": "typed",
+          "stored": "typed",
+          "writes": 1,
+          "keyError": null
+        }
+      ]
+    },
+    {
+      "id": "changed-then-repeated-save",
+      "stored": "old",
+      "actions": [
+        {
+          "op": "appear"
+        },
+        {
+          "op": "edit",
+          "value": "new"
+        },
+        {
+          "op": "save"
+        },
+        {
+          "op": "save"
+        }
+      ],
+      "macSource": "Cotabby/UI/Settings/Panes/LearningReviewSettingsSection.swift",
+      "provenanceKind": "source-method-extension",
+      "expected": [
+        {
+          "invalidations": 0,
+          "key": "",
+          "reads": 0,
+          "savedKey": "",
+          "stored": "old",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "old",
+          "reads": 1,
+          "savedKey": "old",
+          "stored": "old",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "new",
+          "reads": 1,
+          "savedKey": "old",
+          "stored": "old",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 1,
+          "key": "new",
+          "reads": 1,
+          "savedKey": "new",
+          "stored": "new",
+          "writes": 1,
+          "keyError": null
+        },
+        {
+          "invalidations": 1,
+          "key": "new",
+          "reads": 1,
+          "savedKey": "new",
+          "stored": "new",
+          "writes": 1,
+          "keyError": null
+        }
+      ]
+    },
+    {
+      "id": "empty-deletes",
+      "stored": "old",
+      "actions": [
+        {
+          "op": "appear"
+        },
+        {
+          "op": "edit",
+          "value": ""
+        },
+        {
+          "op": "save"
+        }
+      ],
+      "macSource": "Cotabby/UI/Settings/Panes/LearningReviewSettingsSection.swift",
+      "provenanceKind": "source-method-extension",
+      "expected": [
+        {
+          "invalidations": 0,
+          "key": "",
+          "reads": 0,
+          "savedKey": "",
+          "stored": "old",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "old",
+          "reads": 1,
+          "savedKey": "old",
+          "stored": "old",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "",
+          "reads": 1,
+          "savedKey": "old",
+          "stored": "old",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 1,
+          "key": "",
+          "reads": 1,
+          "savedKey": "",
+          "stored": "",
+          "writes": 1,
+          "keyError": null
+        }
+      ]
+    },
+    {
+      "id": "whitespace-is-key",
+      "stored": "",
+      "actions": [
+        {
+          "op": "appear"
+        },
+        {
+          "op": "edit",
+          "value": " \t "
+        },
+        {
+          "op": "save"
+        }
+      ],
+      "macSource": "Cotabby/UI/Settings/Panes/LearningReviewSettingsSection.swift",
+      "provenanceKind": "source-method-extension",
+      "expected": [
+        {
+          "invalidations": 0,
+          "key": "",
+          "reads": 0,
+          "savedKey": "",
+          "stored": "",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "",
+          "reads": 1,
+          "savedKey": "",
+          "stored": "",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": " \t ",
+          "reads": 1,
+          "savedKey": "",
+          "stored": "",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 1,
+          "key": " \t ",
+          "reads": 1,
+          "savedKey": " \t ",
+          "stored": " \t ",
+          "writes": 1,
+          "keyError": null
+        }
+      ]
+    },
+    {
+      "id": "nul-bom-preserved",
+      "stored": "",
+      "actions": [
+        {
+          "op": "appear"
+        },
+        {
+          "op": "edit",
+          "value": "\u0000﻿"
+        },
+        {
+          "op": "save"
+        }
+      ],
+      "macSource": "Cotabby/UI/Settings/Panes/LearningReviewSettingsSection.swift",
+      "provenanceKind": "source-method-extension",
+      "expected": [
+        {
+          "invalidations": 0,
+          "key": "",
+          "reads": 0,
+          "savedKey": "",
+          "stored": "",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "",
+          "reads": 1,
+          "savedKey": "",
+          "stored": "",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "\u0000﻿",
+          "reads": 1,
+          "savedKey": "",
+          "stored": "",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 1,
+          "key": "\u0000﻿",
+          "reads": 1,
+          "savedKey": "\u0000﻿",
+          "stored": "\u0000﻿",
+          "writes": 1,
+          "keyError": null
+        }
+      ]
+    },
+    {
+      "id": "canonical-unchanged",
+      "stored": "café",
+      "actions": [
+        {
+          "op": "appear"
+        },
+        {
+          "op": "edit",
+          "value": "café"
+        },
+        {
+          "op": "save"
+        }
+      ],
+      "macSource": "Cotabby/UI/Settings/Panes/LearningReviewSettingsSection.swift",
+      "provenanceKind": "source-method-extension",
+      "expected": [
+        {
+          "invalidations": 0,
+          "key": "",
+          "reads": 0,
+          "savedKey": "",
+          "stored": "café",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "café",
+          "reads": 1,
+          "savedKey": "café",
+          "stored": "café",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "café",
+          "reads": 1,
+          "savedKey": "café",
+          "stored": "café",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "café",
+          "reads": 1,
+          "savedKey": "café",
+          "stored": "café",
+          "writes": 0,
+          "keyError": null
+        }
+      ]
+    },
+    {
+      "id": "compatibility-not-canonical",
+      "stored": "Ａ",
+      "actions": [
+        {
+          "op": "appear"
+        },
+        {
+          "op": "edit",
+          "value": "A"
+        },
+        {
+          "op": "save"
+        }
+      ],
+      "macSource": "Cotabby/UI/Settings/Panes/LearningReviewSettingsSection.swift",
+      "provenanceKind": "source-method-extension",
+      "expected": [
+        {
+          "invalidations": 0,
+          "key": "",
+          "reads": 0,
+          "savedKey": "",
+          "stored": "Ａ",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "Ａ",
+          "reads": 1,
+          "savedKey": "Ａ",
+          "stored": "Ａ",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "A",
+          "reads": 1,
+          "savedKey": "Ａ",
+          "stored": "Ａ",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 1,
+          "key": "A",
+          "reads": 1,
+          "savedKey": "A",
+          "stored": "A",
+          "writes": 1,
+          "keyError": null
+        }
+      ]
+    },
+    {
+      "id": "failed-save-retry",
+      "stored": "old",
+      "actions": [
+        {
+          "op": "appear"
+        },
+        {
+          "op": "edit",
+          "value": "new"
+        },
+        {
+          "op": "writeFailure",
+          "flag": true
+        },
+        {
+          "op": "save"
+        },
+        {
+          "op": "writeFailure",
+          "flag": false
+        },
+        {
+          "op": "save"
+        }
+      ],
+      "macSource": "Cotabby/UI/Settings/Panes/LearningReviewSettingsSection.swift",
+      "provenanceKind": "source-method-extension",
+      "expected": [
+        {
+          "invalidations": 0,
+          "key": "",
+          "reads": 0,
+          "savedKey": "",
+          "stored": "old",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "old",
+          "reads": 1,
+          "savedKey": "old",
+          "stored": "old",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "new",
+          "reads": 1,
+          "savedKey": "old",
+          "stored": "old",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "new",
+          "reads": 1,
+          "savedKey": "old",
+          "stored": "old",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "new",
+          "keyError": "fixture write failure",
+          "reads": 1,
+          "savedKey": "old",
+          "stored": "old",
+          "writes": 1
+        },
+        {
+          "invalidations": 0,
+          "key": "new",
+          "keyError": "fixture write failure",
+          "reads": 1,
+          "savedKey": "old",
+          "stored": "old",
+          "writes": 1
+        },
+        {
+          "invalidations": 1,
+          "key": "new",
+          "reads": 1,
+          "savedKey": "new",
+          "stored": "new",
+          "writes": 2,
+          "keyError": null
+        }
+      ]
+    },
+    {
+      "id": "failed-save-return-to-old-sticky",
+      "stored": "old",
+      "actions": [
+        {
+          "op": "appear"
+        },
+        {
+          "op": "edit",
+          "value": "new"
+        },
+        {
+          "op": "writeFailure",
+          "flag": true
+        },
+        {
+          "op": "save"
+        },
+        {
+          "op": "writeFailure",
+          "flag": false
+        },
+        {
+          "op": "edit",
+          "value": "old"
+        },
+        {
+          "op": "save"
+        }
+      ],
+      "macSource": "Cotabby/UI/Settings/Panes/LearningReviewSettingsSection.swift",
+      "provenanceKind": "source-method-extension",
+      "expected": [
+        {
+          "invalidations": 0,
+          "key": "",
+          "reads": 0,
+          "savedKey": "",
+          "stored": "old",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "old",
+          "reads": 1,
+          "savedKey": "old",
+          "stored": "old",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "new",
+          "reads": 1,
+          "savedKey": "old",
+          "stored": "old",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "new",
+          "reads": 1,
+          "savedKey": "old",
+          "stored": "old",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "new",
+          "keyError": "fixture write failure",
+          "reads": 1,
+          "savedKey": "old",
+          "stored": "old",
+          "writes": 1
+        },
+        {
+          "invalidations": 0,
+          "key": "new",
+          "keyError": "fixture write failure",
+          "reads": 1,
+          "savedKey": "old",
+          "stored": "old",
+          "writes": 1
+        },
+        {
+          "invalidations": 0,
+          "key": "old",
+          "keyError": "fixture write failure",
+          "reads": 1,
+          "savedKey": "old",
+          "stored": "old",
+          "writes": 1
+        },
+        {
+          "invalidations": 0,
+          "key": "old",
+          "keyError": "fixture write failure",
+          "reads": 1,
+          "savedKey": "old",
+          "stored": "old",
+          "writes": 1
+        }
+      ]
+    },
+    {
+      "id": "failed-read-successful-read-sticky",
+      "stored": "old",
+      "actions": [
+        {
+          "op": "readFailure",
+          "flag": true
+        },
+        {
+          "op": "appear"
+        },
+        {
+          "op": "readFailure",
+          "flag": false
+        },
+        {
+          "op": "appear"
+        },
+        {
+          "op": "save"
+        }
+      ],
+      "macSource": "Cotabby/UI/Settings/Panes/LearningReviewSettingsSection.swift",
+      "provenanceKind": "source-method-extension",
+      "expected": [
+        {
+          "invalidations": 0,
+          "key": "",
+          "reads": 0,
+          "savedKey": "",
+          "stored": "old",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "",
+          "reads": 0,
+          "savedKey": "",
+          "stored": "old",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "",
+          "keyError": "fixture read failure",
+          "reads": 1,
+          "savedKey": "",
+          "stored": "old",
+          "writes": 0
+        },
+        {
+          "invalidations": 0,
+          "key": "",
+          "keyError": "fixture read failure",
+          "reads": 1,
+          "savedKey": "",
+          "stored": "old",
+          "writes": 0
+        },
+        {
+          "invalidations": 0,
+          "key": "old",
+          "keyError": "fixture read failure",
+          "reads": 2,
+          "savedKey": "old",
+          "stored": "old",
+          "writes": 0
+        },
+        {
+          "invalidations": 0,
+          "key": "old",
+          "keyError": "fixture read failure",
+          "reads": 2,
+          "savedKey": "old",
+          "stored": "old",
+          "writes": 0
+        }
+      ]
+    },
+    {
+      "id": "failed-read-changed-save-clears",
+      "stored": "old",
+      "actions": [
+        {
+          "op": "readFailure",
+          "flag": true
+        },
+        {
+          "op": "appear"
+        },
+        {
+          "op": "edit",
+          "value": "new"
+        },
+        {
+          "op": "save"
+        }
+      ],
+      "macSource": "Cotabby/UI/Settings/Panes/LearningReviewSettingsSection.swift",
+      "provenanceKind": "source-method-extension",
+      "expected": [
+        {
+          "invalidations": 0,
+          "key": "",
+          "reads": 0,
+          "savedKey": "",
+          "stored": "old",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "",
+          "reads": 0,
+          "savedKey": "",
+          "stored": "old",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "",
+          "keyError": "fixture read failure",
+          "reads": 1,
+          "savedKey": "",
+          "stored": "old",
+          "writes": 0
+        },
+        {
+          "invalidations": 0,
+          "key": "new",
+          "keyError": "fixture read failure",
+          "reads": 1,
+          "savedKey": "",
+          "stored": "old",
+          "writes": 0
+        },
+        {
+          "invalidations": 1,
+          "key": "new",
+          "reads": 1,
+          "savedKey": "new",
+          "stored": "new",
+          "writes": 1,
+          "keyError": null
+        }
+      ]
+    },
+    {
+      "id": "failed-save-failed-reappear-retains-draft",
+      "stored": "old",
+      "actions": [
+        {
+          "op": "appear"
+        },
+        {
+          "op": "edit",
+          "value": "new"
+        },
+        {
+          "op": "writeFailure",
+          "flag": true
+        },
+        {
+          "op": "save"
+        },
+        {
+          "op": "readFailure",
+          "flag": true
+        },
+        {
+          "op": "appear"
+        },
+        {
+          "op": "writeFailure",
+          "flag": false
+        },
+        {
+          "op": "save"
+        }
+      ],
+      "macSource": "Cotabby/UI/Settings/Panes/LearningReviewSettingsSection.swift",
+      "provenanceKind": "source-method-extension",
+      "expected": [
+        {
+          "invalidations": 0,
+          "key": "",
+          "reads": 0,
+          "savedKey": "",
+          "stored": "old",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "old",
+          "reads": 1,
+          "savedKey": "old",
+          "stored": "old",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "new",
+          "reads": 1,
+          "savedKey": "old",
+          "stored": "old",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "new",
+          "reads": 1,
+          "savedKey": "old",
+          "stored": "old",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "new",
+          "keyError": "fixture write failure",
+          "reads": 1,
+          "savedKey": "old",
+          "stored": "old",
+          "writes": 1
+        },
+        {
+          "invalidations": 0,
+          "key": "new",
+          "keyError": "fixture write failure",
+          "reads": 1,
+          "savedKey": "old",
+          "stored": "old",
+          "writes": 1
+        },
+        {
+          "invalidations": 0,
+          "key": "new",
+          "keyError": "fixture read failure",
+          "reads": 2,
+          "savedKey": "old",
+          "stored": "old",
+          "writes": 1
+        },
+        {
+          "invalidations": 0,
+          "key": "new",
+          "keyError": "fixture read failure",
+          "reads": 2,
+          "savedKey": "old",
+          "stored": "old",
+          "writes": 1
+        },
+        {
+          "invalidations": 1,
+          "key": "new",
+          "reads": 2,
+          "savedKey": "new",
+          "stored": "new",
+          "writes": 2,
+          "keyError": null
+        }
+      ]
+    },
+    {
+      "id": "failed-save-successful-reappear-restores-old",
+      "stored": "old",
+      "actions": [
+        {
+          "op": "appear"
+        },
+        {
+          "op": "edit",
+          "value": "new"
+        },
+        {
+          "op": "writeFailure",
+          "flag": true
+        },
+        {
+          "op": "save"
+        },
+        {
+          "op": "appear"
+        },
+        {
+          "op": "save"
+        }
+      ],
+      "macSource": "Cotabby/UI/Settings/Panes/LearningReviewSettingsSection.swift",
+      "provenanceKind": "source-method-extension",
+      "expected": [
+        {
+          "invalidations": 0,
+          "key": "",
+          "reads": 0,
+          "savedKey": "",
+          "stored": "old",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "old",
+          "reads": 1,
+          "savedKey": "old",
+          "stored": "old",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "new",
+          "reads": 1,
+          "savedKey": "old",
+          "stored": "old",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "new",
+          "reads": 1,
+          "savedKey": "old",
+          "stored": "old",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "new",
+          "keyError": "fixture write failure",
+          "reads": 1,
+          "savedKey": "old",
+          "stored": "old",
+          "writes": 1
+        },
+        {
+          "invalidations": 0,
+          "key": "old",
+          "keyError": "fixture write failure",
+          "reads": 2,
+          "savedKey": "old",
+          "stored": "old",
+          "writes": 1
+        },
+        {
+          "invalidations": 0,
+          "key": "old",
+          "keyError": "fixture write failure",
+          "reads": 2,
+          "savedKey": "old",
+          "stored": "old",
+          "writes": 1
+        }
+      ]
+    },
+    {
+      "id": "emoji-and-linebreak-preserved",
+      "stored": "",
+      "actions": [
+        {
+          "op": "appear"
+        },
+        {
+          "op": "edit",
+          "value": "😀\nkey"
+        },
+        {
+          "op": "save"
+        },
+        {
+          "op": "appear"
+        }
+      ],
+      "macSource": "Cotabby/UI/Settings/Panes/LearningReviewSettingsSection.swift",
+      "provenanceKind": "source-method-extension",
+      "expected": [
+        {
+          "invalidations": 0,
+          "key": "",
+          "reads": 0,
+          "savedKey": "",
+          "stored": "",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "",
+          "reads": 1,
+          "savedKey": "",
+          "stored": "",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 0,
+          "key": "😀\nkey",
+          "reads": 1,
+          "savedKey": "",
+          "stored": "",
+          "writes": 0,
+          "keyError": null
+        },
+        {
+          "invalidations": 1,
+          "key": "😀\nkey",
+          "reads": 1,
+          "savedKey": "😀\nkey",
+          "stored": "😀\nkey",
+          "writes": 1,
+          "keyError": null
+        },
+        {
+          "invalidations": 1,
+          "key": "😀\nkey",
+          "reads": 2,
+          "savedKey": "😀\nkey",
+          "stored": "😀\nkey",
+          "writes": 1,
+          "keyError": null
+        }
+      ]
+    }
+  ]
+}

@@ -19,6 +19,7 @@ public partial class App : Application
     private Mutex? _singleInstance;
     private AppHost? _host;
     private TrayController? _tray;
+    private Task? _shutdown;
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -73,18 +74,41 @@ public partial class App : Application
         }
     }
 
-    protected override async void OnExit(ExitEventArgs e)
+    /// <summary>Normal Quit keeps the UI dispatcher alive while admitted work drains. WPF's
+    /// OnExit is synchronous notification, so awaiting cleanup there cannot delay process exit.</summary>
+    internal Task RequestShutdownAsync()
+    {
+        if (_shutdown is not null) return _shutdown;
+        var completion = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        _shutdown = completion.Task;
+        _ = DrainAndShutdown();
+        return completion.Task;
+        async Task DrainAndShutdown()
+        {
+            try
+            {
+                // Closing first commits the last masked-key edit and detaches view observers.
+                if (_host is not null) SettingsWindow.CloseFor(_host);
+                _tray?.Dispose(); _tray = null;
+                if (_host is not null) await _host.DisposeAsync();
+            }
+            catch (Exception error) { _host?.LogError(error, "Application shutdown failed."); }
+            finally { completion.TrySetResult(true); Shutdown(); }
+        }
+    }
+
+    protected override void OnExit(ExitEventArgs e)
     {
         try
         {
             _tray?.Dispose();
-            if (_host is not null) await _host.DisposeAsync();
-        }
-        finally
-        {
+            // A forced OS exit cannot be delayed here. Normal tray Quit always uses the owned,
+            // awaited path above; do not block this dispatcher on asynchronous UI continuations.
+            if (_shutdown is null && _host is not null) _ = _host.DisposeAsync();
             _singleInstance?.ReleaseMutex();
-            base.OnExit(e);
+            _singleInstance?.Dispose();
         }
+        finally { base.OnExit(e); }
     }
 
     private void OnUiException(object sender, DispatcherUnhandledExceptionEventArgs e)

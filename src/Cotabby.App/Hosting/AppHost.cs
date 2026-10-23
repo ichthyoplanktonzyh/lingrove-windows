@@ -1,5 +1,6 @@
 using System.Net.Http;
 using Cotabby.App.Learning;
+using Cotabby.App.Review;
 using Cotabby.App.Emoji;
 using Cotabby.App.Macros;
 using Cotabby.App.Overlay;
@@ -73,6 +74,7 @@ public sealed class AppHost : IAsyncDisposable
     internal LearningPreviewController LearningPreview { get; }
     internal LearningExplanationController LearningExplanation { get; }
     internal VocabularyStore Vocabulary { get; }
+    internal AnkiReviewFeature Review { get; }
     internal VocabularyWindowController VocabularyWindow { get; }
     private readonly WindowsVocabularyClipboardTransfer _vocabularyClipboard;
 
@@ -155,6 +157,11 @@ public sealed class AppHost : IAsyncDisposable
         Vocabulary = new VocabularyStore(new VocabularyArchive(System.IO.Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "Cotabby", "vocabulary", "vocabulary.sqlite")), ui);
+        // Review has its own inert HTTP/key owners. Its settings save only their durable values;
+        // editing a deck or connection must not wake/reconfigure the autocomplete runtime.
+        Review = new AnkiReviewFeature(() => Settings, () => SettingsStore.Save(Settings),
+            Vocabulary, new Cotabby.Win32.Review.AnkiConnectClient(), new DpapiAnkiCredentialStore());
+        Review.Controller.Configure = () => SettingsWindow.ShowReview(this);
         _vocabularyClipboard = new WindowsVocabularyClipboardTransfer();
         VocabularyWindow = new VocabularyWindowController(Vocabulary, overlay.Dispatcher,
             () => new VocabularyNotebookSession(overlay.Dispatcher, _services.GetRequiredService<ILearningDictionaryProviding>(),
@@ -387,15 +394,21 @@ public sealed class AppHost : IAsyncDisposable
         Vocabulary.EnrichCapture = null;
         await LearningExplanation.DisposeAsync().ConfigureAwait(false);
         LearningExplanation.Service.Explained -= PersistExplanation;
-        await Vocabulary.DisposeAsync().ConfigureAwait(false);
-        await LearningModels.DisposeAsync().ConfigureAwait(false);
-        EmojiPicker.Dispose();
-        Macros.Dispose();
-        _spelling.Dispose();
-        await Coordinator.DisposeAsync().ConfigureAwait(false);
-        await Runtime.DisposeAsync().ConfigureAwait(false);
-        EndpointClient.Dispose();
-        _learningHttpClient.Dispose();
-        await _services.DisposeAsync().ConfigureAwait(false);
+        try { await Review.DisposeAsync().ConfigureAwait(false); }
+        finally
+        {
+            // Review already drains all admitted actions even if cancellation/disposal reports
+            // an error. Its failure must not strand the shared notebook or skip existing cleanup.
+            await Vocabulary.DisposeAsync().ConfigureAwait(false);
+            await LearningModels.DisposeAsync().ConfigureAwait(false);
+            EmojiPicker.Dispose();
+            Macros.Dispose();
+            _spelling.Dispose();
+            await Coordinator.DisposeAsync().ConfigureAwait(false);
+            await Runtime.DisposeAsync().ConfigureAwait(false);
+            EndpointClient.Dispose();
+            _learningHttpClient.Dispose();
+            await _services.DisposeAsync().ConfigureAwait(false);
+        }
     }
 }

@@ -6,6 +6,8 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="..\..\fixtures\parity\anki-settings-interaction-v1.json" Link="fixtures\anki-settings-interaction-v1.json" CopyToOutputDirectory="PreserveNewest" />
+    <Compile Include="..\Shared\AnkiReviewTestEffects.cs" Link="Shared\AnkiReviewTestEffects.cs" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
     <PackageReference Include="xunit" Version="2.9.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
@@ -16,6 +18,8 @@
     <!-- Compile the actual non-WPF app boundaries for portable lifetime/settings tests. This is
          no replacement for compiling the complete WPF app or exercising a Windows desktop. -->
     <Compile Include="..\..\src\Cotabby.Win32\Review\AnkiConnectClient.cs" Link="Production\AnkiConnectClient.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Review\AnkiReviewFeature.cs" Link="Production\AnkiReviewFeature.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Review\AnkiReviewSettingsInteraction.cs" Link="Production\AnkiReviewSettingsInteraction.cs" />
     <Compile Include="..\..\src\Cotabby.App\Review\AnkiReviewSettings.cs" Link="Production\AnkiReviewSettings.cs" />
     <Compile Include="..\..\src\Cotabby.App\Review\AnkiReviewController.cs" Link="Production\AnkiReviewController.cs" />
     <Compile Include="..\..\src\Cotabby.App\Review\AnkiReviewController.Navigation.cs" Link="Production\AnkiReviewController.Navigation.cs" />

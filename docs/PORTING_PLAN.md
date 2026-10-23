@@ -154,7 +154,8 @@ storage stays local and no sync service is introduced.
 ## Platform and hardware constraints
 
 The current maintainer machine is an Apple M1 Max Mac with 32 GB RAM and no Windows desktop. A hosted
-Windows CI runner can prove compilation and portable tests, but cannot establish field behavior on a
+Windows CI runner can prove compilation, portable tests and isolated compiled WPF view behavior
+(see [view tests](WPF_VIEW_TESTS.md)), but cannot establish field behavior on a
 user's Windows desktop. Native x64 Windows is the primary app and inference verification target. An
 ARM Windows virtual machine on Apple silicon can expose ARM-specific compile/runtime problems, but it
 does not verify the x64 app or x64 Vulkan backend. Arrange a native Windows x64 test host before

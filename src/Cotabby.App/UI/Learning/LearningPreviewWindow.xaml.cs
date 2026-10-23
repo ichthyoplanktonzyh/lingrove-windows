@@ -145,6 +145,11 @@ public partial class LearningPreviewWindow : Window
 
         Hide();
         _displayedPreview = null;
+        // This long-lived window is reused. Retiring the capture also drops the literal editor
+        // and translation text from its visual tree rather than keeping a hidden old document.
+        SourceText.Text = DirectionText.Text = ErrorText.Text = string.Empty;
+        ResultText.Inlines.Clear();
+        ResultText.ToolTip = null;
         ClearExplanation();
     }
 

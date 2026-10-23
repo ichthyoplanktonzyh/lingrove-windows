@@ -126,6 +126,10 @@ against committed pure Mac policies. They do not build or launch the macOS app. 
 `Cotabby.Tools.*Smoke` projects: those may require an interactive Windows desktop or downloaded
 model weights.
 
+Windows CI also executes the [compiled WPF learning-view suite](docs/WPF_VIEW_TESTS.md): actual
+XAML/resource loading, window layout, in-memory rendering, native no-activation styles and
+target-bound routed commands. It starts no product services and accesses no external editor.
+
 Build and unit tests do not validate UI Automation, IME handling, caret placement, clipboard
 restoration, host text insertion, or GPU inference. Those checks need a Windows host and are tracked
 as explicit gates in the [porting plan](docs/PORTING_PLAN.md). Local model files are not CI inputs.
@@ -134,7 +138,7 @@ CI job ownership is explicit:
 
 | Workflow | What it validates | What it does not do |
 | --- | --- | --- |
-| [`ci.yml`](.github/workflows/ci.yml) | Current .NET 10 tree: Windows x64 full build and unit tests; macOS 26 Core tests and the same JSON cases against pinned Swift policies | Does not run model smoke tools, download model weights, upload artifacts, package, or release |
+| [`ci.yml`](.github/workflows/ci.yml) | Current .NET 10 tree: Windows x64 full build, unit tests and compiled WPF learning views; macOS 26 Core/App tests and the same JSON cases against pinned Swift policies | Does not run model smoke tools, download model weights, upload artifacts, package, or release |
 | [`upstream-baseline.yml`](.github/workflows/upstream-baseline.yml) | Manual recheck of original fork commit `b1e4031c70aca1be21aae2c57b138fde5fc22bb1` on .NET 9 | Does not gate current .NET 10 PRs or validate native app behavior |
 
 Current workflow results are available in the pull request checks. Recorded hosted and local results,

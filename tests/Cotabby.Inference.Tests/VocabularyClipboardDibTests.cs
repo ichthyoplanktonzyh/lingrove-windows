@@ -31,6 +31,15 @@ public sealed class VocabularyClipboardDibTests
         Assert.Equal(dib.AsSpan(4, 104).ToArray(), bmp.AsSpan(18, 104).ToArray()); Assert.Equal(4u, U32(bmp, 122));
         Assert.Equal(new byte[12], bmp.AsSpan(126, 12).ToArray()); Assert.Equal(dib[108..], bmp[138..]);
     }
+    [Fact]
+    public void BiRgbAlphaUsesExplicitStandardBitfieldsWithoutChangingRows()
+    {
+        byte[] dib = VocabularyDibFixture.Image(124, alpha: true); VocabularyDibFixture.U32(dib, 16, 0);
+        VocabularyDibFixture.U32(dib, 40, 0); VocabularyDibFixture.U32(dib, 44, 0); VocabularyDibFixture.U32(dib, 48, 0);
+        var bmp = VocabularyClipboardDib.Wrap(dib); Assert.Equal(3u, U32(bmp, 30));
+        Assert.Equal(0x00FF0000u, U32(bmp, 54)); Assert.Equal(0x0000FF00u, U32(bmp, 58)); Assert.Equal(0x000000FFu, U32(bmp, 62));
+        Assert.Equal(0xFF000000u, U32(bmp, 66)); Assert.Equal(dib[124..], bmp[138..]);
+    }
     [Theory]
     [InlineData("short")]
     [InlineData("unknown-header")]

@@ -77,6 +77,16 @@ internal static class VocabularyClipboardDib
             BinaryPrimitives.WriteUInt32LittleEndian(bmp.AsSpan(14), 124);
             BinaryPrimitives.WriteUInt32LittleEndian(bmp.AsSpan(122), 4); // V5 perceptual intent; no profile data.
         }
+        if (layout.Header >= 108 && U32(dib, 16) == 0 && U32(dib, 52) != 0)
+        {
+            // WIC ignores BI_RGB alpha even with a valid V5 alpha mask. BI_RGB fixes B/G/R
+            // to their standard bytes, so declare that same layout as BI_BITFIELDS instead.
+            // This changes only the envelope's masks/compression, never the admitted pixel rows.
+            BinaryPrimitives.WriteUInt32LittleEndian(bmp.AsSpan(30), 3);
+            BinaryPrimitives.WriteUInt32LittleEndian(bmp.AsSpan(54), 0x00FF0000);
+            BinaryPrimitives.WriteUInt32LittleEndian(bmp.AsSpan(58), 0x0000FF00);
+            BinaryPrimitives.WriteUInt32LittleEndian(bmp.AsSpan(62), 0x000000FF);
+        }
         BinaryPrimitives.WriteUInt32LittleEndian(bmp.AsSpan(34), (uint)layout.Pixels); return bmp;
     }
     /// <summary>

@@ -37,7 +37,10 @@ The [WIC BMP codec](https://learn.microsoft.com/en-us/windows/win32/wic/bmp-form
 32-bit V5 alpha support. Nonzero alpha requires 32 bits; BI_RGB admits only its canonical spare
 byte, while bitfield alpha must be contiguous and disjoint from RGB. A V4 header carrying alpha
 is extended to V5 with perceptual intent and zero profile fields before WIC sees it, preserving
-the existing color masks and rows. Sixteen-bit alpha is explicitly unsupported.
+the existing bitfield masks and rows. Windows CI run `39961823953` additionally proved that WIC
+ignores a BI_RGB alpha mask even in V5. For that admitted 32-bit case, the wrapper declares the
+same standard B/G/R byte layout with explicit BI_BITFIELDS masks; its canonical alpha mask and
+pixel rows remain unchanged. Sixteen-bit alpha is explicitly unsupported.
 
 A direct native probe on Windows CI (run `39959795480`, head `74e20792c8a0a25b3e1d45c02ba8221e604ddcd9`)
 reported `WINCODEC_ERR_UNSUPPORTEDOPERATION` (`0x88982F81`) from BMP frame color-context enumeration.
@@ -50,7 +53,7 @@ check, avoiding a silent alpha loss in direct file imports. The [query contract]
 and [HRESULT table](https://learn.microsoft.com/en-us/windows/win32/wic/-wic-codec-error-codes)
 identify the API/result; the unsupported behavior above is an actual CI observation.
 
-Tests use literal DIB rows and app-owned memory, never the runner clipboard. Fifty-two structure/color-evidence cases cover
+Tests use literal DIB rows and app-owned memory, never the runner clipboard. Fifty-three structure/color-evidence cases cover
 headers, row direction, palette/mask offsets, malformed dimensions/sizes/planes/depth/compression,
 profile rejection, alpha admission, input/output budgets, unused tail trimming and V4 extension.
 Reader cases cover metadata-only admission, encoded-format priority, null bitmap fallback,

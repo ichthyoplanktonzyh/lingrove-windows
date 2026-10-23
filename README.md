@@ -140,8 +140,9 @@ UTF-8/media metadata budgets and literal review HTML. The [usage/capture values 
 retain exact encounter/provenance and share explanation receipts. The [notebook/review values](docs/VOCABULARY_MODELS.md)
 now preserve full sense ownership, retained plans and binding identity. The shared notebook now has durable storage, image preparation, export/backup and graph adapters.
 The [local Anki transport](docs/ANKI_CONNECT_TRANSPORT.md) and
-[review preferences](docs/ANKI_REVIEW_SETTINGS.md) have bounded automated evidence; native credential
-storage, connection controls and the review send transaction remain open.
+[review preferences](docs/ANKI_REVIEW_SETTINGS.md) have bounded automated evidence. The
+[Windows Anki credential adapter](docs/ANKI_CREDENTIAL_STORAGE.md) supplies separate exact-key storage.
+AppHost construction, connection controls and the review send transaction remain open.
 
 Windows CI also executes the [compiled WPF learning-view suite](docs/WPF_VIEW_TESTS.md): actual
 XAML/resource loading, window layout, in-memory rendering, native no-activation styles and

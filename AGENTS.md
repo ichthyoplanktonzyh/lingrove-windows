@@ -149,6 +149,7 @@ the [compiled graph canvas component](docs/VOCABULARY_GRAPH_CANVAS.md) now adapt
 the [notebook graph integration](docs/VOCABULARY_GRAPH_NOTEBOOK.md) now connects original mode/chrome/settings and shared Store/detail selection;
 the [review card material](docs/REVIEW_CARD_MATERIAL.md) now resolves original card sources, layouts, static previews and JSON values;
 the [review preference boundary](docs/ANKI_REVIEW_SETTINGS.md) now preserves original settings, mapping bytes and explicit credential reads;
+the [Windows Anki credential adapter](docs/ANKI_CREDENTIAL_STORAGE.md) now supplies exact-key current-user DPAPI storage independently of inference;
 compressed/profiled bitmap variants, virtual/pixel drops, review UI/Anki transactions and other dictionary providers remain work. Do not flatten senses into
 one translation string, regenerate stable IDs during edits, or treat a generated explanation as the
 user's authored meaning. See the vocabulary models and porting gates in the linked docs. Storage

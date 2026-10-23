@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Cotabby.Core.Vocabulary;
 
 namespace Cotabby.Core.Tests.Parity;
@@ -37,6 +38,8 @@ public sealed class VocabularyRestoreParityTests
             Assert.Null(failure); Assert.NotNull(backup); Assert.NotNull(references);
             Assert.True(VocabularyArchiveMediaPolicy.References(backup.Document).ToHashSet().SetEquals(references));
             Assert.True(references.Select(image => image.Filename).ToHashSet(StringComparer.Ordinal).SetEquals(backup.CopyImages().Keys));
+            var original = JsonNode.Parse(Convert.FromBase64String(expected.GetProperty("package").GetString()!))!["document"];
+            Assert.True(JsonNode.DeepEquals(original, JsonNode.Parse(VocabularyBackupCodec.EncodeDocument(backup.Document))));
             if (nativeError == "invalidContent") Assert.NotEmpty(references);
             else Assert.Equal(VocabularyBackupCodec.DecodeDocument(System.Text.Encoding.UTF8.GetBytes(expected.GetProperty("document").GetRawText())), backup.Document);
         }

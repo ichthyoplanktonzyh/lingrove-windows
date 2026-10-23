@@ -52,6 +52,11 @@ public sealed class VocabularyRestoreTests
                 else Assert.True(CreateHardLinkW(chosen, source, IntPtr.Zero));
             }
         }
+        // SQL sidecars and the chosen source already exist. Restore may introduce only the
+        // final referenced media file; a traversal target or differently named stage is not allowed.
+        var allowedFiles = Directory.EnumerateFiles(folder.Path, "*", SearchOption.AllDirectories)
+            .Where(path => !path.StartsWith(folder.Notebook + ".media" + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
+            .Append(media).ToHashSet(StringComparer.OrdinalIgnoreCase);
         Exception? failure = await Record.ExceptionAsync(() => archive.RestoreAsync(chosen));
         string? nativeError = expected.GetProperty("error").GetString();
         if (nativeError is null) Assert.Null(failure);
@@ -70,6 +75,10 @@ public sealed class VocabularyRestoreTests
         byte[]? actual = null; try { actual = await archive.ReadImageAsync(Image); } catch (VocabularyException) { }
         Assert.Equal(expected.GetProperty("imageReadable").GetBoolean(), actual is not null && actual.SequenceEqual(Input));
         Assert.Equal(expected.GetProperty("mediaExists").GetBoolean(), File.Exists(media));
+        string mediaRoot = folder.Notebook + ".media";
+        var mediaEntries = Directory.Exists(mediaRoot) ? Directory.EnumerateFileSystemEntries(mediaRoot, "*", SearchOption.AllDirectories).ToArray() : [];
+        Assert.Equal(expected.GetProperty("mediaExists").GetBoolean() ? new[] { media } : [], mediaEntries);
+        Assert.All(Directory.EnumerateFiles(folder.Path, "*", SearchOption.AllDirectories), path => Assert.Contains(path, allowedFiles));
         Assert.Equal(expected.GetProperty("stages").GetInt32(), Directory.EnumerateFiles(folder.Path, ".notebook-*", SearchOption.AllDirectories).Count());
         if (id == "oversized") Assert.Equal((long)VocabularyRestorePolicy.MaximumBackupBytes + 1, new FileInfo(source).Length);
         else if (id == "directory") Assert.True(Directory.Exists(source));

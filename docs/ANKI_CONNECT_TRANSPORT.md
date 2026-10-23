@@ -78,7 +78,7 @@ The separate review-card corpus observes native JSONEncoder depth on the synchro
 Windows boundary independently tests that retained guard. Deep async-native stack behavior remains
 an explicit source/runtime limitation, not an established client-depth parity claim.
 
-Thirteen additional component cases exercise actual Windows handler configuration, no dispatch for
+Fifteen additional component cases exercise actual Windows handler configuration, no dispatch for
 rejected endpoints, bounded reading, response/handler disposal, caller cancellation, owned deadline,
 read-error redaction, pre-transmission validation priority and invalid UTF-16/depth admission.
 The fake-handler suite does not establish native socket behavior, real redirects/decompression,
@@ -89,6 +89,6 @@ documented by [Apple](https://developer.apple.com/documentation/foundation/urlse
 Number notation follows the binary64 exact-integer boundary in the [Swift 6.2 formatter](https://github.com/swiftlang/swift/blob/swift-6.2-RELEASE/stdlib/public/runtime/SwiftDtoa.cpp);
 fixture observations, including values adjacent to that boundary, remain the executable reference.
 
-Local validation:88 original-source observations pass; Core3517 and portable App267 pass with
+Local validation:88 original-source observations pass; Core3517 and portable App269 pass with
 zero failures/skips. Full Release solution cross-build passes with zero warnings/errors. Final-head Windows execution and all44 Mac source verifiers are required
 before merge. No installer, artifact upload, model download or network test is introduced.

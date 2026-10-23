@@ -80,6 +80,27 @@ public sealed class AnkiConnectBoundaryTests
         var error = await Assert.ThrowsAsync<AnkiReviewException>(() => work.WaitAsync(TimeSpan.FromSeconds(5)));
         Assert.Equal(AnkiWirePolicy.CouldNotConnect, error.Message); Assert.Null(error.InnerException); Assert.True(stream.Disposed); Assert.Equal(1, handler.Requests);
     }
+    [Theory, InlineData(false), InlineData(true)]
+    public async Task HeaderWaitObservesOwnedTimeoutAndCallerCancellation(bool callerCancels)
+    {
+        using var handler = new HeaderGateHandler(); var clock = new ManualClock();
+        using var client = new AnkiConnectClient(handler, TimeSpan.FromSeconds(10), clock);
+        using var cancellation = new CancellationTokenSource();
+        var work = client.PerformAsync("version", Parameters, Connection, cancellation.Token);
+        await handler.Started.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        if (callerCancels) cancellation.Cancel(); else clock.Advance(TimeSpan.FromSeconds(10));
+        if (callerCancels)
+        {
+            var error = await Assert.ThrowsAsync<OperationCanceledException>(() => work.WaitAsync(TimeSpan.FromSeconds(5)));
+            Assert.Equal(cancellation.Token, error.CancellationToken);
+        }
+        else
+        {
+            var error = await Assert.ThrowsAsync<AnkiReviewException>(() => work.WaitAsync(TimeSpan.FromSeconds(5)));
+            Assert.Equal(AnkiWirePolicy.CouldNotConnect, error.Message); Assert.Null(error.InnerException);
+        }
+        Assert.True(handler.ObservedCancellation); Assert.Equal(1, handler.Requests);
+    }
     [Fact]
     public async Task ReadFailureNeverRetainsTransportTextOrInnerError()
     {
@@ -215,4 +236,17 @@ internal sealed class ProgressStream : Stream
     public override void Flush() => throw new NotSupportedException(); public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
     public override void SetLength(long value) => throw new NotSupportedException(); public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
     protected override void Dispose(bool disposing) { Disposed = true; base.Dispose(disposing); }
+}
+
+internal sealed class HeaderGateHandler : HttpMessageHandler
+{
+    public TaskCompletionSource Started { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    public bool ObservedCancellation { get; private set; }
+    public int Requests { get; private set; }
+    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    {
+        Requests++; Started.TrySetResult();
+        try { await Task.Delay(Timeout.Infinite, cancellationToken); throw new InvalidOperationException("Gate unexpectedly released"); }
+        catch (OperationCanceledException) { ObservedCancellation = true; throw; }
+    }
 }

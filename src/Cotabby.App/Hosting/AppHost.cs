@@ -6,6 +6,7 @@ using Cotabby.App.Overlay;
 using Cotabby.App.Settings;
 using Cotabby.App.UI;
 using Cotabby.Core.Focus;
+using Cotabby.Core.Context;
 using Cotabby.Core.Input;
 using Cotabby.Core.Insertion;
 using Cotabby.Core.LanguageLearning;
@@ -106,6 +107,7 @@ public sealed class AppHost : IAsyncDisposable
         sc.AddSingleton<IFocusTracker, UiaFocusTracker>();
         sc.AddSingleton<IKeyboardHook, KeyboardHook>();
         sc.AddSingleton<ClipboardTextReader>();
+        sc.AddSingleton<IClipboardTextWriter, ClipboardTextWriter>();
         sc.AddSingleton<ITextInserter, SendInputTextInserter>();
         sc.AddSingleton<LlamaRuntimeManager>();
         sc.AddSingleton<ModelDownloader>();
@@ -186,7 +188,8 @@ public sealed class AppHost : IAsyncDisposable
             dictionaryProvider: _services.GetRequiredService<ILearningDictionaryProviding>(),
             explanationService: LearningExplanation.Service,
             explanationInputs: _services.GetRequiredService<LearningExplanationInputFactory>(),
-            configureExplanation: () => SettingsWindow.ShowLearning(this));
+            configureExplanation: () => SettingsWindow.ShowLearning(this),
+            clipboardWriter: _services.GetRequiredService<IClipboardTextWriter>());
 
         SystemEvents.PowerModeChanged += OnPowerModeChanged;
         ApplySettings();

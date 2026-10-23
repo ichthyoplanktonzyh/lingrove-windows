@@ -43,7 +43,10 @@ public partial class LearningPreviewWindow : Window
         Dispatcher.VerifyAccess();
         if (!LearningExplanationCardPolicy.SameDocument(_displayedPreview, state)) ClearExplanation();
         _displayedPreview = state;
-        SourceSection.Visibility = Visibility.Visible;
+        PresentCopyActions(state, anchor);
+        // Mac's error branch replaces the details body. Keep the captured source out of that
+        // presentation as well as its Copy footer; retry still belongs to the controller capture.
+        SourceSection.Visibility = state.Status == LearningPreviewStatus.Failed ? Visibility.Collapsed : Visibility.Visible;
         SourceText.Text = state.Source;
         DirectionText.Text = state.Options is { } options
             ? $"{options.SourceLanguage.Label()}  →  {options.TargetLanguage.Label()}"
@@ -118,6 +121,7 @@ public partial class LearningPreviewWindow : Window
     {
         Dispatcher.VerifyAccess();
         _displayedPreview = null;
+        ClearCopyActions();
         ClearExplanation();
         SourceSection.Visibility = Visibility.Collapsed;
         SourceText.Text = string.Empty;
@@ -145,6 +149,7 @@ public partial class LearningPreviewWindow : Window
 
         Hide();
         _displayedPreview = null;
+        ClearCopyActions();
         // This long-lived window is reused. Retiring the capture also drops the literal editor
         // and translation text from its visual tree rather than keeping a hidden old document.
         SourceText.Text = DirectionText.Text = ErrorText.Text = string.Empty;

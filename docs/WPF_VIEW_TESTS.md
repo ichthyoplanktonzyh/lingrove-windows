@@ -41,3 +41,9 @@ upload, installer or release is involved. Real editor activation, mouse hit test
 IME, external-field freshness, mixed-monitor DPI, caret/ghost pixels, insertion acknowledgement and
 CPU/GPU model execution retain their separate Windows-host gates in `PORTING_PLAN.md`. A green view
 suite does not promote those parity rows to verified.
+
+The [explicit Copy adaptation](LEARNING_COPY.md) adds footer/feedback and old-button identity cases
+to this suite. Its Copy events have no native writer attached in tests, so CI still leaves the
+system clipboard untouched. PR #21's initial 14-view suite passed on Windows x64 at
+`ccaf8ddeda47e295f6ea9f88dfe35eafe92a71ae` (run `39882608095`). Later additions run through the
+same CI entry point; that initial result only covers its recorded revision.

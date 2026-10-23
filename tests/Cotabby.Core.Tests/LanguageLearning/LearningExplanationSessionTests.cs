@@ -290,6 +290,31 @@ public sealed class LearningExplanationSessionTests
         return (new(session), new(view), work, call);
     }
 
+    [Fact]
+    public async Task ExpectedSnapshotRejectsAQueuedStopOrRefreshAfterCompletion()
+    {
+        var service = new Service(); await using var session = new LearningExplanationSession(service);
+        session.SetTarget(Input()); var work = session.ExplainAsync(); var call = await service.Next();
+        var generating = session.State; call.Complete(); await work.WaitAsync(Timeout);
+        var complete = session.State;
+        session.Cancel(generating); await session.ExplainAsync(refresh: true, expectedState: generating);
+        Assert.Same(complete, session.State); Assert.Equal(1, service.Generations);
+    }
+
+    [Fact]
+    public async Task DirectOwnerRetirementRejectsAdmissionAndUncooperativeResults()
+    {
+        var service = new Service(); await using var authority = new LearningRequestLifetime();
+        await using var session = new LearningExplanationSession(service, authority.Token);
+        session.SetTarget(Input()); var work = session.ExplainAsync(); var call = await service.Next();
+        await authority.Retire().WaitAsync(Timeout);
+        Assert.True(call.Token.IsCancellationRequested);
+        call.Complete(); await work.WaitAsync(Timeout);
+        Assert.Null(session.State.Record);
+        await session.ExplainAsync(refresh: true); session.SetTarget(Input("Other sentence."));
+        Assert.Equal(1, service.Generations); Assert.Equal(call.Input, session.State.Input);
+    }
+
     private sealed class ViewProbe { public void Observe(LearningExplanationState state) { } }
 
     private sealed record Call(LearningExplanationInput Input, LearningLanguage Language, CancellationToken Token, string RequestId, bool Refresh)

@@ -1,11 +1,13 @@
 namespace Cotabby.Core.LanguageLearning;
 
 public enum LearningDictionaryContentStatus { Loading, Result, Failed }
+public enum LearningDictionaryPage { Contextual, Dictionary }
 
 /// <summary>
 /// One transient card target. Document/target/request identities have separate lifetimes: a
 /// component word changes the target without rereading the editor or changing its captured unit.
-/// It holds dictionary content only; it never creates a user vocabulary meaning or authorizes edits.
+/// Dictionary and contextual explanation are independent presentations of that target. Generated
+/// text never becomes a source-owned dictionary definition, user meaning or authorization to edit.
 /// </summary>
 public sealed record LearningDictionaryState
 {
@@ -14,6 +16,10 @@ public sealed record LearningDictionaryState
     public LearningDictionaryWord? SelectedWord { get; init; }
     public LearningLanguage Language { get; init; } = LearningLanguage.English;
     public string? SpeechContext { get; init; }
+    public LearningDictionaryPage Page { get; init; } = LearningDictionaryPage.Dictionary;
+    public bool HasContextualExplanation { get; init; }
+    public bool ExplanationConfigured { get; init; }
+    public LearningExplanationState? Explanation { get; init; }
     public Guid TargetIdentity { get; init; } = Guid.NewGuid();
     public Guid RequestIdentity { get; init; } = Guid.NewGuid();
     public LearningDictionaryContentStatus Status { get; init; } = LearningDictionaryContentStatus.Loading;

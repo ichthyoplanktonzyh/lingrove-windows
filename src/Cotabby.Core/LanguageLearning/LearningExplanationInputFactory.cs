@@ -57,6 +57,13 @@ public sealed class LearningExplanationInputFactory(ILearningLexicalText lexical
     }
 
     public LearningExplanationInput? FromComponent(LearningDictionaryWord word, LearningUnit unit, LearningExplanationInput capture)
+        => ProjectComponent(word, unit, capture);
+
+    /// <summary>
+    /// Component projection needs no tokenizer or editor. A dictionary target uses this same
+    /// occurrence mapping when navigating its frozen unit, without carrying a platform adapter.
+    /// </summary>
+    public static LearningExplanationInput? ProjectComponent(LearningDictionaryWord word, LearningUnit unit, LearningExplanationInput capture)
     {
         ArgumentNullException.ThrowIfNull(word); ArgumentNullException.ThrowIfNull(unit); ArgumentNullException.ThrowIfNull(capture);
         if (!unit.Words.Contains(word)) return null;
@@ -75,6 +82,24 @@ public sealed class LearningExplanationInputFactory(ILearningLexicalText lexical
             evidence = new(capture.Context, [range], capture.ContextKind);
         }
         return Input(word.Text, word.Text, capture.Language, VocabularyEntryKind.Word, evidence);
+    }
+
+    /// <summary>
+    /// Mac's unit fallback when an example could not be captured. General explanation stays
+    /// available, but this value makes no claim to contain the original sentence or occurrence.
+    /// </summary>
+    public static LearningExplanationInput? FromUnscopedUnit(LearningUnit unit, LearningLanguage language)
+    {
+        ArgumentNullException.ThrowIfNull(unit);
+        var kind = unit.Kind switch
+        {
+            LearningUnitKind.Word => VocabularyEntryKind.Word,
+            LearningUnitKind.Expression => VocabularyEntryKind.Expression,
+            LearningUnitKind.Pattern => VocabularyEntryKind.Pattern,
+            _ => (VocabularyEntryKind?)null,
+        };
+        return kind is null ? null : Input(unit.Kind == LearningUnitKind.Pattern ? unit.Query : unit.Surface,
+            unit.Query, language, kind.Value, null);
     }
 
     private static bool Ready(LearningPreviewState presentation) =>

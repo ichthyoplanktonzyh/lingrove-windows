@@ -7,7 +7,9 @@ keeps source-owned senses and attribution separate, and supports component words
 
 This is the completed target-translation/bundled-provider subset. Source-sentence double-clicks,
 word fallback after recognition failure, system/imported/online dictionary providers and source
-selection, contextual explanations, references, vocabulary/favorites and speech remain unported.
+selection, contextual explanation UI, references, vocabulary/favorites and speech remain unported.
+The [contextual session library](LEARNING_CONTEXTUAL_QUERY.md) now preserves Mac's contextual default,
+lazy dictionary page and target-specific explanation lifetime, awaiting WPF wiring.
 The card does not modify the editor or issue a model/network lookup.
 
 ## Mac authority and boundaries

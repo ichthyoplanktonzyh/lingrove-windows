@@ -33,6 +33,8 @@ The [offline lexical index and lazy bundled store](docs/LEARNING_OFFLINE_LEXICON
 same pinned Mac resource and attribution. [Completed-translation double-click lookup](docs/LEARNING_WORD_PREVIEW.md)
 now connects them to a bundled dictionary card; native hit/focus/placement checks and broader
 system/imported dictionary flows remain incomplete.
+The [contextual query library](docs/LEARNING_CONTEXTUAL_QUERY.md) now ports the Mac default sense
+page and lazy dictionary navigation; that dictionary UI is not connected to explanation yet.
 The [explanation input, prompt and output rules](docs/LEARNING_EXPLANATION_RULES.md) now have
 Mac-backed portable coverage, including model capability/metadata gates. A local provider now
 connects those rules to an exclusive native lease and complete-response validation. The app now

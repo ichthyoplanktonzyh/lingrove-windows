@@ -129,7 +129,8 @@ service now owns saved-first lookup and the bounded complete-record cache. AppHo
 independent local runtime/settings with that service and its on-demand/60-second idle policy. The
 portable session now preserves saved restoration, refresh and cancellation. The writing sentence
 card now connects it with explicit controls and captured-document freshness checks; native desktop
-and model execution remain unverified. Unit/component explanation, original,
+and model execution remain unverified. The contextual query library now sequences unit/component
+explanation with lazy dictionary navigation; WPF integration remains next. Original,
 selected-text and reading captures, endpoint transport and durable records remain later work.
 
 **Gate:** shared policy fixtures pass; Windows host tests cover selection changes, IME composition,

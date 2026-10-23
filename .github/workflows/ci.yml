@@ -255,3 +255,6 @@ jobs:
 
       - name: Verify original speech companion metadata and voice-language compatibility
         run: python3 scripts/verify-speech-metadata-macos-parity.py --mac-repo .mac-baseline
+
+      - name: Verify complete original speech language resolver with scripted unrestricted scores
+        run: python3 scripts/verify-speech-language-macos-parity.py --mac-repo .mac-baseline

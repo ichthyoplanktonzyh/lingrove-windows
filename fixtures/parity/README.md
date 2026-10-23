@@ -346,3 +346,12 @@ Dimensions, rejection and returned-reference self-consistency are compared; code
 platform-owned. The oversized-area header is also a malformed pixel payload and only establishes
 rejection. EXIF/profile/multiframe/output-size Windows cases remain separate native-adapter
 regressions. [Image preparation scope](../../docs/VOCABULARY_IMAGE_PREPARATION.md) leaves media/UI open.
+
+`vocabulary-image-storage-v1.json` adds twelve observations from the complete original Mac
+`VocabularyImageStorage.swift`: actual memory or temporary private file operations on fixed shared
+PNG bytes, reuse/new-write flags, corrupt-file repair, missing/read removal, invalid-byte and
+metadata rejection, directory/root-link/leaf-link admission and oversized-read rejection. The
+verifier supplies only inputs/driver calls; it does not replace storage or expected behavior. Native
+filesystem error types project as unavailable, and platform encoder bytes are not compared. Seven
+additional Windows cases exercise ACL/identity/publish/cleanup ownership protections independently. Archive
+transactions, backup/restore and editor image UI remain open.

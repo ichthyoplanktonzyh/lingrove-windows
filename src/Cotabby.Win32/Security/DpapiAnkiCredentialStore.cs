@@ -57,7 +57,13 @@ public sealed class DpapiAnkiCredentialStore(string? filePath = null) : IAnkiCre
         {
             string path = ResolvePath();
             ArgumentNullException.ThrowIfNull(value);
-            if (value.Length == 0) { File.Delete(path); return; }
+            if (value.Length == 0)
+            {
+                // Unlike SecItemDelete's not-found status, Windows File.Delete can throw when
+                // the parent is absent. The credential is still absent; do not create a folder.
+                try { File.Delete(path); } catch (DirectoryNotFoundException) { }
+                return;
+            }
             // Validate/encode before touching a destination. Unlike Encoding.UTF8's default,
             // strict encoding cannot silently replace a malformed UTF-16 key with another key.
             plain = StrictUtf8.GetBytes(value);

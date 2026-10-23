@@ -123,7 +123,9 @@ The [existing-file drop adapter](docs/VOCABULARY_FILE_DROP.md) adds a narrow Uni
 the [image clipboard transfer library](docs/VOCABULARY_CLIPBOARD_TRANSFER.md) isolates bounded encoded-image
 reads in a cancellable child process. [Image paste](docs/VOCABULARY_IMAGE_PASTE.md) now connects its
 shared owner to the editor button and explanation-section command. The [DIB adapter](docs/VOCABULARY_CLIPBOARD_DIB.md)
-adds bounded Windows bitmap envelopes to that same path. Compressed/profiled bitmap variants, virtual/pixel drops, review/export and other dictionary providers remain work. Do not flatten senses into
+adds bounded Windows bitmap envelopes to that same path. The [export projection library](docs/VOCABULARY_EXPORT_PROJECTION.md)
+now preserves frozen scope IDs and portable learning-material fields. Export formatting, files and UI,
+compressed/profiled bitmap variants, virtual/pixel drops, review and other dictionary providers remain work. Do not flatten senses into
 one translation string, regenerate stable IDs during edits, or treat a generated explanation as the
 user's authored meaning. See the vocabulary models and porting gates in the linked docs. Storage
 compatibility with macOS is not assumed; migrations must be explicit and tested.
@@ -165,6 +167,7 @@ python3 scripts/verify-vocabulary-notebook-session-macos-parity.py --mac-repo /p
 python3 scripts/verify-vocabulary-image-preparation-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-vocabulary-image-storage-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-vocabulary-media-transactions-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
+python3 scripts/verify-vocabulary-export-projection-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 ```
 
 The verifiers read the pinned macOS sources from Git and check the same JSON cases. The lexical
@@ -178,7 +181,7 @@ runner. This is ordinary compilation, not packaging or a release.
 The current `.github/workflows/ci.yml` has two validation jobs: Windows x64 restores and builds the
 full solution, then runs Core, portable App boundary and Inference tests, including noninteractive ICU sentence tests,
 and the compiled learning-card WPF view suite on its own STA dispatcher (see `docs/WPF_VIEW_TESTS.md`);
-macOS 26 runs Core, portable App boundary tests and all twenty-four Swift parity verifiers against a sparse checkout of the pinned Mac
+macOS 26 runs Core, portable App boundary tests and all twenty-five Swift parity verifiers against a sparse checkout of the pinned Mac
 Support, language-learning/vocabulary models/services, content-test provenance, language catalog and pinned expression resource files. The separate
 `.github/workflows/upstream-baseline.yml` checks the original Windows fork at commit
 `b1e4031c70aca1be21aae2c57b138fde5fc22bb1` with .NET 9 on manual dispatch. Its initial setup run is

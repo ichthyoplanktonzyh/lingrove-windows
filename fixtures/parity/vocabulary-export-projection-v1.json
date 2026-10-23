@@ -1,0 +1,1633 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "configuration-defaults",
+      "operation": "configuration",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyExportModels.swift",
+      "expected": {
+        "content": true,
+        "examples": true,
+        "explanation": false,
+        "expressionList": false,
+        "extension": "txt",
+        "format": "text",
+        "images": false,
+        "includesImages": false,
+        "maximumDataBytes": 67108864,
+        "meanings": true,
+        "notes": true,
+        "spreadsheetCompatibility": true,
+        "style": "notes"
+      }
+    },
+    {
+      "id": "configuration-text-notes-images",
+      "operation": "configuration",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyExportModels.swift",
+      "format": "text",
+      "style": "notes",
+      "images": true,
+      "expected": {
+        "content": true,
+        "examples": true,
+        "explanation": false,
+        "expressionList": false,
+        "extension": "txt",
+        "format": "text",
+        "images": true,
+        "includesImages": true,
+        "maximumDataBytes": 67108864,
+        "meanings": true,
+        "notes": true,
+        "spreadsheetCompatibility": true,
+        "style": "notes"
+      }
+    },
+    {
+      "id": "configuration-text-expressions-images",
+      "operation": "configuration",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyExportModels.swift",
+      "format": "text",
+      "style": "expressions",
+      "images": true,
+      "expected": {
+        "content": true,
+        "examples": true,
+        "explanation": false,
+        "expressionList": true,
+        "extension": "txt",
+        "format": "text",
+        "images": true,
+        "includesImages": false,
+        "maximumDataBytes": 67108864,
+        "meanings": true,
+        "notes": true,
+        "spreadsheetCompatibility": true,
+        "style": "expressions"
+      }
+    },
+    {
+      "id": "configuration-csv-notes-images",
+      "operation": "configuration",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyExportModels.swift",
+      "format": "csv",
+      "style": "notes",
+      "images": true,
+      "expected": {
+        "content": true,
+        "examples": true,
+        "explanation": false,
+        "expressionList": false,
+        "extension": "csv",
+        "format": "csv",
+        "images": true,
+        "includesImages": true,
+        "maximumDataBytes": 67108864,
+        "meanings": true,
+        "notes": true,
+        "spreadsheetCompatibility": true,
+        "style": "notes"
+      }
+    },
+    {
+      "id": "configuration-csv-expressions-images",
+      "operation": "configuration",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyExportModels.swift",
+      "format": "csv",
+      "style": "expressions",
+      "images": true,
+      "expected": {
+        "content": true,
+        "examples": true,
+        "explanation": false,
+        "expressionList": false,
+        "extension": "csv",
+        "format": "csv",
+        "images": true,
+        "includesImages": true,
+        "maximumDataBytes": 67108864,
+        "meanings": true,
+        "notes": true,
+        "spreadsheetCompatibility": true,
+        "style": "expressions"
+      }
+    },
+    {
+      "id": "configuration-json-notes-images",
+      "operation": "configuration",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyExportModels.swift",
+      "format": "json",
+      "style": "notes",
+      "images": true,
+      "expected": {
+        "content": true,
+        "examples": true,
+        "explanation": false,
+        "expressionList": false,
+        "extension": "json",
+        "format": "json",
+        "images": true,
+        "includesImages": true,
+        "maximumDataBytes": 67108864,
+        "meanings": true,
+        "notes": true,
+        "spreadsheetCompatibility": true,
+        "style": "notes"
+      }
+    },
+    {
+      "id": "configuration-json-expressions-images",
+      "operation": "configuration",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyExportModels.swift",
+      "format": "json",
+      "style": "expressions",
+      "images": true,
+      "expected": {
+        "content": true,
+        "examples": true,
+        "explanation": false,
+        "expressionList": false,
+        "extension": "json",
+        "format": "json",
+        "images": true,
+        "includesImages": true,
+        "maximumDataBytes": 67108864,
+        "meanings": true,
+        "notes": true,
+        "spreadsheetCompatibility": true,
+        "style": "expressions"
+      }
+    },
+    {
+      "id": "configuration-content-disabled",
+      "operation": "configuration",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyExportModels.swift",
+      "content": false,
+      "images": true,
+      "expected": {
+        "content": false,
+        "examples": true,
+        "explanation": false,
+        "expressionList": false,
+        "extension": "txt",
+        "format": "text",
+        "images": true,
+        "includesImages": false,
+        "maximumDataBytes": 67108864,
+        "meanings": true,
+        "notes": true,
+        "spreadsheetCompatibility": true,
+        "style": "notes"
+      }
+    },
+    {
+      "id": "configuration-spreadsheet-disabled",
+      "operation": "configuration",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyExportModels.swift",
+      "spreadsheetCompatibility": false,
+      "expected": {
+        "content": true,
+        "examples": true,
+        "explanation": false,
+        "expressionList": false,
+        "extension": "txt",
+        "format": "text",
+        "images": false,
+        "includesImages": false,
+        "maximumDataBytes": 67108864,
+        "meanings": true,
+        "notes": true,
+        "spreadsheetCompatibility": false,
+        "style": "notes"
+      }
+    },
+    {
+      "id": "request-normal",
+      "operation": "request",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyExportModels.swift",
+      "expected": {
+        "all": [
+          [
+            "00000000-0000-0000-0000-000000000001",
+            "00000000-0000-0000-0000-000000000002"
+          ],
+          [
+            "00000000-0000-0000-0000-000000000005",
+            "00000000-0000-0000-0000-000000000006"
+          ]
+        ],
+        "filtered": [
+          [
+            "00000000-0000-0000-0000-000000000005",
+            "00000000-0000-0000-0000-000000000006"
+          ]
+        ],
+        "initial": "filtered",
+        "selected": [
+          [
+            "00000000-0000-0000-0000-000000000001",
+            "00000000-0000-0000-0000-000000000002"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "selection-normal",
+      "operation": "selection",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "expected": [
+        {
+          "entry": "00000000-0000-0000-0000-000000000001",
+          "senses": [
+            "00000000-0000-0000-0000-000000000002"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "selection-empty",
+      "operation": "selection",
+      "mode": "empty",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "expected": {
+        "error": "empty"
+      }
+    },
+    {
+      "id": "selection-missingEntry",
+      "operation": "selection",
+      "mode": "missingEntry",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "expected": {
+        "error": "changed"
+      }
+    },
+    {
+      "id": "selection-missingSense",
+      "operation": "selection",
+      "mode": "missingSense",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "expected": {
+        "error": "changed"
+      }
+    },
+    {
+      "id": "selection-alias",
+      "operation": "selection",
+      "mode": "alias",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "expected": {
+        "error": "changed"
+      }
+    },
+    {
+      "id": "selection-duplicateEntry",
+      "operation": "selection",
+      "mode": "duplicateEntry",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "expected": {
+        "error": "changed"
+      }
+    },
+    {
+      "id": "selection-ordered",
+      "operation": "selection",
+      "mode": "ordered",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "expected": [
+        {
+          "entry": "00000000-0000-0000-0000-000000000005",
+          "senses": [
+            "00000000-0000-0000-0000-000000000006"
+          ]
+        },
+        {
+          "entry": "00000000-0000-0000-0000-000000000001",
+          "senses": [
+            "00000000-0000-0000-0000-000000000004",
+            "00000000-0000-0000-0000-000000000002"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "selection-cancelledEmpty",
+      "operation": "selection",
+      "mode": "cancelledEmpty",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "expected": {
+        "error": "empty"
+      }
+    },
+    {
+      "id": "selection-cancelledNonempty",
+      "operation": "selection",
+      "mode": "cancelledNonempty",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "expected": {
+        "error": "cancelled"
+      }
+    },
+    {
+      "id": "projection-normal",
+      "operation": "projection",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "expected": {
+        "entries": [
+          {
+            "dictionaryForm": "bank",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "content": [
+                  {
+                    "id": "00000000-0000-0000-0000-000000000014",
+                    "text": {
+                      "bold": false,
+                      "italic": false,
+                      "style": "paragraph",
+                      "text": "literal"
+                    }
+                  },
+                  {
+                    "caption": "literal caption",
+                    "filename": "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+                    "id": "00000000-0000-0000-0000-000000000015",
+                    "image": {
+                      "byteCount": 70,
+                      "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                      "height": 1,
+                      "width": 1
+                    }
+                  },
+                  {
+                    "caption": "second occurrence",
+                    "filename": "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+                    "id": "00000000-0000-0000-0000-000000000016",
+                    "image": {
+                      "byteCount": 70,
+                      "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                      "height": 1,
+                      "width": 1
+                    }
+                  },
+                  {
+                    "caption": "different metadata",
+                    "filename": "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+                    "id": "00000000-0000-0000-0000-000000000017",
+                    "image": {
+                      "byteCount": 70,
+                      "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                      "height": 1,
+                      "width": 2
+                    }
+                  }
+                ],
+                "createdAt": 0,
+                "examples": [
+                  {
+                    "completeness": "sentence",
+                    "createdAt": 0,
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "meaning": "context",
+                    "otherTranslations": [],
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "原句"
+                  }
+                ],
+                "id": "00000000-0000-0000-0000-000000000002",
+                "meaning": "core",
+                "note": "note",
+                "otherMeanings": [],
+                "tags": [
+                  "Work"
+                ]
+              },
+              {
+                "content": [],
+                "createdAt": 0,
+                "examples": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "meaning": "second",
+                "note": "",
+                "otherMeanings": [],
+                "tags": []
+              }
+            ]
+          },
+          {
+            "dictionaryForm": "bank",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000005",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "content": [],
+                "createdAt": 0,
+                "examples": [],
+                "id": "00000000-0000-0000-0000-000000000006",
+                "meaning": "third",
+                "note": "",
+                "otherMeanings": [],
+                "tags": []
+              }
+            ]
+          }
+        ],
+        "format": "lingrove-vocabulary-export",
+        "version": 1
+      }
+    },
+    {
+      "id": "projection-empty",
+      "operation": "projection",
+      "mode": "empty",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "expected": {
+        "entries": [],
+        "format": "lingrove-vocabulary-export",
+        "version": 1
+      }
+    },
+    {
+      "id": "projection-absentContent",
+      "operation": "projection",
+      "mode": "absentContent",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "expected": {
+        "entries": [
+          {
+            "dictionaryForm": "bank",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "content": [],
+                "createdAt": 0,
+                "examples": [
+                  {
+                    "completeness": "sentence",
+                    "createdAt": 0,
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "meaning": "context",
+                    "otherTranslations": [],
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "原句"
+                  }
+                ],
+                "id": "00000000-0000-0000-0000-000000000002",
+                "meaning": "core",
+                "note": "note",
+                "otherMeanings": [],
+                "tags": [
+                  "Work"
+                ]
+              },
+              {
+                "content": [],
+                "createdAt": 0,
+                "examples": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "meaning": "second",
+                "note": "",
+                "otherMeanings": [],
+                "tags": []
+              }
+            ]
+          },
+          {
+            "dictionaryForm": "bank",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000005",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "content": [],
+                "createdAt": 0,
+                "examples": [],
+                "id": "00000000-0000-0000-0000-000000000006",
+                "meaning": "third",
+                "note": "",
+                "otherMeanings": [],
+                "tags": []
+              }
+            ]
+          }
+        ],
+        "format": "lingrove-vocabulary-export",
+        "version": 1
+      }
+    },
+    {
+      "id": "projection-emptyContent",
+      "operation": "projection",
+      "mode": "emptyContent",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "expected": {
+        "entries": [
+          {
+            "dictionaryForm": "bank",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "content": [],
+                "createdAt": 0,
+                "examples": [
+                  {
+                    "completeness": "sentence",
+                    "createdAt": 0,
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "meaning": "context",
+                    "otherTranslations": [],
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "原句"
+                  }
+                ],
+                "id": "00000000-0000-0000-0000-000000000002",
+                "meaning": "core",
+                "note": "note",
+                "otherMeanings": [],
+                "tags": [
+                  "Work"
+                ]
+              },
+              {
+                "content": [],
+                "createdAt": 0,
+                "examples": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "meaning": "second",
+                "note": "",
+                "otherMeanings": [],
+                "tags": []
+              }
+            ]
+          },
+          {
+            "dictionaryForm": "bank",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000005",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "content": [],
+                "createdAt": 0,
+                "examples": [],
+                "id": "00000000-0000-0000-0000-000000000006",
+                "meaning": "third",
+                "note": "",
+                "otherMeanings": [],
+                "tags": []
+              }
+            ]
+          }
+        ],
+        "format": "lingrove-vocabulary-export",
+        "version": 1
+      }
+    },
+    {
+      "id": "projection-variants",
+      "operation": "projection",
+      "mode": "variants",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "expected": {
+        "entries": [
+          {
+            "dictionaryForm": "bank",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "content": [
+                  {
+                    "id": "00000000-0000-0000-0000-000000000014",
+                    "text": {
+                      "bold": false,
+                      "italic": false,
+                      "style": "paragraph",
+                      "text": "literal"
+                    }
+                  },
+                  {
+                    "caption": "literal caption",
+                    "filename": "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+                    "id": "00000000-0000-0000-0000-000000000015",
+                    "image": {
+                      "byteCount": 70,
+                      "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                      "height": 1,
+                      "width": 1
+                    }
+                  },
+                  {
+                    "caption": "second occurrence",
+                    "filename": "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+                    "id": "00000000-0000-0000-0000-000000000016",
+                    "image": {
+                      "byteCount": 70,
+                      "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                      "height": 1,
+                      "width": 1
+                    }
+                  },
+                  {
+                    "caption": "different metadata",
+                    "filename": "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+                    "id": "00000000-0000-0000-0000-000000000017",
+                    "image": {
+                      "byteCount": 70,
+                      "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                      "height": 1,
+                      "width": 2
+                    }
+                  }
+                ],
+                "createdAt": 0,
+                "examples": [
+                  {
+                    "completeness": "sentence",
+                    "createdAt": 0,
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "meaning": "context",
+                    "otherTranslations": [
+                      {
+                        "language": "fr",
+                        "text": "é"
+                      },
+                      {
+                        "text": " "
+                      },
+                      {
+                        "text": "other"
+                      }
+                    ],
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "é"
+                  }
+                ],
+                "id": "00000000-0000-0000-0000-000000000002",
+                "meaning": "é",
+                "meaningLanguage": "fr",
+                "note": "note",
+                "otherMeanings": [
+                  {
+                    "language": "en",
+                    "text": "é"
+                  },
+                  {
+                    "language": "fr",
+                    "text": "other"
+                  },
+                  {
+                    "text": " "
+                  },
+                  {
+                    "text": "é"
+                  },
+                  {
+                    "language": "fr",
+                    "text": "other wording"
+                  }
+                ],
+                "tags": [
+                  "Work"
+                ]
+              },
+              {
+                "content": [],
+                "createdAt": 0,
+                "examples": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "meaning": "second",
+                "note": "",
+                "otherMeanings": [],
+                "tags": []
+              }
+            ]
+          },
+          {
+            "dictionaryForm": "bank",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000005",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "content": [],
+                "createdAt": 0,
+                "examples": [],
+                "id": "00000000-0000-0000-0000-000000000006",
+                "meaning": "third",
+                "note": "",
+                "otherMeanings": [],
+                "tags": []
+              }
+            ]
+          }
+        ],
+        "format": "lingrove-vocabulary-export",
+        "version": 1
+      }
+    },
+    {
+      "id": "projection-reviewOnly",
+      "operation": "projection",
+      "mode": "reviewOnly",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "expected": {
+        "entries": [
+          {
+            "dictionaryForm": "bank",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "content": [],
+                "createdAt": 0,
+                "examples": [
+                  {
+                    "completeness": "sentence",
+                    "createdAt": 0,
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "meaning": "context",
+                    "otherTranslations": [],
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "原句"
+                  }
+                ],
+                "id": "00000000-0000-0000-0000-000000000002",
+                "meaning": "core",
+                "note": "note",
+                "otherMeanings": [],
+                "tags": [
+                  "Work"
+                ]
+              },
+              {
+                "content": [],
+                "createdAt": 0,
+                "examples": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "meaning": "second",
+                "note": "",
+                "otherMeanings": [],
+                "tags": []
+              }
+            ]
+          },
+          {
+            "dictionaryForm": "bank",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000005",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "content": [],
+                "createdAt": 0,
+                "examples": [],
+                "id": "00000000-0000-0000-0000-000000000006",
+                "meaning": "third",
+                "note": "",
+                "otherMeanings": [],
+                "tags": []
+              }
+            ]
+          }
+        ],
+        "format": "lingrove-vocabulary-export",
+        "version": 1
+      }
+    },
+    {
+      "id": "projection-all-options-disabled",
+      "operation": "projection",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "meanings": false,
+      "examples": false,
+      "notes": false,
+      "explanation": false,
+      "content": false,
+      "expected": {
+        "entries": [
+          {
+            "dictionaryForm": "bank",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "createdAt": 0,
+                "id": "00000000-0000-0000-0000-000000000002"
+              },
+              {
+                "createdAt": 0,
+                "id": "00000000-0000-0000-0000-000000000004"
+              }
+            ]
+          },
+          {
+            "dictionaryForm": "bank",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000005",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "createdAt": 0,
+                "id": "00000000-0000-0000-0000-000000000006"
+              }
+            ]
+          }
+        ],
+        "format": "lingrove-vocabulary-export",
+        "version": 1
+      }
+    },
+    {
+      "id": "projection-explanations-without-meanings",
+      "operation": "projection",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "meanings": false,
+      "explanation": true,
+      "expected": {
+        "entries": [
+          {
+            "dictionaryForm": "bank",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "content": [
+                  {
+                    "id": "00000000-0000-0000-0000-000000000014",
+                    "text": {
+                      "bold": false,
+                      "italic": false,
+                      "style": "paragraph",
+                      "text": "literal"
+                    }
+                  },
+                  {
+                    "caption": "literal caption",
+                    "filename": "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+                    "id": "00000000-0000-0000-0000-000000000015",
+                    "image": {
+                      "byteCount": 70,
+                      "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                      "height": 1,
+                      "width": 1
+                    }
+                  },
+                  {
+                    "caption": "second occurrence",
+                    "filename": "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+                    "id": "00000000-0000-0000-0000-000000000016",
+                    "image": {
+                      "byteCount": 70,
+                      "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                      "height": 1,
+                      "width": 1
+                    }
+                  },
+                  {
+                    "caption": "different metadata",
+                    "filename": "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+                    "id": "00000000-0000-0000-0000-000000000017",
+                    "image": {
+                      "byteCount": 70,
+                      "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                      "height": 1,
+                      "width": 2
+                    }
+                  }
+                ],
+                "createdAt": 0,
+                "examples": [
+                  {
+                    "completeness": "sentence",
+                    "createdAt": 0,
+                    "explanations": [
+                      {
+                        "detail": "explanation",
+                        "language": "zh-Hans",
+                        "meaning": "meaning"
+                      }
+                    ],
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "otherTranslations": [],
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "原句"
+                  }
+                ],
+                "explanations": [
+                  {
+                    "detail": "explanation",
+                    "language": "zh-Hans",
+                    "meaning": "meaning"
+                  }
+                ],
+                "id": "00000000-0000-0000-0000-000000000002",
+                "note": "note",
+                "tags": [
+                  "Work"
+                ]
+              },
+              {
+                "content": [],
+                "createdAt": 0,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "note": "",
+                "tags": []
+              }
+            ]
+          },
+          {
+            "dictionaryForm": "bank",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000005",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "content": [],
+                "createdAt": 0,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000006",
+                "note": "",
+                "tags": []
+              }
+            ]
+          }
+        ],
+        "format": "lingrove-vocabulary-export",
+        "version": 1
+      }
+    },
+    {
+      "id": "projection-explanations-and-images",
+      "operation": "projection",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "explanation": true,
+      "images": true,
+      "expected": {
+        "entries": [
+          {
+            "dictionaryForm": "bank",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "content": [
+                  {
+                    "id": "00000000-0000-0000-0000-000000000014",
+                    "text": {
+                      "bold": false,
+                      "italic": false,
+                      "style": "paragraph",
+                      "text": "literal"
+                    }
+                  },
+                  {
+                    "caption": "literal caption",
+                    "filename": "images/lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+                    "id": "00000000-0000-0000-0000-000000000015",
+                    "image": {
+                      "byteCount": 70,
+                      "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                      "height": 1,
+                      "width": 1
+                    }
+                  },
+                  {
+                    "caption": "second occurrence",
+                    "filename": "images/lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+                    "id": "00000000-0000-0000-0000-000000000016",
+                    "image": {
+                      "byteCount": 70,
+                      "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                      "height": 1,
+                      "width": 1
+                    }
+                  },
+                  {
+                    "caption": "different metadata",
+                    "filename": "images/lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+                    "id": "00000000-0000-0000-0000-000000000017",
+                    "image": {
+                      "byteCount": 70,
+                      "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                      "height": 1,
+                      "width": 2
+                    }
+                  }
+                ],
+                "createdAt": 0,
+                "examples": [
+                  {
+                    "completeness": "sentence",
+                    "createdAt": 0,
+                    "explanations": [
+                      {
+                        "detail": "explanation",
+                        "language": "zh-Hans",
+                        "meaning": "meaning"
+                      }
+                    ],
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "meaning": "context",
+                    "otherTranslations": [],
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "原句"
+                  }
+                ],
+                "explanations": [
+                  {
+                    "detail": "explanation",
+                    "language": "zh-Hans",
+                    "meaning": "meaning"
+                  }
+                ],
+                "id": "00000000-0000-0000-0000-000000000002",
+                "meaning": "core",
+                "note": "note",
+                "otherMeanings": [],
+                "tags": [
+                  "Work"
+                ]
+              },
+              {
+                "content": [],
+                "createdAt": 0,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "meaning": "second",
+                "note": "",
+                "otherMeanings": [],
+                "tags": []
+              }
+            ]
+          },
+          {
+            "dictionaryForm": "bank",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000005",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "content": [],
+                "createdAt": 0,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000006",
+                "meaning": "third",
+                "note": "",
+                "otherMeanings": [],
+                "tags": []
+              }
+            ]
+          }
+        ],
+        "format": "lingrove-vocabulary-export",
+        "version": 1
+      }
+    },
+    {
+      "id": "projection-expression-list-no-media",
+      "operation": "projection",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "format": "text",
+      "style": "expressions",
+      "images": true,
+      "expected": {
+        "entries": [
+          {
+            "dictionaryForm": "bank",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "content": [
+                  {
+                    "id": "00000000-0000-0000-0000-000000000014",
+                    "text": {
+                      "bold": false,
+                      "italic": false,
+                      "style": "paragraph",
+                      "text": "literal"
+                    }
+                  },
+                  {
+                    "caption": "literal caption",
+                    "filename": "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+                    "id": "00000000-0000-0000-0000-000000000015",
+                    "image": {
+                      "byteCount": 70,
+                      "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                      "height": 1,
+                      "width": 1
+                    }
+                  },
+                  {
+                    "caption": "second occurrence",
+                    "filename": "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+                    "id": "00000000-0000-0000-0000-000000000016",
+                    "image": {
+                      "byteCount": 70,
+                      "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                      "height": 1,
+                      "width": 1
+                    }
+                  },
+                  {
+                    "caption": "different metadata",
+                    "filename": "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+                    "id": "00000000-0000-0000-0000-000000000017",
+                    "image": {
+                      "byteCount": 70,
+                      "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                      "height": 1,
+                      "width": 2
+                    }
+                  }
+                ],
+                "createdAt": 0,
+                "examples": [
+                  {
+                    "completeness": "sentence",
+                    "createdAt": 0,
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "meaning": "context",
+                    "otherTranslations": [],
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "原句"
+                  }
+                ],
+                "id": "00000000-0000-0000-0000-000000000002",
+                "meaning": "core",
+                "note": "note",
+                "otherMeanings": [],
+                "tags": [
+                  "Work"
+                ]
+              },
+              {
+                "content": [],
+                "createdAt": 0,
+                "examples": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "meaning": "second",
+                "note": "",
+                "otherMeanings": [],
+                "tags": []
+              }
+            ]
+          },
+          {
+            "dictionaryForm": "bank",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000005",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "content": [],
+                "createdAt": 0,
+                "examples": [],
+                "id": "00000000-0000-0000-0000-000000000006",
+                "meaning": "third",
+                "note": "",
+                "otherMeanings": [],
+                "tags": []
+              }
+            ]
+          }
+        ],
+        "format": "lingrove-vocabulary-export",
+        "version": 1
+      }
+    },
+    {
+      "id": "images-normal",
+      "operation": "images",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "expected": []
+    },
+    {
+      "id": "images-included",
+      "operation": "images",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "images": true,
+      "expected": [
+        {
+          "byteCount": 70,
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "height": 1,
+          "width": 1
+        },
+        {
+          "byteCount": 70,
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "height": 1,
+          "width": 2
+        }
+      ]
+    },
+    {
+      "id": "images-exclude-review",
+      "operation": "images",
+      "mode": "reviewOnly",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "images": true,
+      "expected": []
+    },
+    {
+      "id": "images-content-disabled",
+      "operation": "images",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "images": true,
+      "content": false,
+      "expected": []
+    },
+    {
+      "id": "images-expression-list",
+      "operation": "images",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "images": true,
+      "format": "text",
+      "style": "expressions",
+      "expected": []
+    },
+    {
+      "id": "images-csv-expression-style",
+      "operation": "images",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "images": true,
+      "format": "csv",
+      "style": "expressions",
+      "expected": [
+        {
+          "byteCount": 70,
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "height": 1,
+          "width": 1
+        },
+        {
+          "byteCount": 70,
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "height": 1,
+          "width": 2
+        }
+      ]
+    },
+    {
+      "id": "projection-unicodeRanges",
+      "operation": "projection",
+      "mode": "unicodeRanges",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "expected": {
+        "entries": [
+          {
+            "dictionaryForm": "bank",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "content": [
+                  {
+                    "id": "00000000-0000-0000-0000-000000000014",
+                    "text": {
+                      "bold": false,
+                      "italic": false,
+                      "style": "paragraph",
+                      "text": "literal"
+                    }
+                  },
+                  {
+                    "caption": "literal caption",
+                    "filename": "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+                    "id": "00000000-0000-0000-0000-000000000015",
+                    "image": {
+                      "byteCount": 70,
+                      "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                      "height": 1,
+                      "width": 1
+                    }
+                  },
+                  {
+                    "caption": "second occurrence",
+                    "filename": "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+                    "id": "00000000-0000-0000-0000-000000000016",
+                    "image": {
+                      "byteCount": 70,
+                      "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                      "height": 1,
+                      "width": 1
+                    }
+                  },
+                  {
+                    "caption": "different metadata",
+                    "filename": "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+                    "id": "00000000-0000-0000-0000-000000000017",
+                    "image": {
+                      "byteCount": 70,
+                      "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                      "height": 1,
+                      "width": 2
+                    }
+                  }
+                ],
+                "createdAt": 0,
+                "examples": [
+                  {
+                    "completeness": "fragment",
+                    "createdAt": 1.125,
+                    "id": "00000000-0000-0000-0000-000000000007",
+                    "meaning": "",
+                    "otherTranslations": [],
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 3
+                      },
+                      {
+                        "length": 4,
+                        "location": 8
+                      }
+                    ],
+                    "text": "😀 bank bank",
+                    "translation": ""
+                  }
+                ],
+                "id": "00000000-0000-0000-0000-000000000002",
+                "meaning": "core",
+                "note": "note",
+                "otherMeanings": [],
+                "tags": [
+                  "Work"
+                ]
+              },
+              {
+                "content": [],
+                "createdAt": 0,
+                "examples": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "meaning": "second",
+                "note": "",
+                "otherMeanings": [],
+                "tags": []
+              }
+            ]
+          },
+          {
+            "dictionaryForm": "bank",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000005",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "content": [],
+                "createdAt": 0,
+                "examples": [],
+                "id": "00000000-0000-0000-0000-000000000006",
+                "meaning": "third",
+                "note": "",
+                "otherMeanings": [],
+                "tags": []
+              }
+            ]
+          }
+        ],
+        "format": "lingrove-vocabulary-export",
+        "version": 1
+      }
+    },
+    {
+      "id": "projection-styledText",
+      "operation": "projection",
+      "mode": "styledText",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift",
+      "expected": {
+        "entries": [
+          {
+            "dictionaryForm": "bank",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "content": [
+                  {
+                    "id": "00000000-0000-0000-0000-000000000018",
+                    "text": {
+                      "bold": true,
+                      "italic": true,
+                      "style": "heading",
+                      "text": "literal <&>\n拾语"
+                    }
+                  }
+                ],
+                "createdAt": 0,
+                "examples": [
+                  {
+                    "completeness": "sentence",
+                    "createdAt": 0,
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "meaning": "context",
+                    "otherTranslations": [],
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "原句"
+                  }
+                ],
+                "id": "00000000-0000-0000-0000-000000000002",
+                "meaning": "core",
+                "note": "note",
+                "otherMeanings": [],
+                "tags": [
+                  "Work"
+                ]
+              },
+              {
+                "content": [],
+                "createdAt": 0,
+                "examples": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "meaning": "second",
+                "note": "",
+                "otherMeanings": [],
+                "tags": []
+              }
+            ]
+          },
+          {
+            "dictionaryForm": "bank",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000005",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "content": [],
+                "createdAt": 0,
+                "examples": [],
+                "id": "00000000-0000-0000-0000-000000000006",
+                "meaning": "third",
+                "note": "",
+                "otherMeanings": [],
+                "tags": []
+              }
+            ]
+          }
+        ],
+        "format": "lingrove-vocabulary-export",
+        "version": 1
+      }
+    }
+  ]
+}

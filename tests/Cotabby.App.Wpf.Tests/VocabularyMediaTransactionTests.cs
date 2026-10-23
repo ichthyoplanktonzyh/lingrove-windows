@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Cotabby.Core.LanguageLearning;
+using Cotabby.Core.Review;
 using Cotabby.Core.Vocabulary;
 using Cotabby.Win32.Vocabulary;
 
@@ -25,6 +26,9 @@ public sealed class VocabularyMediaTransactionTests(WpfDispatcher dispatcher)
     private static IReadOnlyDictionary<string, VocabularyPreparedImage> Supplied(VocabularyPreparedImage image) => new Dictionary<string, VocabularyPreparedImage> { [image.Reference.Filename] = image };
     private static VocabularyCapture Capture() => new("bank", "bank", LearningLanguage.English, VocabularyEntryKind.Word, "core");
     private static VocabularyContentBlock Block(VocabularyImageReference image) => VocabularyContentBlock.Create(new VocabularyBlockContent.Image(image, "river"));
+    private static ReviewLayout ImageLayout(VocabularyImageReference image) => new(
+        [new ReviewCardPart(Guid.NewGuid(), ReviewContentSource.Custom, content: [Block(image)])],
+        [ReviewCardPart.Create(ReviewContentSource.Meaning)]);
     private static VocabularyEntry Content(VocabularyEntry entry, params VocabularyContentBlock[] blocks) => entry with { Senses = [entry.Senses[0] with { Content = blocks }, .. entry.Senses.Skip(1)] };
     private static VocabularyEntry Note(VocabularyEntry entry, string note) => entry with { Senses = [entry.Senses[0] with { Note = note }, .. entry.Senses.Skip(1)] };
     private static async Task<bool> Available(VocabularyArchive archive, VocabularyImageReference image)
@@ -140,6 +144,50 @@ public sealed class VocabularyMediaTransactionTests(WpfDispatcher dispatcher)
         }
         await using var reopened = new VocabularyArchive(folder.Notebook); Assert.Equal(saved, (await reopened.LoadAsync()).Document.Entries[0]);
         Assert.Equal(image.CopyBytes(), await reopened.ReadImageAsync(image.Reference)); Assert.Single(Directory.GetFiles(folder.Media));
+    });
+    [Fact]
+    public Task ReviewCardAndTemplateShareMediaUntilTheFinalOwnerIsRemovedAfterReopen() => dispatcher.RunAsync(async () =>
+    {
+        using var folder = new Folder(); var prepared = Prepared(); var cardId = Guid.NewGuid();
+        var review = new VocabularyReview(new ReviewPlan(cardId) { Layout = ImageLayout(prepared.Reference) });
+        var template = ReviewLayoutTemplate.Create("Shared image", ImageLayout(prepared.Reference)); Guid entryId, senseId;
+        await using (var archive = new VocabularyArchive(folder.Notebook))
+        {
+            var entry = (await archive.SaveAsync(Capture())).Document.Entries[0]; entryId = entry.Id; senseId = entry.Senses[0].Id;
+            await archive.SaveReviewAsync(entryId, senseId, review, null, cardId, Supplied(prepared));
+            await archive.SaveTemplateAsync(template);
+        }
+        await using var reopened = new VocabularyArchive(folder.Notebook);
+        var loaded = await reopened.LoadAsync(); Assert.Equal(review, loaded.Document.Entries[0].Senses[0].ReviewValue(cardId));
+        Assert.Equal(prepared.CopyBytes(), await reopened.ReadImageAsync(prepared.Reference)); Assert.Single(Directory.GetFiles(folder.Media));
+        await reopened.RemoveReviewAsync(entryId, senseId, cardId, review);
+        Assert.Equal(prepared.CopyBytes(), await reopened.ReadImageAsync(prepared.Reference));
+        await reopened.RemoveTemplateAsync(template.Id); Assert.False(await Available(reopened, prepared.Reference));
+        Assert.Empty(Directory.GetFiles(folder.Path, ".vocabulary-image-*", SearchOption.AllDirectories));
+    });
+    [Fact]
+    public Task FailedReviewSqlRollsBackItsNewImageAndKeepsThePreviouslyAcknowledgedNotebook() => dispatcher.RunAsync(async () =>
+    {
+        using var folder = new Folder(); await using var archive = new VocabularyArchive(folder.Notebook); var prepared = Prepared();
+        var before = await archive.SaveAsync(Capture()); var entry = before.Document.Entries[0]; var cardId = Guid.NewGuid();
+        var review = new VocabularyReview(new ReviewPlan(cardId) { Layout = ImageLayout(prepared.Reference) });
+        using (var connection = VocabularySQLiteConnection.OpenNamed(folder.Notebook))
+            connection.Execute("CREATE TRIGGER fail_review BEFORE INSERT ON reviews BEGIN SELECT RAISE(ABORT,'fixture'); END");
+        Assert.Equal(VocabularyFailure.InvalidArchive, await Failure(() => archive.SaveReviewAsync(entry.Id, entry.Senses[0].Id, review, null, cardId, Supplied(prepared))));
+        EqualSnapshot(before, await archive.LoadAsync()); Assert.False(await Available(archive, prepared.Reference));
+        Assert.Empty(Directory.GetFiles(folder.Path, ".vocabulary-image-*", SearchOption.AllDirectories));
+    });
+    [Fact]
+    public Task ReviewCancellationAfterActualImageStagingRetainsThePreviousSqlState() => dispatcher.RunAsync(async () =>
+    {
+        using var folder = new Folder(); using var cancellation = new CancellationTokenSource();
+        var storage = new ForwardingStorage(folder.Notebook, () => cancellation.Cancel());
+        await using var archive = new VocabularyArchive(() => VocabularySQLiteDatabase.OpenFile(folder.Notebook), images: storage);
+        var prepared = Prepared(); var before = await archive.SaveAsync(Capture()); var entry = before.Document.Entries[0]; var cardId = Guid.NewGuid();
+        var review = new VocabularyReview(new ReviewPlan(cardId) { Layout = ImageLayout(prepared.Reference) });
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => archive.SaveReviewAsync(entry.Id, entry.Senses[0].Id, review, null, cardId, Supplied(prepared), cancellation.Token));
+        EqualSnapshot(before, await archive.LoadAsync()); Assert.False(await Available(archive, prepared.Reference));
+        Assert.Empty(Directory.GetFiles(folder.Path, ".vocabulary-image-*", SearchOption.AllDirectories));
     });
     [Theory]
     [InlineData(false)]

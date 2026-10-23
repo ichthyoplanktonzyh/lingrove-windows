@@ -107,7 +107,8 @@ preserves source leaf shapes. [SQLite transactions](docs/VOCABULARY_SQLITE_TRANS
 against isolated in-memory databases. The [Windows file adapter](docs/VOCABULARY_WINDOWS_FILES.md)
 adds named-file identity, locks and private ACL admission. The [serialized archive owner](docs/VOCABULARY_ARCHIVE.md)
 now joins graph validation and revision acknowledgement. The [shared Store](docs/VOCABULARY_STORE.md)
-is owned once by AppHost and restores/persists saved explanations; card Save and notebook UI remain separate work. Do not flatten senses into
+is owned once by AppHost and restores/persists saved explanations. The [writing capture factory](docs/VOCABULARY_CARD_CAPTURE.md)
+now preserves full example translations/provenance; card Save and notebook UI remain separate work. Do not flatten senses into
 one translation string, regenerate stable IDs during edits, or treat a generated explanation as the
 user's authored meaning. See the vocabulary models and porting gates in the linked docs. Storage
 compatibility with macOS is not assumed; migrations must be explicit and tested.
@@ -142,6 +143,7 @@ python3 scripts/verify-vocabulary-codec-macos-parity.py --mac-repo /path/to/macO
 python3 scripts/verify-vocabulary-sqlite-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-vocabulary-archive-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-vocabulary-store-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
+python3 scripts/verify-vocabulary-card-capture-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 ```
 
 The verifiers read the pinned macOS sources from Git and check the same JSON cases. The lexical
@@ -155,7 +157,7 @@ runner. This is ordinary compilation, not packaging or a release.
 The current `.github/workflows/ci.yml` has two validation jobs: Windows x64 restores and builds the
 full solution, then runs Core, portable App boundary and Inference tests, including noninteractive ICU sentence tests,
 and the compiled learning-card WPF view suite on its own STA dispatcher (see `docs/WPF_VIEW_TESTS.md`);
-macOS 26 runs Core, portable App boundary tests and all seventeen Swift parity verifiers against a sparse checkout of the pinned Mac
+macOS 26 runs Core, portable App boundary tests and all eighteen Swift parity verifiers against a sparse checkout of the pinned Mac
 Support, language-learning/vocabulary models/services, content-test provenance, language catalog and pinned expression resource files. The separate
 `.github/workflows/upstream-baseline.yml` checks the original Windows fork at commit
 `b1e4031c70aca1be21aae2c57b138fde5fc22bb1` with .NET 9 on manual dispatch. Its initial setup run is

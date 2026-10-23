@@ -308,3 +308,10 @@ CLI/media/review/export methods; only three diagnostic logging lines are removed
 Publication and concurrent pending-key probes use test scheduling hooks; mutations still execute
 the original store/archive/policies. Expected values are captured only from this native driver.
 [Store ownership and composition limits](../../docs/VOCABULARY_STORE.md) describe the Windows mapping.
+
+`vocabulary-card-capture-v1.json` records 33 full capture observations from the original Mac
+factory, including example translations, meaning languages and application provenance. Inputs and
+NLTokenizer facts correspond to the earlier explanation-capture corpus; each old input projection
+remained unchanged. Expected values come from native execution. Random encounter identity/time are
+checked separately, not copied into expected JSON. [Writing-capture scope](../../docs/VOCABULARY_CARD_CAPTURE.md)
+keeps reading/selection/OCR and UI work explicit.

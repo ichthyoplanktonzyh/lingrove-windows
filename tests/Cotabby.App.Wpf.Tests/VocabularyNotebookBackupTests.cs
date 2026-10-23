@@ -45,14 +45,14 @@ public sealed class VocabularyNotebookBackupTests(WpfDispatcher dispatcher)
             Assert.Empty(store.Entries); Assert.True(Find<Button>(window, "BackupButton").IsEnabled); Assert.True(Find<Button>(window, "RestoreNotebookButton").IsEnabled);
             Assert.False(Find<Button>(window, "ExportButton").IsEnabled);
         }
-        finally { await window.RetireAsync(); }
+        finally { await CloseNotebook(window); }
     });
     [Fact]
     public Task BackupPickerCancellationDoesNotWriteAndRetryUsesTheWholeCurrentNotebook() => dispatcher.RunAsync(async () =>
     {
         using var folder = new VocabularyExportFileTests.Folder(); await using var store = await Store(folder.Notebook);
-        int choices = 0, confirmations = 0; var window = new VocabularyNotebookWindow(store, new WindowsVocabularyTextSearch())
-        { ChooseBackupFile = (restore, _) => { Assert.False(restore); return Task.FromResult<string?>(++choices == 1 ? null : folder.Export); },
+        int choices = 0, confirmations = 0; var offered = new List<bool>(); var window = new VocabularyNotebookWindow(store, new WindowsVocabularyTextSearch())
+        { ChooseBackupFile = (restore, _) => { offered.Add(restore); return Task.FromResult<string?>(++choices == 1 ? null : folder.Export); },
           ConfirmRestore = (_, _) => { confirmations++; return Task.FromResult(true); } };
         try
         {
@@ -62,32 +62,32 @@ public sealed class VocabularyNotebookBackupTests(WpfDispatcher dispatcher)
             File.WriteAllBytes(folder.Export, Package); Assert.True(await store.RestoreAsync(folder.Export)); File.Delete(folder.Export);
             await Refresh(window); Find<TextBox>(window, "SearchText").Text = "unmatched filter"; await Refresh(window);
             Click(Find<Button>(window, "BackupButton")); await window.LastBackupOperation.WaitAsync(TimeSpan.FromSeconds(10));
-            Assert.Equal(Restored, VocabularyBackupCodec.Decode(File.ReadAllBytes(folder.Export)).Document); Assert.Equal(0, confirmations); Assert.Equal(2, choices);
+            Assert.Equal(Restored, VocabularyBackupCodec.Decode(File.ReadAllBytes(folder.Export)).Document); Assert.Equal(0, confirmations); Assert.Equal(2, choices); Assert.Equal(new[] { false, false }, offered);
         }
-        finally { await window.RetireAsync(); }
+        finally { await CloseNotebook(window); }
     });
     [Fact]
     public Task RestorePickerCancellationNeverAsksForConfirmationOrChangesTheNotebook() => dispatcher.RunAsync(async () =>
     {
-        using var folder = new VocabularyExportFileTests.Folder(); await using var store = await Store(folder.Notebook); int confirmations = 0;
+        using var folder = new VocabularyExportFileTests.Folder(); await using var store = await Store(folder.Notebook); int confirmations = 0; bool? offered = null;
         var window = new VocabularyNotebookWindow(store, new WindowsVocabularyTextSearch())
-        { ChooseBackupFile = (restore, _) => { Assert.True(restore); return Task.FromResult<string?>(null); },
+        { ChooseBackupFile = (restore, _) => { offered = restore; return Task.FromResult<string?>(null); },
           ConfirmRestore = (_, _) => { confirmations++; return Task.FromResult(true); } };
         try
         {
             window.Show(); await Refresh(window); Guid media = store.MediaRevision; ulong revision = store.Snapshot.Revision;
             Click(Find<Button>(window, "RestoreNotebookButton")); await window.LastBackupOperation.WaitAsync(TimeSpan.FromSeconds(10));
-            Assert.Equal(0, confirmations); Assert.Equal(revision, store.Snapshot.Revision); Assert.Equal(media, store.MediaRevision); Assert.Empty(store.Entries);
+            Assert.True(offered is true); Assert.Equal(0, confirmations); Assert.Equal(revision, store.Snapshot.Revision); Assert.Equal(media, store.MediaRevision); Assert.Empty(store.Entries);
         }
-        finally { await window.RetireAsync(); }
+        finally { await CloseNotebook(window); }
     });
     [Fact]
     public Task RestoreRequiresTheExactChosenPathAndExplicitConfirmationBeforeRetry() => dispatcher.RunAsync(async () =>
     {
         using var folder = new VocabularyExportFileTests.Folder(); await using var store = await Store(folder.Notebook); File.WriteAllBytes(folder.Export, Package);
-        int confirmations = 0; var window = new VocabularyNotebookWindow(store, new WindowsVocabularyTextSearch())
+        int confirmations = 0; var paths = new List<string>(); var window = new VocabularyNotebookWindow(store, new WindowsVocabularyTextSearch())
         { ChooseBackupFile = (_, _) => Task.FromResult<string?>(folder.Export),
-          ConfirmRestore = (path, _) => { Assert.Equal(folder.Export, path); return Task.FromResult(++confirmations == 2); } };
+          ConfirmRestore = (path, _) => { paths.Add(path); return Task.FromResult(++confirmations == 2); } };
         try
         {
             window.Show(); await Refresh(window); Guid media = store.MediaRevision; ulong revision = store.Snapshot.Revision;
@@ -95,8 +95,9 @@ public sealed class VocabularyNotebookBackupTests(WpfDispatcher dispatcher)
             Assert.Equal(revision, store.Snapshot.Revision); Assert.Equal(media, store.MediaRevision); Assert.Empty(store.Entries);
             Click(Find<Button>(window, "RestoreNotebookButton")); await window.LastBackupOperation.WaitAsync(TimeSpan.FromSeconds(10));
             Assert.Equal(Restored, store.Snapshot.Document); Assert.NotEqual(media, store.MediaRevision); Assert.Equal(Package, File.ReadAllBytes(folder.Export));
+            Assert.Equal(new[] { folder.Export, folder.Export }, paths);
         }
-        finally { await window.RetireAsync(); }
+        finally { await CloseNotebook(window); }
     });
     [Theory]
     [InlineData(false)]
@@ -117,7 +118,7 @@ public sealed class VocabularyNotebookBackupTests(WpfDispatcher dispatcher)
             await window.LastBackupOperation.WaitAsync(TimeSpan.FromSeconds(10));
             Assert.Equal(restore ? Restored : new VocabularyDocument(), store.Snapshot.Document); Assert.False(child.IsVisible);
         }
-        finally { await window.RetireAsync(); }
+        finally { await CloseNotebook(window); }
     });
     [Theory]
     [InlineData(false)]
@@ -143,7 +144,7 @@ public sealed class VocabularyNotebookBackupTests(WpfDispatcher dispatcher)
             if (restore) Assert.Equal(Restored, store.Snapshot.Document);
             else Assert.Equal(new VocabularyDocument(), VocabularyBackupCodec.Decode(File.ReadAllBytes(folder.Export)).Document);
         }
-        finally { await window.RetireAsync(); }
+        finally { await CloseNotebook(window); }
     });
     [Theory]
     [InlineData(false)]
@@ -167,7 +168,7 @@ public sealed class VocabularyNotebookBackupTests(WpfDispatcher dispatcher)
             Assert.Equal(0, confirmations); Assert.Empty(store.Entries); Assert.True(Find<Button>(window, button).IsEnabled);
             if (!restore) Assert.False(File.Exists(folder.Export)); else Assert.Equal(Package, File.ReadAllBytes(folder.Export));
         }
-        finally { choice.TrySetResult(null); await window.RetireAsync(); }
+        finally { choice.TrySetResult(null); await CloseNotebook(window); }
     });
     [Fact]
     public Task HiddenNotebookRejectsLatePositiveConfirmation() => dispatcher.RunAsync(async () =>
@@ -182,7 +183,7 @@ public sealed class VocabularyNotebookBackupTests(WpfDispatcher dispatcher)
             Click(Find<Button>(window, "RestoreNotebookButton")); await entered.Task.WaitAsync(TimeSpan.FromSeconds(10)); window.Close(); reply.TrySetResult(true); await window.LastBackupOperation.WaitAsync(TimeSpan.FromSeconds(10));
             Assert.Empty(store.Entries); Assert.Equal(media, store.MediaRevision);
         }
-        finally { reply.TrySetResult(false); await window.RetireAsync(); }
+        finally { reply.TrySetResult(false); await CloseNotebook(window); }
     });
     [Fact]
     public Task RetirementClosesAndDrainsTheActualOwnedConfirmation() => dispatcher.RunAsync(async () =>
@@ -194,9 +195,9 @@ public sealed class VocabularyNotebookBackupTests(WpfDispatcher dispatcher)
             window.Show(); await Refresh(window); Click(Find<Button>(window, "RestoreNotebookButton"));
             await Until(() => window.OwnedWindows.OfType<VocabularyRestoreConfirmationWindow>().Any(value => value.IsVisible));
             var child = Assert.Single(window.OwnedWindows.OfType<VocabularyRestoreConfirmationWindow>());
-            await window.RetireAsync(); Assert.True(window.LastBackupOperation.IsCompleted); Assert.False(child.IsVisible); Assert.Empty(store.Entries);
+            await window.RetireAsync().WaitAsync(TimeSpan.FromSeconds(10)); Assert.True(window.LastBackupOperation.IsCompleted); Assert.False(child.IsVisible); Assert.Empty(store.Entries);
         }
-        finally { await window.RetireAsync(); }
+        finally { await CloseNotebook(window); }
     });
     [Fact]
     public Task RetiringWindowAndStoreDrainTheAlreadyConfirmedNativeRestore() => dispatcher.RunAsync(async () =>
@@ -216,7 +217,7 @@ public sealed class VocabularyNotebookBackupTests(WpfDispatcher dispatcher)
             var image = Assert.Single(VocabularyArchiveMediaPolicy.References(Restored).Distinct());
             Assert.Equal(VocabularyBackupCodec.Decode(Package).CopyImages()[image.Filename], await reopened.ReadImageAsync(image));
         }
-        finally { images.Release.TrySetResult(); await window.RetireAsync(); await store.DisposeAsync(); }
+        finally { images.Release.TrySetResult(); await CloseNotebook(window); await store.DisposeAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10)); }
     });
     [Fact]
     public Task PanelStartupFailureIsLocalSanitizedAndCanRetry() => dispatcher.RunAsync(async () =>
@@ -232,8 +233,15 @@ public sealed class VocabularyNotebookBackupTests(WpfDispatcher dispatcher)
             Click(Find<Button>(window, "BackupButton")); await window.LastBackupOperation.WaitAsync(TimeSpan.FromSeconds(10));
             Assert.True(File.Exists(folder.Export)); Assert.Equal(Visibility.Collapsed, Find<TextBlock>(window, "StorageError").Visibility);
         }
-        finally { await window.RetireAsync(); }
+        finally { await CloseNotebook(window); }
     });
+    private static async Task CloseNotebook(VocabularyNotebookWindow window)
+    {
+        // Defensive test teardown closes the child even if the production retirement path
+        // regresses. This lets a failed milestone unwind the shared STA's nested modal frame.
+        foreach (var child in window.OwnedWindows.OfType<VocabularyRestoreConfirmationWindow>().ToArray()) child.Close();
+        await window.RetireAsync().WaitAsync(TimeSpan.FromSeconds(10));
+    }
     private sealed class GatedImages(WindowsVocabularyImageStorage actual) : IVocabularyImageStorage
     {
         internal readonly TaskCompletionSource Entered = new(TaskCreationOptions.RunContinuationsAsynchronously), Release = new(TaskCreationOptions.RunContinuationsAsynchronously);

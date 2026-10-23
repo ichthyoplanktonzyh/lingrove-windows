@@ -24,6 +24,7 @@ internal sealed class VocabularyStore(VocabularyArchive archive, Synchronization
     private Task? _loadWork, _disposal;
 
     internal event Action? Changed;
+    internal Action<VocabularySelection?>? OpenSelection { get; set; }
     /// <summary>Composition may attach only an already cached/saved record; this callback never generates.</summary>
     internal Func<VocabularyCapture, VocabularyCapture>? EnrichCapture { get; set; }
     internal VocabularySnapshot Snapshot { get { lock (_gate) return _snapshot; } }
@@ -87,6 +88,11 @@ internal sealed class VocabularyStore(VocabularyArchive archive, Synchronization
             var entry = _snapshot.Document.Entries.FirstOrDefault(entry => VocabularyCapturePolicy.EntryKey(entry) == VocabularyCapturePolicy.EntryKey(capture));
             return entry is null ? null : VocabularySensePolicy.Destination(capture, entry);
         }
+    }
+    internal void Show(VocabularyCapture capture)
+    {
+        var destination = ExplanationDestination(capture);
+        OpenSelection?.Invoke(destination is { } value ? new(value.EntryId, value.SenseId) : null);
     }
     internal string? UserMeaning(VocabularyExplanationDestination destination)
     {

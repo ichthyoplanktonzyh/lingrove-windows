@@ -36,6 +36,9 @@ public sealed class WpfDispatcher : IDisposable
     public Task Run(Action test) => _dispatcher.InvokeAsync(test, DispatcherPriority.Normal).Task
         .WaitAsync(TimeSpan.FromSeconds(30));
 
+    public Task RunAsync(Func<Task> test) => _dispatcher.InvokeAsync(test, DispatcherPriority.Normal).Task.Unwrap()
+        .WaitAsync(TimeSpan.FromSeconds(30));
+
     public void Dispose()
     {
         _dispatcher.InvokeAsync(() => Application.Current.Shutdown()).Task

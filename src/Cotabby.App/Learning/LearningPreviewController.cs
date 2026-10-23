@@ -93,9 +93,12 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         ILearningExplanationGenerating? explanationService = null,
         LearningExplanationInputFactory? explanationInputs = null,
         Action? configureExplanation = null,
-        IClipboardTextWriter? clipboardWriter = null)
+        IClipboardTextWriter? clipboardWriter = null,
+        Vocabulary.VocabularyStore? vocabulary = null,
+        Cotabby.Core.Vocabulary.VocabularyCaptureFactory? vocabularyCaptures = null)
     {
         _hook = hook;
+        _vocabulary = vocabulary; _vocabularyCaptures = vocabularyCaptures;
         _textCopy = clipboardWriter is null ? null : new LearningTextCopyController(clipboardWriter);
         _coordinator = new LearningPreviewCoordinator(unitRecognizer: unitRecognizer);
         _dictionarySession = dictionaryProvider is null ? null : new LearningDictionarySession(dictionaryProvider,
@@ -983,6 +986,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
             EnsureWindow().ShowState(state, capture.Field.CaretRect,
                 canRetry: state.Status == LearningPreviewStatus.Failed);
             PrepareSentenceExplanation(state, capture, intent);
+            PrepareSentenceVocabulary(state, capture, intent);
         }, DispatcherPriority.Background);
     }
 

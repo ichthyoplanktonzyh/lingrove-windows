@@ -2,6 +2,7 @@ using System.Windows.Threading;
 using Cotabby.App.UI.Learning;
 using Cotabby.Core.Focus;
 using Cotabby.Core.LanguageLearning;
+using Cotabby.Core.Vocabulary;
 using Microsoft.Extensions.Logging;
 
 namespace Cotabby.App.Learning;
@@ -43,10 +44,14 @@ internal sealed partial class LearningPreviewController
         CapturedSentence capture, long intent, long openingRevision, LearningPreviewState translation)
     {
         if (!await ValidateLearningCaptureAsync(capture, intent).ConfigureAwait(false)) return;
-        var input = await Task.Run(() =>
+        var prepared = await Task.Run<(LearningExplanationInput? Input, VocabularyCapture? Capture)>(() =>
         {
-            try { return _explanationInputs?.FromUnit(unit, translation); }
-            catch { return null; } // Mac permits target-only meaning when an example is unavailable.
+            try
+            {
+                var detached = _vocabularyCaptures?.FromUnit(unit, translation, capture.Field.ProcessName);
+                return (detached is not null ? LearningExplanationPolicy.Input(detached) : _explanationInputs?.FromUnit(unit, translation), detached);
+            }
+            catch { return (null, null); } // Mac permits target-only meaning when an example is unavailable.
         }).ConfigureAwait(false);
         if (!await ValidateLearningCaptureAsync(capture, intent).ConfigureAwait(false)) return;
         await _dispatcher.InvokeAsync(() =>
@@ -59,7 +64,8 @@ internal sealed partial class LearningPreviewController
                     || !CachedCaptureCurrent(capture)) return;
                 _dictionaryAnchor = anchor; _dictionaryIntent = intent;
                 _dictionaryTranslation = translation;
-                _ = _dictionarySession!.OpenAsync(unit, documentId, translation.Options!.TargetLanguage, translation.Result, input);
+                _dictionaryVocabularyCapture = prepared.Capture;
+                _ = _dictionarySession!.OpenAsync(unit, documentId, translation.Options!.TargetLanguage, translation.Result, prepared.Input);
             }
         }, DispatcherPriority.Background);
     }
@@ -102,6 +108,7 @@ internal sealed partial class LearningPreviewController
                 if (!ReferenceEquals(_dictionarySession?.State, state) || !CanUseDictionaryTargetLocked(state, capture, intent)) return;
                 EnsureDictionaryWindow().ShowState(state, _dictionaryAnchor,
                     LearningDictionaryCardPolicy.ExampleTranslation(state.Explanation?.Input, _dictionaryTranslation));
+                BindDictionaryVocabulary(state, capture, intent);
             }
         }, DispatcherPriority.Background);
     }
@@ -205,6 +212,7 @@ internal sealed partial class LearningPreviewController
     // Otherwise a slow first double-click could reopen after a newer click or Close.
     private void RetireDictionaryLocked()
     {
+        _dictionaryVocabularyCapture = null;
         ++_dictionaryOpeningRevision;
         _dictionaryTranslation = null;
         _dictionarySession?.Close();

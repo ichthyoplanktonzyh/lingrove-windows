@@ -48,6 +48,8 @@ The [writing capture adapter](docs/LEARNING_EXPLANATION_RULES.md#writing-capture
 the completed translation's target, exact occurrences and context receipt for the service.
 The library service now adds saved-first lookup, profile/language isolation, complete records and
 the Mac's bounded result cache. Its app-owned controller loads on demand and releases after 60 idle seconds.
+The sentence card now has Mac's explicit [Copy source text / Copy translation](docs/LEARNING_COPY.md)
+footer with immutable document guards; provisional translations cannot be copied.
 
 The first foundation milestone is documentation, build-and-test CI, and shared behavior fixtures. It
 does not add a Windows installer, downloadable build, artifact upload, release workflow, or model

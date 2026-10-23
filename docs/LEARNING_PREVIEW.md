@@ -20,7 +20,7 @@ The source reference is read through Git, independently of changes in the Mac wo
 | `Support/LanguageLearning/LearningExpressionOutputPolicy.swift`, output tests | The same complete-output validation and 12,000-byte UTF-8 limit used by the Mac translation service |
 | `App/Coordinators/InlineFeatures/LearningSentencePreviewCoordinator.swift`, coordinator tests | A learning-owned request identity, captured settings, cancellation and latest-result guards; the App adapter retains field freshness |
 | `Services/LanguageLearning/LearningTranslationService.swift` | Learning-specific endpoint generation, immutable destination/model, complete-result checks and task-owned credentials/client |
-| `Services/Presentation/LearningSentencePanel.swift`, `UI/InlineFeatures/LearningSentenceCard.swift` | WPF read-only source/result panel with loading, failure, retry and cancellation |
+| `Services/Presentation/LearningSentencePanel.swift`, `UI/InlineFeatures/LearningSentenceCard.swift` | WPF read-only source/result panel with loading, failure, retry, cancellation and explicit [source/complete-translation Copy](LEARNING_COPY.md) |
 | `App/Core/CotabbyAppEnvironment.swift` (`learningAvailability`), `Support/Suggestion/Request/SuggestionAvailabilityEvaluator.swift` | Shared app enable/pause/battery-saver and field/terminal eligibility; learning does not inherit autocomplete's integrated-terminal opt-in |
 
 Mac paths above are relative to `Cotabby/`; named regression tests live under `CotabbyTests/` at the
@@ -105,9 +105,9 @@ validated local provider can replace the explicit unavailable state without chan
 Pure rules and lifecycle tests use immutable snapshots and fake engines. Endpoint tests use in-memory
 HTTP handlers. Shared learning fixtures compare selected actual committed Swift rules with the C#
 port, with the exact corpus scope and dependency stubs documented alongside them. Windows CI builds
-the WPF integration and can test noninteractive ICU text segmentation. It does not exercise UIA,
-IME, focus behavior or the rendered card on a real desktop, and does not run a model or contact a
-translation service.
+the WPF integration, tests noninteractive ICU segmentation, and runs the [compiled learning views](WPF_VIEW_TESTS.md)
+and fake clipboard-copy transaction. It does not exercise external-editor UIA/IME, physical focus
+behavior or real clipboard mutation, and does not run a model or contact a translation service.
 
 An interactive Windows environment is required for the host acceptance gate, not for implementing
 these portable contracts. No virtual machine, installer, downloadable artifact, model-weight

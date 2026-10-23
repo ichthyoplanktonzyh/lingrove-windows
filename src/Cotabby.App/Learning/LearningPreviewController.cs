@@ -7,6 +7,7 @@ using Cotabby.App.Settings;
 using Cotabby.App.UI.Controls;
 using Cotabby.App.UI.Learning;
 using Cotabby.Core.Focus;
+using Cotabby.Core.Context;
 using Cotabby.Core.Input;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Models;
@@ -91,9 +92,11 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         ILearningDictionaryProviding? dictionaryProvider = null,
         ILearningExplanationGenerating? explanationService = null,
         LearningExplanationInputFactory? explanationInputs = null,
-        Action? configureExplanation = null)
+        Action? configureExplanation = null,
+        IClipboardTextWriter? clipboardWriter = null)
     {
         _hook = hook;
+        _textCopy = clipboardWriter is null ? null : new LearningTextCopyController(clipboardWriter);
         _coordinator = new LearningPreviewCoordinator(unitRecognizer: unitRecognizer);
         _dictionarySession = dictionaryProvider is null ? null : new LearningDictionarySession(dictionaryProvider,
             explanationInputs is null ? null : explanationService);
@@ -218,6 +221,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         _hook.KeyEvent -= OnKeyEvent;
         _focus.FocusChanged -= OnFocusChanged;
         _coordinator.StateChanged -= OnCoordinatorStateChanged;
+        _textCopy?.Dispose();
         if (_dictionarySession is not null) _dictionarySession.StateChanged -= OnDictionaryStateChanged;
         if (_explanationSession is not null) _explanationSession.StateChanged -= OnExplanationStateChanged;
         CancelCurrentState();
@@ -1146,6 +1150,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         _window.DismissRequested += CancelAndHide;
         _window.LookupRequested += OnDictionaryLookupRequested;
         _window.ExplanationRequested += OnExplanationRequested;
+        _window.CopyRequested += OnCopyRequested;
         _window.Closed += (_, _) =>
         {
             _window = null;

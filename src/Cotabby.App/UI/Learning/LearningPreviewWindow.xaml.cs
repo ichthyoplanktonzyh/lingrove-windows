@@ -43,6 +43,7 @@ public partial class LearningPreviewWindow : Window
         Dispatcher.VerifyAccess();
         if (!LearningExplanationCardPolicy.SameDocument(_displayedPreview, state)) ClearExplanation();
         _displayedPreview = state;
+        PresentCopyActions(state, anchor);
         SourceSection.Visibility = Visibility.Visible;
         SourceText.Text = state.Source;
         DirectionText.Text = state.Options is { } options
@@ -118,6 +119,7 @@ public partial class LearningPreviewWindow : Window
     {
         Dispatcher.VerifyAccess();
         _displayedPreview = null;
+        ClearCopyActions();
         ClearExplanation();
         SourceSection.Visibility = Visibility.Collapsed;
         SourceText.Text = string.Empty;
@@ -145,6 +147,7 @@ public partial class LearningPreviewWindow : Window
 
         Hide();
         _displayedPreview = null;
+        ClearCopyActions();
         // This long-lived window is reused. Retiring the capture also drops the literal editor
         // and translation text from its visual tree rather than keeping a hidden old document.
         SourceText.Text = DirectionText.Text = ErrorText.Text = string.Empty;

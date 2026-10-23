@@ -1,9 +1,8 @@
 # Vocabulary SQLite transactions
 
 This slice executes real SQLite transactions against isolated in-memory databases. It does not
-connect a user file, persistent archive, AppHost store, Save button, notebook or CLI listener. The
-named-file identity, exclusive publication and advisory lock adapters must be complete before a
-file-backed save can be acknowledged. In-memory success cannot establish restart or disk durability.
+connect a user file, persistent archive, AppHost store, Save button, notebook or CLI listener. The subsequent [Windows file adapter](VOCABULARY_WINDOWS_FILES.md) adds named-file identity,
+exclusive publication and advisory locking as a separate boundary. In-memory success cannot establish restart or disk durability.
 
 The behavior reference is `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`:
 
@@ -63,5 +62,6 @@ DOTNET_ROOT="$PWD/.dotnet" .dotnet/dotnet test tests/Cotabby.App.Tests/Cotabby.A
 python3 scripts/verify-vocabulary-sqlite-macos-parity.py --mac-repo /path/to/macOS-lingrove
 ```
 
-File creation/reopen, Windows reparse/file identity and cross-process locking, durable archive cache
-publication, media, Save/notebook UI and complete Mac storage compatibility remain open.
+The subsequent [Windows file adapter](VOCABULARY_WINDOWS_FILES.md) supplies creation/reopen,
+reparse/file identity and cross-process locking. Durable archive cache publication, media,
+Save/notebook UI and complete Mac storage compatibility remain open.

@@ -7,8 +7,8 @@ namespace Cotabby.Win32.Vocabulary;
 /// <summary>
 /// Archive-owned synchronous native SQLite boundary adapted from the Mac connection. Statements
 /// never escape or survive an await. SQLitePCL owns safe native handles; borrowed column spans are
-/// copied before stepping/finalizing. Only isolated memory connections are available until the
-/// Windows named-file identity and lock adapter can protect durable acknowledgement.
+/// copied before stepping/finalizing. A named connection retains the Windows regular-file identity
+/// lease until SQLite closes; its database owner adds a cross-process metadata/media lock.
 /// </summary>
 internal sealed class VocabularySQLiteConnection : IDisposable
 {
@@ -16,6 +16,7 @@ internal sealed class VocabularySQLiteConnection : IDisposable
     private static readonly UTF8Encoding Utf8 = new(false, true);
     private static readonly Lazy<bool> Provider = new(() => { Batteries_V2.Init(); return true; });
     private sqlite3? _handle;
+    private readonly VocabularyWindowsFile? _file;
 
     internal abstract record Value
     {
@@ -26,30 +27,45 @@ internal sealed class VocabularySQLiteConnection : IDisposable
         internal sealed record Null : Value;
     }
 
-    private VocabularySQLiteConnection(sqlite3 handle) => _handle = handle;
-    internal static VocabularySQLiteConnection OpenMemory()
+    private VocabularySQLiteConnection(sqlite3 handle, VocabularyWindowsFile? file) { _handle = handle; _file = file; }
+    internal static VocabularySQLiteConnection OpenMemory() => Open(":memory:", null);
+    internal static VocabularySQLiteConnection OpenNamed(string path)
+    {
+        var file = VocabularyWindowsFile.Open(path);
+        try { return Open(file.Path, file); } catch { file.Dispose(); throw; }
+    }
+    private static VocabularySQLiteConnection Open(string path, VocabularyWindowsFile? file)
     {
         _ = Provider.Value;
-        int status = raw.sqlite3_open_v2(":memory:", out var handle,
-            raw.SQLITE_OPEN_READWRITE | raw.SQLITE_OPEN_CREATE | raw.SQLITE_OPEN_FULLMUTEX, null);
+        _ = Utf8.GetByteCount(path);
+        // SQLITE_OPEN_NOFOLLOW (0x01000000) supplements the retained Windows handle; the Win32
+        // leaf/ID checks are still required because VFS handling of this flag is platform-specific.
+        int flags = raw.SQLITE_OPEN_READWRITE | raw.SQLITE_OPEN_FULLMUTEX | 0x01000000;
+        if (file is null) flags |= raw.SQLITE_OPEN_CREATE;
+        // SQLite's default Windows VFS has its own short path budget even for \\?\ paths.
+        // Select the registered long-path VFS with normal locking, never the nolock variant.
+        int status = raw.sqlite3_open_v2(path, out var handle, flags, file is null ? null : "win32-longpath");
         if (status != raw.SQLITE_OK || handle is null)
         { handle?.Dispose(); throw Invalid(); }
-        var connection = new VocabularySQLiteConnection(handle);
+        var connection = new VocabularySQLiteConnection(handle, file);
         try
         {
             Check(raw.sqlite3_busy_timeout(handle, 2000));
             raw.sqlite3_limit(handle, raw.SQLITE_LIMIT_LENGTH, MaximumValueBytes);
+            connection.VerifyFile();
             connection.Execute("PRAGMA foreign_keys=ON");
             return connection;
         }
         catch { connection.Dispose(); throw; }
     }
     internal long TotalChanges => Scalar("SELECT total_changes()");
+    internal bool IsNamed => _file is not null;
+    internal void VerifyFile() => _file?.Verify();
     internal long Scalar(string sql) => Rows(sql) is [{ Length: > 0 } row] && row[0] is Value.Integer value ? value.Data : throw Invalid();
     internal T Transaction<T>(bool write, Func<T> body)
     {
-        Execute(write ? "BEGIN IMMEDIATE" : "BEGIN");
-        try { T result = body(); Execute("COMMIT"); return result; }
+        VerifyFile(); Execute(write ? "BEGIN IMMEDIATE" : "BEGIN");
+        try { T result = body(); VerifyFile(); Execute("COMMIT"); return result; }
         catch { try { Execute("ROLLBACK"); } catch (VocabularyException) { } throw; }
     }
     internal void Execute(string sql, params Value[] values) => _ = Rows(sql, values);
@@ -124,5 +140,5 @@ internal sealed class VocabularySQLiteConnection : IDisposable
             ? VocabularyFailure.StorageBusy : VocabularyFailure.InvalidArchive);
     }
     private static VocabularyException Invalid() => new(VocabularyFailure.InvalidArchive);
-    public void Dispose() { _handle?.Dispose(); _handle = null; }
+    public void Dispose() { _handle?.Dispose(); _handle = null; _file?.Dispose(); }
 }

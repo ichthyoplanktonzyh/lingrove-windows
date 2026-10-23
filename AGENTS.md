@@ -104,7 +104,8 @@ pure whole-graph admission. [Archive draft edits](docs/VOCABULARY_ARCHIVE_DRAFTS
 concurrent captures and prune stale explanations before semantic admission. [Relational projection](docs/VOCABULARY_RELATIONAL_PROJECTION.md)
 now separates typed entity headers and relationships. The [row JSON codec](docs/VOCABULARY_PAYLOAD_CODEC.md)
 preserves source leaf shapes. [SQLite transactions](docs/VOCABULARY_SQLITE_TRANSACTIONS.md) now run
-against isolated in-memory databases; named-file protection, durable archive storage and Save UI remain separate work. Do not flatten senses into
+against isolated in-memory databases. The [Windows file adapter](docs/VOCABULARY_WINDOWS_FILES.md)
+adds named-file identity, locks and private ACL admission; durable archive publication and Save UI remain separate work. Do not flatten senses into
 one translation string, regenerate stable IDs during edits, or treat a generated explanation as the
 user's authored meaning. See the vocabulary models and porting gates in the linked docs. Storage
 compatibility with macOS is not assumed; migrations must be explicit and tested.

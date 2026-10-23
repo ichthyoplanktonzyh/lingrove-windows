@@ -5,6 +5,7 @@ using Cotabby.App.Vocabulary;
 using Cotabby.Core.Review;
 using Cotabby.Core.Text;
 using Cotabby.Core.Vocabulary;
+using Cotabby.Inference.Speech;
 
 namespace Cotabby.App.Review;
 
@@ -13,12 +14,13 @@ namespace Cotabby.App.Review;
 /// lease prevents concurrent note creation; sessions will own writes and durable acknowledgement.
 /// Construction is inert. Async methods retain the caller's UI context like the source MainActor.</summary>
 internal sealed partial class AnkiReviewController(AnkiReviewSettings settings, VocabularyStore store,
-    IAnkiConnecting client, Func<string?>? speechConfigurationId = null, Action? activateAnki = null) : INotifyPropertyChanged
+    IAnkiConnecting client, Func<string?>? speechConfigurationId = null, Action? activateAnki = null, ISpeechExporting? speech = null) : INotifyPropertyChanged
 {
     internal AnkiReviewSettings Settings { get; } = settings;
     internal VocabularyStore Store { get; } = store;
     internal IAnkiConnecting Client { get; } = client;
-    private readonly Func<string?> _speechId = speechConfigurationId ?? (() => null);
+    internal ISpeechExporting? Speech { get; } = speech;
+    private readonly Func<string?> _speechId = speechConfigurationId ?? (() => speech?.ExportConfigurationId);
     private readonly Action _activateAnki = activateAnki ?? (() => { });
     private readonly Dictionary<Guid, string> _failures = [];
     private readonly HashSet<Guid> _missing = [], _unresolved = [];

@@ -49,7 +49,8 @@ jobs:
     name: Portable core and Swift parity on macOS ARM64
     # The pinned Swift policies use Swift 6.2 syntax supplied by Xcode 26.
     runs-on: macos-26
-    timeout-minutes: 10
+    # Each verifier compiles actual pinned Swift declarations in an isolated temporary binary.
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
@@ -147,6 +148,9 @@ jobs:
 
       - name: Verify CSV cell and UTF-8 preview against actual Mac formatter methods
         run: python3 scripts/verify-vocabulary-export-text-macos-parity.py --mac-repo .mac-baseline
+
+      - name: Verify complete TXT and CSV rendering against actual Mac formatter
+        run: python3 scripts/verify-vocabulary-export-notes-macos-parity.py --mac-repo .mac-baseline
 
   # Routine CI stops after validation. Packaging, artifact uploads and releases
   # are deliberately absent; distribution is a separately authorized task.

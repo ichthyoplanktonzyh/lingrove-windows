@@ -12,8 +12,18 @@ _spec = importlib.util.spec_from_file_location('export_inputs', Path(__file__).w
 _inputs = importlib.util.module_from_spec(_spec); _spec.loader.exec_module(_inputs)
 if _inputs.DRIVER.count('func observe(') != 1: raise RuntimeError('Fixed export input boundary must be unique')
 DRIVER = _inputs.DRIVER.split('func observe(')[0] + r'''
+import CryptoKit
 func renderProbe(_ row: [String: Any]) throws -> Data {
     let c = configuration(row), mode = row["mode"] as! String
+    if mode == "budgetExact" || mode == "budgetOver" {
+        func projected(_ expression: String) -> VocabularyExportDocument {
+            let senses: [VocabularyExportDocument.Sense] = c.format == .csv ? [.init(id: id(2), createdAt: now, meaning: nil, meaningLanguage: nil, otherMeanings: nil, note: nil, tags: nil, examples: nil, explanations: nil, content: nil)] : []
+            return .init(entries: [.init(id: id(1), expression: expression, dictionaryForm: c.format == .csv ? "" : expression, language: .english, kind: .word, senses: senses)])
+        }
+        let overhead = try VocabularyExportFormatter.render(projected(""), configuration: c).count
+        let expression = String(repeating: "a", count: VocabularyExportPolicy.maximumDataBytes - overhead + (mode == "budgetOver" ? 1 : 0))
+        return try VocabularyExportFormatter.render(projected(expression), configuration: c)
+    }
     var entries = exportEntries()
     switch mode {
     case "empty": entries = []
@@ -62,7 +72,11 @@ func observeRender(_ row: [String: Any]) async -> [String: Any] {
         if let data = await task.value { return ["text": String(decoding: data, as: UTF8.self), "byteCount": data.count] }
         return ["error": "cancelled"]
     }
-    do { let data = try renderProbe(row); return ["text": String(decoding: data, as: UTF8.self), "byteCount": data.count] }
+    do {
+        let data = try renderProbe(row)
+        if (row["mode"] as! String).hasPrefix("budget") { return ["byteCount": data.count, "sha256": SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()] }
+        return ["text": String(decoding: data, as: UTF8.self), "byteCount": data.count]
+    }
     catch let error as VocabularyExportError { return ["error": String(describing: error)] }
     catch { fatalError("Unexpected render error") }
 }

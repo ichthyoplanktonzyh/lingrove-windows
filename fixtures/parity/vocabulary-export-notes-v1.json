@@ -91,7 +91,7 @@
       }
     },
     {
-      "id": "text-normal-8",
+      "id": "text-normal-meanings-false",
       "format": "text",
       "mode": "normal",
       "provenanceKind": "source-policy-extension",
@@ -103,7 +103,7 @@
       }
     },
     {
-      "id": "text-normal-9",
+      "id": "text-normal-examples-false",
       "format": "text",
       "mode": "normal",
       "provenanceKind": "source-policy-extension",
@@ -115,7 +115,7 @@
       }
     },
     {
-      "id": "text-normal-10",
+      "id": "text-normal-notes-false",
       "format": "text",
       "mode": "normal",
       "provenanceKind": "source-policy-extension",
@@ -127,7 +127,7 @@
       }
     },
     {
-      "id": "text-normal-11",
+      "id": "text-normal-content-false",
       "format": "text",
       "mode": "normal",
       "provenanceKind": "source-policy-extension",
@@ -139,7 +139,7 @@
       }
     },
     {
-      "id": "text-normal-12",
+      "id": "text-normal-explanation-true-images-true",
       "format": "text",
       "mode": "normal",
       "provenanceKind": "source-policy-extension",
@@ -152,7 +152,7 @@
       }
     },
     {
-      "id": "text-normal-13",
+      "id": "text-normal-meanings-false-examples-false-notes-false-content-false",
       "format": "text",
       "mode": "normal",
       "provenanceKind": "source-policy-extension",
@@ -167,7 +167,7 @@
       }
     },
     {
-      "id": "text-empty-14",
+      "id": "text-empty-cancelled-true",
       "format": "text",
       "mode": "empty",
       "provenanceKind": "source-policy-extension",
@@ -179,7 +179,7 @@
       }
     },
     {
-      "id": "text-normal-15",
+      "id": "text-normal-cancelled-true",
       "format": "text",
       "mode": "normal",
       "provenanceKind": "source-policy-extension",
@@ -278,7 +278,7 @@
       }
     },
     {
-      "id": "csv-normal-24",
+      "id": "csv-normal-meanings-false",
       "format": "csv",
       "mode": "normal",
       "provenanceKind": "source-policy-extension",
@@ -290,7 +290,7 @@
       }
     },
     {
-      "id": "csv-normal-25",
+      "id": "csv-normal-examples-false",
       "format": "csv",
       "mode": "normal",
       "provenanceKind": "source-policy-extension",
@@ -302,7 +302,7 @@
       }
     },
     {
-      "id": "csv-normal-26",
+      "id": "csv-normal-notes-false",
       "format": "csv",
       "mode": "normal",
       "provenanceKind": "source-policy-extension",
@@ -314,7 +314,7 @@
       }
     },
     {
-      "id": "csv-normal-27",
+      "id": "csv-normal-content-false",
       "format": "csv",
       "mode": "normal",
       "provenanceKind": "source-policy-extension",
@@ -326,7 +326,7 @@
       }
     },
     {
-      "id": "csv-normal-28",
+      "id": "csv-normal-explanation-true-images-true",
       "format": "csv",
       "mode": "normal",
       "provenanceKind": "source-policy-extension",
@@ -339,7 +339,7 @@
       }
     },
     {
-      "id": "csv-normal-29",
+      "id": "csv-normal-meanings-false-examples-false-notes-false-content-false",
       "format": "csv",
       "mode": "normal",
       "provenanceKind": "source-policy-extension",
@@ -354,7 +354,7 @@
       }
     },
     {
-      "id": "csv-empty-30",
+      "id": "csv-empty-cancelled-true",
       "format": "csv",
       "mode": "empty",
       "provenanceKind": "source-policy-extension",
@@ -366,7 +366,7 @@
       }
     },
     {
-      "id": "csv-normal-31",
+      "id": "csv-normal-cancelled-true",
       "format": "csv",
       "mode": "normal",
       "provenanceKind": "source-policy-extension",
@@ -377,7 +377,7 @@
       }
     },
     {
-      "id": "text-normal-32",
+      "id": "text-normal-images-true-style-expressions",
       "format": "text",
       "mode": "normal",
       "provenanceKind": "source-policy-extension",
@@ -390,7 +390,7 @@
       }
     },
     {
-      "id": "text-normalizedList-33",
+      "id": "text-normalizedList-style-expressions",
       "format": "text",
       "mode": "normalizedList",
       "provenanceKind": "source-policy-extension",
@@ -402,7 +402,7 @@
       }
     },
     {
-      "id": "text-unicodeQuotes-34",
+      "id": "text-unicodeQuotes-style-expressions",
       "format": "text",
       "mode": "unicodeQuotes",
       "provenanceKind": "source-policy-extension",
@@ -414,7 +414,7 @@
       }
     },
     {
-      "id": "csv-normal-35",
+      "id": "csv-normal-style-expressions",
       "format": "csv",
       "mode": "normal",
       "provenanceKind": "source-policy-extension",
@@ -426,7 +426,7 @@
       }
     },
     {
-      "id": "csv-unicodeQuotes-36",
+      "id": "csv-unicodeQuotes-spreadsheetCompatibility-false",
       "format": "csv",
       "mode": "unicodeQuotes",
       "provenanceKind": "source-policy-extension",
@@ -435,6 +435,60 @@
       "expected": {
         "byteCount": 1328,
         "text": "\"entry_id\",\"expression\",\"dictionary_form\",\"language\",\"type\",\"sense_id\",\"saved_at\",\"meaning\",\"meaning_language\",\"other_meanings\",\"usage_id\",\"usage_saved_at\",\"example\",\"translation\",\"translation_language\",\"other_translations\",\"contextual_meaning\",\"contextual_meaning_language\",\"notes\",\"tags\",\"supplemental_text\",\"images\",\"image_captions\"\r\n\"00000000-0000-0000-0000-000000000001\",\"=😀,\"\"語\"\"\nform\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000002\",\"1970-01-01T00:00:00Z\",\"core\",\"zh-Hans\",\"\",\"00000000-0000-0000-0000-000000000003\",\"1970-01-01T00:00:00Z\",\"😀,\"\"bank\"\"\nline\",\"原句\",\"zh-Hans\",\"\",\"context\",\"en\",\" \t=1,\"\"note\"\"\r\nline\",\"A; B;C\",\"literal\",\"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\"literal caption\nsecond occurrence\ndifferent metadata\"\r\n\"00000000-0000-0000-0000-000000000001\",\"=😀,\"\"語\"\"\nform\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000004\",\"1970-01-01T00:00:00Z\",\"second\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n\"00000000-0000-0000-0000-000000000005\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000006\",\"1970-01-01T00:00:00Z\",\"third\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n"
+      }
+    },
+    {
+      "id": "text-budgetExact",
+      "format": "text",
+      "mode": "budgetExact",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "expected": {
+        "byteCount": 67108864,
+        "sha256": "55e3a3a995b40fc7d30028d88f27e169c1a27ba61e73856b61d26bef38e031b4"
+      }
+    },
+    {
+      "id": "text-budgetOver",
+      "format": "text",
+      "mode": "budgetOver",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "expected": {
+        "error": "tooLarge"
+      }
+    },
+    {
+      "id": "csv-manyExamples-examples-false",
+      "format": "csv",
+      "mode": "manyExamples",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "examples": false,
+      "expected": {
+        "byteCount": 964,
+        "text": "﻿\"entry_id\",\"expression\",\"dictionary_form\",\"language\",\"type\",\"sense_id\",\"saved_at\",\"meaning\",\"meaning_language\",\"other_meanings\",\"notes\",\"tags\",\"supplemental_text\",\"images\",\"image_captions\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000002\",\"1970-01-01T00:00:00Z\",\"core\",\"\",\"\",\"note\",\"Work\",\"literal\",\"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\"literal caption\nsecond occurrence\ndifferent metadata\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000004\",\"1970-01-01T00:00:00Z\",\"second\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n\"00000000-0000-0000-0000-000000000005\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000006\",\"1970-01-01T00:00:00Z\",\"third\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n"
+      }
+    },
+    {
+      "id": "csv-budgetExact",
+      "format": "csv",
+      "mode": "budgetExact",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "expected": {
+        "byteCount": 67108864,
+        "sha256": "dd480caa1e998e3bd97fe088ddcccf59809a2a8d74256b5b491523acc41174f2"
+      }
+    },
+    {
+      "id": "csv-budgetOver",
+      "format": "csv",
+      "mode": "budgetOver",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "expected": {
+        "error": "tooLarge"
       }
     }
   ]

@@ -1,4 +1,5 @@
 using System.Text;
+using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Cotabby.Core.LanguageLearning;
@@ -28,6 +29,21 @@ public sealed class VocabularyExportNotesParityTests
     {
         var options = VocabularyExportProjectionParityTests.Configuration(row); var entries = VocabularyExportProjectionParityTests.ExportEntries();
         string mode = row.GetProperty("mode").GetString()!; var sense = entries[0].Senses[0]; var usage = sense.Examples[0];
+        if (mode is "budgetExact" or "budgetOver")
+        {
+            VocabularyExportDocument Projected(string expression) => new([new(Id(1), expression, options.Format == VocabularyExportFormat.Csv ? "" : expression,
+                LearningLanguage.English, VocabularyEntryKind.Word, options.Format == VocabularyExportFormat.Csv
+                    ? [new(Id(2), DateTimeOffset.UnixEpoch, null, null, null, null, null, null, null, null)] : [])]);
+            byte[] RenderBudget(VocabularyExportDocument d) => options.Format == VocabularyExportFormat.Csv ? VocabularyExportFormatter.RenderCsv(d, options) : VocabularyExportFormatter.RenderText(d);
+            int overhead = RenderBudget(Projected("")).Length;
+            string expression = new('a', VocabularyExportPolicy.MaximumDataBytes - overhead + (mode == "budgetOver" ? 1 : 0));
+            try
+            {
+                byte[] bytes = RenderBudget(Projected(expression));
+                return new { byteCount = bytes.Length, sha256 = Convert.ToHexStringLower(SHA256.HashData(bytes)) };
+            }
+            catch (VocabularyExportException error) { return new { error = JsonNamingPolicy.CamelCase.ConvertName(error.Failure.ToString()) }; }
+        }
         switch (mode)
         {
             case "empty": entries.Clear(); break;
@@ -60,7 +76,7 @@ public sealed class VocabularyExportNotesParityTests
             return new { text = new UTF8Encoding(false, true).GetString(bytes), byteCount = bytes.Length };
         }
         catch (OperationCanceledException) { return new { error = "cancelled" }; }
-        catch (VocabularyExportException error) { return new { error = error.Failure.ToString().ToLowerInvariant() }; }
+        catch (VocabularyExportException error) { return new { error = JsonNamingPolicy.CamelCase.ConvertName(error.Failure.ToString()) }; }
     }
     private static Guid Id(int n) => VocabularyReferenceGraph.Id(n);
 }

@@ -40,7 +40,7 @@ public partial class VocabularyEntryEditorWindow : Window
         Closing += (_, args) => { if (_saving && !_forceClose) args.Cancel = true; };
         Closed += (_, _) =>
         {
-            _retired = true; _lifetime.Cancel();
+            _retired = true; _lifetime.Cancel(); RetireImages();
             _ = LastOperation.ContinueWith(_ => _lifetime.Dispose(), CancellationToken.None,
                 TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
         };
@@ -49,6 +49,7 @@ public partial class VocabularyEntryEditorWindow : Window
     {
         if (_saving || _retired) return;
         _draft = _draft with { Senses = _draft.Senses.Select(value => value.Id == _senseId ? change(value) : value).ToArray() };
+        PruneImports();
         UpdateAdmission();
     }
     private void ChangeExample(Guid id, Func<VocabularyExample, VocabularyExample> change) =>
@@ -57,13 +58,13 @@ public partial class VocabularyEntryEditorWindow : Window
         ChangeSense(sense => sense with { Content = (sense.Content ?? []).Select(block => block.Id == id ? block with { Content = change(block.Content) } : block).ToArray() });
     private void UpdateAdmission()
     {
-        SaveButton.IsEnabled = !_retired && VocabularyEntryEditingPolicy.CanSave(_draft, _senseId, _saving);
-        AddTextButton.IsEnabled = (Sense?.Content?.Count ?? 0) < VocabularyContentPolicy.MaximumBlocks;
+        SaveButton.IsEnabled = !_retired && VocabularyEntryEditingPolicy.CanSave(_draft, _senseId, _saving, _importing);
+        AddTextButton.IsEnabled = AddImageButton.IsEnabled = !_saving && !_retired && !_importing && (Sense?.Content?.Count ?? 0) < VocabularyContentPolicy.MaximumBlocks;
     }
     private void OnCancel(object sender, RoutedEventArgs args) { if (!_saving && !_retired) Close(); }
     private void OnSave(object sender, RoutedEventArgs args)
     {
-        if (_retired || !VocabularyEntryEditingPolicy.CanSave(_draft, _senseId, _saving)) return;
+        if (_retired || !VocabularyEntryEditingPolicy.CanSave(_draft, _senseId, _saving, _importing)) return;
         var tags = VocabularyEntryEditingPolicy.ParseTags(TagsText.Text);
         var value = _draft with { Senses = _draft.Senses.Select(sense => sense.Id == _senseId ? sense with { Tags = tags } : sense).ToArray() };
         _saving = true; FormContent.IsEnabled = false; CancelButton.IsEnabled = false; SaveButton.IsEnabled = false;
@@ -72,7 +73,7 @@ public partial class VocabularyEntryEditorWindow : Window
     private async Task PersistAsync(VocabularyEntry value, CancellationToken token)
     {
         bool saved; string? failure;
-        try { saved = await _store.UpdateAsync(value, _baseline).ConfigureAwait(false); failure = _store.ErrorMessage; }
+        try { saved = await _store.UpdateAsync(value, _baseline, _importedImages).ConfigureAwait(false); failure = _store.ErrorMessage; }
         catch (Exception) { saved = false; failure = new VocabularyException(VocabularyFailure.InvalidContent).Message; }
         if (token.IsCancellationRequested || Dispatcher.HasShutdownStarted) return;
         try
@@ -113,6 +114,7 @@ public partial class VocabularyEntryEditorWindow : Window
     }
     private void RenderBlocks()
     {
+        ClearImageViews();
         BlocksContent.Children.Clear(); var blocks = Sense?.Content ?? [];
         foreach (var block in blocks)
         {
@@ -141,10 +143,13 @@ public partial class VocabularyEntryEditorWindow : Window
             }
             else if (block.Content is VocabularyBlockContent.Image image)
             {
-                // Media preparation/storage is a separate port. Keep the complete reference and
-                // editable caption; rebuilding this form must never drop an existing image block.
-                panel.Children.Add(Label("Image unavailable")); panel.Children.Add(Editor(image.Caption, "Caption", changed =>
-                    ChangeBlock(block.Id, value => value is VocabularyBlockContent.Image old ? old with { Caption = changed } : value)));
+                _importedImages.TryGetValue(image.Reference.Filename, out var draft);
+                var view = new VocabularyImageView(_store, image.Reference, draft, image.Caption); _imageViews.Add(view);
+                panel.Children.Add(view); panel.Children.Add(Editor(image.Caption, "Caption", changed =>
+                {
+                    ChangeBlock(block.Id, value => value is VocabularyBlockContent.Image old ? old with { Caption = changed } : value);
+                    view.SetCaption(changed);
+                }));
             }
             BlocksContent.Children.Add(Card(panel));
         }
@@ -153,7 +158,7 @@ public partial class VocabularyEntryEditorWindow : Window
     private void MoveBlock(Guid id, int offset) { ChangeSense(sense => sense with { Content = VocabularyEntryEditingPolicy.MoveBlock(sense.Content, id, offset) }); RenderBlocks(); }
     private void OnAddText(object sender, RoutedEventArgs args)
     {
-        if (_saving || _retired || (Sense?.Content?.Count ?? 0) >= VocabularyContentPolicy.MaximumBlocks) return;
+        if (_saving || _retired || _importing || (Sense?.Content?.Count ?? 0) >= VocabularyContentPolicy.MaximumBlocks) return;
         ChangeSense(sense => sense with { Content = (sense.Content ?? []).Append(VocabularyContentBlock.Create(new VocabularyBlockContent.Text(new()))).ToArray() }); RenderBlocks();
     }
     private void OnAddExample(object sender, RoutedEventArgs args)

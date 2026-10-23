@@ -61,9 +61,10 @@ fixture boundary; it makes no claim about image-byte preparation/storage. Tests 
 files, start a model, read the clipboard or interact with an external editor. macOS cross-compiles;
 Windows CI executes these cases before merge.
 
-New image import/paste/drop/normalization/storage, graph/batch/review/export UI, speech, notebook AI
-and dictionary sessions, explicit explanation-adoption controls, localization and window geometry
-persistence remain open. [New/merge/delete-sense and move-usage commands](VOCABULARY_ACTIONS.md)
-now use the same Store through the notebook action partial. Existing images display placeholders until media is implemented. Native
+The [image UI](VOCABULARY_IMAGE_UI.md) now adds explicit file import, draft previews and saved-image
+reading; its separate tests include actual temporary notebook files. Clipboard/drop receipt,
+graph/batch/review/export UI, speech, localization and window geometry persistence remain open.
+[Sense actions](VOCABULARY_ACTIONS.md), [contextual explanation/adoption](VOCABULARY_EXPLANATION_UI.md)
+and [dictionary sessions](VOCABULARY_DICTIONARY_UI.md) now use the shared Store/notebook. Native
 physical keyboard/pointer, editor activation, UIA/IME, ghost pixels, insertion and GPU gates remain.
 No installer, artifact upload or release is produced.

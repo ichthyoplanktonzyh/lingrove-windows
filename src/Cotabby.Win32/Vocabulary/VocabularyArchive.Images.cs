@@ -16,6 +16,8 @@ public sealed partial class VocabularyArchive
         byte[] copy = data.ToArray(); return Run(() => ImageStorage.Prepare(copy, cancellationToken));
     }
     public Task<byte[]> ReadImageAsync(VocabularyImageReference image) => Run(() => Persistence().Access(false, () => ImageStorage.Read(image)));
+    public Task<VocabularyPreparedImage> PrepareImageFileAsync(string path, CancellationToken cancellationToken = default) =>
+        Run(() => ImageStorage.PrepareFile(path, cancellationToken));
 
     private VocabularySnapshot CommitWithImages(VocabularyDocument next, IReadOnlyDictionary<string, VocabularyPreparedImage> supplied,
         CancellationToken cancellationToken) => Persistence().Access(true, () =>

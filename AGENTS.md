@@ -118,7 +118,8 @@ now connect explicit generation and acknowledged adoption; the [dictionary discl
 connects explicit bundled lookup and word navigation. The [image preparation library](docs/VOCABULARY_IMAGE_PREPARATION.md) now supplies bounded PNG drafts;
 [image storage library](docs/VOCABULARY_IMAGE_STORAGE.md) adds validated private media files and reuse/repair;
 [archive media transactions](docs/VOCABULARY_MEDIA_TRANSACTIONS.md) now join staging, SQL and cleanup.
-Editor media UI, review/export and other dictionary providers remain work. Do not flatten senses into
+The [image UI](docs/VOCABULARY_IMAGE_UI.md) now connects file import, draft previews, saved-image reading and enlargement.
+Clipboard/drop receipt, review/export and other dictionary providers remain work. Do not flatten senses into
 one translation string, regenerate stable IDs during edits, or treat a generated explanation as the
 user's authored meaning. See the vocabulary models and porting gates in the linked docs. Storage
 compatibility with macOS is not assumed; migrations must be explicit and tested.

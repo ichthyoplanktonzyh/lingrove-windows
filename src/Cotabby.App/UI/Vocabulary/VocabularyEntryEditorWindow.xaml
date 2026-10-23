@@ -31,7 +31,12 @@
                 <TextBox x:Name="TagsText" Style="{StaticResource Input}" AutomationProperties.Name="Tags" />
                 <TextBlock Text="Sense explanation" FontWeight="SemiBold" Margin="0,18,0,6" />
                 <StackPanel x:Name="BlocksContent" />
-                <Button x:Name="AddTextButton" Content="Add text" Click="OnAddText" HorizontalAlignment="Left" Padding="10,5" Margin="0,6,0,0" />
+                <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                    <Button x:Name="AddTextButton" Content="Add text" Click="OnAddText" Padding="10,5" Margin="0,0,8,0" />
+                    <Button x:Name="AddImageButton" Content="Add image" Click="OnAddImage" Padding="10,5" />
+                    <TextBlock x:Name="ImportStatus" Text="Importing image…" Visibility="Collapsed" Margin="10,5,0,0" />
+                </StackPanel>
+                <TextBlock x:Name="ImportFailure" TextWrapping="Wrap" Foreground="{DynamicResource OrangeBrush}" Visibility="Collapsed" Margin="0,6,0,0" />
                 <StackPanel x:Name="ExamplesContent" Margin="0,18,0,0" />
                 <Button x:Name="AddExampleButton" Content="Add example" Click="OnAddExample" HorizontalAlignment="Left" Padding="10,5" Margin="0,6,0,0" />
             </StackPanel>

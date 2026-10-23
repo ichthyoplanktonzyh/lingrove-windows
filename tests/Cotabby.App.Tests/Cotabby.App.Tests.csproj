@@ -22,6 +22,7 @@
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularyArchive.Images.cs" Link="Production\VocabularyArchive.Images.cs" />
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\IVocabularyImageStorage.cs" Link="Production\IVocabularyImageStorage.cs" />
     <Compile Include="..\..\src\Cotabby.App\Vocabulary\VocabularyStore.cs" Link="Production\VocabularyStore.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Vocabulary\VocabularyStore.Images.cs" Link="Production\VocabularyStore.Images.cs" />
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularyWindowsFile.cs" Link="Production\VocabularyWindowsFile.cs" />
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularyWindowsFileLock.cs" Link="Production\VocabularyWindowsFileLock.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Explanation.cs" Link="Production\AppSettings.Explanation.cs" />

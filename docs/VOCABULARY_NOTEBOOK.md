@@ -59,11 +59,11 @@ merge. These cases do not establish physical keyboard/pointer interaction or ext
 
 The list/detail browser displays acknowledged values. The [owned editor](VOCABULARY_EDITOR.md)
 now supplies an explicit full-value draft and acknowledged Save/Cancel. [Sense/usage actions](VOCABULARY_ACTIONS.md)
-now supply New/Merge/Delete/Move with durable acknowledgement. Explicit
-explanation adoption, the notebook-owned AI/dictionary session, speech, review/Anki, batch selection,
-graph mode, export/backup/restore, localization and persisted window geometry remain unported UI.
-Authored image references display an unavailable placeholder and literal caption until verified
-media preparation/storage is implemented. Source-application attribution is also pending: current
+now supply New/Merge/Delete/Move with durable acknowledgement. [Contextual explanation/adoption](VOCABULARY_EXPLANATION_UI.md)
+and [explicit bundled dictionary lookup](VOCABULARY_DICTIONARY_UI.md) now borrow notebook-owned sessions.
+The [image UI](VOCABULARY_IMAGE_UI.md) now reads actual validated media and supports enlargement.
+Clipboard/drop, speech, review/Anki, batch selection, graph, export/backup/restore, localization and
+persisted window geometry remain open. Source-application attribution is also pending: current
 Windows captures leave application identity absent rather than substituting a process basename.
 Existing stored source identifiers are retained but not resolved/displayed by this window.
 

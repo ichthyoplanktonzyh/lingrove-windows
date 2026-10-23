@@ -11,6 +11,7 @@ namespace Cotabby.Win32.Vocabulary;
 internal interface IVocabularyImageStorage
 {
     VocabularyPreparedImage Prepare(ReadOnlySpan<byte> data, CancellationToken cancellationToken);
+    VocabularyPreparedImage PrepareFile(string path, CancellationToken cancellationToken);
     byte[] Read(VocabularyImageReference image);
     bool Write(ReadOnlySpan<byte> data, VocabularyImageReference image);
     void Remove(VocabularyImageReference image);

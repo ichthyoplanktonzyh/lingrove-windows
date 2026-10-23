@@ -12,7 +12,7 @@ namespace Cotabby.App.Vocabulary;
 /// replies. State is protected for worker-side saved lookup; notifications return to the UI context.
 /// Closing drains store operations before disposing its archive. No model is started by saving.
 /// </summary>
-internal sealed class VocabularyStore(VocabularyArchive archive, SynchronizationContext ui) : IAsyncDisposable
+internal sealed partial class VocabularyStore(VocabularyArchive archive, SynchronizationContext ui) : IAsyncDisposable
 {
     private readonly object _gate = new();
     private readonly HashSet<Task> _work = [];
@@ -72,7 +72,13 @@ internal sealed class VocabularyStore(VocabularyArchive archive, Synchronization
         return Change(capture, () => archive.SaveAsync(enriched));
     }
     internal Task<bool> RemoveAsync(VocabularyCapture capture) => Change(capture, () => archive.RemoveAsync(capture));
-    internal Task<bool> UpdateAsync(VocabularyEntry edited, VocabularyEntry baseline) => Mutation(() => archive.UpdateAsync(edited, baseline));
+    internal Task<bool> UpdateAsync(VocabularyEntry edited, VocabularyEntry baseline, IReadOnlyDictionary<string, VocabularyPreparedImage>? importedImages = null)
+    {
+        // The editor can close or prune its map as soon as Save is admitted. Prepared values
+        // own immutable bytes; detaching the map preserves the exact admitted draft until SQL.
+        var supplied = importedImages is null ? null : new Dictionary<string, VocabularyPreparedImage>(importedImages, StringComparer.Ordinal);
+        return Mutation(() => archive.UpdateAsync(edited, baseline, supplied));
+    }
     internal Task<bool> RemoveEntryAsync(Guid id) => Mutation(() => archive.RemoveEntryAsync(id));
     internal Task<bool> RemoveSenseAsync(Guid entryId, Guid senseId) => Mutation(() => archive.RemoveSenseAsync(entryId, senseId));
     internal Task<bool> MergeSensesAsync(Guid entryId, Guid source, Guid target) => Mutation(() => archive.MergeSensesAsync(entryId, source, target));

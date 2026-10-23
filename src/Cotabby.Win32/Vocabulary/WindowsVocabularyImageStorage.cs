@@ -25,6 +25,8 @@ internal sealed class WindowsVocabularyImageStorage : IVocabularyImageStorage
     { DirectoryPath = notebook is null ? null : VocabularyWindowsFile.FullPath(notebook) + ".media"; _stagingIdentity = stagingIdentity; }
 
     public VocabularyPreparedImage Prepare(ReadOnlySpan<byte> data, CancellationToken cancellationToken) => WindowsVocabularyImagePreparer.Prepare(data, cancellationToken);
+    public VocabularyPreparedImage PrepareFile(string path, CancellationToken cancellationToken) =>
+        Prepare(WindowsVocabularyImageInput.ReadFile(path, cancellationToken), cancellationToken);
     public byte[] Read(VocabularyImageReference image) => ContentOperation(() =>
     {
         ValidateReference(image);

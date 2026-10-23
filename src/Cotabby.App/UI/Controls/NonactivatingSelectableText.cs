@@ -20,7 +20,12 @@ public sealed class NonactivatingSelectableText : TextBlock
 {
     public static readonly DependencyProperty DocumentIdentityProperty = DependencyProperty.Register(
         nameof(DocumentIdentity), typeof(object), typeof(NonactivatingSelectableText),
-        new PropertyMetadata(null, (owner, _) => ((NonactivatingSelectableText)owner).ClearSelection()));
+        new PropertyMetadata(null, (owner, change) =>
+        {
+            // Guid identities arrive boxed as object. Repainting the same target can allocate
+            // another box, so a DP reference change is not necessarily a document change.
+            if (!Equals(change.OldValue, change.NewValue)) ((NonactivatingSelectableText)owner).ClearSelection();
+        }));
     public static readonly RoutedEvent CopyRequestedEvent = EventManager.RegisterRoutedEvent(
         nameof(CopyRequested), RoutingStrategy.Bubble, typeof(EventHandler<SelectedTextCopyEventArgs>), typeof(NonactivatingSelectableText));
 

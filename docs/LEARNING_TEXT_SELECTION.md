@@ -49,7 +49,9 @@ nonselectable presentation, matching the pinned Mac responsibilities.
 the original target and contextual page. `LearningPreviewController.SelectionCopy.cs` adds the
 existing capture, intent, copy revision, direct lifetime and cached-field checks at final grant.
 Dictionary navigation intent also revokes a queued selection copy before its async UIA validation
-commits the new page/target; old feedback cannot cross that navigation revision.
+commits the new page/target; old feedback cannot cross that navigation revision. A new Copy
+from the still-visible old card during validation uses the new revision and may complete before
+the Core navigation commits; at that point it still names the current target/page.
 It shares the one background worker with the explicit sentence Copy buttons and sends fixed
 feedback only to the still-current owner. The worker reads detached data/atomic flags, never a
 Dispatcher-bound control. Dictionary feedback does not replace source/model attribution.

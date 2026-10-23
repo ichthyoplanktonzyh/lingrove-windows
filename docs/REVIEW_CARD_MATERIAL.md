@@ -45,7 +45,10 @@ Display references are not treated as duplicate stored ownership or silently ded
 ## Templates and JSON values
 
 Current and legacy templates/CSS are copied unchanged, including the current gap front that hides
-meaning and audio. Only known static templates are interpreted. Conditional processing precedes
+meaning and audio. Multiline constants use explicit LF separators so a Windows CRLF checkout
+cannot change exported CSS/template bytes. The exact HTML observations cover this contract; the
+first Windows run exposed the raw-literal line-ending difference and was not accepted as passing.
+Only known static templates are interpreted. Conditional processing precedes
 one reverse-position field insertion pass, so braces inside field values remain literal. Preview
 removes sound commands and supplies visible labels for flexible audio slots; it plays no audio.
 Prepared field HTML is an input contract, not an arbitrary-HTML sanitizer or browser security model.

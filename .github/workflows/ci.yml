@@ -46,11 +46,13 @@ jobs:
         run: dotnet test tests/Cotabby.App.Wpf.Tests/Cotabby.App.Wpf.Tests.csproj --configuration Release --no-build --no-restore --blame-hang-timeout 2m
 
   portable-core:
-    name: Portable core and Swift parity on macOS ARM64
+    name: Portable core and Swift parity on macOS x64
     # The pinned Swift policies use Swift 6.2 syntax supplied by Xcode 26.
-    runs-on: macos-26
+    # ARM64 hosted capacity repeatedly failed before acquiring a runner. This standard Intel
+    # image has the same macOS/Xcode generation; these are portable/source checks, not GPU tests.
+    runs-on: macos-26-intel
     # Each verifier compiles actual pinned Swift declarations in an isolated temporary binary.
-    timeout-minutes: 18
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:

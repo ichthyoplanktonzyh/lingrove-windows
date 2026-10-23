@@ -19,6 +19,7 @@
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\WindowsVocabularyTextSearch.cs" Link="Platform\WindowsVocabularyTextSearch.cs" />
     <Compile Include="..\Shared\LearningLexicalCorpus.cs" Link="Shared\LearningLexicalCorpus.cs" />
     <Compile Include="..\Shared\LearningExplanationCaptureCorpus.cs" Link="Shared\LearningExplanationCaptureCorpus.cs" />
+    <Compile Include="..\Shared\VocabularyReferenceGraph.cs" Link="Shared\VocabularyReferenceGraph.cs" />
     <!-- This platform file boundary uses only managed IO; compile the actual source to exercise
          bounded resource reads on both OS runners without loading WPF or native ICU. -->
     <Compile Include="..\..\src\Cotabby.Win32\LanguageLearning\BundledLearningLexiconResourceSource.cs"

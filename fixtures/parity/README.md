@@ -331,3 +331,11 @@ only the State-to-value mutation qualifier changes. The original Swift equality 
 onChange scheduling. Save cases evaluate source admission predicates, not a rendered SwiftUI button.
 Expected values are independent of C#. [Editor mapping/evidence](../../docs/VOCABULARY_EDITOR.md)
 keeps native UI, media and remaining notebook actions explicit.
+
+`vocabulary-notebook-session-v1.json` adds 24 complete original Mac notebook/child session
+observations. Configured fake generation is explicitly started, released and awaited in cancellation
+cases; unchanged-input generation stays live at observation time. Actual provider arguments and
+separately captured native word facts accompany explicit dictionary queries. Source routing/miss/error
+fallback is outside this first-successful-hit scope. C# runs the same operations against the real
+App session and Core children on a Windows dispatcher; the twenty-first Swift verifier checks the
+original sessions. [Session scope](../../docs/VOCABULARY_NOTEBOOK_SESSION.md) keeps UI integration open.

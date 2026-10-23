@@ -13,5 +13,8 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
     <Using Include="Xunit" />
     <ProjectReference Include="..\..\src\Cotabby.App\Cotabby.App.csproj" />
+    <Compile Include="..\Shared\VocabularyReferenceGraph.cs" Link="Shared\VocabularyReferenceGraph.cs" />
+    <None Include="..\..\fixtures\parity\vocabulary-notebook-session-v1.json"
+          Link="fixtures\parity\vocabulary-notebook-session-v1.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

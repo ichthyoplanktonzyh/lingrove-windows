@@ -315,6 +315,39 @@ public sealed class LearningExplanationSessionTests
         Assert.Equal(1, service.Generations); Assert.Equal(call.Input, session.State.Input);
     }
 
+    [Theory]
+    [InlineData("target")]
+    [InlineData("cancel")]
+    [InlineData("clear")]
+    public async Task BatchRevocationSuspendsServiceRestorationAndGenerationUntilTheOwnerCompletesTheTransition(string completion)
+    {
+        var loaded = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var service = new Service { Load = _ => { loaded.TrySetResult(); return Task.FromResult<LearningExplanationRecord?>(null); } };
+        await using var session = new LearningExplanationSession(service);
+        session.SetTarget(Input()); await loaded.Task.WaitAsync(Timeout);
+        var work = session.ExplainAsync(); var call = await service.Next();
+        try
+        {
+            session.RevokeWork();
+            // Both callbacks are synchronous admission attempts during an owner's foreign
+            // callback; neither may create fresh work for the revoked, still-visible input.
+            int restored = 0; service.Load = _ => { Interlocked.Increment(ref restored); return Task.FromResult<LearningExplanationRecord?>(Record(Input())); };
+            service.ChangeLanguage(LearningLanguage.Chinese);
+            await session.ExplainAsync();
+            call.Complete(); await work.WaitAsync(Timeout);
+            Assert.Equal(0, restored); Assert.Equal(1, service.Generations); Assert.Equal(0, service.Displays); Assert.Null(session.State.Record);
+            if (completion == "target") session.SetTarget(Input("Next."), Record(Input("Next.")));
+            else if (completion == "cancel") session.Cancel();
+            else session.Clear();
+            var nextInput = session.State.Input;
+            if (nextInput is null) { Assert.Equal("clear", completion); return; }
+            var nextWork = session.ExplainAsync(refresh: true); var next = await service.Next();
+            try { next.Complete(); await nextWork.WaitAsync(Timeout); Assert.Equal(nextInput, session.State.Record!.Input); }
+            finally { next.Complete(); }
+        }
+        finally { call.Complete(); }
+    }
+
     private sealed class ViewProbe { public void Observe(LearningExplanationState state) { } }
 
     private sealed record Call(LearningExplanationInput Input, LearningLanguage Language, CancellationToken Token, string RequestId, bool Refresh)

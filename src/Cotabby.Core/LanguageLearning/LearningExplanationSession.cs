@@ -18,6 +18,7 @@ public sealed class LearningExplanationSession : IAsyncDisposable
     private long _revision;
     private bool _draining;
     private bool _disposed;
+    private bool _transitionSuspended;
 
     public LearningExplanationSession(ILearningExplanationGenerating? service = null, CancellationToken ownerCancellation = default)
     {
@@ -44,6 +45,9 @@ public sealed class LearningExplanationSession : IAsyncDisposable
                 _state = _state with { Input = input, Record = null, ErrorMessage = null };
                 drain = EnqueueLocked();
             }
+            // Admission resumes atomically with the new input. A service change during the
+            // owner's earlier batch must not restart a saved lookup for the previous input.
+            _transitionSuspended = false;
             revision = _revision;
         }
         if (drain) Drain();
@@ -70,7 +74,7 @@ public sealed class LearningExplanationSession : IAsyncDisposable
         Task task; bool drain;
         lock (_gate)
         {
-            if (_disposed || _ownerCancellation.IsCancellationRequested
+            if (_disposed || _transitionSuspended || _ownerCancellation.IsCancellationRequested
                 || expectedState is not null && !ReferenceEquals(_state, expectedState)
                 || _service is null || _state.Input is not { } input
                 || _state.IsGenerating || !refresh && _state.Record is not null) return Task.CompletedTask;
@@ -95,9 +99,22 @@ public sealed class LearningExplanationSession : IAsyncDisposable
         lock (_gate)
         {
             if (_disposed || expectedState is not null && !ReferenceEquals(_state, expectedState)) return;
-            RetireLocked(); drain = EnqueueLocked();
+            RetireLocked(); _transitionSuspended = false; drain = EnqueueLocked();
         }
         if (drain) Drain();
+    }
+
+    /// <summary>
+    /// An owner preparing several row transitions first revokes their work without calling view
+    /// observers. It then calls SetTarget, Cancel or Dispose to publish the resulting state. Mac's
+    /// MainActor makes that batch atomic against generation publication; Windows workers need
+    /// this explicit first phase before any foreign saved-lookup/subscription/view callback.
+    /// Service-change restoration and explicit generation stay suspended until the owner installs
+    /// the next target or completes cancellation, so cancellation alone cannot reopen old work.
+    /// </summary>
+    public void RevokeWork()
+    {
+        lock (_gate) { if (!_disposed) { _transitionSuspended = true; RetireLocked(); } }
     }
 
     public void Clear()
@@ -106,7 +123,7 @@ public sealed class LearningExplanationSession : IAsyncDisposable
         lock (_gate)
         {
             if (_disposed) return;
-            RetireLocked(); _state = _state with { Input = null, Record = null, ErrorMessage = null };
+            RetireLocked(); _transitionSuspended = false; _state = _state with { Input = null, Record = null, ErrorMessage = null };
             drain = EnqueueLocked();
         }
         if (drain) Drain();
@@ -117,7 +134,7 @@ public sealed class LearningExplanationSession : IAsyncDisposable
         bool drain;
         lock (_gate)
         {
-            if (_disposed || _ownerCancellation.IsCancellationRequested) return;
+            if (_disposed || _transitionSuspended || _ownerCancellation.IsCancellationRequested) return;
             RetireLocked(); _state = _state with { Record = null, ErrorMessage = null };
             RestoreSavedLocked(); drain = EnqueueLocked();
         }
@@ -126,7 +143,7 @@ public sealed class LearningExplanationSession : IAsyncDisposable
 
     private void RestoreSavedLocked()
     {
-        if (_service is null || _ownerCancellation.IsCancellationRequested || _state.Input is not { } input) return;
+        if (_transitionSuspended || _service is null || _ownerCancellation.IsCancellationRequested || _state.Input is not { } input) return;
         var lifetime = new LearningRequestLifetime(); _lookup = lifetime;
         long revision = _revision;
         var owner = new WeakReference<LearningExplanationSession>(this);
@@ -226,7 +243,7 @@ public sealed class LearningExplanationSession : IAsyncDisposable
         && record.Input == input && record.Result is not null && LearningExplanationPolicy.IsValid(record.Result)
         && Enum.IsDefined(record.Language) && (_service is null || record.Language == _service.Language);
     private bool CurrentLocked(long revision, LearningExplanationInput? input) =>
-        !_disposed && !_ownerCancellation.IsCancellationRequested && _revision == revision && _state.Input == input;
+        !_disposed && !_transitionSuspended && !_ownerCancellation.IsCancellationRequested && _revision == revision && _state.Input == input;
     private void RetireLocked()
     {
         ++_revision;

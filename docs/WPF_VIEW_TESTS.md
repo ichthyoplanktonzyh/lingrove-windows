@@ -164,3 +164,8 @@ and five cancelled/stale/retired-owner cases (420 total). Real Windows source ha
 and SQLite verify unchanged failures, full replacement/reopen, repaired images, orphan removal
 and conflict rollback. The oversized source uses a length extension; the exact limit and aggregate-media boundary
 are not exercised. Store commands and physical confirmation/chooser interaction remain work.
+
+The [Store backup/restore owner](VOCABULARY_BACKUP_STORE.md) adds thirteen actual Mac state/IO
+counterparts and four publication/retired-dispatcher/IO-drain cases (437 total). Scheduling gates
+forward real native reads/writes; they do not fabricate successful archive outcomes. Physical
+chooser/confirmation interaction remains the next adaptation and a separate desktop gate.

@@ -6,8 +6,8 @@ internal sealed partial class VocabularyStore
 {
     // Mac changes this only after restore, not on every ordinary notebook snapshot. Keeping
     // the token separate prevents unrelated saves from re-reading visible same-hash images.
-    private readonly Guid _mediaRevision = Guid.NewGuid();
-    internal Guid MediaRevision => _mediaRevision;
+    private Guid _mediaRevision = Guid.NewGuid();
+    internal Guid MediaRevision { get { lock (_gate) return _mediaRevision; } }
     internal Task<VocabularyPreparedImage> PrepareImageAsync(ReadOnlyMemory<byte> data, CancellationToken cancellationToken = default) =>
         MediaOperation(() => archive.PrepareImageAsync(data, cancellationToken));
     internal Task<VocabularyPreparedImage> PrepareImageFileAsync(string path, CancellationToken cancellationToken = default) =>

@@ -51,7 +51,7 @@ dotnet test tests/Cotabby.App.Wpf.Tests/Cotabby.App.Wpf.Tests.csproj --configura
 ```
 
 The [restore transaction](VOCABULARY_RESTORE.md) now adds bounded source reads, version/whole-graph/
-exact-media admission and acknowledged staged replacement. Store commands and the UI's explicit
-replacement confirmation remain work. Physical
-native picker interaction and UIA/IME/ghost/insertion/GPU gates remain open. Backup writes are only
+exact-media admission and acknowledged staged replacement. The [Store commands](VOCABULARY_BACKUP_STORE.md)
+now own shared publication and lifetime. Explicit replacement confirmation, physical native picker
+interaction and UIA/IME/ghost/insertion/GPU gates remain open. Backup writes are only
 user-requested local effects; no model, clipboard, network, installer or downloadable build is added.

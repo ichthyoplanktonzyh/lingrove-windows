@@ -1,6 +1,3 @@
-using System.Globalization;
-using System.Security.Cryptography;
-using System.Text;
 using Cotabby.Core.Text;
 using Cotabby.Core.Vocabulary;
 
@@ -11,7 +8,7 @@ namespace Cotabby.Core.LanguageLearning;
 /// It owns no editor or notebook: a future card supplies its immutable document/unit, and this
 /// adapter retains original UTF-16 occurrences for explanation. Platform word/sentence facts are
 /// injected; callers run them on a worker and separately verify their presentation identity.
-/// Reading/original-text/selection captures and durable vocabulary records are separate work.
+/// Reading/original-text/selection capture and notebook persistence remain separate work.
 /// </summary>
 public sealed class LearningExplanationInputFactory(ILearningLexicalText lexicalText, ILearningEvidenceSentenceTokenizer sentenceTokenizer)
 {
@@ -169,16 +166,11 @@ public sealed class LearningExplanationInputFactory(ILearningLexicalText lexical
             evidence?.Ranges ?? [new VocabularyTextRange(0, target.Length)], evidence?.Scope ?? LearningExplanationContext.None,
             evidence is null ? null : Receipt(evidence));
 
-    private static string Receipt(Evidence evidence)
-    {
-        // Mac exampleKey frames UTF-8 lengths, exact ordered UTF-16 spans and completeness only.
-        // The local receipt excludes translation/meaning, UUID, app data and endpoint identity.
-        string ranges = string.Join(",", evidence.Ranges.Select(range =>
-            range.Location.ToString(CultureInfo.InvariantCulture) + ":" + range.Length.ToString(CultureInfo.InvariantCulture)));
-        string framed = string.Concat(new[] { evidence.Text, ranges, evidence.Scope == LearningExplanationContext.Sentence ? "sentence" : "fragment" }
-            .Select(value => Encoding.UTF8.GetByteCount(value).ToString(CultureInfo.InvariantCulture) + ":" + value));
-        return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(framed))).ToLowerInvariant();
-    }
+    // The same exact usage receipt now belongs to the vocabulary identity boundary. Reuse it
+    // without constructing a durable usage, UUID or timestamp for a transient explanation request.
+    private static string Receipt(Evidence evidence) => VocabularyCapturePolicy.ExampleKey(evidence.Text,
+        evidence.Ranges, evidence.Scope == LearningExplanationContext.Sentence
+            ? VocabularyExampleCompleteness.Sentence : VocabularyExampleCompleteness.Fragment);
 
     /// <summary>Transient projection of a captured example, owned only while constructing the frozen input.</summary>
     private sealed record Evidence(string Text, IReadOnlyList<VocabularyTextRange> Ranges, LearningExplanationContext Scope);

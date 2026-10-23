@@ -237,3 +237,24 @@ updated by normal verification. This is pure data/HTML evidence, not archive, PN
 C# tests also reject null/unknown/malformed UTF-16 values that have no native Swift equivalent.
 Windows RenderHtml validates before interpolation; Mac archive/review callers validate before html.
 [The scope record](../../docs/VOCABULARY_CONTENT.md) lists the unfinished notebook/media boundaries.
+
+## Captured usage identity and admission
+
+`vocabulary-capture-v1.json` adds 63 source-policy probes from the same fixed Mac revision. The
+verifier compiles complete meaning/example/capture declarations, the actual entry Kind declaration,
+original normalization/key framing/capture validation/range validation methods, and the actual
+capture-to-explanation input/validation methods. Unported sense/review/store graphs are omitted,
+not replaced by fake algorithms. Original language/catalog/budget/estimator/error sources supply
+their dependencies.
+
+```sh
+python3 scripts/verify-vocabulary-capture-macos-parity.py --mac-repo /path/to/lingrove
+```
+
+Observations retain normalized byte count/hash and short raw text, entry/example/capture keys,
+capture validity, explanation validity and occurrence receipt. They cover language/kind/case,
+NFC/Character whitespace, original UTF-8 budgets, exact occurrence/order/scope, annotation and
+provenance independence, invalid/split ranges, empty/overlapping ranges permitted by the Mac
+capture validator, and its NSString CR/LF range behavior. Expected values come from executing
+Mac source; the .NET implementation does not supply an oracle. These cases establish no sentence
+tokenizer, save/merge, notebook schema/restart, media or native editor behavior.

@@ -94,7 +94,7 @@ coordinators focused on sequencing, cancellation, and current UI state.
 Preserve the macOS vocabulary contract when implementing learning storage: entry UUIDs identify
 headwords, sense UUIDs identify meanings independently of their wording or order, and usage/example
 UUIDs retain a particular encountered sentence or fragment with its exact text ranges and provenance.
-Anki review/card identity is an independent relationship to those records. The [sense-content library](docs/VOCABULARY_CONTENT.md) provides pure block/image rules; it is not a durable store. Future senses must preserve absent content versus an explicitly empty block list. Do not flatten senses into
+Anki review/card identity is an independent relationship to those records. The [sense-content library](docs/VOCABULARY_CONTENT.md) provides pure block/image rules; it is not a durable store. The [usage/capture values and keys](docs/VOCABULARY_CAPTURE.md) preserve encountered text/ranges and provenance without connecting Save. Future senses must preserve absent content versus an explicitly empty block list. Do not flatten senses into
 one translation string, regenerate stable IDs during edits, or treat a generated explanation as the
 user's authored meaning. See the vocabulary models and porting gates in the linked docs. Storage
 compatibility with macOS is not assumed; migrations must be explicit and tested.
@@ -119,6 +119,7 @@ python3 scripts/verify-learning-lexical-macos-parity.py --mac-repo /path/to/macO
 python3 scripts/verify-learning-explanation-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-learning-capture-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-vocabulary-content-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
+python3 scripts/verify-vocabulary-capture-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 ```
 
 The verifiers read the pinned macOS sources from Git and check the same JSON cases. The lexical
@@ -132,7 +133,7 @@ runner. This is ordinary compilation, not packaging or a release.
 The current `.github/workflows/ci.yml` has two validation jobs: Windows x64 restores and builds the
 full solution, then runs Core, portable App boundary and Inference tests, including noninteractive ICU sentence tests,
 and the compiled learning-card WPF view suite on its own STA dispatcher (see `docs/WPF_VIEW_TESTS.md`);
-macOS 26 runs Core, portable App boundary tests and all seven Swift parity verifiers against a sparse checkout of the pinned Mac
+macOS 26 runs Core, portable App boundary tests and all eight Swift parity verifiers against a sparse checkout of the pinned Mac
 Support, language-learning/vocabulary models/services, content-test provenance, language catalog and pinned expression resource files. The separate
 `.github/workflows/upstream-baseline.yml` checks the original Windows fork at commit
 `b1e4031c70aca1be21aae2c57b138fde5fc22bb1` with .NET 9 on manual dispatch. Its initial setup run is

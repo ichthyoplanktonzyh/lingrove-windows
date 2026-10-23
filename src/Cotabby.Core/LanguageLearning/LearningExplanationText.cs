@@ -1,12 +1,14 @@
 using System.Globalization;
 using System.Text;
+using Cotabby.Core.Text;
 
 namespace Cotabby.Core.LanguageLearning;
 
 /// <summary>
 /// Text primitives at the Foundation/.NET seam for explanation policy. They never normalize study
 /// text: byte limits, original UTF-16 ranges and JSON-quoted text must describe the same capture.
-/// StringInfo supplies grapheme boundaries; Unicode-version differences remain a platform gate.
+/// FoundationTextRanges adapts composed-sequence boundaries (including NSString's separate CR/LF);
+/// Unicode-version differences remain a platform gate. Readonly UI selection uses another map.
 /// </summary>
 internal static class LearningExplanationText
 {
@@ -24,10 +26,9 @@ internal static class LearningExplanationText
     private static readonly char[] TrimCharacters =
         "\u0009\u000A\u000B\u000C\u000D\u0020\u0085\u00A0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u200B\u2028\u2029\u202F\u205F\u3000".ToCharArray();
 
-    public static int[] Boundaries(string text) => [.. StringInfo.ParseCombiningCharacters(text), text.Length];
+    public static int[] Boundaries(string text) => FoundationTextRanges.Boundaries(text);
     public static bool ValidRange(int location, int length, string text, int[] boundaries) =>
-        location >= 0 && length > 0 && location <= text.Length && length <= text.Length - location
-        && Array.BinarySearch(boundaries, location) >= 0 && Array.BinarySearch(boundaries, location + length) >= 0;
+        FoundationTextRanges.IsValid(location, length, text, boundaries);
 
     public static string ExpandedWindow(string text, int start, int end, int[] boundaries)
     {

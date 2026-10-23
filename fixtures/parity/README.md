@@ -378,3 +378,10 @@ Numbers include source edge cases and a fixed-seed100-value array. Exact raw str
 for single-key bodies; multi-key request order is unspecified, with semantic values and exact
 length compared. No network or real Anki is exercised; deep async Swift encoder stack behavior
 remains an explicit limitation. See [scope and mapping](../../docs/ANKI_CONNECT_TRANSPORT.md).
+
+`anki-fields-v1.json` contains76 observations from four exact original AnkiReviewPolicy methods
+(fields, conflicts, removal and audio markup) plus preset constants and complete card/layout
+dependencies. It preserves canonical field identity, override precedence and exact UTF-8 budgets.
+Large generated values expose byte count and SHA-256 instead of repeated megabytes; all smaller
+outputs compare exact strings/keys/array count. No server, controller transaction or audio
+freshness is established. See [mapping and limits](../../docs/ANKI_FIELD_POLICY.md).

@@ -3,10 +3,10 @@ using Cotabby.Core.Support;
 namespace Cotabby.Core.Review;
 
 /// <summary>
-/// The pure review-merge subset from Mac: a future sense transaction keeps the target plan and
-/// all source history/remote associations. No endpoint validation, connection or send is implied.
+/// Pure review interoperability rules from Mac. Merge retains target ownership/history; the
+/// companion field policy projects validated material without a Store, HTTP client or speech runtime.
 /// </summary>
-public static class AnkiReviewPolicy
+public static partial class AnkiReviewPolicy
 {
     public static VocabularyReview? Merged(VocabularyReview? target, VocabularyReview? source)
     {

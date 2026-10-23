@@ -1,0 +1,1521 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "preset",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "preset",
+      "expected": {
+        "valid": true,
+        "value": {
+          "mapping": {
+            "Explanation": "Explanation",
+            "Expression": "Expression",
+            "ExpressionAudio": "ExpressionAudio",
+            "GapAnswer": "GapAnswer",
+            "GapPrompt": "GapPrompt",
+            "LingroveID": "LingroveID",
+            "Meaning": "Meaning",
+            "Notes": "Notes",
+            "Recognition": "Recognition",
+            "Sentence": "Sentence",
+            "SentenceAudio": "SentenceAudio",
+            "Translation": "Translation"
+          },
+          "name": "Lingrove v1"
+        }
+      }
+    },
+    {
+      "id": "default-fields",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "valid": true,
+        "value": {
+          "Explanation": "explanation",
+          "Expression": "bank&lt;&amp;&gt;",
+          "ExpressionAudio": "",
+          "GapAnswer": "bank",
+          "GapPrompt": "The ___.",
+          "LingroveID": "00000000-0000-0000-0000-000000000002",
+          "Meaning": "answer&lt;&amp;&gt;",
+          "Notes": "notes",
+          "Recognition": "1",
+          "Sentence": "The <b>bank</b>.",
+          "SentenceAudio": "",
+          "Translation": "translation"
+        }
+      }
+    },
+    {
+      "id": "minimal-fields",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mapping": {
+        "LingroveID": "LingroveID",
+        "Expression": "Expression",
+        "Meaning": "Meaning"
+      },
+      "expected": {
+        "valid": true,
+        "value": {
+          "Expression": "bank&lt;&amp;&gt;",
+          "LingroveID": "00000000-0000-0000-0000-000000000002",
+          "Meaning": "answer&lt;&amp;&gt;"
+        }
+      }
+    },
+    {
+      "id": "custom-fields",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mapping": {
+        "LingroveID": "ID",
+        "Expression": "Question",
+        "Meaning": "Answer"
+      },
+      "expected": {
+        "valid": true,
+        "value": {
+          "Answer": "answer&lt;&amp;&gt;",
+          "ID": "00000000-0000-0000-0000-000000000002",
+          "Question": "bank&lt;&amp;&gt;"
+        }
+      }
+    },
+    {
+      "id": "rich-fields",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "blocks": true,
+      "expected": {
+        "valid": true,
+        "value": {
+          "Explanation": "explanation",
+          "Expression": "bank&lt;&amp;&gt;",
+          "ExpressionAudio": "",
+          "GapAnswer": "bank",
+          "GapPrompt": "The ___.",
+          "LingroveID": "00000000-0000-0000-0000-000000000002",
+          "Meaning": "answer&lt;&amp;&gt;<div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><p>A &lt;hint&gt;&amp;</p><figure style=\"margin:12px 0\"><img src=\"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\" style=\"max-width:100%;height:auto\" alt=\"image&lt;&amp;&gt;\"><figcaption>image&lt;&amp;&gt;</figcaption></figure></div>",
+          "Notes": "notes",
+          "Recognition": "1",
+          "Sentence": "The <b>bank</b>.",
+          "SentenceAudio": "",
+          "Translation": "translation"
+        }
+      }
+    },
+    {
+      "id": "missing-LingroveID",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mapping": {
+        "Expression": "Expression",
+        "Meaning": "Meaning"
+      },
+      "expected": {
+        "error": "Map unique fields for the sense ID, expression and answer.",
+        "valid": false
+      }
+    },
+    {
+      "id": "empty-LingroveID",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mapping": {
+        "LingroveID": "",
+        "Expression": "Expression",
+        "Meaning": "Meaning"
+      },
+      "expected": {
+        "error": "Map unique fields for the sense ID, expression and answer.",
+        "valid": false
+      }
+    },
+    {
+      "id": "missing-Expression",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mapping": {
+        "LingroveID": "LingroveID",
+        "Meaning": "Meaning"
+      },
+      "expected": {
+        "error": "Map unique fields for the sense ID, expression and answer.",
+        "valid": false
+      }
+    },
+    {
+      "id": "empty-Expression",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mapping": {
+        "LingroveID": "LingroveID",
+        "Expression": "",
+        "Meaning": "Meaning"
+      },
+      "expected": {
+        "error": "Map unique fields for the sense ID, expression and answer.",
+        "valid": false
+      }
+    },
+    {
+      "id": "missing-Meaning",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mapping": {
+        "LingroveID": "LingroveID",
+        "Expression": "Expression"
+      },
+      "expected": {
+        "error": "Map unique fields for the sense ID, expression and answer.",
+        "valid": false
+      }
+    },
+    {
+      "id": "empty-Meaning",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mapping": {
+        "LingroveID": "LingroveID",
+        "Expression": "Expression",
+        "Meaning": ""
+      },
+      "expected": {
+        "error": "Map unique fields for the sense ID, expression and answer.",
+        "valid": false
+      }
+    },
+    {
+      "id": "duplicate-same",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mapping": {
+        "LingroveID": "LingroveID",
+        "Expression": "Expression",
+        "Meaning": "Expression"
+      },
+      "expected": {
+        "error": "Map unique fields for the sense ID, expression and answer.",
+        "valid": false
+      }
+    },
+    {
+      "id": "duplicate-canonical",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mapping": {
+        "LingroveID": "LingroveID",
+        "Expression": "é",
+        "Meaning": "é"
+      },
+      "expected": {
+        "error": "Map unique fields for the sense ID, expression and answer.",
+        "valid": false
+      }
+    },
+    {
+      "id": "name-space",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mapping": {
+        "LingroveID": "LingroveID",
+        "Expression": "Expression",
+        "Meaning": " "
+      },
+      "expected": {
+        "valid": true,
+        "value": {
+          " ": "answer&lt;&amp;&gt;",
+          "Expression": "bank&lt;&amp;&gt;",
+          "LingroveID": "00000000-0000-0000-0000-000000000002"
+        }
+      }
+    },
+    {
+      "id": "name-200-ascii",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mapping": {
+        "LingroveID": "LingroveID",
+        "Expression": "Expression",
+        "Meaning": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      },
+      "expected": {
+        "valid": true,
+        "value": {
+          "Expression": "bank&lt;&amp;&gt;",
+          "LingroveID": "00000000-0000-0000-0000-000000000002",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx": "answer&lt;&amp;&gt;"
+        }
+      }
+    },
+    {
+      "id": "name-201-ascii",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mapping": {
+        "LingroveID": "LingroveID",
+        "Expression": "Expression",
+        "Meaning": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      },
+      "expected": {
+        "error": "Map unique fields for the sense ID, expression and answer.",
+        "valid": false
+      }
+    },
+    {
+      "id": "name-66-han",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mapping": {
+        "LingroveID": "LingroveID",
+        "Expression": "Expression",
+        "Meaning": "汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉"
+      },
+      "expected": {
+        "valid": true,
+        "value": {
+          "Expression": "bank&lt;&amp;&gt;",
+          "LingroveID": "00000000-0000-0000-0000-000000000002",
+          "汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉": "answer&lt;&amp;&gt;"
+        }
+      }
+    },
+    {
+      "id": "name-67-han",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mapping": {
+        "LingroveID": "LingroveID",
+        "Expression": "Expression",
+        "Meaning": "汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉"
+      },
+      "expected": {
+        "error": "Map unique fields for the sense ID, expression and answer.",
+        "valid": false
+      }
+    },
+    {
+      "id": "name-newline-lf",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mapping": {
+        "LingroveID": "LingroveID",
+        "Expression": "Expression",
+        "Meaning": "x\n"
+      },
+      "expected": {
+        "error": "Map unique fields for the sense ID, expression and answer.",
+        "valid": false
+      }
+    },
+    {
+      "id": "name-newline-cr",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mapping": {
+        "LingroveID": "LingroveID",
+        "Expression": "Expression",
+        "Meaning": "x\r"
+      },
+      "expected": {
+        "error": "Map unique fields for the sense ID, expression and answer.",
+        "valid": false
+      }
+    },
+    {
+      "id": "name-newline-crlf",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mapping": {
+        "LingroveID": "LingroveID",
+        "Expression": "Expression",
+        "Meaning": "x\r\n"
+      },
+      "expected": {
+        "error": "Map unique fields for the sense ID, expression and answer.",
+        "valid": false
+      }
+    },
+    {
+      "id": "name-newline-vt",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mapping": {
+        "LingroveID": "LingroveID",
+        "Expression": "Expression",
+        "Meaning": "x\u000b"
+      },
+      "expected": {
+        "error": "Map unique fields for the sense ID, expression and answer.",
+        "valid": false
+      }
+    },
+    {
+      "id": "name-newline-ff",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mapping": {
+        "LingroveID": "LingroveID",
+        "Expression": "Expression",
+        "Meaning": "x\f"
+      },
+      "expected": {
+        "error": "Map unique fields for the sense ID, expression and answer.",
+        "valid": false
+      }
+    },
+    {
+      "id": "name-newline-nel",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mapping": {
+        "LingroveID": "LingroveID",
+        "Expression": "Expression",
+        "Meaning": "x"
+      },
+      "expected": {
+        "error": "Map unique fields for the sense ID, expression and answer.",
+        "valid": false
+      }
+    },
+    {
+      "id": "name-newline-ls",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mapping": {
+        "LingroveID": "LingroveID",
+        "Expression": "Expression",
+        "Meaning": "x "
+      },
+      "expected": {
+        "error": "Map unique fields for the sense ID, expression and answer.",
+        "valid": false
+      }
+    },
+    {
+      "id": "name-newline-ps",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mapping": {
+        "LingroveID": "LingroveID",
+        "Expression": "Expression",
+        "Meaning": "x "
+      },
+      "expected": {
+        "error": "Map unique fields for the sense ID, expression and answer.",
+        "valid": false
+      }
+    },
+    {
+      "id": "name-zwsp",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mapping": {
+        "LingroveID": "LingroveID",
+        "Expression": "Expression",
+        "Meaning": "x​"
+      },
+      "expected": {
+        "valid": true,
+        "value": {
+          "Expression": "bank&lt;&amp;&gt;",
+          "LingroveID": "00000000-0000-0000-0000-000000000002",
+          "x​": "answer&lt;&amp;&gt;"
+        }
+      }
+    },
+    {
+      "id": "name-nul",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mapping": {
+        "LingroveID": "LingroveID",
+        "Expression": "Expression",
+        "Meaning": "x\u0000"
+      },
+      "expected": {
+        "valid": true,
+        "value": {
+          "Expression": "bank&lt;&amp;&gt;",
+          "LingroveID": "00000000-0000-0000-0000-000000000002",
+          "x\u0000": "answer&lt;&amp;&gt;"
+        }
+      }
+    },
+    {
+      "id": "optional-unselected",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mapping": {
+        "LingroveID": "LingroveID",
+        "Expression": "Expression",
+        "Meaning": "Meaning",
+        "Notes": "",
+        "SentenceAudio": ""
+      },
+      "audio": {
+        "SentenceAudio": "ignored"
+      },
+      "expected": {
+        "valid": true,
+        "value": {
+          "Expression": "bank&lt;&amp;&gt;",
+          "LingroveID": "00000000-0000-0000-0000-000000000002",
+          "Meaning": "answer&lt;&amp;&gt;"
+        }
+      }
+    },
+    {
+      "id": "override-identity-unknown",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "overrides": {
+        "LingroveID": "wrong-identity",
+        "Unknown": "ignored",
+        "Meaning": "<i>retained remote answer</i>"
+      },
+      "expected": {
+        "valid": true,
+        "value": {
+          "Explanation": "explanation",
+          "Expression": "bank&lt;&amp;&gt;",
+          "ExpressionAudio": "",
+          "GapAnswer": "bank",
+          "GapPrompt": "The ___.",
+          "LingroveID": "00000000-0000-0000-0000-000000000002",
+          "Meaning": "<i>retained remote answer</i>",
+          "Notes": "notes",
+          "Recognition": "1",
+          "Sentence": "The <b>bank</b>.",
+          "SentenceAudio": "",
+          "Translation": "translation"
+        }
+      }
+    },
+    {
+      "id": "override-empty-answer",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "overrides": {
+        "Meaning": ""
+      },
+      "expected": {
+        "valid": true,
+        "value": {
+          "Explanation": "explanation",
+          "Expression": "bank&lt;&amp;&gt;",
+          "ExpressionAudio": "",
+          "GapAnswer": "bank",
+          "GapPrompt": "The ___.",
+          "LingroveID": "00000000-0000-0000-0000-000000000002",
+          "Meaning": "",
+          "Notes": "notes",
+          "Recognition": "1",
+          "Sentence": "The <b>bank</b>.",
+          "SentenceAudio": "",
+          "Translation": "translation"
+        }
+      }
+    },
+    {
+      "id": "canonical-override",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mapping": {
+        "LingroveID": "LingroveID",
+        "Expression": "Expression",
+        "Meaning": "é"
+      },
+      "overrides": {
+        "é": "remote"
+      },
+      "expected": {
+        "valid": true,
+        "value": {
+          "Expression": "bank&lt;&amp;&gt;",
+          "LingroveID": "00000000-0000-0000-0000-000000000002",
+          "é": "remote"
+        }
+      }
+    },
+    {
+      "id": "audio-both",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "audio": {
+        "ExpressionAudio": "[sound:e.wav]",
+        "SentenceAudio": "[sound:s.mp3]"
+      },
+      "expected": {
+        "valid": true,
+        "value": {
+          "Explanation": "explanation",
+          "Expression": "bank&lt;&amp;&gt;",
+          "ExpressionAudio": "[sound:e.wav]",
+          "GapAnswer": "bank",
+          "GapPrompt": "The ___.",
+          "LingroveID": "00000000-0000-0000-0000-000000000002",
+          "Meaning": "answer&lt;&amp;&gt;",
+          "Notes": "notes",
+          "Recognition": "1",
+          "Sentence": "The <b>bank</b>.",
+          "SentenceAudio": "[sound:s.mp3]",
+          "Translation": "translation"
+        }
+      }
+    },
+    {
+      "id": "audio-generic-identity",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "audio": {
+        "LingroveID": "audio-identity",
+        "Meaning": "audio-meaning"
+      },
+      "expected": {
+        "valid": true,
+        "value": {
+          "Explanation": "explanation",
+          "Expression": "bank&lt;&amp;&gt;",
+          "ExpressionAudio": "",
+          "GapAnswer": "bank",
+          "GapPrompt": "The ___.",
+          "LingroveID": "audio-identity",
+          "Meaning": "audio-meaning",
+          "Notes": "notes",
+          "Recognition": "1",
+          "Sentence": "The <b>bank</b>.",
+          "SentenceAudio": "",
+          "Translation": "translation"
+        }
+      }
+    },
+    {
+      "id": "no-recognition-gap",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "recognition": false,
+      "gap": false,
+      "expected": {
+        "valid": true,
+        "value": {
+          "Explanation": "explanation",
+          "Expression": "bank&lt;&amp;&gt;",
+          "ExpressionAudio": "",
+          "GapAnswer": "",
+          "GapPrompt": "",
+          "LingroveID": "00000000-0000-0000-0000-000000000002",
+          "Meaning": "answer&lt;&amp;&gt;",
+          "Notes": "notes",
+          "Recognition": "",
+          "Sentence": "The <b>bank</b>.",
+          "SentenceAudio": "",
+          "Translation": "translation"
+        }
+      }
+    },
+    {
+      "id": "flex-both",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "audio": {
+        "ExpressionAudio": "[sound:e.wav]",
+        "SentenceAudio": "[sound:s.mp3]"
+      },
+      "front": [
+        {
+          "kind": "text",
+          "text": "front <&>"
+        },
+        {
+          "kind": "audio",
+          "audio": "expression"
+        },
+        {
+          "kind": "blocks"
+        }
+      ],
+      "back": [
+        {
+          "kind": "audio",
+          "audio": "sentence"
+        },
+        {
+          "kind": "text",
+          "text": "back <&>"
+        }
+      ],
+      "expected": {
+        "valid": true,
+        "value": {
+          "Explanation": "explanation",
+          "Expression": "<section>front &lt;&amp;&gt;</section><section>[sound:e.wav]</section><section><div class=\"sense-explanation\" style=\"font-weight:400;font-size:0.91em\"><p>A &lt;hint&gt;&amp;</p><figure style=\"margin:12px 0\"><img src=\"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\" style=\"max-width:100%;height:auto\" alt=\"image&lt;&amp;&gt;\"><figcaption>image&lt;&amp;&gt;</figcaption></figure></div></section>",
+          "ExpressionAudio": "[sound:e.wav]",
+          "GapAnswer": "bank",
+          "GapPrompt": "The ___.",
+          "LingroveID": "00000000-0000-0000-0000-000000000002",
+          "Meaning": "<section>[sound:s.mp3]</section><section>back &lt;&amp;&gt;</section>",
+          "Notes": "notes",
+          "Recognition": "1",
+          "Sentence": "The <b>bank</b>.",
+          "SentenceAudio": "[sound:s.mp3]",
+          "Translation": "translation"
+        }
+      }
+    },
+    {
+      "id": "flex-only-front",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "audio": {
+        "ExpressionAudio": "[sound:e.wav]",
+        "SentenceAudio": "[sound:s.mp3]"
+      },
+      "front": [
+        {
+          "kind": "text",
+          "text": "front <&>"
+        },
+        {
+          "kind": "audio",
+          "audio": "expression"
+        },
+        {
+          "kind": "blocks"
+        }
+      ],
+      "expected": {
+        "valid": true,
+        "value": {
+          "Explanation": "explanation",
+          "Expression": "bank&lt;&amp;&gt;",
+          "ExpressionAudio": "[sound:e.wav]",
+          "GapAnswer": "bank",
+          "GapPrompt": "The ___.",
+          "LingroveID": "00000000-0000-0000-0000-000000000002",
+          "Meaning": "answer&lt;&amp;&gt;",
+          "Notes": "notes",
+          "Recognition": "1",
+          "Sentence": "The <b>bank</b>.",
+          "SentenceAudio": "[sound:s.mp3]",
+          "Translation": "translation"
+        }
+      }
+    },
+    {
+      "id": "flex-only-back",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "audio": {
+        "ExpressionAudio": "[sound:e.wav]",
+        "SentenceAudio": "[sound:s.mp3]"
+      },
+      "back": [
+        {
+          "kind": "audio",
+          "audio": "sentence"
+        },
+        {
+          "kind": "text",
+          "text": "back <&>"
+        }
+      ],
+      "expected": {
+        "valid": true,
+        "value": {
+          "Explanation": "explanation",
+          "Expression": "bank&lt;&amp;&gt;",
+          "ExpressionAudio": "[sound:e.wav]",
+          "GapAnswer": "bank",
+          "GapPrompt": "The ___.",
+          "LingroveID": "00000000-0000-0000-0000-000000000002",
+          "Meaning": "answer&lt;&amp;&gt;",
+          "Notes": "notes",
+          "Recognition": "1",
+          "Sentence": "The <b>bank</b>.",
+          "SentenceAudio": "[sound:s.mp3]",
+          "Translation": "translation"
+        }
+      }
+    },
+    {
+      "id": "flex-empty",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "audio": {
+        "ExpressionAudio": "[sound:e.wav]",
+        "SentenceAudio": "[sound:s.mp3]"
+      },
+      "front": [],
+      "back": [],
+      "expected": {
+        "valid": true,
+        "value": {
+          "Explanation": "explanation",
+          "Expression": "",
+          "ExpressionAudio": "[sound:e.wav]",
+          "GapAnswer": "bank",
+          "GapPrompt": "The ___.",
+          "LingroveID": "00000000-0000-0000-0000-000000000002",
+          "Meaning": "",
+          "Notes": "notes",
+          "Recognition": "1",
+          "Sentence": "The <b>bank</b>.",
+          "SentenceAudio": "[sound:s.mp3]",
+          "Translation": "translation"
+        }
+      }
+    },
+    {
+      "id": "flex-overridden",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "front": [
+        {
+          "kind": "text",
+          "text": "front <&>"
+        },
+        {
+          "kind": "audio",
+          "audio": "expression"
+        },
+        {
+          "kind": "blocks"
+        }
+      ],
+      "back": [
+        {
+          "kind": "audio",
+          "audio": "sentence"
+        },
+        {
+          "kind": "text",
+          "text": "back <&>"
+        }
+      ],
+      "overrides": {
+        "Expression": "remote-front",
+        "Meaning": "remote-back",
+        "LingroveID": "ignored"
+      },
+      "expected": {
+        "valid": true,
+        "value": {
+          "Explanation": "explanation",
+          "Expression": "remote-front",
+          "ExpressionAudio": "",
+          "GapAnswer": "bank",
+          "GapPrompt": "The ___.",
+          "LingroveID": "00000000-0000-0000-0000-000000000002",
+          "Meaning": "remote-back",
+          "Notes": "notes",
+          "Recognition": "1",
+          "Sentence": "The <b>bank</b>.",
+          "SentenceAudio": "",
+          "Translation": "translation"
+        }
+      }
+    },
+    {
+      "id": "budget-999963",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mapping": {
+        "LingroveID": "LingroveID",
+        "Expression": "Expression",
+        "Meaning": "Meaning"
+      },
+      "expression": "",
+      "repeatCount": 999963,
+      "expected": {
+        "valid": true,
+        "value": {
+          "Expression": "",
+          "LingroveID": "00000000-0000-0000-0000-000000000002",
+          "Meaning": {
+            "bytes": 999963,
+            "sha256": "846f2e5aad2af965b438915e3f2a247f02a3fbf1742d7e6990868e590acad68e"
+          }
+        }
+      }
+    },
+    {
+      "id": "budget-999964",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mapping": {
+        "LingroveID": "LingroveID",
+        "Expression": "Expression",
+        "Meaning": "Meaning"
+      },
+      "expression": "",
+      "repeatCount": 999964,
+      "expected": {
+        "valid": true,
+        "value": {
+          "Expression": "",
+          "LingroveID": "00000000-0000-0000-0000-000000000002",
+          "Meaning": {
+            "bytes": 999964,
+            "sha256": "52a5d7ffaf778ab7ac80b42a3fee5eb8f66149ea5e36fff2b48514aec9a12239"
+          }
+        }
+      }
+    },
+    {
+      "id": "budget-999965",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mapping": {
+        "LingroveID": "LingroveID",
+        "Expression": "Expression",
+        "Meaning": "Meaning"
+      },
+      "expression": "",
+      "repeatCount": 999965,
+      "expected": {
+        "error": "The review content is too large to send.",
+        "valid": false
+      }
+    },
+    {
+      "id": "budget-27721-333321",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mapping": {
+        "LingroveID": "LingroveID",
+        "Expression": "Expression",
+        "Meaning": "Meaning"
+      },
+      "expression": "",
+      "repeatText": "汉",
+      "repeatCount": 333321,
+      "expected": {
+        "valid": true,
+        "value": {
+          "Expression": "",
+          "LingroveID": "00000000-0000-0000-0000-000000000002",
+          "Meaning": {
+            "bytes": 999963,
+            "sha256": "3c5d8fcf23c0d5fb3cbcb520c19ddb079638d18de3c4cff85dab3173b8d96377"
+          }
+        }
+      }
+    },
+    {
+      "id": "budget-27721-333322",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mapping": {
+        "LingroveID": "LingroveID",
+        "Expression": "Expression",
+        "Meaning": "Meaning"
+      },
+      "expression": "",
+      "repeatText": "汉",
+      "repeatCount": 333322,
+      "expected": {
+        "error": "The review content is too large to send.",
+        "valid": false
+      }
+    },
+    {
+      "id": "budget-47-999964",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mapping": {
+        "LingroveID": "LingroveID",
+        "Expression": "Expression",
+        "Meaning": "Meaning"
+      },
+      "expression": "",
+      "repeatText": "/",
+      "repeatCount": 999964,
+      "expected": {
+        "valid": true,
+        "value": {
+          "Expression": "",
+          "LingroveID": "00000000-0000-0000-0000-000000000002",
+          "Meaning": {
+            "bytes": 999964,
+            "sha256": "8c7fc60e95bc01cd1abba8d440d17e8f17fff7a1fba84e4616734f0417fa2e13"
+          }
+        }
+      }
+    },
+    {
+      "id": "budget-60-999964",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mapping": {
+        "LingroveID": "LingroveID",
+        "Expression": "Expression",
+        "Meaning": "Meaning"
+      },
+      "expression": "",
+      "repeatText": "<",
+      "repeatCount": 999964,
+      "expected": {
+        "valid": true,
+        "value": {
+          "Expression": "",
+          "LingroveID": "00000000-0000-0000-0000-000000000002",
+          "Meaning": {
+            "bytes": 999964,
+            "sha256": "b53d6ad2826255eb54535073c5351006baf816ecf0d5bddf943b9d66173e812c"
+          }
+        }
+      }
+    },
+    {
+      "id": "ignored-large-override",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "mapping": {
+        "LingroveID": "LingroveID",
+        "Expression": "Expression",
+        "Meaning": "Meaning"
+      },
+      "repeatField": "Unknown",
+      "repeatCount": 1000001,
+      "expected": {
+        "valid": true,
+        "value": {
+          "Expression": "bank&lt;&amp;&gt;",
+          "LingroveID": "00000000-0000-0000-0000-000000000002",
+          "Meaning": "answer&lt;&amp;&gt;"
+        }
+      }
+    },
+    {
+      "id": "conflict-unchanged",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "conflicts",
+      "base": {
+        "a": "base"
+      },
+      "local": {
+        "a": "base"
+      },
+      "remote": {
+        "a": "base"
+      },
+      "expected": {
+        "valid": true,
+        "value": []
+      }
+    },
+    {
+      "id": "conflict-local-only",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "conflicts",
+      "base": {
+        "a": "base"
+      },
+      "local": {
+        "a": "local"
+      },
+      "remote": {
+        "a": "base"
+      },
+      "expected": {
+        "valid": true,
+        "value": []
+      }
+    },
+    {
+      "id": "conflict-remote-only",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "conflicts",
+      "base": {
+        "a": "base"
+      },
+      "local": {
+        "a": "base"
+      },
+      "remote": {
+        "a": "remote"
+      },
+      "expected": {
+        "valid": true,
+        "value": [
+          {
+            "id": "a",
+            "local": "base",
+            "remote": "remote"
+          }
+        ]
+      }
+    },
+    {
+      "id": "conflict-same-edit",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "conflicts",
+      "base": {
+        "a": "base"
+      },
+      "local": {
+        "a": "same"
+      },
+      "remote": {
+        "a": "same"
+      },
+      "expected": {
+        "valid": true,
+        "value": []
+      }
+    },
+    {
+      "id": "conflict-diverged",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "conflicts",
+      "base": {
+        "a": "base"
+      },
+      "local": {
+        "a": "local"
+      },
+      "remote": {
+        "a": "remote"
+      },
+      "expected": {
+        "valid": true,
+        "value": [
+          {
+            "id": "a",
+            "local": "local",
+            "remote": "remote"
+          }
+        ]
+      }
+    },
+    {
+      "id": "conflict-absent-base",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "conflicts",
+      "base": {},
+      "local": {
+        "a": "local"
+      },
+      "remote": {
+        "a": ""
+      },
+      "expected": {
+        "valid": true,
+        "value": []
+      }
+    },
+    {
+      "id": "conflict-unmapped-remote",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "conflicts",
+      "base": {},
+      "local": {
+        "a": ""
+      },
+      "remote": {
+        "a": "",
+        "extra": "edit"
+      },
+      "expected": {
+        "valid": true,
+        "value": []
+      }
+    },
+    {
+      "id": "conflict-deleted-remote",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "conflicts",
+      "base": {
+        "a": "base"
+      },
+      "local": {
+        "a": "local"
+      },
+      "remote": {},
+      "expected": {
+        "valid": true,
+        "value": [
+          {
+            "id": "a",
+            "local": "local",
+            "remote": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "conflict-canonical-value",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "conflicts",
+      "base": {
+        "a": "é"
+      },
+      "local": {
+        "a": "local"
+      },
+      "remote": {
+        "a": "é"
+      },
+      "expected": {
+        "valid": true,
+        "value": []
+      }
+    },
+    {
+      "id": "conflict-canonical-key",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "conflicts",
+      "base": {
+        "é": "base"
+      },
+      "local": {
+        "é": "local"
+      },
+      "remote": {
+        "é": "remote"
+      },
+      "expected": {
+        "valid": true,
+        "value": [
+          {
+            "id": "é",
+            "local": "local",
+            "remote": "remote"
+          }
+        ]
+      }
+    },
+    {
+      "id": "conflict-scalar-sort",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "conflicts",
+      "base": {},
+      "local": {
+        "😀": "a",
+        "": "b",
+        "é": "c",
+        "a": "d"
+      },
+      "remote": {
+        "😀": "A",
+        "": "B",
+        "é": "C",
+        "a": "D"
+      },
+      "expected": {
+        "valid": true,
+        "value": [
+          {
+            "id": "a",
+            "local": "d",
+            "remote": "D"
+          },
+          {
+            "id": "é",
+            "local": "c",
+            "remote": "C"
+          },
+          {
+            "id": "",
+            "local": "b",
+            "remote": "B"
+          },
+          {
+            "id": "😀",
+            "local": "a",
+            "remote": "A"
+          }
+        ]
+      }
+    },
+    {
+      "id": "removes-True-True-True",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "removes",
+      "recognition": true,
+      "gap": true,
+      "hasNote": true,
+      "fields": {
+        "Recognition": "1",
+        "GapPrompt": "prompt"
+      },
+      "expected": {
+        "valid": true,
+        "value": false
+      }
+    },
+    {
+      "id": "removes-True-True-False",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "removes",
+      "recognition": true,
+      "gap": true,
+      "hasNote": false,
+      "fields": {
+        "Recognition": "1",
+        "GapPrompt": "prompt"
+      },
+      "expected": {
+        "valid": true,
+        "value": false
+      }
+    },
+    {
+      "id": "removes-True-False-True",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "removes",
+      "recognition": true,
+      "gap": false,
+      "hasNote": true,
+      "fields": {
+        "Recognition": "1",
+        "GapPrompt": "prompt"
+      },
+      "expected": {
+        "valid": true,
+        "value": true
+      }
+    },
+    {
+      "id": "removes-True-False-False",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "removes",
+      "recognition": true,
+      "gap": false,
+      "hasNote": false,
+      "fields": {
+        "Recognition": "1",
+        "GapPrompt": "prompt"
+      },
+      "expected": {
+        "valid": true,
+        "value": false
+      }
+    },
+    {
+      "id": "removes-False-True-True",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "removes",
+      "recognition": false,
+      "gap": true,
+      "hasNote": true,
+      "fields": {
+        "Recognition": "1",
+        "GapPrompt": "prompt"
+      },
+      "expected": {
+        "valid": true,
+        "value": true
+      }
+    },
+    {
+      "id": "removes-False-True-False",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "removes",
+      "recognition": false,
+      "gap": true,
+      "hasNote": false,
+      "fields": {
+        "Recognition": "1",
+        "GapPrompt": "prompt"
+      },
+      "expected": {
+        "valid": true,
+        "value": false
+      }
+    },
+    {
+      "id": "removes-False-False-True",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "removes",
+      "recognition": false,
+      "gap": false,
+      "hasNote": true,
+      "fields": {
+        "Recognition": "1",
+        "GapPrompt": "prompt"
+      },
+      "expected": {
+        "valid": true,
+        "value": true
+      }
+    },
+    {
+      "id": "removes-False-False-False",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "removes",
+      "recognition": false,
+      "gap": false,
+      "hasNote": false,
+      "fields": {
+        "Recognition": "1",
+        "GapPrompt": "prompt"
+      },
+      "expected": {
+        "valid": true,
+        "value": false
+      }
+    },
+    {
+      "id": "removes-empty-receipt",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "removes",
+      "recognition": false,
+      "gap": false,
+      "fields": {},
+      "expected": {
+        "valid": true,
+        "value": false
+      }
+    },
+    {
+      "id": "removes-empty-key-fallback",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "removes",
+      "recognition": false,
+      "gap": false,
+      "mapping": {},
+      "fields": {
+        "": "stored"
+      },
+      "expected": {
+        "valid": true,
+        "value": true
+      }
+    },
+    {
+      "id": "audio-fields-nil",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "audio",
+      "expected": {
+        "valid": true,
+        "value": {}
+      }
+    },
+    {
+      "id": "audio-fields-empty",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "audio",
+      "audioKinds": [],
+      "expected": {
+        "valid": true,
+        "value": {}
+      }
+    },
+    {
+      "id": "audio-fields-missing",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "audio",
+      "audioKinds": [
+        "expression"
+      ],
+      "expected": {
+        "valid": true,
+        "value": {}
+      }
+    },
+    {
+      "id": "audio-fields-unselected",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "audio",
+      "audioKinds": [],
+      "receipts": {
+        "expression": "e.wav"
+      },
+      "expected": {
+        "valid": true,
+        "value": {}
+      }
+    },
+    {
+      "id": "audio-fields-both",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "audio",
+      "audioKinds": [
+        "expression",
+        "sentence"
+      ],
+      "receipts": {
+        "expression": "e.wav",
+        "sentence": "s.mp3"
+      },
+      "expected": {
+        "valid": true,
+        "value": {
+          "ExpressionAudio": "[sound:e.wav]",
+          "SentenceAudio": "[sound:s.mp3]"
+        }
+      }
+    },
+    {
+      "id": "audio-fields-one",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "audio",
+      "audioKinds": [
+        "expression"
+      ],
+      "receipts": {
+        "expression": "e.wav",
+        "sentence": "s.mp3"
+      },
+      "expected": {
+        "valid": true,
+        "value": {
+          "ExpressionAudio": "[sound:e.wav]"
+        }
+      }
+    },
+    {
+      "id": "audio-fields-empty-filename",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "audio",
+      "audioKinds": [
+        "sentence"
+      ],
+      "receipts": {
+        "sentence": ""
+      },
+      "expected": {
+        "valid": true,
+        "value": {
+          "SentenceAudio": "[sound:]"
+        }
+      }
+    }
+  ]
+}

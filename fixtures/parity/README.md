@@ -301,3 +301,10 @@ does not substitute archive algorithms. Save/no-op, sense ownership, concurrent 
 admission, stale CAS, real SQL rollback and explanation authorship feed the actual C# archive.
 [Archive ownership and outstanding media/product work](../../docs/VOCABULARY_ARCHIVE.md) describe
 the limits. Normal verification never updates expected observations.
+
+`vocabulary-store-v1.json` records 16 observations from exact pinned Mac Store declarations/method
+bodies around the complete actual archive and SQLite. Its selected slice omits unported
+CLI/media/review/export methods; only three diagnostic logging lines are removed under count guards.
+Publication and concurrent pending-key probes use test scheduling hooks; mutations still execute
+the original store/archive/policies. Expected values are captured only from this native driver.
+[Store ownership and composition limits](../../docs/VOCABULARY_STORE.md) describe the Windows mapping.

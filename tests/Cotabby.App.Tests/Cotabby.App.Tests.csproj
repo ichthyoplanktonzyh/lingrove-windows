@@ -19,6 +19,7 @@
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularySQLiteConnection.cs" Link="Production\VocabularySQLiteConnection.cs" />
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularySQLiteDatabase.cs" Link="Production\VocabularySQLiteDatabase.cs" />
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularyArchive.cs" Link="Production\VocabularyArchive.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Vocabulary\VocabularyStore.cs" Link="Production\VocabularyStore.cs" />
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularyWindowsFile.cs" Link="Production\VocabularyWindowsFile.cs" />
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularyWindowsFileLock.cs" Link="Production\VocabularyWindowsFileLock.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Explanation.cs" Link="Production\AppSettings.Explanation.cs" />
@@ -34,6 +35,7 @@
   <ItemGroup>
     <None Include="..\..\fixtures\parity\vocabulary-sqlite-v1.json" Link="fixtures\vocabulary-sqlite-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\fixtures\parity\vocabulary-archive-v1.json" Link="fixtures\vocabulary-archive-v1.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\fixtures\parity\vocabulary-store-v1.json" Link="fixtures\vocabulary-store-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\fixtures\parity\vocabulary-projection-v1.json" Link="fixtures\vocabulary-projection-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\fixtures\parity\vocabulary-codec-v1.json" Link="fixtures\vocabulary-codec-v1.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>

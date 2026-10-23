@@ -1,0 +1,186 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "fresh",
+      "operation": "fresh",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyStore.swift",
+      "expected": {
+        "before": false,
+        "contains": false,
+        "entries": 0,
+        "loaded": true
+      }
+    },
+    {
+      "id": "save",
+      "operation": "save",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyStore.swift",
+      "expected": {
+        "containsStandalone": false,
+        "containsUsage": true,
+        "loaded": true,
+        "pending": false
+      }
+    },
+    {
+      "id": "enrich",
+      "operation": "enrich",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyStore.swift",
+      "expected": {
+        "meaning": "core",
+        "record": true
+      }
+    },
+    {
+      "id": "monotonic",
+      "operation": "monotonic",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyStore.swift",
+      "expected": {
+        "contains": true,
+        "entries": 1,
+        "loaded": true
+      }
+    },
+    {
+      "id": "equalRevision",
+      "operation": "equalRevision",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyStore.swift",
+      "expected": {
+        "contains": false,
+        "entries": 0,
+        "loaded": true
+      }
+    },
+    {
+      "id": "pending",
+      "operation": "pending",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyStore.swift",
+      "expected": {
+        "after": false,
+        "before": true,
+        "middle": true,
+        "saved": true
+      }
+    },
+    {
+      "id": "invalidSave",
+      "operation": "invalidSave",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyStore.swift",
+      "expected": {
+        "entries": 0,
+        "error": true,
+        "loaded": false,
+        "pending": false
+      }
+    },
+    {
+      "id": "remove",
+      "operation": "remove",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyStore.swift",
+      "expected": {
+        "contains": false,
+        "note": "note",
+        "usages": 1
+      }
+    },
+    {
+      "id": "lookup",
+      "operation": "lookup",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyStore.swift",
+      "expected": {
+        "same": true,
+        "wrongLanguage": true
+      }
+    },
+    {
+      "id": "destination",
+      "operation": "destination",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyStore.swift",
+      "expected": {
+        "capturedUserMeaning": true,
+        "entry": true,
+        "noUsage": true,
+        "sense": true,
+        "usage": true
+      }
+    },
+    {
+      "id": "adoptStandalone",
+      "operation": "adoptStandalone",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyStore.swift",
+      "expected": {
+        "meaning": "adopted",
+        "ok": true,
+        "origin": "user"
+      }
+    },
+    {
+      "id": "adoptMoved",
+      "operation": "adoptMoved",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyStore.swift",
+      "expected": {
+        "meaning": "adopted",
+        "ok": true,
+        "owner": true,
+        "sourceEmpty": true
+      }
+    },
+    {
+      "id": "adoptDeleted",
+      "operation": "adoptDeleted",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyStore.swift",
+      "expected": {
+        "error": false,
+        "ok": false,
+        "usages": 0
+      }
+    },
+    {
+      "id": "adoptStale",
+      "operation": "adoptStale",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyStore.swift",
+      "expected": {
+        "error": false,
+        "ok": false,
+        "usages": 1
+      }
+    },
+    {
+      "id": "senseAlias",
+      "operation": "senseAlias",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyStore.swift",
+      "expected": {
+        "contains": true,
+        "destination": true
+      }
+    },
+    {
+      "id": "failureThenSuccess",
+      "operation": "failureThenSuccess",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyStore.swift",
+      "expected": {
+        "afterError": false,
+        "beforeError": true,
+        "saved": true
+      }
+    }
+  ]
+}

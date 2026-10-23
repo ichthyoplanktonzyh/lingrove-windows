@@ -2,7 +2,7 @@
 
 `Cotabby.Win32.Vocabulary.VocabularyArchive` adapts the pinned Mac archive actor to an async C#
 owner. It composes the real SQLite/file adapter with the already ported save, sense, edit, pruning
-and whole-graph validation policies. AppHost and user-visible Save/notebook remain the next layer;
+and whole-graph validation policies. The [shared Store](VOCABULARY_STORE.md) now provides AppHost publication; user-visible Save/notebook remains the next layer;
 this round introduces no duplicate runtime, observer, network request or per-keystroke disk activity.
 
 Reference: `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`.
@@ -17,7 +17,7 @@ Reference: `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`.
 | actor lifetime | Explicit admission close, drain of admitted edits, off-UI database disposal |
 
 Construction is inert. A null path explicitly selects an isolated in-memory test notebook; a named
-path uses protected Windows file admission. The eventual composition root must own one instance
+path uses protected Windows file admission. AppHost owns one instance
 for the application lifetime. A semaphore serializes the complete read/modify/commit operation;
 SQLite/native file work runs on a worker, outside WPF. No native lock or SQL transaction crosses an
 await. Failures release the queue and preserve the previous acknowledged cache.

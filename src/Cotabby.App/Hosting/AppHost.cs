@@ -5,6 +5,7 @@ using Cotabby.App.Macros;
 using Cotabby.App.Overlay;
 using Cotabby.App.Settings;
 using Cotabby.App.UI;
+using Cotabby.App.Vocabulary;
 using Cotabby.Core.Focus;
 using Cotabby.Core.Context;
 using Cotabby.Core.Input;
@@ -13,6 +14,7 @@ using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Models;
 using Cotabby.Core.Spelling;
 using Cotabby.Core.Suggestions;
+using Cotabby.Core.Vocabulary;
 using Cotabby.Inference;
 using Cotabby.Inference.LanguageLearning;
 using Cotabby.Inference.LanguageLearning.Local;
@@ -26,6 +28,7 @@ using Cotabby.Win32.Power;
 using Cotabby.Win32.Security;
 using Cotabby.Win32.Spelling;
 using Cotabby.Win32.Text;
+using Cotabby.Win32.Vocabulary;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
@@ -69,6 +72,7 @@ public sealed class AppHost : IAsyncDisposable
     internal LearningModelCatalogManager LearningModels { get; }
     internal LearningPreviewController LearningPreview { get; }
     internal LearningExplanationController LearningExplanation { get; }
+    internal VocabularyStore Vocabulary { get; }
 
     /// <summary>Raised on the UI thread after settings were applied or a model was loaded, so open windows and the tray can refresh.</summary>
     public event Action? SettingsApplied;
@@ -143,6 +147,26 @@ public sealed class AppHost : IAsyncDisposable
         LearningExplanation = new LearningExplanationController(
             new LearningLocalRuntime(loggers.CreateLogger<LearningLocalRuntime>(), loggers), Settings,
             ModelCatalog.DefaultLocalDirectory(), batterySaverOn: () => PowerStatus.IsBatterySaverOn);
+        // One notebook owner is shared by every card/window. Construction does no IO; saved
+        // explanation lookup or a user action loads it lazily. Saving never starts generation.
+        Vocabulary = new VocabularyStore(new VocabularyArchive(System.IO.Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "Cotabby", "vocabulary", "vocabulary.sqlite")), ui);
+        Vocabulary.EnrichCapture = capture =>
+        {
+            var input = LearningExplanationPolicy.Input(capture);
+            try { return capture with { Explanation = LearningExplanation.Service.Cached(input) ?? LearningExplanation.Service.SavedRecord(input) }; }
+            // Annotation is optional. A shutdown race must preserve the captured favorite even
+            // when the explanation service has already closed its saved-lookup admission.
+            catch (ObjectDisposedException) { return capture; }
+        };
+        LearningExplanation.Service.LoadPersisted = async (input, language) =>
+        {
+            await Vocabulary.LoadAsync().ConfigureAwait(false);
+            return Vocabulary.Explanation(input, language);
+        };
+        LearningExplanation.Service.LookupSaved = Vocabulary.Explanation;
+        LearningExplanation.Service.Explained += PersistExplanation;
         _spelling = new SymSpellCorrector(logger: loggers.CreateLogger<SymSpellCorrector>());
         _logger = loggers.CreateLogger("Cotabby.App");
         _hook = _services.GetRequiredService<IKeyboardHook>();
@@ -199,6 +223,8 @@ public sealed class AppHost : IAsyncDisposable
         Settings.EndpointBaseUrl,
         Settings.EndpointModel,
         Settings.EndpointUsesChatApi ? OpenAICompatibleApiMode.ChatCompletions : OpenAICompatibleApiMode.Completions);
+
+    private void PersistExplanation(LearningExplanationRecord record) => _ = Vocabulary.SaveExplanationAsync(record);
 
     /// <summary>Pushes <see cref="Settings"/> into the running app and saves them.</summary>
     public void PersistSettings()
@@ -348,7 +374,10 @@ public sealed class AppHost : IAsyncDisposable
         _hook.KeyEvent -= OnGlobalToggleKey;
         SystemEvents.PowerModeChanged -= OnPowerModeChanged;
         await LearningPreview.DisposeAsync().ConfigureAwait(false);
+        Vocabulary.EnrichCapture = null;
         await LearningExplanation.DisposeAsync().ConfigureAwait(false);
+        LearningExplanation.Service.Explained -= PersistExplanation;
+        await Vocabulary.DisposeAsync().ConfigureAwait(false);
         await LearningModels.DisposeAsync().ConfigureAwait(false);
         EmojiPicker.Dispose();
         Macros.Dispose();

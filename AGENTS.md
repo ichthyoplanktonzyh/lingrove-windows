@@ -121,7 +121,8 @@ connects explicit bundled lookup and word navigation. The [image preparation lib
 The [image UI](docs/VOCABULARY_IMAGE_UI.md) now connects file import, draft previews, saved-image reading and enlargement.
 The [existing-file drop adapter](docs/VOCABULARY_FILE_DROP.md) adds a narrow Unicode Shell path;
 the [image clipboard transfer library](docs/VOCABULARY_CLIPBOARD_TRANSFER.md) isolates bounded encoded-image
-reads in a cancellable child process, with no UI connection yet. Clipboard UI/DIB formats,
+reads in a cancellable child process. [Image paste](docs/VOCABULARY_IMAGE_PASTE.md) now connects its
+shared owner to the editor button and explanation-section command. Clipboard DIB/bitmap formats,
 virtual/pixel drops, review/export and other dictionary providers remain work. Do not flatten senses into
 one translation string, regenerate stable IDs during edits, or treat a generated explanation as the
 user's authored meaning. See the vocabulary models and porting gates in the linked docs. Storage

@@ -122,5 +122,7 @@ DPI cases supply synthetic transforms to actual visual hit testing.
 
 The [clipboard transfer library](VOCABULARY_CLIPBOARD_TRANSFER.md) adds one test of the actual helper
 sidecars and invalid-argument startup/exit. It never reads the clipboard; process cancellation and
-wire-format cases run in Inference.Tests with fixed PowerShell fixture output. Clipboard UI is not
-connected in this slice.
+wire-format cases run in Inference.Tests with fixed PowerShell fixture output. The
+[image paste integration](VOCABULARY_IMAGE_PASTE.md) adds twelve controls/routed-command/WIC/SQLite cases
+through a test clipboard-offer boundary, with no system clipboard access. Native producer and
+physical keyboard/IME checks remain open.

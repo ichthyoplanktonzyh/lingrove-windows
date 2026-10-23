@@ -56,8 +56,10 @@ automated. Existing original-source content/editor/media verifiers remain unchan
 Windows UI cases are source-derived regressions, not new captured Mac UI observations.
 
 The [existing-file drop adapter](VOCABULARY_FILE_DROP.md) now connects Unicode Shell paths to this
-import flow. Nonmutating clipboard paste, virtual files and pixel-only drags remain unconnected. Cross-process OLE data extraction is synchronous and can block; editor cancellation must not
-wait on a foreign provider. Even file reads check cancellation between native calls and cannot
+import flow. The [image paste integration](VOCABULARY_IMAGE_PASTE.md) connects bounded encoded
+clipboard images through a cancellable helper process. Virtual files and pixel-only drags remain
+unconnected. Cross-process OLE data extraction is synchronous and can block; editor cancellation
+must not wait on a foreign provider. Even file reads check cancellation between native calls and cannot
 interrupt an already blocked synchronous read, so a hung network/removable path can delay Store
 shutdown draining. Ordinary local-file CI does not establish those external host behaviors, broad
 codec/color equivalence, physical desktop interaction or visual pixel equivalence with Mac.

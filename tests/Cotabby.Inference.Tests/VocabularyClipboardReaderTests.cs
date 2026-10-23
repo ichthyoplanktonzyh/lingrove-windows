@@ -10,6 +10,13 @@ namespace Cotabby.Inference.Tests;
 /// </summary>
 public sealed class VocabularyClipboardReaderTests
 {
+    [Fact]
+    public void FormatAdmissionUsesOnlyMetadataAndCannotRequestDelayedData()
+    {
+        using var native = new Clipboard(); var reader = new VocabularyClipboardImageReader(native);
+        Assert.False(reader.HasAvailableImage()); native.Add("TIFF", null); Assert.True(reader.HasAvailableImage());
+        Assert.Equal(0, native.Opens); Assert.Equal(0, native.Closes); Assert.Equal(0, native.Locks); Assert.Empty(native.ReadFormats);
+    }
     [Theory]
     [InlineData("PNG")]
     [InlineData("image/png")]

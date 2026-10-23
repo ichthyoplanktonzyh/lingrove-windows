@@ -23,6 +23,8 @@ internal sealed class VocabularyClipboardImageReader
         _formats = [_native.Register("PNG"), _native.Register("image/png"), 6,
             _native.Register("JFIF"), _native.Register("JPEG"), _native.Register("image/jpeg")];
     }
+    // Metadata only: safe for command admission without invoking delayed clipboard rendering.
+    internal bool HasAvailableImage() => _formats.Any(format => format != 0 && _native.Available(format));
     internal byte[]? Read(uint expectedSequence)
     {
         if (expectedSequence == 0 || _native.Sequence != expectedSequence) return null;

@@ -51,4 +51,20 @@ public sealed class VocabularyDibPreparationTests(WpfDispatcher dispatcher)
         byte[] pixels = new byte[24]; image.CopyPixels(pixels, 12, 0);
         Assert.Equal(new byte[] { 0, 0, 255, 127 }, pixels[..4]); Assert.Equal(new byte[] { 255, 0, 0, 255 }, pixels[12..16]);
     });
+    [Theory]
+    [InlineData(40)]
+    [InlineData(108)]
+    [InlineData(124)]
+    public Task UnusedHighBytesAreOpaqueWhenNoAlphaMaskIsDeclared(int header) => dispatcher.RunAsync(async () =>
+    {
+        byte[] source = VocabularyDibFixture.Image(124, alpha: true), dib = new byte[header + 24];
+        source.AsSpan(0, header).CopyTo(dib); source.AsSpan(124, 24).CopyTo(dib.AsSpan(header));
+        VocabularyDibFixture.U32(dib, 0, (uint)header); VocabularyDibFixture.U32(dib, 16, 0);
+        if (header >= 108) VocabularyDibFixture.U32(dib, 52, 0);
+        await using var archive = new VocabularyArchive((string?)null);
+        var prepared = await archive.PrepareImageAsync(VocabularyClipboardDib.Wrap(dib));
+        var image = await Task.Run(() => WindowsVocabularyImageDecoder.Decode(prepared.CopyBytes(), prepared.Reference));
+        byte[] pixels = new byte[24]; image.CopyPixels(pixels, 12, 0);
+        Assert.Equal(new byte[] { 0, 0, 255, 255 }, pixels[..4]); Assert.Equal(new byte[] { 255, 0, 0, 255 }, pixels[12..16]);
+    });
 }

@@ -54,9 +54,9 @@ Tests use literal DIB rows and app-owned memory, never the runner clipboard. Fif
 headers, row direction, palette/mask offsets, malformed dimensions/sizes/planes/depth/compression,
 profile rejection, alpha admission, input/output budgets, unused tail trimming and V4 extension.
 Reader cases cover metadata-only admission, encoded-format priority, null bitmap fallback,
-detachment/close ordering and no fallback after invalid selected data. A direct native frame case and ten actual WIC/archive/PNG
+detachment/close ordering and no fallback after invalid selected data. A direct native frame case and thirteen actual WIC/archive/PNG
 cases check red top/blue bottom pixels for all three headers and both directions, plus V4/V5
-BI_RGB/bitfield alpha. These are format/pixel regressions, not evidence of physical keyboard,
+BI_RGB/bitfield alpha and opaque unused high bytes. These are format/pixel regressions, not evidence of physical keyboard,
 Paint/browser/Office clipboard production, color-profile parity or complete Mac image-provider parity.
 
 ```sh

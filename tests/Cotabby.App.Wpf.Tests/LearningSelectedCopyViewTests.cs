@@ -52,7 +52,10 @@ public sealed class LearningSelectedCopyViewTests(WpfDispatcher dispatcher)
             window.ShowState(state, Anchor);
             var example = Find<NonactivatingSelectableText>(window, "ContextualExampleText");
             example.Select(5, 7);
+            Assert.True(example.IsVisible, "The contextual example must be visible to emit Copy.");
+            Assert.NotNull(example.Selection);
             var lease = example.RequestCopy()!;
+            Assert.NotNull(lease);
             Assert.Same(lease, emitted); Assert.Same(state, owner); Assert.Equal("me", lease.Text);
             window.ShowState(state with { Explanation = state.Explanation! with { IsGenerating = true } }, Anchor);
             Assert.True(lease.IsCurrent); Assert.Equal("me", example.Selection!.Text);

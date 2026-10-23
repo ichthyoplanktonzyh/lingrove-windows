@@ -44,10 +44,16 @@ public sealed class NonactivatingSelectableText : TextBlock
         // in a separate mouse-transparent Adorner; do not replace WPF's shaping or inline layout.
         TextProperty.OverrideMetadata(typeof(NonactivatingSelectableText), new FrameworkPropertyMetadata(string.Empty,
             FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender,
-            (owner, _) =>
+            (owner, change) =>
             {
                 var text = (NonactivatingSelectableText)owner;
-                if (text._updatingContent == 0) { text._textMap = null; text._mappedSource = null; text.ClearSelection(); }
+                if (text._updatingContent != 0) return;
+                // TextContainer can publish a new deferred Text value for a formatting-only
+                // change. Compare the resolved notification value, not Text (which would reenter
+                // its property getter). Equal raw text must not revoke a styled example's lease.
+                if (change.NewValue is string raw && text._selection is { } selected
+                    && string.Equals(selected.Source, raw, StringComparison.Ordinal)) return;
+                text._textMap = null; text._mappedSource = null; text.ClearSelection();
             }));
     }
 

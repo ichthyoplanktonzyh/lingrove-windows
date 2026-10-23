@@ -72,6 +72,7 @@ public sealed class VocabularyImagePasteTests(WpfDispatcher dispatcher)
             Assert.True(ApplicationCommands.Paste.CanExecute(null, text)); Assert.Equal(0, clipboard.Reads);
             ApplicationCommands.Paste.Execute(null, text); await editor.LastImport;
             Assert.Equal(0, fallback); Assert.Equal(1, clipboard.Reads); Assert.Equal(2, editor.Draft.Senses[0].Content!.Count);
+            Assert.IsType<VocabularyBlockContent.Image>(editor.Draft.Senses[0].Content![1].Content);
             Assert.Equal("existing explanation", Assert.IsType<VocabularyBlockContent.Text>(editor.Draft.Senses[0].Content![0].Content).Value.Text);
         }
         finally { await editor.RetireAsync(); }
@@ -134,7 +135,8 @@ public sealed class VocabularyImagePasteTests(WpfDispatcher dispatcher)
             Assert.False(Named<Button>(editor, "SaveButton").IsEnabled); Assert.False(Named<Button>(editor, "PasteImageButton").IsEnabled); Assert.False(Named<Button>(editor, "AddImageButton").IsEnabled);
             Assert.False(editor.PasteImage()); Assert.Equal(1, clipboard.Reads); Click(Named<Button>(editor, "CancelButton"));
             await editor.RetireAsync().WaitAsync(TimeSpan.FromSeconds(2)); Assert.True(clipboard.Token.IsCancellationRequested);
-            clipboard.Release.TrySetResult(); await clipboard.Finished.Task; await Dispatcher.Yield();
+            clipboard.Release.TrySetResult();
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => editor.ImagePreparation.WaitAsync(TimeSpan.FromSeconds(2)));
             Assert.Null(editor.Draft.Senses[0].Content); Assert.Equal(0, editor.ImportedImageCount); Assert.Equal(1UL, store.Snapshot.Revision);
         }
         finally { clipboard.Release.TrySetResult(); await editor.RetireAsync(); }

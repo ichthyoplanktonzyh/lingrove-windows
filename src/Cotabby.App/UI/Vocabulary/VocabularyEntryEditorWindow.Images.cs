@@ -13,6 +13,7 @@ public partial class VocabularyEntryEditorWindow
     private readonly List<VocabularyImageView> _imageViews = [];
     private bool _importing;
     private Task _importPreparation = Task.CompletedTask;
+    internal Task ImagePreparation => _importPreparation;
     internal Task LastImport { get; private set; } = Task.CompletedTask;
     internal int ImportedImageCount => _importedImages.Count;
     private void OnAddImage(object sender, RoutedEventArgs args)

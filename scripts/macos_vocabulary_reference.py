@@ -195,3 +195,21 @@ def archive_export_sources(repo):
         "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
         "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
         "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift")]
+
+
+def export_session_sources(repo):
+    """Actual export session + existing Store ownership/delegates around the complete archive."""
+    store = vocabulary_store_sources(repo)[-1]
+    marker = '\nextension VocabularyStore {\n    func applyProbe('
+    if store.count(marker) != 1: raise RuntimeError('Original Store test extension boundary changed')
+    store = store[:store.index(marker)]
+    original = source(repo, 'Cotabby/Services/Vocabulary/VocabularyStore.swift')
+    delegates = between(original, '    func prepareExport(', '    func export(to url:')
+    logging = '''        CotabbyLogger.learning.info("Vocabulary exported", metadata: ["format": .string(package.configuration.format.rawValue),
+            "senses": .stringConvertible(package.senseCount), "with_images": .stringConvertible(package.configuration.includesImages)])
+'''
+    if delegates.count(logging) != 1: raise RuntimeError('Pinned export diagnostic boundary changed')
+    store += '\nextension VocabularyStore {\n' + delegates.replace(logging, '') + '}\n'
+    session = source(repo, 'Cotabby/Services/Vocabulary/VocabularyExportSession.swift')
+    session += '\nextension VocabularyExportSession { var generationProbe: UUID { generation } }\n'
+    return archive_export_sources(repo) + [store, session]

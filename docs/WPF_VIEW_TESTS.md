@@ -141,3 +141,8 @@ with real Windows destination bytes, hard-link/file identities, ACL creation and
 publication. Thirty additional native file cases cover collision/cleanup, cancellation, ACL
 replacement, path retargeting and publication failure; four archive cases cover source deletion and
 closed admission. This exercises owned temporary files rather than a save picker or desktop action.
+
+The [export session suite](VOCABULARY_EXPORT_SESSION.md) adds sixteen pinned Mac session states with
+actual Store/memory archive and native save, controlling queued reply order before Store admission.
+Seven additional delegate cases exercise stale failures, save ownership/reentry, close acknowledgement,
+local failure retry, control-change revocation and completion after an owned dispatcher exits. It does not open a save picker or export window.

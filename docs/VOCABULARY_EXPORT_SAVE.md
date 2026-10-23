@@ -69,6 +69,7 @@ dotnet test tests/Cotabby.App.Wpf.Tests/Cotabby.App.Wpf.Tests.csproj --configura
 ```
 
 macOS can cross-compile these Windows tests but cannot execute them. Final-head Windows CI must
-establish actual file-test success. The public export command, Store callbacks, save-session
-staleness, picker and export window remain work, alongside full backup/restore. Native desktop
+establish actual file-test success. The [Store/session adapter](VOCABULARY_EXPORT_SESSION.md) separately preserves stale-preview and
+save identity guards. The public export command, picker and export window remain work, alongside
+full backup/restore. Native desktop
 UIA/IME/ghost/insertion and model/GPU gates remain open.

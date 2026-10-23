@@ -1,3 +1,5 @@
+using System.IO;
+using System.Security.AccessControl;
 using Cotabby.Core.Vocabulary;
 using Value = Cotabby.Win32.Vocabulary.VocabularySQLiteConnection.Value;
 
@@ -6,30 +8,67 @@ namespace Cotabby.Win32.Vocabulary;
 /// <summary>
 /// One future archive owns this relational database and its connection. Typed projection decides
 /// which rows changed before encoding; SQLite owns atomic compare-and-increment acknowledgement.
-/// This synchronous boundary retains Mac table order, deferred FKs and rollback. Its current
-/// factory creates only isolated memory databases; no user file or AppHost service is connected.
+/// This synchronous boundary retains Mac table order, deferred FKs and rollback. The named-file
+/// factory adds Windows identity, exclusive creation and cross-process locking. No AppHost service
+/// or product Save button is connected by this library.
 /// </summary>
 internal sealed class VocabularySQLiteDatabase : IDisposable
 {
     internal const long ApplicationId = 0x4C47564E, SchemaVersion = 2;
     private readonly object _gate = new();
     private readonly VocabularySQLiteConnection _connection;
+    private readonly VocabularyWindowsFileLock? _fileLock;
     private bool? _held;
     private bool _disposed;
     internal long LastWrittenRows { get; private set; }
 
-    private VocabularySQLiteDatabase(VocabularySQLiteConnection connection)
-    { _connection = connection; }
+    private VocabularySQLiteDatabase(VocabularySQLiteConnection connection, VocabularyWindowsFileLock? fileLock = null)
+    { _connection = connection; _fileLock = fileLock; }
+    internal static VocabularySQLiteDatabase OpenFile(string path)
+    {
+        if (!OperatingSystem.IsWindows()) throw Invalid();
+        VocabularySQLiteConnection? connection = null; VocabularyWindowsFileLock? fileLock = null;
+        try
+        {
+            path = VocabularyWindowsFile.FullPath(path); VocabularyWindowsFile.CreateParentDirectory(Path.GetDirectoryName(path)!);
+            if (!File.Exists(path)) CreateFile(path);
+            connection = VocabularySQLiteConnection.OpenNamed(path); fileLock = new(path);
+            var result = new VocabularySQLiteDatabase(connection, fileLock); result.Initialize(); return result;
+        }
+        catch (Exception error) when (error is VocabularyException or IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException or System.Security.SecurityException)
+        { connection?.Dispose(); fileLock?.Dispose(); if (error is VocabularyException) throw; throw Invalid(); }
+    }
+    private static void CreateFile(string destination)
+    {
+        if (!OperatingSystem.IsWindows()) throw Invalid();
+        string staged = Path.Combine(Path.GetDirectoryName(destination)!, ".vocabulary-" + Guid.NewGuid().ToString("D") + ".sqlite");
+        bool created = false;
+        try
+        {
+            using (new FileInfo(VocabularyWindowsFile.Extended(staged)).Create(FileMode.CreateNew, FileSystemRights.FullControl, FileShare.None,
+                4096, FileOptions.None, VocabularyWindowsFile.NewFileSecurity())) { created = true; }
+            using (var connection = VocabularySQLiteConnection.OpenNamed(staged)) CreateSchema(connection);
+            VocabularyWindowsFile.Publish(staged, destination);
+        }
+        finally
+        {
+            // Delete only our random staging names. A failed open/version/integrity check must
+            // never reset the destination or remove a database another process published first.
+            if (created) foreach (string suffix in new[] { "", "-journal", "-wal", "-shm" })
+                try { File.Delete(staged + suffix); } catch (Exception error) when (error is IOException or UnauthorizedAccessException) { }
+        }
+    }
     internal static VocabularySQLiteDatabase CreateMemory()
     {
         var connection = VocabularySQLiteConnection.OpenMemory();
         try { CreateSchema(connection); var result = new VocabularySQLiteDatabase(connection); result.Initialize(); return result; }
         catch { connection.Dispose(); throw; }
     }
-    // Admission takes ownership of the connection, including on failure. File creation stays closed;
-    // a future file adapter must verify named-file identity before allowing this owner to publish.
+    // Test admission takes ownership of an isolated memory connection, including on failure.
+    // Production named-file admission always uses OpenFile's identity and lock composition.
     internal static VocabularySQLiteDatabase Admit(VocabularySQLiteConnection connection)
     {
+        if (connection.IsNamed) { connection.Dispose(); throw Invalid(); }
         var result = new VocabularySQLiteDatabase(connection);
         try { result.Initialize(); return result; }
         catch { result.Dispose(); throw; }
@@ -56,8 +95,11 @@ internal sealed class VocabularySQLiteDatabase : IDisposable
             if (_held is { } held)
             {
                 if (!held && write) throw new VocabularyException(VocabularyFailure.InvalidContent);
+                _connection.VerifyFile();
                 return operation();
             }
+            using var lease = _fileLock?.Enter(write);
+            _connection.VerifyFile();
             _held = write;
             try { return operation(); }
             finally { _held = null; }
@@ -162,7 +204,7 @@ internal sealed class VocabularySQLiteDatabase : IDisposable
     }
     private static void CreateReceipts(VocabularySQLiteConnection connection) => connection.Execute("CREATE TABLE cli_receipts (key TEXT PRIMARY KEY NOT NULL, fingerprint TEXT NOT NULL, result BLOB NOT NULL)");
     private static VocabularyException Invalid() => new(VocabularyFailure.InvalidArchive);
-    public void Dispose() { lock (_gate) { if (_disposed) return; _disposed = true; _connection.Dispose(); } }
+    public void Dispose() { lock (_gate) { if (_disposed) return; _disposed = true; _connection.Dispose(); _fileLock?.Dispose(); } }
 }
 
 /// <summary>

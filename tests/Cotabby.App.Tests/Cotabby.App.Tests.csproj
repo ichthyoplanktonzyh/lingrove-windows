@@ -18,6 +18,8 @@
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.cs" Link="Production\AppSettings.cs" />
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularySQLiteConnection.cs" Link="Production\VocabularySQLiteConnection.cs" />
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularySQLiteDatabase.cs" Link="Production\VocabularySQLiteDatabase.cs" />
+    <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularyWindowsFile.cs" Link="Production\VocabularyWindowsFile.cs" />
+    <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularyWindowsFileLock.cs" Link="Production\VocabularyWindowsFileLock.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Explanation.cs" Link="Production\AppSettings.Explanation.cs" />
     <Compile Include="..\..\src\Cotabby.App\Learning\LearningExplanationController.cs" Link="Production\LearningExplanationController.cs" />
     <Compile Include="..\..\src\Cotabby.App\Learning\LearningTextCopyController.cs" Link="Production\LearningTextCopyController.cs" />

@@ -8,8 +8,10 @@ Unicode/quotes/newlines, senses without examples, option omission and literal ex
 This adapts those deterministic render paths in `VocabularyExportFormatter.Notes.cs`, over the
 existing [portable material document](VOCABULARY_EXPORT_PROJECTION.md) and
 [CSV/preview helpers](VOCABULARY_EXPORT_TEXT.md). The explicit library APIs are `RenderText` and
-`RenderCsv`. JSON rendering, the combined format dispatcher/package, media collection, file/ZIP
-writing and the export window remain work; these methods are not connected to a product command.
+`RenderCsv`. Separate adapters now cover [JSON rendering](VOCABULARY_EXPORT_JSON.md),
+[format dispatch/packages](VOCABULARY_EXPORT_PACKAGE.md), [media snapshots](VOCABULARY_EXPORT_SNAPSHOT.md)
+and [ZIP bytes](VOCABULARY_EXPORT_ZIP.md). Destination writing and the export window remain work;
+these renderer methods are not connected to a product command.
 
 Each call owns one bounded byte writer. It checks the exact UTF-8 byte count before encoding and
 appending each source-equivalent chunk; headers, BOM, delimiters and newlines count toward 64 MiB.
@@ -38,7 +40,7 @@ Text blocks, filenames and captions form separate ordered content columns. Tags 
 
 Cancellation checks retain Mac granularity: TXT per entry, sense and usage; CSV per emitted row.
 A directly called renderer with an empty document performs no loop cancellation check (CSV still
-returns its header). The later package factory must preserve its separate initial cancellation check.
+returns its header). The [package factory](VOCABULARY_EXPORT_PACKAGE.md) preserves its separate initial cancellation check.
 
 Forty-two fixtures execute the complete actual pinned Swift formatter and compare complete UTF-8
 text plus byte counts. They cover options, no/multiple examples, quote/newline/Unicode values,

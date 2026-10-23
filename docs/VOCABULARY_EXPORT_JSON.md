@@ -23,7 +23,7 @@ export ceiling counts the final encoded bytes. Mac first completes JSONEncoder a
 ceiling in `package`; Windows applies the same final data/error boundary while appending output, so
 oversized JSON does not need a complete additional output allocation. This difference in check
 timing does not change allowed payloads. There are no in-render cancellation checks, as in the Mac
-JSON path; the later package factory must keep its separate initial cancellation check.
+JSON path; the [package factory](VOCABULARY_EXPORT_PACKAGE.md) keeps its separate initial cancellation check.
 
 Nineteen fixtures execute the actual original JSONEncoder branch, with no replacement encoding
 body. Smaller cases compare complete UTF-8 text and byte count, including optional omission,

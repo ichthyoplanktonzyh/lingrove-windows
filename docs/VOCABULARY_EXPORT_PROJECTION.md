@@ -3,7 +3,7 @@
 Reference: macOS `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`:
 
 - `Cotabby/Models/Vocabulary/VocabularyExportModels.swift`: format/style/scope, configuration,
-  request and portable document values (package/renderer ownership is still a later slice).
+  request and portable document values (package/renderer ownership is documented in their separate adapters).
 - `Cotabby/Support/Vocabulary/VocabularyExportPolicy.swift`: `selected`, `document`, `images`
   and the 64 MiB data budget contract.
 - `CotabbyTests/Services/Vocabulary/VocabularyExportTests.swift`: selection identity/order,

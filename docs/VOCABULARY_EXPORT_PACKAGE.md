@@ -16,7 +16,7 @@ The [archive snapshot](VOCABULARY_EXPORT_SNAPSHOT.md) keeps its separate check a
 Counts describe the input graph, not deduplicated expression-list lines: entry and sense counts
 include all input entries/senses, and example count is zero when examples are off or TXT expression
 list is selected. Otherwise every usage counts. CSV/JSON expressions style does not suppress examples.
-The 64 MiB whole-export data ceiling remains separate from the later media/ZIP ceilings.
+The 64 MiB whole-export data ceiling remains separate from the archive media and ZIP ceilings.
 
 `VocabularyExportPackage` owns encoded bytes, preview, immutable configuration, counts and a generated
 ID. That ID identifies a preparation, not a vocabulary record; a later sheet compares it before Save.

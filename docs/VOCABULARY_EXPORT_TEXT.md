@@ -3,10 +3,12 @@
 Reference: macOS `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`,
 `Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift`, `csvCell` and `preview`.
 This adapts two existing deterministic rules in `Cotabby.Core/Vocabulary/VocabularyExportFormatter.cs`.
-The [TXT/CSV document renderer](VOCABULARY_EXPORT_NOTES.md) is a later connected library slice; JSON,
-prepared packages, archive/file effects and export UI remain work.
+The [TXT/CSV renderer](VOCABULARY_EXPORT_NOTES.md), [JSON encoder](VOCABULARY_EXPORT_JSON.md),
+[prepared package](VOCABULARY_EXPORT_PACKAGE.md), [archive snapshot](VOCABULARY_EXPORT_SNAPSHOT.md)
+and [ZIP encoder](VOCABULARY_EXPORT_ZIP.md) each have separate adapters and evidence.
+Destination writing and export UI remain work.
 
-The future renderer owns the reduced [portable document](VOCABULARY_EXPORT_PROJECTION.md). These
+The renderer owns the reduced [portable document](VOCABULARY_EXPORT_PROJECTION.md). These
 stateless helpers own only one CSV cell or a bounded byte preview; they neither query notebook state
 nor create files, use clipboard services, run a model or transmit data.
 

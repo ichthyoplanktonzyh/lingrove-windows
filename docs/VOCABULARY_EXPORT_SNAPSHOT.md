@@ -3,7 +3,8 @@
 Reference: macOS `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`,
 `Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift`, `prepareExport` and `exportSnapshot`.
 The original archive/storage actor, image owner, policy, encoders and package declarations remain
-the behavior reference. Destination validation, `writeExport` and ZIP are later effects.
+the behavior reference. ZIP has a [separate adapter](VOCABULARY_EXPORT_ZIP.md); destination validation and `writeExport`
+remain follow-up effects outside snapshot preparation.
 
 `VocabularyArchive.Export.cs` adds `PrepareExportAsync` to the existing serialized archive owner.
 The call freezes offered selection IDs before queueing. On its worker, one shared persistence access

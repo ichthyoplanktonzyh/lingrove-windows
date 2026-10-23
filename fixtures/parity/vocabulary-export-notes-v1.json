@@ -1,0 +1,441 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "text-normal",
+      "format": "text",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "expected": {
+        "byteCount": 627,
+        "text": "bank [en]\n\nSense 1: core\nNotes: note\nTags: Work\nliteral\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · literal caption\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · second occurrence\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · different metadata\n\nExample sentence: The bank.\nExample translation: 原句\nContextual meaning: context\n\nSense 2: second\n\n────────────────────\n\nbank [en]\n\nSense 1: third\n\n────────────────────\n\n"
+      }
+    },
+    {
+      "id": "text-empty",
+      "format": "text",
+      "mode": "empty",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "expected": {
+        "byteCount": 0,
+        "text": ""
+      }
+    },
+    {
+      "id": "text-noExamples",
+      "format": "text",
+      "mode": "noExamples",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "expected": {
+        "byteCount": 542,
+        "text": "bank [en]\n\nSense 1: core\nNotes: note\nTags: Work\nliteral\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · literal caption\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · second occurrence\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · different metadata\n\nSense 2: second\n\n────────────────────\n\nbank [en]\n\nSense 1: third\n\n────────────────────\n\n"
+      }
+    },
+    {
+      "id": "text-manyExamples",
+      "format": "text",
+      "mode": "manyExamples",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "expected": {
+        "byteCount": 712,
+        "text": "bank [en]\n\nSense 1: core\nNotes: note\nTags: Work\nliteral\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · literal caption\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · second occurrence\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · different metadata\n\nExample sentence: The bank.\nExample translation: 原句\nContextual meaning: context\n\nExample sentence: The bank.\nExample translation: 原句\nContextual meaning: context\n\nSense 2: second\n\n────────────────────\n\nbank [en]\n\nSense 1: third\n\n────────────────────\n\n"
+      }
+    },
+    {
+      "id": "text-unicodeQuotes",
+      "format": "text",
+      "mode": "unicodeQuotes",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "expected": {
+        "byteCount": 708,
+        "text": "=😀,\"語\"\nform [en]\nDictionary form: bank\n\nSense 1: [zh-Hans] core\nNotes:  \t=1,\"note\"\r\nline\nTags: A; B;C\nliteral\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · literal caption\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · second occurrence\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · different metadata\n\nExample sentence: 😀,\"bank\"\nline\nExample translation: [zh-Hans] 原句\nContextual meaning: [en] context\n\nSense 2: second\n\n────────────────────\n\nbank [en]\n\nSense 1: third\n\n────────────────────\n\n"
+      }
+    },
+    {
+      "id": "text-canonicalForm",
+      "format": "text",
+      "mode": "canonicalForm",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "expected": {
+        "byteCount": 625,
+        "text": "é [en]\n\nSense 1: core\nNotes: note\nTags: Work\nliteral\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · literal caption\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · second occurrence\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · different metadata\n\nExample sentence: The bank.\nExample translation: 原句\nContextual meaning: context\n\nSense 2: second\n\n────────────────────\n\nbank [en]\n\nSense 1: third\n\n────────────────────\n\n"
+      }
+    },
+    {
+      "id": "text-emptyTextBlock",
+      "format": "text",
+      "mode": "emptyTextBlock",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "expected": {
+        "byteCount": 303,
+        "text": "bank [en]\n\nSense 1: core\nNotes: note\nTags: Work\n\n\nExample sentence: The bank.\nExample translation: 原句\nContextual meaning: context\n\nSense 2: second\n\n────────────────────\n\nbank [en]\n\nSense 1: third\n\n────────────────────\n\n"
+      }
+    },
+    {
+      "id": "text-dates",
+      "format": "text",
+      "mode": "dates",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "expected": {
+        "byteCount": 627,
+        "text": "bank [en]\n\nSense 1: core\nNotes: note\nTags: Work\nliteral\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · literal caption\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · second occurrence\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · different metadata\n\nExample sentence: The bank.\nExample translation: 原句\nContextual meaning: context\n\nSense 2: second\n\n────────────────────\n\nbank [en]\n\nSense 1: third\n\n────────────────────\n\n"
+      }
+    },
+    {
+      "id": "text-normal-8",
+      "format": "text",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "meanings": false,
+      "expected": {
+        "byteCount": 584,
+        "text": "bank [en]\n\nSense 1: \nNotes: note\nTags: Work\nliteral\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · literal caption\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · second occurrence\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · different metadata\n\nExample sentence: The bank.\nExample translation: 原句\n\nSense 2: \n\n────────────────────\n\nbank [en]\n\nSense 1: \n\n────────────────────\n\n"
+      }
+    },
+    {
+      "id": "text-normal-9",
+      "format": "text",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "examples": false,
+      "expected": {
+        "byteCount": 542,
+        "text": "bank [en]\n\nSense 1: core\nNotes: note\nTags: Work\nliteral\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · literal caption\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · second occurrence\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · different metadata\n\nSense 2: second\n\n────────────────────\n\nbank [en]\n\nSense 1: third\n\n────────────────────\n\n"
+      }
+    },
+    {
+      "id": "text-normal-10",
+      "format": "text",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "notes": false,
+      "expected": {
+        "byteCount": 604,
+        "text": "bank [en]\n\nSense 1: core\nliteral\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · literal caption\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · second occurrence\nImage: lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · different metadata\n\nExample sentence: The bank.\nExample translation: 原句\nContextual meaning: context\n\nSense 2: second\n\n────────────────────\n\nbank [en]\n\nSense 1: third\n\n────────────────────\n\n"
+      }
+    },
+    {
+      "id": "text-normal-11",
+      "format": "text",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "content": false,
+      "expected": {
+        "byteCount": 302,
+        "text": "bank [en]\n\nSense 1: core\nNotes: note\nTags: Work\n\nExample sentence: The bank.\nExample translation: 原句\nContextual meaning: context\n\nSense 2: second\n\n────────────────────\n\nbank [en]\n\nSense 1: third\n\n────────────────────\n\n"
+      }
+    },
+    {
+      "id": "text-normal-12",
+      "format": "text",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "explanation": true,
+      "images": true,
+      "expected": {
+        "byteCount": 708,
+        "text": "bank [en]\n\nSense 1: core\nNotes: note\nTags: Work\nliteral\nImage: images/lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · literal caption\nImage: images/lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · second occurrence\nImage: images/lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png · different metadata\n[zh-Hans] meaning\nexplanation\n\nExample sentence: The bank.\nExample translation: 原句\nContextual meaning: context\n[zh-Hans] meaning\nexplanation\n\nSense 2: second\n\n────────────────────\n\nbank [en]\n\nSense 1: third\n\n────────────────────\n\n"
+      }
+    },
+    {
+      "id": "text-normal-13",
+      "format": "text",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "meanings": false,
+      "examples": false,
+      "notes": false,
+      "content": false,
+      "expected": {
+        "byteCount": 179,
+        "text": "bank [en]\n\nSense 1: \n\nSense 2: \n\n────────────────────\n\nbank [en]\n\nSense 1: \n\n────────────────────\n\n"
+      }
+    },
+    {
+      "id": "text-empty-14",
+      "format": "text",
+      "mode": "empty",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "cancelled": true,
+      "expected": {
+        "byteCount": 0,
+        "text": ""
+      }
+    },
+    {
+      "id": "text-normal-15",
+      "format": "text",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "cancelled": true,
+      "expected": {
+        "error": "cancelled"
+      }
+    },
+    {
+      "id": "csv-normal",
+      "format": "csv",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "expected": {
+        "byteCount": 1261,
+        "text": "﻿\"entry_id\",\"expression\",\"dictionary_form\",\"language\",\"type\",\"sense_id\",\"saved_at\",\"meaning\",\"meaning_language\",\"other_meanings\",\"usage_id\",\"usage_saved_at\",\"example\",\"translation\",\"translation_language\",\"other_translations\",\"contextual_meaning\",\"contextual_meaning_language\",\"notes\",\"tags\",\"supplemental_text\",\"images\",\"image_captions\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000002\",\"1970-01-01T00:00:00Z\",\"core\",\"\",\"\",\"00000000-0000-0000-0000-000000000003\",\"1970-01-01T00:00:00Z\",\"The bank.\",\"原句\",\"\",\"\",\"context\",\"\",\"note\",\"Work\",\"literal\",\"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\"literal caption\nsecond occurrence\ndifferent metadata\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000004\",\"1970-01-01T00:00:00Z\",\"second\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n\"00000000-0000-0000-0000-000000000005\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000006\",\"1970-01-01T00:00:00Z\",\"third\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n"
+      }
+    },
+    {
+      "id": "csv-empty",
+      "format": "csv",
+      "mode": "empty",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "expected": {
+        "byteCount": 340,
+        "text": "﻿\"entry_id\",\"expression\",\"dictionary_form\",\"language\",\"type\",\"sense_id\",\"saved_at\",\"meaning\",\"meaning_language\",\"other_meanings\",\"usage_id\",\"usage_saved_at\",\"example\",\"translation\",\"translation_language\",\"other_translations\",\"contextual_meaning\",\"contextual_meaning_language\",\"notes\",\"tags\",\"supplemental_text\",\"images\",\"image_captions\"\r\n"
+      }
+    },
+    {
+      "id": "csv-noExamples",
+      "format": "csv",
+      "mode": "noExamples",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "expected": {
+        "byteCount": 1183,
+        "text": "﻿\"entry_id\",\"expression\",\"dictionary_form\",\"language\",\"type\",\"sense_id\",\"saved_at\",\"meaning\",\"meaning_language\",\"other_meanings\",\"usage_id\",\"usage_saved_at\",\"example\",\"translation\",\"translation_language\",\"other_translations\",\"contextual_meaning\",\"contextual_meaning_language\",\"notes\",\"tags\",\"supplemental_text\",\"images\",\"image_captions\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000002\",\"1970-01-01T00:00:00Z\",\"core\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"note\",\"Work\",\"literal\",\"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\"literal caption\nsecond occurrence\ndifferent metadata\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000004\",\"1970-01-01T00:00:00Z\",\"second\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n\"00000000-0000-0000-0000-000000000005\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000006\",\"1970-01-01T00:00:00Z\",\"third\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n"
+      }
+    },
+    {
+      "id": "csv-manyExamples",
+      "format": "csv",
+      "mode": "manyExamples",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "expected": {
+        "byteCount": 1819,
+        "text": "﻿\"entry_id\",\"expression\",\"dictionary_form\",\"language\",\"type\",\"sense_id\",\"saved_at\",\"meaning\",\"meaning_language\",\"other_meanings\",\"usage_id\",\"usage_saved_at\",\"example\",\"translation\",\"translation_language\",\"other_translations\",\"contextual_meaning\",\"contextual_meaning_language\",\"notes\",\"tags\",\"supplemental_text\",\"images\",\"image_captions\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000002\",\"1970-01-01T00:00:00Z\",\"core\",\"\",\"\",\"00000000-0000-0000-0000-000000000003\",\"1970-01-01T00:00:00Z\",\"The bank.\",\"原句\",\"\",\"\",\"context\",\"\",\"note\",\"Work\",\"literal\",\"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\"literal caption\nsecond occurrence\ndifferent metadata\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000002\",\"1970-01-01T00:00:00Z\",\"core\",\"\",\"\",\"00000000-0000-0000-0000-000000000008\",\"1970-01-01T00:00:00Z\",\"The bank.\",\"原句\",\"\",\"\",\"context\",\"\",\"note\",\"Work\",\"literal\",\"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\"literal caption\nsecond occurrence\ndifferent metadata\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000004\",\"1970-01-01T00:00:00Z\",\"second\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n\"00000000-0000-0000-0000-000000000005\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000006\",\"1970-01-01T00:00:00Z\",\"third\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n"
+      }
+    },
+    {
+      "id": "csv-unicodeQuotes",
+      "format": "csv",
+      "mode": "unicodeQuotes",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "expected": {
+        "byteCount": 1334,
+        "text": "﻿\"entry_id\",\"expression\",\"dictionary_form\",\"language\",\"type\",\"sense_id\",\"saved_at\",\"meaning\",\"meaning_language\",\"other_meanings\",\"usage_id\",\"usage_saved_at\",\"example\",\"translation\",\"translation_language\",\"other_translations\",\"contextual_meaning\",\"contextual_meaning_language\",\"notes\",\"tags\",\"supplemental_text\",\"images\",\"image_captions\"\r\n\"00000000-0000-0000-0000-000000000001\",\"'=😀,\"\"語\"\"\nform\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000002\",\"1970-01-01T00:00:00Z\",\"core\",\"zh-Hans\",\"\",\"00000000-0000-0000-0000-000000000003\",\"1970-01-01T00:00:00Z\",\"😀,\"\"bank\"\"\nline\",\"原句\",\"zh-Hans\",\"\",\"context\",\"en\",\"' \t=1,\"\"note\"\"\r\nline\",\"A; B;C\",\"literal\",\"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\"literal caption\nsecond occurrence\ndifferent metadata\"\r\n\"00000000-0000-0000-0000-000000000001\",\"'=😀,\"\"語\"\"\nform\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000004\",\"1970-01-01T00:00:00Z\",\"second\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n\"00000000-0000-0000-0000-000000000005\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000006\",\"1970-01-01T00:00:00Z\",\"third\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n"
+      }
+    },
+    {
+      "id": "csv-canonicalForm",
+      "format": "csv",
+      "mode": "canonicalForm",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "expected": {
+        "byteCount": 1255,
+        "text": "﻿\"entry_id\",\"expression\",\"dictionary_form\",\"language\",\"type\",\"sense_id\",\"saved_at\",\"meaning\",\"meaning_language\",\"other_meanings\",\"usage_id\",\"usage_saved_at\",\"example\",\"translation\",\"translation_language\",\"other_translations\",\"contextual_meaning\",\"contextual_meaning_language\",\"notes\",\"tags\",\"supplemental_text\",\"images\",\"image_captions\"\r\n\"00000000-0000-0000-0000-000000000001\",\"é\",\"é\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000002\",\"1970-01-01T00:00:00Z\",\"core\",\"\",\"\",\"00000000-0000-0000-0000-000000000003\",\"1970-01-01T00:00:00Z\",\"The bank.\",\"原句\",\"\",\"\",\"context\",\"\",\"note\",\"Work\",\"literal\",\"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\"literal caption\nsecond occurrence\ndifferent metadata\"\r\n\"00000000-0000-0000-0000-000000000001\",\"é\",\"é\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000004\",\"1970-01-01T00:00:00Z\",\"second\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n\"00000000-0000-0000-0000-000000000005\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000006\",\"1970-01-01T00:00:00Z\",\"third\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n"
+      }
+    },
+    {
+      "id": "csv-emptyTextBlock",
+      "format": "csv",
+      "mode": "emptyTextBlock",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "expected": {
+        "byteCount": 969,
+        "text": "﻿\"entry_id\",\"expression\",\"dictionary_form\",\"language\",\"type\",\"sense_id\",\"saved_at\",\"meaning\",\"meaning_language\",\"other_meanings\",\"usage_id\",\"usage_saved_at\",\"example\",\"translation\",\"translation_language\",\"other_translations\",\"contextual_meaning\",\"contextual_meaning_language\",\"notes\",\"tags\",\"supplemental_text\",\"images\",\"image_captions\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000002\",\"1970-01-01T00:00:00Z\",\"core\",\"\",\"\",\"00000000-0000-0000-0000-000000000003\",\"1970-01-01T00:00:00Z\",\"The bank.\",\"原句\",\"\",\"\",\"context\",\"\",\"note\",\"Work\",\"\",\"\",\"\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000004\",\"1970-01-01T00:00:00Z\",\"second\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n\"00000000-0000-0000-0000-000000000005\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000006\",\"1970-01-01T00:00:00Z\",\"third\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n"
+      }
+    },
+    {
+      "id": "csv-dates",
+      "format": "csv",
+      "mode": "dates",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "expected": {
+        "byteCount": 1261,
+        "text": "﻿\"entry_id\",\"expression\",\"dictionary_form\",\"language\",\"type\",\"sense_id\",\"saved_at\",\"meaning\",\"meaning_language\",\"other_meanings\",\"usage_id\",\"usage_saved_at\",\"example\",\"translation\",\"translation_language\",\"other_translations\",\"contextual_meaning\",\"contextual_meaning_language\",\"notes\",\"tags\",\"supplemental_text\",\"images\",\"image_captions\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000002\",\"1969-12-31T23:59:59Z\",\"core\",\"\",\"\",\"00000000-0000-0000-0000-000000000003\",\"1970-01-01T00:00:01Z\",\"The bank.\",\"原句\",\"\",\"\",\"context\",\"\",\"note\",\"Work\",\"literal\",\"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\"literal caption\nsecond occurrence\ndifferent metadata\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000004\",\"1970-01-01T00:00:00Z\",\"second\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n\"00000000-0000-0000-0000-000000000005\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000006\",\"1970-01-01T00:00:00Z\",\"third\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n"
+      }
+    },
+    {
+      "id": "csv-normal-24",
+      "format": "csv",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "meanings": false,
+      "expected": {
+        "byteCount": 1097,
+        "text": "﻿\"entry_id\",\"expression\",\"dictionary_form\",\"language\",\"type\",\"sense_id\",\"saved_at\",\"usage_id\",\"usage_saved_at\",\"example\",\"translation\",\"translation_language\",\"other_translations\",\"notes\",\"tags\",\"supplemental_text\",\"images\",\"image_captions\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000002\",\"1970-01-01T00:00:00Z\",\"00000000-0000-0000-0000-000000000003\",\"1970-01-01T00:00:00Z\",\"The bank.\",\"原句\",\"\",\"\",\"note\",\"Work\",\"literal\",\"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\"literal caption\nsecond occurrence\ndifferent metadata\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000004\",\"1970-01-01T00:00:00Z\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n\"00000000-0000-0000-0000-000000000005\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000006\",\"1970-01-01T00:00:00Z\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n"
+      }
+    },
+    {
+      "id": "csv-normal-25",
+      "format": "csv",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "examples": false,
+      "expected": {
+        "byteCount": 964,
+        "text": "﻿\"entry_id\",\"expression\",\"dictionary_form\",\"language\",\"type\",\"sense_id\",\"saved_at\",\"meaning\",\"meaning_language\",\"other_meanings\",\"notes\",\"tags\",\"supplemental_text\",\"images\",\"image_captions\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000002\",\"1970-01-01T00:00:00Z\",\"core\",\"\",\"\",\"note\",\"Work\",\"literal\",\"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\"literal caption\nsecond occurrence\ndifferent metadata\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000004\",\"1970-01-01T00:00:00Z\",\"second\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n\"00000000-0000-0000-0000-000000000005\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000006\",\"1970-01-01T00:00:00Z\",\"third\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n"
+      }
+    },
+    {
+      "id": "csv-normal-26",
+      "format": "csv",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "notes": false,
+      "expected": {
+        "byteCount": 1220,
+        "text": "﻿\"entry_id\",\"expression\",\"dictionary_form\",\"language\",\"type\",\"sense_id\",\"saved_at\",\"meaning\",\"meaning_language\",\"other_meanings\",\"usage_id\",\"usage_saved_at\",\"example\",\"translation\",\"translation_language\",\"other_translations\",\"contextual_meaning\",\"contextual_meaning_language\",\"supplemental_text\",\"images\",\"image_captions\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000002\",\"1970-01-01T00:00:00Z\",\"core\",\"\",\"\",\"00000000-0000-0000-0000-000000000003\",\"1970-01-01T00:00:00Z\",\"The bank.\",\"原句\",\"\",\"\",\"context\",\"\",\"literal\",\"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\"literal caption\nsecond occurrence\ndifferent metadata\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000004\",\"1970-01-01T00:00:00Z\",\"second\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n\"00000000-0000-0000-0000-000000000005\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000006\",\"1970-01-01T00:00:00Z\",\"third\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n"
+      }
+    },
+    {
+      "id": "csv-normal-27",
+      "format": "csv",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "content": false,
+      "expected": {
+        "byteCount": 896,
+        "text": "﻿\"entry_id\",\"expression\",\"dictionary_form\",\"language\",\"type\",\"sense_id\",\"saved_at\",\"meaning\",\"meaning_language\",\"other_meanings\",\"usage_id\",\"usage_saved_at\",\"example\",\"translation\",\"translation_language\",\"other_translations\",\"contextual_meaning\",\"contextual_meaning_language\",\"notes\",\"tags\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000002\",\"1970-01-01T00:00:00Z\",\"core\",\"\",\"\",\"00000000-0000-0000-0000-000000000003\",\"1970-01-01T00:00:00Z\",\"The bank.\",\"原句\",\"\",\"\",\"context\",\"\",\"note\",\"Work\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000004\",\"1970-01-01T00:00:00Z\",\"second\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n\"00000000-0000-0000-0000-000000000005\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000006\",\"1970-01-01T00:00:00Z\",\"third\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n"
+      }
+    },
+    {
+      "id": "csv-normal-28",
+      "format": "csv",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "explanation": true,
+      "images": true,
+      "expected": {
+        "byteCount": 1402,
+        "text": "﻿\"entry_id\",\"expression\",\"dictionary_form\",\"language\",\"type\",\"sense_id\",\"saved_at\",\"meaning\",\"meaning_language\",\"other_meanings\",\"usage_id\",\"usage_saved_at\",\"example\",\"translation\",\"translation_language\",\"other_translations\",\"contextual_meaning\",\"contextual_meaning_language\",\"notes\",\"tags\",\"sense_explanations\",\"usage_explanations\",\"supplemental_text\",\"images\",\"image_captions\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000002\",\"1970-01-01T00:00:00Z\",\"core\",\"\",\"\",\"00000000-0000-0000-0000-000000000003\",\"1970-01-01T00:00:00Z\",\"The bank.\",\"原句\",\"\",\"\",\"context\",\"\",\"note\",\"Work\",\"[zh-Hans] meaning\nexplanation\n\",\"[zh-Hans] meaning\nexplanation\n\",\"literal\",\"images/lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nimages/lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nimages/lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\"literal caption\nsecond occurrence\ndifferent metadata\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000004\",\"1970-01-01T00:00:00Z\",\"second\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n\"00000000-0000-0000-0000-000000000005\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000006\",\"1970-01-01T00:00:00Z\",\"third\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n"
+      }
+    },
+    {
+      "id": "csv-normal-29",
+      "format": "csv",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "meanings": false,
+      "examples": false,
+      "notes": false,
+      "content": false,
+      "expected": {
+        "byteCount": 470,
+        "text": "﻿\"entry_id\",\"expression\",\"dictionary_form\",\"language\",\"type\",\"sense_id\",\"saved_at\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000002\",\"1970-01-01T00:00:00Z\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000004\",\"1970-01-01T00:00:00Z\"\r\n\"00000000-0000-0000-0000-000000000005\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000006\",\"1970-01-01T00:00:00Z\"\r\n"
+      }
+    },
+    {
+      "id": "csv-empty-30",
+      "format": "csv",
+      "mode": "empty",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "cancelled": true,
+      "expected": {
+        "byteCount": 340,
+        "text": "﻿\"entry_id\",\"expression\",\"dictionary_form\",\"language\",\"type\",\"sense_id\",\"saved_at\",\"meaning\",\"meaning_language\",\"other_meanings\",\"usage_id\",\"usage_saved_at\",\"example\",\"translation\",\"translation_language\",\"other_translations\",\"contextual_meaning\",\"contextual_meaning_language\",\"notes\",\"tags\",\"supplemental_text\",\"images\",\"image_captions\"\r\n"
+      }
+    },
+    {
+      "id": "csv-normal-31",
+      "format": "csv",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "cancelled": true,
+      "expected": {
+        "error": "cancelled"
+      }
+    },
+    {
+      "id": "text-normal-32",
+      "format": "text",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "style": "expressions",
+      "images": true,
+      "expected": {
+        "byteCount": 5,
+        "text": "bank\n"
+      }
+    },
+    {
+      "id": "text-normalizedList-33",
+      "format": "text",
+      "mode": "normalizedList",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "style": "expressions",
+      "expected": {
+        "byteCount": 36,
+        "text": "café world\ncafé world\nCafé world\n"
+      }
+    },
+    {
+      "id": "text-unicodeQuotes-34",
+      "format": "text",
+      "mode": "unicodeQuotes",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "style": "expressions",
+      "expected": {
+        "byteCount": 22,
+        "text": "=😀,\"語\" form\nbank\n"
+      }
+    },
+    {
+      "id": "csv-normal-35",
+      "format": "csv",
+      "mode": "normal",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "style": "expressions",
+      "expected": {
+        "byteCount": 1261,
+        "text": "﻿\"entry_id\",\"expression\",\"dictionary_form\",\"language\",\"type\",\"sense_id\",\"saved_at\",\"meaning\",\"meaning_language\",\"other_meanings\",\"usage_id\",\"usage_saved_at\",\"example\",\"translation\",\"translation_language\",\"other_translations\",\"contextual_meaning\",\"contextual_meaning_language\",\"notes\",\"tags\",\"supplemental_text\",\"images\",\"image_captions\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000002\",\"1970-01-01T00:00:00Z\",\"core\",\"\",\"\",\"00000000-0000-0000-0000-000000000003\",\"1970-01-01T00:00:00Z\",\"The bank.\",\"原句\",\"\",\"\",\"context\",\"\",\"note\",\"Work\",\"literal\",\"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\"literal caption\nsecond occurrence\ndifferent metadata\"\r\n\"00000000-0000-0000-0000-000000000001\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000004\",\"1970-01-01T00:00:00Z\",\"second\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n\"00000000-0000-0000-0000-000000000005\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000006\",\"1970-01-01T00:00:00Z\",\"third\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n"
+      }
+    },
+    {
+      "id": "csv-unicodeQuotes-36",
+      "format": "csv",
+      "mode": "unicodeQuotes",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportFormatter.swift",
+      "spreadsheetCompatibility": false,
+      "expected": {
+        "byteCount": 1328,
+        "text": "\"entry_id\",\"expression\",\"dictionary_form\",\"language\",\"type\",\"sense_id\",\"saved_at\",\"meaning\",\"meaning_language\",\"other_meanings\",\"usage_id\",\"usage_saved_at\",\"example\",\"translation\",\"translation_language\",\"other_translations\",\"contextual_meaning\",\"contextual_meaning_language\",\"notes\",\"tags\",\"supplemental_text\",\"images\",\"image_captions\"\r\n\"00000000-0000-0000-0000-000000000001\",\"=😀,\"\"語\"\"\nform\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000002\",\"1970-01-01T00:00:00Z\",\"core\",\"zh-Hans\",\"\",\"00000000-0000-0000-0000-000000000003\",\"1970-01-01T00:00:00Z\",\"😀,\"\"bank\"\"\nline\",\"原句\",\"zh-Hans\",\"\",\"context\",\"en\",\" \t=1,\"\"note\"\"\r\nline\",\"A; B;C\",\"literal\",\"lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\nlg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\",\"literal caption\nsecond occurrence\ndifferent metadata\"\r\n\"00000000-0000-0000-0000-000000000001\",\"=😀,\"\"語\"\"\nform\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000004\",\"1970-01-01T00:00:00Z\",\"second\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n\"00000000-0000-0000-0000-000000000005\",\"bank\",\"bank\",\"en\",\"word\",\"00000000-0000-0000-0000-000000000006\",\"1970-01-01T00:00:00Z\",\"third\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\r\n"
+      }
+    }
+  ]
+}

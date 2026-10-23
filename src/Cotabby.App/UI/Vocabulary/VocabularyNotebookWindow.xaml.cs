@@ -6,6 +6,7 @@ using System.Windows.Media;
 using Cotabby.App.Vocabulary;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Vocabulary;
+using Cotabby.Win32.Vocabulary;
 
 namespace Cotabby.App.UI.Vocabulary;
 
@@ -18,6 +19,7 @@ namespace Cotabby.App.UI.Vocabulary;
 public partial class VocabularyNotebookWindow : Window
 {
     private readonly VocabularyStore _store;
+    private readonly IVocabularyClipboardImageTransfer? _clipboard;
     private readonly IVocabularyTextSearching _textSearch;
     private readonly HashSet<Guid> _expanded = [];
     private readonly HashSet<Task> _work = [];
@@ -41,9 +43,9 @@ public partial class VocabularyNotebookWindow : Window
     private sealed record TagOption(string Value, string Label);
 
     internal VocabularyNotebookWindow(VocabularyStore store, IVocabularyTextSearching textSearch,
-        VocabularyNotebookSession? learning = null, Action? configureExplanation = null)
+        VocabularyNotebookSession? learning = null, Action? configureExplanation = null, IVocabularyClipboardImageTransfer? clipboard = null)
     {
-        _store = store; _textSearch = textSearch; _learning = learning; _configureExplanation = configureExplanation;
+        _store = store; _textSearch = textSearch; _learning = learning; _configureExplanation = configureExplanation; _clipboard = clipboard;
         InitializeComponent(); WindowTheme.Follow(this);
         _presenting = true;
         LanguageFilter.ItemsSource = new[] { new LanguageOption(null, "All languages") }
@@ -262,10 +264,10 @@ public partial class VocabularyNotebookWindow : Window
         // fewer senses and would delete hidden ownership if it became an editor baseline.
         var entry = _store.Snapshot.Document.Entries.FirstOrDefault(value => value.Id == selected.EntryId);
         if (entry is null) return;
-        var editor = new VocabularyEntryEditorWindow(_store, entry, selected.SenseId) { Owner = this }; _editor = editor;
+        var editor = new VocabularyEntryEditorWindow(_store, entry, selected.SenseId, _clipboard) { Owner = this }; _editor = editor;
         editor.OperationStarted += Track;
         try { editor.ShowDialog(); }
-        finally { editor.OperationStarted -= Track; Track(editor.LastOperation); _editor = null; }
+        finally { editor.OperationStarted -= Track; Track(editor.LastOperation); Track(editor.LastImport); _editor = null; }
     }
     private void OnClosing(object? sender, CancelEventArgs args)
     {

@@ -9,8 +9,9 @@ try the next format; a non-nil empty or invalid representation proceeds to prepa
 there, without trying a different image. Its provider bridge also releases the waiting task on
 cancellation even if the foreign provider never calls back. These are the behavior references.
 
-This slice supplies the Windows extraction library and its ordinary build dependency. It does
-not yet connect a Paste image button or keyboard command. Clipboard text, DIB/bitmap conversion,
+This slice initially supplied the Windows extraction library and its ordinary build dependency.
+The [image paste integration](VOCABULARY_IMAGE_PASTE.md) now connects the button and explanation
+section command through one AppHost owner. Clipboard text, DIB/bitmap conversion,
 virtual files and pixel-only drops are outside this library's implemented formats.
 
 ## Ownership and data flow
@@ -58,10 +59,10 @@ and [standard formats](https://learn.microsoft.com/en-us/windows/win32/dataxchg/
 
 ## Validation boundary
 
-Twenty-nine reader/protocol cases use app-owned unmanaged memory, scripted native calls and
+Thirty reader/protocol cases use app-owned unmanaged memory, scripted native calls and
 independent literal wire frames. They verify representation ordering, nil versus invalid/empty
 data, busy/stale opens, size-before-lock, failed lock cleanup, delayed-render sequence admission,
-owner/copy races and malformed framing. They never open or change the runner clipboard.
+owner/copy races, metadata-only admission and malformed framing. They never open or change the runner clipboard.
 
 Twelve process cases launch actual installed Windows PowerShell fixture processes with fixed
 test bytes and private PID markers. They verify data/empty/unavailable replies, fixed failures,

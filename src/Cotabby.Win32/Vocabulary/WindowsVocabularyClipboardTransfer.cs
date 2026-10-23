@@ -13,7 +13,7 @@ namespace Cotabby.Win32.Vocabulary;
 /// only detached bounded bytes can subsequently enter the archive. This service changes no
 /// clipboard contents, loads no model and is not a security sandbox. Composition owns/drains it.
 /// </summary>
-public sealed class WindowsVocabularyClipboardTransfer : IAsyncDisposable
+public sealed class WindowsVocabularyClipboardTransfer : IVocabularyClipboardImageTransfer, IAsyncDisposable
 {
     private readonly object _gate = new();
     private readonly HashSet<Task> _work = [];
@@ -31,6 +31,12 @@ public sealed class WindowsVocabularyClipboardTransfer : IAsyncDisposable
     internal WindowsVocabularyClipboardTransfer(Func<uint, ProcessStartInfo> start, TimeSpan timeout)
     { _start = start; _timeout = timeout; }
     public static uint SequenceNumber => ClipboardNativeMethods.GetClipboardSequenceNumber();
+    public VocabularyClipboardImageOffer Capture()
+    {
+        uint sequence = SequenceNumber;
+        bool available = new VocabularyClipboardImageReader().HasAvailableImage();
+        return sequence != 0 && sequence == SequenceNumber ? new(sequence, available) : default;
+    }
     public Task<byte[]?> ReadAsync(uint expectedSequence, CancellationToken cancellationToken = default)
     {
         lock (_gate)
@@ -97,3 +103,15 @@ public sealed class WindowsVocabularyClipboardTransfer : IAsyncDisposable
         }
     }
 }
+
+/// <summary>
+/// Editors borrow this app-owned boundary. Capture reads metadata only; ReadAsync may invoke a
+/// foreign provider and must be cancellable. Bytes remain untrusted until archive preparation.
+/// </summary>
+public interface IVocabularyClipboardImageTransfer
+{
+    VocabularyClipboardImageOffer Capture();
+    Task<byte[]?> ReadAsync(uint expectedSequence, CancellationToken cancellationToken = default);
+}
+/// <summary>One short-lived metadata snapshot; a later read must retain this sequence identity.</summary>
+public readonly record struct VocabularyClipboardImageOffer(uint Sequence, bool HasImage);

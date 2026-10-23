@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Threading;
 using Cotabby.Core.Vocabulary;
 using Microsoft.Win32;
 
@@ -11,6 +12,8 @@ public partial class VocabularyEntryEditorWindow
     private readonly Dictionary<string, VocabularyPreparedImage> _importedImages = new(StringComparer.Ordinal);
     private readonly List<VocabularyImageView> _imageViews = [];
     private bool _importing;
+    private Task _importPreparation = Task.CompletedTask;
+    internal Task ImagePreparation => _importPreparation;
     internal Task LastImport { get; private set; } = Task.CompletedTask;
     internal int ImportedImageCount => _importedImages.Count;
     private void OnAddImage(object sender, RoutedEventArgs args)
@@ -21,38 +24,60 @@ public partial class VocabularyEntryEditorWindow
         if (dialog.ShowDialog(this) == true) ImportImageFile(dialog.FileName);
     }
     private bool CanImport() => !_saving && !_retired && !_importing && Sense is not null && (Sense.Content?.Count ?? 0) < VocabularyContentPolicy.MaximumBlocks;
-    internal bool ImportImageFile(string path) => BeginImageImport(token => _store.PrepareImageFileAsync(path, token));
-    internal bool ImportImageBytes(ReadOnlyMemory<byte> data) => BeginImageImport(token => _store.PrepareImageAsync(data, token));
-    private bool BeginImageImport(Func<CancellationToken, Task<VocabularyPreparedImage>> prepare)
+    internal bool ImportImageFile(string path) => BeginImageImport(async token => await _store.PrepareImageFileAsync(path, token).ConfigureAwait(false));
+    internal bool ImportImageBytes(ReadOnlyMemory<byte> data)
+    {
+        Dispatcher.VerifyAccess(); if (!CanImport()) return false;
+        // A borrowed memory caller may mutate as soon as this method returns. Store bounds and
+        // detaches synchronously at admission. Clipboard paste already owns its private reply,
+        // so that production path can perform the same Store admission away from WPF instead.
+        var admitted = _store.PrepareImageAsync(data, _lifetime.Token);
+        return BeginImageImport(async _ => await admitted.ConfigureAwait(false), admitted);
+    }
+    private bool BeginImageImport(Func<CancellationToken, Task<VocabularyPreparedImage?>> prepare, Task? alreadyAdmitted = null)
     {
         Dispatcher.VerifyAccess(); if (!CanImport()) return false;
         _importing = true; ImportFailure.Visibility = Visibility.Collapsed; ImportStatus.Visibility = Visibility.Visible; UpdateAdmission();
-        LastImport = ImportAsync(prepare, _lifetime.Token); return true;
+        LastImport = ImportAsync(prepare, _lifetime.Token, alreadyAdmitted); return true;
     }
-    private async Task ImportAsync(Func<CancellationToken, Task<VocabularyPreparedImage>> prepare, CancellationToken token)
+    private async Task ImportAsync(Func<CancellationToken, Task<VocabularyPreparedImage?>> prepare, CancellationToken token, Task? alreadyAdmitted)
     {
-        // This runs on the dispatcher so append+map admission is one atomic UI transition. The
-        // archive work is off-thread; cancelling the wait prevents a late result resurrecting a
-        // closed editor even if the underlying bounded normalization is already finishing.
+        // File/clipboard factories run away from WPF, including the owned clipboard byte copy.
+        // Presentation callbacks return to the dispatcher. Cancellation lets this task finish even
+        // if the dispatcher has stopped or bounded normalization is already finishing elsewhere.
         try
         {
-            var prepared = await prepare(token).WaitAsync(token);
-            token.ThrowIfCancellationRequested(); if (_retired || Sense is null) return;
-            var block = VocabularyContentBlock.Create(new VocabularyBlockContent.Image(prepared.Reference));
-            var blocks = (Sense.Content ?? []).Append(block).ToArray(); VocabularyContentPolicy.Validate(blocks);
-            _importedImages[prepared.Reference.Filename] = prepared;
-            ChangeSense(sense => sense with { Content = blocks }); RenderBlocks();
+            var preparing = Task.Run(() => prepare(token), token);
+            _importPreparation = alreadyAdmitted is null ? preparing : Task.WhenAll(preparing, alreadyAdmitted);
+            _ = _importPreparation.ContinueWith(task => _ = task.Exception, CancellationToken.None,
+                TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+            var prepared = await preparing.WaitAsync(token).ConfigureAwait(false);
+            token.ThrowIfCancellationRequested(); if (prepared is null) return;
+            await PresentImportAsync(() =>
+            {
+                if (Sense is null) return;
+                var block = VocabularyContentBlock.Create(new VocabularyBlockContent.Image(prepared.Reference));
+                var blocks = (Sense.Content ?? []).Append(block).ToArray(); VocabularyContentPolicy.Validate(blocks);
+                _importedImages[prepared.Reference.Filename] = prepared;
+                ChangeSense(sense => sense with { Content = blocks }); RenderBlocks();
+            }, token).ConfigureAwait(false);
         }
         catch (OperationCanceledException) { }
         catch (Exception)
         {
-            if (!_retired) { ImportFailure.Text = "Unable to add this image. Try a smaller image."; ImportFailure.Visibility = Visibility.Visible; }
+            await PresentImportAsync(() => { ImportFailure.Text = "Unable to add this image. Try a smaller image."; ImportFailure.Visibility = Visibility.Visible; }, token).ConfigureAwait(false);
         }
         finally
         {
-            _importing = false;
-            if (!_retired) { ImportStatus.Visibility = Visibility.Collapsed; UpdateAdmission(); }
+            await PresentImportAsync(() => { _importing = false; ImportStatus.Visibility = Visibility.Collapsed; UpdateAdmission(); }, token).ConfigureAwait(false);
         }
+    }
+    private async Task PresentImportAsync(Action action, CancellationToken token)
+    {
+        if (token.IsCancellationRequested || Dispatcher.HasShutdownStarted) return;
+        try { await Dispatcher.InvokeAsync(() => { if (!_retired) action(); }, DispatcherPriority.Normal, token).Task.ConfigureAwait(false); }
+        catch (OperationCanceledException) { }
+        catch (InvalidOperationException) when (Dispatcher.HasShutdownStarted) { }
     }
     private void PruneImports()
     {

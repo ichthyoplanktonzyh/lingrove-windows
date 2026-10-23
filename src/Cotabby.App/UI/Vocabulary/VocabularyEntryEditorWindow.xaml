@@ -35,7 +35,8 @@
                         <StackPanel x:Name="BlocksContent" />
                         <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
                             <Button x:Name="AddTextButton" Content="Add text" Click="OnAddText" Padding="10,5" Margin="0,0,8,0" />
-                            <Button x:Name="AddImageButton" Content="Add image" Click="OnAddImage" Padding="10,5" />
+                            <Button x:Name="AddImageButton" Content="Add image" Click="OnAddImage" Padding="10,5" Margin="0,0,8,0" />
+                            <Button x:Name="PasteImageButton" Content="Paste image" Click="OnPasteImage" Padding="10,5" />
                             <TextBlock x:Name="ImportStatus" Text="Importing image…" Visibility="Collapsed" Margin="10,5,0,0" />
                         </StackPanel>
                         <TextBlock x:Name="ImportFailure" TextWrapping="Wrap" Foreground="{DynamicResource OrangeBrush}" Visibility="Collapsed" Margin="0,6,0,0" />

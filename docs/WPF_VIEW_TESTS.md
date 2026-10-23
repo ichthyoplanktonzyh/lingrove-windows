@@ -47,3 +47,8 @@ to this suite. Its Copy events have no native writer attached in tests, so CI st
 system clipboard untouched. PR #21's initial 14-view suite passed on Windows x64 at
 `ccaf8ddeda47e295f6ea9f88dfe35eafe92a71ae` (run `39882608095`). Later additions run through the
 same CI entry point; that initial result only covers its recorded revision.
+
+The independent [readonly text-selection adapter](LEARNING_TEXT_SELECTION.md) also runs here,
+including actual TextPointer hit testing, popup styles, scrolled clipping and in-memory pixel
+differences for selection paint. It is not yet wired to a product card; these cases add adapter
+evidence without closing the product/native selection gates.

@@ -54,3 +54,26 @@ def sense_policy_sources(repo):
     values.append("import Foundation\nnonisolated enum ReviewCardPolicy {\n" +
         between(review, "    static func html(_ text:", "    static func sentenceHTML(") + "}\n")
     return values
+
+
+def archive_validation_sources(repo):
+    """Original validator method bodies in a value wrapper; no actor/storage implementation."""
+    values = sense_policy_sources(repo)
+    archive = source(repo, "Cotabby/Services/Vocabulary/VocabularyArchive.swift")
+    cards = source(repo, "Cotabby/Services/Vocabulary/VocabularyArchive+ReviewCards.swift")
+    media = source(repo, "Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift")
+    values.append("import Foundation\nnonisolated struct VocabularyArchive {\n" +
+        between(archive, "    func validate(_ document:", "    private static func encoded(") +
+        between(cards, "    func validateCards(", "    func removeReview(") +
+        between(cards, "    func validateTemplates(", "\n}\n") + "\n" +
+        between(media, "    func validateBlockIdentities(", "    static let maximumBackupBytes") + "}\n")
+    layout = source(repo, "Cotabby/Support/Review/ReviewLayoutPolicy.swift")
+    endpoint = source(repo, "Cotabby/Support/Review/AnkiReviewPolicy.swift")
+    speech = source(repo, "Cotabby/Support/Speech/SpeechExportPolicy.swift")
+    values += ["import Foundation\nnonisolated enum ReviewLayoutPolicy {\n" +
+        between(layout, "    static func validate(", "    static func portable(") + "}\n",
+        "import Foundation\nextension AnkiReviewPolicy {\n" +
+        between(endpoint, "    static func endpoint(", "    static func fields(") + "}\n",
+        "import Foundation\nnonisolated enum SpeechExportPolicy {\n" +
+        between(speech, "    static func validFilename(", "    static func wav(") + "}\n"]
+    return values

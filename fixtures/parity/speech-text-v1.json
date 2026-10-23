@@ -1,0 +1,481 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "sanitize-empty",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "text": "",
+      "expected": null
+    },
+    {
+      "id": "sanitize-spaces",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "text": " \t\n\r",
+      "expected": null
+    },
+    {
+      "id": "sanitize-controls",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "text": "\u0000\u0007",
+      "expected": null
+    },
+    {
+      "id": "sanitize-collapsed",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "regression-adaptation",
+      "text": " \n hello\t world \n",
+      "macTest": "CotabbyTests/Support/Speech/SpeechTextPolicyTests.swift",
+      "macTestMethod": "directSpeechTextIsCollapsedAndBounded",
+      "expected": "hello world"
+    },
+    {
+      "id": "sanitize-format",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "text": "a‍b‮c﻿d",
+      "expected": "abcd"
+    },
+    {
+      "id": "sanitize-zwsp-inner",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "text": "a​b",
+      "expected": "a​b"
+    },
+    {
+      "id": "sanitize-zwsp-edges",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "text": "​hello​",
+      "expected": "hello"
+    },
+    {
+      "id": "sanitize-zwsp-accent",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "text": "​́hello​́",
+      "expected": "́hello​́"
+    },
+    {
+      "id": "sanitize-space-accent",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "text": "a ́ b",
+      "expected": "a b"
+    },
+    {
+      "id": "sanitize-nbsp",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "text": "a b c",
+      "expected": "a b c"
+    },
+    {
+      "id": "sanitize-cg-joiner",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "text": "a͏b",
+      "expected": "a͏b"
+    },
+    {
+      "id": "sanitize-tag",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "text": "a󠀁b",
+      "expected": "ab"
+    },
+    {
+      "id": "sanitize-family",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "text": "👨‍👩‍👧‍👦",
+      "expected": "👨👩👧👦"
+    },
+    {
+      "id": "sanitize-crlf",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "text": "a\r\nb",
+      "expected": "a b"
+    },
+    {
+      "id": "sanitize-all-controls",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "text": "\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007\b\t\n\u000b\f\r\u000e\u000f\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017\u0018\u0019\u001a\u001b\u001c\u001d\u001e\u001f a",
+      "expected": "a"
+    },
+    {
+      "id": "sanitize-noncharacters",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "text": "￾￿􏿿",
+      "expected": "￾￿􏿿"
+    },
+    {
+      "id": "sanitize-ascii1000",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "repeatCount": 1000,
+      "repeatText": "a",
+      "expected": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "id": "sanitize-ascii1001",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "repeatCount": 1001,
+      "repeatText": "a",
+      "expected": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "id": "sanitize-bytes8192",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "repeatCount": 8192,
+      "repeatText": "a",
+      "expected": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "id": "sanitize-bytes8193",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "repeatCount": 8193,
+      "repeatText": "a",
+      "expected": null
+    },
+    {
+      "id": "sanitize-han8190",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "repeatCount": 2730,
+      "repeatText": "汉",
+      "expected": "汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉"
+    },
+    {
+      "id": "sanitize-han8193",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "repeatCount": 2731,
+      "repeatText": "汉",
+      "expected": null
+    },
+    {
+      "id": "sanitize-emoji",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "repeatCount": 1001,
+      "repeatText": "😀",
+      "expected": "😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀"
+    },
+    {
+      "id": "sanitize-decomposed",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "repeatCount": 1001,
+      "repeatText": "é",
+      "expected": "éééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé"
+    },
+    {
+      "id": "sanitize-flags",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "repeatCount": 1001,
+      "repeatText": "🇨🇳",
+      "expected": "🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳🇨🇳"
+    },
+    {
+      "id": "sanitize-sentence",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "regression-adaptation",
+      "repeatCount": 1000,
+      "repeatText": "hello ",
+      "macTest": "CotabbyTests/Support/Speech/SpeechTextPolicyTests.swift",
+      "macTestMethod": "directSpeechTextIsCollapsedAndBounded",
+      "expected": "hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello hell"
+    },
+    {
+      "id": "sanitize-controls-limit",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "repeatCount": 8192,
+      "repeatText": "\u0000",
+      "expected": null
+    },
+    {
+      "id": "unit-word",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "regression-adaptation",
+      "kind": "unit",
+      "unitKind": "word",
+      "text": "went",
+      "words": [],
+      "macTest": "CotabbyTests/Support/Speech/SpeechTextPolicyTests.swift",
+      "macTestMethod": "wordsAndExpressionsUseTheirActualSurface",
+      "expected": "went"
+    },
+    {
+      "id": "unit-expression",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "regression-adaptation",
+      "kind": "unit",
+      "unitKind": "expression",
+      "text": "look forward to",
+      "words": [],
+      "macTest": "CotabbyTests/Support/Speech/SpeechTextPolicyTests.swift",
+      "macTestMethod": "wordsAndExpressionsUseTheirActualSurface",
+      "expected": "look forward to"
+    },
+    {
+      "id": "unit-pattern",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "regression-adaptation",
+      "kind": "unit",
+      "unitKind": "pattern",
+      "text": "take … time",
+      "words": [
+        "take",
+        "your",
+        "time"
+      ],
+      "macTest": "CotabbyTests/Support/Speech/SpeechTextPolicyTests.swift",
+      "macTestMethod": "patternSpeaksAllWordsAndPronounSlotsWithoutDisplayEllipses",
+      "expected": "take your time"
+    },
+    {
+      "id": "unit-empty-word",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "regression-adaptation",
+      "kind": "unit",
+      "unitKind": "word",
+      "text": "  ",
+      "words": [],
+      "macTest": "CotabbyTests/Support/Speech/SpeechTextPolicyTests.swift",
+      "macTestMethod": "malformedOrEmptyUnitsProduceNoUtterance",
+      "expected": null
+    },
+    {
+      "id": "unit-empty-pattern",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "regression-adaptation",
+      "kind": "unit",
+      "unitKind": "pattern",
+      "text": "take … time",
+      "words": [],
+      "macTest": "CotabbyTests/Support/Speech/SpeechTextPolicyTests.swift",
+      "macTestMethod": "malformedOrEmptyUnitsProduceNoUtterance",
+      "expected": null
+    },
+    {
+      "id": "unit-malformed-pattern",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "regression-adaptation",
+      "kind": "unit",
+      "unitKind": "pattern",
+      "text": "take … time",
+      "words": [
+        "take",
+        " "
+      ],
+      "macTest": "CotabbyTests/Support/Speech/SpeechTextPolicyTests.swift",
+      "macTestMethod": "malformedOrEmptyUnitsProduceNoUtterance",
+      "expected": null
+    },
+    {
+      "id": "unit-zwsp-pattern",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "unit",
+      "unitKind": "pattern",
+      "words": [
+        "take",
+        "​",
+        "time"
+      ],
+      "expected": null
+    },
+    {
+      "id": "unit-control-pattern",
+      "macSource": "Cotabby/Support/Speech/SpeechTextPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "unit",
+      "unitKind": "pattern",
+      "words": [
+        "take",
+        "\u0000",
+        "time"
+      ],
+      "expected": "take time"
+    },
+    {
+      "id": "current-absent",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "current",
+      "text": " hello\t world ",
+      "sentence": "The bank.",
+      "expected": true
+    },
+    {
+      "id": "current-empty",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "current",
+      "text": " hello\t world ",
+      "sentence": "The bank.",
+      "audioKinds": [],
+      "expected": true
+    },
+    {
+      "id": "current-missing",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "current",
+      "text": " hello\t world ",
+      "sentence": "The bank.",
+      "audioKinds": [
+        "expression"
+      ],
+      "expected": false
+    },
+    {
+      "id": "current-matching",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "current",
+      "text": " hello\t world ",
+      "sentence": "The bank.",
+      "audioKinds": [
+        "expression"
+      ],
+      "receipts": {
+        "expression": "b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9"
+      },
+      "expected": true
+    },
+    {
+      "id": "current-raw-hash",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "current",
+      "text": " hello\t world ",
+      "sentence": "The bank.",
+      "audioKinds": [
+        "expression"
+      ],
+      "receipts": {
+        "expression": "4f33d66abf2fa8c79c9bec8cbf2aea1b06914c90c95c6174b027819f8d3efdc1"
+      },
+      "expected": false
+    },
+    {
+      "id": "current-wrong",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "current",
+      "text": " hello\t world ",
+      "sentence": "The bank.",
+      "audioKinds": [
+        "expression"
+      ],
+      "receipts": {
+        "expression": "d9298a10d1b0735837dc4bd85dac641b0f3cef27a47e5d53a54f2f3f5b2fcffa"
+      },
+      "expected": false
+    },
+    {
+      "id": "current-uppercase",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "current",
+      "text": " hello\t world ",
+      "sentence": "The bank.",
+      "audioKinds": [
+        "expression"
+      ],
+      "receipts": {
+        "expression": "B94D27B9934D3E08A52E52D7DA7DABFAC484EFE37A5380EE9088F7ACE2EFCDE9"
+      },
+      "expected": false
+    },
+    {
+      "id": "current-both",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "current",
+      "text": " hello\t world ",
+      "sentence": "The bank.",
+      "audioKinds": [
+        "expression",
+        "sentence"
+      ],
+      "receipts": {
+        "expression": "b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9",
+        "sentence": "ee36d8f5299d0b13686532951b2e2bbb60ad73cbf25b7f16012fd867f28b36a6"
+      },
+      "expected": true
+    },
+    {
+      "id": "current-missing-sentence",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "current",
+      "text": " hello\t world ",
+      "sentence": "The bank.",
+      "audioKinds": [
+        "expression",
+        "sentence"
+      ],
+      "receipts": {
+        "expression": "b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9"
+      },
+      "expected": false
+    },
+    {
+      "id": "current-unselected",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "current",
+      "text": " hello\t world ",
+      "sentence": "The bank.",
+      "audioKinds": [],
+      "receipts": {
+        "expression": "wrong"
+      },
+      "expected": true
+    },
+    {
+      "id": "current-empty-hash",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "current",
+      "text": "\u0000",
+      "audioKinds": [
+        "expression"
+      ],
+      "receipts": {
+        "expression": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "expected": true
+    },
+    {
+      "id": "current-oversize-hash",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "current",
+      "repeatText": "a",
+      "repeatCount": 8193,
+      "audioKinds": [
+        "expression"
+      ],
+      "receipts": {
+        "expression": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "expected": true
+    }
+  ]
+}

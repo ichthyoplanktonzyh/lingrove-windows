@@ -55,8 +55,8 @@ commit results. The production picker callback is exercised; OS dialog interacti
 automated. Existing original-source content/editor/media verifiers remain unchanged; these new
 Windows UI cases are source-derived regressions, not new captured Mac UI observations.
 
-The next slice is nonmutating clipboard/paste/drop receipt. Those buttons/handlers are not connected
-here. Cross-process OLE data extraction is synchronous and can block; editor cancellation must not
+The [existing-file drop adapter](VOCABULARY_FILE_DROP.md) now connects Unicode Shell paths to this
+import flow. Nonmutating clipboard paste, virtual files and pixel-only drags remain unconnected. Cross-process OLE data extraction is synchronous and can block; editor cancellation must not
 wait on a foreign provider. Even file reads check cancellation between native calls and cannot
 interrupt an already blocked synchronous read, so a hung network/removable path can delay Store
 shutdown draining. Ordinary local-file CI does not establish those external host behaviors, broad

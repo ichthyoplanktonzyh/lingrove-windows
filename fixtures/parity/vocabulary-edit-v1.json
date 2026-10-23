@@ -1,0 +1,681 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "merge-current-append",
+      "operation": "merge-current-append",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "senses": [
+          {
+            "content": null,
+            "id": "00000000-0000-0000-0000-000000000002",
+            "language": null,
+            "meaning": "",
+            "note": "Edited note",
+            "origin": "captured",
+            "records": [],
+            "standalone": false,
+            "tags": [],
+            "updated": true,
+            "usages": [
+              {
+                "id": "00000000-0000-0000-0000-000000000003",
+                "meaning": "draft",
+                "origin": "captured",
+                "records": [],
+                "text": "The bank.",
+                "translation": ""
+              }
+            ],
+            "variants": []
+          },
+          {
+            "content": null,
+            "id": "00000000-0000-0000-0000-000000000004",
+            "language": null,
+            "meaning": "",
+            "note": "",
+            "origin": "captured",
+            "records": [],
+            "standalone": false,
+            "tags": [],
+            "updated": false,
+            "usages": [],
+            "variants": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "merge-conflict-note",
+      "operation": "merge-conflict-note",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "error": "editConflict"
+      }
+    },
+    {
+      "id": "merge-same-note",
+      "operation": "merge-same-note",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "senses": [
+          {
+            "content": null,
+            "id": "00000000-0000-0000-0000-000000000002",
+            "language": null,
+            "meaning": "",
+            "note": "Same",
+            "origin": "captured",
+            "records": [],
+            "standalone": false,
+            "tags": [],
+            "updated": true,
+            "usages": [
+              {
+                "id": "00000000-0000-0000-0000-000000000003",
+                "meaning": "draft",
+                "origin": "captured",
+                "records": [],
+                "text": "The bank.",
+                "translation": ""
+              }
+            ],
+            "variants": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "merge-unchanged",
+      "operation": "merge-unchanged",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "senses": [
+          {
+            "content": null,
+            "id": "00000000-0000-0000-0000-000000000002",
+            "language": null,
+            "meaning": "",
+            "note": "Live",
+            "origin": "captured",
+            "records": [],
+            "standalone": false,
+            "tags": [],
+            "updated": false,
+            "usages": [
+              {
+                "id": "00000000-0000-0000-0000-000000000003",
+                "meaning": "draft",
+                "origin": "captured",
+                "records": [],
+                "text": "The bank.",
+                "translation": ""
+              }
+            ],
+            "variants": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "merge-delete-changed",
+      "operation": "merge-delete-changed",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "error": "editConflict"
+      }
+    },
+    {
+      "id": "merge-new-alias",
+      "operation": "merge-new-alias",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "error": "editConflict"
+      }
+    },
+    {
+      "id": "merge-new",
+      "operation": "merge-new",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "senses": [
+          {
+            "content": null,
+            "id": "00000000-0000-0000-0000-000000000002",
+            "language": null,
+            "meaning": "",
+            "note": "",
+            "origin": "captured",
+            "records": [],
+            "standalone": false,
+            "tags": [],
+            "updated": false,
+            "usages": [
+              {
+                "id": "00000000-0000-0000-0000-000000000003",
+                "meaning": "draft",
+                "origin": "captured",
+                "records": [],
+                "text": "The bank.",
+                "translation": ""
+              }
+            ],
+            "variants": []
+          },
+          {
+            "content": null,
+            "id": "00000000-0000-0000-0000-000000000004",
+            "language": null,
+            "meaning": "",
+            "note": "",
+            "origin": "captured",
+            "records": [],
+            "standalone": false,
+            "tags": [],
+            "updated": false,
+            "usages": [],
+            "variants": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "merge-delete",
+      "operation": "merge-delete",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "senses": [
+          {
+            "content": null,
+            "id": "00000000-0000-0000-0000-000000000002",
+            "language": null,
+            "meaning": "",
+            "note": "",
+            "origin": "captured",
+            "records": [],
+            "standalone": false,
+            "tags": [],
+            "updated": false,
+            "usages": [
+              {
+                "id": "00000000-0000-0000-0000-000000000003",
+                "meaning": "draft",
+                "origin": "captured",
+                "records": [],
+                "text": "The bank.",
+                "translation": ""
+              }
+            ],
+            "variants": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "merge-meaning",
+      "operation": "merge-meaning",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "senses": [
+          {
+            "content": null,
+            "id": "00000000-0000-0000-0000-000000000002",
+            "language": "zh-Hans",
+            "meaning": "My meaning",
+            "note": "",
+            "origin": "user",
+            "records": [],
+            "standalone": false,
+            "tags": [],
+            "updated": true,
+            "usages": [
+              {
+                "id": "00000000-0000-0000-0000-000000000003",
+                "meaning": "draft",
+                "origin": "captured",
+                "records": [],
+                "text": "The bank.",
+                "translation": ""
+              }
+            ],
+            "variants": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "merge-adopt",
+      "operation": "merge-adopt",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "senses": [
+          {
+            "content": null,
+            "id": "00000000-0000-0000-0000-000000000002",
+            "language": null,
+            "meaning": "",
+            "note": "",
+            "origin": "user",
+            "records": [],
+            "standalone": false,
+            "tags": [],
+            "updated": true,
+            "usages": [
+              {
+                "id": "00000000-0000-0000-0000-000000000003",
+                "meaning": "draft",
+                "origin": "captured",
+                "records": [],
+                "text": "The bank.",
+                "translation": ""
+              }
+            ],
+            "variants": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "merge-standalone",
+      "operation": "merge-standalone",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "senses": [
+          {
+            "content": null,
+            "id": "00000000-0000-0000-0000-000000000002",
+            "language": null,
+            "meaning": "My general",
+            "note": "",
+            "origin": "user",
+            "records": [],
+            "standalone": true,
+            "tags": [],
+            "updated": true,
+            "usages": [
+              {
+                "id": "00000000-0000-0000-0000-000000000003",
+                "meaning": "draft",
+                "origin": "captured",
+                "records": [],
+                "text": "The bank.",
+                "translation": ""
+              }
+            ],
+            "variants": [
+              "My general"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "merge-edit-clear",
+      "operation": "merge-edit-clear",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "senses": [
+          {
+            "content": null,
+            "id": "00000000-0000-0000-0000-000000000002",
+            "language": null,
+            "meaning": "",
+            "note": "",
+            "origin": "captured",
+            "records": [],
+            "standalone": false,
+            "tags": [],
+            "updated": true,
+            "usages": [
+              {
+                "id": "00000000-0000-0000-0000-000000000003",
+                "meaning": "",
+                "origin": "captured",
+                "records": [],
+                "text": "The bank changed.",
+                "translation": ""
+              }
+            ],
+            "variants": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "merge-usage-meaning",
+      "operation": "merge-usage-meaning",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "senses": [
+          {
+            "content": null,
+            "id": "00000000-0000-0000-0000-000000000002",
+            "language": null,
+            "meaning": "",
+            "note": "",
+            "origin": "captured",
+            "records": [],
+            "standalone": false,
+            "tags": [],
+            "updated": true,
+            "usages": [
+              {
+                "id": "00000000-0000-0000-0000-000000000003",
+                "meaning": "My contextual",
+                "origin": "user",
+                "records": [],
+                "text": "The bank.",
+                "translation": ""
+              }
+            ],
+            "variants": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "merge-usage-conflict",
+      "operation": "merge-usage-conflict",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "error": "editConflict"
+      }
+    },
+    {
+      "id": "merge-usage-deleted",
+      "operation": "merge-usage-deleted",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "error": "editConflict"
+      }
+    },
+    {
+      "id": "merge-new-duplicate",
+      "operation": "merge-new-duplicate",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "senses": [
+          {
+            "content": null,
+            "id": "00000000-0000-0000-0000-000000000002",
+            "language": null,
+            "meaning": "",
+            "note": "",
+            "origin": "captured",
+            "records": [],
+            "standalone": false,
+            "tags": [],
+            "updated": true,
+            "usages": [
+              {
+                "id": "00000000-0000-0000-0000-000000000003",
+                "meaning": "draft",
+                "origin": "captured",
+                "records": [],
+                "text": "The bank.",
+                "translation": ""
+              },
+              {
+                "id": "00000000-0000-0000-0000-000000000004",
+                "meaning": "draft",
+                "origin": "captured",
+                "records": [],
+                "text": "A bank opened.",
+                "translation": ""
+              }
+            ],
+            "variants": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "merge-usage-delete-conflict",
+      "operation": "merge-usage-delete-conflict",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "error": "editConflict"
+      }
+    },
+    {
+      "id": "merge-no-standalone",
+      "operation": "merge-no-standalone",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "senses": [
+          {
+            "content": null,
+            "id": "00000000-0000-0000-0000-000000000002",
+            "language": null,
+            "meaning": "",
+            "note": "",
+            "origin": "captured",
+            "records": [],
+            "standalone": false,
+            "tags": [],
+            "updated": true,
+            "usages": [],
+            "variants": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "merge-canonical",
+      "operation": "merge-canonical",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "senses": [
+          {
+            "content": null,
+            "id": "00000000-0000-0000-0000-000000000002",
+            "language": null,
+            "meaning": "",
+            "note": "Live",
+            "origin": "captured",
+            "records": [],
+            "standalone": false,
+            "tags": [
+              "Live"
+            ],
+            "updated": false,
+            "usages": [
+              {
+                "id": "00000000-0000-0000-0000-000000000003",
+                "meaning": "draft",
+                "origin": "captured",
+                "records": [],
+                "text": "The bank.",
+                "translation": ""
+              }
+            ],
+            "variants": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "merge-content-conflict",
+      "operation": "merge-content-conflict",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "error": "editConflict"
+      }
+    },
+    {
+      "id": "prune-moved",
+      "operation": "prune-moved",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "senses": [
+          {
+            "content": null,
+            "id": "00000000-0000-0000-0000-000000000002",
+            "language": null,
+            "meaning": "",
+            "note": "",
+            "origin": "captured",
+            "records": [],
+            "standalone": false,
+            "tags": [],
+            "updated": false,
+            "usages": [],
+            "variants": []
+          },
+          {
+            "content": null,
+            "id": "00000000-0000-0000-0000-000000000004",
+            "language": null,
+            "meaning": "",
+            "note": "",
+            "origin": "captured",
+            "records": [],
+            "standalone": false,
+            "tags": [],
+            "updated": false,
+            "usages": [
+              {
+                "id": "00000000-0000-0000-0000-000000000003",
+                "meaning": "draft",
+                "origin": "captured",
+                "records": [
+                  "00000000-0000-0000-0000-000000000065"
+                ],
+                "text": "The bank.",
+                "translation": ""
+              }
+            ],
+            "variants": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "prune-edited",
+      "operation": "prune-edited",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "senses": [
+          {
+            "content": null,
+            "id": "00000000-0000-0000-0000-000000000002",
+            "language": null,
+            "meaning": "",
+            "note": "",
+            "origin": "captured",
+            "records": [],
+            "standalone": false,
+            "tags": [],
+            "updated": false,
+            "usages": [
+              {
+                "id": "00000000-0000-0000-0000-000000000003",
+                "meaning": "draft",
+                "origin": "captured",
+                "records": [],
+                "text": "The bank changed.",
+                "translation": ""
+              }
+            ],
+            "variants": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "prune-general",
+      "operation": "prune-general",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "senses": [
+          {
+            "content": null,
+            "id": "00000000-0000-0000-0000-000000000002",
+            "language": null,
+            "meaning": "",
+            "note": "",
+            "origin": "captured",
+            "records": [
+              "00000000-0000-0000-0000-000000000064"
+            ],
+            "standalone": true,
+            "tags": [],
+            "updated": false,
+            "usages": [
+              {
+                "id": "00000000-0000-0000-0000-000000000003",
+                "meaning": "draft",
+                "origin": "captured",
+                "records": [
+                  "00000000-0000-0000-0000-000000000065"
+                ],
+                "text": "The bank.",
+                "translation": ""
+              }
+            ],
+            "variants": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "prune-form",
+      "operation": "prune-form",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "expected": {
+        "senses": [
+          {
+            "content": null,
+            "id": "00000000-0000-0000-0000-000000000002",
+            "language": null,
+            "meaning": "",
+            "note": "",
+            "origin": "captured",
+            "records": [],
+            "standalone": true,
+            "tags": [],
+            "updated": false,
+            "usages": [
+              {
+                "id": "00000000-0000-0000-0000-000000000003",
+                "meaning": "draft",
+                "origin": "captured",
+                "records": [],
+                "text": "The bank.",
+                "translation": ""
+              }
+            ],
+            "variants": []
+          }
+        ]
+      }
+    }
+  ]
+}

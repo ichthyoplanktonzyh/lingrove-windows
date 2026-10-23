@@ -16,7 +16,8 @@ public static partial class VocabularyArchiveValidation
 {
     public static void Validate(VocabularyDocument document)
     {
-        if (document is null || document.SchemaVersion != 3 || document.Entries.Any(entry => !Representable(entry))
+        ValidateRepresentability(document);
+        if (document.SchemaVersion != 3
             || document.Entries.Select(VocabularyCapturePolicy.EntryKey).Distinct(StringComparer.Ordinal).Count() != document.Entries.Count) throw Invalid();
         ValidateTemplates(document.ReviewTemplates ?? []);
         var ids = new HashSet<Guid>();
@@ -105,14 +106,24 @@ public static partial class VocabularyArchiveValidation
 
     // These are representability checks only. Swift has no null strings/objects or invalid enum
     // integers/malformed UTF-16; do not accidentally turn this pass into new product text budgets.
-    private static bool Representable(VocabularyEntry entry) => entry is not null && Enum.IsDefined(entry.Language) && Enum.IsDefined(entry.Kind)
+    internal static void ValidateRepresentability(VocabularyDocument document)
+    {
+        if (document is null || document.Entries.Any(entry => !Representable(entry))) throw Invalid();
+    }
+    internal static bool Representable(VocabularyEntry entry) => entry is not null && Enum.IsDefined(entry.Language) && Enum.IsDefined(entry.Kind)
         && Fits(entry.Expression) && Fits(entry.DictionaryForm) && entry.Senses.All(sense => sense is not null && Fits(sense.Meaning) && Fits(sense.Note)
             && Language(sense.MeaningLanguage) && Enum.IsDefined(sense.MeaningOrigin) && sense.Tags.All(tag => Fits(tag))
             && sense.StandaloneMeanings.Concat(sense.AlternateMeanings).All(meaning => meaning is not null && Fits(meaning.Text) && Language(meaning.Language))
+            && sense.Explanations.All(RepresentableRecord)
             && sense.Examples.All(usage => usage is not null && Fits(usage.Text) && Fits(usage.Translation) && Fits(usage.Meaning)
                 && Optional(usage.SourceApplicationId) && Language(usage.TranslationLanguage) && Language(usage.MeaningLanguage)
                 && Enum.IsDefined(usage.MeaningOrigin) && Enum.IsDefined(usage.Completeness)
-                && usage.TranslationVariants.All(meaning => meaning is not null && Fits(meaning.Text) && Language(meaning.Language))));
+                && usage.TranslationVariants.All(meaning => meaning is not null && Fits(meaning.Text) && Language(meaning.Language))
+                && usage.Explanations.All(RepresentableRecord)));
+    private static bool RepresentableRecord(LearningExplanationRecord record) => record is { Input: not null, Result: not null }
+        && Enum.IsDefined(record.Language) && Enum.IsDefined(record.Input.Language) && Enum.IsDefined(record.Input.Kind) && Enum.IsDefined(record.Input.ContextKind)
+        && Fits(record.Model) && Fits(record.Input.Target) && Fits(record.Input.DictionaryForm) && Fits(record.Input.Context) && Optional(record.Input.OccurrenceIdentity)
+        && Fits(record.Result.Meaning) && Fits(record.Result.Explanation);
     private static bool Language(LearningLanguage? language) => language is null || Enum.IsDefined(language.Value);
     private static bool Optional(string? text, int maximum = int.MaxValue) => text is null || Fits(text, maximum);
     private static bool Fits(string? text, int maximum = int.MaxValue) => LearningExplanationText.Fits(text, maximum);

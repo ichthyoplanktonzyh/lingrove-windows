@@ -51,6 +51,7 @@ scope.
 | `Cotabby.Core` | Portable request/value types, suggestion state machine, prompt/output policies, context filtering, emoji, macros, spelling rules | Immutable field snapshots and settings in; normalized requests/results and deterministic decisions out |
 | `Cotabby.Inference` | Local llama.cpp/LLamaSharp and OpenAI-compatible inference transport | Bounded immutable requests in; cancellable partial/final generation results out |
 | `Cotabby.Win32` | UI Automation, keyboard hook, input insertion, clipboard, DPAPI, Windows spell checking, power | OS observations become Core values; accepted Core actions become guarded OS effects |
+| `Cotabby.ImageTransferHost` | Short-lived STA image clipboard extraction, terminated by its Win32 owner on cancellation | Captured numeric sequence in; bounded encoded-image bytes over stdout out; no WPF, model or network dependency |
 | `tests/` | xUnit coverage for Core and inference contracts | Portable deterministic behavior; native app behavior requires a Windows host |
 
 `AppHost` is the app's composition root. It creates long-lived settings, focus and keyboard services,

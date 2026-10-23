@@ -119,3 +119,8 @@ claimed as exercised. Source, notebook and media bytes are private temporary fix
 The [existing-file drop adapter](VOCABULARY_FILE_DROP.md) adds 21 actual HGLOBAL/SendMessage/WPF
 hook cases. These do not alter the runner clipboard or claim physical Explorer/OLE interoperability;
 DPI cases supply synthetic transforms to actual visual hit testing.
+
+The [clipboard transfer library](VOCABULARY_CLIPBOARD_TRANSFER.md) adds one test of the actual helper
+sidecars and invalid-argument startup/exit. It never reads the clipboard; process cancellation and
+wire-format cases run in Inference.Tests with fixed PowerShell fixture output. Clipboard UI is not
+connected in this slice.

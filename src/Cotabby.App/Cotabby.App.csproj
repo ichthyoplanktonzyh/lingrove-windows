@@ -37,6 +37,20 @@
     <ProjectReference Include="..\Cotabby.Core\Cotabby.Core.csproj" />
     <ProjectReference Include="..\Cotabby.Inference\Cotabby.Inference.csproj" />
     <ProjectReference Include="..\Cotabby.Win32\Cotabby.Win32.csproj" />
+    <ProjectReference Include="..\Cotabby.ImageTransferHost\Cotabby.ImageTransferHost.csproj" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The process boundary is part of the app's ordinary build, not a release/package job.
+         Content metadata also carries these four sidecars into the WPF test output. -->
+    <Content Include="..\Cotabby.ImageTransferHost\bin\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\Cotabby.ImageTransferHost.exe"
+             Link="Cotabby.ImageTransferHost.exe" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\Cotabby.ImageTransferHost\bin\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\Cotabby.ImageTransferHost.dll"
+             Link="Cotabby.ImageTransferHost.dll" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\Cotabby.ImageTransferHost\bin\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\Cotabby.ImageTransferHost.deps.json"
+             Link="Cotabby.ImageTransferHost.deps.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\Cotabby.ImageTransferHost\bin\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\Cotabby.ImageTransferHost.runtimeconfig.json"
+             Link="Cotabby.ImageTransferHost.runtimeconfig.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

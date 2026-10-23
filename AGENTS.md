@@ -156,6 +156,7 @@ the [review settings adapter](docs/ANKI_REVIEW_SETTINGS_UI.md) now connects shar
 the [PCM foundation](docs/SPEECH_PCM_FOUNDATION.md) now supplies bounded Float32 blocks and queue accounting without a player/provider;
 the [frame decoder](docs/SPEECH_FRAME_DECODER.md) now admits bounded fragmented helper frames without a subprocess;
 the [export buffer](docs/SPEECH_EXPORT_BUFFER.md) now serializes request-owned audio accumulation/packaging without generation/playback;
+the [provider metadata rules](docs/SPEECH_PROVIDER_METADATA.md) preserve exact Qwen companions, local languages and voice-tag compatibility without catalog selection;
 compressed/profiled bitmap variants, virtual/pixel drops, review navigation/preparation/send and other dictionary providers remain work. Do not flatten senses into
 one translation string, regenerate stable IDs during edits, or treat a generated explanation as the
 user's authored meaning. See the vocabulary models and porting gates in the linked docs. Storage
@@ -228,6 +229,7 @@ python3 scripts/verify-anki-settings-interaction-macos-parity.py --mac-repo /pat
 python3 scripts/verify-speech-pcm-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-speech-frame-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-speech-buffer-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
+python3 scripts/verify-speech-metadata-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 ```
 
 The verifiers read the pinned macOS sources from Git and check the same JSON cases. The lexical
@@ -241,7 +243,7 @@ runner. This is ordinary compilation, not packaging or a release.
 The current `.github/workflows/ci.yml` has two validation jobs: Windows x64 restores and builds the
 full solution, then runs Core, portable App boundary and Inference tests, including noninteractive ICU sentence tests,
 and the compiled learning-card WPF view suite on its own STA dispatcher (see `docs/WPF_VIEW_TESTS.md`);
-macOS 26 x64 runs Core, portable App boundary tests and all fifty-four Swift parity verifiers against a sparse checkout of the pinned Mac
+macOS 26 x64 runs Core, portable App boundary tests and all fifty-five Swift parity verifiers against a sparse checkout of the pinned Mac
 Support, language-learning/vocabulary models/services, content-test provenance, language catalog and pinned expression resource files. The separate
 `.github/workflows/upstream-baseline.yml` checks the original Windows fork at commit
 `b1e4031c70aca1be21aae2c57b138fde5fc22bb1` with .NET 9 on manual dispatch. Its initial setup run is

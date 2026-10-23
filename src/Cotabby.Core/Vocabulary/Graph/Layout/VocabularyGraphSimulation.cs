@@ -38,8 +38,8 @@ public sealed class VocabularyGraphSimulation
         if (positions.Count == 0 || positions.Count != velocities.Count) throw new ArgumentException("A nonempty matching particle pair is required.");
         _positions = positions.Select(GrapeVector.From).ToArray(); _velocities = velocities.Select(GrapeVector.From).ToArray();
         _fixation = new GrapeVector?[positions.Count]; _parameters = parameters;
+        if (edges.Any(edge => edge.Source < 0 || edge.Target < 0)) throw new ArgumentException("Particle indices cannot be negative.", nameof(edges));
         _edges = edges.Where(edge => edge.Source < positions.Count && edge.Target < positions.Count).ToArray();
-        if (_edges.Any(edge => edge.Source < 0 || edge.Target < 0)) throw new ArgumentException("Particle indices cannot be negative.", nameof(edges));
         var degrees = new int[positions.Count];
         foreach (var edge in _edges) { degrees[edge.Source]++; degrees[edge.Target]++; }
         _bias = _edges.Select(edge => (double)degrees[edge.Source] / (degrees[edge.Target] + degrees[edge.Source])).ToArray();

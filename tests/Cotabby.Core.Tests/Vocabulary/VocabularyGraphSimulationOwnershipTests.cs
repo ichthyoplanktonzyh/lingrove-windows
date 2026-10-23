@@ -35,6 +35,8 @@ public sealed class VocabularyGraphSimulationOwnershipTests
         Assert.Throws<ArgumentException>(() => new VocabularyGraphSimulation([], [], [], parameters));
         Assert.Throws<ArgumentException>(() => new VocabularyGraphSimulation([default], [], [], parameters));
         Assert.Throws<ArgumentException>(() => new VocabularyGraphSimulation([default], [default], [new(-1, 0)], parameters));
+        Assert.Throws<ArgumentException>(() => new VocabularyGraphSimulation([default], [default], [new(-1, 1)], parameters));
+        Assert.Throws<ArgumentException>(() => new VocabularyGraphSimulation([default], [default], [new(1, -1)], parameters));
         var simulation = new VocabularyGraphSimulation([new(60, 0)], [default], [], parameters); var original = simulation.Current;
         Assert.Throws<ArgumentOutOfRangeException>(() => simulation.Step(1, default));
         Assert.Throws<ArgumentOutOfRangeException>(() => simulation.Step(-1, default));

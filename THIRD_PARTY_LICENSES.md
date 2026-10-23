@@ -121,3 +121,12 @@ They are licensed under [Apache License 2.0](https://www.apache.org/licenses/LIC
 [Upstream source and notices](https://github.com/ericsink/SQLitePCL.raw/tree/v3.0.5) accompany that license.
 The transitive `SQLite` 3.53.4 package supplies native SQLite builds; its package `LICENSE.txt` states
 that SQLite is in the public domain. See [SQLite copyright](https://sqlite.org/copyright.html).
+
+## Grape force simulation
+
+The Windows graph solver adapts the 2D force/tree/vector rules used by Lingrove's pinned Mac
+`Packages/LingroveGraphLayout` package. Its upstream is Grape 1.1.0 (`48eb7d8`), MIT,
+Copyright (c) 2023 Zhen Li. The complete license and original source checksum table are retained in
+[`resources/ThirdParty/Grape/LICENSE`](resources/ThirdParty/Grape/LICENSE) and
+[`UPSTREAM.md`](resources/ThirdParty/Grape/UPSTREAM.md). The C# specialization uses managed buffers
+and copies snapshots; it does not copy upstream's SwiftUI rendering or substitute a different solver.

@@ -69,9 +69,10 @@ internal sealed class WindowsVocabularyExportFile : IDisposable
     private void Rename(SafeFileHandle stage)
     {
         // FILE_RENAME_INFO is a DWORD/BOOLEAN union, aligned HANDLE, DWORD byte count, UTF-16
-        // name. RootDirectory is retained through the call; only the admitted leaf is resolved
-        // relative to that pinned parent. The OS renames the stage HANDLE, not a re-opened name.
-        byte[] name = Encoding.Unicode.GetBytes(System.IO.Path.GetFileName(Path));
+        // name. Use the common absolute-name/NULL-root form: some Win32 wrappers reject the
+        // documented relative-root form. The parent lease stays retained through the native call;
+        // the OS renames the stage HANDLE, not a re-opened staging name.
+        byte[] name = Encoding.Unicode.GetBytes(Path);
         int rootOffset = IntPtr.Size, lengthOffset = rootOffset + IntPtr.Size, nameOffset = lengthOffset + 4;
         byte[] info = new byte[Math.Max(nameOffset + name.Length + 2, IntPtr.Size == 8 ? 24 : 16)];
         BinaryPrimitives.WriteUInt32LittleEndian(info, 1); // ReplaceIfExists, FileRenameInfo (3).
@@ -80,8 +81,6 @@ internal sealed class WindowsVocabularyExportFile : IDisposable
         try
         {
             _parent.DangerousAddRef(ref retained);
-            if (IntPtr.Size == 8) BinaryPrimitives.WriteInt64LittleEndian(info.AsSpan(rootOffset), _parent.DangerousGetHandle().ToInt64());
-            else BinaryPrimitives.WriteInt32LittleEndian(info.AsSpan(rootOffset), _parent.DangerousGetHandle().ToInt32());
             if (!SetFileInformationByHandle(stage, 3, info, (uint)info.Length)) throw Invalid();
         }
         finally { if (retained) _parent.DangerousRelease(); }
@@ -92,7 +91,9 @@ internal sealed class WindowsVocabularyExportFile : IDisposable
     private void Verify()
     {
         using var requested = OpenDirectory(_requestedParent);
-        if (_parent.IsClosed || DirectoryIdentity(_parent) != _parentIdentity || DirectoryIdentity(requested) != _parentIdentity) throw Invalid();
+        using var canonical = OpenDirectory(System.IO.Path.GetDirectoryName(Path)!);
+        if (_parent.IsClosed || DirectoryIdentity(_parent) != _parentIdentity || DirectoryIdentity(requested) != _parentIdentity
+            || DirectoryIdentity(canonical) != _parentIdentity) throw Invalid();
         using var target = OpenLeaf(Path);
         if (_notebook.Length == 0) return;
         string notebook = CanonicalLeaf(_notebook);

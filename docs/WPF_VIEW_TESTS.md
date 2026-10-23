@@ -115,3 +115,7 @@ The [image UI](VOCABULARY_IMAGE_UI.md) adds sixteen compiled-control/native case
 draft ownership/pruning, cancellation, budgets, save/retry, lazy reads and enlargement. The tests
 invoke the production picker callback; the OS file dialog and cross-process clipboard/drop are not
 claimed as exercised. Source, notebook and media bytes are private temporary fixtures.
+
+The [existing-file drop adapter](VOCABULARY_FILE_DROP.md) adds 21 actual HGLOBAL/SendMessage/WPF
+hook cases. These do not alter the runner clipboard or claim physical Explorer/OLE interoperability;
+DPI cases supply synthetic transforms to actual visual hit testing.

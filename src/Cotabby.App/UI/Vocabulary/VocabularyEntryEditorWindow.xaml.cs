@@ -37,10 +37,11 @@ public partial class VocabularyEntryEditorWindow : Window
         MeaningText.TextChanged += (_, _) => ChangeSense(value => value with { Meaning = MeaningText.Text });
         NoteText.TextChanged += (_, _) => ChangeSense(value => value with { Note = NoteText.Text });
         RenderBlocks(); RenderExamples(); UpdateAdmission();
+        SourceInitialized += (_, _) => AttachFileDrop(); Loaded += (_, _) => AttachFileDrop();
         Closing += (_, args) => { if (_saving && !_forceClose) args.Cancel = true; };
         Closed += (_, _) =>
         {
-            _retired = true; _lifetime.Cancel(); RetireImages();
+            _retired = true; _lifetime.Cancel(); RetireImages(); _fileDrop?.Dispose(); _fileDrop = null;
             _ = LastOperation.ContinueWith(_ => _lifetime.Dispose(), CancellationToken.None,
                 TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
         };

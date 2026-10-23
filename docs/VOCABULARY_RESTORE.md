@@ -6,8 +6,8 @@ Reference: pinned macOS `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`,
 `CotabbyTests/Services/Vocabulary/VocabularyContentTests.swift` supplies the original reopen,
 malformed/missing-media, stable review identity and damaged-media repair scenarios.
 
-This archive slice adapts replacement of an entire notebook. Store commands, file chooser,
-replacement confirmation and backup/restore UI remain separate work. It does not merge records,
+This archive slice adapts replacement of an entire notebook. [Store commands](VOCABULARY_BACKUP_STORE.md) now publish the acknowledged result and media token;
+file chooser, replacement confirmation and backup/restore UI remain separate work. It does not merge records,
 regenerate IDs, contact Anki or add cloud synchronization.
 
 ## Responsibilities and ordering

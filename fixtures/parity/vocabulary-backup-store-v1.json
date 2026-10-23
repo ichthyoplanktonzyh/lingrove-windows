@@ -1,0 +1,3364 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "input": "iVBORw0KGgoAAAANSUhEUgAAAFAAAAAoCAYAAABpYH0BAAAAX0lEQVR4nO3QMQ0AIADAMHSgFrXYAA88ZEmP/UvHXPvovfF7oB5AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgH+7T3Y1UlqIbeIAAAAASUVORK5CYII=",
+  "cases": [
+    {
+      "id": "fresh-backup",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyStore.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "backup": {
+          "document": {
+            "entries": [],
+            "schemaVersion": 3
+          },
+          "images": {},
+          "version": 1
+        },
+        "entries": [],
+        "error": false,
+        "imageReadable": false,
+        "loaded": false,
+        "mediaChanged": false,
+        "pending": 0,
+        "revisionDelta": 0,
+        "templates": []
+      }
+    },
+    {
+      "id": "backup",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyStore.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "backup": {
+          "document": {
+            "entries": [
+              {
+                "createdAt": -978307200,
+                "dictionaryForm": "bank",
+                "expression": "bank",
+                "id": "00000000-0000-0000-0000-000000000001",
+                "kind": "word",
+                "language": "en",
+                "senses": [
+                  {
+                    "alternateMeanings": [],
+                    "content": [
+                      {
+                        "content": {
+                          "image": {
+                            "_0": {
+                              "byteCount": 152,
+                              "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                              "height": 40,
+                              "width": 80
+                            },
+                            "caption": "river"
+                          }
+                        },
+                        "id": "00000000-0000-0000-0000-000000000014"
+                      }
+                    ],
+                    "createdAt": -978307200,
+                    "examples": [
+                      {
+                        "completeness": "sentence",
+                        "createdAt": -978307200,
+                        "explanations": [],
+                        "id": "00000000-0000-0000-0000-000000000003",
+                        "meaning": "context",
+                        "meaningOrigin": "captured",
+                        "ranges": [
+                          {
+                            "length": 4,
+                            "location": 4
+                          }
+                        ],
+                        "text": "The bank.",
+                        "translation": "原句",
+                        "translationVariants": []
+                      }
+                    ],
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000002",
+                    "isSavedWithoutContext": false,
+                    "meaning": "core",
+                    "meaningOrigin": "captured",
+                    "mergedFrom": [
+                      "00000000-0000-0000-0000-00000000005A"
+                    ],
+                    "note": "note",
+                    "review": {
+                      "activeBindingID": "00000000-0000-0000-0000-000000000028",
+                      "bindings": [
+                        {
+                          "deck": "Default",
+                          "endpoint": "http://localhost",
+                          "fields": {
+                            "ID": "00000000-0000-0000-0000-000000000002"
+                          },
+                          "id": "00000000-0000-0000-0000-000000000028",
+                          "identityField": "ID",
+                          "mapping": [
+                            "LingroveID",
+                            "ID"
+                          ],
+                          "model": "Basic",
+                          "noteID": 7,
+                          "originSenseID": "00000000-0000-0000-0000-000000000002",
+                          "profile": "fixture"
+                        }
+                      ],
+                      "plan": {
+                        "fieldOverrides": {},
+                        "gap": false,
+                        "id": "00000000-0000-0000-0000-00000000001E",
+                        "includeExplanation": false,
+                        "includeNotes": false,
+                        "layout": {
+                          "back": [],
+                          "front": [
+                            {
+                              "content": [
+                                {
+                                  "content": {
+                                    "image": {
+                                      "_0": {
+                                        "byteCount": 152,
+                                        "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                        "height": 40,
+                                        "width": 80
+                                      },
+                                      "caption": "river"
+                                    }
+                                  },
+                                  "id": "00000000-0000-0000-0000-000000000016"
+                                }
+                              ],
+                              "id": "00000000-0000-0000-0000-000000000032",
+                              "showCaption": false,
+                              "source": "custom"
+                            }
+                          ]
+                        },
+                        "recognition": true
+                      },
+                      "preservedPlans": [
+                        {
+                          "fieldOverrides": {},
+                          "gap": false,
+                          "id": "00000000-0000-0000-0000-00000000001F",
+                          "includeExplanation": false,
+                          "includeNotes": false,
+                          "layout": {
+                            "back": [],
+                            "front": [
+                              {
+                                "content": [
+                                  {
+                                    "content": {
+                                      "image": {
+                                        "_0": {
+                                          "byteCount": 152,
+                                          "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                          "height": 40,
+                                          "width": 80
+                                        },
+                                        "caption": "river"
+                                      }
+                                    },
+                                    "id": "00000000-0000-0000-0000-000000000017"
+                                  }
+                                ],
+                                "id": "00000000-0000-0000-0000-000000000033",
+                                "showCaption": false,
+                                "source": "custom"
+                              }
+                            ]
+                          },
+                          "recognition": true
+                        }
+                      ]
+                    },
+                    "reviewCards": [
+                      {
+                        "bindings": [],
+                        "plan": {
+                          "fieldOverrides": {},
+                          "gap": false,
+                          "id": "00000000-0000-0000-0000-000000000020",
+                          "includeExplanation": false,
+                          "includeNotes": false,
+                          "layout": {
+                            "back": [],
+                            "front": [
+                              {
+                                "content": [
+                                  {
+                                    "content": {
+                                      "image": {
+                                        "_0": {
+                                          "byteCount": 152,
+                                          "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                          "height": 40,
+                                          "width": 80
+                                        },
+                                        "caption": "river"
+                                      }
+                                    },
+                                    "id": "00000000-0000-0000-0000-000000000018"
+                                  }
+                                ],
+                                "id": "00000000-0000-0000-0000-000000000034",
+                                "showCaption": false,
+                                "source": "custom"
+                              }
+                            ]
+                          },
+                          "recognition": true
+                        },
+                        "preservedPlans": []
+                      }
+                    ],
+                    "standaloneMeanings": [],
+                    "tags": [
+                      "Work"
+                    ],
+                    "updatedAt": -978307200
+                  },
+                  {
+                    "alternateMeanings": [],
+                    "content": [
+                      {
+                        "content": {
+                          "image": {
+                            "_0": {
+                              "byteCount": 152,
+                              "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                              "height": 40,
+                              "width": 80
+                            },
+                            "caption": "river"
+                          }
+                        },
+                        "id": "00000000-0000-0000-0000-000000000015"
+                      }
+                    ],
+                    "createdAt": -978307200,
+                    "examples": [],
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000004",
+                    "isSavedWithoutContext": false,
+                    "meaning": "second",
+                    "meaningOrigin": "captured",
+                    "mergedFrom": [],
+                    "note": "",
+                    "standaloneMeanings": [],
+                    "tags": [],
+                    "updatedAt": -978307200
+                  }
+                ],
+                "updatedAt": -978307200
+              }
+            ],
+            "reviewTemplates": [
+              {
+                "id": "00000000-0000-0000-0000-000000000046",
+                "layout": {
+                  "back": [],
+                  "front": [
+                    {
+                      "content": [
+                        {
+                          "content": {
+                            "image": {
+                              "_0": {
+                                "byteCount": 152,
+                                "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                "height": 40,
+                                "width": 80
+                              },
+                              "caption": "river"
+                            }
+                          },
+                          "id": "00000000-0000-0000-0000-000000000019"
+                        }
+                      ],
+                      "id": "00000000-0000-0000-0000-000000000035",
+                      "showCaption": false,
+                      "source": "custom"
+                    }
+                  ]
+                },
+                "name": "Template"
+              }
+            ],
+            "schemaVersion": 3
+          },
+          "images": {
+            "lg-image-8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53.png": "iVBORw0KGgoAAAANSUhEUgAAAFAAAAAoCAYAAABpYH0BAAAAX0lEQVR4nO3QMQ0AIADAMHSgFrXYAA88ZEmP/UvHXPvovfF7oB5AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgH+7T3Y1UlqIbeIAAAAASUVORK5CYII="
+          },
+          "version": 1
+        },
+        "entries": [
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "bank",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "content": [
+                  {
+                    "content": {
+                      "image": {
+                        "_0": {
+                          "byteCount": 152,
+                          "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                          "height": 40,
+                          "width": 80
+                        },
+                        "caption": "river"
+                      }
+                    },
+                    "id": "00000000-0000-0000-0000-000000000014"
+                  }
+                ],
+                "createdAt": -978307200,
+                "examples": [
+                  {
+                    "completeness": "sentence",
+                    "createdAt": -978307200,
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "meaning": "context",
+                    "meaningOrigin": "captured",
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "原句",
+                    "translationVariants": []
+                  }
+                ],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000002",
+                "isSavedWithoutContext": false,
+                "meaning": "core",
+                "meaningOrigin": "captured",
+                "mergedFrom": [
+                  "00000000-0000-0000-0000-00000000005A"
+                ],
+                "note": "note",
+                "review": {
+                  "activeBindingID": "00000000-0000-0000-0000-000000000028",
+                  "bindings": [
+                    {
+                      "deck": "Default",
+                      "endpoint": "http://localhost",
+                      "fields": {
+                        "ID": "00000000-0000-0000-0000-000000000002"
+                      },
+                      "id": "00000000-0000-0000-0000-000000000028",
+                      "identityField": "ID",
+                      "mapping": [
+                        "LingroveID",
+                        "ID"
+                      ],
+                      "model": "Basic",
+                      "noteID": 7,
+                      "originSenseID": "00000000-0000-0000-0000-000000000002",
+                      "profile": "fixture"
+                    }
+                  ],
+                  "plan": {
+                    "fieldOverrides": {},
+                    "gap": false,
+                    "id": "00000000-0000-0000-0000-00000000001E",
+                    "includeExplanation": false,
+                    "includeNotes": false,
+                    "layout": {
+                      "back": [],
+                      "front": [
+                        {
+                          "content": [
+                            {
+                              "content": {
+                                "image": {
+                                  "_0": {
+                                    "byteCount": 152,
+                                    "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                    "height": 40,
+                                    "width": 80
+                                  },
+                                  "caption": "river"
+                                }
+                              },
+                              "id": "00000000-0000-0000-0000-000000000016"
+                            }
+                          ],
+                          "id": "00000000-0000-0000-0000-000000000032",
+                          "showCaption": false,
+                          "source": "custom"
+                        }
+                      ]
+                    },
+                    "recognition": true
+                  },
+                  "preservedPlans": [
+                    {
+                      "fieldOverrides": {},
+                      "gap": false,
+                      "id": "00000000-0000-0000-0000-00000000001F",
+                      "includeExplanation": false,
+                      "includeNotes": false,
+                      "layout": {
+                        "back": [],
+                        "front": [
+                          {
+                            "content": [
+                              {
+                                "content": {
+                                  "image": {
+                                    "_0": {
+                                      "byteCount": 152,
+                                      "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                      "height": 40,
+                                      "width": 80
+                                    },
+                                    "caption": "river"
+                                  }
+                                },
+                                "id": "00000000-0000-0000-0000-000000000017"
+                              }
+                            ],
+                            "id": "00000000-0000-0000-0000-000000000033",
+                            "showCaption": false,
+                            "source": "custom"
+                          }
+                        ]
+                      },
+                      "recognition": true
+                    }
+                  ]
+                },
+                "reviewCards": [
+                  {
+                    "bindings": [],
+                    "plan": {
+                      "fieldOverrides": {},
+                      "gap": false,
+                      "id": "00000000-0000-0000-0000-000000000020",
+                      "includeExplanation": false,
+                      "includeNotes": false,
+                      "layout": {
+                        "back": [],
+                        "front": [
+                          {
+                            "content": [
+                              {
+                                "content": {
+                                  "image": {
+                                    "_0": {
+                                      "byteCount": 152,
+                                      "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                      "height": 40,
+                                      "width": 80
+                                    },
+                                    "caption": "river"
+                                  }
+                                },
+                                "id": "00000000-0000-0000-0000-000000000018"
+                              }
+                            ],
+                            "id": "00000000-0000-0000-0000-000000000034",
+                            "showCaption": false,
+                            "source": "custom"
+                          }
+                        ]
+                      },
+                      "recognition": true
+                    },
+                    "preservedPlans": []
+                  }
+                ],
+                "standaloneMeanings": [],
+                "tags": [
+                  "Work"
+                ],
+                "updatedAt": -978307200
+              },
+              {
+                "alternateMeanings": [],
+                "content": [
+                  {
+                    "content": {
+                      "image": {
+                        "_0": {
+                          "byteCount": 152,
+                          "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                          "height": 40,
+                          "width": 80
+                        },
+                        "caption": "river"
+                      }
+                    },
+                    "id": "00000000-0000-0000-0000-000000000015"
+                  }
+                ],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "isSavedWithoutContext": false,
+                "meaning": "second",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          }
+        ],
+        "error": false,
+        "imageReadable": true,
+        "loaded": true,
+        "mediaChanged": false,
+        "pending": 0,
+        "revisionDelta": 0,
+        "templates": [
+          {
+            "id": "00000000-0000-0000-0000-000000000046",
+            "layout": {
+              "back": [],
+              "front": [
+                {
+                  "content": [
+                    {
+                      "content": {
+                        "image": {
+                          "_0": {
+                            "byteCount": 152,
+                            "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                            "height": 40,
+                            "width": 80
+                          },
+                          "caption": "river"
+                        }
+                      },
+                      "id": "00000000-0000-0000-0000-000000000019"
+                    }
+                  ],
+                  "id": "00000000-0000-0000-0000-000000000035",
+                  "showCaption": false,
+                  "source": "custom"
+                }
+              ]
+            },
+            "name": "Template"
+          }
+        ]
+      }
+    },
+    {
+      "id": "backup-error",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyStore.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "backup": null,
+        "entries": [
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "bank",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "content": [
+                  {
+                    "content": {
+                      "image": {
+                        "_0": {
+                          "byteCount": 152,
+                          "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                          "height": 40,
+                          "width": 80
+                        },
+                        "caption": "river"
+                      }
+                    },
+                    "id": "00000000-0000-0000-0000-000000000014"
+                  }
+                ],
+                "createdAt": -978307200,
+                "examples": [
+                  {
+                    "completeness": "sentence",
+                    "createdAt": -978307200,
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "meaning": "context",
+                    "meaningOrigin": "captured",
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "原句",
+                    "translationVariants": []
+                  }
+                ],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000002",
+                "isSavedWithoutContext": false,
+                "meaning": "core",
+                "meaningOrigin": "captured",
+                "mergedFrom": [
+                  "00000000-0000-0000-0000-00000000005A"
+                ],
+                "note": "note",
+                "review": {
+                  "activeBindingID": "00000000-0000-0000-0000-000000000028",
+                  "bindings": [
+                    {
+                      "deck": "Default",
+                      "endpoint": "http://localhost",
+                      "fields": {
+                        "ID": "00000000-0000-0000-0000-000000000002"
+                      },
+                      "id": "00000000-0000-0000-0000-000000000028",
+                      "identityField": "ID",
+                      "mapping": [
+                        "LingroveID",
+                        "ID"
+                      ],
+                      "model": "Basic",
+                      "noteID": 7,
+                      "originSenseID": "00000000-0000-0000-0000-000000000002",
+                      "profile": "fixture"
+                    }
+                  ],
+                  "plan": {
+                    "fieldOverrides": {},
+                    "gap": false,
+                    "id": "00000000-0000-0000-0000-00000000001E",
+                    "includeExplanation": false,
+                    "includeNotes": false,
+                    "layout": {
+                      "back": [],
+                      "front": [
+                        {
+                          "content": [
+                            {
+                              "content": {
+                                "image": {
+                                  "_0": {
+                                    "byteCount": 152,
+                                    "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                    "height": 40,
+                                    "width": 80
+                                  },
+                                  "caption": "river"
+                                }
+                              },
+                              "id": "00000000-0000-0000-0000-000000000016"
+                            }
+                          ],
+                          "id": "00000000-0000-0000-0000-000000000032",
+                          "showCaption": false,
+                          "source": "custom"
+                        }
+                      ]
+                    },
+                    "recognition": true
+                  },
+                  "preservedPlans": [
+                    {
+                      "fieldOverrides": {},
+                      "gap": false,
+                      "id": "00000000-0000-0000-0000-00000000001F",
+                      "includeExplanation": false,
+                      "includeNotes": false,
+                      "layout": {
+                        "back": [],
+                        "front": [
+                          {
+                            "content": [
+                              {
+                                "content": {
+                                  "image": {
+                                    "_0": {
+                                      "byteCount": 152,
+                                      "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                      "height": 40,
+                                      "width": 80
+                                    },
+                                    "caption": "river"
+                                  }
+                                },
+                                "id": "00000000-0000-0000-0000-000000000017"
+                              }
+                            ],
+                            "id": "00000000-0000-0000-0000-000000000033",
+                            "showCaption": false,
+                            "source": "custom"
+                          }
+                        ]
+                      },
+                      "recognition": true
+                    }
+                  ]
+                },
+                "reviewCards": [
+                  {
+                    "bindings": [],
+                    "plan": {
+                      "fieldOverrides": {},
+                      "gap": false,
+                      "id": "00000000-0000-0000-0000-000000000020",
+                      "includeExplanation": false,
+                      "includeNotes": false,
+                      "layout": {
+                        "back": [],
+                        "front": [
+                          {
+                            "content": [
+                              {
+                                "content": {
+                                  "image": {
+                                    "_0": {
+                                      "byteCount": 152,
+                                      "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                      "height": 40,
+                                      "width": 80
+                                    },
+                                    "caption": "river"
+                                  }
+                                },
+                                "id": "00000000-0000-0000-0000-000000000018"
+                              }
+                            ],
+                            "id": "00000000-0000-0000-0000-000000000034",
+                            "showCaption": false,
+                            "source": "custom"
+                          }
+                        ]
+                      },
+                      "recognition": true
+                    },
+                    "preservedPlans": []
+                  }
+                ],
+                "standaloneMeanings": [],
+                "tags": [
+                  "Work"
+                ],
+                "updatedAt": -978307200
+              },
+              {
+                "alternateMeanings": [],
+                "content": [
+                  {
+                    "content": {
+                      "image": {
+                        "_0": {
+                          "byteCount": 152,
+                          "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                          "height": 40,
+                          "width": 80
+                        },
+                        "caption": "river"
+                      }
+                    },
+                    "id": "00000000-0000-0000-0000-000000000015"
+                  }
+                ],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "isSavedWithoutContext": false,
+                "meaning": "second",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          }
+        ],
+        "error": true,
+        "imageReadable": true,
+        "loaded": true,
+        "mediaChanged": false,
+        "pending": 0,
+        "revisionDelta": 0,
+        "templates": [
+          {
+            "id": "00000000-0000-0000-0000-000000000046",
+            "layout": {
+              "back": [],
+              "front": [
+                {
+                  "content": [
+                    {
+                      "content": {
+                        "image": {
+                          "_0": {
+                            "byteCount": 152,
+                            "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                            "height": 40,
+                            "width": 80
+                          },
+                          "caption": "river"
+                        }
+                      },
+                      "id": "00000000-0000-0000-0000-000000000019"
+                    }
+                  ],
+                  "id": "00000000-0000-0000-0000-000000000035",
+                  "showCaption": false,
+                  "source": "custom"
+                }
+              ]
+            },
+            "name": "Template"
+          }
+        ]
+      }
+    },
+    {
+      "id": "backup-preserves-error",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyStore.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "backup": {
+          "document": {
+            "entries": [
+              {
+                "createdAt": -978307200,
+                "dictionaryForm": "bank",
+                "expression": "bank",
+                "id": "00000000-0000-0000-0000-000000000001",
+                "kind": "word",
+                "language": "en",
+                "senses": [
+                  {
+                    "alternateMeanings": [],
+                    "content": [
+                      {
+                        "content": {
+                          "image": {
+                            "_0": {
+                              "byteCount": 152,
+                              "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                              "height": 40,
+                              "width": 80
+                            },
+                            "caption": "river"
+                          }
+                        },
+                        "id": "00000000-0000-0000-0000-000000000014"
+                      }
+                    ],
+                    "createdAt": -978307200,
+                    "examples": [
+                      {
+                        "completeness": "sentence",
+                        "createdAt": -978307200,
+                        "explanations": [],
+                        "id": "00000000-0000-0000-0000-000000000003",
+                        "meaning": "context",
+                        "meaningOrigin": "captured",
+                        "ranges": [
+                          {
+                            "length": 4,
+                            "location": 4
+                          }
+                        ],
+                        "text": "The bank.",
+                        "translation": "原句",
+                        "translationVariants": []
+                      }
+                    ],
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000002",
+                    "isSavedWithoutContext": false,
+                    "meaning": "core",
+                    "meaningOrigin": "captured",
+                    "mergedFrom": [
+                      "00000000-0000-0000-0000-00000000005A"
+                    ],
+                    "note": "note",
+                    "review": {
+                      "activeBindingID": "00000000-0000-0000-0000-000000000028",
+                      "bindings": [
+                        {
+                          "deck": "Default",
+                          "endpoint": "http://localhost",
+                          "fields": {
+                            "ID": "00000000-0000-0000-0000-000000000002"
+                          },
+                          "id": "00000000-0000-0000-0000-000000000028",
+                          "identityField": "ID",
+                          "mapping": [
+                            "LingroveID",
+                            "ID"
+                          ],
+                          "model": "Basic",
+                          "noteID": 7,
+                          "originSenseID": "00000000-0000-0000-0000-000000000002",
+                          "profile": "fixture"
+                        }
+                      ],
+                      "plan": {
+                        "fieldOverrides": {},
+                        "gap": false,
+                        "id": "00000000-0000-0000-0000-00000000001E",
+                        "includeExplanation": false,
+                        "includeNotes": false,
+                        "layout": {
+                          "back": [],
+                          "front": [
+                            {
+                              "content": [
+                                {
+                                  "content": {
+                                    "image": {
+                                      "_0": {
+                                        "byteCount": 152,
+                                        "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                        "height": 40,
+                                        "width": 80
+                                      },
+                                      "caption": "river"
+                                    }
+                                  },
+                                  "id": "00000000-0000-0000-0000-000000000016"
+                                }
+                              ],
+                              "id": "00000000-0000-0000-0000-000000000032",
+                              "showCaption": false,
+                              "source": "custom"
+                            }
+                          ]
+                        },
+                        "recognition": true
+                      },
+                      "preservedPlans": [
+                        {
+                          "fieldOverrides": {},
+                          "gap": false,
+                          "id": "00000000-0000-0000-0000-00000000001F",
+                          "includeExplanation": false,
+                          "includeNotes": false,
+                          "layout": {
+                            "back": [],
+                            "front": [
+                              {
+                                "content": [
+                                  {
+                                    "content": {
+                                      "image": {
+                                        "_0": {
+                                          "byteCount": 152,
+                                          "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                          "height": 40,
+                                          "width": 80
+                                        },
+                                        "caption": "river"
+                                      }
+                                    },
+                                    "id": "00000000-0000-0000-0000-000000000017"
+                                  }
+                                ],
+                                "id": "00000000-0000-0000-0000-000000000033",
+                                "showCaption": false,
+                                "source": "custom"
+                              }
+                            ]
+                          },
+                          "recognition": true
+                        }
+                      ]
+                    },
+                    "reviewCards": [
+                      {
+                        "bindings": [],
+                        "plan": {
+                          "fieldOverrides": {},
+                          "gap": false,
+                          "id": "00000000-0000-0000-0000-000000000020",
+                          "includeExplanation": false,
+                          "includeNotes": false,
+                          "layout": {
+                            "back": [],
+                            "front": [
+                              {
+                                "content": [
+                                  {
+                                    "content": {
+                                      "image": {
+                                        "_0": {
+                                          "byteCount": 152,
+                                          "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                          "height": 40,
+                                          "width": 80
+                                        },
+                                        "caption": "river"
+                                      }
+                                    },
+                                    "id": "00000000-0000-0000-0000-000000000018"
+                                  }
+                                ],
+                                "id": "00000000-0000-0000-0000-000000000034",
+                                "showCaption": false,
+                                "source": "custom"
+                              }
+                            ]
+                          },
+                          "recognition": true
+                        },
+                        "preservedPlans": []
+                      }
+                    ],
+                    "standaloneMeanings": [],
+                    "tags": [
+                      "Work"
+                    ],
+                    "updatedAt": -978307200
+                  },
+                  {
+                    "alternateMeanings": [],
+                    "content": [
+                      {
+                        "content": {
+                          "image": {
+                            "_0": {
+                              "byteCount": 152,
+                              "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                              "height": 40,
+                              "width": 80
+                            },
+                            "caption": "river"
+                          }
+                        },
+                        "id": "00000000-0000-0000-0000-000000000015"
+                      }
+                    ],
+                    "createdAt": -978307200,
+                    "examples": [],
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000004",
+                    "isSavedWithoutContext": false,
+                    "meaning": "second",
+                    "meaningOrigin": "captured",
+                    "mergedFrom": [],
+                    "note": "",
+                    "standaloneMeanings": [],
+                    "tags": [],
+                    "updatedAt": -978307200
+                  }
+                ],
+                "updatedAt": -978307200
+              }
+            ],
+            "reviewTemplates": [
+              {
+                "id": "00000000-0000-0000-0000-000000000046",
+                "layout": {
+                  "back": [],
+                  "front": [
+                    {
+                      "content": [
+                        {
+                          "content": {
+                            "image": {
+                              "_0": {
+                                "byteCount": 152,
+                                "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                "height": 40,
+                                "width": 80
+                              },
+                              "caption": "river"
+                            }
+                          },
+                          "id": "00000000-0000-0000-0000-000000000019"
+                        }
+                      ],
+                      "id": "00000000-0000-0000-0000-000000000035",
+                      "showCaption": false,
+                      "source": "custom"
+                    }
+                  ]
+                },
+                "name": "Template"
+              }
+            ],
+            "schemaVersion": 3
+          },
+          "images": {
+            "lg-image-8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53.png": "iVBORw0KGgoAAAANSUhEUgAAAFAAAAAoCAYAAABpYH0BAAAAX0lEQVR4nO3QMQ0AIADAMHSgFrXYAA88ZEmP/UvHXPvovfF7oB5AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgH+7T3Y1UlqIbeIAAAAASUVORK5CYII="
+          },
+          "version": 1
+        },
+        "entries": [
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "bank",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "content": [
+                  {
+                    "content": {
+                      "image": {
+                        "_0": {
+                          "byteCount": 152,
+                          "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                          "height": 40,
+                          "width": 80
+                        },
+                        "caption": "river"
+                      }
+                    },
+                    "id": "00000000-0000-0000-0000-000000000014"
+                  }
+                ],
+                "createdAt": -978307200,
+                "examples": [
+                  {
+                    "completeness": "sentence",
+                    "createdAt": -978307200,
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "meaning": "context",
+                    "meaningOrigin": "captured",
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "原句",
+                    "translationVariants": []
+                  }
+                ],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000002",
+                "isSavedWithoutContext": false,
+                "meaning": "core",
+                "meaningOrigin": "captured",
+                "mergedFrom": [
+                  "00000000-0000-0000-0000-00000000005A"
+                ],
+                "note": "note",
+                "review": {
+                  "activeBindingID": "00000000-0000-0000-0000-000000000028",
+                  "bindings": [
+                    {
+                      "deck": "Default",
+                      "endpoint": "http://localhost",
+                      "fields": {
+                        "ID": "00000000-0000-0000-0000-000000000002"
+                      },
+                      "id": "00000000-0000-0000-0000-000000000028",
+                      "identityField": "ID",
+                      "mapping": [
+                        "LingroveID",
+                        "ID"
+                      ],
+                      "model": "Basic",
+                      "noteID": 7,
+                      "originSenseID": "00000000-0000-0000-0000-000000000002",
+                      "profile": "fixture"
+                    }
+                  ],
+                  "plan": {
+                    "fieldOverrides": {},
+                    "gap": false,
+                    "id": "00000000-0000-0000-0000-00000000001E",
+                    "includeExplanation": false,
+                    "includeNotes": false,
+                    "layout": {
+                      "back": [],
+                      "front": [
+                        {
+                          "content": [
+                            {
+                              "content": {
+                                "image": {
+                                  "_0": {
+                                    "byteCount": 152,
+                                    "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                    "height": 40,
+                                    "width": 80
+                                  },
+                                  "caption": "river"
+                                }
+                              },
+                              "id": "00000000-0000-0000-0000-000000000016"
+                            }
+                          ],
+                          "id": "00000000-0000-0000-0000-000000000032",
+                          "showCaption": false,
+                          "source": "custom"
+                        }
+                      ]
+                    },
+                    "recognition": true
+                  },
+                  "preservedPlans": [
+                    {
+                      "fieldOverrides": {},
+                      "gap": false,
+                      "id": "00000000-0000-0000-0000-00000000001F",
+                      "includeExplanation": false,
+                      "includeNotes": false,
+                      "layout": {
+                        "back": [],
+                        "front": [
+                          {
+                            "content": [
+                              {
+                                "content": {
+                                  "image": {
+                                    "_0": {
+                                      "byteCount": 152,
+                                      "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                      "height": 40,
+                                      "width": 80
+                                    },
+                                    "caption": "river"
+                                  }
+                                },
+                                "id": "00000000-0000-0000-0000-000000000017"
+                              }
+                            ],
+                            "id": "00000000-0000-0000-0000-000000000033",
+                            "showCaption": false,
+                            "source": "custom"
+                          }
+                        ]
+                      },
+                      "recognition": true
+                    }
+                  ]
+                },
+                "reviewCards": [
+                  {
+                    "bindings": [],
+                    "plan": {
+                      "fieldOverrides": {},
+                      "gap": false,
+                      "id": "00000000-0000-0000-0000-000000000020",
+                      "includeExplanation": false,
+                      "includeNotes": false,
+                      "layout": {
+                        "back": [],
+                        "front": [
+                          {
+                            "content": [
+                              {
+                                "content": {
+                                  "image": {
+                                    "_0": {
+                                      "byteCount": 152,
+                                      "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                      "height": 40,
+                                      "width": 80
+                                    },
+                                    "caption": "river"
+                                  }
+                                },
+                                "id": "00000000-0000-0000-0000-000000000018"
+                              }
+                            ],
+                            "id": "00000000-0000-0000-0000-000000000034",
+                            "showCaption": false,
+                            "source": "custom"
+                          }
+                        ]
+                      },
+                      "recognition": true
+                    },
+                    "preservedPlans": []
+                  }
+                ],
+                "standaloneMeanings": [],
+                "tags": [
+                  "Work"
+                ],
+                "updatedAt": -978307200
+              },
+              {
+                "alternateMeanings": [],
+                "content": [
+                  {
+                    "content": {
+                      "image": {
+                        "_0": {
+                          "byteCount": 152,
+                          "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                          "height": 40,
+                          "width": 80
+                        },
+                        "caption": "river"
+                      }
+                    },
+                    "id": "00000000-0000-0000-0000-000000000015"
+                  }
+                ],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "isSavedWithoutContext": false,
+                "meaning": "second",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          }
+        ],
+        "error": true,
+        "imageReadable": true,
+        "loaded": true,
+        "mediaChanged": false,
+        "pending": 0,
+        "revisionDelta": 0,
+        "templates": [
+          {
+            "id": "00000000-0000-0000-0000-000000000046",
+            "layout": {
+              "back": [],
+              "front": [
+                {
+                  "content": [
+                    {
+                      "content": {
+                        "image": {
+                          "_0": {
+                            "byteCount": 152,
+                            "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                            "height": 40,
+                            "width": 80
+                          },
+                          "caption": "river"
+                        }
+                      },
+                      "id": "00000000-0000-0000-0000-000000000019"
+                    }
+                  ],
+                  "id": "00000000-0000-0000-0000-000000000035",
+                  "showCaption": false,
+                  "source": "custom"
+                }
+              ]
+            },
+            "name": "Template"
+          }
+        ]
+      }
+    },
+    {
+      "id": "backup-failure-then-success",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyStore.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "backup": {
+          "document": {
+            "entries": [
+              {
+                "createdAt": -978307200,
+                "dictionaryForm": "bank",
+                "expression": "bank",
+                "id": "00000000-0000-0000-0000-000000000001",
+                "kind": "word",
+                "language": "en",
+                "senses": [
+                  {
+                    "alternateMeanings": [],
+                    "content": [
+                      {
+                        "content": {
+                          "image": {
+                            "_0": {
+                              "byteCount": 152,
+                              "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                              "height": 40,
+                              "width": 80
+                            },
+                            "caption": "river"
+                          }
+                        },
+                        "id": "00000000-0000-0000-0000-000000000014"
+                      }
+                    ],
+                    "createdAt": -978307200,
+                    "examples": [
+                      {
+                        "completeness": "sentence",
+                        "createdAt": -978307200,
+                        "explanations": [],
+                        "id": "00000000-0000-0000-0000-000000000003",
+                        "meaning": "context",
+                        "meaningOrigin": "captured",
+                        "ranges": [
+                          {
+                            "length": 4,
+                            "location": 4
+                          }
+                        ],
+                        "text": "The bank.",
+                        "translation": "原句",
+                        "translationVariants": []
+                      }
+                    ],
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000002",
+                    "isSavedWithoutContext": false,
+                    "meaning": "core",
+                    "meaningOrigin": "captured",
+                    "mergedFrom": [
+                      "00000000-0000-0000-0000-00000000005A"
+                    ],
+                    "note": "note",
+                    "review": {
+                      "activeBindingID": "00000000-0000-0000-0000-000000000028",
+                      "bindings": [
+                        {
+                          "deck": "Default",
+                          "endpoint": "http://localhost",
+                          "fields": {
+                            "ID": "00000000-0000-0000-0000-000000000002"
+                          },
+                          "id": "00000000-0000-0000-0000-000000000028",
+                          "identityField": "ID",
+                          "mapping": [
+                            "LingroveID",
+                            "ID"
+                          ],
+                          "model": "Basic",
+                          "noteID": 7,
+                          "originSenseID": "00000000-0000-0000-0000-000000000002",
+                          "profile": "fixture"
+                        }
+                      ],
+                      "plan": {
+                        "fieldOverrides": {},
+                        "gap": false,
+                        "id": "00000000-0000-0000-0000-00000000001E",
+                        "includeExplanation": false,
+                        "includeNotes": false,
+                        "layout": {
+                          "back": [],
+                          "front": [
+                            {
+                              "content": [
+                                {
+                                  "content": {
+                                    "image": {
+                                      "_0": {
+                                        "byteCount": 152,
+                                        "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                        "height": 40,
+                                        "width": 80
+                                      },
+                                      "caption": "river"
+                                    }
+                                  },
+                                  "id": "00000000-0000-0000-0000-000000000016"
+                                }
+                              ],
+                              "id": "00000000-0000-0000-0000-000000000032",
+                              "showCaption": false,
+                              "source": "custom"
+                            }
+                          ]
+                        },
+                        "recognition": true
+                      },
+                      "preservedPlans": [
+                        {
+                          "fieldOverrides": {},
+                          "gap": false,
+                          "id": "00000000-0000-0000-0000-00000000001F",
+                          "includeExplanation": false,
+                          "includeNotes": false,
+                          "layout": {
+                            "back": [],
+                            "front": [
+                              {
+                                "content": [
+                                  {
+                                    "content": {
+                                      "image": {
+                                        "_0": {
+                                          "byteCount": 152,
+                                          "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                          "height": 40,
+                                          "width": 80
+                                        },
+                                        "caption": "river"
+                                      }
+                                    },
+                                    "id": "00000000-0000-0000-0000-000000000017"
+                                  }
+                                ],
+                                "id": "00000000-0000-0000-0000-000000000033",
+                                "showCaption": false,
+                                "source": "custom"
+                              }
+                            ]
+                          },
+                          "recognition": true
+                        }
+                      ]
+                    },
+                    "reviewCards": [
+                      {
+                        "bindings": [],
+                        "plan": {
+                          "fieldOverrides": {},
+                          "gap": false,
+                          "id": "00000000-0000-0000-0000-000000000020",
+                          "includeExplanation": false,
+                          "includeNotes": false,
+                          "layout": {
+                            "back": [],
+                            "front": [
+                              {
+                                "content": [
+                                  {
+                                    "content": {
+                                      "image": {
+                                        "_0": {
+                                          "byteCount": 152,
+                                          "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                          "height": 40,
+                                          "width": 80
+                                        },
+                                        "caption": "river"
+                                      }
+                                    },
+                                    "id": "00000000-0000-0000-0000-000000000018"
+                                  }
+                                ],
+                                "id": "00000000-0000-0000-0000-000000000034",
+                                "showCaption": false,
+                                "source": "custom"
+                              }
+                            ]
+                          },
+                          "recognition": true
+                        },
+                        "preservedPlans": []
+                      }
+                    ],
+                    "standaloneMeanings": [],
+                    "tags": [
+                      "Work"
+                    ],
+                    "updatedAt": -978307200
+                  },
+                  {
+                    "alternateMeanings": [],
+                    "content": [
+                      {
+                        "content": {
+                          "image": {
+                            "_0": {
+                              "byteCount": 152,
+                              "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                              "height": 40,
+                              "width": 80
+                            },
+                            "caption": "river"
+                          }
+                        },
+                        "id": "00000000-0000-0000-0000-000000000015"
+                      }
+                    ],
+                    "createdAt": -978307200,
+                    "examples": [],
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000004",
+                    "isSavedWithoutContext": false,
+                    "meaning": "second",
+                    "meaningOrigin": "captured",
+                    "mergedFrom": [],
+                    "note": "",
+                    "standaloneMeanings": [],
+                    "tags": [],
+                    "updatedAt": -978307200
+                  }
+                ],
+                "updatedAt": -978307200
+              }
+            ],
+            "reviewTemplates": [
+              {
+                "id": "00000000-0000-0000-0000-000000000046",
+                "layout": {
+                  "back": [],
+                  "front": [
+                    {
+                      "content": [
+                        {
+                          "content": {
+                            "image": {
+                              "_0": {
+                                "byteCount": 152,
+                                "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                "height": 40,
+                                "width": 80
+                              },
+                              "caption": "river"
+                            }
+                          },
+                          "id": "00000000-0000-0000-0000-000000000019"
+                        }
+                      ],
+                      "id": "00000000-0000-0000-0000-000000000035",
+                      "showCaption": false,
+                      "source": "custom"
+                    }
+                  ]
+                },
+                "name": "Template"
+              }
+            ],
+            "schemaVersion": 3
+          },
+          "images": {
+            "lg-image-8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53.png": "iVBORw0KGgoAAAANSUhEUgAAAFAAAAAoCAYAAABpYH0BAAAAX0lEQVR4nO3QMQ0AIADAMHSgFrXYAA88ZEmP/UvHXPvovfF7oB5AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgADTAQQIMB1AgH+7T3Y1UlqIbeIAAAAASUVORK5CYII="
+          },
+          "version": 1
+        },
+        "entries": [
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "bank",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "content": [
+                  {
+                    "content": {
+                      "image": {
+                        "_0": {
+                          "byteCount": 152,
+                          "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                          "height": 40,
+                          "width": 80
+                        },
+                        "caption": "river"
+                      }
+                    },
+                    "id": "00000000-0000-0000-0000-000000000014"
+                  }
+                ],
+                "createdAt": -978307200,
+                "examples": [
+                  {
+                    "completeness": "sentence",
+                    "createdAt": -978307200,
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "meaning": "context",
+                    "meaningOrigin": "captured",
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "原句",
+                    "translationVariants": []
+                  }
+                ],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000002",
+                "isSavedWithoutContext": false,
+                "meaning": "core",
+                "meaningOrigin": "captured",
+                "mergedFrom": [
+                  "00000000-0000-0000-0000-00000000005A"
+                ],
+                "note": "note",
+                "review": {
+                  "activeBindingID": "00000000-0000-0000-0000-000000000028",
+                  "bindings": [
+                    {
+                      "deck": "Default",
+                      "endpoint": "http://localhost",
+                      "fields": {
+                        "ID": "00000000-0000-0000-0000-000000000002"
+                      },
+                      "id": "00000000-0000-0000-0000-000000000028",
+                      "identityField": "ID",
+                      "mapping": [
+                        "LingroveID",
+                        "ID"
+                      ],
+                      "model": "Basic",
+                      "noteID": 7,
+                      "originSenseID": "00000000-0000-0000-0000-000000000002",
+                      "profile": "fixture"
+                    }
+                  ],
+                  "plan": {
+                    "fieldOverrides": {},
+                    "gap": false,
+                    "id": "00000000-0000-0000-0000-00000000001E",
+                    "includeExplanation": false,
+                    "includeNotes": false,
+                    "layout": {
+                      "back": [],
+                      "front": [
+                        {
+                          "content": [
+                            {
+                              "content": {
+                                "image": {
+                                  "_0": {
+                                    "byteCount": 152,
+                                    "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                    "height": 40,
+                                    "width": 80
+                                  },
+                                  "caption": "river"
+                                }
+                              },
+                              "id": "00000000-0000-0000-0000-000000000016"
+                            }
+                          ],
+                          "id": "00000000-0000-0000-0000-000000000032",
+                          "showCaption": false,
+                          "source": "custom"
+                        }
+                      ]
+                    },
+                    "recognition": true
+                  },
+                  "preservedPlans": [
+                    {
+                      "fieldOverrides": {},
+                      "gap": false,
+                      "id": "00000000-0000-0000-0000-00000000001F",
+                      "includeExplanation": false,
+                      "includeNotes": false,
+                      "layout": {
+                        "back": [],
+                        "front": [
+                          {
+                            "content": [
+                              {
+                                "content": {
+                                  "image": {
+                                    "_0": {
+                                      "byteCount": 152,
+                                      "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                      "height": 40,
+                                      "width": 80
+                                    },
+                                    "caption": "river"
+                                  }
+                                },
+                                "id": "00000000-0000-0000-0000-000000000017"
+                              }
+                            ],
+                            "id": "00000000-0000-0000-0000-000000000033",
+                            "showCaption": false,
+                            "source": "custom"
+                          }
+                        ]
+                      },
+                      "recognition": true
+                    }
+                  ]
+                },
+                "reviewCards": [
+                  {
+                    "bindings": [],
+                    "plan": {
+                      "fieldOverrides": {},
+                      "gap": false,
+                      "id": "00000000-0000-0000-0000-000000000020",
+                      "includeExplanation": false,
+                      "includeNotes": false,
+                      "layout": {
+                        "back": [],
+                        "front": [
+                          {
+                            "content": [
+                              {
+                                "content": {
+                                  "image": {
+                                    "_0": {
+                                      "byteCount": 152,
+                                      "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                      "height": 40,
+                                      "width": 80
+                                    },
+                                    "caption": "river"
+                                  }
+                                },
+                                "id": "00000000-0000-0000-0000-000000000018"
+                              }
+                            ],
+                            "id": "00000000-0000-0000-0000-000000000034",
+                            "showCaption": false,
+                            "source": "custom"
+                          }
+                        ]
+                      },
+                      "recognition": true
+                    },
+                    "preservedPlans": []
+                  }
+                ],
+                "standaloneMeanings": [],
+                "tags": [
+                  "Work"
+                ],
+                "updatedAt": -978307200
+              },
+              {
+                "alternateMeanings": [],
+                "content": [
+                  {
+                    "content": {
+                      "image": {
+                        "_0": {
+                          "byteCount": 152,
+                          "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                          "height": 40,
+                          "width": 80
+                        },
+                        "caption": "river"
+                      }
+                    },
+                    "id": "00000000-0000-0000-0000-000000000015"
+                  }
+                ],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "isSavedWithoutContext": false,
+                "meaning": "second",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          }
+        ],
+        "error": true,
+        "imageReadable": true,
+        "loaded": true,
+        "mediaChanged": false,
+        "pending": 0,
+        "revisionDelta": 0,
+        "templates": [
+          {
+            "id": "00000000-0000-0000-0000-000000000046",
+            "layout": {
+              "back": [],
+              "front": [
+                {
+                  "content": [
+                    {
+                      "content": {
+                        "image": {
+                          "_0": {
+                            "byteCount": 152,
+                            "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                            "height": 40,
+                            "width": 80
+                          },
+                          "caption": "river"
+                        }
+                      },
+                      "id": "00000000-0000-0000-0000-000000000019"
+                    }
+                  ],
+                  "id": "00000000-0000-0000-0000-000000000035",
+                  "showCaption": false,
+                  "source": "custom"
+                }
+              ]
+            },
+            "name": "Template"
+          }
+        ]
+      }
+    },
+    {
+      "id": "restore",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyStore.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "backup": null,
+        "entries": [
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "bank",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [
+                  {
+                    "completeness": "sentence",
+                    "createdAt": -978307200,
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "meaning": "context",
+                    "meaningOrigin": "captured",
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "原句",
+                    "translationVariants": []
+                  }
+                ],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000002",
+                "isSavedWithoutContext": false,
+                "meaning": "core",
+                "meaningOrigin": "captured",
+                "mergedFrom": [
+                  "00000000-0000-0000-0000-00000000005A"
+                ],
+                "note": "note",
+                "standaloneMeanings": [],
+                "tags": [
+                  "Work"
+                ],
+                "updatedAt": -978307200
+              },
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "isSavedWithoutContext": false,
+                "meaning": "second",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          }
+        ],
+        "error": false,
+        "imageReadable": false,
+        "loaded": true,
+        "mediaChanged": true,
+        "pending": 0,
+        "revisionDelta": 1,
+        "templates": []
+      }
+    },
+    {
+      "id": "restore-all",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyStore.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "backup": null,
+        "entries": [
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "bank",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "content": [
+                  {
+                    "content": {
+                      "image": {
+                        "_0": {
+                          "byteCount": 152,
+                          "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                          "height": 40,
+                          "width": 80
+                        },
+                        "caption": "river"
+                      }
+                    },
+                    "id": "00000000-0000-0000-0000-000000000014"
+                  }
+                ],
+                "createdAt": -978307200,
+                "examples": [
+                  {
+                    "completeness": "sentence",
+                    "createdAt": -978307200,
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "meaning": "context",
+                    "meaningOrigin": "captured",
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "原句",
+                    "translationVariants": []
+                  }
+                ],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000002",
+                "isSavedWithoutContext": false,
+                "meaning": "core",
+                "meaningOrigin": "captured",
+                "mergedFrom": [
+                  "00000000-0000-0000-0000-00000000005A"
+                ],
+                "note": "note",
+                "review": {
+                  "activeBindingID": "00000000-0000-0000-0000-000000000028",
+                  "bindings": [
+                    {
+                      "deck": "Default",
+                      "endpoint": "http://localhost",
+                      "fields": {
+                        "ID": "00000000-0000-0000-0000-000000000002"
+                      },
+                      "id": "00000000-0000-0000-0000-000000000028",
+                      "identityField": "ID",
+                      "mapping": [
+                        "LingroveID",
+                        "ID"
+                      ],
+                      "model": "Basic",
+                      "noteID": 7,
+                      "originSenseID": "00000000-0000-0000-0000-000000000002",
+                      "profile": "fixture"
+                    }
+                  ],
+                  "plan": {
+                    "fieldOverrides": {},
+                    "gap": false,
+                    "id": "00000000-0000-0000-0000-00000000001E",
+                    "includeExplanation": false,
+                    "includeNotes": false,
+                    "layout": {
+                      "back": [],
+                      "front": [
+                        {
+                          "content": [
+                            {
+                              "content": {
+                                "image": {
+                                  "_0": {
+                                    "byteCount": 152,
+                                    "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                    "height": 40,
+                                    "width": 80
+                                  },
+                                  "caption": "river"
+                                }
+                              },
+                              "id": "00000000-0000-0000-0000-000000000016"
+                            }
+                          ],
+                          "id": "00000000-0000-0000-0000-000000000032",
+                          "showCaption": false,
+                          "source": "custom"
+                        }
+                      ]
+                    },
+                    "recognition": true
+                  },
+                  "preservedPlans": [
+                    {
+                      "fieldOverrides": {},
+                      "gap": false,
+                      "id": "00000000-0000-0000-0000-00000000001F",
+                      "includeExplanation": false,
+                      "includeNotes": false,
+                      "layout": {
+                        "back": [],
+                        "front": [
+                          {
+                            "content": [
+                              {
+                                "content": {
+                                  "image": {
+                                    "_0": {
+                                      "byteCount": 152,
+                                      "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                      "height": 40,
+                                      "width": 80
+                                    },
+                                    "caption": "river"
+                                  }
+                                },
+                                "id": "00000000-0000-0000-0000-000000000017"
+                              }
+                            ],
+                            "id": "00000000-0000-0000-0000-000000000033",
+                            "showCaption": false,
+                            "source": "custom"
+                          }
+                        ]
+                      },
+                      "recognition": true
+                    }
+                  ]
+                },
+                "reviewCards": [
+                  {
+                    "bindings": [],
+                    "plan": {
+                      "fieldOverrides": {},
+                      "gap": false,
+                      "id": "00000000-0000-0000-0000-000000000020",
+                      "includeExplanation": false,
+                      "includeNotes": false,
+                      "layout": {
+                        "back": [],
+                        "front": [
+                          {
+                            "content": [
+                              {
+                                "content": {
+                                  "image": {
+                                    "_0": {
+                                      "byteCount": 152,
+                                      "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                      "height": 40,
+                                      "width": 80
+                                    },
+                                    "caption": "river"
+                                  }
+                                },
+                                "id": "00000000-0000-0000-0000-000000000018"
+                              }
+                            ],
+                            "id": "00000000-0000-0000-0000-000000000034",
+                            "showCaption": false,
+                            "source": "custom"
+                          }
+                        ]
+                      },
+                      "recognition": true
+                    },
+                    "preservedPlans": []
+                  }
+                ],
+                "standaloneMeanings": [],
+                "tags": [
+                  "Work"
+                ],
+                "updatedAt": -978307200
+              },
+              {
+                "alternateMeanings": [],
+                "content": [
+                  {
+                    "content": {
+                      "image": {
+                        "_0": {
+                          "byteCount": 152,
+                          "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                          "height": 40,
+                          "width": 80
+                        },
+                        "caption": "river"
+                      }
+                    },
+                    "id": "00000000-0000-0000-0000-000000000015"
+                  }
+                ],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "isSavedWithoutContext": false,
+                "meaning": "second",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          }
+        ],
+        "error": false,
+        "imageReadable": true,
+        "loaded": true,
+        "mediaChanged": true,
+        "pending": 0,
+        "revisionDelta": 1,
+        "templates": [
+          {
+            "id": "00000000-0000-0000-0000-000000000046",
+            "layout": {
+              "back": [],
+              "front": [
+                {
+                  "content": [
+                    {
+                      "content": {
+                        "image": {
+                          "_0": {
+                            "byteCount": 152,
+                            "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                            "height": 40,
+                            "width": 80
+                          },
+                          "caption": "river"
+                        }
+                      },
+                      "id": "00000000-0000-0000-0000-000000000019"
+                    }
+                  ],
+                  "id": "00000000-0000-0000-0000-000000000035",
+                  "showCaption": false,
+                  "source": "custom"
+                }
+              ]
+            },
+            "name": "Template"
+          }
+        ]
+      }
+    },
+    {
+      "id": "restore-error",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyStore.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "backup": null,
+        "entries": [
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "bank",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "content": [
+                  {
+                    "content": {
+                      "image": {
+                        "_0": {
+                          "byteCount": 152,
+                          "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                          "height": 40,
+                          "width": 80
+                        },
+                        "caption": "river"
+                      }
+                    },
+                    "id": "00000000-0000-0000-0000-000000000014"
+                  }
+                ],
+                "createdAt": -978307200,
+                "examples": [
+                  {
+                    "completeness": "sentence",
+                    "createdAt": -978307200,
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "meaning": "context",
+                    "meaningOrigin": "captured",
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "原句",
+                    "translationVariants": []
+                  }
+                ],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000002",
+                "isSavedWithoutContext": false,
+                "meaning": "core",
+                "meaningOrigin": "captured",
+                "mergedFrom": [
+                  "00000000-0000-0000-0000-00000000005A"
+                ],
+                "note": "note",
+                "review": {
+                  "activeBindingID": "00000000-0000-0000-0000-000000000028",
+                  "bindings": [
+                    {
+                      "deck": "Default",
+                      "endpoint": "http://localhost",
+                      "fields": {
+                        "ID": "00000000-0000-0000-0000-000000000002"
+                      },
+                      "id": "00000000-0000-0000-0000-000000000028",
+                      "identityField": "ID",
+                      "mapping": [
+                        "LingroveID",
+                        "ID"
+                      ],
+                      "model": "Basic",
+                      "noteID": 7,
+                      "originSenseID": "00000000-0000-0000-0000-000000000002",
+                      "profile": "fixture"
+                    }
+                  ],
+                  "plan": {
+                    "fieldOverrides": {},
+                    "gap": false,
+                    "id": "00000000-0000-0000-0000-00000000001E",
+                    "includeExplanation": false,
+                    "includeNotes": false,
+                    "layout": {
+                      "back": [],
+                      "front": [
+                        {
+                          "content": [
+                            {
+                              "content": {
+                                "image": {
+                                  "_0": {
+                                    "byteCount": 152,
+                                    "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                    "height": 40,
+                                    "width": 80
+                                  },
+                                  "caption": "river"
+                                }
+                              },
+                              "id": "00000000-0000-0000-0000-000000000016"
+                            }
+                          ],
+                          "id": "00000000-0000-0000-0000-000000000032",
+                          "showCaption": false,
+                          "source": "custom"
+                        }
+                      ]
+                    },
+                    "recognition": true
+                  },
+                  "preservedPlans": [
+                    {
+                      "fieldOverrides": {},
+                      "gap": false,
+                      "id": "00000000-0000-0000-0000-00000000001F",
+                      "includeExplanation": false,
+                      "includeNotes": false,
+                      "layout": {
+                        "back": [],
+                        "front": [
+                          {
+                            "content": [
+                              {
+                                "content": {
+                                  "image": {
+                                    "_0": {
+                                      "byteCount": 152,
+                                      "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                      "height": 40,
+                                      "width": 80
+                                    },
+                                    "caption": "river"
+                                  }
+                                },
+                                "id": "00000000-0000-0000-0000-000000000017"
+                              }
+                            ],
+                            "id": "00000000-0000-0000-0000-000000000033",
+                            "showCaption": false,
+                            "source": "custom"
+                          }
+                        ]
+                      },
+                      "recognition": true
+                    }
+                  ]
+                },
+                "reviewCards": [
+                  {
+                    "bindings": [],
+                    "plan": {
+                      "fieldOverrides": {},
+                      "gap": false,
+                      "id": "00000000-0000-0000-0000-000000000020",
+                      "includeExplanation": false,
+                      "includeNotes": false,
+                      "layout": {
+                        "back": [],
+                        "front": [
+                          {
+                            "content": [
+                              {
+                                "content": {
+                                  "image": {
+                                    "_0": {
+                                      "byteCount": 152,
+                                      "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                      "height": 40,
+                                      "width": 80
+                                    },
+                                    "caption": "river"
+                                  }
+                                },
+                                "id": "00000000-0000-0000-0000-000000000018"
+                              }
+                            ],
+                            "id": "00000000-0000-0000-0000-000000000034",
+                            "showCaption": false,
+                            "source": "custom"
+                          }
+                        ]
+                      },
+                      "recognition": true
+                    },
+                    "preservedPlans": []
+                  }
+                ],
+                "standaloneMeanings": [],
+                "tags": [
+                  "Work"
+                ],
+                "updatedAt": -978307200
+              },
+              {
+                "alternateMeanings": [],
+                "content": [
+                  {
+                    "content": {
+                      "image": {
+                        "_0": {
+                          "byteCount": 152,
+                          "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                          "height": 40,
+                          "width": 80
+                        },
+                        "caption": "river"
+                      }
+                    },
+                    "id": "00000000-0000-0000-0000-000000000015"
+                  }
+                ],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "isSavedWithoutContext": false,
+                "meaning": "second",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          }
+        ],
+        "error": true,
+        "imageReadable": true,
+        "loaded": true,
+        "mediaChanged": false,
+        "pending": 0,
+        "revisionDelta": 0,
+        "templates": [
+          {
+            "id": "00000000-0000-0000-0000-000000000046",
+            "layout": {
+              "back": [],
+              "front": [
+                {
+                  "content": [
+                    {
+                      "content": {
+                        "image": {
+                          "_0": {
+                            "byteCount": 152,
+                            "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                            "height": 40,
+                            "width": 80
+                          },
+                          "caption": "river"
+                        }
+                      },
+                      "id": "00000000-0000-0000-0000-000000000019"
+                    }
+                  ],
+                  "id": "00000000-0000-0000-0000-000000000035",
+                  "showCaption": false,
+                  "source": "custom"
+                }
+              ]
+            },
+            "name": "Template"
+          }
+        ]
+      }
+    },
+    {
+      "id": "restore-after-error",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyStore.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "backup": null,
+        "entries": [
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "bank",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [
+                  {
+                    "completeness": "sentence",
+                    "createdAt": -978307200,
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "meaning": "context",
+                    "meaningOrigin": "captured",
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "原句",
+                    "translationVariants": []
+                  }
+                ],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000002",
+                "isSavedWithoutContext": false,
+                "meaning": "core",
+                "meaningOrigin": "captured",
+                "mergedFrom": [
+                  "00000000-0000-0000-0000-00000000005A"
+                ],
+                "note": "note",
+                "standaloneMeanings": [],
+                "tags": [
+                  "Work"
+                ],
+                "updatedAt": -978307200
+              },
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "isSavedWithoutContext": false,
+                "meaning": "second",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          }
+        ],
+        "error": false,
+        "imageReadable": false,
+        "loaded": true,
+        "mediaChanged": true,
+        "pending": 0,
+        "revisionDelta": 1,
+        "templates": []
+      }
+    },
+    {
+      "id": "restore-repair",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyStore.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "backup": null,
+        "entries": [
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "bank",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "content": [
+                  {
+                    "content": {
+                      "image": {
+                        "_0": {
+                          "byteCount": 152,
+                          "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                          "height": 40,
+                          "width": 80
+                        },
+                        "caption": "river"
+                      }
+                    },
+                    "id": "00000000-0000-0000-0000-000000000014"
+                  }
+                ],
+                "createdAt": -978307200,
+                "examples": [
+                  {
+                    "completeness": "sentence",
+                    "createdAt": -978307200,
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "meaning": "context",
+                    "meaningOrigin": "captured",
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "原句",
+                    "translationVariants": []
+                  }
+                ],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000002",
+                "isSavedWithoutContext": false,
+                "meaning": "core",
+                "meaningOrigin": "captured",
+                "mergedFrom": [
+                  "00000000-0000-0000-0000-00000000005A"
+                ],
+                "note": "note",
+                "review": {
+                  "activeBindingID": "00000000-0000-0000-0000-000000000028",
+                  "bindings": [
+                    {
+                      "deck": "Default",
+                      "endpoint": "http://localhost",
+                      "fields": {
+                        "ID": "00000000-0000-0000-0000-000000000002"
+                      },
+                      "id": "00000000-0000-0000-0000-000000000028",
+                      "identityField": "ID",
+                      "mapping": [
+                        "LingroveID",
+                        "ID"
+                      ],
+                      "model": "Basic",
+                      "noteID": 7,
+                      "originSenseID": "00000000-0000-0000-0000-000000000002",
+                      "profile": "fixture"
+                    }
+                  ],
+                  "plan": {
+                    "fieldOverrides": {},
+                    "gap": false,
+                    "id": "00000000-0000-0000-0000-00000000001E",
+                    "includeExplanation": false,
+                    "includeNotes": false,
+                    "layout": {
+                      "back": [],
+                      "front": [
+                        {
+                          "content": [
+                            {
+                              "content": {
+                                "image": {
+                                  "_0": {
+                                    "byteCount": 152,
+                                    "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                    "height": 40,
+                                    "width": 80
+                                  },
+                                  "caption": "river"
+                                }
+                              },
+                              "id": "00000000-0000-0000-0000-000000000016"
+                            }
+                          ],
+                          "id": "00000000-0000-0000-0000-000000000032",
+                          "showCaption": false,
+                          "source": "custom"
+                        }
+                      ]
+                    },
+                    "recognition": true
+                  },
+                  "preservedPlans": [
+                    {
+                      "fieldOverrides": {},
+                      "gap": false,
+                      "id": "00000000-0000-0000-0000-00000000001F",
+                      "includeExplanation": false,
+                      "includeNotes": false,
+                      "layout": {
+                        "back": [],
+                        "front": [
+                          {
+                            "content": [
+                              {
+                                "content": {
+                                  "image": {
+                                    "_0": {
+                                      "byteCount": 152,
+                                      "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                      "height": 40,
+                                      "width": 80
+                                    },
+                                    "caption": "river"
+                                  }
+                                },
+                                "id": "00000000-0000-0000-0000-000000000017"
+                              }
+                            ],
+                            "id": "00000000-0000-0000-0000-000000000033",
+                            "showCaption": false,
+                            "source": "custom"
+                          }
+                        ]
+                      },
+                      "recognition": true
+                    }
+                  ]
+                },
+                "reviewCards": [
+                  {
+                    "bindings": [],
+                    "plan": {
+                      "fieldOverrides": {},
+                      "gap": false,
+                      "id": "00000000-0000-0000-0000-000000000020",
+                      "includeExplanation": false,
+                      "includeNotes": false,
+                      "layout": {
+                        "back": [],
+                        "front": [
+                          {
+                            "content": [
+                              {
+                                "content": {
+                                  "image": {
+                                    "_0": {
+                                      "byteCount": 152,
+                                      "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                      "height": 40,
+                                      "width": 80
+                                    },
+                                    "caption": "river"
+                                  }
+                                },
+                                "id": "00000000-0000-0000-0000-000000000018"
+                              }
+                            ],
+                            "id": "00000000-0000-0000-0000-000000000034",
+                            "showCaption": false,
+                            "source": "custom"
+                          }
+                        ]
+                      },
+                      "recognition": true
+                    },
+                    "preservedPlans": []
+                  }
+                ],
+                "standaloneMeanings": [],
+                "tags": [
+                  "Work"
+                ],
+                "updatedAt": -978307200
+              },
+              {
+                "alternateMeanings": [],
+                "content": [
+                  {
+                    "content": {
+                      "image": {
+                        "_0": {
+                          "byteCount": 152,
+                          "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                          "height": 40,
+                          "width": 80
+                        },
+                        "caption": "river"
+                      }
+                    },
+                    "id": "00000000-0000-0000-0000-000000000015"
+                  }
+                ],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "isSavedWithoutContext": false,
+                "meaning": "second",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          }
+        ],
+        "error": false,
+        "imageReadable": true,
+        "loaded": true,
+        "mediaChanged": true,
+        "pending": 0,
+        "revisionDelta": 1,
+        "templates": [
+          {
+            "id": "00000000-0000-0000-0000-000000000046",
+            "layout": {
+              "back": [],
+              "front": [
+                {
+                  "content": [
+                    {
+                      "content": {
+                        "image": {
+                          "_0": {
+                            "byteCount": 152,
+                            "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                            "height": 40,
+                            "width": 80
+                          },
+                          "caption": "river"
+                        }
+                      },
+                      "id": "00000000-0000-0000-0000-000000000019"
+                    }
+                  ],
+                  "id": "00000000-0000-0000-0000-000000000035",
+                  "showCaption": false,
+                  "source": "custom"
+                }
+              ]
+            },
+            "name": "Template"
+          }
+        ]
+      }
+    },
+    {
+      "id": "restore-empty",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyStore.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "backup": null,
+        "entries": [],
+        "error": false,
+        "imageReadable": false,
+        "loaded": true,
+        "mediaChanged": true,
+        "pending": 0,
+        "revisionDelta": 1,
+        "templates": []
+      }
+    },
+    {
+      "id": "restore-twice",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyStore.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "backup": null,
+        "entries": [
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "bank",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "content": [
+                  {
+                    "content": {
+                      "image": {
+                        "_0": {
+                          "byteCount": 152,
+                          "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                          "height": 40,
+                          "width": 80
+                        },
+                        "caption": "river"
+                      }
+                    },
+                    "id": "00000000-0000-0000-0000-000000000014"
+                  }
+                ],
+                "createdAt": -978307200,
+                "examples": [
+                  {
+                    "completeness": "sentence",
+                    "createdAt": -978307200,
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "meaning": "context",
+                    "meaningOrigin": "captured",
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "原句",
+                    "translationVariants": []
+                  }
+                ],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000002",
+                "isSavedWithoutContext": false,
+                "meaning": "core",
+                "meaningOrigin": "captured",
+                "mergedFrom": [
+                  "00000000-0000-0000-0000-00000000005A"
+                ],
+                "note": "note",
+                "review": {
+                  "activeBindingID": "00000000-0000-0000-0000-000000000028",
+                  "bindings": [
+                    {
+                      "deck": "Default",
+                      "endpoint": "http://localhost",
+                      "fields": {
+                        "ID": "00000000-0000-0000-0000-000000000002"
+                      },
+                      "id": "00000000-0000-0000-0000-000000000028",
+                      "identityField": "ID",
+                      "mapping": [
+                        "LingroveID",
+                        "ID"
+                      ],
+                      "model": "Basic",
+                      "noteID": 7,
+                      "originSenseID": "00000000-0000-0000-0000-000000000002",
+                      "profile": "fixture"
+                    }
+                  ],
+                  "plan": {
+                    "fieldOverrides": {},
+                    "gap": false,
+                    "id": "00000000-0000-0000-0000-00000000001E",
+                    "includeExplanation": false,
+                    "includeNotes": false,
+                    "layout": {
+                      "back": [],
+                      "front": [
+                        {
+                          "content": [
+                            {
+                              "content": {
+                                "image": {
+                                  "_0": {
+                                    "byteCount": 152,
+                                    "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                    "height": 40,
+                                    "width": 80
+                                  },
+                                  "caption": "river"
+                                }
+                              },
+                              "id": "00000000-0000-0000-0000-000000000016"
+                            }
+                          ],
+                          "id": "00000000-0000-0000-0000-000000000032",
+                          "showCaption": false,
+                          "source": "custom"
+                        }
+                      ]
+                    },
+                    "recognition": true
+                  },
+                  "preservedPlans": [
+                    {
+                      "fieldOverrides": {},
+                      "gap": false,
+                      "id": "00000000-0000-0000-0000-00000000001F",
+                      "includeExplanation": false,
+                      "includeNotes": false,
+                      "layout": {
+                        "back": [],
+                        "front": [
+                          {
+                            "content": [
+                              {
+                                "content": {
+                                  "image": {
+                                    "_0": {
+                                      "byteCount": 152,
+                                      "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                      "height": 40,
+                                      "width": 80
+                                    },
+                                    "caption": "river"
+                                  }
+                                },
+                                "id": "00000000-0000-0000-0000-000000000017"
+                              }
+                            ],
+                            "id": "00000000-0000-0000-0000-000000000033",
+                            "showCaption": false,
+                            "source": "custom"
+                          }
+                        ]
+                      },
+                      "recognition": true
+                    }
+                  ]
+                },
+                "reviewCards": [
+                  {
+                    "bindings": [],
+                    "plan": {
+                      "fieldOverrides": {},
+                      "gap": false,
+                      "id": "00000000-0000-0000-0000-000000000020",
+                      "includeExplanation": false,
+                      "includeNotes": false,
+                      "layout": {
+                        "back": [],
+                        "front": [
+                          {
+                            "content": [
+                              {
+                                "content": {
+                                  "image": {
+                                    "_0": {
+                                      "byteCount": 152,
+                                      "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                                      "height": 40,
+                                      "width": 80
+                                    },
+                                    "caption": "river"
+                                  }
+                                },
+                                "id": "00000000-0000-0000-0000-000000000018"
+                              }
+                            ],
+                            "id": "00000000-0000-0000-0000-000000000034",
+                            "showCaption": false,
+                            "source": "custom"
+                          }
+                        ]
+                      },
+                      "recognition": true
+                    },
+                    "preservedPlans": []
+                  }
+                ],
+                "standaloneMeanings": [],
+                "tags": [
+                  "Work"
+                ],
+                "updatedAt": -978307200
+              },
+              {
+                "alternateMeanings": [],
+                "content": [
+                  {
+                    "content": {
+                      "image": {
+                        "_0": {
+                          "byteCount": 152,
+                          "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                          "height": 40,
+                          "width": 80
+                        },
+                        "caption": "river"
+                      }
+                    },
+                    "id": "00000000-0000-0000-0000-000000000015"
+                  }
+                ],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "isSavedWithoutContext": false,
+                "meaning": "second",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          }
+        ],
+        "error": false,
+        "imageReadable": true,
+        "loaded": true,
+        "mediaChanged": true,
+        "pending": 0,
+        "revisionDelta": 2,
+        "templates": [
+          {
+            "id": "00000000-0000-0000-0000-000000000046",
+            "layout": {
+              "back": [],
+              "front": [
+                {
+                  "content": [
+                    {
+                      "content": {
+                        "image": {
+                          "_0": {
+                            "byteCount": 152,
+                            "digest": "8224f6c22b909dcc2a8ab6b227f1a0b3231fd95b0a74d62f3b7859076fea6b53",
+                            "height": 40,
+                            "width": 80
+                          },
+                          "caption": "river"
+                        }
+                      },
+                      "id": "00000000-0000-0000-0000-000000000019"
+                    }
+                  ],
+                  "id": "00000000-0000-0000-0000-000000000035",
+                  "showCaption": false,
+                  "source": "custom"
+                }
+              ]
+            },
+            "name": "Template"
+          }
+        ]
+      }
+    },
+    {
+      "id": "backup-after-restore",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyStore.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "backup": {
+          "document": {
+            "entries": [
+              {
+                "createdAt": -978307200,
+                "dictionaryForm": "bank",
+                "expression": "bank",
+                "id": "00000000-0000-0000-0000-000000000001",
+                "kind": "word",
+                "language": "en",
+                "senses": [
+                  {
+                    "alternateMeanings": [],
+                    "createdAt": -978307200,
+                    "examples": [
+                      {
+                        "completeness": "sentence",
+                        "createdAt": -978307200,
+                        "explanations": [],
+                        "id": "00000000-0000-0000-0000-000000000003",
+                        "meaning": "context",
+                        "meaningOrigin": "captured",
+                        "ranges": [
+                          {
+                            "length": 4,
+                            "location": 4
+                          }
+                        ],
+                        "text": "The bank.",
+                        "translation": "原句",
+                        "translationVariants": []
+                      }
+                    ],
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000002",
+                    "isSavedWithoutContext": false,
+                    "meaning": "core",
+                    "meaningOrigin": "captured",
+                    "mergedFrom": [
+                      "00000000-0000-0000-0000-00000000005A"
+                    ],
+                    "note": "note",
+                    "standaloneMeanings": [],
+                    "tags": [
+                      "Work"
+                    ],
+                    "updatedAt": -978307200
+                  },
+                  {
+                    "alternateMeanings": [],
+                    "createdAt": -978307200,
+                    "examples": [],
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000004",
+                    "isSavedWithoutContext": false,
+                    "meaning": "second",
+                    "meaningOrigin": "captured",
+                    "mergedFrom": [],
+                    "note": "",
+                    "standaloneMeanings": [],
+                    "tags": [],
+                    "updatedAt": -978307200
+                  }
+                ],
+                "updatedAt": -978307200
+              }
+            ],
+            "schemaVersion": 3
+          },
+          "images": {},
+          "version": 1
+        },
+        "entries": [
+          {
+            "createdAt": -978307200,
+            "dictionaryForm": "bank",
+            "expression": "bank",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "kind": "word",
+            "language": "en",
+            "senses": [
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [
+                  {
+                    "completeness": "sentence",
+                    "createdAt": -978307200,
+                    "explanations": [],
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "meaning": "context",
+                    "meaningOrigin": "captured",
+                    "ranges": [
+                      {
+                        "length": 4,
+                        "location": 4
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "原句",
+                    "translationVariants": []
+                  }
+                ],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000002",
+                "isSavedWithoutContext": false,
+                "meaning": "core",
+                "meaningOrigin": "captured",
+                "mergedFrom": [
+                  "00000000-0000-0000-0000-00000000005A"
+                ],
+                "note": "note",
+                "standaloneMeanings": [],
+                "tags": [
+                  "Work"
+                ],
+                "updatedAt": -978307200
+              },
+              {
+                "alternateMeanings": [],
+                "createdAt": -978307200,
+                "examples": [],
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "isSavedWithoutContext": false,
+                "meaning": "second",
+                "meaningOrigin": "captured",
+                "mergedFrom": [],
+                "note": "",
+                "standaloneMeanings": [],
+                "tags": [],
+                "updatedAt": -978307200
+              }
+            ],
+            "updatedAt": -978307200
+          }
+        ],
+        "error": false,
+        "imageReadable": false,
+        "loaded": true,
+        "mediaChanged": true,
+        "pending": 0,
+        "revisionDelta": 1,
+        "templates": []
+      }
+    }
+  ]
+}

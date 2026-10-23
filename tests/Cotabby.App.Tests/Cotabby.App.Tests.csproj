@@ -17,6 +17,8 @@
          no replacement for compiling the complete WPF app or exercising a Windows desktop. -->
     <Compile Include="..\..\src\Cotabby.Win32\Review\AnkiConnectClient.cs" Link="Production\AnkiConnectClient.cs" />
     <Compile Include="..\..\src\Cotabby.App\Review\AnkiReviewSettings.cs" Link="Production\AnkiReviewSettings.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Review\AnkiReviewController.cs" Link="Production\AnkiReviewController.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Review\AnkiReviewController.Navigation.cs" Link="Production\AnkiReviewController.Navigation.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.cs" Link="Production\AppSettings.cs" />
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularySQLiteConnection.cs" Link="Production\VocabularySQLiteConnection.cs" />
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularySQLiteDatabase.cs" Link="Production\VocabularySQLiteDatabase.cs" />
@@ -44,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\fixtures\parity\anki-settings-v1.json" Link="fixtures\anki-settings-v1.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\fixtures\parity\anki-controller-v1.json" Link="fixtures\anki-controller-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\fixtures\parity\anki-connect-v1.json" Link="fixtures\anki-connect-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\fixtures\parity\vocabulary-graph-presentation-v1.json" Link="fixtures\vocabulary-graph-presentation-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\fixtures\parity\vocabulary-sqlite-v1.json" Link="fixtures\vocabulary-sqlite-v1.json" CopyToOutputDirectory="PreserveNewest" />

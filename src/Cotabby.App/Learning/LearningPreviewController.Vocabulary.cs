@@ -36,7 +36,9 @@ internal sealed partial class LearningPreviewController
         if (!await ValidateLearningCaptureAsync(capture, intent).ConfigureAwait(false)) return;
         var detached = await Task.Run(() =>
         {
-            try { return _vocabularyCaptures!.FromWritingSentencePreview(presentation, capture.Field.ProcessName); }
+            // A process basename is not a stable application identity. Leave provenance absent
+            // until the Windows focus boundary supplies a real identifier; never label it a bundle ID.
+            try { return _vocabularyCaptures!.FromWritingSentencePreview(presentation); }
             catch { return null; }
         }).ConfigureAwait(false);
         if (detached is null || !await ValidateLearningCaptureAsync(capture, intent).ConfigureAwait(false)) return;

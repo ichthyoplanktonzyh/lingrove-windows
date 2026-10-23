@@ -48,7 +48,7 @@ internal sealed partial class LearningPreviewController
         {
             try
             {
-                var detached = _vocabularyCaptures?.FromUnit(unit, translation, capture.Field.ProcessName);
+                var detached = _vocabularyCaptures?.FromUnit(unit, translation);
                 return (detached is not null ? LearningExplanationPolicy.Input(detached) : _explanationInputs?.FromUnit(unit, translation), detached);
             }
             catch { return (null, null); } // Mac permits target-only meaning when an example is unavailable.

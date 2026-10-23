@@ -22,6 +22,32 @@ public sealed class VocabularyFavoriteViewTests(WpfDispatcher dispatcher)
     private static void ClickMenu(MenuItem menu) => menu.RaiseEvent(new RoutedEventArgs(MenuItem.ClickEvent));
     private static async Task Settle() => await Dispatcher.Yield(DispatcherPriority.ApplicationIdle);
     [Fact]
+    public Task ComponentSaveAndRemovePreserveTheParentPatternEncounter() => dispatcher.RunAsync(async () =>
+    {
+        var window = new LearningDictionaryWindow(); await using var store = Store(new VocabularyArchive((string?)null));
+        var unit = Unit; var word = unit.Words[^1];
+        var usage = new VocabularyExample(Guid.NewGuid(), Preview.Result!, Preview.Source,
+            unit.Ranges.Select(range => new VocabularyTextRange(range.Location, range.Length)).ToArray(),
+            VocabularyExampleCompleteness.Sentence, "", DateTimeOffset.UnixEpoch) { TranslationLanguage = LearningLanguage.Chinese };
+        var parent = new VocabularyCapture(unit.Query, unit.Query, LearningLanguage.English, VocabularyEntryKind.Pattern, Example: usage);
+        var component = VocabularyCaptureFactory.FromComponent(word, unit, parent)!;
+        try
+        {
+            Assert.True(await store.SaveAsync(parent));
+            var state = Dictionary with { SelectedWord = word, Explanation = new() { Input = LearningExplanationPolicy.Input(component) } };
+            window.ShowState(state, Anchor); window.BindVocabulary(store, component, state.TargetIdentity, () => true);
+            var button = Find<VocabularyFavoriteButton>(window, "FavoriteButton"); await button.LastOperation;
+            Click(button); await button.LastOperation; await Settle();
+            Assert.True(store.Contains(parent)); Assert.True(store.Contains(component)); Assert.Equal(2, store.Entries.Count);
+            var saved = store.Entries.Single(entry => entry.Kind == VocabularyEntryKind.Word).Examples[0];
+            Assert.NotEqual(usage.Id, saved.Id); Assert.Equal(word.Range.Location, Assert.Single(saved.Ranges).Location);
+            Assert.Equal(usage.Translation, saved.Translation);
+            Click(button); ClickMenu(Assert.Single(button.ContextMenu!.Items.OfType<MenuItem>())); await button.LastOperation; await Settle();
+            Assert.True(store.Contains(parent)); Assert.False(store.Contains(component)); Assert.Equal(usage.Id, Assert.Single(Assert.Single(store.Entries).Examples).Id);
+        }
+        finally { window.Close(); }
+    });
+    [Fact]
     public Task AcknowledgedSavePaintsSavedAndMenuRemovesOnlyThatEncounter() => dispatcher.RunAsync(async () =>
     {
         var window = new LearningPreviewWindow(); await using var store = Store(new VocabularyArchive((string?)null));

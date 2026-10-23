@@ -12,12 +12,13 @@ Reference: `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`.
 | `UI/Components/VocabularyFavoriteButton.swift` | `UI/Vocabulary/VocabularyFavoriteButton.cs`: saved/pending/error, exact remove and optional notebook navigation |
 | `Assets.xcassets/FavoriteFish{Outline,Filled}.imageset/*.svg` | Exact original path data in `UI/Vocabulary/VocabularyIcons.xaml`; 552-square viewport, 20-unit translation and original 24-unit round outline |
 | `LearningSentenceCard`, `LearningDictionaryCard` borrow shared Store | Existing WPF windows expose a favorite binding with their displayed document/target identity |
-| `VocabularyCaptureFactory.preview/unit/component` | Existing Core factory, run on the controller worker with the captured process name as Windows application provenance |
+| `VocabularyCaptureFactory.preview/unit/component` | Existing Core factory, run on the controller worker; source-app identity stays absent pending a stable Windows adapter |
 | Mac panel owns capture and child presentation lifetime | `LearningPreviewController.Vocabulary.cs`, dictionary preparation and existing intent/freshness gates |
 
 The controller verifies its frozen editor capture around asynchronous factory work. It does not
 read a new source into the favorite when the user clicks. A dictionary component maps into the
-same encountered sentence, retaining identity, timestamp, translation and application provenance.
+same encountered sentence, retaining identity, timestamp and translation. Windows source-app identity remains nil: a best-effort
+process basename cannot stand in for the source bundle/application identifier.
 Preparation revision and document/target checks prevent late tokenization or dictionary callbacks
 from attaching a favorite to a different reused card. ICU failure leaves capture unavailable.
 The existing explanation path remains separate from the save action.
@@ -35,10 +36,10 @@ exact Remove; the notebook window/route remains the next slice, so the current a
 item rather than presenting an action with no destination. Explicit meaning adoption UI, speech,
 reading/selection/OCR favorites and full localization also remain open.
 
-Five added compiled WPF cases use the real in-memory archive and shared Store: acknowledged Save
+Six added compiled WPF cases use the real in-memory archive and shared Store: acknowledged Save
 and exact Remove while preserving another encounter; a gated pending save and retired binding;
 fixed failure without a saved claim; stable navigation and an old menu refusing deletion after a
-new card; dictionary target change/hide. The async STA fixture keeps the dispatcher pumping while
+new card; dictionary target change/hide; component capture/Save/Remove preserving the parent pattern. The async STA fixture keeps the dispatcher pumping while
 actual SQLite work completes. Existing nonactivating-style and in-memory render checks remain.
 macOS only cross-compiles these views; Windows CI must execute them before merge.
 

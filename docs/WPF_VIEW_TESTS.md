@@ -91,3 +91,9 @@ cases (103 total): explicit generation/stop, meaning precedence/proposal/adoptio
 and selection, hide/reopen/reset, detached/removed targets, configuration and retirement during a
 blocked durable adoption. Fake generators remain external boundaries; real model/native input is
 not tested. Dictionary disclosure integration remains open.
+
+[Notebook dictionary disclosure](VOCABULARY_DICTIONARY_UI.md) adds nine actual window/archive/
+native-ICU cases (112 total), covering explicit query, word/Back navigation, shared literal attributed
+definitions, retained expansion, form edits, collapse/reopen/late results, preparation failure/retry
+and canceled pending queries during explicit Show or empty-form expression editing. Source fallback,
+physical input and external editor behavior remain outside this evidence.

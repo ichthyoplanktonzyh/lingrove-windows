@@ -50,8 +50,7 @@ across retirement with repeated-click rejection. The suite now has 103 cases in 
 These are executed on Windows CI. macOS performs a full Windows-targeting compile; a compile is not
 an execution. The existing 24 original Mac session observations and 21 Swift verifiers remain.
 
-Dictionary session ownership is already present, but its notebook disclosure/definition UI is the
-next integration slice. Source routing, system/imported/online dictionaries, media preparation and
+Dictionary session ownership is now connected by [the explicit notebook disclosure](VOCABULARY_DICTIONARY_UI.md). Source routing, system/imported/online dictionaries, media preparation and
 storage, speech, review/templates/Anki, graph, exports, backup/restore and the documented search
 provider differences remain open. Routed buttons and WPF layout tests do not prove physical input,
 external editor focus/IME, insertion acknowledgement, model execution or GPU behavior.

@@ -71,8 +71,10 @@ public partial class VocabularyNotebookWindow : Window
                 ? entry.Senses[index].Id : entry.Senses.FirstOrDefault()?.Id;
             RenderDetail(document);
         }
+        else RenderDetail(_store.Snapshot.Document);
         RequestRefresh();
         foreach (var row in _explanationRows.Values) row.Refresh();
+        _dictionarySection?.ResumeExpanded();
         _ = _learning?.Resume();
     }
     private void OnStoreChanged() { if (!_retired) RequestRefresh(); }
@@ -232,6 +234,7 @@ public partial class VocabularyNotebookWindow : Window
             else if (example.Meaning.Length > 0) content.Children.Add(Literal(example.Meaning, 13, example.MeaningLanguage));
             Section(example.Completeness == VocabularyExampleCompleteness.Sentence ? "Example sentence" : "Context fragment", content);
         }
+        AddDictionarySection(entry, sense);
         DetailContent.Children.Add(Label(sense.CreatedAt.ToLocalTime().ToString("d"), 11));
     }
     private static TextBlock Label(string text, double size, bool bold = false) => new()

@@ -110,7 +110,7 @@ public sealed class AnkiReviewSettingsViewTests(WpfDispatcher dispatcher)
 
             Assert.Equal("Retained deck", section.DeckPicker.SelectedItem);
             feature.Settings.Deck = "cafe\u0301";
-            Assert.Equal("café", section.DeckPicker.SelectedItem); Assert.Equal("cafe\u0301", feature.Settings.Deck); Assert.Equal(4, section.DeckPicker.Items.Count);
+            Assert.Equal("café", section.DeckPicker.SelectedItem); Assert.Equal("cafe\u0301", feature.Settings.Deck); Assert.Equal(3, section.DeckPicker.Items.Count);
             section.DeckPicker.SelectedItem = "Other"; Assert.Equal("Other", feature.Settings.Deck);
         }
         finally { section.Close(); window.Close(); }

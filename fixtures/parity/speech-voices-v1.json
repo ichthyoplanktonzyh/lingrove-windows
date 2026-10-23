@@ -12750,6 +12750,168 @@
           "name": "voice-at-1",
           "quality": 0
         }
+      },
+      "expectedByComparisonReference": {
+        "macos-26.6.1-25G76-x86_64": {
+          "catalog": [
+            {
+              "id": "é",
+              "isNovelty": false,
+              "isSystemPreferred": false,
+              "language": "en",
+              "name": "voice-at-0",
+              "quality": 0
+            },
+            {
+              "id": "é",
+              "isNovelty": false,
+              "isSystemPreferred": false,
+              "language": "en",
+              "name": "voice-at-1",
+              "quality": 0
+            },
+            {
+              "id": "e",
+              "isNovelty": false,
+              "isSystemPreferred": false,
+              "language": "en",
+              "name": "voice-at-2",
+              "quality": 0
+            },
+            {
+              "id": "E",
+              "isNovelty": false,
+              "isSystemPreferred": false,
+              "language": "en",
+              "name": "voice-at-3",
+              "quality": 0
+            }
+          ],
+          "comparisons": [
+            {
+              "lhs": "é",
+              "result": 0,
+              "rhs": "é"
+            },
+            {
+              "lhs": "é",
+              "result": 1,
+              "rhs": "é"
+            },
+            {
+              "lhs": "é",
+              "result": 1,
+              "rhs": "e"
+            },
+            {
+              "lhs": "é",
+              "result": 1,
+              "rhs": "E"
+            },
+            {
+              "lhs": "é",
+              "result": -1,
+              "rhs": "é"
+            },
+            {
+              "lhs": "é",
+              "result": 0,
+              "rhs": "é"
+            },
+            {
+              "lhs": "é",
+              "result": 1,
+              "rhs": "e"
+            },
+            {
+              "lhs": "é",
+              "result": 1,
+              "rhs": "E"
+            },
+            {
+              "lhs": "e",
+              "result": -1,
+              "rhs": "é"
+            },
+            {
+              "lhs": "e",
+              "result": -1,
+              "rhs": "é"
+            },
+            {
+              "lhs": "e",
+              "result": 0,
+              "rhs": "e"
+            },
+            {
+              "lhs": "e",
+              "result": -1,
+              "rhs": "E"
+            },
+            {
+              "lhs": "E",
+              "result": -1,
+              "rhs": "é"
+            },
+            {
+              "lhs": "E",
+              "result": -1,
+              "rhs": "é"
+            },
+            {
+              "lhs": "E",
+              "result": 1,
+              "rhs": "e"
+            },
+            {
+              "lhs": "E",
+              "result": 0,
+              "rhs": "E"
+            }
+          ],
+          "ordered": [
+            {
+              "id": "e",
+              "isNovelty": false,
+              "isSystemPreferred": false,
+              "language": "en",
+              "name": "voice-at-2",
+              "quality": 0
+            },
+            {
+              "id": "E",
+              "isNovelty": false,
+              "isSystemPreferred": false,
+              "language": "en",
+              "name": "voice-at-3",
+              "quality": 0
+            },
+            {
+              "id": "é",
+              "isNovelty": false,
+              "isSystemPreferred": false,
+              "language": "en",
+              "name": "voice-at-1",
+              "quality": 0
+            },
+            {
+              "id": "é",
+              "isNovelty": false,
+              "isSystemPreferred": false,
+              "language": "en",
+              "name": "voice-at-0",
+              "quality": 0
+            }
+          ],
+          "selected": {
+            "id": "é",
+            "isNovelty": false,
+            "isSystemPreferred": false,
+            "language": "en",
+            "name": "voice-at-1",
+            "quality": 0
+          }
+        }
       }
     },
     {
@@ -16448,5 +16610,10 @@
       }
     }
   ],
-  "comparisonLocale": "en_US"
+  "comparisonLocale": "en_US",
+  "defaultComparisonReference": "macos-26.6.2-25G83-arm64",
+  "comparisonReferences": [
+    "macos-26.6.2-25G83-arm64",
+    "macos-26.6.1-25G76-x86_64"
+  ]
 }

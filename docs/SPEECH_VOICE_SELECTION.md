@@ -29,7 +29,7 @@ voice/language declarations. Nine cases adapt the original tests and compile the
 103 extensions exercise every ranking tier, all palette languages, missing/mismatched/canonical
 preferences, Chinese script tags, all-novelty catalogs, equal IDs and input permutations. Every
 observation includes full ordered/selected voice values and the input catalog. The process pins
-AppleLocale to en_US and asserts the active locale so source comparisons have a repeatable scope.
+AppleLocale to en_US and asserts the active locale. Locale alone does not make Foundation comparisons identical across host OS/architecture.
 Expectations and every pairwise localized ID comparison were captured from that executable.
 
 C# tests inject those observed comparisons only as the platform dependency; they assert the other
@@ -37,7 +37,7 @@ policy outputs against the original. This establishes ranking/selection given th
 not Windows collation or equivalence across user locales. Two additional cases verify canonical
 value equality/hash, immutable list ownership, and that quality wins without consulting ID comparison.
 Case IDs are locked in both runners. These source observations are not execution of Swift Testing.
-All114 focused cases and full Core4417 passed with zero failed/skipped; Release solution cross-build
+All115 focused cases and full Core4418 passed with zero failed/skipped; Release solution cross-build
 passed with zero warnings/errors. The original verifier passed locally and independently. Production review is clear; both
 final-head CI jobs remain required before merge.
 
@@ -45,3 +45,22 @@ No installed inventory, Windows collation adapter, recognizer, speech settings/c
 audible playback or review media upload is connected. Native quality/preferred/novelty mapping and
 voice availability remain explicit platform work. No model download, network test, audio file,
 installer, release or uploaded artifact is produced.
+
+The first Intel CI run failed `collation-2`, while the original executable passed locally. A separate
+isolated CI capture then ran all112 original-source rows unchanged and logged the mismatching full
+observation; it did not change expectations or skip the failing case. The recorded environments are:
+
+| Reference fingerprint | Captured `collation-2` order |
+| --- | --- |
+| macos-26.6.2-25G83-arm64 | `e`, decomposed `é`, `E`, composed `é` |
+| macos-26.6.1-25G76-x86_64 | `e`, `E`, decomposed `é`, composed `é` |
+
+Only the reciprocal comparisons between decomposed `é` and `E` differ; the selected voice remains
+the same. The full Intel observation comes directly from source-capture run40038818528 at
+b8967bb16488d90ae04e1cdb167e8b86f6550d3f, based on the exact original voice-port head. The fixture
+retains both full outputs. The verifier computes the OS version/build/architecture fingerprint,
+rejects unrecorded environments, and chooses the matching complete expectation. It still verifies
+all112 source rows. C# runs113 captured observations (both `collation-2` variants), injecting each
+host's actual pairwise comparison, plus the2 ownership/value cases. This does not implement or
+certify Windows/user-locale collation. Production ranking code and the original Swift policy are
+unchanged; no expectation was hand-adjusted to fit the C# result.

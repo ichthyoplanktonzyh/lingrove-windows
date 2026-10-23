@@ -17,12 +17,16 @@ public sealed class SpeechVoiceSelectionTests
         Assert.Equal(1, d.RootElement.GetProperty("version").GetInt32()); Assert.Equal("43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f", d.RootElement.GetProperty("macReference").GetString()); Assert.Equal("en_US", d.RootElement.GetProperty("comparisonLocale").GetString());
         var rows = d.RootElement.GetProperty("cases").EnumerateArray().ToArray(); Assert.Equal(112, rows.Length);
         Assert.Equal("18e462748c2c712e83b14559eb0188548f9e5e3883e8f12e95d7628a57878cfb", Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(string.Join("\n", rows.Select(r => r.GetProperty("id").GetString()!).Order(StringComparer.Ordinal))))));
-        return rows.Select(r => new object[] { r.GetProperty("id").GetString()!, r.Clone() }).ToArray();
+        string primary = d.RootElement.GetProperty("defaultComparisonReference").GetString()!;
+        Assert.Equal("macos-26.6.2-25G83-arm64", primary);
+        Assert.Equal(new[] { primary, "macos-26.6.1-25G76-x86_64" }, d.RootElement.GetProperty("comparisonReferences").EnumerateArray().Select(v => v.GetString()!));
+        var cases = rows.SelectMany(r => new[] { new object[] { r.GetProperty("id").GetString()! + "/" + primary, r.Clone(), r.GetProperty("expected").Clone() } }
+            .Concat(r.TryGetProperty("expectedByComparisonReference", out var variants) ? variants.EnumerateObject().Select(v => new object[] { r.GetProperty("id").GetString()! + "/" + v.Name, r.Clone(), v.Value.Clone() }) : [] )).ToArray();
+        Assert.Equal(113, cases.Length); return cases;
     }
     [Theory, MemberData(nameof(Cases))]
-    public void OriginalRankingAndExplicitOrAutomaticChoice(string id, JsonElement row)
+    public void OriginalRankingAndExplicitOrAutomaticChoice(string id, JsonElement row, JsonElement expected)
     {
-        var expected = row.GetProperty("expected");
         // The Swift verifier compiles the nine original-test cases' literal source catalog;
         // this runner consumes its captured catalog. Other rows supply synthetic catalogs.
         // Captured comparisons stand in only for localizedStandardCompare.

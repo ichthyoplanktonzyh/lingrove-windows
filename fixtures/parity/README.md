@@ -370,3 +370,11 @@ success measures the original JSONEncoder directly. Three extra Core cases cover
 values, closed enum admission and display-reference validation without changing stored-block
 identity rules. See [mapping and evidence limits](../../docs/REVIEW_CARD_MATERIAL.md). No review UI,
 Anki connection, remote mutation, audio generation or media upload is established by these cases.
+
+`anki-connect-v1.json` contains88 observations executed through the complete pinned Anki client
+with an in-process URLProtocol plus its unchanged private encoder. It covers local endpoint
+normalization, framing/byte budgets, synthetic status/envelope/UTF responses and error redaction.
+Numbers include source edge cases and a fixed-seed100-value array. Exact raw strings are compared
+for single-key bodies; multi-key request order is unspecified, with semantic values and exact
+length compared. No network or real Anki is exercised; deep async Swift encoder stack behavior
+remains an explicit limitation. See [scope and mapping](../../docs/ANKI_CONNECT_TRANSPORT.md).

@@ -1,0 +1,1598 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "endpoint-00",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "endpoint",
+      "endpoint": "http://127.0.0.1:8765",
+      "expected": {
+        "endpoint": "http://127.0.0.1:8765"
+      }
+    },
+    {
+      "id": "endpoint-01",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "endpoint",
+      "endpoint": " http://LOCALHOST:08765/​",
+      "expected": {
+        "endpoint": "http://localhost:8765"
+      }
+    },
+    {
+      "id": "endpoint-02",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "endpoint",
+      "endpoint": "http://[::1]:8765/",
+      "expected": {
+        "endpoint": "http://[::1]:8765"
+      }
+    },
+    {
+      "id": "endpoint-03",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "endpoint",
+      "endpoint": "http://localhost",
+      "expected": {
+        "endpoint": "http://localhost"
+      }
+    },
+    {
+      "id": "endpoint-04",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "endpoint",
+      "endpoint": "http://localhost:",
+      "expected": {
+        "endpoint": "http://localhost"
+      }
+    },
+    {
+      "id": "endpoint-05",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "endpoint",
+      "endpoint": "http://%6cocalhost:8765",
+      "expected": {
+        "endpoint": "http://localhost:8765"
+      }
+    },
+    {
+      "id": "endpoint-06",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "endpoint",
+      "endpoint": "HTTP://localhost",
+      "expected": {
+        "endpoint": null
+      }
+    },
+    {
+      "id": "endpoint-07",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "endpoint",
+      "endpoint": "https://localhost",
+      "expected": {
+        "endpoint": null
+      }
+    },
+    {
+      "id": "endpoint-08",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "endpoint",
+      "endpoint": "http://127.1",
+      "expected": {
+        "endpoint": null
+      }
+    },
+    {
+      "id": "endpoint-09",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "endpoint",
+      "endpoint": "http://2130706433",
+      "expected": {
+        "endpoint": null
+      }
+    },
+    {
+      "id": "endpoint-10",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "endpoint",
+      "endpoint": "http://localhost.evil",
+      "expected": {
+        "endpoint": null
+      }
+    },
+    {
+      "id": "endpoint-11",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "endpoint",
+      "endpoint": "http://localhost@evil",
+      "expected": {
+        "endpoint": null
+      }
+    },
+    {
+      "id": "endpoint-12",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "endpoint",
+      "endpoint": "http://user@localhost",
+      "expected": {
+        "endpoint": null
+      }
+    },
+    {
+      "id": "endpoint-13",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "endpoint",
+      "endpoint": "http://localhost?",
+      "expected": {
+        "endpoint": null
+      }
+    },
+    {
+      "id": "endpoint-14",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "endpoint",
+      "endpoint": "http://localhost#",
+      "expected": {
+        "endpoint": null
+      }
+    },
+    {
+      "id": "endpoint-15",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "endpoint",
+      "endpoint": "http://localhost/extra",
+      "expected": {
+        "endpoint": null
+      }
+    },
+    {
+      "id": "endpoint-16",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "endpoint",
+      "endpoint": "http://localhost:0",
+      "expected": {
+        "endpoint": null
+      }
+    },
+    {
+      "id": "endpoint-17",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "endpoint",
+      "endpoint": "http://localhost:65536",
+      "expected": {
+        "endpoint": null
+      }
+    },
+    {
+      "id": "endpoint-18",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "endpoint",
+      "endpoint": "http://localhost:65535",
+      "expected": {
+        "endpoint": "http://localhost:65535"
+      }
+    },
+    {
+      "id": "endpoint-19",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "endpoint",
+      "endpoint": "http://localhost:00001",
+      "expected": {
+        "endpoint": "http://localhost:1"
+      }
+    },
+    {
+      "id": "endpoint-20",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "endpoint",
+      "endpoint": "http://[0:0:0:0:0:0:0:1]",
+      "expected": {
+        "endpoint": null
+      }
+    },
+    {
+      "id": "endpoint-21",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "endpoint",
+      "endpoint": "http://localhost\\evil",
+      "expected": {
+        "endpoint": null
+      }
+    },
+    {
+      "id": "endpoint-22",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "endpoint",
+      "endpoint": "http://localhost/%2f",
+      "expected": {
+        "endpoint": null
+      }
+    },
+    {
+      "id": "request-basic",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "params": {},
+      "expected": {
+        "body": {
+          "action": "version",
+          "params": {},
+          "version": 6
+        },
+        "bodyCount": 44,
+        "contentType": "application/json",
+        "method": "POST",
+        "requests": 1,
+        "result": 6,
+        "timeout": 10,
+        "valid": true
+      }
+    },
+    {
+      "id": "request-types",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "params": {
+        "s": "<&>/😀  ﻿é",
+        "b": true,
+        "n": null,
+        "a": [
+          1,
+          2.5,
+          -0.0
+        ]
+      },
+      "expected": {
+        "body": {
+          "action": "version",
+          "params": {
+            "a": [
+              1,
+              2.5,
+              0
+            ],
+            "b": true,
+            "n": null,
+            "s": "<&>/😀  ﻿é"
+          },
+          "version": 6
+        },
+        "bodyCount": 104,
+        "contentType": "application/json",
+        "method": "POST",
+        "requests": 1,
+        "result": 6,
+        "timeout": 10,
+        "valid": true
+      }
+    },
+    {
+      "id": "request-key",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "params": {},
+      "key": "fixture-key",
+      "expected": {
+        "body": {
+          "action": "version",
+          "key": "fixture-key",
+          "params": {},
+          "version": 6
+        },
+        "bodyCount": 64,
+        "contentType": "application/json",
+        "method": "POST",
+        "requests": 1,
+        "result": 6,
+        "timeout": 10,
+        "valid": true
+      }
+    },
+    {
+      "id": "response-null",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "response": "{\"error\":null,\"result\":null}",
+      "expected": {
+        "body": {
+          "action": "version",
+          "params": {},
+          "version": 6
+        },
+        "bodyCount": 44,
+        "contentType": "application/json",
+        "method": "POST",
+        "requests": 1,
+        "result": null,
+        "timeout": 10,
+        "valid": true
+      }
+    },
+    {
+      "id": "response-false",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "response": "{\"result\":false,\"error\":null}",
+      "expected": {
+        "body": {
+          "action": "version",
+          "params": {},
+          "version": 6
+        },
+        "bodyCount": 44,
+        "contentType": "application/json",
+        "method": "POST",
+        "requests": 1,
+        "result": false,
+        "timeout": 10,
+        "valid": true
+      }
+    },
+    {
+      "id": "response-object",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "response": "{\"error\":null,\"result\":{\"id\":123}}",
+      "expected": {
+        "body": {
+          "action": "version",
+          "params": {},
+          "version": 6
+        },
+        "bodyCount": 44,
+        "contentType": "application/json",
+        "method": "POST",
+        "requests": 1,
+        "result": {
+          "id": 123
+        },
+        "timeout": 10,
+        "valid": true
+      }
+    },
+    {
+      "id": "response-missing-error",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "response": "{\"result\":6}",
+      "expected": {
+        "body": {
+          "action": "version",
+          "params": {},
+          "version": 6
+        },
+        "bodyCount": 44,
+        "contentType": "application/json",
+        "error": "AnkiConnect returned an invalid response.",
+        "method": "POST",
+        "requests": 1,
+        "timeout": 10,
+        "valid": false
+      }
+    },
+    {
+      "id": "response-missing-result",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "response": "{\"error\":null}",
+      "expected": {
+        "body": {
+          "action": "version",
+          "params": {},
+          "version": 6
+        },
+        "bodyCount": 44,
+        "contentType": "application/json",
+        "error": "AnkiConnect returned an invalid response.",
+        "method": "POST",
+        "requests": 1,
+        "timeout": 10,
+        "valid": false
+      }
+    },
+    {
+      "id": "response-array",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "response": "[]",
+      "expected": {
+        "body": {
+          "action": "version",
+          "params": {},
+          "version": 6
+        },
+        "bodyCount": 44,
+        "contentType": "application/json",
+        "error": "AnkiConnect returned an invalid response.",
+        "method": "POST",
+        "requests": 1,
+        "timeout": 10,
+        "valid": false
+      }
+    },
+    {
+      "id": "response-root-null",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "response": "null",
+      "expected": {
+        "body": {
+          "action": "version",
+          "params": {},
+          "version": 6
+        },
+        "bodyCount": 44,
+        "contentType": "application/json",
+        "error": "AnkiConnect returned an invalid response.",
+        "method": "POST",
+        "requests": 1,
+        "timeout": 10,
+        "valid": false
+      }
+    },
+    {
+      "id": "response-malformed",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "response": "not-json fixture-secret",
+      "expected": {
+        "body": {
+          "action": "version",
+          "params": {},
+          "version": 6
+        },
+        "bodyCount": 44,
+        "contentType": "application/json",
+        "error": "Could not connect to Anki. Open Anki with AnkiConnect enabled.",
+        "method": "POST",
+        "requests": 1,
+        "timeout": 10,
+        "valid": false
+      }
+    },
+    {
+      "id": "response-rejected",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "response": "{\"error\":\"fixture-secret note/key\",\"result\":null}",
+      "expected": {
+        "body": {
+          "action": "version",
+          "params": {},
+          "version": 6
+        },
+        "bodyCount": 44,
+        "contentType": "application/json",
+        "error": "Anki rejected the request. Check the API key, fields and active profile.",
+        "method": "POST",
+        "requests": 1,
+        "timeout": 10,
+        "valid": false
+      }
+    },
+    {
+      "id": "response-error-false",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "response": "{\"error\":false,\"result\":6}",
+      "expected": {
+        "body": {
+          "action": "version",
+          "params": {},
+          "version": 6
+        },
+        "bodyCount": 44,
+        "contentType": "application/json",
+        "error": "Anki rejected the request. Check the API key, fields and active profile.",
+        "method": "POST",
+        "requests": 1,
+        "timeout": 10,
+        "valid": false
+      }
+    },
+    {
+      "id": "response-duplicate-first",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "response": "{\"error\":null,\"error\":\"secret\",\"result\":6,\"result\":7}",
+      "expected": {
+        "body": {
+          "action": "version",
+          "params": {},
+          "version": 6
+        },
+        "bodyCount": 44,
+        "contentType": "application/json",
+        "method": "POST",
+        "requests": 1,
+        "result": 6,
+        "timeout": 10,
+        "valid": true
+      }
+    },
+    {
+      "id": "response-duplicate-reject",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "response": "{\"error\":\"secret\",\"error\":null,\"result\":6}",
+      "expected": {
+        "body": {
+          "action": "version",
+          "params": {},
+          "version": 6
+        },
+        "bodyCount": 44,
+        "contentType": "application/json",
+        "error": "Anki rejected the request. Check the API key, fields and active profile.",
+        "method": "POST",
+        "requests": 1,
+        "timeout": 10,
+        "valid": false
+      }
+    },
+    {
+      "id": "response-overflow",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "response": "{\"error\":null,\"result\":1e309}",
+      "expected": {
+        "body": {
+          "action": "version",
+          "params": {},
+          "version": 6
+        },
+        "bodyCount": 44,
+        "contentType": "application/json",
+        "error": "Could not connect to Anki. Open Anki with AnkiConnect enabled.",
+        "method": "POST",
+        "requests": 1,
+        "timeout": 10,
+        "valid": false
+      }
+    },
+    {
+      "id": "response-trailing",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "response": "{\"error\":null,\"result\":6} x",
+      "expected": {
+        "body": {
+          "action": "version",
+          "params": {},
+          "version": 6
+        },
+        "bodyCount": 44,
+        "contentType": "application/json",
+        "error": "Could not connect to Anki. Open Anki with AnkiConnect enabled.",
+        "method": "POST",
+        "requests": 1,
+        "timeout": 10,
+        "valid": false
+      }
+    },
+    {
+      "id": "status-201",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "status": 201,
+      "response": "fixture-secret",
+      "expected": {
+        "body": {
+          "action": "version",
+          "params": {},
+          "version": 6
+        },
+        "bodyCount": 44,
+        "contentType": "application/json",
+        "error": "AnkiConnect returned an invalid response.",
+        "method": "POST",
+        "requests": 1,
+        "timeout": 10,
+        "valid": false
+      }
+    },
+    {
+      "id": "status-204",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "status": 204,
+      "response": "fixture-secret",
+      "expected": {
+        "body": {
+          "action": "version",
+          "params": {},
+          "version": 6
+        },
+        "bodyCount": 44,
+        "contentType": "application/json",
+        "error": "AnkiConnect returned an invalid response.",
+        "method": "POST",
+        "requests": 1,
+        "timeout": 10,
+        "valid": false
+      }
+    },
+    {
+      "id": "status-301",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "status": 301,
+      "response": "fixture-secret",
+      "expected": {
+        "body": {
+          "action": "version",
+          "params": {},
+          "version": 6
+        },
+        "bodyCount": 44,
+        "contentType": "application/json",
+        "error": "AnkiConnect returned an invalid response.",
+        "method": "POST",
+        "requests": 1,
+        "timeout": 10,
+        "valid": false
+      }
+    },
+    {
+      "id": "status-302",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "status": 302,
+      "response": "fixture-secret",
+      "expected": {
+        "body": {
+          "action": "version",
+          "params": {},
+          "version": 6
+        },
+        "bodyCount": 44,
+        "contentType": "application/json",
+        "error": "AnkiConnect returned an invalid response.",
+        "method": "POST",
+        "requests": 1,
+        "timeout": 10,
+        "valid": false
+      }
+    },
+    {
+      "id": "status-307",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "status": 307,
+      "response": "fixture-secret",
+      "expected": {
+        "body": {
+          "action": "version",
+          "params": {},
+          "version": 6
+        },
+        "bodyCount": 44,
+        "contentType": "application/json",
+        "error": "AnkiConnect returned an invalid response.",
+        "method": "POST",
+        "requests": 1,
+        "timeout": 10,
+        "valid": false
+      }
+    },
+    {
+      "id": "status-400",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "status": 400,
+      "response": "fixture-secret",
+      "expected": {
+        "body": {
+          "action": "version",
+          "params": {},
+          "version": 6
+        },
+        "bodyCount": 44,
+        "contentType": "application/json",
+        "error": "AnkiConnect returned an invalid response.",
+        "method": "POST",
+        "requests": 1,
+        "timeout": 10,
+        "valid": false
+      }
+    },
+    {
+      "id": "status-401",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "status": 401,
+      "response": "fixture-secret",
+      "expected": {
+        "body": {
+          "action": "version",
+          "params": {},
+          "version": 6
+        },
+        "bodyCount": 44,
+        "contentType": "application/json",
+        "error": "AnkiConnect returned an invalid response.",
+        "method": "POST",
+        "requests": 1,
+        "timeout": 10,
+        "valid": false
+      }
+    },
+    {
+      "id": "status-500",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "status": 500,
+      "response": "fixture-secret",
+      "expected": {
+        "body": {
+          "action": "version",
+          "params": {},
+          "version": 6
+        },
+        "bodyCount": 44,
+        "contentType": "application/json",
+        "error": "AnkiConnect returned an invalid response.",
+        "method": "POST",
+        "requests": 1,
+        "timeout": 10,
+        "valid": false
+      }
+    },
+    {
+      "id": "failure-connection",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "failure": "connection",
+      "expected": {
+        "body": {
+          "action": "version",
+          "params": {},
+          "version": 6
+        },
+        "bodyCount": 44,
+        "contentType": "application/json",
+        "error": "Could not connect to Anki. Open Anki with AnkiConnect enabled.",
+        "method": "POST",
+        "requests": 1,
+        "timeout": 10,
+        "valid": false
+      }
+    },
+    {
+      "id": "failure-cancel",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "failure": "cancel",
+      "expected": {
+        "body": {
+          "action": "version",
+          "params": {},
+          "version": 6
+        },
+        "bodyCount": 44,
+        "contentType": "application/json",
+        "error": "Could not connect to Anki. Open Anki with AnkiConnect enabled.",
+        "method": "POST",
+        "requests": 1,
+        "timeout": 10,
+        "valid": false
+      }
+    },
+    {
+      "id": "response-size-2000000",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "responseSize": 2000000,
+      "expected": {
+        "body": {
+          "action": "version",
+          "params": {},
+          "version": 6
+        },
+        "bodyCount": 44,
+        "contentType": "application/json",
+        "method": "POST",
+        "requests": 1,
+        "result": null,
+        "timeout": 10,
+        "valid": true
+      }
+    },
+    {
+      "id": "response-size-2000001",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "responseSize": 2000001,
+      "expected": {
+        "body": {
+          "action": "version",
+          "params": {},
+          "version": 6
+        },
+        "bodyCount": 44,
+        "contentType": "application/json",
+        "error": "AnkiConnect returned an invalid response.",
+        "method": "POST",
+        "requests": 1,
+        "timeout": 10,
+        "valid": false
+      }
+    },
+    {
+      "id": "bytes-utf8-bom",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "responseBytes": "77u/eyJlcnJvciI6bnVsbCwicmVzdWx0Ijo2fQ==",
+      "expected": {
+        "body": {
+          "action": "version",
+          "params": {},
+          "version": 6
+        },
+        "bodyCount": 44,
+        "contentType": "application/json",
+        "method": "POST",
+        "requests": 1,
+        "result": 6,
+        "timeout": 10,
+        "valid": true
+      }
+    },
+    {
+      "id": "bytes-utf16le",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "responseBytes": "ewAiAGUAcgByAG8AcgAiADoAbgB1AGwAbAAsACIAcgBlAHMAdQBsAHQAIgA6ADYAfQA=",
+      "expected": {
+        "body": {
+          "action": "version",
+          "params": {},
+          "version": 6
+        },
+        "bodyCount": 44,
+        "contentType": "application/json",
+        "method": "POST",
+        "requests": 1,
+        "result": 6,
+        "timeout": 10,
+        "valid": true
+      }
+    },
+    {
+      "id": "bytes-utf16be",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "responseBytes": "AHsAIgBlAHIAcgBvAHIAIgA6AG4AdQBsAGwALAAiAHIAZQBzAHUAbAB0ACIAOgA2AH0=",
+      "expected": {
+        "body": {
+          "action": "version",
+          "params": {},
+          "version": 6
+        },
+        "bodyCount": 44,
+        "contentType": "application/json",
+        "method": "POST",
+        "requests": 1,
+        "result": 6,
+        "timeout": 10,
+        "valid": true
+      }
+    },
+    {
+      "id": "bytes-utf16bom",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "responseBytes": "//57ACIAZQByAHIAbwByACIAOgBuAHUAbABsACwAIgByAGUAcwB1AGwAdAAiADoANgB9AA==",
+      "expected": {
+        "body": {
+          "action": "version",
+          "params": {},
+          "version": 6
+        },
+        "bodyCount": 44,
+        "contentType": "application/json",
+        "method": "POST",
+        "requests": 1,
+        "result": 6,
+        "timeout": 10,
+        "valid": true
+      }
+    },
+    {
+      "id": "bytes-utf32le",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "responseBytes": "ewAAACIAAABlAAAAcgAAAHIAAABvAAAAcgAAACIAAAA6AAAAbgAAAHUAAABsAAAAbAAAACwAAAAiAAAAcgAAAGUAAABzAAAAdQAAAGwAAAB0AAAAIgAAADoAAAA2AAAAfQAAAA==",
+      "expected": {
+        "body": {
+          "action": "version",
+          "params": {},
+          "version": 6
+        },
+        "bodyCount": 44,
+        "contentType": "application/json",
+        "method": "POST",
+        "requests": 1,
+        "result": 6,
+        "timeout": 10,
+        "valid": true
+      }
+    },
+    {
+      "id": "bytes-utf32be",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "responseBytes": "AAAAewAAACIAAABlAAAAcgAAAHIAAABvAAAAcgAAACIAAAA6AAAAbgAAAHUAAABsAAAAbAAAACwAAAAiAAAAcgAAAGUAAABzAAAAdQAAAGwAAAB0AAAAIgAAADoAAAA2AAAAfQ==",
+      "expected": {
+        "body": {
+          "action": "version",
+          "params": {},
+          "version": 6
+        },
+        "bodyCount": 44,
+        "contentType": "application/json",
+        "method": "POST",
+        "requests": 1,
+        "result": 6,
+        "timeout": 10,
+        "valid": true
+      }
+    },
+    {
+      "id": "bytes-utf32le-bom",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "responseBytes": "//4AAHsAAAAiAAAAZQAAAHIAAAByAAAAbwAAAHIAAAAiAAAAOgAAAG4AAAB1AAAAbAAAAGwAAAAsAAAAIgAAAHIAAABlAAAAcwAAAHUAAABsAAAAdAAAACIAAAA6AAAANgAAAH0AAAA=",
+      "expected": {
+        "body": {
+          "action": "version",
+          "params": {},
+          "version": 6
+        },
+        "bodyCount": 44,
+        "contentType": "application/json",
+        "error": "Could not connect to Anki. Open Anki with AnkiConnect enabled.",
+        "method": "POST",
+        "requests": 1,
+        "timeout": 10,
+        "valid": false
+      }
+    },
+    {
+      "id": "bytes-invalid-utf8",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "responseBytes": "eyJlcnJvciI6bnVsbCwicmVzdWx0Ijoi/yJ9",
+      "expected": {
+        "body": {
+          "action": "version",
+          "params": {},
+          "version": 6
+        },
+        "bodyCount": 44,
+        "contentType": "application/json",
+        "error": "Could not connect to Anki. Open Anki with AnkiConnect enabled.",
+        "method": "POST",
+        "requests": 1,
+        "timeout": 10,
+        "valid": false
+      }
+    },
+    {
+      "id": "encode-number-00",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "encode",
+      "params": 0,
+      "expected": {
+        "count": 13,
+        "json": {
+          "payload": 0
+        },
+        "raw": "{\"payload\":0}",
+        "valid": true
+      }
+    },
+    {
+      "id": "encode-number-01",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "encode",
+      "params": -0.0,
+      "expected": {
+        "count": 14,
+        "json": {
+          "payload": 0
+        },
+        "raw": "{\"payload\":-0}",
+        "valid": true
+      }
+    },
+    {
+      "id": "encode-number-02",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "encode",
+      "params": 1,
+      "expected": {
+        "count": 13,
+        "json": {
+          "payload": 1
+        },
+        "raw": "{\"payload\":1}",
+        "valid": true
+      }
+    },
+    {
+      "id": "encode-number-03",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "encode",
+      "params": 1000000000000000.0,
+      "expected": {
+        "count": 28,
+        "json": {
+          "payload": 1000000000000000
+        },
+        "raw": "{\"payload\":1000000000000000}",
+        "valid": true
+      }
+    },
+    {
+      "id": "encode-number-04",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "encode",
+      "params": 1e+16,
+      "expected": {
+        "count": 17,
+        "json": {
+          "payload": 1e+16
+        },
+        "raw": "{\"payload\":1e+16}",
+        "valid": true
+      }
+    },
+    {
+      "id": "encode-number-05",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "encode",
+      "params": 1e+17,
+      "expected": {
+        "count": 17,
+        "json": {
+          "payload": 1e+17
+        },
+        "raw": "{\"payload\":1e+17}",
+        "valid": true
+      }
+    },
+    {
+      "id": "encode-number-06",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "encode",
+      "params": 1e+20,
+      "expected": {
+        "count": 17,
+        "json": {
+          "payload": 1e+20
+        },
+        "raw": "{\"payload\":1e+20}",
+        "valid": true
+      }
+    },
+    {
+      "id": "encode-number-07",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "encode",
+      "params": 1e+21,
+      "expected": {
+        "count": 17,
+        "json": {
+          "payload": 1e+21
+        },
+        "raw": "{\"payload\":1e+21}",
+        "valid": true
+      }
+    },
+    {
+      "id": "encode-number-08",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "encode",
+      "params": 0.0001,
+      "expected": {
+        "count": 18,
+        "json": {
+          "payload": 0.0001
+        },
+        "raw": "{\"payload\":0.0001}",
+        "valid": true
+      }
+    },
+    {
+      "id": "encode-number-09",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "encode",
+      "params": 1e-05,
+      "expected": {
+        "count": 17,
+        "json": {
+          "payload": 1e-05
+        },
+        "raw": "{\"payload\":1e-05}",
+        "valid": true
+      }
+    },
+    {
+      "id": "encode-number-10",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "encode",
+      "params": 1e-06,
+      "expected": {
+        "count": 17,
+        "json": {
+          "payload": 1e-06
+        },
+        "raw": "{\"payload\":1e-06}",
+        "valid": true
+      }
+    },
+    {
+      "id": "encode-number-11",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "encode",
+      "params": 1e-07,
+      "expected": {
+        "count": 17,
+        "json": {
+          "payload": 1e-07
+        },
+        "raw": "{\"payload\":1e-07}",
+        "valid": true
+      }
+    },
+    {
+      "id": "encode-number-12",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "encode",
+      "params": 1.2345678901234567,
+      "expected": {
+        "count": 30,
+        "json": {
+          "payload": 1.2345678901234567
+        },
+        "raw": "{\"payload\":1.2345678901234567}",
+        "valid": true
+      }
+    },
+    {
+      "id": "encode-number-13",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "encode",
+      "params": 5e-324,
+      "expected": {
+        "count": 18,
+        "json": {
+          "payload": 5e-324
+        },
+        "raw": "{\"payload\":5e-324}",
+        "valid": true
+      }
+    },
+    {
+      "id": "encode-number-14",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "encode",
+      "params": 1.7976931348623157e+308,
+      "expected": {
+        "count": 35,
+        "json": {
+          "payload": 1.7976931348623157e+308
+        },
+        "raw": "{\"payload\":1.7976931348623157e+308}",
+        "valid": true
+      }
+    },
+    {
+      "id": "encode-string-0",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "encode",
+      "params": "a/\"\\\n\t\u0000",
+      "expected": {
+        "count": 31,
+        "json": {
+          "payload": "a/\"\\\n\t\u0000"
+        },
+        "raw": "{\"payload\":\"a\\/\\\"\\\\\\n\\t\\u0000\"}",
+        "valid": true
+      }
+    },
+    {
+      "id": "encode-string-1",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "encode",
+      "params": "<>&😀  ﻿",
+      "expected": {
+        "count": 30,
+        "json": {
+          "payload": "<>&😀  ﻿"
+        },
+        "raw": "{\"payload\":\"<>&😀  ﻿\"}",
+        "valid": true
+      }
+    },
+    {
+      "id": "encode-string-2",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "encode",
+      "params": "é",
+      "expected": {
+        "count": 17,
+        "json": {
+          "payload": "é"
+        },
+        "raw": "{\"payload\":\"é\"}",
+        "valid": true
+      }
+    },
+    {
+      "id": "encode-string-3",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "encode",
+      "params": "\b\f\u001f",
+      "expected": {
+        "count": 24,
+        "json": {
+          "payload": "\b\f\u001f"
+        },
+        "raw": "{\"payload\":\"\\b\\f\\u001f\"}",
+        "valid": true
+      }
+    },
+    {
+      "id": "encode-nan",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "encode",
+      "specialNumber": "nan",
+      "expected": {
+        "kind": "encoding",
+        "valid": false
+      }
+    },
+    {
+      "id": "encode-infinity",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "encode",
+      "specialNumber": "infinity",
+      "expected": {
+        "kind": "encoding",
+        "valid": false
+      }
+    },
+    {
+      "id": "encode-limit-18874354",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "encode",
+      "repeatCount": 18874354,
+      "expected": {
+        "count": 18874368,
+        "valid": true
+      }
+    },
+    {
+      "id": "encode-limit-18874355",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "encode",
+      "repeatCount": 18874355,
+      "expected": {
+        "error": "The speech audio exceeded the size limit. Try a shorter passage.",
+        "valid": false
+      }
+    },
+    {
+      "id": "encode-limit-slash",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "encode",
+      "repeatText": "/",
+      "repeatCount": 9437177,
+      "expected": {
+        "count": 18874368,
+        "valid": true
+      }
+    },
+    {
+      "id": "encode-limit-utf8",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "encode",
+      "repeatText": "汉",
+      "repeatCount": 6291452,
+      "expected": {
+        "error": "The speech audio exceeded the size limit. Try a shorter passage.",
+        "valid": false
+      }
+    },
+    {
+      "id": "perform-invalid-endpoint",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "endpoint": "http://example.com",
+      "expected": {
+        "error": "AnkiConnect returned an invalid response.",
+        "requests": 0,
+        "valid": false
+      }
+    },
+    {
+      "id": "perform-invalid-encoding",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "specialNumber": "nan",
+      "expected": {
+        "kind": "encoding",
+        "requests": 0,
+        "valid": false
+      }
+    },
+    {
+      "id": "encode-shortest-number-array",
+      "macSource": "Cotabby/Services/Review/AnkiConnectClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "encode",
+      "params": [
+        9999999999999998.0,
+        1.0000000000000002e+16,
+        9.999999999999999e-05,
+        0.00010000000000000002,
+        9007199254740991,
+        9007199254740992,
+        -12345678901234568,
+        6.425477203632479e+44,
+        -8802160506290648.0,
+        -3.321887672905179e+258,
+        1.3002490765236236e+148,
+        -5.483434413745721e-64,
+        6.198872602164253e-190,
+        -7.893978701810457e-187,
+        -2.863051310199465e-174,
+        -2.6706669077549925e-291,
+        -3.4093252734304055e-214,
+        -3.7152441105385903e-155,
+        -2.267770956199732e+243,
+        -4.29379408722704e+168,
+        -6.542681128358762e+247,
+        6.319181363522267e+177,
+        1.736413617654538e-237,
+        2.398455952932893e-176,
+        4.341338824320152e-155,
+        1.9884383557489102e-119,
+        1.2517776924285442e-110,
+        -3.289631959217508e+104,
+        5.732035497536158e-150,
+        1.166161481214312e+169,
+        -4.964381180165833e+281,
+        2.2900095125740878e+27,
+        1.868930737869657e-84,
+        2.526071940782991e-230,
+        -6.392089148594482e-211,
+        1.503742677978661e-78,
+        6.162445466541323e-233,
+        2.5312517924033574e-104,
+        3.1322867515703047e+31,
+        1.1703879038248252e-213,
+        -2.2682091894360798e-156,
+        -1.1470174310807757e+294,
+        -5.230912775251897e+78,
+        -8.589630975679177e-119,
+        -5.225775489448261e-124,
+        2.046549483626081e-233,
+        -1.6158539254264582e+117,
+        1.1987476388570453e+256,
+        -3.145983243298239e-127,
+        -3.172018311380876e-33,
+        1.5604953196105742e+99,
+        -2.6059764757912463e-106,
+        1.2725907615849007e+233,
+        7.067789192806183e-153,
+        7.912178844096914e-210,
+        1.1465527583049749e+86,
+        -1.440521045813819e+156,
+        4.716157249036665e+22,
+        -3.453708132915627e-27,
+        -9.625732483781542e-97,
+        6.408009043656438e-222,
+        -2.3461591026541882e+300,
+        -4.2231467561000534e-108,
+        1.9296586576033047e+58,
+        -3.0679629680330773e+184,
+        -8.052955767254743e-27,
+        7.4377710283713135e+137,
+        1.5511840703792665e+227,
+        2.3063636025552418e+275,
+        4.79654905458392e+203,
+        -2.997239314730295e+29,
+        4.2343086983491725e+133,
+        -6.407728650403677e-130,
+        -4.004353447766348e+152,
+        -1.098729043785481e-23,
+        -2.6740167803048756e-217,
+        1.783040101235836e+71,
+        -2.6861994487379412e-74,
+        6.040518273040937e+215,
+        -3.1530605178474225e-201,
+        6.185572632875238e-128,
+        2.9039840380641715e-178,
+        -2.6347019575443514e+51,
+        -3.976369548484986e+96,
+        2.9490106365512514e-153,
+        1.2115383964772748e-287,
+        -3.5645574265793196e+28,
+        -5.4940312479495125e+88,
+        -1.2654827230223385e+38,
+        1.7164562391927919e-162,
+        -8.954900465651834e-269,
+        248311119624.45148,
+        -356349.4843360506,
+        4.073997526067294e+254,
+        2.0283092190140033e+111,
+        -1.585228222394776e+247,
+        3.188621511063325e-201,
+        1.7866941314535823e-267,
+        -3.3894591367043555e-40,
+        -3.073689445277861e+120
+      ],
+      "expected": {
+        "count": 2345,
+        "json": {
+          "payload": [
+            9999999999999998.0,
+            1.0000000000000002e+16,
+            9.999999999999999e-05,
+            0.00010000000000000002,
+            9007199254740991,
+            9007199254740992,
+            -1.2345678901234568e+16,
+            6.425477203632479e+44,
+            -8802160506290648,
+            -3.321887672905179e+258,
+            1.3002490765236236e+148,
+            -5.483434413745721e-64,
+            6.198872602164253e-190,
+            -7.893978701810457e-187,
+            -2.863051310199465e-174,
+            -2.6706669077549925e-291,
+            -3.4093252734304055e-214,
+            -3.7152441105385903e-155,
+            -2.267770956199732e+243,
+            -4.29379408722704e+168,
+            -6.542681128358762e+247,
+            6.319181363522267e+177,
+            1.736413617654538e-237,
+            2.398455952932893e-176,
+            4.341338824320152e-155,
+            1.9884383557489102e-119,
+            1.2517776924285442e-110,
+            -3.289631959217508e+104,
+            5.732035497536158e-150,
+            1.166161481214312e+169,
+            -4.964381180165833e+281,
+            2.2900095125740878e+27,
+            1.868930737869657e-84,
+            2.526071940782991e-230,
+            -6.392089148594482e-211,
+            1.503742677978661e-78,
+            6.162445466541323e-233,
+            2.5312517924033574e-104,
+            3.1322867515703047e+31,
+            1.1703879038248252e-213,
+            -2.2682091894360798e-156,
+            -1.1470174310807757e+294,
+            -5.230912775251897e+78,
+            -8.589630975679177e-119,
+            -5.225775489448261e-124,
+            2.046549483626081e-233,
+            -1.6158539254264582e+117,
+            1.1987476388570453e+256,
+            -3.145983243298239e-127,
+            -3.172018311380876e-33,
+            1.5604953196105742e+99,
+            -2.6059764757912463e-106,
+            1.2725907615849007e+233,
+            7.067789192806183e-153,
+            7.912178844096914e-210,
+            1.1465527583049749e+86,
+            -1.440521045813819e+156,
+            4.716157249036665e+22,
+            -3.453708132915627e-27,
+            -9.625732483781542e-97,
+            6.408009043656438e-222,
+            -2.3461591026541882e+300,
+            -4.2231467561000534e-108,
+            1.9296586576033047e+58,
+            -3.0679629680330773e+184,
+            -8.052955767254743e-27,
+            7.4377710283713135e+137,
+            1.5511840703792665e+227,
+            2.3063636025552418e+275,
+            4.79654905458392e+203,
+            -2.997239314730295e+29,
+            4.2343086983491725e+133,
+            -6.407728650403677e-130,
+            -4.004353447766348e+152,
+            -1.098729043785481e-23,
+            -2.6740167803048756e-217,
+            1.783040101235836e+71,
+            -2.6861994487379412e-74,
+            6.040518273040937e+215,
+            -3.1530605178474225e-201,
+            6.185572632875238e-128,
+            2.9039840380641715e-178,
+            -2.6347019575443514e+51,
+            -3.976369548484986e+96,
+            2.9490106365512514e-153,
+            1.2115383964772748e-287,
+            -3.5645574265793196e+28,
+            -5.4940312479495125e+88,
+            -1.2654827230223385e+38,
+            1.7164562391927919e-162,
+            -8.954900465651834e-269,
+            248311119624.45148,
+            -356349.4843360506,
+            4.073997526067294e+254,
+            2.0283092190140033e+111,
+            -1.585228222394776e+247,
+            3.188621511063325e-201,
+            1.7866941314535823e-267,
+            -3.3894591367043555e-40,
+            -3.073689445277861e+120
+          ]
+        },
+        "raw": "{\"payload\":[9.999999999999998e+15,1.0000000000000002e+16,9.999999999999999e-05,0.00010000000000000002,9007199254740991,9007199254740992,-1.2345678901234568e+16,6.425477203632479e+44,-8802160506290648,-3.321887672905179e+258,1.3002490765236236e+148,-5.483434413745721e-64,6.198872602164253e-190,-7.893978701810457e-187,-2.863051310199465e-174,-2.6706669077549925e-291,-3.4093252734304055e-214,-3.7152441105385903e-155,-2.267770956199732e+243,-4.29379408722704e+168,-6.542681128358762e+247,6.319181363522267e+177,1.736413617654538e-237,2.398455952932893e-176,4.341338824320152e-155,1.9884383557489102e-119,1.2517776924285442e-110,-3.289631959217508e+104,5.732035497536158e-150,1.166161481214312e+169,-4.964381180165833e+281,2.2900095125740878e+27,1.868930737869657e-84,2.526071940782991e-230,-6.392089148594482e-211,1.503742677978661e-78,6.162445466541323e-233,2.5312517924033574e-104,3.1322867515703047e+31,1.1703879038248252e-213,-2.2682091894360798e-156,-1.1470174310807757e+294,-5.230912775251897e+78,-8.589630975679177e-119,-5.225775489448261e-124,2.046549483626081e-233,-1.6158539254264582e+117,1.1987476388570453e+256,-3.145983243298239e-127,-3.172018311380876e-33,1.5604953196105742e+99,-2.6059764757912463e-106,1.2725907615849007e+233,7.067789192806183e-153,7.912178844096914e-210,1.1465527583049749e+86,-1.440521045813819e+156,4.716157249036665e+22,-3.453708132915627e-27,-9.625732483781542e-97,6.408009043656438e-222,-2.3461591026541882e+300,-4.2231467561000534e-108,1.9296586576033047e+58,-3.0679629680330773e+184,-8.052955767254743e-27,7.4377710283713135e+137,1.5511840703792665e+227,2.3063636025552418e+275,4.79654905458392e+203,-2.997239314730295e+29,4.2343086983491725e+133,-6.407728650403677e-130,-4.004353447766348e+152,-1.098729043785481e-23,-2.6740167803048756e-217,1.783040101235836e+71,-2.6861994487379412e-74,6.040518273040937e+215,-3.1530605178474225e-201,6.185572632875238e-128,2.9039840380641715e-178,-2.6347019575443514e+51,-3.976369548484986e+96,2.9490106365512514e-153,1.2115383964772748e-287,-3.5645574265793196e+28,-5.4940312479495125e+88,-1.2654827230223385e+38,1.7164562391927919e-162,-8.954900465651834e-269,248311119624.45148,-356349.4843360506,4.073997526067294e+254,2.0283092190140033e+111,-1.585228222394776e+247,3.188621511063325e-201,1.7866941314535823e-267,-3.3894591367043555e-40,-3.073689445277861e+120]}",
+        "valid": true
+      }
+    }
+  ]
+}

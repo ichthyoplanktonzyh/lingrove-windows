@@ -33,8 +33,9 @@ The [offline lexical index and lazy bundled store](docs/LEARNING_OFFLINE_LEXICON
 same pinned Mac resource and attribution. [Completed-translation double-click lookup](docs/LEARNING_WORD_PREVIEW.md)
 now connects them to a bundled dictionary card; native hit/focus/placement checks and broader
 system/imported dictionary flows remain incomplete.
-The [contextual query library](docs/LEARNING_CONTEXTUAL_QUERY.md) now ports the Mac default sense
-page and lazy dictionary navigation; that dictionary UI is not connected to explanation yet.
+The [contextual query library](docs/LEARNING_CONTEXTUAL_QUERY.md) and
+[word/expression card](docs/LEARNING_CONTEXTUAL_CARD.md) now connect the Mac default sense page,
+exact captured examples and lazy dictionary navigation to the local explanation service.
 The [explanation input, prompt and output rules](docs/LEARNING_EXPLANATION_RULES.md) now have
 Mac-backed portable coverage, including model capability/metadata gates. A local provider now
 connects those rules to an exclusive native lease and complete-response validation. The app now
@@ -63,7 +64,7 @@ unverified.
   task settings, cancellation, dedicated CPU local inference and an explicit learning chat endpoint.
   Local model import and catalog downloads require user actions; settings do not load a model.
   Source/model/style/budget rules follow the pinned Mac. Native capture/IME/card and model execution, replacement,
-  reading/OCR, unit/component explanations, system/imported/online dictionaries, notebook, Anki and speech remain explicit gaps.
+  reading/OCR, system/imported/online dictionaries, notebook, Anki and speech remain explicit gaps.
 - **Privacy:** local generation is the default design. A remote endpoint is an explicit user choice;
   requests must be bounded and tied to the selected task. CI must not download model weights or
   contact model endpoints. Cloud sync is outside scope.

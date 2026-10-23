@@ -130,7 +130,8 @@ independent local runtime/settings with that service and its on-demand/60-second
 portable session now preserves saved restoration, refresh and cancellation. The writing sentence
 card now connects it with explicit controls and captured-document freshness checks; native desktop
 and model execution remain unverified. The contextual query library now sequences unit/component
-explanation with lazy dictionary navigation; WPF integration remains next. Original,
+explanation with lazy dictionary navigation. Its WPF card now connects controls, exact examples
+and captured-field guards; native interaction and selectable text remain unverified/unported. Original,
 selected-text and reading captures, endpoint transport and durable records remain later work.
 
 **Gate:** shared policy fixtures pass; Windows host tests cover selection changes, IME composition,

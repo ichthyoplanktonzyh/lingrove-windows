@@ -39,7 +39,7 @@ internal sealed partial class LearningPreviewController
     private async Task PrepareSentenceExplanationAsync(LearningPreviewState presentation, CapturedSentence capture,
         long intent, long revision)
     {
-        if (!await ValidateExplanationCaptureAsync(capture, intent).ConfigureAwait(false)) return;
+        if (!await ValidateLearningCaptureAsync(capture, intent).ConfigureAwait(false)) return;
         var input = await Task.Run(() =>
         {
             try { return _explanationInputs!.FromWritingSentencePreview(presentation); }
@@ -47,7 +47,7 @@ internal sealed partial class LearningPreviewController
         }).ConfigureAwait(false);
         // ICU is bounded but can still outlive an editor update before the tracker publishes it.
         // Re-read after construction rather than granting authority from the pre-tokenization read.
-        if (!await ValidateExplanationCaptureAsync(capture, intent).ConfigureAwait(false)) return;
+        if (!await ValidateLearningCaptureAsync(capture, intent).ConfigureAwait(false)) return;
         await _dispatcher.InvokeAsync(() =>
         {
             lock (_gate)
@@ -77,7 +77,7 @@ internal sealed partial class LearningPreviewController
             if (documentId != presentation.RequestId || !ReferenceEquals(state, displayedState)
                 || !CanExplainDocumentLocked(presentation, capture, intent)) return;
             // Like the Mac button, Stop does not prepare/recapture/reconfigure anything.
-            if (state.IsGenerating) { _explanationSession.Cancel(); return; }
+            if (state.IsGenerating) { _explanationSession.Cancel(state); return; }
         }
         _ = ObserveExplanationPresentationAsync(ExplainAfterValidationAsync(presentation, capture, intent, state));
     }
@@ -85,7 +85,7 @@ internal sealed partial class LearningPreviewController
     private async Task ExplainAfterValidationAsync(LearningPreviewState presentation, CapturedSentence capture,
         long intent, LearningExplanationState state)
     {
-        if (!await ValidateExplanationCaptureAsync(capture, intent).ConfigureAwait(false)) return;
+        if (!await ValidateLearningCaptureAsync(capture, intent).ConfigureAwait(false)) return;
         await _dispatcher.InvokeAsync(() =>
         {
             bool configure = false;
@@ -96,7 +96,7 @@ internal sealed partial class LearningPreviewController
                     || !CanExplainDocumentLocked(presentation, capture, intent)) return;
                 var action = LearningExplanationCardPolicy.Action(state, _explanationSession.IsConfigured);
                 if (action is LearningExplanationCardAction.Explain or LearningExplanationCardAction.Refresh)
-                    _ = _explanationSession.ExplainAsync(refresh: action == LearningExplanationCardAction.Refresh);
+                    _ = _explanationSession.ExplainAsync(refresh: action == LearningExplanationCardAction.Refresh, expectedState: state);
                 else configure = action == LearningExplanationCardAction.Configure;
             }
             if (configure)
@@ -122,7 +122,7 @@ internal sealed partial class LearningPreviewController
     private async Task RenderExplanationAfterValidationAsync(LearningExplanationState state,
         LearningPreviewState presentation, CapturedSentence capture, long intent)
     {
-        if (!await ValidateExplanationCaptureAsync(capture, intent).ConfigureAwait(false)) return;
+        if (!await ValidateLearningCaptureAsync(capture, intent).ConfigureAwait(false)) return;
         await _dispatcher.InvokeAsync(() =>
         {
             lock (_gate)
@@ -141,22 +141,6 @@ internal sealed partial class LearningPreviewController
         ++_explanationPreparationRevision;
         _explanationPresentation = null;
         _explanationSession?.Clear();
-    }
-
-    private async Task<bool> ValidateExplanationCaptureAsync(CapturedSentence capture, long intent)
-    {
-        if (await Task.Run(() => IsCaptureCurrent(capture)).ConfigureAwait(false)) return true;
-        await _dispatcher.InvokeAsync(() =>
-        {
-            lock (_gate)
-            {
-                // A failed old validation must not close a newer capture, including a retry
-                // sharing its intent. Retire the stale current card without waiting for polling.
-                if (!_disposed && _intentActive && _intentGeneration == intent
-                    && ReferenceEquals(_activeCapture, capture)) CancelAndHide();
-            }
-        }, DispatcherPriority.Background);
-        return false;
     }
 
     private async Task ObserveExplanationPresentationAsync(Task task)

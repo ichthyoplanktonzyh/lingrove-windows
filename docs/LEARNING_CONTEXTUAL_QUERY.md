@@ -2,9 +2,9 @@
 
 This Core library slice adapts `Services/LanguageLearning/LearningDictionarySession.swift` and
 the three `LearningContextualQueryTests.swift` cases at Mac revision
-`43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`. The current WPF dictionary controller still constructs
-the session without an explanation service; connecting its contextual controls is the next slice.
-This change alone does not expose contextual lookup in the app.
+`43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`. The
+[WPF word/expression adapter](LEARNING_CONTEXTUAL_CARD.md) now supplies worker-built inputs and
+borrows the app-owned explanation service. Native interaction/model execution remain unverified.
 
 `LearningDictionarySession.Contextual.cs` owns the target/page sequencing, while the existing
 session partial owns bundled dictionary requests and cache. `LearningDictionaryState` carries
@@ -54,6 +54,6 @@ blocked/reentrant saved callbacks, blocked event subscription, stale action snap
 GC of the retired owner/view while model work is pending. Existing dictionary/session tests remain
 in place. These are fake-driven state/lifetime tests, separate from the six pure Swift verifiers.
 
-WPF contextual/dictionary tabs and controls, native editor revalidation for auto-started lookup,
-source routing/settings, dictionary references, vocabulary ownership/adoption and durable storage
-remain follow-up work. No model or native desktop is executed by these tests.
+WPF now connects contextual/dictionary controls and captured-editor revalidation. Source routing/
+settings, dictionary references, vocabulary ownership/adoption and durable storage remain follow-up
+work. No model or native desktop is executed by these tests.

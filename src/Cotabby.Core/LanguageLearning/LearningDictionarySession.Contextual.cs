@@ -70,7 +70,8 @@ public sealed partial class LearningDictionarySession
         _state = _state with { TargetIdentity = identity, RequestIdentity = Guid.NewGuid(),
             Status = LearningDictionaryContentStatus.Loading, Result = null, ErrorMessage = null,
             Page = _explanationService is null ? LearningDictionaryPage.Dictionary : LearningDictionaryPage.Contextual,
-            HasContextualExplanation = _explanationService is not null, ExplanationConfigured = false, Explanation = null };
+            HasContextualExplanation = _explanationService is not null, ExplanationConfigured = false,
+            ExplanationLanguage = null, Explanation = null };
         if (_explanationService is not null)
         {
             var input = _unitExplanationInput;
@@ -138,13 +139,15 @@ public sealed partial class LearningDictionarySession
         if (!owner.TryGetTarget(out var session)) return;
         if (target.Session is not { } explanation) return;
         bool configured = explanation.IsConfigured;
+        var language = session._explanationService?.Language;
         bool drain;
         lock (session._gate)
         {
             if (session._disposed || !ReferenceEquals(session._contextual?.Owner, target)
                 || !ReferenceEquals(explanation.State, state)) return;
-            if (ReferenceEquals(session._state.Explanation, state) && session._state.ExplanationConfigured == configured) return;
-            session._state = session._state with { Explanation = state, ExplanationConfigured = configured };
+            if (ReferenceEquals(session._state.Explanation, state) && session._state.ExplanationConfigured == configured
+                && session._state.ExplanationLanguage == language) return;
+            session._state = session._state with { Explanation = state, ExplanationConfigured = configured, ExplanationLanguage = language };
             drain = session.EnqueueLocked();
         }
         if (drain) session.Drain();

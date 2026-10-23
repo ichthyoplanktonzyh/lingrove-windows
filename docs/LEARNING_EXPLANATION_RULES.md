@@ -268,7 +268,7 @@ currently records no telemetry.
 ## Next adapter gates
 
 Still unported: the remaining capture origins and notebook construction, explanation endpoint transport,
-durable record ownership/persistence and unit/component explanation card wiring. The writing
+durable record ownership/persistence and selectable contextual text. The [unit/component card](LEARNING_CONTEXTUAL_CARD.md) now borrows the same service. The writing
 card now revalidates its captured document before requesting/displaying explanations. The [app-owned local provider](LEARNING_EXPLANATION_RUNTIME.md) has independent configuration/runtime
 ownership; it reports unavailable rather than borrowing translation's selected model.
 Native WPF/UIA/IME/model

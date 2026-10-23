@@ -48,6 +48,7 @@ runtime, capture fixture and Swift-oracle tests cover their separately documente
 These tests and a full WPF compile do not execute the dispatcher/UIA event sequence or paint a
 native window. No model is downloaded or executed by CI; explanation quality remains unmeasured.
 
-Unit/component dictionary explanation, source-word fallback, selection/reading/OCR captures,
+[Unit/component dictionary explanation](LEARNING_CONTEXTUAL_CARD.md) is now connected separately.
+Source-word fallback, selection/reading/OCR captures,
 notebook adoption/persistence, settings sample action, localization, telemetry and explicit
 explanation endpoint consent/transport remain separate migration slices.

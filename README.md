@@ -142,7 +142,9 @@ now preserve full sense ownership, retained plans and binding identity. The shar
 The [local Anki transport](docs/ANKI_CONNECT_TRANSPORT.md) and
 [review preferences](docs/ANKI_REVIEW_SETTINGS.md) have bounded automated evidence. The
 [Windows Anki credential adapter](docs/ANKI_CREDENTIAL_STORAGE.md) supplies separate exact-key storage.
-AppHost construction, connection controls and the review send transaction remain open.
+The [review controller](docs/ANKI_REVIEW_CONTROLLER.md) now preserves operation scopes, probes,
+status and guarded navigation/template updates. AppHost construction, connection controls and the
+review send transaction remain open.
 
 Windows CI also executes the [compiled WPF learning-view suite](docs/WPF_VIEW_TESTS.md): actual
 XAML/resource loading, window layout, in-memory rendering, native no-activation styles and

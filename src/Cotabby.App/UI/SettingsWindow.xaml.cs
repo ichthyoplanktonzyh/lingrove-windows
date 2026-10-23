@@ -66,6 +66,22 @@ public partial class SettingsWindow : Window
         if (index >= 0) _instance.NavList.SelectedIndex = index;
     }
 
+    /// <summary>Uses the same shared Learning pane and its existing scroll navigation. No
+    /// second review window, controller or credential reader is created for this route.</summary>
+    internal static void ShowReview(AppHost host)
+    {
+        ShowLearning(host);
+        var window = _instance!;
+        var row = window._panes.SelectMany(p => p.Pane.Cards).SelectMany(c => c.Rows)
+            .First(r => r.Title == "Anki review");
+        window.Dispatcher.BeginInvoke(() => row.View.BringIntoView(), DispatcherPriority.Loaded);
+    }
+
+    internal static void CloseFor(AppHost host)
+    {
+        if (_instance is { } window && ReferenceEquals(window._host, host)) window.Close();
+    }
+
     protected override void OnKeyDown(KeyEventArgs e)
     {
         base.OnKeyDown(e);

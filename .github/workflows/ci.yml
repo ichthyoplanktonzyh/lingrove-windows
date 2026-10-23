@@ -79,6 +79,7 @@ jobs:
             Cotabby/Models/Context
             Cotabby/Models/LanguageLearning
             Cotabby/Models/Vocabulary
+            Cotabby/UI/Settings/Panes/LearningReviewSettingsSection.swift
             Cotabby/Models/Review
             Cotabby/Models/Runtime
             Cotabby/Models/Speech/LearningSpeechModels.swift
@@ -236,3 +237,6 @@ jobs:
 
       - name: Verify review and template transactions against original Mac Store and complete archive
         run: python3 scripts/verify-vocabulary-review-macos-parity.py --mac-repo .mac-baseline
+
+      - name: Verify original review settings key methods with synthetic effects
+        run: python3 scripts/verify-anki-settings-interaction-macos-parity.py --mac-repo .mac-baseline

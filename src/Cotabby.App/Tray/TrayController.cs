@@ -64,7 +64,7 @@ public sealed class TrayController : IDisposable
         var welcomeItem = new MenuItem { Header = "Run welcome again…" };
         welcomeItem.Click += (_, _) => WelcomeWindow.ShowFor(host);
         var quitItem = new MenuItem { Header = "Quit Cotabby" };
-        quitItem.Click += (_, _) => Application.Current.Shutdown();
+        quitItem.Click += async (_, _) => await ((App)Application.Current).RequestShutdownAsync();
 
         var menu = new ContextMenu();
         foreach (var item in new Control[]

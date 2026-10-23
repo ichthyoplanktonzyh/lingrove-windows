@@ -34,6 +34,15 @@ public sealed class VocabularyCaptureParityTests
         Assert.Equal(expected.GetProperty("explanationValid").GetBoolean(), LearningExplanationPolicy.IsValid(input));
         Assert.Equal(expected.GetProperty("explanationReceipt").ValueKind == JsonValueKind.Null ? null
             : expected.GetProperty("explanationReceipt").GetString(), input.OccurrenceIdentity);
+        var projection = expected.GetProperty("input");
+        AssertLiteral(projection.GetProperty("target"), input.Target);
+        AssertLiteral(projection.GetProperty("dictionaryForm"), input.DictionaryForm);
+        AssertLiteral(projection.GetProperty("context"), input.Context);
+        Assert.Equal(projection.GetProperty("language").GetString(), input.Language.Code());
+        Assert.Equal(JsonSerializer.Deserialize<VocabularyEntryKind>(projection.GetProperty("kind").GetRawText()), input.Kind);
+        Assert.Equal(JsonSerializer.Deserialize<LearningExplanationContext>(projection.GetProperty("contextKind").GetRawText()), input.ContextKind);
+        Assert.Equal(projection.GetProperty("ranges").EnumerateArray().Select(range => new VocabularyTextRange(
+            range.GetProperty("location").GetInt32(), range.GetProperty("length").GetInt32())), input.Ranges);
         if (expected.GetProperty("valid").GetBoolean()) VocabularyCapturePolicy.Validate(capture);
         else Assert.Throws<VocabularyContentValidationException>(() => VocabularyCapturePolicy.Validate(capture));
     }
@@ -58,4 +67,11 @@ public sealed class VocabularyCaptureParityTests
     private static string? String(JsonElement value, string name) => value.TryGetProperty(name, out var text) ? text.GetString() : null;
     private static string Text(JsonElement value) => value.ValueKind == JsonValueKind.String ? value.GetString()!
         : string.Concat(Enumerable.Repeat(value.GetProperty("repeating").GetString()!, value.GetProperty("count").GetInt32()));
+    private static void AssertLiteral(JsonElement expected, string actual)
+    {
+        byte[] bytes = Encoding.UTF8.GetBytes(actual);
+        Assert.Equal(expected.GetProperty("utf8Bytes").GetInt32(), bytes.Length);
+        Assert.Equal(expected.GetProperty("sha256").GetString(), Convert.ToHexStringLower(SHA256.HashData(bytes)));
+        if (expected.TryGetProperty("text", out var text)) Assert.Equal(text.GetString(), actual);
+    }
 }

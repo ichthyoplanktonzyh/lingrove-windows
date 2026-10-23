@@ -252,7 +252,8 @@ python3 scripts/verify-vocabulary-capture-macos-parity.py --mac-repo /path/to/li
 ```
 
 Observations retain normalized byte count/hash and short raw text, entry/example/capture keys,
-capture validity, explanation validity and occurrence receipt. They cover language/kind/case,
+capture validity, explanation validity/occurrence receipt and all projected input fields (literal fields
+use exact UTF-8 lengths/hashes and short raw values; enums and ordered ranges retain their values). They cover language/kind/case,
 NFC/Character whitespace, original UTF-8 budgets, exact occurrence/order/scope, annotation and
 provenance independence, invalid/split ranges, empty/overlapping ranges permitted by the Mac
 capture validator, and its NSString CR/LF range behavior. Expected values come from executing

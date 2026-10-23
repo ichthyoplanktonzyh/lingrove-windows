@@ -18,6 +18,32 @@
         "exampleKey": "no-context",
         "explanationReceipt": null,
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -40,6 +66,32 @@
         "exampleKey": "no-context",
         "explanationReceipt": null,
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -62,6 +114,32 @@
         "exampleKey": "no-context",
         "explanationReceipt": null,
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "expression",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -84,6 +162,32 @@
         "exampleKey": "no-context",
         "explanationReceipt": null,
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "pattern",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -106,6 +210,32 @@
         "exampleKey": "no-context",
         "explanationReceipt": null,
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "sentence",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -128,6 +258,32 @@
         "exampleKey": "no-context",
         "explanationReceipt": null,
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -150,6 +306,32 @@
         "exampleKey": "no-context",
         "explanationReceipt": null,
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "es",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -172,6 +354,32 @@
         "exampleKey": "no-context",
         "explanationReceipt": null,
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "fr",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -194,6 +402,32 @@
         "exampleKey": "no-context",
         "explanationReceipt": null,
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "de",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -216,6 +450,32 @@
         "exampleKey": "no-context",
         "explanationReceipt": null,
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "it",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -238,6 +498,32 @@
         "exampleKey": "no-context",
         "explanationReceipt": null,
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "pt",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -260,6 +546,32 @@
         "exampleKey": "no-context",
         "explanationReceipt": null,
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "nl",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -282,6 +594,32 @@
         "exampleKey": "no-context",
         "explanationReceipt": null,
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "ru",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -304,6 +642,32 @@
         "exampleKey": "no-context",
         "explanationReceipt": null,
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "zh-Hans",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -326,6 +690,32 @@
         "exampleKey": "no-context",
         "explanationReceipt": null,
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "zh-Hant",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -348,6 +738,32 @@
         "exampleKey": "no-context",
         "explanationReceipt": null,
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "ja",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -370,6 +786,32 @@
         "exampleKey": "no-context",
         "explanationReceipt": null,
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "ko",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -392,6 +834,32 @@
         "exampleKey": "no-context",
         "explanationReceipt": null,
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "hi",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -414,6 +882,32 @@
         "exampleKey": "no-context",
         "explanationReceipt": null,
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "ar",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -436,6 +930,32 @@
         "exampleKey": "no-context",
         "explanationReceipt": null,
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "afd80c5a1b84c378544290379f7195d17d994e3a6e30675372c6dc58446e0614",
+            "text": "Posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "afd80c5a1b84c378544290379f7195d17d994e3a6e30675372c6dc58446e0614",
+            "text": "Posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "Posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "afd80c5a1b84c378544290379f7195d17d994e3a6e30675372c6dc58446e0614",
@@ -458,6 +978,32 @@
         "exampleKey": "no-context",
         "explanationReceipt": null,
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "850f7dc43910ff890f8879c0ed26fe697c93a067ad93a7d50f466a7028a9bf4e",
+            "text": "café",
+            "utf8Bytes": 5
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 4,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "850f7dc43910ff890f8879c0ed26fe697c93a067ad93a7d50f466a7028a9bf4e",
+            "text": "café",
+            "utf8Bytes": 5
+          }
+        },
         "normalized": "café",
         "normalizedBytes": 5,
         "normalizedSHA256": "850f7dc43910ff890f8879c0ed26fe697c93a067ad93a7d50f466a7028a9bf4e",
@@ -480,6 +1026,32 @@
         "exampleKey": "no-context",
         "explanationReceipt": null,
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "81ef060bcd98adc7824eb5c1ada83c32491b16018e11e79f00ab9d09e04b015a",
+            "text": "café",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 5,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "81ef060bcd98adc7824eb5c1ada83c32491b16018e11e79f00ab9d09e04b015a",
+            "text": "café",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "café",
         "normalizedBytes": 5,
         "normalizedSHA256": "850f7dc43910ff890f8879c0ed26fe697c93a067ad93a7d50f466a7028a9bf4e",
@@ -502,6 +1074,32 @@
         "exampleKey": "no-context",
         "explanationReceipt": null,
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "8790bb31d0a01a61aa56353948f98ea603e25775eef6792c044362a5e11a117b",
+            "text": " \tkeep\n me\r\nposted  ",
+            "utf8Bytes": 21
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 20,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "8790bb31d0a01a61aa56353948f98ea603e25775eef6792c044362a5e11a117b",
+            "text": " \tkeep\n me\r\nposted  ",
+            "utf8Bytes": 21
+          }
+        },
         "normalized": "keep me posted",
         "normalizedBytes": 14,
         "normalizedSHA256": "f56943bf45c296a49228aa536e1603898c06cdf224d863101964dabc0ada4f75",
@@ -524,6 +1122,32 @@
         "exampleKey": "no-context",
         "explanationReceipt": null,
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "f998a9526559636a0cecd5e0ca64b69867e85d9b29b3dcb66b3b19b683b2eb8c",
+            "text": " ́ x",
+            "utf8Bytes": 5
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 4,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "f998a9526559636a0cecd5e0ca64b69867e85d9b29b3dcb66b3b19b683b2eb8c",
+            "text": " ́ x",
+            "utf8Bytes": 5
+          }
+        },
         "normalized": "x",
         "normalizedBytes": 1,
         "normalizedSHA256": "2d711642b726b04401627ca9fbac32f5c8530fb1903cc4db02258717921a4881",
@@ -546,6 +1170,32 @@
         "exampleKey": "no-context",
         "explanationReceipt": null,
         "explanationValid": false,
+        "input": {
+          "context": {
+            "sha256": "f4e48e664a603543865edc77bbc76dd1dd53dc9d0c30f651bbad7c8231091348",
+            "text": "​",
+            "utf8Bytes": 3
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 1,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "f4e48e664a603543865edc77bbc76dd1dd53dc9d0c30f651bbad7c8231091348",
+            "text": "​",
+            "utf8Bytes": 3
+          }
+        },
         "normalized": "​",
         "normalizedBytes": 3,
         "normalizedSHA256": "f4e48e664a603543865edc77bbc76dd1dd53dc9d0c30f651bbad7c8231091348",
@@ -568,6 +1218,32 @@
         "exampleKey": "no-context",
         "explanationReceipt": null,
         "explanationValid": false,
+        "input": {
+          "context": {
+            "sha256": "af7475cd16a2bfde8bd44fdaa63747182321b50e4c4fbb1aafaa1c123116db69",
+            "text": "  　",
+            "utf8Bytes": 9
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 3,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "af7475cd16a2bfde8bd44fdaa63747182321b50e4c4fbb1aafaa1c123116db69",
+            "text": "  　",
+            "utf8Bytes": 9
+          }
+        },
         "normalized": "",
         "normalizedBytes": 0,
         "normalizedSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -590,6 +1266,32 @@
         "exampleKey": "no-context",
         "explanationReceipt": null,
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "f1945cd6c19e56b3c1c78943ef5ec18116907a4ca1efc40a57d48ab1db7adfc5",
+            "text": "﻿",
+            "utf8Bytes": 3
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 1,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "f1945cd6c19e56b3c1c78943ef5ec18116907a4ca1efc40a57d48ab1db7adfc5",
+            "text": "﻿",
+            "utf8Bytes": 3
+          }
+        },
         "normalized": "﻿",
         "normalizedBytes": 3,
         "normalizedSHA256": "f1945cd6c19e56b3c1c78943ef5ec18116907a4ca1efc40a57d48ab1db7adfc5",
@@ -612,6 +1314,32 @@
         "exampleKey": "no-context",
         "explanationReceipt": null,
         "explanationValid": false,
+        "input": {
+          "context": {
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "text": "",
+            "utf8Bytes": 0
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 0,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "text": "",
+            "utf8Bytes": 0
+          }
+        },
         "normalized": "",
         "normalizedBytes": 0,
         "normalizedSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -634,6 +1362,32 @@
         "exampleKey": "no-context",
         "explanationReceipt": null,
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "8fc41774e0f52eaee9169cc5040e756e440e23cd520f83d1ae9c47c9ee7ad081",
+            "text": "4:word:1:a",
+            "utf8Bytes": 10
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 10,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "8fc41774e0f52eaee9169cc5040e756e440e23cd520f83d1ae9c47c9ee7ad081",
+            "text": "4:word:1:a",
+            "utf8Bytes": 10
+          }
+        },
         "normalized": "4:word:1:a",
         "normalizedBytes": 10,
         "normalizedSHA256": "8fc41774e0f52eaee9169cc5040e756e440e23cd520f83d1ae9c47c9ee7ad081",
@@ -659,6 +1413,30 @@
         "exampleKey": "no-context",
         "explanationReceipt": null,
         "explanationValid": false,
+        "input": {
+          "context": {
+            "sha256": "dd3dde87623d9a6b354c68c943d189c89c63652d945e7bbdf0986cae91a49521",
+            "utf8Bytes": 262144
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 262144,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "dd3dde87623d9a6b354c68c943d189c89c63652d945e7bbdf0986cae91a49521",
+            "utf8Bytes": 262144
+          }
+        },
         "normalized": null,
         "normalizedBytes": 262144,
         "normalizedSHA256": "dd3dde87623d9a6b354c68c943d189c89c63652d945e7bbdf0986cae91a49521",
@@ -684,6 +1462,30 @@
         "exampleKey": "no-context",
         "explanationReceipt": null,
         "explanationValid": false,
+        "input": {
+          "context": {
+            "sha256": "c592f4a6b099700b5050ce8bc67367f0c8f44810203124e86405c3e7b6f1a2ba",
+            "utf8Bytes": 262145
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 262145,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "c592f4a6b099700b5050ce8bc67367f0c8f44810203124e86405c3e7b6f1a2ba",
+            "utf8Bytes": 262145
+          }
+        },
         "normalized": null,
         "normalizedBytes": 262145,
         "normalizedSHA256": "c592f4a6b099700b5050ce8bc67367f0c8f44810203124e86405c3e7b6f1a2ba",
@@ -709,6 +1511,30 @@
         "exampleKey": "no-context",
         "explanationReceipt": null,
         "explanationValid": false,
+        "input": {
+          "context": {
+            "sha256": "94914398e4fe14ac182b9e6080caa078bbde122682c352744929d55f7d038d10",
+            "utf8Bytes": 262144
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 131072,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "94914398e4fe14ac182b9e6080caa078bbde122682c352744929d55f7d038d10",
+            "utf8Bytes": 262144
+          }
+        },
         "normalized": null,
         "normalizedBytes": 262144,
         "normalizedSHA256": "94914398e4fe14ac182b9e6080caa078bbde122682c352744929d55f7d038d10",
@@ -734,6 +1560,30 @@
         "exampleKey": "no-context",
         "explanationReceipt": null,
         "explanationValid": false,
+        "input": {
+          "context": {
+            "sha256": "f255f6867867b3951d82413e5cebf5973f140cbce4a0ea963630b38bcf6325ba",
+            "utf8Bytes": 262146
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 131073,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "f255f6867867b3951d82413e5cebf5973f140cbce4a0ea963630b38bcf6325ba",
+            "utf8Bytes": 262146
+          }
+        },
         "normalized": null,
         "normalizedBytes": 262146,
         "normalizedSHA256": "f255f6867867b3951d82413e5cebf5973f140cbce4a0ea963630b38bcf6325ba",
@@ -759,6 +1609,30 @@
         "exampleKey": "no-context",
         "explanationReceipt": null,
         "explanationValid": false,
+        "input": {
+          "context": {
+            "sha256": "27cb03b898e978f2493818e414119edabc05246a6697a65ea42b21b682dc07d4",
+            "utf8Bytes": 262145
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 262145,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "27cb03b898e978f2493818e414119edabc05246a6697a65ea42b21b682dc07d4",
+            "utf8Bytes": 262145
+          }
+        },
         "normalized": "",
         "normalizedBytes": 0,
         "normalizedSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -791,6 +1665,32 @@
         "exampleKey": "061165eaff41695c7322efda8fb1a6f9e9416b7a6f9761d73c910d5a50fc3ce5",
         "explanationReceipt": "061165eaff41695c7322efda8fb1a6f9e9416b7a6f9761d73c910d5a50fc3ce5",
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "3cab18b1f3190c2c102235ab1c461b4e474d22e579f5ece837b370e5e4bb8652",
+            "text": "I saw a bat near the bat.",
+            "utf8Bytes": 25
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 3,
+              "location": 21
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -823,6 +1723,32 @@
         "exampleKey": "851880eadc8452c630687a2dd9a95161343ae75bba74f0c91914b3d46593ef71",
         "explanationReceipt": "851880eadc8452c630687a2dd9a95161343ae75bba74f0c91914b3d46593ef71",
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "3cab18b1f3190c2c102235ab1c461b4e474d22e579f5ece837b370e5e4bb8652",
+            "text": "I saw a bat near the bat.",
+            "utf8Bytes": 25
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 3,
+              "location": 8
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -855,6 +1781,32 @@
         "exampleKey": "4febd531a8bfae6b6d69953979f779b67025ff50aa1f8d8d441d1e10d0645c68",
         "explanationReceipt": "4febd531a8bfae6b6d69953979f779b67025ff50aa1f8d8d441d1e10d0645c68",
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "3cab18b1f3190c2c102235ab1c461b4e474d22e579f5ece837b370e5e4bb8652",
+            "text": "I saw a bat near the bat.",
+            "utf8Bytes": 25
+          },
+          "contextKind": "fragment",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 3,
+              "location": 21
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -891,6 +1843,36 @@
         "exampleKey": "4e6a16ba8fc9f9ff9653ae136eacd269b6c56031f30e54b19b137db7b61a2dd6",
         "explanationReceipt": "4e6a16ba8fc9f9ff9653ae136eacd269b6c56031f30e54b19b137db7b61a2dd6",
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "3cab18b1f3190c2c102235ab1c461b4e474d22e579f5ece837b370e5e4bb8652",
+            "text": "I saw a bat near the bat.",
+            "utf8Bytes": 25
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 3,
+              "location": 8
+            },
+            {
+              "length": 3,
+              "location": 21
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -927,6 +1909,36 @@
         "exampleKey": "f1aa7bcfa11484710f8d0244d81d56e2e5fb3d03f03588c1457036186f12d0eb",
         "explanationReceipt": "f1aa7bcfa11484710f8d0244d81d56e2e5fb3d03f03588c1457036186f12d0eb",
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "3cab18b1f3190c2c102235ab1c461b4e474d22e579f5ece837b370e5e4bb8652",
+            "text": "I saw a bat near the bat.",
+            "utf8Bytes": 25
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 3,
+              "location": 21
+            },
+            {
+              "length": 3,
+              "location": 8
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -963,6 +1975,36 @@
         "exampleKey": "8bd4e58bafd41c57e12aea12cb3433dd2936ad60a19b208f82e3c86880d7407b",
         "explanationReceipt": "8bd4e58bafd41c57e12aea12cb3433dd2936ad60a19b208f82e3c86880d7407b",
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "3cab18b1f3190c2c102235ab1c461b4e474d22e579f5ece837b370e5e4bb8652",
+            "text": "I saw a bat near the bat.",
+            "utf8Bytes": 25
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 3,
+              "location": 8
+            },
+            {
+              "length": 3,
+              "location": 8
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -990,6 +2032,27 @@
         "exampleKey": "694ee301615aab7876135dee3c8e728a52a5efa4bf2d6c1498a40302ec4dc81c",
         "explanationReceipt": "694ee301615aab7876135dee3c8e728a52a5efa4bf2d6c1498a40302ec4dc81c",
         "explanationValid": false,
+        "input": {
+          "context": {
+            "sha256": "3cab18b1f3190c2c102235ab1c461b4e474d22e579f5ece837b370e5e4bb8652",
+            "text": "I saw a bat near the bat.",
+            "utf8Bytes": 25
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -1030,6 +2093,32 @@
         "exampleKey": "061165eaff41695c7322efda8fb1a6f9e9416b7a6f9761d73c910d5a50fc3ce5",
         "explanationReceipt": "061165eaff41695c7322efda8fb1a6f9e9416b7a6f9761d73c910d5a50fc3ce5",
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "3cab18b1f3190c2c102235ab1c461b4e474d22e579f5ece837b370e5e4bb8652",
+            "text": "I saw a bat near the bat.",
+            "utf8Bytes": 25
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 3,
+              "location": 21
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -1071,6 +2160,32 @@
         "exampleKey": "061165eaff41695c7322efda8fb1a6f9e9416b7a6f9761d73c910d5a50fc3ce5",
         "explanationReceipt": "061165eaff41695c7322efda8fb1a6f9e9416b7a6f9761d73c910d5a50fc3ce5",
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "3cab18b1f3190c2c102235ab1c461b4e474d22e579f5ece837b370e5e4bb8652",
+            "text": "I saw a bat near the bat.",
+            "utf8Bytes": 25
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "4bbb93f4436553361c59a45de563a4293ee62d5f3f77c1f82cf0b108f92f411f",
+            "text": "another form",
+            "utf8Bytes": 12
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 3,
+              "location": 21
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -1098,6 +2213,27 @@
         "exampleKey": "24506f0e9c8b5c21dc417088a6eed2daedd6489357004c75d965ca07f228866f",
         "explanationReceipt": "24506f0e9c8b5c21dc417088a6eed2daedd6489357004c75d965ca07f228866f",
         "explanationValid": false,
+        "input": {
+          "context": {
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "text": "",
+            "utf8Bytes": 0
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -1130,6 +2266,32 @@
         "exampleKey": "a8b4c74cf08e30421eb8c87416a50a65b81207e3be6e549eca56e2c2e3eb19f8",
         "explanationReceipt": "a8b4c74cf08e30421eb8c87416a50a65b81207e3be6e549eca56e2c2e3eb19f8",
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "36a9e7f1c95b82ffb99743e0c5c4ce95d83c9a430aac59f84ef3cbfab6145068",
+            "text": " ",
+            "utf8Bytes": 1
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 1,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -1162,6 +2324,32 @@
         "exampleKey": "d36549c17995a760826fe6da669ebae3a3ce2292da36314c88a71a823903685f",
         "explanationReceipt": "d36549c17995a760826fe6da669ebae3a3ce2292da36314c88a71a823903685f",
         "explanationValid": false,
+        "input": {
+          "context": {
+            "sha256": "3639efcd08abb273b1619e82e78c29a7df02c1051b1820e99fc395dcaa3326b8",
+            "text": "Hi",
+            "utf8Bytes": 2
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 1,
+              "location": -1
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -1194,6 +2382,32 @@
         "exampleKey": "6329220795ce8c03c22e094efa659388781803911eadf0a16a3f2fa57b936bea",
         "explanationReceipt": "6329220795ce8c03c22e094efa659388781803911eadf0a16a3f2fa57b936bea",
         "explanationValid": false,
+        "input": {
+          "context": {
+            "sha256": "3639efcd08abb273b1619e82e78c29a7df02c1051b1820e99fc395dcaa3326b8",
+            "text": "Hi",
+            "utf8Bytes": 2
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 0,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -1226,6 +2440,32 @@
         "exampleKey": "c72b0f599dc3433938eaeaff8e0802b6131b3e28a81930267cddd77934d10913",
         "explanationReceipt": "c72b0f599dc3433938eaeaff8e0802b6131b3e28a81930267cddd77934d10913",
         "explanationValid": false,
+        "input": {
+          "context": {
+            "sha256": "3639efcd08abb273b1619e82e78c29a7df02c1051b1820e99fc395dcaa3326b8",
+            "text": "Hi",
+            "utf8Bytes": 2
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": -1,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -1258,6 +2498,32 @@
         "exampleKey": "db1857c60871d0219e2f14887ac9369ba02325f0647c5d440d40bb9054bf3240",
         "explanationReceipt": "db1857c60871d0219e2f14887ac9369ba02325f0647c5d440d40bb9054bf3240",
         "explanationValid": false,
+        "input": {
+          "context": {
+            "sha256": "3639efcd08abb273b1619e82e78c29a7df02c1051b1820e99fc395dcaa3326b8",
+            "text": "Hi",
+            "utf8Bytes": 2
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 1,
+              "location": 3
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -1290,6 +2556,32 @@
         "exampleKey": "3f69ff9ef042f6c60791a475c35a8889294b5dd4d7e72f0b4419ccee3d2649bc",
         "explanationReceipt": "3f69ff9ef042f6c60791a475c35a8889294b5dd4d7e72f0b4419ccee3d2649bc",
         "explanationValid": false,
+        "input": {
+          "context": {
+            "sha256": "3639efcd08abb273b1619e82e78c29a7df02c1051b1820e99fc395dcaa3326b8",
+            "text": "Hi",
+            "utf8Bytes": 2
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 2147483647,
+              "location": 2147483647
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -1322,6 +2614,32 @@
         "exampleKey": "744fc63ab81263058de6123703d3f30e293feb4f1bfa8db5176cfc102659e924",
         "explanationReceipt": "744fc63ab81263058de6123703d3f30e293feb4f1bfa8db5176cfc102659e924",
         "explanationValid": false,
+        "input": {
+          "context": {
+            "sha256": "c29a6208692dcf3a8d5a0418ad7aa6ef90b667ab5d8e5ef65fce175a4df9bb71",
+            "text": "🐟Hi",
+            "utf8Bytes": 6
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 1,
+              "location": 1
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -1354,6 +2672,32 @@
         "exampleKey": "a03ee712ea0c9669e9ae0daef83e3b5def21f41c062ca65da155ff0f33aed72d",
         "explanationReceipt": "a03ee712ea0c9669e9ae0daef83e3b5def21f41c062ca65da155ff0f33aed72d",
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "c29a6208692dcf3a8d5a0418ad7aa6ef90b667ab5d8e5ef65fce175a4df9bb71",
+            "text": "🐟Hi",
+            "utf8Bytes": 6
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 2,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -1386,6 +2730,32 @@
         "exampleKey": "ae1a94cd08ddab63ef7a31118e2a7565fb18a73bade72b19ae3859085461f11d",
         "explanationReceipt": "ae1a94cd08ddab63ef7a31118e2a7565fb18a73bade72b19ae3859085461f11d",
         "explanationValid": false,
+        "input": {
+          "context": {
+            "sha256": "bf12767b0f2a56b2190075bae8169f656e3ce8d6357d4aff184bc6c7ea48f9f6",
+            "text": "é",
+            "utf8Bytes": 3
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 1,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -1418,6 +2788,32 @@
         "exampleKey": "ee0b8473d62496a0dfb039ba696220b027abab15957d842f0c277c66e86e881d",
         "explanationReceipt": "ee0b8473d62496a0dfb039ba696220b027abab15957d842f0c277c66e86e881d",
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "bf12767b0f2a56b2190075bae8169f656e3ce8d6357d4aff184bc6c7ea48f9f6",
+            "text": "é",
+            "utf8Bytes": 3
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 2,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -1450,6 +2846,32 @@
         "exampleKey": "2e9bfee491bf8b334ce079d7ba90f1f97db8c41ec63ba5d41769df68e00ff84c",
         "explanationReceipt": "2e9bfee491bf8b334ce079d7ba90f1f97db8c41ec63ba5d41769df68e00ff84c",
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "4a99557e4033c3539de2eb65472017cad5f9557f7a0625a09f1c3f6e2ba69c4c",
+            "text": "é",
+            "utf8Bytes": 2
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 1,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -1482,6 +2904,32 @@
         "exampleKey": "bb517dbbc36e83d520e7743f965a76ac3f5bed8a4a2ccc5b6805fc3f30afbb16",
         "explanationReceipt": "bb517dbbc36e83d520e7743f965a76ac3f5bed8a4a2ccc5b6805fc3f30afbb16",
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "18745f36a05e29072709042d6062ce54f1b08ff36c27ba80c39f81fb010c8ce2",
+            "text": "a\r\nb",
+            "utf8Bytes": 4
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 1,
+              "location": 1
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -1514,6 +2962,32 @@
         "exampleKey": "a488ba9489d6d64312f7831c4ccca0aae759e82600977c9a3310857855444268",
         "explanationReceipt": "a488ba9489d6d64312f7831c4ccca0aae759e82600977c9a3310857855444268",
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "18745f36a05e29072709042d6062ce54f1b08ff36c27ba80c39f81fb010c8ce2",
+            "text": "a\r\nb",
+            "utf8Bytes": 4
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 2,
+              "location": 1
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -1546,6 +3020,32 @@
         "exampleKey": "67cf7afb9724e05e5a6a32ebe444db8f8efe182a4b85914537783440b45ffe8e",
         "explanationReceipt": "67cf7afb9724e05e5a6a32ebe444db8f8efe182a4b85914537783440b45ffe8e",
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "b1e0232190991f0337645cb23fb896790216a8488f6c1d59f4cdf874cf5ec806",
+            "text": "👩🏽‍💻",
+            "utf8Bytes": 15
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 7,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -1578,6 +3078,32 @@
         "exampleKey": "9864d07d3268fcaff925781a1dfbb1acfa6e23fda2e63e72b2a150198e9ffcbb",
         "explanationReceipt": "9864d07d3268fcaff925781a1dfbb1acfa6e23fda2e63e72b2a150198e9ffcbb",
         "explanationValid": false,
+        "input": {
+          "context": {
+            "sha256": "b1e0232190991f0337645cb23fb896790216a8488f6c1d59f4cdf874cf5ec806",
+            "text": "👩🏽‍💻",
+            "utf8Bytes": 15
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 2,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -1613,6 +3139,31 @@
         "exampleKey": "9a0922a4e7dd341d435155d02e8be298894db87039111b37df225482143414ab",
         "explanationReceipt": "9a0922a4e7dd341d435155d02e8be298894db87039111b37df225482143414ab",
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "dd3dde87623d9a6b354c68c943d189c89c63652d945e7bbdf0986cae91a49521",
+            "utf8Bytes": 262144
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 1,
+              "location": 262143
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -1648,6 +3199,31 @@
         "exampleKey": "649f92df7d7c71091941d2301b616d25875dc7d1869db217455ee5669b836c6f",
         "explanationReceipt": "649f92df7d7c71091941d2301b616d25875dc7d1869db217455ee5669b836c6f",
         "explanationValid": false,
+        "input": {
+          "context": {
+            "sha256": "c592f4a6b099700b5050ce8bc67367f0c8f44810203124e86405c3e7b6f1a2ba",
+            "utf8Bytes": 262145
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 1,
+              "location": 262144
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -1680,6 +3256,32 @@
         "exampleKey": "b5110b88f3a66ac25e314f0f8f31e263698fa2724ab393a3a9164c3a0d969c7e",
         "explanationReceipt": "b5110b88f3a66ac25e314f0f8f31e263698fa2724ab393a3a9164c3a0d969c7e",
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "18745f36a05e29072709042d6062ce54f1b08ff36c27ba80c39f81fb010c8ce2",
+            "text": "a\r\nb",
+            "utf8Bytes": 4
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 1,
+              "location": 2
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
@@ -1712,6 +3314,32 @@
         "exampleKey": "a0a57f0d6b008ad9bc7d5ae5969487e098940c05180991660b36ac07f51267ce",
         "explanationReceipt": "a0a57f0d6b008ad9bc7d5ae5969487e098940c05180991660b36ac07f51267ce",
         "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "18745f36a05e29072709042d6062ce54f1b08ff36c27ba80c39f81fb010c8ce2",
+            "text": "a\r\nb",
+            "utf8Bytes": 4
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 2,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
         "normalized": "posted",
         "normalizedBytes": 6,
         "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",

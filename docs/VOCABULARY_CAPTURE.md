@@ -49,7 +49,8 @@ verifier compiles actual pinned usage/capture models, exact Kind declaration, id
 methods and capture-to-explanation projection/validation. It excludes the unported entry/sense/review
 graphs instead of faking their behavior. Language/catalog, budget/estimator and error dependencies
 are original source too. Observations include normalized bytes/hash, exact keys, capture validity,
-explanation validity and receipt. Large repetitive text uses a text spec, with exact byte count and
+explanation validity/receipt and every input field (target, dictionary form, language/kind, context,
+ordered ranges and completeness). Large repetitive text uses a text spec, with exact byte count and
 SHA-256 to keep the fixture compact. No expected result is produced by the C# implementation.
 
 Ten standalone cases cover edits versus explicit ID copying, detached lists, canonical equality

@@ -56,6 +56,29 @@ struct Capture: Decodable {
 }
 struct Row: Decodable { let id: String; let capture: Capture }
 struct Corpus: Decodable { let cases: [Row] }
+struct LiteralObservation: Encodable {
+    let text: String?
+    let utf8Bytes: Int
+    let sha256: String
+    init(_ value: String) {
+        let bytes = Data(value.utf8)
+        text = bytes.count <= 1_024 ? value : nil; utf8Bytes = bytes.count
+        sha256 = SHA256.hash(data: bytes).map { String(format: "%02x", $0) }.joined()
+    }
+}
+struct InputObservation: Encodable {
+    let target: LiteralObservation
+    let dictionaryForm: LiteralObservation
+    let language: String
+    let kind: String
+    let context: LiteralObservation
+    let ranges: [VocabularyTextRange]
+    let contextKind: String
+    init(_ input: LearningExplanationInput) {
+        target = .init(input.target); dictionaryForm = .init(input.dictionaryForm); language = input.language.rawValue
+        kind = input.kind.rawValue; context = .init(input.context); ranges = input.ranges; contextKind = input.contextKind.rawValue
+    }
+}
 struct Observation: Encodable {
     let valid: Bool
     let explanationValid: Bool
@@ -66,13 +89,15 @@ struct Observation: Encodable {
     let entryKey: String
     let exampleKey: String
     let captureKey: String
-    enum CodingKeys: String, CodingKey { case valid, explanationValid, explanationReceipt, normalized, normalizedBytes, normalizedSHA256, entryKey, exampleKey, captureKey }
+    let input: InputObservation
+    enum CodingKeys: String, CodingKey { case valid, explanationValid, explanationReceipt, normalized, normalizedBytes, normalizedSHA256, entryKey, exampleKey, captureKey, input }
     func encode(to encoder: Encoder) throws {
         var c = encoder.container(keyedBy: CodingKeys.self)
         try c.encode(valid, forKey: .valid); try c.encode(explanationValid, forKey: .explanationValid)
         try c.encode(explanationReceipt, forKey: .explanationReceipt); try c.encode(normalized, forKey: .normalized)
         try c.encode(normalizedBytes, forKey: .normalizedBytes); try c.encode(normalizedSHA256, forKey: .normalizedSHA256)
         try c.encode(entryKey, forKey: .entryKey); try c.encode(exampleKey, forKey: .exampleKey); try c.encode(captureKey, forKey: .captureKey)
+        try c.encode(input, forKey: .input)
     }
 }
 struct Result: Encodable { let id: String; let expected: Observation }
@@ -87,7 +112,7 @@ let results = corpus.cases.map { row in
         explanationReceipt: input.occurrenceIdentity, normalized: bytes.count <= 1_024 ? normalized : nil,
         normalizedBytes: bytes.count, normalizedSHA256: SHA256.hash(data: bytes).map { String(format: "%02x", $0) }.joined(),
         entryKey: VocabularyPolicy.entryKey(capture), exampleKey: VocabularyPolicy.exampleKey(capture.example),
-        captureKey: VocabularyPolicy.captureKey(capture)))
+        captureKey: VocabularyPolicy.captureKey(capture), input: .init(input)))
 }
 let encoder = JSONEncoder(); encoder.outputFormatting = [.sortedKeys]
 FileHandle.standardOutput.write(try encoder.encode(results))

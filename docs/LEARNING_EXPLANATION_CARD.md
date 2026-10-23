@@ -35,7 +35,7 @@ settings pane after retiring the captured preview. Settings selection does not g
 no endpoint transport, text insertion or notebook adoption in this flow.
 
 The current Windows preview already shows the source and translation together, so this slice
-embeds explanation there; Mac compact/expanded card selection is not yet ported. Meaning and prose
+embeds explanation there; Mac compact/expanded card modes are not yet ported. Meaning and prose
 are plain text with an Arabic response direction when appropriate. Both the explanation and the
 whole card have bounded scroll viewports. The inherited `WS_EX_NOACTIVATE`, `ShowActivated=false`
 and physical-pixel placement path remain the native focus/position boundary. Native interaction,

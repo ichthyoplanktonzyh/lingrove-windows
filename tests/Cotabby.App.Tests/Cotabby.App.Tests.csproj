@@ -18,6 +18,8 @@
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Explanation.cs" Link="Production\AppSettings.Explanation.cs" />
     <Compile Include="..\..\src\Cotabby.App\Learning\LearningExplanationController.cs" Link="Production\LearningExplanationController.cs" />
     <Compile Include="..\..\src\Cotabby.App\Learning\LearningTextCopyController.cs" Link="Production\LearningTextCopyController.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Learning\LearningSelectedCopyPolicy.cs" Link="Production\LearningSelectedCopyPolicy.cs" />
+    <Compile Include="..\..\src\Cotabby.App\UI\Controls\SelectedTextCopyLease.cs" Link="Production\SelectedTextCopyLease.cs" />
     <Compile Include="..\..\src\Cotabby.App\Learning\LearningExplanationCardPolicy.cs" Link="Production\LearningExplanationCardPolicy.cs" />
     <Compile Include="..\..\src\Cotabby.App\Learning\LearningDictionaryCardPolicy.cs" Link="Production\LearningDictionaryCardPolicy.cs" />
     <ProjectReference Include="..\..\src\Cotabby.Core\Cotabby.Core.csproj" />

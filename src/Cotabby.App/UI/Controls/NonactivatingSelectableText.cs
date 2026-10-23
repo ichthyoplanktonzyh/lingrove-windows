@@ -20,7 +20,12 @@ public sealed class NonactivatingSelectableText : TextBlock
 {
     public static readonly DependencyProperty DocumentIdentityProperty = DependencyProperty.Register(
         nameof(DocumentIdentity), typeof(object), typeof(NonactivatingSelectableText),
-        new PropertyMetadata(null, (owner, _) => ((NonactivatingSelectableText)owner).ClearSelection()));
+        new PropertyMetadata(null, (owner, change) =>
+        {
+            // Guid identities arrive boxed as object. Repainting the same target can allocate
+            // another box, so a DP reference change is not necessarily a document change.
+            if (!Equals(change.OldValue, change.NewValue)) ((NonactivatingSelectableText)owner).ClearSelection();
+        }));
     public static readonly RoutedEvent CopyRequestedEvent = EventManager.RegisterRoutedEvent(
         nameof(CopyRequested), RoutingStrategy.Bubble, typeof(EventHandler<SelectedTextCopyEventArgs>), typeof(NonactivatingSelectableText));
 
@@ -44,10 +49,11 @@ public sealed class NonactivatingSelectableText : TextBlock
         // in a separate mouse-transparent Adorner; do not replace WPF's shaping or inline layout.
         TextProperty.OverrideMetadata(typeof(NonactivatingSelectableText), new FrameworkPropertyMetadata(string.Empty,
             FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender,
-            (owner, _) =>
+            (owner, change) =>
             {
                 var text = (NonactivatingSelectableText)owner;
-                if (text._updatingContent == 0) { text._textMap = null; text._mappedSource = null; text.ClearSelection(); }
+                if (text._updatingContent != 0) return;
+                text.RefreshLiteralContent();
             }));
     }
 
@@ -56,6 +62,7 @@ public sealed class NonactivatingSelectableText : TextBlock
         Cursor = Cursors.IBeam;
         IsVisibleChanged += (_, _) => { if (!IsVisible) ClearSelection(); };
         Unloaded += (_, _) => ClearSelection();
+        Loaded += (_, _) => RefreshLiteralContent();
         LayoutUpdated += (_, _) => UpdateSelectionLayout();
     }
 
@@ -78,12 +85,12 @@ public sealed class NonactivatingSelectableText : TextBlock
         finally
         {
             _updatingContent--;
-            if (_updatingContent == 0 && !string.Equals(_mappedSource, Text, StringComparison.Ordinal)) { _textMap = null; _mappedSource = null; }
-            if (_updatingContent == 0 && _selection is { } selected
-                && (!LiteralRuns || !string.Equals(selected.Source, Text, StringComparison.Ordinal))) ClearSelection();
+            if (_updatingContent == 0) RefreshLiteralContent();
             InvalidateSelectionPaint();
         }
     }
+
+    public void SetLiteralText(string text) => UpdateLiteralContent(() => Text = text);
 
     internal void Select(int anchor, int extent)
     {
@@ -111,7 +118,7 @@ public sealed class NonactivatingSelectableText : TextBlock
     {
         Dispatcher.VerifyAccess();
         if (!IsVisible || !LiteralRuns || DocumentIdentity is not { } identity || _selection is not { Length: > 0 } selected
-            || !string.Equals(selected.Source, Text, StringComparison.Ordinal)) return null;
+            || !string.Equals(selected.Source, TextMap()?.Source, StringComparison.Ordinal)) return null;
         _lease?.Revoke();
         var lease = _lease = new SelectedTextCopyLease(selected.Text, identity);
         RaiseEvent(new SelectedTextCopyEventArgs(CopyRequestedEvent, lease));
@@ -167,11 +174,11 @@ public sealed class NonactivatingSelectableText : TextBlock
         // keyboard focus even when its top-level popup does not activate the foreground window.
         var selectionAtOpen = _selection;
         object identityAtOpen = DocumentIdentity;
-        string textAtOpen = Text;
+        string? textAtOpen = TextMap()?.Source;
         bool CurrentMenu() => ReferenceEquals(_menu, menu) && menu.IsOpen && Equals(identityAtOpen, DocumentIdentity)
-            && ReferenceEquals(selectionAtOpen, _selection) && string.Equals(textAtOpen, Text, StringComparison.Ordinal);
+            && ReferenceEquals(selectionAtOpen, _selection) && string.Equals(textAtOpen, TextMap()?.Source, StringComparison.Ordinal);
         copy.Click += (_, _) => { if (CurrentMenu()) RequestCopy(); menu.IsOpen = false; };
-        all.Click += (_, _) => { if (CurrentMenu()) Select(0, Text.Length); menu.IsOpen = false; };
+        all.Click += (_, _) => { if (CurrentMenu()) Select(0, textAtOpen?.Length ?? 0); menu.IsOpen = false; };
         menu.IsOpen = true;
     }
 
@@ -187,10 +194,21 @@ public sealed class NonactivatingSelectableText : TextBlock
     private bool LiteralRuns => Inlines.Cast<Inline>().All(inline => inline is Run);
     private LiteralTextSelectionMap? TextMap()
     {
-        string source = Text;
-        if (!string.Equals(_mappedSource, source, StringComparison.Ordinal))
-        { _mappedSource = source; _textMap = LiteralTextSelectionMap.Create(source); }
+        if (_mappedSource is null) RefreshLiteralContent();
         return _textMap;
+    }
+
+    private void RefreshLiteralContent()
+    {
+        // TextBlock starts listening to its TextContainer at first measure. Runs built before
+        // that point can render correctly while Text still holds its old value. Read the actual
+        // literal Runs, matching the TextPointers used for hit testing, instead of that DP cache.
+        // Rebuild only on content notifications/wrapped refresh, never for each drag or glyph.
+        string? source = LiteralRuns ? string.Concat(Inlines.OfType<Run>().Select(run => run.Text)) : null;
+        if (string.Equals(_mappedSource, source, StringComparison.Ordinal)) return;
+        _mappedSource = source;
+        _textMap = source is null ? null : LiteralTextSelectionMap.Create(source);
+        if (_selection is { } selected && !string.Equals(selected.Source, source, StringComparison.Ordinal)) ClearSelection();
     }
     internal TextPointer? PointerAt(int offset)
     {
@@ -215,7 +233,7 @@ public sealed class NonactivatingSelectableText : TextBlock
     /// </summary>
     internal IReadOnlyList<Rect> SelectionRectangles()
     {
-        if (_selection is not { Length: > 0 } selected || !string.Equals(selected.Source, Text, StringComparison.Ordinal)) return [];
+        if (_selection is not { Length: > 0 } selected || !string.Equals(selected.Source, TextMap()?.Source, StringComparison.Ordinal)) return [];
         Rect visible = VisibleBounds();
         if (visible.IsEmpty || visible.Height <= 0) return [];
         int first = selected.Start, last = first + selected.Length;

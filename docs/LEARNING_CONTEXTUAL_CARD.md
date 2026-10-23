@@ -50,8 +50,10 @@ bits while keeping external-editor behavior as a separate gate.
 
 Native Windows verification still needs a host walkthrough: no activation/focus theft, context
 clicks, Details/scroll/resize, DPI/work-area placement, field changes, IME and real model output.
-Mac's text-selection/copy interaction is also still unported: these readonly WPF text blocks do
-not provide it. A selectable readonly document control needs its own focus/interaction validation; WPF exposes selection on [FlowDocumentScrollViewer](https://learn.microsoft.com/en-us/dotnet/api/system.windows.controls.flowdocumentscrollviewer.isselectionenabled?view=windowsdesktop-10.0).
+The [readonly selection adapter](LEARNING_TEXT_SELECTION.md) now connects contextual meaning,
+example/reciprocal line and Details to mouse/context Copy with target/selection revocation and the
+app's final captured-document grant. Word double-click selection, drag autoscroll, keyboard and
+accessibility selection commands and physical host-focus behavior remain open.
 Source-word fallback, source-text/reading/selection/OCR capture, dictionary source routing and
 references, speech, durable vocabulary/favorites, adoption, localization, telemetry and explanation
 endpoint transport remain separate migration work. No package or model is produced/downloaded by CI.

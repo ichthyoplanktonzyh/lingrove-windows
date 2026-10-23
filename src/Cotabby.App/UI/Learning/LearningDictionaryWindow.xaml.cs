@@ -22,6 +22,7 @@ public partial class LearningDictionaryWindow : Window
     public LearningDictionaryWindow()
     {
         InitializeComponent();
+        InstallSelection();
         WindowTheme.Follow(this);
         SourceInitialized += (_, _) => LearningPanelPlacement.Install(this);
     }
@@ -34,6 +35,7 @@ public partial class LearningDictionaryWindow : Window
     internal void ShowState(LearningDictionaryState state, ScreenRect anchor, LearningContextExampleTranslation? exampleTranslation = null)
     {
         Dispatcher.VerifyAccess();
+        SetSelectionTarget(state.TargetIdentity, state.Page);
         _state = state;
         _anchor = anchor;
         if (state.Unit is not { } unit) { HideCard(); return; }
@@ -114,6 +116,9 @@ public partial class LearningDictionaryWindow : Window
     public void HideCard()
     {
         _state = null; _viewport = new(); _contextInput = null;
+        ContextualMeaning.DocumentIdentity = ContextualExampleText.DocumentIdentity =
+            ContextualExampleTranslation.DocumentIdentity = ExplanationProse.DocumentIdentity = null;
+        CopyStatus.Text = string.Empty; CopyStatus.Visibility = Visibility.Collapsed;
         TitleText.Text = QueryText.Text = string.Empty;
         DefinitionContent.Children.Clear(); WordButtons.Children.Clear(); AttributionText.Inlines.Clear();
         ContextualMeaning.Text = ExplanationProse.Text = ExplanationStatus.Text = string.Empty;

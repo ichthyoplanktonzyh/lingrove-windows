@@ -115,6 +115,7 @@ internal sealed partial class LearningPreviewController
         _dictionaryWindow.CloseRequested += target => NavigateDictionary(target, close: true);
         _dictionaryWindow.PageRequested += (page, target) => NavigateDictionary(target, page: page);
         _dictionaryWindow.ExplanationRequested += OnDictionaryExplanationRequested;
+        _dictionaryWindow.SelectedCopyRequested += OnDictionarySelectedCopy;
         _dictionaryWindow.Closed += (_, _) =>
         {
             _dictionaryWindow = null;

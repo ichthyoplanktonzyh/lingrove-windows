@@ -213,3 +213,21 @@ def export_session_sources(repo):
     session = source(repo, 'Cotabby/Services/Vocabulary/VocabularyExportSession.swift')
     session += '\nextension VocabularyExportSession { var generationProbe: UUID { generation } }\n'
     return archive_export_sources(repo) + [store, session]
+
+
+def export_offer_sources(repo):
+    """Actual notebook offer methods in the existing pure browse wrapper; no UI body replacement."""
+    values = notebook_browse_sources(repo)
+    wrapper = values[-1]
+    marker = '    var selection: UUID?\n'
+    if wrapper.count(marker) != 1: raise RuntimeError('Notebook input wrapper boundary changed')
+    wrapper = wrapper.replace(marker, marker + '    var batchSelection: Set<VocabularySelection> = []\n    var exporting: VocabularyExportRequest?\n')
+    view = source(repo, 'Cotabby/UI/Vocabulary/VocabularyNotebookView.swift')
+    wrapper += '\nextension NotebookBrowseReference {\n' + between(view, '    private func selections(in entries:', '    private func backup()') + '\n    mutating func exportOfferProbe(scope: VocabularyExportScope? = nil, single: VocabularySelection? = nil) -> VocabularyExportRequest { beginExport(scope:scope,single:single); return exporting! }\n}\n'
+    # The real SwiftUI view mutates @State through a nonmutating View method. The test wrapper
+    # has ordinary stored values, so use a class wrapper to preserve its original method body.
+    wrapper = wrapper.replace('struct NotebookBrowseReference {', 'final class NotebookBrowseReference {')
+    wrapper = wrapper.replace('    mutating func exportOfferProbe(', '    func exportOfferProbe(')
+    # Ordinary class stored inputs need the memberwise initializer the prior struct synthesized.
+    wrapper = wrapper.replace('final class NotebookBrowseReference {', 'final class NotebookBrowseReference {\n    init(store: VocabularyDocument) { self.store = store }')
+    return values[:-1] + [source(repo, 'Cotabby/Models/Vocabulary/VocabularyExportModels.swift'), wrapper]

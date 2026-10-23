@@ -34,8 +34,8 @@ filenames, admit image bytes, read files or enforce the archive's separate media
 `VocabularyExportFormatter.Render` now dispatches all three existing pure encoders. TXT alone
 consumes a presentation-supplied label snapshot. This is the complete portable preparation library;
 [archive selection/media capture](VOCABULARY_EXPORT_SNAPSHOT.md) and [ZIP bytes](VOCABULARY_EXPORT_ZIP.md)
-now have their separate adapters. [Destination validation/writing](VOCABULARY_EXPORT_SAVE.md) now has its own adapter; export-window/session
-integration remains work. A prepared package is not a full backup or an installer artifact.
+now have their separate adapters. [Destination validation/writing](VOCABULARY_EXPORT_SAVE.md) now has its own adapter; [session](VOCABULARY_EXPORT_SESSION.md) and
+[export-form](VOCABULARY_EXPORT_WINDOW.md) integration have separate evidence. A prepared package is not a full backup or an installer artifact.
 
 Thirty-three probes execute the actual original Mac factory and value declarations. They compare
 format, configuration, data SHA-256/count, complete preview, filenames, graph counts and empty media
@@ -51,7 +51,7 @@ python3 scripts/verify-vocabulary-export-package-macos-parity.py --mac-repo /pat
 DOTNET_ROOT="$PWD/.dotnet" .dotnet/dotnet test tests/Cotabby.Core.Tests/Cotabby.Core.Tests.csproj --configuration Release --filter FullyQualifiedName~VocabularyExportPackage
 ```
 
-No public export command or destination is connected. Source deletion/media snapshot transactions
+The [public export form](VOCABULARY_EXPORT_WINDOW.md) connects commands and destination choice. Source deletion/media snapshot transactions
 and ZIP bytes are covered by the linked adapters, rather than by these package-value probes.
 The [Windows destination/atomic replacement adapter](VOCABULARY_EXPORT_SAVE.md) has separate evidence.
-Save-session staleness and the actual export window still need their pinned Mac archive/session/UI counterparts and tests.
+[Session guards](VOCABULARY_EXPORT_SESSION.md) and the export form have separate pinned-source and native evidence.

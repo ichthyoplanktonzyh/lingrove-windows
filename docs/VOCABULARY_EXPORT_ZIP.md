@@ -49,6 +49,7 @@ python3 scripts/verify-vocabulary-export-zip-macos-parity.py --mac-repo /path/to
 DOTNET_ROOT="$PWD/.dotnet" .dotnet/dotnet test tests/Cotabby.Core.Tests/Cotabby.Core.Tests.csproj --configuration Release --filter FullyQualifiedName~VocabularyExportZip
 ```
 
-[Atomic destination admission/writing](VOCABULARY_EXPORT_SAVE.md) has a separate adapter. Store/session
-callbacks, stale save-session guards, the export window and full backup/restore remain work. Windows desktop UIA/IME/overlay/insertion and
+[Atomic destination admission/writing](VOCABULARY_EXPORT_SAVE.md) has a separate adapter. [Store/session
+guards](VOCABULARY_EXPORT_SESSION.md) and the [export form](VOCABULARY_EXPORT_WINDOW.md) have
+separate evidence. Full backup/restore remains work. Windows desktop UIA/IME/overlay/insertion and
 model/GPU gates are unchanged by this portable byte-format slice.

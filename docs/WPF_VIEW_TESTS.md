@@ -146,3 +146,9 @@ The [export session suite](VOCABULARY_EXPORT_SESSION.md) adds sixteen pinned Mac
 actual Store/memory archive and native save, controlling queued reply order before Store admission.
 Seven additional delegate cases exercise stale failures, save ownership/reentry, close acknowledgement,
 local failure retry, control-change revocation and completion after an owned dispatcher exits. It does not open a save picker or export window.
+
+The [notebook export form](VOCABULARY_EXPORT_WINDOW.md) adds twelve compiled control/lifetime
+cases with real Store/archive data and controlled human picker replies, including one real native
+failed/save/retry path. Eleven native Shell startup/configuration/admission cases instantiate the
+actual COM dialog without Show. These 23 cases bring the suite to 363; physical modal Shell
+interaction remains a separate Windows desktop gate. No package or artifact is produced.

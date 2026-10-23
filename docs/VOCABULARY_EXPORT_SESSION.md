@@ -10,7 +10,7 @@ preparation/save tasks and drains them before the archive closes. Export does no
 revision or overwrite shared Store errors; errors propagate to the particular export session.
 No second Store, archive, runtime or listener is constructed by these methods.
 
-`VocabularyExportSession` is owned by one future export window and confined to its WPF dispatcher,
+`VocabularyExportSession` is owned by one [export window](VOCABULARY_EXPORT_WINDOW.md) and confined to its WPF dispatcher,
 adapting Mac MainActor. It retains a frozen request and current immutable configuration/scope key.
 Preparation clears the previous package/message, advances generation identity and sets loading;
 the Store prepares off the dispatcher. A reply publishes only if the session remains active, its
@@ -57,7 +57,7 @@ python3 scripts/verify-vocabulary-export-session-macos-parity.py --mac-repo /pat
 dotnet test tests/Cotabby.App.Wpf.Tests/Cotabby.App.Wpf.Tests.csproj --configuration Release --filter FullyQualifiedName~VocabularyExportSessionTests
 ```
 
-The public notebook command, frozen all/filtered/selected offer construction, export window, controls,
-native picker and close/task wiring remain follow-up work. This session introduces no model,
+The [notebook command/form adapter](VOCABULARY_EXPORT_WINDOW.md) now connects frozen offers,
+controls, native picker ownership and close/task wiring with separate evidence. This session introduces no model,
 clipboard or network operation. Full backup/restore and native desktop UIA/IME/ghost/insertion/GPU
 validation remain separate gaps.

@@ -7,10 +7,12 @@ namespace Cotabby.Core.LanguageLearning;
 /// card. Word navigation keeps the captured unit/context; new occurrences and Close retire it.
 /// Separate revisions reject noncooperative old lookups. Its transient cache retains at most 32
 /// queries and the Mac 8MiB headword/definition estimate, not a total managed-memory guarantee.
-/// Source routing, contextual explanations, vocabulary capture and references remain later ports.
+/// Contextual generation and lazy dictionary pages follow the same target's separate lifetimes.
+/// Source routing, durable vocabulary capture and references remain later ports.
 /// </summary>
-public sealed class LearningDictionarySession(ILearningDictionaryProviding provider) : IAsyncDisposable
+public sealed partial class LearningDictionarySession : IAsyncDisposable
 {
+    private readonly ILearningDictionaryProviding _provider;
     private readonly object _gate = new();
     private readonly Dictionary<long, Task> _tasks = [];
     private readonly Dictionary<CacheKey, LearningDictionaryResult> _cache = [];
@@ -22,93 +24,106 @@ public sealed class LearningDictionarySession(ILearningDictionaryProviding provi
     private bool _disposed;
     private bool _draining;
 
+    public LearningDictionarySession(ILearningDictionaryProviding provider, ILearningExplanationGenerating? explanationService = null)
+    {
+        _provider = provider ?? throw new ArgumentNullException(nameof(provider));
+        _explanationService = explanationService;
+    }
+
     public event Action<LearningDictionaryState>? StateChanged;
     public LearningDictionaryState State { get { lock (_gate) return _state; } }
 
-    public Task OpenAsync(LearningUnit unit, string documentId, LearningLanguage language, string? speechContext = null)
+    public Task OpenAsync(LearningUnit unit, string documentId, LearningLanguage language, string? speechContext = null,
+        LearningExplanationInput? explanationInput = null)
     {
         ArgumentNullException.ThrowIfNull(unit);
         ArgumentException.ThrowIfNullOrWhiteSpace(documentId);
-        Task task; bool drain;
+        TargetTransition transition;
         lock (_gate)
         {
             ObjectDisposedException.ThrowIf(_disposed, this);
             _cache.Clear(); _cacheOrder.Clear();
             _state = new LearningDictionaryState { Unit = unit, DocumentId = documentId, Language = language,
                 SpeechContext = speechContext };
-            (task, drain) = BeginQueryLocked();
+            _unitExplanationInput = ValidUnitInput(unit, language, explanationInput
+                ?? LearningExplanationInputFactory.FromUnscopedUnit(unit, language));
+            transition = BeginTargetLocked(resetExplanation: true);
         }
-        if (drain) Drain();
-        return task;
+        return ActivateTarget(transition);
     }
 
     public Task SelectWordAsync(LearningDictionaryWord word, Guid? targetIdentity = null)
     {
-        Task task; bool drain;
+        TargetTransition transition;
         lock (_gate)
         {
             if (_disposed || _state.Unit is not { } unit || !unit.Words.Contains(word)
                 || targetIdentity is not null && targetIdentity != _state.TargetIdentity) return Task.CompletedTask;
             _state = _state with { SelectedWord = word };
-            (task, drain) = BeginQueryLocked();
+            transition = BeginTargetLocked();
         }
-        if (drain) Drain();
-        return task;
+        return ActivateTarget(transition);
     }
 
     public Task ReturnToExpressionAsync(Guid? targetIdentity = null)
     {
-        Task task; bool drain;
+        TargetTransition transition;
         lock (_gate)
         {
             if (_disposed || _state.Unit is null || targetIdentity is not null && targetIdentity != _state.TargetIdentity)
                 return Task.CompletedTask;
             _state = _state with { SelectedWord = null };
-            (task, drain) = BeginQueryLocked();
+            transition = BeginTargetLocked();
         }
-        if (drain) Drain();
-        return task;
+        return ActivateTarget(transition);
     }
 
     public void Close(Guid? targetIdentity = null)
     {
-        bool drain;
+        bool drain; ContextualTarget? retired;
         lock (_gate)
         {
             if (_disposed || targetIdentity is not null && targetIdentity != _state.TargetIdentity) return;
             RetireLocked();
+            retired = _contextual; _contextual = null; _unitExplanationInput = null;
+            if (retired is not null) _ = ObserveRetirementAsync(retired.Owner.Lifetime.Retire());
             _state = new LearningDictionaryState();
             _cache.Clear(); _cacheOrder.Clear();
             drain = EnqueueLocked();
         }
+        RetireContextualTarget(retired);
         if (drain) Drain();
     }
 
     public async ValueTask DisposeAsync()
     {
-        Task[] tasks; bool drain;
+        Task[] tasks; bool drain; ContextualTarget? retired;
         lock (_gate)
         {
             if (_disposed) return;
             _disposed = true;
             RetireLocked();
+            retired = _contextual; _contextual = null; _unitExplanationInput = null;
+            if (retired is not null) _ = ObserveRetirementAsync(retired.Owner.Lifetime.Retire());
             _state = new LearningDictionaryState();
             _cache.Clear(); _cacheOrder.Clear();
             tasks = _tasks.Values.ToArray();
             drain = EnqueueLocked();
         }
+        RetireContextualTarget(retired);
         if (drain) Drain();
         var all = Task.WhenAll(tasks);
         if (await Task.WhenAny(all, Task.Delay(TimeSpan.FromSeconds(5))).ConfigureAwait(false) == all)
             try { await all.ConfigureAwait(false); } catch { }
     }
 
-    private (Task Task, bool Drain) BeginQueryLocked()
+    private (Task Task, bool Drain) RequestDictionaryLocked()
     {
         RetireLocked();
         long revision = _revision;
         var lifetime = new LearningRequestLifetime(); _lifetime = lifetime;
-        _state = _state with { TargetIdentity = Guid.NewGuid(), RequestIdentity = Guid.NewGuid(),
+        _dictionaryRequested = true;
+        _state = _state with { RequestIdentity = Guid.NewGuid(),
             Status = LearningDictionaryContentStatus.Loading, Result = null, ErrorMessage = null };
         var snapshot = _state;
         bool drain = EnqueueLocked();
@@ -132,7 +147,7 @@ public sealed class LearningDictionarySession(ILearningDictionaryProviding provi
             }
             if (result is null)
             {
-                result = await provider.LookupAsync(snapshot.Query, snapshot.Language, snapshot.IsExpression, lifetime.Token).ConfigureAwait(false);
+                result = await _provider.LookupAsync(snapshot.Query, snapshot.Language, snapshot.IsExpression, lifetime.Token).ConfigureAwait(false);
                 if (result is null) throw new InvalidOperationException();
                 lock (_gate)
                 {

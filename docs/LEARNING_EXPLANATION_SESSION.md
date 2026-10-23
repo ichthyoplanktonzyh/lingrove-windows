@@ -47,6 +47,10 @@ records, canonical range validation, async restoration and service borrowing. Th
 lifetime tests, not an asynchronous Swift oracle or a model/desktop test. All six existing pinned
 Swift verifiers retain their separately documented pure-policy/capture coverage.
 
+The [dictionary query library](LEARNING_CONTEXTUAL_QUERY.md) also borrows target-owned sessions.
+Its direct owner cancellation and expected-snapshot command checks close Windows admission/action
+races while keeping foreign callbacks outside the containing owner's lock.
+
 The writing preview now sets a session target, revalidates its original document before request/
 display, renders embedded results and clears on hide. Remaining integration includes unit/component
 dictionary targets, settings sample test, notebook adoption, endpoint consent/transport, telemetry

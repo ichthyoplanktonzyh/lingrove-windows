@@ -11,6 +11,7 @@ public sealed class LearningExplanationSession : IAsyncDisposable
 {
     private readonly object _gate = new();
     private readonly ILearningExplanationGenerating? _service;
+    private readonly CancellationToken _ownerCancellation;
     private readonly Queue<Notification> _notifications = [];
     private LearningExplanationState _state = new();
     private LearningRequestLifetime? _lookup, _generation;
@@ -18,9 +19,12 @@ public sealed class LearningExplanationSession : IAsyncDisposable
     private bool _draining;
     private bool _disposed;
 
-    public LearningExplanationSession(ILearningExplanationGenerating? service = null)
+    public LearningExplanationSession(ILearningExplanationGenerating? service = null, CancellationToken ownerCancellation = default)
     {
         _service = service;
+        // A containing target can revoke admission under its own lock without invoking saved
+        // stores or view observers there. The target still disposes this session to clear UI state.
+        _ownerCancellation = ownerCancellation;
         if (service is not null) service.Changed += OnServiceChanged;
     }
     public event Action<LearningExplanationState>? StateChanged;
@@ -33,7 +37,7 @@ public sealed class LearningExplanationSession : IAsyncDisposable
         long revision; bool drain = false;
         lock (_gate)
         {
-            if (_disposed) return;
+            if (_disposed || _ownerCancellation.IsCancellationRequested) return;
             if (_state.Input != input)
             {
                 RetireLocked();
@@ -61,12 +65,14 @@ public sealed class LearningExplanationSession : IAsyncDisposable
         if (drain) Drain();
     }
 
-    public Task ExplainAsync(bool refresh = false)
+    public Task ExplainAsync(bool refresh = false, LearningExplanationState? expectedState = null)
     {
         Task task; bool drain;
         lock (_gate)
         {
-            if (_disposed || _service is null || _state.Input is not { } input
+            if (_disposed || _ownerCancellation.IsCancellationRequested
+                || expectedState is not null && !ReferenceEquals(_state, expectedState)
+                || _service is null || _state.Input is not { } input
                 || _state.IsGenerating || !refresh && _state.Record is not null) return Task.CompletedTask;
             RetireLocked();
             _state = _state with { IsGenerating = true, ErrorMessage = null };
@@ -76,18 +82,19 @@ public sealed class LearningExplanationSession : IAsyncDisposable
             var owner = new WeakReference<LearningExplanationSession>(this);
             var service = _service;
             drain = EnqueueLocked();
-            task = Task.Run(() => GenerateAsync(owner, service, input, revision, requestId, refresh, lifetime));
+            var ownerCancellation = _ownerCancellation;
+            task = Task.Run(() => GenerateAsync(owner, service, input, revision, requestId, refresh, lifetime, ownerCancellation));
         }
         if (drain) Drain();
         return task;
     }
 
-    public void Cancel()
+    public void Cancel(LearningExplanationState? expectedState = null)
     {
         bool drain;
         lock (_gate)
         {
-            if (_disposed) return;
+            if (_disposed || expectedState is not null && !ReferenceEquals(_state, expectedState)) return;
             RetireLocked(); drain = EnqueueLocked();
         }
         if (drain) Drain();
@@ -110,7 +117,7 @@ public sealed class LearningExplanationSession : IAsyncDisposable
         bool drain;
         lock (_gate)
         {
-            if (_disposed) return;
+            if (_disposed || _ownerCancellation.IsCancellationRequested) return;
             RetireLocked(); _state = _state with { Record = null, ErrorMessage = null };
             RestoreSavedLocked(); drain = EnqueueLocked();
         }
@@ -119,20 +126,22 @@ public sealed class LearningExplanationSession : IAsyncDisposable
 
     private void RestoreSavedLocked()
     {
-        if (_service is null || _state.Input is not { } input) return;
+        if (_service is null || _ownerCancellation.IsCancellationRequested || _state.Input is not { } input) return;
         var lifetime = new LearningRequestLifetime(); _lookup = lifetime;
         long revision = _revision;
         var owner = new WeakReference<LearningExplanationSession>(this);
         var service = _service;
-        _ = Task.Run(() => RestoreSavedAsync(owner, service, input, revision, lifetime));
+        var ownerCancellation = _ownerCancellation;
+        _ = Task.Run(() => RestoreSavedAsync(owner, service, input, revision, lifetime, ownerCancellation));
     }
 
     private static async Task RestoreSavedAsync(WeakReference<LearningExplanationSession> owner, ILearningExplanationGenerating service,
-        LearningExplanationInput input, long revision, LearningRequestLifetime lifetime)
+        LearningExplanationInput input, long revision, LearningRequestLifetime lifetime, CancellationToken ownerCancellation)
     {
         try
         {
             lifetime.Token.ThrowIfCancellationRequested();
+            ownerCancellation.ThrowIfCancellationRequested();
             var saved = await service.LoadSavedAsync(input).ConfigureAwait(false);
             PublishSaved(owner, input, revision, lifetime, saved);
         }
@@ -142,13 +151,16 @@ public sealed class LearningExplanationSession : IAsyncDisposable
 
     private static async Task GenerateAsync(WeakReference<LearningExplanationSession> owner, ILearningExplanationGenerating service,
         LearningExplanationInput input, long revision, string requestId,
-        bool refresh, LearningRequestLifetime lifetime)
+        bool refresh, LearningRequestLifetime lifetime, CancellationToken ownerCancellation)
     {
         try
         {
-            lifetime.Token.ThrowIfCancellationRequested();
-            var record = await service.GenerateAsync(input, requestId, refresh, lifetime.Token).ConfigureAwait(false);
-            lifetime.Token.ThrowIfCancellationRequested();
+            using var linked = ownerCancellation.CanBeCanceled
+                ? CancellationTokenSource.CreateLinkedTokenSource(lifetime.Token, ownerCancellation) : null;
+            var token = linked?.Token ?? lifetime.Token;
+            token.ThrowIfCancellationRequested(); ownerCancellation.ThrowIfCancellationRequested();
+            var record = await service.GenerateAsync(input, requestId, refresh, token).ConfigureAwait(false);
+            token.ThrowIfCancellationRequested(); ownerCancellation.ThrowIfCancellationRequested();
             if (!PublishGenerated(owner, input, revision, record)) return;
             // This is the Mac session's admitted-record hook, not proof of WPF pixel display.
             try { service.RecordDisplay(requestId); } catch { }
@@ -214,7 +226,7 @@ public sealed class LearningExplanationSession : IAsyncDisposable
         && record.Input == input && record.Result is not null && LearningExplanationPolicy.IsValid(record.Result)
         && Enum.IsDefined(record.Language) && (_service is null || record.Language == _service.Language);
     private bool CurrentLocked(long revision, LearningExplanationInput? input) =>
-        !_disposed && _revision == revision && _state.Input == input;
+        !_disposed && !_ownerCancellation.IsCancellationRequested && _revision == revision && _state.Input == input;
     private void RetireLocked()
     {
         ++_revision;

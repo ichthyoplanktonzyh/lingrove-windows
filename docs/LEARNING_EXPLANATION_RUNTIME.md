@@ -53,7 +53,7 @@ requests, facades and outstanding release tasks before disposing the explanation
 thread guards replace MainActor sequencing; no UIA/editor/window objects enter this owner. Saved
 results can still be viewed without generating, as in the Mac service. Telemetry, endpoint settings/
 consent/credentials, automatic power model switching, GPU controls, notebook persistence, settings
-sample test, sampling-override editor, unit/component explanation and the remaining capture origins
+sample test, sampling-override editor, selectable text and the remaining capture origins
 are separate work. Sampler preferences are persisted and honored, but currently edited only through
 settings data; the UI keeps recommended sampling by default. The empty model picker item clears
 only that role's selection, retaining downloaded files and saved per-model preferences.

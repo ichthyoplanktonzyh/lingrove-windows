@@ -168,7 +168,8 @@ Native interaction and model execution remain unverified. See [the explanation m
 and [app ownership](docs/LEARNING_EXPLANATION_RUNTIME.md).
 The [contextual query library](docs/LEARNING_CONTEXTUAL_QUERY.md) now sequences unit/component
 explanation and lazy dictionary pages with separate target/request identities. It borrows the
-explanation service; dictionary WPF controls and captured-editor wiring remain a later adapter.
+explanation service. The [word/expression card](docs/LEARNING_CONTEXTUAL_CARD.md) now connects its
+tabs and exact examples with captured-editor guards; native interaction and text selection remain gaps.
 
 Explicit replacement and a combined autocomplete/learning host walkthrough are follow-up slices
 after captured ranges, IME and editor acknowledgement are verified. Broader model residency/power controls, dictionary, notebook, Anki, speech and history work follows the scoped preview port.

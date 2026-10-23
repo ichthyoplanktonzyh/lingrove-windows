@@ -52,6 +52,6 @@ Its direct owner cancellation and expected-snapshot command checks close Windows
 races while keeping foreign callbacks outside the containing owner's lock.
 
 The writing preview now sets a session target, revalidates its original document before request/
-display, renders embedded results and clears on hide. Remaining integration includes unit/component
-dictionary targets, settings sample test, notebook adoption, endpoint consent/transport, telemetry
+display, renders embedded results and clears on hide. The [dictionary card](LEARNING_CONTEXTUAL_CARD.md) now also connects unit/component targets.
+Remaining integration includes settings sample test, notebook adoption, endpoint consent/transport, telemetry
 and other capture origins.

@@ -2,15 +2,16 @@
 
 This adapts stable Mac Lingrove at `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`. A completed manual
 translation now acquires independent lexical annotations. Double-clicking one of its words opens
-that occurrence's expression/pattern or word in a nonactivating bundled dictionary card. The card
-keeps source-owned senses and attribution separate, and supports component words and Back.
+that occurrence's expression/pattern or word in a nonactivating contextual/dictionary card. The card
+keeps AI meaning, source-owned senses and attribution separate, and supports component words and Back.
 
 This is the completed target-translation/bundled-provider subset. Source-sentence double-clicks,
 word fallback after recognition failure, system/imported/online dictionary providers and source
-selection, contextual explanation UI, references, vocabulary/favorites and speech remain unported.
+selection, references, vocabulary/favorites and speech remain unported.
 The [contextual session library](LEARNING_CONTEXTUAL_QUERY.md) now preserves Mac's contextual default,
-lazy dictionary page and target-specific explanation lifetime, awaiting WPF wiring.
-The card does not modify the editor or issue a model/network lookup.
+lazy dictionary page and target-specific explanation lifetime. The [WPF adapter](LEARNING_CONTEXTUAL_CARD.md)
+now connects it to the independent local explanation service. The card does not modify the editor;
+the bundled dictionary page makes no network request.
 
 ## Mac authority and boundaries
 

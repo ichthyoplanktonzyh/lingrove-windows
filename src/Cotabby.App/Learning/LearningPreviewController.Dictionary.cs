@@ -18,36 +18,48 @@ internal sealed partial class LearningPreviewController
     private ScreenRect _dictionaryAnchor;
     private long _dictionaryIntent;
     private long _dictionaryOpeningRevision;
+    private LearningPreviewState? _dictionaryTranslation;
 
     private void OnDictionaryLookupRequested(LearningUnit unit, string documentId, ScreenRect anchor)
     {
         _dispatcher.VerifyAccess();
         if (_dictionarySession is null) return;
-        CapturedSentence? capture; long intent; long openingRevision;
+        CapturedSentence? capture; long intent; long openingRevision; LearningPreviewState translation;
         lock (_gate)
         {
             if (!CanQueryDictionaryLocked(documentId, unit)) return;
             capture = _activeCapture; intent = _intentGeneration;
             openingRevision = ++_dictionaryOpeningRevision;
+            translation = _coordinator.State;
+            _dictionaryTranslation = null;
             _dictionarySession.Close();
         }
-        _ = ObserveDictionaryPresentationAsync(OpenDictionaryAfterValidationAsync(unit, documentId, anchor, capture!, intent, openingRevision));
+        _dictionaryWindow?.HideCard();
+        _ = ObserveDictionaryPresentationAsync(OpenDictionaryAfterValidationAsync(unit, documentId, anchor,
+            capture!, intent, openingRevision, translation));
     }
 
     private async Task OpenDictionaryAfterValidationAsync(LearningUnit unit, string documentId, ScreenRect anchor,
-        CapturedSentence capture, long intent, long openingRevision)
+        CapturedSentence capture, long intent, long openingRevision, LearningPreviewState translation)
     {
-        if (!await Task.Run(() => IsCaptureCurrent(capture)).ConfigureAwait(false)) return;
+        if (!await ValidateLearningCaptureAsync(capture, intent).ConfigureAwait(false)) return;
+        var input = await Task.Run(() =>
+        {
+            try { return _explanationInputs?.FromUnit(unit, translation); }
+            catch { return null; } // Mac permits target-only meaning when an example is unavailable.
+        }).ConfigureAwait(false);
+        if (!await ValidateLearningCaptureAsync(capture, intent).ConfigureAwait(false)) return;
         await _dispatcher.InvokeAsync(() =>
         {
             lock (_gate)
             {
                 if (_intentGeneration != intent || _dictionaryOpeningRevision != openingRevision
                     || !CanQueryDictionaryLocked(documentId, unit)
+                    || !LearningExplanationCardPolicy.SameDocument(translation, _coordinator.State)
                     || !CachedCaptureCurrent(capture)) return;
                 _dictionaryAnchor = anchor; _dictionaryIntent = intent;
-                var state = _coordinator.State;
-                _ = _dictionarySession!.OpenAsync(unit, documentId, state.Options!.TargetLanguage, state.Result);
+                _dictionaryTranslation = translation;
+                _ = _dictionarySession!.OpenAsync(unit, documentId, translation.Options!.TargetLanguage, translation.Result, input);
             }
         }, DispatcherPriority.Background);
     }
@@ -67,12 +79,12 @@ internal sealed partial class LearningPreviewController
         lock (_gate) if (_disposed) return;
         _ = _dispatcher.BeginInvoke(() =>
         {
-            if (_dictionarySession?.State != state) return;
+            if (!ReferenceEquals(_dictionarySession?.State, state)) return;
             if (state.Unit is null) { _dictionaryWindow?.HideCard(); return; }
             CapturedSentence? capture; long intent;
             lock (_gate)
             {
-                if (state.DocumentId is null || !CanQueryDictionaryLocked(state.DocumentId)
+                if (state.DocumentId is null || !CanQueryDictionaryLocked(state.DocumentId, state.Unit)
                     || _dictionaryIntent != _intentGeneration) return;
                 capture = _activeCapture; intent = _intentGeneration;
             }
@@ -82,14 +94,14 @@ internal sealed partial class LearningPreviewController
 
     private async Task RenderDictionaryAfterValidationAsync(LearningDictionaryState state, CapturedSentence capture, long intent)
     {
-        if (!await Task.Run(() => IsCaptureCurrent(capture)).ConfigureAwait(false)) return;
+        if (!await ValidateLearningCaptureAsync(capture, intent).ConfigureAwait(false)) return;
         await _dispatcher.InvokeAsync(() =>
         {
             lock (_gate)
             {
-                if (_dictionarySession?.State != state || state.DocumentId is null || _intentGeneration != intent
-                    || !CanQueryDictionaryLocked(state.DocumentId) || !CachedCaptureCurrent(capture)) return;
-                EnsureDictionaryWindow().ShowState(state, _dictionaryAnchor);
+                if (!ReferenceEquals(_dictionarySession?.State, state) || !CanUseDictionaryTargetLocked(state, capture, intent)) return;
+                EnsureDictionaryWindow().ShowState(state, _dictionaryAnchor,
+                    LearningDictionaryCardPolicy.ExampleTranslation(state.Explanation?.Input, _dictionaryTranslation));
             }
         }, DispatcherPriority.Background);
     }
@@ -101,6 +113,8 @@ internal sealed partial class LearningPreviewController
         _dictionaryWindow.WordRequested += (word, target) => NavigateDictionary(target, word);
         _dictionaryWindow.BackRequested += target => NavigateDictionary(target);
         _dictionaryWindow.CloseRequested += target => NavigateDictionary(target, close: true);
+        _dictionaryWindow.PageRequested += (page, target) => NavigateDictionary(target, page: page);
+        _dictionaryWindow.ExplanationRequested += OnDictionaryExplanationRequested;
         _dictionaryWindow.Closed += (_, _) =>
         {
             _dictionaryWindow = null;
@@ -109,20 +123,81 @@ internal sealed partial class LearningPreviewController
         return _dictionaryWindow;
     }
 
-    private void NavigateDictionary(Guid target, LearningDictionaryWord? word = null, bool close = false)
+    private void NavigateDictionary(Guid target, LearningDictionaryWord? word = null, bool close = false,
+        LearningDictionaryPage? page = null)
     {
+        CapturedSentence capture; LearningDictionaryState state; long intent; long navigation;
         lock (_gate)
         {
-            if (_disposed || _dictionarySession?.State is not { Unit: not null } state || state.TargetIdentity != target) return;
-            ++_dictionaryOpeningRevision;
-            if (close) _dictionarySession.Close(target);
-            else if (state.DocumentId is not null && CanQueryDictionaryLocked(state.DocumentId)
-                && _activeCapture is { } capture && CachedCaptureCurrent(capture))
+            if (_disposed || _dictionarySession?.State is not { Unit: not null } current || current.TargetIdentity != target) return;
+            navigation = ++_dictionaryOpeningRevision;
+            if (close)
             {
-                if (word is not null) _ = _dictionarySession.SelectWordAsync(word, target);
-                else _ = _dictionarySession.ReturnToExpressionAsync(target);
+                _dictionaryTranslation = null; _dictionarySession.Close(target); _dictionaryWindow?.HideCard(); return;
             }
+            if (_activeCapture is null || !CanUseDictionaryTargetLocked(current, _activeCapture, _intentGeneration)) return;
+            capture = _activeCapture; state = current; intent = _intentGeneration;
         }
+        _ = ObserveDictionaryPresentationAsync(NavigateDictionaryAfterValidationAsync(state, capture, intent, navigation, word, page));
+    }
+
+    private async Task NavigateDictionaryAfterValidationAsync(LearningDictionaryState state, CapturedSentence capture,
+        long intent, long navigation, LearningDictionaryWord? word, LearningDictionaryPage? page)
+    {
+        if (!await ValidateLearningCaptureAsync(capture, intent).ConfigureAwait(false)) return;
+        await _dispatcher.InvokeAsync(() =>
+        {
+            lock (_gate)
+            {
+                if (_dictionaryOpeningRevision != navigation || !CanUseDictionaryTargetLocked(state, capture, intent)) return;
+                if (page is not null) _ = _dictionarySession!.SelectPageAsync(page.Value, state.TargetIdentity);
+                else if (word is not null) _ = _dictionarySession!.SelectWordAsync(word, state.TargetIdentity);
+                else _ = _dictionarySession!.ReturnToExpressionAsync(state.TargetIdentity);
+            }
+        }, DispatcherPriority.Background);
+    }
+
+    private bool CanUseDictionaryTargetLocked(LearningDictionaryState state, CapturedSentence capture, long intent) =>
+        !_disposed && _intentGeneration == intent && _dictionaryIntent == intent && ReferenceEquals(_activeCapture, capture)
+        && state.DocumentId is not null && state.Unit is not null
+        && _dictionarySession?.State.TargetIdentity == state.TargetIdentity
+        && CanQueryDictionaryLocked(state.DocumentId, state.Unit)
+        && LearningExplanationCardPolicy.SameDocument(_dictionaryTranslation, _coordinator.State)
+        && CachedCaptureCurrent(capture);
+
+    private void OnDictionaryExplanationRequested(Guid target, LearningExplanationState displayed)
+    {
+        CapturedSentence capture; LearningDictionaryState state; long intent; long navigation;
+        lock (_gate)
+        {
+            if (_dictionarySession?.State is not { Unit: not null } current || current.TargetIdentity != target
+                || !ReferenceEquals(current.Explanation, displayed) || _activeCapture is null
+                || !CanUseDictionaryTargetLocked(current, _activeCapture, _intentGeneration)) return;
+            navigation = ++_dictionaryOpeningRevision;
+            if (displayed.IsGenerating) { _dictionarySession.CancelExplanation(target, displayed); return; }
+            capture = _activeCapture; state = current; intent = _intentGeneration;
+        }
+        _ = ObserveDictionaryPresentationAsync(ExplainDictionaryAfterValidationAsync(state, displayed, capture, intent, navigation));
+    }
+
+    private async Task ExplainDictionaryAfterValidationAsync(LearningDictionaryState state, LearningExplanationState displayed,
+        CapturedSentence capture, long intent, long navigation)
+    {
+        if (!await ValidateLearningCaptureAsync(capture, intent).ConfigureAwait(false)) return;
+        await _dispatcher.InvokeAsync(() =>
+        {
+            bool configure = false;
+            lock (_gate)
+            {
+                if (navigation != _dictionaryOpeningRevision || !CanUseDictionaryTargetLocked(state, capture, intent)
+                    || !ReferenceEquals(_dictionarySession!.State.Explanation, displayed)) return;
+                var action = LearningExplanationCardPolicy.Action(displayed, _dictionarySession.State.ExplanationConfigured);
+                if (action is LearningExplanationCardAction.Explain or LearningExplanationCardAction.Refresh)
+                    _ = _dictionarySession.ExplainAsync(state.TargetIdentity, displayed, refresh: action == LearningExplanationCardAction.Refresh);
+                else configure = action == LearningExplanationCardAction.Configure;
+            }
+            if (configure) { CancelAndHide(); _configureExplanation?.Invoke(); }
+        }, DispatcherPriority.Background);
     }
 
     // The App intent lock covers pending UIA validation as well as an already-open session.
@@ -130,6 +205,7 @@ internal sealed partial class LearningPreviewController
     private void RetireDictionaryLocked()
     {
         ++_dictionaryOpeningRevision;
+        _dictionaryTranslation = null;
         _dictionarySession?.Close();
     }
 

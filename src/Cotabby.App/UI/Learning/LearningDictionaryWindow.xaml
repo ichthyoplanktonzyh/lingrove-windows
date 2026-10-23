@@ -18,23 +18,66 @@
                 <Button x:Name="CloseButton" DockPanel.Dock="Right" Content="×" Width="28" Height="28"
                         Focusable="False" Background="Transparent" BorderThickness="0"
                         Foreground="{DynamicResource TextSecondary}" Click="OnClose" />
+                <Button x:Name="ExplanationButton" DockPanel.Dock="Right" Content="✦" Width="28" Height="28"
+                        Focusable="False" Background="Transparent" BorderThickness="0" FontSize="16"
+                        Foreground="{DynamicResource AccentBrush}" Click="OnExplanation" Visibility="Collapsed" />
                 <TextBlock x:Name="TitleText" FontSize="16" FontWeight="SemiBold" TextWrapping="Wrap"
+                           LineHeight="20" LineStackingStrategy="BlockLineHeight" MaxHeight="60" TextTrimming="CharacterEllipsis"
                            Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center" />
             </DockPanel>
-            <TextBlock Text="Bundled expression dictionary · definitions in English" FontSize="11"
+            <TextBlock x:Name="SubtitleText" Text="Bundled expression dictionary · definitions in English" FontSize="11"
                        TextWrapping="Wrap" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,10" />
-            <ScrollViewer x:Name="DefinitionViewport" Height="120" VerticalScrollBarVisibility="Auto" Margin="0,0,0,10">
-                <StackPanel x:Name="DefinitionContent" />
-            </ScrollViewer>
-            <StackPanel x:Name="WordSection" Margin="0,0,0,10">
-                <Button x:Name="BackButton" Content="Back to expression" Focusable="False"
-                        HorizontalAlignment="Left" Margin="0,0,0,8" Padding="8,4"
+            <TextBlock x:Name="QueryText" FontSize="11" TextWrapping="Wrap" Visibility="Collapsed"
+                       Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,10" />
+            <StackPanel x:Name="PageButtons" Orientation="Horizontal" Margin="0,0,0,10" Visibility="Collapsed">
+                <Button x:Name="ContextualPageButton" Content="Contextual meaning" Focusable="False" Padding="10,5"
                         Foreground="{DynamicResource TextPrimary}" Background="{DynamicResource KeycapBg}"
-                        BorderBrush="{DynamicResource CardBorder}" Click="OnBack" />
-                <TextBlock Text="WORDS" FontSize="10" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,5" />
-                <WrapPanel x:Name="WordButtons" />
+                        BorderBrush="{DynamicResource CardBorder}" Click="OnContextualPage" Margin="0,0,6,0" />
+                <Button x:Name="DictionaryPageButton" Content="Dictionary" Focusable="False" Padding="10,5"
+                        Foreground="{DynamicResource TextPrimary}" Background="{DynamicResource KeycapBg}"
+                        BorderBrush="{DynamicResource CardBorder}" Click="OnDictionaryPage" />
             </StackPanel>
-            <TextBlock x:Name="AttributionText" FontSize="10" TextWrapping="Wrap"
+            <Button x:Name="BackButton" Content="Back to expression" Focusable="False"
+                    HorizontalAlignment="Left" Margin="0,0,0,8" Padding="8,4" Visibility="Collapsed"
+                    Foreground="{DynamicResource TextPrimary}" Background="{DynamicResource KeycapBg}"
+                    BorderBrush="{DynamicResource CardBorder}" Click="OnBack" />
+            <ScrollViewer x:Name="DefinitionViewport" Height="120" VerticalScrollBarVisibility="Auto" Margin="0,0,0,10">
+                <StackPanel x:Name="BodyContent">
+                    <StackPanel x:Name="ContextualContent" Visibility="Collapsed">
+                        <TextBlock x:Name="ContextualMeaning" TextWrapping="Wrap" FontSize="13" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextPrimary}" Margin="0,0,0,10" Visibility="Collapsed" />
+                        <StackPanel x:Name="ContextualExample" Margin="0,0,0,10" Visibility="Collapsed">
+                            <TextBlock x:Name="FragmentLabel" Text="Context fragment" FontSize="11"
+                                       Foreground="{DynamicResource TextSecondary}" Visibility="Collapsed" Margin="0,0,0,5" />
+                            <TextBlock x:Name="ContextualExampleText" TextWrapping="Wrap" FontSize="13"
+                                       Foreground="{DynamicResource TextPrimary}" />
+                            <TextBlock x:Name="ContextualExampleTranslation" TextWrapping="Wrap" FontSize="11" Margin="0,6,0,0"
+                                       Foreground="{DynamicResource TextSecondary}" Visibility="Collapsed" />
+                        </StackPanel>
+                        <Expander x:Name="ExplanationDetails" Header="Details" Focusable="False" FontSize="11"
+                                  Foreground="{DynamicResource TextPrimary}" Visibility="Collapsed" Margin="0,0,0,10"
+                                  Expanded="OnDetailsChanged" Collapsed="OnDetailsChanged">
+                            <TextBlock x:Name="ExplanationProse" TextWrapping="Wrap" FontSize="13" Margin="0,7,0,0"
+                                       Foreground="{DynamicResource TextPrimary}" />
+                        </Expander>
+                        <ProgressBar x:Name="ExplanationProgress" Height="3" IsIndeterminate="True" Visibility="Collapsed" Margin="0,0,0,8" />
+                        <TextBlock x:Name="ExplanationStatus" TextWrapping="Wrap" FontSize="11" Margin="0,0,0,10"
+                                   Foreground="{DynamicResource TextSecondary}" Visibility="Collapsed" />
+                    </StackPanel>
+                    <StackPanel x:Name="DefinitionContent" />
+                    <StackPanel x:Name="WordSection" Margin="0,0,0,10">
+                        <TextBlock Text="WORDS" FontSize="10" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,5" />
+                        <WrapPanel x:Name="WordButtons" />
+                    </StackPanel>
+                    <StackPanel x:Name="DictionaryExample" Margin="0,0,0,10" Visibility="Collapsed">
+                        <TextBlock Text="This example" FontSize="11" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,5" />
+                        <TextBlock x:Name="DictionaryExampleText" TextWrapping="Wrap" FontSize="13" Foreground="{DynamicResource TextPrimary}" />
+                        <TextBlock x:Name="DictionaryExampleTranslation" TextWrapping="Wrap" FontSize="11" Margin="0,6,0,0"
+                                   Foreground="{DynamicResource TextSecondary}" Visibility="Collapsed" />
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+            <TextBlock x:Name="AttributionText" FontSize="10" TextWrapping="Wrap" Height="32"
                        Foreground="{DynamicResource TextSecondary}" />
         </StackPanel>
     </Border>

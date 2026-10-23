@@ -95,7 +95,8 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
     {
         _hook = hook;
         _coordinator = new LearningPreviewCoordinator(unitRecognizer: unitRecognizer);
-        _dictionarySession = dictionaryProvider is null ? null : new LearningDictionarySession(dictionaryProvider);
+        _dictionarySession = dictionaryProvider is null ? null : new LearningDictionarySession(dictionaryProvider,
+            explanationInputs is null ? null : explanationService);
         if (_dictionarySession is not null) _dictionarySession.StateChanged += OnDictionaryStateChanged;
         _explanationInputs = explanationInputs;
         _configureExplanation = configureExplanation;
@@ -600,6 +601,23 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         _settings is { } settings && settings.HasSameTranslationInputs(capture.Settings) && IsLearningAvailable(settings)
         && _focus.Current is { } field && SameCapturedField(capture.Field, field)
         && FieldCaptureFailure(field, capture.Settings) is null;
+
+    // All learning children revalidate off-thread and retire only the same captured intent.
+    private async Task<bool> ValidateLearningCaptureAsync(CapturedSentence capture, long intent)
+    {
+        if (await Task.Run(() => IsCaptureCurrent(capture)).ConfigureAwait(false)) return true;
+        await _dispatcher.InvokeAsync(() =>
+        {
+            lock (_gate)
+            {
+                // A failed old validation must not close a newer capture, including a retry
+                // sharing its intent. Retire the stale current card without waiting for polling.
+                if (!_disposed && _intentActive && _intentGeneration == intent
+                    && ReferenceEquals(_activeCapture, capture)) CancelAndHide();
+            }
+        }, DispatcherPriority.Background);
+        return false;
+    }
 
     private bool IsCaptureCurrent(CapturedSentence capture)
     {

@@ -19,6 +19,7 @@ public sealed record LearningDictionaryState
     public LearningDictionaryPage Page { get; init; } = LearningDictionaryPage.Dictionary;
     public bool HasContextualExplanation { get; init; }
     public bool ExplanationConfigured { get; init; }
+    public LearningLanguage? ExplanationLanguage { get; init; }
     public LearningExplanationState? Explanation { get; init; }
     public Guid TargetIdentity { get; init; } = Guid.NewGuid();
     public Guid RequestIdentity { get; init; } = Guid.NewGuid();

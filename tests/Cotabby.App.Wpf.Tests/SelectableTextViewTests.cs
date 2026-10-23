@@ -18,6 +18,25 @@ namespace Cotabby.App.Wpf.Tests;
 public sealed class SelectableTextViewTests(WpfDispatcher dispatcher)
 {
     [Fact]
+    public async Task SelectionLayoutSettlesAndAllowsDispatcherIdleToRun()
+    {
+        Window? window = null;
+        var idle = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        try
+        {
+            await dispatcher.Run(() =>
+            {
+                var shown = Show("Selection must not sustain a render and layout loop.");
+                window = shown.Window;
+                shown.Text.Select(0, shown.Text.Text.Length);
+                window.Dispatcher.BeginInvoke(() => idle.TrySetResult(), DispatcherPriority.ApplicationIdle);
+            });
+            await idle.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        }
+        finally { if (window is not null) await dispatcher.Run(window.Close); }
+    }
+
+    [Fact]
     public Task SelectionAcrossStyledRunsCopiesLiteralTextWithoutChangingRunsOrTakingKeyboardFocus() => dispatcher.Run(() =>
     {
         var (window, text) = Show("unused");

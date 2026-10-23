@@ -135,7 +135,13 @@ public partial class VocabularyNotebookWindow
                 _mutating = false;
                 // A later user selection owns browsing. A completed transaction may update its
                 // graph, but cannot pull the user back from a different sense they selected.
-                if (result.Succeeded && _detailVersion == version && _selection == receipt.SenseId) _selection = result.Selection;
+                if (result.Succeeded && _detailVersion == version && _selection == receipt.SenseId)
+                {
+                    // Acknowledged New/Merge/Delete is an explicit selection publication too.
+                    // A filter captured before it must not follow a merged alias and clear the
+                    // newly chosen target after this command has completed.
+                    _pendingGraphReconciliation = null; _selection = result.Selection;
+                }
                 if (result.Succeeded) _expanded.Add(receipt.EntryId);
                 UpdateActions(); RequestRefresh();
                 if (!result.Succeeded && failure is { } message) { StorageError.Text = message; StorageError.Visibility = Visibility.Visible; }

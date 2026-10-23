@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using Cotabby.App.Vocabulary;
+using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Vocabulary;
 using Cotabby.Win32.Vocabulary;
 
@@ -17,7 +18,12 @@ public partial class VocabularyNotebookWindow
     private IReadOnlyList<VocabularyEntry> _graphEntries = [];
     private string _graphQuery = "";
     private Guid? _lastGraphSense;
-    private sealed record GraphFilterReconciliation(Guid SenseId);
+    /// <summary>One graph-mode filter edit freezes its original acknowledged inputs until the
+    /// browse worker evaluates it. Later list-only edits do not replace this criterion.</summary>
+    private sealed record GraphFilterConstraint(VocabularyDocument Document, string Query, LearningLanguage? Language, string Tag);
+    /// <summary>Window-owned pending constraints share one selected identity. Any excluding edit
+    /// clears it; a later explicit selection cancels the whole receipt before publication.</summary>
+    private sealed record GraphFilterReconciliation(Guid SenseId, IReadOnlyList<GraphFilterConstraint> Filters);
     private GraphFilterReconciliation? _pendingGraphReconciliation;
     private (bool Graph, bool Detail)? _presentedBrowserLayout;
     internal bool IsGraphMode => _graphPreferences.BrowserMode == "graph";
@@ -83,16 +89,26 @@ public partial class VocabularyNotebookWindow
         if (request.GraphReconciliation is { } reconciliation && ReferenceEquals(reconciliation, _pendingGraphReconciliation))
         {
             var selected = VocabularyNotebookPolicy.ResolveSelection(request.Document, reconciliation.SenseId)?.SenseId;
-            if (_selection == selected && selected is { } sense && !result.Entries.Any(entry => VocabularySensePolicy.Index(sense, entry) is not null))
+            if (_selection == selected && selected is not null && result.ClearGraphSelection)
             { _selection = null; _graphPresentation?.ClearFocus(); }
             _pendingGraphReconciliation = null;
         }
         RefreshGraph();
         if (_graphView is { } view) view.IsEnabled = true;
     }
+    private bool GraphFilterExcludesSelection(GraphFilterConstraint filter, Guid selected, CancellationToken token)
+    {
+        token.ThrowIfCancellationRequested();
+        // Each constraint retains the graph-mode filter and acknowledged document at that edit.
+        // A later list-only query cannot change its outcome, and an earlier excluding graph edit
+        // cannot be undone by a later including one before the dispatcher receives the result.
+        string tag = VocabularyNotebookPolicy.ResolveTag(VocabularyNotebookPolicy.Tags(filter.Document), filter.Tag);
+        return !VocabularyNotebookPolicy.VisibleEntries(filter.Document, _textSearch, filter.Query, filter.Language, tag, true, token)
+            .Any(entry => VocabularySensePolicy.Index(selected, entry) is not null);
+    }
     private void SelectFromGraph(VocabularySelection? selection)
     {
-        if (_retired || _graphView is not { IsEnabled: true }) return;
+        if (_retired || !IsGraphMode || !IsVisible || _graphView is not { IsEnabled: true, IsVisible: true }) return;
         _pendingGraphReconciliation = null;
         var resolved = VocabularyNotebookPolicy.ResolveSelection(_store.Snapshot.Document, selection?.SenseId);
         if (_selection != resolved?.SenseId) DetailViewport.ScrollToTop();

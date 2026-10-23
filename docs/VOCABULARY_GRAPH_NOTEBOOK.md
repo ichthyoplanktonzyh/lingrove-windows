@@ -41,7 +41,11 @@ batch state already exists does not silently discard it.
 Mac recomputes visible entries and reconciles graph selection synchronously. Windows retains the
 existing off-dispatcher filtering boundary. A pending graph-filter reconciliation therefore carries
 its original selected identity through superseding Store/sort/mode refreshes until the latest result
-applies. A later explicit selection, directed Reveal or detail-close cancels that pending intent.
+applies. Each pending graph edit retains its original document/query/language/tag criterion:
+a later list filter cannot change its outcome, and a later including graph filter cannot undo an
+earlier excluding one before selection clears. A later explicit selection, directed Reveal or
+detail-close cancels that pending intent. An acknowledged mutation's selection publication retires
+it too; a pre-merge filter cannot follow an alias and clear the newly selected merge target.
 Stale worker replies cannot publish or clear that later choice.
 
 During pending browse, the old drawing can remain visible for continuity but graph controls and
@@ -70,17 +74,18 @@ canvas's tracked work before the Store owner is disposed.
 
 ## Evidence and remaining verification
 
-Sixteen new compiled WPF cases use actual XAML, controls/popups, graph/presentation/worker, memory
+Twenty-one new compiled WPF cases use actual XAML, controls/popups, graph/presentation/worker, memory
 SQLite and the shared Store. They cover durable controller startup, selection/detail sharing,
 query/tag/language reconciliation, mode entry, head/sense intents, all settings/defaults, camera
 commands, hide/reopen/retirement, checklist identity, merge/delete, split-width retention and gated
-filter/mode/navigation races with disabled virtual peers, plus current-failure/Retry recovery. Three portable App cases execute the
+filter/mode/navigation races with disabled/hidden virtual peers, original filter criteria across
+superseding list/graph edits, plus current-failure/Retry recovery. Three portable App cases execute the
 actual reset factory over valid, malformed and wrong-shaped raw preference values, reparse saved
 settings and check the live preference adapter follows replacement.
 
 These are Windows integration tests and manually mapped source UI closures, not a new SwiftUI
 runtime oracle. The forty-two existing actual-source verifiers remain unchanged. Expected full
-Windows totals are Core3339 / Inference539 / App166 / WPF492. Cross-compilation does not execute
+Windows totals are Core3339 / Inference539 / App166 / WPF497. Cross-compilation does not execute
 WPF. Exact-head Windows execution and the complete Mac CI must pass before merge.
 
 Physical pointer/key dispatch, touchpad/magnify, native popup/splitter placement, external UIA/

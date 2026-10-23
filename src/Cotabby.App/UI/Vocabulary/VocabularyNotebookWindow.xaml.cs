@@ -32,7 +32,7 @@ public partial class VocabularyNotebookWindow : Window
     private string _selectedTag = "";
     private sealed record BrowseRequest(VocabularyDocument Document, string Query, LearningLanguage? Language, string Tag,
         bool Newest, bool Loaded, string? Error, ulong Revision, long Version, CancellationTokenSource Work, GraphFilterReconciliation? GraphReconciliation);
-    private sealed record BrowseResult(IReadOnlyList<VocabularyEntry> Entries, IReadOnlyList<string> Tags, string Tag);
+    private sealed record BrowseResult(IReadOnlyList<VocabularyEntry> Entries, IReadOnlyList<string> Tags, string Tag, bool ClearGraphSelection);
     private sealed record DetailKey(Guid Entry, string Expression, string Form, LearningLanguage Language, VocabularyEntryKind Kind, VocabularySense Sense);
     private DetailKey? _renderedDetail;
     private bool _hasRenderedDetail;
@@ -94,7 +94,6 @@ public partial class VocabularyNotebookWindow : Window
     private void RequestRefresh(bool reconcileGraph = false)
     {
         Dispatcher.VerifyAccess(); if (_retired) return;
-        if (reconcileGraph) _pendingGraphReconciliation = _selection is { } selected ? new(selected) : null;
         // Windows filters off the dispatcher. Retain the last drawing for continuity but do
         // not accept graph intents against rows from the previous query/revision.
         if (_graphView is { } graphView) graphView.IsEnabled = false;
@@ -104,6 +103,16 @@ public partial class VocabularyNotebookWindow : Window
         InvalidateExportOffer();
         var state = _store.ReadState(); var document = state.Snapshot.Document; string query = SearchText.Text;
         var language = (LanguageFilter.SelectedItem as LanguageOption)?.Value;
+        if (reconcileGraph)
+        {
+            if (_selection is { } selected)
+            {
+                var constraint = new GraphFilterConstraint(document, query, language, _selectedTag);
+                var previous = _pendingGraphReconciliation is { } pending && pending.SenseId == selected ? pending.Filters : [];
+                _pendingGraphReconciliation = new(selected, previous.Append(constraint).ToArray());
+            }
+            else _pendingGraphReconciliation = null;
+        }
         var request = new BrowseRequest(document, query, language, _selectedTag, _newestFirst, state.IsLoaded, state.ErrorMessage, state.Snapshot.Revision, version, source, _pendingGraphReconciliation);
         var work = RefreshAsync(request); LastRefresh = work;
         Track(work);
@@ -123,8 +132,9 @@ public partial class VocabularyNotebookWindow : Window
             {
                 token.ThrowIfCancellationRequested(); var tags = VocabularyNotebookPolicy.Tags(request.Document);
                 string tag = VocabularyNotebookPolicy.ResolveTag(tags, request.Tag);
-                return new BrowseResult(VocabularyNotebookPolicy.VisibleEntries(request.Document, _textSearch, request.Query,
-                    request.Language, tag, request.Newest, token), tags, tag);
+                var entries = VocabularyNotebookPolicy.VisibleEntries(request.Document, _textSearch, request.Query, request.Language, tag, request.Newest, token);
+                bool clear = request.GraphReconciliation is { } reconciliation && reconciliation.Filters.Any(filter => GraphFilterExcludesSelection(filter, reconciliation.SenseId, token));
+                return new BrowseResult(entries, tags, tag, clear);
             }, token).ConfigureAwait(false);
             if (token.IsCancellationRequested || Dispatcher.HasShutdownStarted) return;
             await Dispatcher.InvokeAsync(() => ApplyBrowse(request, result), System.Windows.Threading.DispatcherPriority.DataBind, token).Task.ConfigureAwait(false);

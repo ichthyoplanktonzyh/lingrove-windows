@@ -102,9 +102,12 @@ public sealed class VocabularyGraphNotebookTests(WpfDispatcher dispatcher)
             Assert.Equal(Visibility.Visible, Find<DockPanel>(window, "DetailsPane").Visibility);
             Click(Find<Button>(window, "CloseGraphDetailButton")); Assert.Null(window.Selection); Assert.Null(Graph(window).Presentation.FocusedEntryId);
             Assert.Contains(Id(1), Graph(window).Presentation.Expanded); Assert.Equal(Visibility.Collapsed, Find<DockPanel>(window, "DetailsPane").Visibility);
+            var held = UIElementAutomationPeer.CreatePeerForElement(Graph(window).Canvas)!.GetChildren()!.First();
             Mode(window, false); await Refresh(window); Assert.Null(window.Selection); Assert.Equal("list", preferences.BrowserMode);
             Assert.Equal(Visibility.Visible, Find<DockPanel>(window, "DetailsPane").Visibility);
             Assert.Equal(Visibility.Visible, Find<Button>(window, "SortButton").Visibility);
+            Assert.False(held.IsEnabled()); Assert.Throws<ElementNotEnabledException>(() => ((IInvokeProvider)held.GetPattern(PatternInterface.Invoke)!).Invoke());
+            Graph(window).Canvas.Activate(VocabularyGraphNodeId.Sense(OtherBank)); Assert.Null(window.Selection);
         }
         finally { await Retire(window); }
     });
@@ -260,13 +263,14 @@ public sealed class VocabularyGraphNotebookTests(WpfDispatcher dispatcher)
         finally { await Retire(window); }
     });
 
-    private sealed class SearchGate : IVocabularyTextSearching
+    private sealed class SearchGate(string term = "slow") : IVocabularyTextSearching
     {
         private readonly WindowsVocabularyTextSearch _actual = new();
         internal TaskCompletionSource Entered { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
         internal TaskCompletionSource Release { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
         public bool Contains(string field, string term)
-        { if (term == "slow") { Entered.TrySetResult(); Release.Task.GetAwaiter().GetResult(); } return _actual.Contains(field, term); }
+        { if (term == _term) { Entered.TrySetResult(); Release.Task.GetAwaiter().GetResult(); } return _actual.Contains(field, term); }
+        private readonly string _term = term;
     }
     private sealed class FailOnceSearch : IVocabularyTextSearching
     {
@@ -328,10 +332,51 @@ public sealed class VocabularyGraphNotebookTests(WpfDispatcher dispatcher)
             Mode(window, false);
             if (navigate) window.Reveal(OtherBank);
             else input.Text = "café";
-            await Refresh(window); Assert.Equal(navigate ? OtherBank : null, window.Selection);
-            search.Release.TrySetResult(); await old.WaitAsync(TimeSpan.FromSeconds(10)); await Refresh(window);
+            search.Release.TrySetResult(); await Refresh(window); Assert.Equal(navigate ? OtherBank : null, window.Selection);
+            await old.WaitAsync(TimeSpan.FromSeconds(10)); await Refresh(window);
             Assert.Equal(navigate ? OtherBank : null, window.Selection);
             if (!navigate) Assert.Equal(Id(10), Assert.Single(Rows(window)).Selection.EntryId);
+        }
+        finally { search.Release.TrySetResult(); await Retire(window); }
+    });
+
+    [Theory]
+    [InlineData("bank", "café", true, false)]
+    [InlineData("café", "bank", true, true)]
+    [InlineData("café", "bank", false, true)]
+    [InlineData("bank", "café", false, true)]
+    public Task PendingGraphEditsRetainTheirOriginalCriteriaAcrossDifferentLaterFilters(string first, string second, bool toList, bool cleared) => dispatcher.RunAsync(async () =>
+    {
+        await using var store = await Store(); var search = new SearchGate(first);
+        var window = new VocabularyNotebookWindow(store, search, graphPreferences: new Preferences("graph"));
+        try
+        {
+            window.Reveal(Bank); window.Show(); await Refresh(window); var input = Find<TextBox>(window, "SearchText");
+            input.Text = first; var original = window.LastRefresh; await search.Entered.Task.WaitAsync(TimeSpan.FromSeconds(10));
+            if (toList) Mode(window, false);
+            input.Text = second; search.Release.TrySetResult(); await Refresh(window); await original.WaitAsync(TimeSpan.FromSeconds(10));
+            Assert.Equal(cleared ? null : Bank, window.Selection);
+            Assert.Equal(toList, !window.IsGraphMode);
+            Assert.All(Rows(window), row => Assert.Equal(second == "bank" ? Id(1) : Id(10), row.Selection.EntryId));
+        }
+        finally { search.Release.TrySetResult(); await Retire(window); }
+    });
+
+    [Fact]
+    public Task AcknowledgedMergeSelectionRetiresEarlierFilterConstraintsBeforeAliasResolution() => dispatcher.RunAsync(async () =>
+    {
+        await using var store = await Store(); var search = new SearchGate();
+        var window = new VocabularyNotebookWindow(store, search, graphPreferences: new Preferences("graph"));
+        try
+        {
+            window.Reveal(Bank); window.Show(); await Refresh(window); var input = Find<TextBox>(window, "SearchText");
+            input.Text = "slow"; var old = window.LastRefresh; await search.Entered.Task.WaitAsync(TimeSpan.FromSeconds(10));
+            var merge = Find<Button>(window, "MergeSenseButton"); Click(merge);
+            Assert.Single(merge.ContextMenu!.Items.OfType<MenuItem>()).RaiseEvent(new RoutedEventArgs(MenuItem.ClickEvent));
+            await window.LastMutation.WaitAsync(TimeSpan.FromSeconds(10)); Assert.Equal(OtherBank, window.Selection);
+            input.Text = "bank"; search.Release.TrySetResult(); await Refresh(window); await old.WaitAsync(TimeSpan.FromSeconds(10));
+            Assert.Equal(OtherBank, window.Selection);
+            Assert.Contains(Bank.SenseId, store.Snapshot.Document.Entries.Single(entry => entry.Id == Id(1)).Senses.Single().MergedFrom);
         }
         finally { search.Release.TrySetResult(); await Retire(window); }
     });

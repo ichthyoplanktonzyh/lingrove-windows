@@ -96,3 +96,16 @@ def database_projection_sources(repo):
     return sense_policy_sources(repo) + [source(repo, path) for path in (
         "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
         "Cotabby/Support/Vocabulary/VocabularyDatabaseProjection.swift")]
+
+
+def database_sqlite_sources(repo):
+    """Complete original SQLite implementation, removing only two logging calls/import."""
+    connection = source(repo, "Cotabby/Services/Vocabulary/VocabularySQLiteConnection.swift")
+    if connection.count('import Logging\n') != 1 or connection.count('CotabbyLogger.learning.error(') != 2:
+        raise RuntimeError('Pinned SQLite logging boundary changed')
+    connection = '\n'.join(line for line in connection.split('\n')
+        if line != 'import Logging' and 'CotabbyLogger.learning.error(' not in line)
+    return database_projection_sources(repo) + [connection] + [source(repo, path) for path in (
+        "Cotabby/Models/Vocabulary/VocabularyCLIReceipt.swift",
+        "Cotabby/Services/Vocabulary/VocabularySQLiteFileLock.swift",
+        "Cotabby/Services/Vocabulary/VocabularySQLiteDatabase.swift")]

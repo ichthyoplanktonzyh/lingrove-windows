@@ -112,3 +112,12 @@ SymSpell published the derived multilingual files.
 Chinese is intentionally not bundled: SymSpell's generation notes do not identify
 the source word list and license for that file, and Cotabby's current typo gate does
 not yet provide reliable word segmentation for languages without whitespace.
+
+## SQLite
+
+The vocabulary SQLite boundary uses `SQLitePCLRaw.bundle_e_sqlite3` 3.0.5 and its core/provider
+packages, copyright 2014–2026 SourceGear, LLC (individual source files may specify earlier years).
+They are licensed under [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+[Upstream source and notices](https://github.com/ericsink/SQLitePCL.raw/tree/v3.0.5) accompany that license.
+The transitive `SQLite` 3.53.4 package supplies native SQLite builds; its package `LICENSE.txt` states
+that SQLite is in the public domain. See [SQLite copyright](https://sqlite.org/copyright.html).

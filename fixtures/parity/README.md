@@ -278,3 +278,19 @@ review coexistence, retained-plan traversal and endpoint/profile/origin/note ded
 are pure value/projection evidence, not a complete field-by-field model codec roundtrip. Explicit
 .NET snapshot mutation/hash and collection tests complement them. The [scope record](../../docs/VOCABULARY_MODELS.md)
 keeps Save/merge transactions, storage, media, template application and Anki transport unfinished.
+
+## Vocabulary row JSON and SQLite
+
+`vocabulary-codec-v1.json` records 40 actual native inputs as base64 and the original pinned Mac
+Payload encoder/decoder observations. It covers typed row leaves, source field/enum names, associated
+content values, the 2001 numeric date epoch, duplicate canonical keys and byte-order handling.
+[Codec source mapping and date/encoding limits](../../docs/VOCABULARY_PAYLOAD_CODEC.md) keep its scope explicit.
+
+`vocabulary-sqlite-v1.json` adds 20 observations from the complete original Mac SQLite classes on
+isolated in-memory databases. The new verifier compiles native SQL implementations, excluding only
+two diagnostic log calls/import, with count assertions. It reuses the projection driver's fixed
+Swift graph construction; the C# consumer constructs the same input graph from native codec bytes
+and relational row inputs. SQLite expectations come from the separate Swift driver. These tests
+exercise real SQL constraints, update/delete order and transaction rollback, not a fake database.
+[SQLite scope and unresolved named-file protection](../../docs/VOCABULARY_SQLITE_TRANSACTIONS.md)
+separate in-memory evidence from restart, disk durability, Windows file locks and product Save.

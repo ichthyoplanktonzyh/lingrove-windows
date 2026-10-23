@@ -154,7 +154,10 @@ public sealed class AppHost : IAsyncDisposable
         Vocabulary = new VocabularyStore(new VocabularyArchive(System.IO.Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "Cotabby", "vocabulary", "vocabulary.sqlite")), ui);
-        VocabularyWindow = new VocabularyWindowController(Vocabulary, overlay.Dispatcher);
+        VocabularyWindow = new VocabularyWindowController(Vocabulary, overlay.Dispatcher,
+            () => new VocabularyNotebookSession(overlay.Dispatcher, _services.GetRequiredService<ILearningDictionaryProviding>(),
+                _services.GetRequiredService<ILearningLexicalText>(), LearningExplanation.Service),
+            () => SettingsWindow.ShowLearning(this));
         Vocabulary.EnrichCapture = capture =>
         {
             var input = LearningExplanationPolicy.Input(capture);

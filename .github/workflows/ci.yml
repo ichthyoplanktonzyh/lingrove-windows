@@ -85,6 +85,7 @@ jobs:
             Cotabby/Services/Review/AnkiConnectClient.swift
             CotabbyTests/Services/Vocabulary/VocabularyContentTests.swift
             CotabbyTests/Support/Review/ReviewCardPolicyTests.swift
+            CotabbyTests/Support/Speech/SpeechTextPolicyTests.swift
             Cotabby/Services/Vocabulary/VocabularyArchive.swift
             Cotabby/Services/Vocabulary/VocabularyGraphLayoutWorker.swift
             Cotabby/Services/Vocabulary/VocabularyArchive+ReviewCards.swift
@@ -216,3 +217,6 @@ jobs:
 
       - name: Verify Anki field mapping conflicts and receipts against original Mac methods
         run: python3 scripts/verify-anki-fields-macos-parity.py --mac-repo .mac-baseline
+
+      - name: Verify spoken text and receipt freshness against original Mac rules
+        run: python3 scripts/verify-speech-text-macos-parity.py --mac-repo .mac-baseline

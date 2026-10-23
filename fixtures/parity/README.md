@@ -385,3 +385,9 @@ dependencies. It preserves canonical field identity, override precedence and exa
 Large generated values expose byte count and SHA-256 instead of repeated megabytes; all smaller
 outputs compare exact strings/keys/array count. No server, controller transaction or audio
 freshness is established. See [mapping and limits](../../docs/ANKI_FIELD_POLICY.md).
+
+`speech-text-v1.json` contains47 original speech-text/audio-freshness observations, with eight
+adaptations of four existing SpeechTextPolicyTests regressions. The complete speech-text enum and
+exact original freshness/digest helpers execute with native JSON strings, byte/grapheme limits
+and receipt hashes. It establishes no voice, playback, remote media or send transaction; see
+[scope and mapping](../../docs/SPEECH_TEXT_POLICY.md).

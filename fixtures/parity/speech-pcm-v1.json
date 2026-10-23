@@ -1,0 +1,3218 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "chunk-rate--2147483648",
+      "kind": "chunk",
+      "macSource": "Cotabby/Models/Speech/SpeechAudioChunk.swift",
+      "provenanceKind": "source-policy-extension",
+      "sampleRate": -2147483648,
+      "bits": [
+        0
+      ],
+      "expected": {
+        "error": "invalidAudio"
+      }
+    },
+    {
+      "id": "chunk-rate--1",
+      "kind": "chunk",
+      "macSource": "Cotabby/Models/Speech/SpeechAudioChunk.swift",
+      "provenanceKind": "source-policy-extension",
+      "sampleRate": -1,
+      "bits": [
+        0
+      ],
+      "expected": {
+        "error": "invalidAudio"
+      }
+    },
+    {
+      "id": "chunk-rate-0",
+      "kind": "chunk",
+      "macSource": "Cotabby/Models/Speech/SpeechAudioChunk.swift",
+      "provenanceKind": "source-policy-extension",
+      "sampleRate": 0,
+      "bits": [
+        0
+      ],
+      "expected": {
+        "error": "invalidAudio"
+      }
+    },
+    {
+      "id": "chunk-rate-7999",
+      "kind": "chunk",
+      "macSource": "Cotabby/Models/Speech/SpeechAudioChunk.swift",
+      "provenanceKind": "source-policy-extension",
+      "sampleRate": 7999,
+      "bits": [
+        0
+      ],
+      "expected": {
+        "error": "invalidAudio"
+      }
+    },
+    {
+      "id": "chunk-rate-8000",
+      "kind": "chunk",
+      "macSource": "Cotabby/Models/Speech/SpeechAudioChunk.swift",
+      "provenanceKind": "source-policy-extension",
+      "sampleRate": 8000,
+      "bits": [
+        0
+      ],
+      "expected": {
+        "bytes": 4,
+        "rate": 8000,
+        "samples": 1,
+        "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119"
+      }
+    },
+    {
+      "id": "chunk-rate-24000",
+      "kind": "chunk",
+      "macSource": "Cotabby/Models/Speech/SpeechAudioChunk.swift",
+      "provenanceKind": "source-policy-extension",
+      "sampleRate": 24000,
+      "bits": [
+        0
+      ],
+      "expected": {
+        "bytes": 4,
+        "rate": 24000,
+        "samples": 1,
+        "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119"
+      }
+    },
+    {
+      "id": "chunk-rate-192000",
+      "kind": "chunk",
+      "macSource": "Cotabby/Models/Speech/SpeechAudioChunk.swift",
+      "provenanceKind": "source-policy-extension",
+      "sampleRate": 192000,
+      "bits": [
+        0
+      ],
+      "expected": {
+        "bytes": 4,
+        "rate": 192000,
+        "samples": 1,
+        "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119"
+      }
+    },
+    {
+      "id": "chunk-rate-192001",
+      "kind": "chunk",
+      "macSource": "Cotabby/Models/Speech/SpeechAudioChunk.swift",
+      "provenanceKind": "source-policy-extension",
+      "sampleRate": 192001,
+      "bits": [
+        0
+      ],
+      "expected": {
+        "error": "invalidAudio"
+      }
+    },
+    {
+      "id": "chunk-rate-2147483647",
+      "kind": "chunk",
+      "macSource": "Cotabby/Models/Speech/SpeechAudioChunk.swift",
+      "provenanceKind": "source-policy-extension",
+      "sampleRate": 2147483647,
+      "bits": [
+        0
+      ],
+      "expected": {
+        "error": "invalidAudio"
+      }
+    },
+    {
+      "id": "chunk-bytes-0",
+      "kind": "chunk",
+      "macSource": "Cotabby/Models/Speech/SpeechAudioChunk.swift",
+      "provenanceKind": "source-policy-extension",
+      "sampleRate": 24000,
+      "zeros": 0,
+      "expected": {
+        "error": "invalidAudio"
+      }
+    },
+    {
+      "id": "chunk-bytes-1",
+      "kind": "chunk",
+      "macSource": "Cotabby/Models/Speech/SpeechAudioChunk.swift",
+      "provenanceKind": "source-policy-extension",
+      "sampleRate": 24000,
+      "zeros": 1,
+      "expected": {
+        "error": "invalidAudio"
+      }
+    },
+    {
+      "id": "chunk-bytes-2",
+      "kind": "chunk",
+      "macSource": "Cotabby/Models/Speech/SpeechAudioChunk.swift",
+      "provenanceKind": "source-policy-extension",
+      "sampleRate": 24000,
+      "zeros": 2,
+      "expected": {
+        "error": "invalidAudio"
+      }
+    },
+    {
+      "id": "chunk-bytes-3",
+      "kind": "chunk",
+      "macSource": "Cotabby/Models/Speech/SpeechAudioChunk.swift",
+      "provenanceKind": "source-policy-extension",
+      "sampleRate": 24000,
+      "zeros": 3,
+      "expected": {
+        "error": "invalidAudio"
+      }
+    },
+    {
+      "id": "chunk-bytes-4",
+      "kind": "chunk",
+      "macSource": "Cotabby/Models/Speech/SpeechAudioChunk.swift",
+      "provenanceKind": "source-policy-extension",
+      "sampleRate": 24000,
+      "zeros": 4,
+      "expected": {
+        "bytes": 4,
+        "rate": 24000,
+        "samples": 1,
+        "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119"
+      }
+    },
+    {
+      "id": "chunk-bytes-5",
+      "kind": "chunk",
+      "macSource": "Cotabby/Models/Speech/SpeechAudioChunk.swift",
+      "provenanceKind": "source-policy-extension",
+      "sampleRate": 24000,
+      "zeros": 5,
+      "expected": {
+        "error": "invalidAudio"
+      }
+    },
+    {
+      "id": "chunk-bytes-7",
+      "kind": "chunk",
+      "macSource": "Cotabby/Models/Speech/SpeechAudioChunk.swift",
+      "provenanceKind": "source-policy-extension",
+      "sampleRate": 24000,
+      "zeros": 7,
+      "expected": {
+        "error": "invalidAudio"
+      }
+    },
+    {
+      "id": "chunk-bytes-8",
+      "kind": "chunk",
+      "macSource": "Cotabby/Models/Speech/SpeechAudioChunk.swift",
+      "provenanceKind": "source-policy-extension",
+      "sampleRate": 24000,
+      "zeros": 8,
+      "expected": {
+        "bytes": 8,
+        "rate": 24000,
+        "samples": 2,
+        "sha256": "af5570f5a1810b7af78caf4bc70a660f0df51e42baf91d4de5b2328de0e83dfc"
+      }
+    },
+    {
+      "id": "chunk-bytes-262140",
+      "kind": "chunk",
+      "macSource": "Cotabby/Models/Speech/SpeechAudioChunk.swift",
+      "provenanceKind": "source-policy-extension",
+      "sampleRate": 24000,
+      "zeros": 262140,
+      "expected": {
+        "bytes": 262140,
+        "rate": 24000,
+        "samples": 65535,
+        "sha256": "32e0ff00b0570220938cc60d6dd2f7220c625213173a5dcef3b4e388b65bd946"
+      }
+    },
+    {
+      "id": "chunk-bytes-262144",
+      "kind": "chunk",
+      "macSource": "Cotabby/Models/Speech/SpeechAudioChunk.swift",
+      "provenanceKind": "source-policy-extension",
+      "sampleRate": 24000,
+      "zeros": 262144,
+      "expected": {
+        "bytes": 262144,
+        "rate": 24000,
+        "samples": 65536,
+        "sha256": "8a39d2abd3999ab73c34db2476849cddf303ce389b35826850f9a700589b4a90"
+      }
+    },
+    {
+      "id": "chunk-bytes-262145",
+      "kind": "chunk",
+      "macSource": "Cotabby/Models/Speech/SpeechAudioChunk.swift",
+      "provenanceKind": "source-policy-extension",
+      "sampleRate": 24000,
+      "zeros": 262145,
+      "expected": {
+        "error": "invalidAudio"
+      }
+    },
+    {
+      "id": "chunk-bytes-262148",
+      "kind": "chunk",
+      "macSource": "Cotabby/Models/Speech/SpeechAudioChunk.swift",
+      "provenanceKind": "source-policy-extension",
+      "sampleRate": 24000,
+      "zeros": 262148,
+      "expected": {
+        "error": "invalidAudio"
+      }
+    },
+    {
+      "id": "chunk-positive-zero",
+      "kind": "chunk",
+      "macSource": "Cotabby/Models/Speech/SpeechAudioChunk.swift",
+      "provenanceKind": "source-policy-extension",
+      "sampleRate": 24000,
+      "bits": [
+        0
+      ],
+      "expected": {
+        "bytes": 4,
+        "rate": 24000,
+        "samples": 1,
+        "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119"
+      }
+    },
+    {
+      "id": "chunk-negative-zero",
+      "kind": "chunk",
+      "macSource": "Cotabby/Models/Speech/SpeechAudioChunk.swift",
+      "provenanceKind": "source-policy-extension",
+      "sampleRate": 24000,
+      "bits": [
+        2147483648
+      ],
+      "expected": {
+        "bytes": 4,
+        "rate": 24000,
+        "samples": 1,
+        "sha256": "6d58692645c9d1cfaf13541cbd258f86193ef63c2f1d38f6bbca9617372d7bd6"
+      }
+    },
+    {
+      "id": "chunk-normal-extremes",
+      "kind": "chunk",
+      "macSource": "Cotabby/Models/Speech/SpeechAudioChunk.swift",
+      "provenanceKind": "source-policy-extension",
+      "sampleRate": 24000,
+      "bits": [
+        1090519040,
+        3238002688
+      ],
+      "expected": {
+        "bytes": 8,
+        "rate": 24000,
+        "samples": 2,
+        "sha256": "a3c84d98e67916fed00c3f63db43ad9214dda5f4553790ca5388b8b776d3db5a"
+      }
+    },
+    {
+      "id": "chunk-above-positive",
+      "kind": "chunk",
+      "macSource": "Cotabby/Models/Speech/SpeechAudioChunk.swift",
+      "provenanceKind": "source-policy-extension",
+      "sampleRate": 24000,
+      "bits": [
+        1090519041
+      ],
+      "expected": {
+        "error": "invalidAudio"
+      }
+    },
+    {
+      "id": "chunk-below-negative",
+      "kind": "chunk",
+      "macSource": "Cotabby/Models/Speech/SpeechAudioChunk.swift",
+      "provenanceKind": "source-policy-extension",
+      "sampleRate": 24000,
+      "bits": [
+        3238002689
+      ],
+      "expected": {
+        "error": "invalidAudio"
+      }
+    },
+    {
+      "id": "chunk-pos-inf",
+      "kind": "chunk",
+      "macSource": "Cotabby/Models/Speech/SpeechAudioChunk.swift",
+      "provenanceKind": "source-policy-extension",
+      "sampleRate": 24000,
+      "bits": [
+        2139095040
+      ],
+      "expected": {
+        "error": "invalidAudio"
+      }
+    },
+    {
+      "id": "chunk-neg-inf",
+      "kind": "chunk",
+      "macSource": "Cotabby/Models/Speech/SpeechAudioChunk.swift",
+      "provenanceKind": "source-policy-extension",
+      "sampleRate": 24000,
+      "bits": [
+        4286578688
+      ],
+      "expected": {
+        "error": "invalidAudio"
+      }
+    },
+    {
+      "id": "chunk-quiet-nan",
+      "kind": "chunk",
+      "macSource": "Cotabby/Models/Speech/SpeechAudioChunk.swift",
+      "provenanceKind": "source-policy-extension",
+      "sampleRate": 24000,
+      "bits": [
+        2143289345
+      ],
+      "expected": {
+        "error": "invalidAudio"
+      }
+    },
+    {
+      "id": "chunk-signaling-nan",
+      "kind": "chunk",
+      "macSource": "Cotabby/Models/Speech/SpeechAudioChunk.swift",
+      "provenanceKind": "source-policy-extension",
+      "sampleRate": 24000,
+      "bits": [
+        2139095041
+      ],
+      "expected": {
+        "error": "invalidAudio"
+      }
+    },
+    {
+      "id": "chunk-subnormal",
+      "kind": "chunk",
+      "macSource": "Cotabby/Models/Speech/SpeechAudioChunk.swift",
+      "provenanceKind": "source-policy-extension",
+      "sampleRate": 24000,
+      "bits": [
+        1,
+        2147483649
+      ],
+      "expected": {
+        "bytes": 8,
+        "rate": 24000,
+        "samples": 2,
+        "sha256": "87e35cd017ff3522c8c5f9ac2b6fdd0e6870b7443bbb656080d2817537c5f7c6"
+      }
+    },
+    {
+      "id": "chunk-mixed-late-invalid",
+      "kind": "chunk",
+      "macSource": "Cotabby/Models/Speech/SpeechAudioChunk.swift",
+      "provenanceKind": "source-policy-extension",
+      "sampleRate": 24000,
+      "bits": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        2143289344
+      ],
+      "expected": {
+        "error": "invalidAudio"
+      }
+    },
+    {
+      "id": "chunk-arbitrary-finite",
+      "kind": "chunk",
+      "macSource": "Cotabby/Models/Speech/SpeechAudioChunk.swift",
+      "provenanceKind": "source-policy-extension",
+      "sampleRate": 24000,
+      "bits": [
+        1051372203,
+        3204448256,
+        1078530011
+      ],
+      "expected": {
+        "bytes": 12,
+        "rate": 24000,
+        "samples": 3,
+        "sha256": "7cf1b5b0ea2f6b6719d7758d187eed91eba15c4d78493a330337eec064518825"
+      }
+    },
+    {
+      "id": "state-completed-duplicate-ack",
+      "kind": "state",
+      "macSource": "Cotabby/Support/Speech/SpeechPCMPlaybackState.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "enqueue",
+          "samples": 12000
+        },
+        {
+          "op": "enqueue",
+          "samples": 12000
+        },
+        {
+          "op": "end"
+        },
+        {
+          "op": "played",
+          "id": 0
+        },
+        {
+          "op": "played",
+          "id": 0
+        },
+        {
+          "op": "played",
+          "id": 1
+        },
+        {
+          "op": "enqueue",
+          "samples": 1
+        }
+      ],
+      "expected": [
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": 0,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 12000,
+            "total": 12000
+          }
+        },
+        {
+          "result": 1,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 24000,
+            "total": 24000
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 24000,
+            "total": 24000
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 12000,
+            "total": 24000
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 12000,
+            "total": 24000
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": true,
+            "finished": true,
+            "queued": 0,
+            "total": 24000
+          }
+        },
+        {
+          "result": {
+            "error": "invalidAudio"
+          },
+          "state": {
+            "ended": true,
+            "finished": true,
+            "queued": 0,
+            "total": 24000
+          }
+        }
+      ]
+    },
+    {
+      "id": "state-drained-before-eof",
+      "kind": "state",
+      "macSource": "Cotabby/Support/Speech/SpeechPCMPlaybackState.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "end"
+        },
+        {
+          "op": "enqueue",
+          "samples": 100
+        },
+        {
+          "op": "played",
+          "id": 0
+        },
+        {
+          "op": "start",
+          "sampleRate": 24000,
+          "rate": "1"
+        },
+        {
+          "op": "enqueue",
+          "samples": 200
+        },
+        {
+          "op": "played",
+          "id": 1
+        },
+        {
+          "op": "end"
+        },
+        {
+          "op": "end"
+        }
+      ],
+      "expected": [
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": {
+            "error": "invalidAudio"
+          },
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": 0,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 100,
+            "total": 100
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 100
+          }
+        },
+        {
+          "result": false,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 100
+          }
+        },
+        {
+          "result": 1,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 200,
+            "total": 300
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 300
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": true,
+            "finished": true,
+            "queued": 0,
+            "total": 300
+          }
+        },
+        {
+          "result": {
+            "error": "invalidAudio"
+          },
+          "state": {
+            "ended": true,
+            "finished": true,
+            "queued": 0,
+            "total": 300
+          }
+        }
+      ]
+    },
+    {
+      "id": "state-speed-and-short-eof",
+      "kind": "state",
+      "macSource": "Cotabby/Support/Speech/SpeechPCMPlaybackState.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "enqueue",
+          "samples": 15360
+        },
+        {
+          "op": "start",
+          "sampleRate": 24000,
+          "rate": "1"
+        },
+        {
+          "op": "start",
+          "sampleRate": 24000,
+          "rate": "1.5"
+        },
+        {
+          "op": "enqueue",
+          "samples": 15360
+        },
+        {
+          "op": "start",
+          "sampleRate": 24000,
+          "rate": "1.5"
+        },
+        {
+          "op": "played",
+          "id": 0
+        },
+        {
+          "op": "played",
+          "id": 1
+        },
+        {
+          "op": "enqueue",
+          "samples": 1920
+        },
+        {
+          "op": "start",
+          "sampleRate": 24000,
+          "rate": "1"
+        },
+        {
+          "op": "end"
+        },
+        {
+          "op": "start",
+          "sampleRate": 24000,
+          "rate": "1"
+        }
+      ],
+      "expected": [
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": 0,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 15360,
+            "total": 15360
+          }
+        },
+        {
+          "result": true,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 15360,
+            "total": 15360
+          }
+        },
+        {
+          "result": false,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 15360,
+            "total": 15360
+          }
+        },
+        {
+          "result": 1,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 30720,
+            "total": 30720
+          }
+        },
+        {
+          "result": true,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 30720,
+            "total": 30720
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 15360,
+            "total": 30720
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 30720
+          }
+        },
+        {
+          "result": 2,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 1920,
+            "total": 32640
+          }
+        },
+        {
+          "result": false,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 1920,
+            "total": 32640
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 1920,
+            "total": 32640
+          }
+        },
+        {
+          "result": true,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 1920,
+            "total": 32640
+          }
+        }
+      ]
+    },
+    {
+      "id": "state-unknown-and-out-of-order",
+      "kind": "state",
+      "macSource": "Cotabby/Support/Speech/SpeechPCMPlaybackState.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "played",
+          "id": -1
+        },
+        {
+          "op": "played",
+          "id": 9223372036854775807
+        },
+        {
+          "op": "enqueue",
+          "samples": 10
+        },
+        {
+          "op": "enqueue",
+          "samples": 20
+        },
+        {
+          "op": "played",
+          "id": 1
+        },
+        {
+          "op": "played",
+          "id": 99
+        },
+        {
+          "op": "played",
+          "id": 0
+        },
+        {
+          "op": "end"
+        }
+      ],
+      "expected": [
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": 0,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 10,
+            "total": 10
+          }
+        },
+        {
+          "result": 1,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 30,
+            "total": 30
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 10,
+            "total": 30
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 10,
+            "total": 30
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 30
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": true,
+            "finished": true,
+            "queued": 0,
+            "total": 30
+          }
+        }
+      ]
+    },
+    {
+      "id": "state-budget--9223372036854775808",
+      "kind": "state",
+      "macSource": "Cotabby/Support/Speech/SpeechPCMPlaybackState.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "enqueue",
+          "samples": -9223372036854775808
+        },
+        {
+          "op": "enqueue",
+          "samples": 1
+        },
+        {
+          "op": "played",
+          "id": 0
+        },
+        {
+          "op": "enqueue",
+          "samples": 1
+        },
+        {
+          "op": "end"
+        }
+      ],
+      "expected": [
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": {
+            "error": "invalidAudio"
+          },
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": 0,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 1,
+            "total": 1
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 1
+          }
+        },
+        {
+          "result": 1,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 1,
+            "total": 2
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 1,
+            "total": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "state-budget--1",
+      "kind": "state",
+      "macSource": "Cotabby/Support/Speech/SpeechPCMPlaybackState.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "enqueue",
+          "samples": -1
+        },
+        {
+          "op": "enqueue",
+          "samples": 1
+        },
+        {
+          "op": "played",
+          "id": 0
+        },
+        {
+          "op": "enqueue",
+          "samples": 1
+        },
+        {
+          "op": "end"
+        }
+      ],
+      "expected": [
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": {
+            "error": "invalidAudio"
+          },
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": 0,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 1,
+            "total": 1
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 1
+          }
+        },
+        {
+          "result": 1,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 1,
+            "total": 2
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 1,
+            "total": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "state-budget-0",
+      "kind": "state",
+      "macSource": "Cotabby/Support/Speech/SpeechPCMPlaybackState.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "enqueue",
+          "samples": 0
+        },
+        {
+          "op": "enqueue",
+          "samples": 1
+        },
+        {
+          "op": "played",
+          "id": 0
+        },
+        {
+          "op": "enqueue",
+          "samples": 1
+        },
+        {
+          "op": "end"
+        }
+      ],
+      "expected": [
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": {
+            "error": "invalidAudio"
+          },
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": 0,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 1,
+            "total": 1
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 1
+          }
+        },
+        {
+          "result": 1,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 1,
+            "total": 2
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 1,
+            "total": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "state-budget-1",
+      "kind": "state",
+      "macSource": "Cotabby/Support/Speech/SpeechPCMPlaybackState.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "enqueue",
+          "samples": 1
+        },
+        {
+          "op": "enqueue",
+          "samples": 1
+        },
+        {
+          "op": "played",
+          "id": 0
+        },
+        {
+          "op": "enqueue",
+          "samples": 1
+        },
+        {
+          "op": "end"
+        }
+      ],
+      "expected": [
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": 0,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 1,
+            "total": 1
+          }
+        },
+        {
+          "result": 1,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 2,
+            "total": 2
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 1,
+            "total": 2
+          }
+        },
+        {
+          "result": 2,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 2,
+            "total": 3
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 2,
+            "total": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "state-budget-11519999",
+      "kind": "state",
+      "macSource": "Cotabby/Support/Speech/SpeechPCMPlaybackState.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "enqueue",
+          "samples": 11519999
+        },
+        {
+          "op": "enqueue",
+          "samples": 1
+        },
+        {
+          "op": "played",
+          "id": 0
+        },
+        {
+          "op": "enqueue",
+          "samples": 1
+        },
+        {
+          "op": "end"
+        }
+      ],
+      "expected": [
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": 0,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 11519999,
+            "total": 11519999
+          }
+        },
+        {
+          "result": 1,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 11520000,
+            "total": 11520000
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 1,
+            "total": 11520000
+          }
+        },
+        {
+          "result": {
+            "error": "invalidAudio"
+          },
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 1,
+            "total": 11520000
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 1,
+            "total": 11520000
+          }
+        }
+      ]
+    },
+    {
+      "id": "state-budget-11520000",
+      "kind": "state",
+      "macSource": "Cotabby/Support/Speech/SpeechPCMPlaybackState.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "enqueue",
+          "samples": 11520000
+        },
+        {
+          "op": "enqueue",
+          "samples": 1
+        },
+        {
+          "op": "played",
+          "id": 0
+        },
+        {
+          "op": "enqueue",
+          "samples": 1
+        },
+        {
+          "op": "end"
+        }
+      ],
+      "expected": [
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": 0,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 11520000,
+            "total": 11520000
+          }
+        },
+        {
+          "result": {
+            "error": "invalidAudio"
+          },
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 11520000,
+            "total": 11520000
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 11520000
+          }
+        },
+        {
+          "result": {
+            "error": "invalidAudio"
+          },
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 11520000
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": true,
+            "finished": true,
+            "queued": 0,
+            "total": 11520000
+          }
+        }
+      ]
+    },
+    {
+      "id": "state-budget-11520001",
+      "kind": "state",
+      "macSource": "Cotabby/Support/Speech/SpeechPCMPlaybackState.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "enqueue",
+          "samples": 11520001
+        },
+        {
+          "op": "enqueue",
+          "samples": 1
+        },
+        {
+          "op": "played",
+          "id": 0
+        },
+        {
+          "op": "enqueue",
+          "samples": 1
+        },
+        {
+          "op": "end"
+        }
+      ],
+      "expected": [
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": {
+            "error": "invalidAudio"
+          },
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": 0,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 1,
+            "total": 1
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 1
+          }
+        },
+        {
+          "result": 1,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 1,
+            "total": 2
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 1,
+            "total": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "state-budget-9223372036854775807",
+      "kind": "state",
+      "macSource": "Cotabby/Support/Speech/SpeechPCMPlaybackState.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "enqueue",
+          "samples": 9223372036854775807
+        },
+        {
+          "op": "enqueue",
+          "samples": 1
+        },
+        {
+          "op": "played",
+          "id": 0
+        },
+        {
+          "op": "enqueue",
+          "samples": 1
+        },
+        {
+          "op": "end"
+        }
+      ],
+      "expected": [
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": {
+            "error": "invalidAudio"
+          },
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": 0,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 1,
+            "total": 1
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 1
+          }
+        },
+        {
+          "result": 1,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 1,
+            "total": 2
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 1,
+            "total": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "state-lifetime-budget-after-drain",
+      "kind": "state",
+      "macSource": "Cotabby/Support/Speech/SpeechPCMPlaybackState.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "enqueue",
+          "samples": 11519999
+        },
+        {
+          "op": "played",
+          "id": 0
+        },
+        {
+          "op": "enqueue",
+          "samples": 1
+        },
+        {
+          "op": "played",
+          "id": 1
+        },
+        {
+          "op": "enqueue",
+          "samples": 1
+        },
+        {
+          "op": "end"
+        }
+      ],
+      "expected": [
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": 0,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 11519999,
+            "total": 11519999
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 11519999
+          }
+        },
+        {
+          "result": 1,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 1,
+            "total": 11520000
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 11520000
+          }
+        },
+        {
+          "result": {
+            "error": "invalidAudio"
+          },
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 11520000
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": true,
+            "finished": true,
+            "queued": 0,
+            "total": 11520000
+          }
+        }
+      ]
+    },
+    {
+      "id": "state-half-second-11999",
+      "kind": "state",
+      "macSource": "Cotabby/Support/Speech/SpeechPCMPlaybackState.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "enqueue",
+          "samples": 11999
+        },
+        {
+          "op": "start",
+          "sampleRate": 24000,
+          "rate": "1"
+        },
+        {
+          "op": "start",
+          "sampleRate": 24000,
+          "rate": "1.5"
+        },
+        {
+          "op": "end"
+        },
+        {
+          "op": "start",
+          "sampleRate": 24000,
+          "rate": "1"
+        }
+      ],
+      "expected": [
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": 0,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 11999,
+            "total": 11999
+          }
+        },
+        {
+          "result": false,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 11999,
+            "total": 11999
+          }
+        },
+        {
+          "result": false,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 11999,
+            "total": 11999
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 11999,
+            "total": 11999
+          }
+        },
+        {
+          "result": true,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 11999,
+            "total": 11999
+          }
+        }
+      ]
+    },
+    {
+      "id": "state-half-second-12000",
+      "kind": "state",
+      "macSource": "Cotabby/Support/Speech/SpeechPCMPlaybackState.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "enqueue",
+          "samples": 12000
+        },
+        {
+          "op": "start",
+          "sampleRate": 24000,
+          "rate": "1"
+        },
+        {
+          "op": "start",
+          "sampleRate": 24000,
+          "rate": "1.5"
+        },
+        {
+          "op": "end"
+        },
+        {
+          "op": "start",
+          "sampleRate": 24000,
+          "rate": "1"
+        }
+      ],
+      "expected": [
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": 0,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 12000,
+            "total": 12000
+          }
+        },
+        {
+          "result": true,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 12000,
+            "total": 12000
+          }
+        },
+        {
+          "result": false,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 12000,
+            "total": 12000
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 12000,
+            "total": 12000
+          }
+        },
+        {
+          "result": true,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 12000,
+            "total": 12000
+          }
+        }
+      ]
+    },
+    {
+      "id": "state-half-second-12001",
+      "kind": "state",
+      "macSource": "Cotabby/Support/Speech/SpeechPCMPlaybackState.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "enqueue",
+          "samples": 12001
+        },
+        {
+          "op": "start",
+          "sampleRate": 24000,
+          "rate": "1"
+        },
+        {
+          "op": "start",
+          "sampleRate": 24000,
+          "rate": "1.5"
+        },
+        {
+          "op": "end"
+        },
+        {
+          "op": "start",
+          "sampleRate": 24000,
+          "rate": "1"
+        }
+      ],
+      "expected": [
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": 0,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 12001,
+            "total": 12001
+          }
+        },
+        {
+          "result": true,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 12001,
+            "total": 12001
+          }
+        },
+        {
+          "result": false,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 12001,
+            "total": 12001
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 12001,
+            "total": 12001
+          }
+        },
+        {
+          "result": true,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 12001,
+            "total": 12001
+          }
+        }
+      ]
+    },
+    {
+      "id": "state-play-rate-nan",
+      "kind": "state",
+      "macSource": "Cotabby/Support/Speech/SpeechPCMPlaybackState.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "enqueue",
+          "samples": 12000
+        },
+        {
+          "op": "start",
+          "sampleRate": 24000,
+          "rate": "nan"
+        },
+        {
+          "op": "end"
+        },
+        {
+          "op": "start",
+          "sampleRate": 24000,
+          "rate": "nan"
+        }
+      ],
+      "expected": [
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": 0,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 12000,
+            "total": 12000
+          }
+        },
+        {
+          "result": false,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 12000,
+            "total": 12000
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 12000,
+            "total": 12000
+          }
+        },
+        {
+          "result": false,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 12000,
+            "total": 12000
+          }
+        }
+      ]
+    },
+    {
+      "id": "state-play-rate-infinity",
+      "kind": "state",
+      "macSource": "Cotabby/Support/Speech/SpeechPCMPlaybackState.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "enqueue",
+          "samples": 12000
+        },
+        {
+          "op": "start",
+          "sampleRate": 24000,
+          "rate": "infinity"
+        },
+        {
+          "op": "end"
+        },
+        {
+          "op": "start",
+          "sampleRate": 24000,
+          "rate": "infinity"
+        }
+      ],
+      "expected": [
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": 0,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 12000,
+            "total": 12000
+          }
+        },
+        {
+          "result": false,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 12000,
+            "total": 12000
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 12000,
+            "total": 12000
+          }
+        },
+        {
+          "result": true,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 12000,
+            "total": 12000
+          }
+        }
+      ]
+    },
+    {
+      "id": "state-play-rate--infinity",
+      "kind": "state",
+      "macSource": "Cotabby/Support/Speech/SpeechPCMPlaybackState.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "enqueue",
+          "samples": 12000
+        },
+        {
+          "op": "start",
+          "sampleRate": 24000,
+          "rate": "-infinity"
+        },
+        {
+          "op": "end"
+        },
+        {
+          "op": "start",
+          "sampleRate": 24000,
+          "rate": "-infinity"
+        }
+      ],
+      "expected": [
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": 0,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 12000,
+            "total": 12000
+          }
+        },
+        {
+          "result": false,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 12000,
+            "total": 12000
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 12000,
+            "total": 12000
+          }
+        },
+        {
+          "result": false,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 12000,
+            "total": 12000
+          }
+        }
+      ]
+    },
+    {
+      "id": "state-play-rate-0",
+      "kind": "state",
+      "macSource": "Cotabby/Support/Speech/SpeechPCMPlaybackState.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "enqueue",
+          "samples": 12000
+        },
+        {
+          "op": "start",
+          "sampleRate": 24000,
+          "rate": "0"
+        },
+        {
+          "op": "end"
+        },
+        {
+          "op": "start",
+          "sampleRate": 24000,
+          "rate": "0"
+        }
+      ],
+      "expected": [
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": 0,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 12000,
+            "total": 12000
+          }
+        },
+        {
+          "result": false,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 12000,
+            "total": 12000
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 12000,
+            "total": 12000
+          }
+        },
+        {
+          "result": false,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 12000,
+            "total": 12000
+          }
+        }
+      ]
+    },
+    {
+      "id": "state-play-rate--1",
+      "kind": "state",
+      "macSource": "Cotabby/Support/Speech/SpeechPCMPlaybackState.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "enqueue",
+          "samples": 12000
+        },
+        {
+          "op": "start",
+          "sampleRate": 24000,
+          "rate": "-1"
+        },
+        {
+          "op": "end"
+        },
+        {
+          "op": "start",
+          "sampleRate": 24000,
+          "rate": "-1"
+        }
+      ],
+      "expected": [
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": 0,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 12000,
+            "total": 12000
+          }
+        },
+        {
+          "result": false,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 12000,
+            "total": 12000
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 12000,
+            "total": 12000
+          }
+        },
+        {
+          "result": false,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 12000,
+            "total": 12000
+          }
+        }
+      ]
+    },
+    {
+      "id": "state-play-rate-0.00001",
+      "kind": "state",
+      "macSource": "Cotabby/Support/Speech/SpeechPCMPlaybackState.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "enqueue",
+          "samples": 12000
+        },
+        {
+          "op": "start",
+          "sampleRate": 24000,
+          "rate": "0.00001"
+        },
+        {
+          "op": "end"
+        },
+        {
+          "op": "start",
+          "sampleRate": 24000,
+          "rate": "0.00001"
+        }
+      ],
+      "expected": [
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": 0,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 12000,
+            "total": 12000
+          }
+        },
+        {
+          "result": true,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 12000,
+            "total": 12000
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 12000,
+            "total": 12000
+          }
+        },
+        {
+          "result": true,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 12000,
+            "total": 12000
+          }
+        }
+      ]
+    },
+    {
+      "id": "state-play-rate-1.5",
+      "kind": "state",
+      "macSource": "Cotabby/Support/Speech/SpeechPCMPlaybackState.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "enqueue",
+          "samples": 12000
+        },
+        {
+          "op": "start",
+          "sampleRate": 24000,
+          "rate": "1.5"
+        },
+        {
+          "op": "end"
+        },
+        {
+          "op": "start",
+          "sampleRate": 24000,
+          "rate": "1.5"
+        }
+      ],
+      "expected": [
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": 0,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 12000,
+            "total": 12000
+          }
+        },
+        {
+          "result": false,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 12000,
+            "total": 12000
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 12000,
+            "total": 12000
+          }
+        },
+        {
+          "result": true,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 12000,
+            "total": 12000
+          }
+        }
+      ]
+    },
+    {
+      "id": "state-play-rate-1000000000",
+      "kind": "state",
+      "macSource": "Cotabby/Support/Speech/SpeechPCMPlaybackState.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "enqueue",
+          "samples": 12000
+        },
+        {
+          "op": "start",
+          "sampleRate": 24000,
+          "rate": "1000000000"
+        },
+        {
+          "op": "end"
+        },
+        {
+          "op": "start",
+          "sampleRate": 24000,
+          "rate": "1000000000"
+        }
+      ],
+      "expected": [
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": 0,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 12000,
+            "total": 12000
+          }
+        },
+        {
+          "result": false,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 12000,
+            "total": 12000
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 12000,
+            "total": 12000
+          }
+        },
+        {
+          "result": true,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 12000,
+            "total": 12000
+          }
+        }
+      ]
+    },
+    {
+      "id": "state-start-sample-rate--9223372036854775808",
+      "kind": "state",
+      "macSource": "Cotabby/Support/Speech/SpeechPCMPlaybackState.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "enqueue",
+          "samples": 100
+        },
+        {
+          "op": "start",
+          "sampleRate": -9223372036854775808,
+          "rate": "1"
+        },
+        {
+          "op": "end"
+        },
+        {
+          "op": "start",
+          "sampleRate": -9223372036854775808,
+          "rate": "1"
+        }
+      ],
+      "expected": [
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": 0,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 100,
+            "total": 100
+          }
+        },
+        {
+          "result": false,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 100,
+            "total": 100
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 100,
+            "total": 100
+          }
+        },
+        {
+          "result": false,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 100,
+            "total": 100
+          }
+        }
+      ]
+    },
+    {
+      "id": "state-start-sample-rate--1",
+      "kind": "state",
+      "macSource": "Cotabby/Support/Speech/SpeechPCMPlaybackState.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "enqueue",
+          "samples": 100
+        },
+        {
+          "op": "start",
+          "sampleRate": -1,
+          "rate": "1"
+        },
+        {
+          "op": "end"
+        },
+        {
+          "op": "start",
+          "sampleRate": -1,
+          "rate": "1"
+        }
+      ],
+      "expected": [
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": 0,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 100,
+            "total": 100
+          }
+        },
+        {
+          "result": false,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 100,
+            "total": 100
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 100,
+            "total": 100
+          }
+        },
+        {
+          "result": false,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 100,
+            "total": 100
+          }
+        }
+      ]
+    },
+    {
+      "id": "state-start-sample-rate-0",
+      "kind": "state",
+      "macSource": "Cotabby/Support/Speech/SpeechPCMPlaybackState.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "enqueue",
+          "samples": 100
+        },
+        {
+          "op": "start",
+          "sampleRate": 0,
+          "rate": "1"
+        },
+        {
+          "op": "end"
+        },
+        {
+          "op": "start",
+          "sampleRate": 0,
+          "rate": "1"
+        }
+      ],
+      "expected": [
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": 0,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 100,
+            "total": 100
+          }
+        },
+        {
+          "result": false,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 100,
+            "total": 100
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 100,
+            "total": 100
+          }
+        },
+        {
+          "result": false,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 100,
+            "total": 100
+          }
+        }
+      ]
+    },
+    {
+      "id": "state-start-sample-rate-1",
+      "kind": "state",
+      "macSource": "Cotabby/Support/Speech/SpeechPCMPlaybackState.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "enqueue",
+          "samples": 100
+        },
+        {
+          "op": "start",
+          "sampleRate": 1,
+          "rate": "1"
+        },
+        {
+          "op": "end"
+        },
+        {
+          "op": "start",
+          "sampleRate": 1,
+          "rate": "1"
+        }
+      ],
+      "expected": [
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": 0,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 100,
+            "total": 100
+          }
+        },
+        {
+          "result": true,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 100,
+            "total": 100
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 100,
+            "total": 100
+          }
+        },
+        {
+          "result": true,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 100,
+            "total": 100
+          }
+        }
+      ]
+    },
+    {
+      "id": "state-start-sample-rate-24000",
+      "kind": "state",
+      "macSource": "Cotabby/Support/Speech/SpeechPCMPlaybackState.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "enqueue",
+          "samples": 100
+        },
+        {
+          "op": "start",
+          "sampleRate": 24000,
+          "rate": "1"
+        },
+        {
+          "op": "end"
+        },
+        {
+          "op": "start",
+          "sampleRate": 24000,
+          "rate": "1"
+        }
+      ],
+      "expected": [
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": 0,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 100,
+            "total": 100
+          }
+        },
+        {
+          "result": false,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 100,
+            "total": 100
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 100,
+            "total": 100
+          }
+        },
+        {
+          "result": true,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 100,
+            "total": 100
+          }
+        }
+      ]
+    },
+    {
+      "id": "state-start-sample-rate-9223372036854775807",
+      "kind": "state",
+      "macSource": "Cotabby/Support/Speech/SpeechPCMPlaybackState.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "enqueue",
+          "samples": 100
+        },
+        {
+          "op": "start",
+          "sampleRate": 9223372036854775807,
+          "rate": "1"
+        },
+        {
+          "op": "end"
+        },
+        {
+          "op": "start",
+          "sampleRate": 9223372036854775807,
+          "rate": "1"
+        }
+      ],
+      "expected": [
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": 0,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 100,
+            "total": 100
+          }
+        },
+        {
+          "result": false,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 100,
+            "total": 100
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 100,
+            "total": 100
+          }
+        },
+        {
+          "result": true,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 100,
+            "total": 100
+          }
+        }
+      ]
+    },
+    {
+      "id": "state-eof-empty-then-valid",
+      "kind": "state",
+      "macSource": "Cotabby/Support/Speech/SpeechPCMPlaybackState.swift",
+      "provenanceKind": "source-policy-extension",
+      "steps": [
+        {
+          "op": "end"
+        },
+        {
+          "op": "enqueue",
+          "samples": 1
+        },
+        {
+          "op": "end"
+        },
+        {
+          "op": "played",
+          "id": 0
+        },
+        {
+          "op": "start",
+          "sampleRate": 24000,
+          "rate": "1"
+        },
+        {
+          "op": "end"
+        }
+      ],
+      "expected": [
+        {
+          "result": null,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": {
+            "error": "invalidAudio"
+          },
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 0,
+            "total": 0
+          }
+        },
+        {
+          "result": 0,
+          "state": {
+            "ended": false,
+            "finished": false,
+            "queued": 1,
+            "total": 1
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": true,
+            "finished": false,
+            "queued": 1,
+            "total": 1
+          }
+        },
+        {
+          "result": null,
+          "state": {
+            "ended": true,
+            "finished": true,
+            "queued": 0,
+            "total": 1
+          }
+        },
+        {
+          "result": false,
+          "state": {
+            "ended": true,
+            "finished": true,
+            "queued": 0,
+            "total": 1
+          }
+        },
+        {
+          "result": {
+            "error": "invalidAudio"
+          },
+          "state": {
+            "ended": true,
+            "finished": true,
+            "queued": 0,
+            "total": 1
+          }
+        }
+      ]
+    }
+  ]
+}

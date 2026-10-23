@@ -8,11 +8,15 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries><ResourceDictionary Source="../Theme.xaml" /></ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter x:Key="BatchVisibility" />
             <HierarchicalDataTemplate DataType="{x:Type local:VocabularyEntryRow}" ItemsSource="{Binding Senses}">
                 <TextBlock Text="{Binding Expression}" FontWeight="SemiBold" FontSize="14" TextWrapping="Wrap" MaxWidth="330" />
             </HierarchicalDataTemplate>
             <DataTemplate DataType="{x:Type local:VocabularySenseRow}">
-                <StackPanel Margin="0,4" MaxWidth="320">
+                <StackPanel Margin="0,4" MaxWidth="320" ContextMenuOpening="OnSenseExportMenuOpening">
+                    <StackPanel.ContextMenu><ContextMenu Opened="OnSenseExportMenuOpened" Closed="OnSenseExportMenuClosed"><MenuItem Header="Export this sense…" Click="OnExportSingle" /></ContextMenu></StackPanel.ContextMenu>
+                    <CheckBox IsChecked="{Binding IsBatchSelected, Mode=TwoWay}" IsEnabled="{Binding BatchEnabled}"
+                              Visibility="{Binding Selecting, Converter={StaticResource BatchVisibility}}" AutomationProperties.Name="{Binding BatchLabel}" Margin="0,0,0,4" />
                     <TextBlock Text="{Binding Title}" TextWrapping="Wrap" MaxHeight="40" TextTrimming="CharacterEllipsis" />
                     <TextBlock Text="{Binding UsageCount}" FontSize="11" Foreground="{DynamicResource TextSecondary}" Margin="0,3,0,0" />
                     <TextBlock Text="{Binding Example}" FontSize="11" Foreground="{DynamicResource TextSecondary}" TextTrimming="CharacterEllipsis" MaxWidth="300" />
@@ -35,6 +39,10 @@
             <ComboBox x:Name="TagFilter" Width="130" Margin="0,0,8,0" SelectionChanged="OnFiltersChanged" Style="{StaticResource Combo}"
                       DisplayMemberPath="Label" SelectedValuePath="Value" AutomationProperties.Name="Tags" />
             <Button x:Name="SortButton" Content="Newest first" Padding="10,4" Click="OnSort" />
+            <ToggleButton x:Name="SelectSensesButton" Content="Select senses" Padding="10,4" Margin="8,0,0,0" Checked="OnSelectSenses" Unchecked="OnSelectSenses" />
+            <Button x:Name="SelectVisibleButton" Content="Select visible" Padding="10,4" Margin="8,0,0,0" Visibility="Collapsed" Click="OnSelectVisible" IsEnabled="False" />
+            <Button x:Name="ExportSelectedButton" Content="Export selected…" Padding="10,4" Margin="8,0,0,0" Visibility="Collapsed" Click="OnExportSelected" IsEnabled="False" />
+            <Button x:Name="ExportButton" Content="Export…" Padding="10,4" Margin="8,0,0,0" Click="OnExportNotebook" IsEnabled="False" />
         </WrapPanel>
         <TextBlock x:Name="StorageError" DockPanel.Dock="Top" Margin="12,0,12,8" TextWrapping="Wrap"
                    Foreground="{DynamicResource OrangeBrush}" Visibility="Collapsed" />

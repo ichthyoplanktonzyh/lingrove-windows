@@ -174,5 +174,8 @@ jobs:
       - name: Verify export session scope and stale preparation against original Mac owner
         run: python3 scripts/verify-vocabulary-export-session-macos-parity.py --mac-repo .mac-baseline
 
+      - name: Verify frozen notebook export offers against original Mac view methods
+        run: python3 scripts/verify-vocabulary-export-offer-macos-parity.py --mac-repo .mac-baseline
+
   # Routine CI stops after validation. Packaging, artifact uploads and releases
   # are deliberately absent; distribution is a separately authorized task.

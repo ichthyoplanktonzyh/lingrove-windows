@@ -12,7 +12,7 @@ Reference: macOS `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`:
 This adapts the existing Mac rules in Core. It does not connect an export command, format bytes,
 write a file, read media, create a ZIP, provide a full backup or integrate Anki.
 
-`VocabularyExportRequest` belongs to one future export sheet and freezes its all/filtered/selected
+`VocabularyExportRequest` belongs to one export sheet and freezes its all/filtered/selected
 exact entry/sense pairs. Accessing a scope returns its captured order. Constructing those lists from
 notebook sorting, filters and batch selection remains presentation work. Its generated ID identifies
 that one sheet; it is not a vocabulary ID. `VocabularyExportConfiguration` is a replaceable immutable
@@ -63,5 +63,5 @@ DOTNET_ROOT="$PWD/.dotnet" .dotnet/dotnet test tests/Cotabby.Core.Tests/Cotabby.
 Later adapters cover [TXT/CSV rendering](VOCABULARY_EXPORT_NOTES.md), [JSON bytes](VOCABULARY_EXPORT_JSON.md),
 [CSV/preview boundaries](VOCABULARY_EXPORT_TEXT.md), packages, media capture and [ZIP](VOCABULARY_EXPORT_ZIP.md).
 [Atomic destination writing](VOCABULARY_EXPORT_SAVE.md) has a separate adapter. Full backup/restore
-and the export window remain work. Native Windows clipboard,
+remain work. The [export window](VOCABULARY_EXPORT_WINDOW.md) supplies separate command/control evidence. Native Windows clipboard,
 IME, UIA, overlay/insertion and model/GPU gates are unchanged by portable export tests.

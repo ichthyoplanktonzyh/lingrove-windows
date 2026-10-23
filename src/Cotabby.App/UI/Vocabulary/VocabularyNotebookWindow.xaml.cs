@@ -31,7 +31,7 @@ public partial class VocabularyNotebookWindow : Window
     private long _version;
     private string _selectedTag = "";
     private sealed record BrowseRequest(VocabularyDocument Document, string Query, LearningLanguage? Language, string Tag,
-        bool Newest, bool Loaded, string? Error, long Version, CancellationTokenSource Work);
+        bool Newest, bool Loaded, string? Error, ulong Revision, long Version, CancellationTokenSource Work);
     private sealed record BrowseResult(IReadOnlyList<VocabularyEntry> Entries, IReadOnlyList<string> Tags, string Tag);
     private sealed record DetailKey(Guid Entry, string Expression, string Form, LearningLanguage Language, VocabularyEntryKind Kind, VocabularySense Sense);
     private DetailKey? _renderedDetail;
@@ -53,7 +53,8 @@ public partial class VocabularyNotebookWindow : Window
         LanguageFilter.SelectedIndex = 0; _presenting = false;
         _store.Changed += OnStoreChanged;
         Closing += OnClosing;
-        Closed += (_, _) => { _retired = true; _store.Changed -= OnStoreChanged; CancelFiltering(); RetireActions(); RetireLearning(); ClearImages(); };
+        Closed += (_, _) => { _retired = true; _store.Changed -= OnStoreChanged; CancelFiltering(); RetireActions(); RetireLearning(); RetireExport(); ClearImages(); };
+        IsVisibleChanged += (_, _) => { if (IsInitialized) { if (!IsVisible) RetireExport(); UpdateExportAdmission(); } };
         RequestRefresh();
     }
     internal void Reveal(VocabularySelection? selection)
@@ -92,9 +93,10 @@ public partial class VocabularyNotebookWindow : Window
     {
         Dispatcher.VerifyAccess(); if (_retired) return;
         CancelFiltering(); var source = new CancellationTokenSource(); _filterWork = source; long version = ++_version;
+        InvalidateExportOffer();
         var state = _store.ReadState(); var document = state.Snapshot.Document; string query = SearchText.Text;
         var language = (LanguageFilter.SelectedItem as LanguageOption)?.Value;
-        var request = new BrowseRequest(document, query, language, _selectedTag, _newestFirst, state.IsLoaded, state.ErrorMessage, version, source);
+        var request = new BrowseRequest(document, query, language, _selectedTag, _newestFirst, state.IsLoaded, state.ErrorMessage, state.Snapshot.Revision, version, source);
         var work = RefreshAsync(request); LastRefresh = work;
         Track(work);
     }
@@ -159,12 +161,14 @@ public partial class VocabularyNotebookWindow : Window
             TagFilter.Visibility = result.Tags.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
             SortButton.Content = request.Newest ? "Newest first" : "Oldest first";
             EntriesTree.ItemsSource = visible.Select(entry => new VocabularyEntryRow(entry, _expanded.Contains(entry.Id), _selection,
-                expanded => { if (expanded) _expanded.Add(entry.Id); else _expanded.Remove(entry.Id); })).ToArray();
+                expanded => { if (expanded) _expanded.Add(entry.Id); else _expanded.Remove(entry.Id); }, _selectingSenses, _batchSelection,
+                (selection, selected) => SetBatch(selection, selected, request.Version), request.Version)).ToArray();
             EmptyText.Text = !request.Loaded ? "Loading vocabulary…" : request.Query.Length > 0 ? "No matching expressions" : "No saved expressions";
             EmptyText.Visibility = visible.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
             StorageError.Text = request.Error ?? ""; StorageError.Visibility = StorageError.Text.Length == 0 ? Visibility.Collapsed : Visibility.Visible;
         }
         finally { _presenting = false; }
+        _exportOffer = new(request, visible); UpdateExportAdmission();
         RenderDetail(document);
     }
     private void OnSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> args)
@@ -271,7 +275,7 @@ public partial class VocabularyNotebookWindow : Window
     }
     private void OnClosing(object? sender, CancelEventArgs args)
     {
-        if (_closing) return; args.Cancel = true; CloseActionMenus(); _learning?.Cancel(); Hide(); CancelFiltering(); ++_version;
+        if (_closing) return; args.Cancel = true; CloseActionMenus(); RetireExport(); _learning?.Cancel(); Hide(); CancelFiltering(); ++_version; InvalidateExportOffer();
     }
     private void CancelFiltering()
     {
@@ -285,7 +289,7 @@ public partial class VocabularyNotebookWindow : Window
         if (!_retired)
         {
             _retired = true; _store.Changed -= OnStoreChanged; CancelFiltering(); ++_version;
-            RetireActions(); RetireLearning();
+            RetireActions(); RetireLearning(); RetireExport();
             if (_editor is { } editor) Track(editor.RetireAsync());
             _closing = true; Close();
         }

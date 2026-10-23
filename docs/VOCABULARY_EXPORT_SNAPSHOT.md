@@ -61,5 +61,6 @@ dotnet test tests/Cotabby.App.Wpf.Tests/Cotabby.App.Wpf.Tests.csproj --configura
 
 The Windows test execution is established by final-head CI, not by cross-compilation. The
 [ZIP adapter](VOCABULARY_EXPORT_ZIP.md) separately covers the stored byte format. [Destination/path admission and atomic save](VOCABULARY_EXPORT_SAVE.md) have a separate adapter.
-Backup/restore, stale save-session guards and the export window remain follow-up work. Physical desktop UIA/IME/overlay/insertion and model/GPU
+Backup/restore remains work; [session guards](VOCABULARY_EXPORT_SESSION.md) and the
+[export window](VOCABULARY_EXPORT_WINDOW.md) have their own evidence. Physical desktop UIA/IME/overlay/insertion and model/GPU
 gates remain open.

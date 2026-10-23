@@ -117,7 +117,10 @@ internal sealed class WindowsVocabularyExportFile : IDisposable
     }
     private static SafeFileHandle OpenDirectory(string path)
     {
-        var handle = VocabularyWindowsFile.Native.CreateFileW(VocabularyWindowsFile.Extended(path), 0,
+        // A zero-access metadata handle does not participate in Windows share-access checks.
+        // Read includes FILE_LIST_DIRECTORY, making omission of FILE_SHARE_DELETE actually pin
+        // this directory against rename. The selected parent must therefore grant directory read.
+        var handle = VocabularyWindowsFile.Native.CreateFileW(VocabularyWindowsFile.Extended(path), VocabularyWindowsFile.Native.Read,
             VocabularyWindowsFile.Native.ShareReadWrite, IntPtr.Zero, VocabularyWindowsFile.Native.OpenExisting,
             VocabularyWindowsFile.Native.BackupSemantics, IntPtr.Zero);
         try { if (handle.IsInvalid) throw Invalid(); _ = DirectoryIdentity(handle); return handle; }

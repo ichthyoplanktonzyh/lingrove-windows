@@ -139,8 +139,13 @@ public sealed class VocabularyExportFileTests
     {
         using var folder = new Folder(); string renamed = folder.Path + "-renamed";
         using var file = new WindowsVocabularyExportFile(folder.Export, null);
-        Assert.True(Record.Exception(() => Directory.Move(folder.Path, renamed)) is IOException or UnauthorizedAccessException);
-        file.Write([1, 2, 3], default); Assert.Equal(new byte[] { 1, 2, 3 }, File.ReadAllBytes(folder.Export));
+        Exception? error = Record.Exception(() => Directory.Move(folder.Path, renamed));
+        try
+        {
+            Assert.True(error is IOException or UnauthorizedAccessException, $"Directory rename result: {error?.ToString() ?? "succeeded unexpectedly"}");
+            file.Write([1, 2, 3], default); Assert.Equal(new byte[] { 1, 2, 3 }, File.ReadAllBytes(folder.Export));
+        }
+        finally { if (Directory.Exists(renamed)) Directory.Move(renamed, folder.Path); }
     }
     [Fact]
     public void RetargetedAncestorAliasFailsBeforePublication()

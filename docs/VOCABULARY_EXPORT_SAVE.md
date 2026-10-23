@@ -14,14 +14,16 @@ The production constructor retains the notebook path so export cannot overwrite 
 No notebook connection is opened merely to save an already prepared package.
 
 `WindowsVocabularyExportFile` owns one short-lived directory handle and the destination checks.
-It resolves the offered parent through a handle, pins directory identity without delete sharing,
+It resolves the offered parent through a read-capable handle, pins directory identity without delete sharing,
 and rechecks the offered parent after staging. Existing destinations must be regular disk leaves;
 Windows reparse leaves are rejected. The resolved path cannot equal the database, `-wal`, `-shm`,
 `-journal` or `.lock`; volume plus 128-bit file ID also rejects hard-link aliases to those files.
 The media root and descendants are protected after resolution, including an ancestor alias into
 that root. A sibling with a similar name is still a valid export folder.
 
-The user-selected folder need not satisfy SQLite's private-parent inheritance rule. A new random
+The user-selected folder must grant directory read for a meaningful share-deny-delete lease; a
+zero-access metadata handle does not pin renames on Windows. It need not satisfy SQLite's
+private-parent inheritance rule. A new random
 same-directory stage instead receives the existing protected current-user file ACL at `CREATE_NEW`,
 before writing its first byte. The worker writes the complete captured data, calls `Flush(true)`,
 keeps its non-delete-sharing stage handle open, repeats destination protection and checks cancellation

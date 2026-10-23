@@ -44,8 +44,10 @@ its original selected identity through superseding Store/sort/mode refreshes unt
 applies. Each pending graph edit retains its original document/query/language/tag criterion:
 a later list filter cannot change its outcome, and a later including graph filter cannot undo an
 earlier excluding one before selection clears. A later explicit selection, directed Reveal or
-detail-close cancels that pending intent. An acknowledged mutation's selection publication retires
-it too; a pre-merge filter cannot follow an alias and clear the newly selected merge target.
+detail-close cancels that pending intent. Admitting an explicit detail mutation retires earlier
+constraints before Store can publish Changed. This claims the command's detail intent even if the
+operation fails; it does not select unacknowledged values. A pre-merge filter cannot follow a new
+alias and clear the target between commit notification and command acknowledgement.
 Stale worker replies cannot publish or clear that later choice.
 
 During pending browse, the old drawing can remain visible for continuity but graph controls and

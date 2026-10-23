@@ -42,10 +42,10 @@ public sealed class VocabularyGraphNotebookTests(WpfDispatcher dispatcher)
         public void WriteSettings(ReadOnlySpan<byte> data) { _data = data.ToArray(); Writes++; }
         public string BrowserMode { get; set; } = mode;
     }
-    private static async Task<VocabularyStore> Store()
+    private static async Task<VocabularyStore> Store(SynchronizationContext? context = null)
     {
         var archive = new VocabularyArchive((string?)null); await archive.CommitAsync(Seed());
-        var store = new VocabularyStore(archive, SynchronizationContext.Current!); await store.LoadAsync(); return store;
+        var store = new VocabularyStore(archive, context ?? SynchronizationContext.Current!); await store.LoadAsync(); return store;
     }
     private static async Task Refresh(VocabularyNotebookWindow window)
     {
@@ -362,22 +362,41 @@ public sealed class VocabularyGraphNotebookTests(WpfDispatcher dispatcher)
         finally { search.Release.TrySetResult(); await Retire(window); }
     });
 
+    /// <summary>Only the Store's notification return is gated: the real commit/snapshot and
+    /// Changed callback run before its awaiting command can publish UI acknowledgement.</summary>
+    private sealed class MutationNotificationGate(Dispatcher ui) : SynchronizationContext
+    {
+        private int _armed;
+        internal TaskCompletionSource Entered { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        internal TaskCompletionSource Release { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        internal void Arm() => Interlocked.Exchange(ref _armed, 1);
+        public override void Post(SendOrPostCallback callback, object? state)
+        {
+            ui.BeginInvoke(() => callback(state));
+            if (Interlocked.Exchange(ref _armed, 0) != 1) return;
+            Entered.TrySetResult(); Release.Task.WaitAsync(TimeSpan.FromSeconds(10)).GetAwaiter().GetResult();
+        }
+    }
     [Fact]
     public Task AcknowledgedMergeSelectionRetiresEarlierFilterConstraintsBeforeAliasResolution() => dispatcher.RunAsync(async () =>
     {
-        await using var store = await Store(); var search = new SearchGate();
+        var notification = new MutationNotificationGate(Dispatcher.CurrentDispatcher);
+        await using var store = await Store(notification); var search = new SearchGate();
         var window = new VocabularyNotebookWindow(store, search, graphPreferences: new Preferences("graph"));
         try
         {
             window.Reveal(Bank); window.Show(); await Refresh(window); var input = Find<TextBox>(window, "SearchText");
             input.Text = "slow"; var old = window.LastRefresh; await search.Entered.Task.WaitAsync(TimeSpan.FromSeconds(10));
+            notification.Arm();
             var merge = Find<Button>(window, "MergeSenseButton"); Click(merge);
             Assert.Single(merge.ContextMenu!.Items.OfType<MenuItem>()).RaiseEvent(new RoutedEventArgs(MenuItem.ClickEvent));
-            await window.LastMutation.WaitAsync(TimeSpan.FromSeconds(10)); Assert.Equal(OtherBank, window.Selection);
-            input.Text = "bank"; search.Release.TrySetResult(); await Refresh(window); await old.WaitAsync(TimeSpan.FromSeconds(10));
+            await notification.Entered.Task.WaitAsync(TimeSpan.FromSeconds(10));
+            search.Release.TrySetResult(); await Refresh(window); await old.WaitAsync(TimeSpan.FromSeconds(10));
+            Assert.False(window.LastMutation.IsCompleted); Assert.Equal(OtherBank, window.Selection);
+            notification.Release.TrySetResult(); await window.LastMutation.WaitAsync(TimeSpan.FromSeconds(10)); await Refresh(window);
             Assert.Equal(OtherBank, window.Selection);
             Assert.Contains(Bank.SenseId, store.Snapshot.Document.Entries.Single(entry => entry.Id == Id(1)).Senses.Single().MergedFrom);
         }
-        finally { search.Release.TrySetResult(); await Retire(window); }
+        finally { notification.Release.TrySetResult(); search.Release.TrySetResult(); await Retire(window); }
     });
 }

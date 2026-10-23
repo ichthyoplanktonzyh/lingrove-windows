@@ -26,6 +26,9 @@ internal sealed class GrapeSpatialTree
             high = new(Math.Max(p.X, high.X), Math.Max(p.Y, high.Y));
         }
         // The original UnsafeArray overload adds one to BOTH maxima, unlike its Array overload.
+        // A new shape may reuse only a prefix of the pool. Release every old leaf list,
+        // matching upstream reset/disposeNodeIndices even for now-inactive suffix nodes.
+        for (int i = 0; i < _validCount; i++) _buffer[i].Indices = null;
         _validCount = 0;
         Allocate(low, high + new GrapeVector(1, 1));
         for (int i = 0; i < positions.Length; i++) Add(0, i, positions[i]);

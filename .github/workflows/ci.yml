@@ -83,6 +83,7 @@ jobs:
             Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift
             Cotabby/Services/Vocabulary/VocabularyImageStorage.swift
             Cotabby/Services/Vocabulary/VocabularyStore.swift
+            Cotabby/Services/Vocabulary/VocabularyExportSession.swift
             Cotabby/Services/Vocabulary/VocabularyNotebookSession.swift
             Cotabby/Services/Vocabulary/VocabularySQLiteConnection.swift
             Cotabby/Services/Vocabulary/VocabularySQLiteDatabase.swift
@@ -167,6 +168,9 @@ jobs:
 
       - name: Verify export save and destination protection against original Mac effects
         run: python3 scripts/verify-vocabulary-export-save-macos-parity.py --mac-repo .mac-baseline
+
+      - name: Verify export session scope and stale preparation against original Mac owner
+        run: python3 scripts/verify-vocabulary-export-session-macos-parity.py --mac-repo .mac-baseline
 
   # Routine CI stops after validation. Packaging, artifact uploads and releases
   # are deliberately absent; distribution is a separately authorized task.

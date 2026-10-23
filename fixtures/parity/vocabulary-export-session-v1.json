@@ -1,0 +1,382 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "initial",
+      "mode": "initial",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyExportSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "active": true,
+        "canExport": false,
+        "format": "text",
+        "loading": false,
+        "message": null,
+        "package": null,
+        "saved": null,
+        "saving": false,
+        "scope": "all",
+        "storeEntries": 1,
+        "storeError": null,
+        "written": false
+      }
+    },
+    {
+      "id": "prepare",
+      "mode": "prepare",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyExportSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "active": true,
+        "canExport": true,
+        "format": "text",
+        "loading": false,
+        "message": null,
+        "package": {
+          "byteCount": 88,
+          "entryCount": 1,
+          "filename": "Lingrove-vocabulary.txt",
+          "format": "text",
+          "senseCount": 1,
+          "sha256": "5b5785c5d6c5a2095c5aa2c5afa53b72d5ddf24006ff52507ebd4d58dbf630f6"
+        },
+        "saved": null,
+        "saving": false,
+        "scope": "all",
+        "storeEntries": 1,
+        "storeError": null,
+        "written": false
+      }
+    },
+    {
+      "id": "filtered",
+      "mode": "filtered",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyExportSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "active": true,
+        "canExport": true,
+        "format": "text",
+        "loading": false,
+        "message": null,
+        "package": {
+          "byteCount": 90,
+          "entryCount": 1,
+          "filename": "Lingrove-vocabulary.txt",
+          "format": "text",
+          "senseCount": 1,
+          "sha256": "52f4806315ce761e723549808482b67b9601ed3c2d660126f22ddbe2b1a2fa8f"
+        },
+        "saved": null,
+        "saving": false,
+        "scope": "filtered",
+        "storeEntries": 1,
+        "storeError": null,
+        "written": false
+      }
+    },
+    {
+      "id": "empty",
+      "mode": "empty",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyExportSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "active": true,
+        "canExport": false,
+        "format": "text",
+        "loading": false,
+        "message": "Choose at least one sense to export.",
+        "package": null,
+        "saved": null,
+        "saving": false,
+        "scope": "selected",
+        "storeEntries": 1,
+        "storeError": null,
+        "written": false
+      }
+    },
+    {
+      "id": "stale",
+      "mode": "stale",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyExportSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "active": true,
+        "canExport": false,
+        "format": "text",
+        "loading": false,
+        "message": "The selected senses changed. Reopen Export to refresh the selection.",
+        "package": null,
+        "saved": null,
+        "saving": false,
+        "scope": "all",
+        "storeEntries": 1,
+        "storeError": null,
+        "written": false
+      }
+    },
+    {
+      "id": "scopeChanged",
+      "mode": "scopeChanged",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyExportSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "active": true,
+        "canExport": false,
+        "format": "text",
+        "loading": false,
+        "message": null,
+        "package": {
+          "byteCount": 88,
+          "entryCount": 1,
+          "filename": "Lingrove-vocabulary.txt",
+          "format": "text",
+          "senseCount": 1,
+          "sha256": "5b5785c5d6c5a2095c5aa2c5afa53b72d5ddf24006ff52507ebd4d58dbf630f6"
+        },
+        "saved": null,
+        "saving": false,
+        "scope": "filtered",
+        "storeEntries": 1,
+        "storeError": null,
+        "written": false
+      }
+    },
+    {
+      "id": "configurationChanged",
+      "mode": "configurationChanged",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyExportSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "active": true,
+        "canExport": false,
+        "format": "json",
+        "loading": false,
+        "message": null,
+        "package": {
+          "byteCount": 88,
+          "entryCount": 1,
+          "filename": "Lingrove-vocabulary.txt",
+          "format": "text",
+          "senseCount": 1,
+          "sha256": "5b5785c5d6c5a2095c5aa2c5afa53b72d5ddf24006ff52507ebd4d58dbf630f6"
+        },
+        "saved": null,
+        "saving": false,
+        "scope": "all",
+        "storeEntries": 1,
+        "storeError": null,
+        "written": false
+      }
+    },
+    {
+      "id": "wrongPackage",
+      "mode": "wrongPackage",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyExportSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "active": true,
+        "canExport": true,
+        "format": "text",
+        "loading": false,
+        "message": null,
+        "package": {
+          "byteCount": 88,
+          "entryCount": 1,
+          "filename": "Lingrove-vocabulary.txt",
+          "format": "text",
+          "senseCount": 1,
+          "sha256": "5b5785c5d6c5a2095c5aa2c5afa53b72d5ddf24006ff52507ebd4d58dbf630f6"
+        },
+        "saved": false,
+        "saving": false,
+        "scope": "all",
+        "storeEntries": 1,
+        "storeError": null,
+        "written": false
+      }
+    },
+    {
+      "id": "save",
+      "mode": "save",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyExportSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "active": true,
+        "canExport": true,
+        "format": "text",
+        "loading": false,
+        "message": null,
+        "package": {
+          "byteCount": 88,
+          "entryCount": 1,
+          "filename": "Lingrove-vocabulary.txt",
+          "format": "text",
+          "senseCount": 1,
+          "sha256": "5b5785c5d6c5a2095c5aa2c5afa53b72d5ddf24006ff52507ebd4d58dbf630f6"
+        },
+        "saved": true,
+        "saving": false,
+        "scope": "all",
+        "storeEntries": 1,
+        "storeError": null,
+        "written": true
+      }
+    },
+    {
+      "id": "closedSave",
+      "mode": "closedSave",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyExportSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "active": false,
+        "canExport": false,
+        "format": "text",
+        "loading": false,
+        "message": null,
+        "package": null,
+        "saved": false,
+        "saving": false,
+        "scope": "all",
+        "storeEntries": 1,
+        "storeError": null,
+        "written": false
+      }
+    },
+    {
+      "id": "cancelledPrepare",
+      "mode": "cancelledPrepare",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyExportSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "active": true,
+        "canExport": false,
+        "format": "text",
+        "loading": false,
+        "message": null,
+        "package": null,
+        "saved": null,
+        "saving": false,
+        "scope": "all",
+        "storeEntries": 1,
+        "storeError": null,
+        "written": false
+      }
+    },
+    {
+      "id": "cancelledEmpty",
+      "mode": "cancelledEmpty",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyExportSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "active": true,
+        "canExport": false,
+        "format": "text",
+        "loading": false,
+        "message": "Choose at least one sense to export.",
+        "package": null,
+        "saved": null,
+        "saving": false,
+        "scope": "selected",
+        "storeEntries": 1,
+        "storeError": null,
+        "written": false
+      }
+    },
+    {
+      "id": "cancelledSave",
+      "mode": "cancelledSave",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyExportSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "active": true,
+        "canExport": true,
+        "format": "text",
+        "loading": false,
+        "message": null,
+        "package": {
+          "byteCount": 88,
+          "entryCount": 1,
+          "filename": "Lingrove-vocabulary.txt",
+          "format": "text",
+          "senseCount": 1,
+          "sha256": "5b5785c5d6c5a2095c5aa2c5afa53b72d5ddf24006ff52507ebd4d58dbf630f6"
+        },
+        "saved": false,
+        "saving": false,
+        "scope": "all",
+        "storeEntries": 1,
+        "storeError": null,
+        "written": false
+      }
+    },
+    {
+      "id": "closeDuringPrepare",
+      "mode": "closeDuringPrepare",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyExportSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "active": false,
+        "canExport": false,
+        "format": "text",
+        "loading": true,
+        "message": null,
+        "package": null,
+        "saved": null,
+        "saving": false,
+        "scope": "all",
+        "storeEntries": 1,
+        "storeError": null,
+        "written": false
+      }
+    },
+    {
+      "id": "scopeDuringPrepare",
+      "mode": "scopeDuringPrepare",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyExportSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "active": true,
+        "canExport": false,
+        "format": "text",
+        "loading": false,
+        "message": null,
+        "package": null,
+        "saved": null,
+        "saving": false,
+        "scope": "filtered",
+        "storeEntries": 1,
+        "storeError": null,
+        "written": false
+      }
+    },
+    {
+      "id": "latestWins",
+      "mode": "latestWins",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyExportSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "active": true,
+        "canExport": true,
+        "format": "text",
+        "loading": false,
+        "message": null,
+        "package": {
+          "byteCount": 90,
+          "entryCount": 1,
+          "filename": "Lingrove-vocabulary.txt",
+          "format": "text",
+          "senseCount": 1,
+          "sha256": "52f4806315ce761e723549808482b67b9601ed3c2d660126f22ddbe2b1a2fa8f"
+        },
+        "saved": null,
+        "saving": false,
+        "scope": "filtered",
+        "storeEntries": 1,
+        "storeError": null,
+        "written": false
+      }
+    }
+  ]
+}

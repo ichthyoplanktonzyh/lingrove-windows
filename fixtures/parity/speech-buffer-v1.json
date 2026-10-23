@@ -1,0 +1,3134 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "empty-finish-repeat",
+      "actions": [
+        {
+          "op": "finish"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "macSource": "Cotabby/Services/Speech/SpeechExportBuffer.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "error": "invalidAudio",
+            "audio": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          }
+        },
+        {
+          "result": {
+            "error": "invalidAudio",
+            "audio": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "ordered-pcm-join",
+      "actions": [
+        {
+          "op": "pcm",
+          "rate": 24000,
+          "bits": [
+            0,
+            1065353216,
+            3212836864
+          ]
+        },
+        {
+          "op": "pcm",
+          "rate": 24000,
+          "bits": [
+            1056964608,
+            3204448256
+          ]
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "macSource": "Cotabby/Services/Speech/SpeechExportBuffer.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 12,
+            "dataSHA256": "9b0fb770a5483b463e2e2afaa3b4f3db0d372b37b27260f1652b2a8cb6b25192",
+            "sampleRate": 24000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 20,
+            "dataSHA256": "aaf43de17a34e6b91be41081adf6e0415dcd2cac51442e71f5158cc0476fcb26",
+            "sampleRate": 24000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "audio": {
+              "bytes": 54,
+              "format": "wav",
+              "sha256": "19d8ed6c0e38eeb1e9bf40acd3f82504bebdefce8cfa5f95ebc9342bc5321313"
+            },
+            "error": null
+          },
+          "state": {
+            "dataBytes": 20,
+            "dataSHA256": "aaf43de17a34e6b91be41081adf6e0415dcd2cac51442e71f5158cc0476fcb26",
+            "sampleRate": 24000,
+            "encoded": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "finish-does-not-seal",
+      "actions": [
+        {
+          "op": "pcm",
+          "rate": 24000,
+          "bits": [
+            0
+          ]
+        },
+        {
+          "op": "finish"
+        },
+        {
+          "op": "finish"
+        },
+        {
+          "op": "pcm",
+          "rate": 24000,
+          "bits": [
+            1065353216
+          ]
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "macSource": "Cotabby/Services/Speech/SpeechExportBuffer.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 4,
+            "dataSHA256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+            "sampleRate": 24000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "audio": {
+              "bytes": 46,
+              "format": "wav",
+              "sha256": "d8ddcc0cb152ee0adc55b0cf22891fc978781a178cb466cab762ee0129524635"
+            },
+            "error": null
+          },
+          "state": {
+            "dataBytes": 4,
+            "dataSHA256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+            "sampleRate": 24000,
+            "encoded": null
+          }
+        },
+        {
+          "result": {
+            "audio": {
+              "bytes": 46,
+              "format": "wav",
+              "sha256": "d8ddcc0cb152ee0adc55b0cf22891fc978781a178cb466cab762ee0129524635"
+            },
+            "error": null
+          },
+          "state": {
+            "dataBytes": 4,
+            "dataSHA256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+            "sampleRate": 24000,
+            "encoded": null
+          }
+        },
+        {
+          "state": {
+            "dataBytes": 8,
+            "dataSHA256": "22b6f43bd8d27738d3213f29e96b62d01d9d6c0ab4f9732aaae803186f51eab7",
+            "sampleRate": 24000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "audio": {
+              "bytes": 48,
+              "format": "wav",
+              "sha256": "f0d463a03a0ddf75af8ea5267b280e6b6b3206f56587cdcd6d6c5879ec49ea84"
+            },
+            "error": null
+          },
+          "state": {
+            "dataBytes": 8,
+            "dataSHA256": "22b6f43bd8d27738d3213f29e96b62d01d9d6c0ab4f9732aaae803186f51eab7",
+            "sampleRate": 24000,
+            "encoded": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "encoded-mp3-repeat",
+      "actions": [
+        {
+          "op": "encoded",
+          "prefix": "SUQz"
+        },
+        {
+          "op": "finish"
+        },
+        {
+          "op": "finish"
+        },
+        {
+          "op": "encoded",
+          "prefix": "SUQz"
+        },
+        {
+          "op": "pcm",
+          "rate": 24000,
+          "bits": [
+            0
+          ]
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "macSource": "Cotabby/Services/Speech/SpeechExportBuffer.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "encoded": {
+              "bytes": 3,
+              "format": "mp3",
+              "sha256": "041149186b23a9502aea5a4e81bbc9620d2b4b76b4bad94e36c744abcf9d3771"
+            },
+            "sampleRate": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "audio": {
+              "bytes": 3,
+              "format": "mp3",
+              "sha256": "041149186b23a9502aea5a4e81bbc9620d2b4b76b4bad94e36c744abcf9d3771"
+            },
+            "error": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "encoded": {
+              "bytes": 3,
+              "format": "mp3",
+              "sha256": "041149186b23a9502aea5a4e81bbc9620d2b4b76b4bad94e36c744abcf9d3771"
+            },
+            "sampleRate": null
+          }
+        },
+        {
+          "result": {
+            "audio": {
+              "bytes": 3,
+              "format": "mp3",
+              "sha256": "041149186b23a9502aea5a4e81bbc9620d2b4b76b4bad94e36c744abcf9d3771"
+            },
+            "error": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "encoded": {
+              "bytes": 3,
+              "format": "mp3",
+              "sha256": "041149186b23a9502aea5a4e81bbc9620d2b4b76b4bad94e36c744abcf9d3771"
+            },
+            "sampleRate": null
+          }
+        },
+        {
+          "result": {
+            "error": "invalidAudio",
+            "audio": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "encoded": {
+              "bytes": 3,
+              "format": "mp3",
+              "sha256": "041149186b23a9502aea5a4e81bbc9620d2b4b76b4bad94e36c744abcf9d3771"
+            },
+            "sampleRate": null
+          }
+        },
+        {
+          "result": {
+            "error": "responseTooLarge",
+            "audio": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "encoded": {
+              "bytes": 3,
+              "format": "mp3",
+              "sha256": "041149186b23a9502aea5a4e81bbc9620d2b4b76b4bad94e36c744abcf9d3771"
+            },
+            "sampleRate": null
+          }
+        },
+        {
+          "result": {
+            "audio": {
+              "bytes": 3,
+              "format": "mp3",
+              "sha256": "041149186b23a9502aea5a4e81bbc9620d2b4b76b4bad94e36c744abcf9d3771"
+            },
+            "error": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "encoded": {
+              "bytes": 3,
+              "format": "mp3",
+              "sha256": "041149186b23a9502aea5a4e81bbc9620d2b4b76b4bad94e36c744abcf9d3771"
+            },
+            "sampleRate": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "encoded-wav-normalizes",
+      "actions": [
+        {
+          "op": "encoded",
+          "prefix": "UklGRigAAABXQVZFZm10IBAAAAABAAEAwF0AAIC7AAACABAAZGF0YQQAAAD/fwGA"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "macSource": "Cotabby/Services/Speech/SpeechExportBuffer.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "encoded": {
+              "bytes": 48,
+              "format": "wav",
+              "sha256": "a9c0ae757720891ac77cc5d2b6f65a2288b8165e347d30d71507d64b22583543"
+            },
+            "sampleRate": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "audio": {
+              "bytes": 48,
+              "format": "wav",
+              "sha256": "a9c0ae757720891ac77cc5d2b6f65a2288b8165e347d30d71507d64b22583543"
+            },
+            "error": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "encoded": {
+              "bytes": 48,
+              "format": "wav",
+              "sha256": "a9c0ae757720891ac77cc5d2b6f65a2288b8165e347d30d71507d64b22583543"
+            },
+            "sampleRate": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "invalid-encoded-then-pcm",
+      "actions": [
+        {
+          "op": "encoded",
+          "prefix": "YmFk"
+        },
+        {
+          "op": "pcm",
+          "rate": 24000,
+          "bits": [
+            0
+          ]
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "macSource": "Cotabby/Services/Speech/SpeechExportBuffer.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "error": "invalidAudio",
+            "audio": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          }
+        },
+        {
+          "state": {
+            "dataBytes": 4,
+            "dataSHA256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+            "sampleRate": 24000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "audio": {
+              "bytes": 46,
+              "format": "wav",
+              "sha256": "d8ddcc0cb152ee0adc55b0cf22891fc978781a178cb466cab762ee0129524635"
+            },
+            "error": null
+          },
+          "state": {
+            "dataBytes": 4,
+            "dataSHA256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+            "sampleRate": 24000,
+            "encoded": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "empty-encoded-then-mp3",
+      "actions": [
+        {
+          "op": "encoded"
+        },
+        {
+          "op": "encoded",
+          "prefix": "SUQz"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "macSource": "Cotabby/Services/Speech/SpeechExportBuffer.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "error": "responseTooLarge",
+            "audio": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          }
+        },
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "encoded": {
+              "bytes": 3,
+              "format": "mp3",
+              "sha256": "041149186b23a9502aea5a4e81bbc9620d2b4b76b4bad94e36c744abcf9d3771"
+            },
+            "sampleRate": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "audio": {
+              "bytes": 3,
+              "format": "mp3",
+              "sha256": "041149186b23a9502aea5a4e81bbc9620d2b4b76b4bad94e36c744abcf9d3771"
+            },
+            "error": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "encoded": {
+              "bytes": 3,
+              "format": "mp3",
+              "sha256": "041149186b23a9502aea5a4e81bbc9620d2b4b76b4bad94e36c744abcf9d3771"
+            },
+            "sampleRate": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "oversized-encoded-does-not-poison",
+      "actions": [
+        {
+          "op": "encoded",
+          "zeros": 12582913
+        },
+        {
+          "op": "encoded",
+          "prefix": "SUQz"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "macSource": "Cotabby/Services/Speech/SpeechExportBuffer.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "error": "responseTooLarge",
+            "audio": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          }
+        },
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "encoded": {
+              "bytes": 3,
+              "format": "mp3",
+              "sha256": "041149186b23a9502aea5a4e81bbc9620d2b4b76b4bad94e36c744abcf9d3771"
+            },
+            "sampleRate": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "audio": {
+              "bytes": 3,
+              "format": "mp3",
+              "sha256": "041149186b23a9502aea5a4e81bbc9620d2b4b76b4bad94e36c744abcf9d3771"
+            },
+            "error": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "encoded": {
+              "bytes": 3,
+              "format": "mp3",
+              "sha256": "041149186b23a9502aea5a4e81bbc9620d2b4b76b4bad94e36c744abcf9d3771"
+            },
+            "sampleRate": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "maximum-encoded-mp3",
+      "actions": [
+        {
+          "op": "encoded",
+          "prefix": "SUQz",
+          "zeros": 12582909
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "macSource": "Cotabby/Services/Speech/SpeechExportBuffer.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "encoded": {
+              "bytes": 12582912,
+              "format": "mp3",
+              "sha256": "1dd30759d68c176a55f766a80d5afdaf27eacbb12349f2d6021444ba9ee66644"
+            },
+            "sampleRate": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "audio": {
+              "bytes": 12582912,
+              "format": "mp3",
+              "sha256": "1dd30759d68c176a55f766a80d5afdaf27eacbb12349f2d6021444ba9ee66644"
+            },
+            "error": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "encoded": {
+              "bytes": 12582912,
+              "format": "mp3",
+              "sha256": "1dd30759d68c176a55f766a80d5afdaf27eacbb12349f2d6021444ba9ee66644"
+            },
+            "sampleRate": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "encoded-after-pcm",
+      "actions": [
+        {
+          "op": "pcm",
+          "rate": 24000,
+          "bits": [
+            0
+          ]
+        },
+        {
+          "op": "encoded",
+          "prefix": "SUQz"
+        },
+        {
+          "op": "pcm",
+          "rate": 24000,
+          "bits": [
+            1065353216
+          ]
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "macSource": "Cotabby/Services/Speech/SpeechExportBuffer.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 4,
+            "dataSHA256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+            "sampleRate": 24000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "error": "invalidAudio",
+            "audio": null
+          },
+          "state": {
+            "dataBytes": 4,
+            "dataSHA256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+            "sampleRate": 24000,
+            "encoded": null
+          }
+        },
+        {
+          "state": {
+            "dataBytes": 8,
+            "dataSHA256": "22b6f43bd8d27738d3213f29e96b62d01d9d6c0ab4f9732aaae803186f51eab7",
+            "sampleRate": 24000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "audio": {
+              "bytes": 48,
+              "format": "wav",
+              "sha256": "f0d463a03a0ddf75af8ea5267b280e6b6b3206f56587cdcd6d6c5879ec49ea84"
+            },
+            "error": null
+          },
+          "state": {
+            "dataBytes": 8,
+            "dataSHA256": "22b6f43bd8d27738d3213f29e96b62d01d9d6c0ab4f9732aaae803186f51eab7",
+            "sampleRate": 24000,
+            "encoded": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "rate-mismatch-retains-prior",
+      "actions": [
+        {
+          "op": "pcm",
+          "rate": 24000,
+          "bits": [
+            0
+          ]
+        },
+        {
+          "op": "pcm",
+          "rate": 48000,
+          "bits": [
+            0
+          ]
+        },
+        {
+          "op": "pcm",
+          "rate": 24000,
+          "bits": [
+            1065353216
+          ]
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "macSource": "Cotabby/Services/Speech/SpeechExportBuffer.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 4,
+            "dataSHA256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+            "sampleRate": 24000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "error": "responseTooLarge",
+            "audio": null
+          },
+          "state": {
+            "dataBytes": 4,
+            "dataSHA256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+            "sampleRate": 24000,
+            "encoded": null
+          }
+        },
+        {
+          "state": {
+            "dataBytes": 8,
+            "dataSHA256": "22b6f43bd8d27738d3213f29e96b62d01d9d6c0ab4f9732aaae803186f51eab7",
+            "sampleRate": 24000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "audio": {
+              "bytes": 48,
+              "format": "wav",
+              "sha256": "f0d463a03a0ddf75af8ea5267b280e6b6b3206f56587cdcd6d6c5879ec49ea84"
+            },
+            "error": null
+          },
+          "state": {
+            "dataBytes": 8,
+            "dataSHA256": "22b6f43bd8d27738d3213f29e96b62d01d9d6c0ab4f9732aaae803186f51eab7",
+            "sampleRate": 24000,
+            "encoded": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "pcm-byte-budget-exact-and-over",
+      "actions": [
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 262100
+        },
+        {
+          "op": "pcm",
+          "rate": 192000,
+          "zeros": 4
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "macSource": "Cotabby/Services/Speech/SpeechExportBuffer.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 262144,
+            "dataSHA256": "8a39d2abd3999ab73c34db2476849cddf303ce389b35826850f9a700589b4a90",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 524288,
+            "dataSHA256": "07854d2fef297a06ba81685e660c332de36d5d18d546927d30daad6d7fda1541",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 786432,
+            "dataSHA256": "599c1bb5ffd4b87229a81958f33f1060821cd01cd7aa7ccafa0d862f4522f3f6",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 1048576,
+            "dataSHA256": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 1310720,
+            "dataSHA256": "439292e489a0a35e4a3a0fe304ea1a680337243fa53b135aa9310881e1d7e078",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 1572864,
+            "dataSHA256": "106f0647ae10a6516b1ab2968038161e287ef40d1b22ca047531ed768e594ef1",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 1835008,
+            "dataSHA256": "c55ab05d6d767c58e086c8583da4337a08ac85278d36b82644ee1d03064318db",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 2097152,
+            "dataSHA256": "5647f05ec18958947d32874eeb788fa396a05d0bab7c1b71f112ceb7e9b31eee",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 2359296,
+            "dataSHA256": "96a12deebdc8a3421e923d2fc00a649326f0b5167b48ffd231941a415777308c",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 2621440,
+            "dataSHA256": "6de7493c5c90f643357c268fbaaf461c1567e0334e4948023ce17268403aa37a",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 2883584,
+            "dataSHA256": "2d4368dd8667fac3e52e9d314272c572a620f8d017d7c47e55c9ba8bac899221",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 3145728,
+            "dataSHA256": "bbd05cf6097ac9b1f89ea29d2542c1b7b67ee46848393895f5a9e43fa1f621e5",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 3407872,
+            "dataSHA256": "fc77dda0e6e0aaf12128f8c7749f5b934cf0574a024b08db8ea774fd3ca36900",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 3670016,
+            "dataSHA256": "4d9cbaf3aa0935a8c113f139691b3daf9c94c8d6c278aedc8eec66a4b9f6c8ae",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 3932160,
+            "dataSHA256": "9af8275830f1496e82873fd2944a1619944f6fec9a380e7ad8fe3dd039010340",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 4194304,
+            "dataSHA256": "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 4456448,
+            "dataSHA256": "f8cbbdee04223a4630833115cb4fab8799265460abe15172b6d62363c5ebe456",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 4718592,
+            "dataSHA256": "7971f869259aee9bd631bba70e10a49cf66fea3ac7fd16126a064111f87da460",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 4980736,
+            "dataSHA256": "8b9053c18993dbd785f2dbe5366744a81c07e508a4b1aae3d69afc062629df55",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 5242880,
+            "dataSHA256": "c036cbb7553a909f8b8877d4461924307f27ecb66cff928eeeafd569c3887e29",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 5505024,
+            "dataSHA256": "cdfb2aeb922d6161ea0a2c4ed34e9aef508b3944bb5272738b38dc72cbb4856c",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 5767168,
+            "dataSHA256": "733cf513448ce6b20ad1bc5e50eb27c06aefae0c320713a5dd99f4e51bc1ca60",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 6029312,
+            "dataSHA256": "c87ec42ccc6da50ea57271596cd20e9b098dc665ed18c8eb1890df40226b69b2",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 6291456,
+            "dataSHA256": "b69dae56a14d1a8314ed40664c4033ea0a550eea2673e04df42a66ac6b9faf2c",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 6553600,
+            "dataSHA256": "8b60a4ab8149bc68261ab1a2c9eed6dd2123dcb0f2b9bcfb52f2f08249f572e1",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 6815744,
+            "dataSHA256": "d85ef2a08aeac2812a648deb875485a6e3848fc3d43ce4aa380937f08199f86b",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 7077888,
+            "dataSHA256": "468a4a459772da4e498bc9635d3a9c9b12584490e1edcc1d914ee7df6448d8b2",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 7340032,
+            "dataSHA256": "e4e5749032a5163c45125eccf3e8598ba5ed840df442c97e1d5ad4ad84359605",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 7602176,
+            "dataSHA256": "558d72fa1c1faf15ab01b39dd8c3e5d26a8c683e61c428eb7388c320e4439aea",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 7864320,
+            "dataSHA256": "cfe7e95fb512ea6557868829533c57f2a0899202a7c1e29da5df271fdb6e668e",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 8126464,
+            "dataSHA256": "32a8660ecca9c3dc4b2e5745379648de9c8bd95a31cf87534b6e0fceef174d26",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 8388608,
+            "dataSHA256": "2daeb1f36095b44b318410b3f4e8b5d989dcc7bb023d1426c492dab0a3053e74",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 8650752,
+            "dataSHA256": "6334891ad0b99640af1d1dd5dc8863447ff79bb5b3d9936f8bcfc98a5c41922d",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 8912896,
+            "dataSHA256": "aba5081a5f67fef5e25e934d19ff22af66da317bf949a8cb6a32f7c3a8e39b7c",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 9175040,
+            "dataSHA256": "de57ededa21cff887f254369e839bf73c9dba2a2781ee4e185e0778921104421",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 9437184,
+            "dataSHA256": "d2ee4703cd9698945ca7b9fe1689ea3095597eac1a0afd8dba00cac7894fdc43",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 9699328,
+            "dataSHA256": "bffdd255bca24a7b43136955b415d818d7b29b7d4ce364080827960a82e43d4f",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 9961472,
+            "dataSHA256": "36aa9afe94b0c5f475d51ee690e3666b5a775b2995bed1293390637597e952cb",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 10223616,
+            "dataSHA256": "a85803a4dea937b6fc8cd881271be59ea6a157bb76ca205415103f9613a5b3a8",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 10485760,
+            "dataSHA256": "e5b844cc57f57094ea4585e235f36c78c1cd222262bb89d53c94dcb4d6b3e55d",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 10747904,
+            "dataSHA256": "d90086e8740c049cb5398c6a945a24a068c15c3ab6a6e295d88828e16f91c9ca",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 11010048,
+            "dataSHA256": "82e3396cfc18bf74b1a158def394511ba95336483b03d6ac35f9159e33c699cd",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 11272192,
+            "dataSHA256": "13f3e13fa1cdceb8ce7913dd045fe85e387393eb3373200f85051cf18eed20e0",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 11534336,
+            "dataSHA256": "d4d2639ad94b0211839461226eb57a5e185829e5c4a9783c2da9f0a3da032bf5",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 11796480,
+            "dataSHA256": "39a7bc45d5c0655748d4b80aad69c437895628a627368999ef8ea4f583c158ff",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 12058624,
+            "dataSHA256": "8b8e4345137efe8d5fba3e352e2442aa27a5658b509682f2321ed65f292c9457",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 12320768,
+            "dataSHA256": "9b46b938ed17e3a127dcded39df461cb56042949ec7ba4d4bf1a445b5adc4da4",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 12582868,
+            "dataSHA256": "5019c4e0ebfba516fba275d161c80f8d6ed6956cd937bf81501eae81946da15c",
+            "sampleRate": 192000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "error": "responseTooLarge",
+            "audio": null
+          },
+          "state": {
+            "dataBytes": 12582868,
+            "dataSHA256": "5019c4e0ebfba516fba275d161c80f8d6ed6956cd937bf81501eae81946da15c",
+            "sampleRate": 192000,
+            "encoded": null
+          }
+        },
+        {
+          "result": {
+            "audio": {
+              "bytes": 6291478,
+              "format": "wav",
+              "sha256": "f5b6d4a04e4e6084765d3c7c75fdd225dd057ffecede83367dc42e286230956a"
+            },
+            "error": null
+          },
+          "state": {
+            "dataBytes": 12582868,
+            "dataSHA256": "5019c4e0ebfba516fba275d161c80f8d6ed6956cd937bf81501eae81946da15c",
+            "sampleRate": 192000,
+            "encoded": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "duration-check-at-finish",
+      "actions": [
+        {
+          "op": "pcm",
+          "rate": 8000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 8000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 8000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 8000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 8000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 8000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 8000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 8000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 8000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 8000,
+          "zeros": 262144
+        },
+        {
+          "op": "pcm",
+          "rate": 8000,
+          "zeros": 258564
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "macSource": "Cotabby/Services/Speech/SpeechExportBuffer.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 262144,
+            "dataSHA256": "8a39d2abd3999ab73c34db2476849cddf303ce389b35826850f9a700589b4a90",
+            "sampleRate": 8000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 524288,
+            "dataSHA256": "07854d2fef297a06ba81685e660c332de36d5d18d546927d30daad6d7fda1541",
+            "sampleRate": 8000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 786432,
+            "dataSHA256": "599c1bb5ffd4b87229a81958f33f1060821cd01cd7aa7ccafa0d862f4522f3f6",
+            "sampleRate": 8000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 1048576,
+            "dataSHA256": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+            "sampleRate": 8000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 1310720,
+            "dataSHA256": "439292e489a0a35e4a3a0fe304ea1a680337243fa53b135aa9310881e1d7e078",
+            "sampleRate": 8000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 1572864,
+            "dataSHA256": "106f0647ae10a6516b1ab2968038161e287ef40d1b22ca047531ed768e594ef1",
+            "sampleRate": 8000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 1835008,
+            "dataSHA256": "c55ab05d6d767c58e086c8583da4337a08ac85278d36b82644ee1d03064318db",
+            "sampleRate": 8000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 2097152,
+            "dataSHA256": "5647f05ec18958947d32874eeb788fa396a05d0bab7c1b71f112ceb7e9b31eee",
+            "sampleRate": 8000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 2359296,
+            "dataSHA256": "96a12deebdc8a3421e923d2fc00a649326f0b5167b48ffd231941a415777308c",
+            "sampleRate": 8000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 2621440,
+            "dataSHA256": "6de7493c5c90f643357c268fbaaf461c1567e0334e4948023ce17268403aa37a",
+            "sampleRate": 8000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 2880004,
+            "dataSHA256": "745f1b66105eb7dba2da53a0af382ea47f4e5fab41a9f9889dfe4caec5b4f7b7",
+            "sampleRate": 8000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "error": "invalidAudio",
+            "audio": null
+          },
+          "state": {
+            "dataBytes": 2880004,
+            "dataSHA256": "745f1b66105eb7dba2da53a0af382ea47f4e5fab41a9f9889dfe4caec5b4f7b7",
+            "sampleRate": 8000,
+            "encoded": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "package-independent-pcm",
+      "actions": [
+        {
+          "op": "pcm",
+          "rate": 24000,
+          "bits": [
+            0
+          ]
+        },
+        {
+          "op": "package",
+          "rate": 24000,
+          "bits": [
+            1065353216,
+            3212836864
+          ]
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "macSource": "Cotabby/Services/Speech/SpeechExportBuffer.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 4,
+            "dataSHA256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+            "sampleRate": 24000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "audio": {
+              "bytes": 48,
+              "format": "wav",
+              "sha256": "a9c0ae757720891ac77cc5d2b6f65a2288b8165e347d30d71507d64b22583543"
+            },
+            "error": null
+          },
+          "state": {
+            "dataBytes": 4,
+            "dataSHA256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+            "sampleRate": 24000,
+            "encoded": null
+          }
+        },
+        {
+          "result": {
+            "audio": {
+              "bytes": 46,
+              "format": "wav",
+              "sha256": "d8ddcc0cb152ee0adc55b0cf22891fc978781a178cb466cab762ee0129524635"
+            },
+            "error": null
+          },
+          "state": {
+            "dataBytes": 4,
+            "dataSHA256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+            "sampleRate": 24000,
+            "encoded": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "package-independent-encoded",
+      "actions": [
+        {
+          "op": "encoded",
+          "prefix": "SUQz"
+        },
+        {
+          "op": "package",
+          "rate": 24000,
+          "bits": [
+            1091567616
+          ]
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "macSource": "Cotabby/Services/Speech/SpeechExportBuffer.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "encoded": {
+              "bytes": 3,
+              "format": "mp3",
+              "sha256": "041149186b23a9502aea5a4e81bbc9620d2b4b76b4bad94e36c744abcf9d3771"
+            },
+            "sampleRate": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "audio": {
+              "bytes": 46,
+              "format": "wav",
+              "sha256": "7c5e6f02e4645cd0582a364a505bd0de2a2b71d6720c7257d30233bdec84f318"
+            },
+            "error": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "encoded": {
+              "bytes": 3,
+              "format": "mp3",
+              "sha256": "041149186b23a9502aea5a4e81bbc9620d2b4b76b4bad94e36c744abcf9d3771"
+            },
+            "sampleRate": null
+          }
+        },
+        {
+          "result": {
+            "audio": {
+              "bytes": 3,
+              "format": "mp3",
+              "sha256": "041149186b23a9502aea5a4e81bbc9620d2b4b76b4bad94e36c744abcf9d3771"
+            },
+            "error": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "encoded": {
+              "bytes": 3,
+              "format": "mp3",
+              "sha256": "041149186b23a9502aea5a4e81bbc9620d2b4b76b4bad94e36c744abcf9d3771"
+            },
+            "sampleRate": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "package-invalid-rate-retains",
+      "actions": [
+        {
+          "op": "pcm",
+          "rate": 24000,
+          "bits": [
+            0
+          ]
+        },
+        {
+          "op": "package",
+          "rate": 1,
+          "bits": [
+            0
+          ]
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "macSource": "Cotabby/Services/Speech/SpeechExportBuffer.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 4,
+            "dataSHA256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+            "sampleRate": 24000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "error": "invalidAudio",
+            "audio": null
+          },
+          "state": {
+            "dataBytes": 4,
+            "dataSHA256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+            "sampleRate": 24000,
+            "encoded": null
+          }
+        },
+        {
+          "result": {
+            "audio": {
+              "bytes": 46,
+              "format": "wav",
+              "sha256": "d8ddcc0cb152ee0adc55b0cf22891fc978781a178cb466cab762ee0129524635"
+            },
+            "error": null
+          },
+          "state": {
+            "dataBytes": 4,
+            "dataSHA256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+            "sampleRate": 24000,
+            "encoded": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "package-unaligned-retains",
+      "actions": [
+        {
+          "op": "encoded",
+          "prefix": "SUQz"
+        },
+        {
+          "op": "package",
+          "rate": 24000,
+          "zeros": 3
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "macSource": "Cotabby/Services/Speech/SpeechExportBuffer.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "encoded": {
+              "bytes": 3,
+              "format": "mp3",
+              "sha256": "041149186b23a9502aea5a4e81bbc9620d2b4b76b4bad94e36c744abcf9d3771"
+            },
+            "sampleRate": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "error": "invalidAudio",
+            "audio": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "encoded": {
+              "bytes": 3,
+              "format": "mp3",
+              "sha256": "041149186b23a9502aea5a4e81bbc9620d2b4b76b4bad94e36c744abcf9d3771"
+            },
+            "sampleRate": null
+          }
+        },
+        {
+          "result": {
+            "audio": {
+              "bytes": 3,
+              "format": "mp3",
+              "sha256": "041149186b23a9502aea5a4e81bbc9620d2b4b76b4bad94e36c744abcf9d3771"
+            },
+            "error": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "encoded": {
+              "bytes": 3,
+              "format": "mp3",
+              "sha256": "041149186b23a9502aea5a4e81bbc9620d2b4b76b4bad94e36c744abcf9d3771"
+            },
+            "sampleRate": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "cancel-encoded-before-validation",
+      "actions": [
+        {
+          "op": "encoded",
+          "cancel": true
+        },
+        {
+          "op": "encoded",
+          "prefix": "SUQz"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "macSource": "Cotabby/Services/Speech/SpeechExportBuffer.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "error": "cancelled",
+            "audio": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          }
+        },
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "encoded": {
+              "bytes": 3,
+              "format": "mp3",
+              "sha256": "041149186b23a9502aea5a4e81bbc9620d2b4b76b4bad94e36c744abcf9d3771"
+            },
+            "sampleRate": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "audio": {
+              "bytes": 3,
+              "format": "mp3",
+              "sha256": "041149186b23a9502aea5a4e81bbc9620d2b4b76b4bad94e36c744abcf9d3771"
+            },
+            "error": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "encoded": {
+              "bytes": 3,
+              "format": "mp3",
+              "sha256": "041149186b23a9502aea5a4e81bbc9620d2b4b76b4bad94e36c744abcf9d3771"
+            },
+            "sampleRate": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "cancel-pcm-before-mutation",
+      "actions": [
+        {
+          "op": "pcm",
+          "rate": 24000,
+          "bits": [
+            0
+          ],
+          "cancel": true
+        },
+        {
+          "op": "finish"
+        },
+        {
+          "op": "pcm",
+          "rate": 24000,
+          "bits": [
+            0
+          ]
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "macSource": "Cotabby/Services/Speech/SpeechExportBuffer.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "error": "cancelled",
+            "audio": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          }
+        },
+        {
+          "result": {
+            "error": "invalidAudio",
+            "audio": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          }
+        },
+        {
+          "state": {
+            "dataBytes": 4,
+            "dataSHA256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+            "sampleRate": 24000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "audio": {
+              "bytes": 46,
+              "format": "wav",
+              "sha256": "d8ddcc0cb152ee0adc55b0cf22891fc978781a178cb466cab762ee0129524635"
+            },
+            "error": null
+          },
+          "state": {
+            "dataBytes": 4,
+            "dataSHA256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+            "sampleRate": 24000,
+            "encoded": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "cancel-package-before-validation",
+      "actions": [
+        {
+          "op": "package",
+          "rate": 24000,
+          "cancel": true
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "macSource": "Cotabby/Services/Speech/SpeechExportBuffer.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "error": "cancelled",
+            "audio": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          }
+        },
+        {
+          "result": {
+            "error": "invalidAudio",
+            "audio": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "cancel-finish-empty",
+      "actions": [
+        {
+          "op": "finish",
+          "cancel": true
+        }
+      ],
+      "macSource": "Cotabby/Services/Speech/SpeechExportBuffer.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "error": "invalidAudio",
+            "audio": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "cancel-finish-pcm",
+      "actions": [
+        {
+          "op": "pcm",
+          "rate": 24000,
+          "bits": [
+            0
+          ]
+        },
+        {
+          "op": "finish",
+          "cancel": true
+        }
+      ],
+      "macSource": "Cotabby/Services/Speech/SpeechExportBuffer.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 4,
+            "dataSHA256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+            "sampleRate": 24000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "audio": {
+              "bytes": 46,
+              "format": "wav",
+              "sha256": "d8ddcc0cb152ee0adc55b0cf22891fc978781a178cb466cab762ee0129524635"
+            },
+            "error": null
+          },
+          "state": {
+            "dataBytes": 4,
+            "dataSHA256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+            "sampleRate": 24000,
+            "encoded": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "cancel-finish-encoded",
+      "actions": [
+        {
+          "op": "encoded",
+          "prefix": "SUQz"
+        },
+        {
+          "op": "finish",
+          "cancel": true
+        }
+      ],
+      "macSource": "Cotabby/Services/Speech/SpeechExportBuffer.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "encoded": {
+              "bytes": 3,
+              "format": "mp3",
+              "sha256": "041149186b23a9502aea5a4e81bbc9620d2b4b76b4bad94e36c744abcf9d3771"
+            },
+            "sampleRate": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "audio": {
+              "bytes": 3,
+              "format": "mp3",
+              "sha256": "041149186b23a9502aea5a4e81bbc9620d2b4b76b4bad94e36c744abcf9d3771"
+            },
+            "error": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "encoded": {
+              "bytes": 3,
+              "format": "mp3",
+              "sha256": "041149186b23a9502aea5a4e81bbc9620d2b4b76b4bad94e36c744abcf9d3771"
+            },
+            "sampleRate": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "maximum-pcm-amplitude-clips",
+      "actions": [
+        {
+          "op": "pcm",
+          "rate": 24000,
+          "bits": [
+            1090519040,
+            3238002688
+          ]
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "macSource": "Cotabby/Services/Speech/SpeechExportBuffer.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 8,
+            "dataSHA256": "a3c84d98e67916fed00c3f63db43ad9214dda5f4553790ca5388b8b776d3db5a",
+            "sampleRate": 24000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "audio": {
+              "bytes": 48,
+              "format": "wav",
+              "sha256": "a9c0ae757720891ac77cc5d2b6f65a2288b8165e347d30d71507d64b22583543"
+            },
+            "error": null
+          },
+          "state": {
+            "dataBytes": 8,
+            "dataSHA256": "a3c84d98e67916fed00c3f63db43ad9214dda5f4553790ca5388b8b776d3db5a",
+            "sampleRate": 24000,
+            "encoded": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "package-nonfinite",
+      "actions": [
+        {
+          "op": "pcm",
+          "rate": 24000,
+          "bits": [
+            0
+          ]
+        },
+        {
+          "op": "package",
+          "rate": 24000,
+          "bits": [
+            2143289344
+          ]
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "macSource": "Cotabby/Services/Speech/SpeechExportBuffer.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 4,
+            "dataSHA256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+            "sampleRate": 24000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "error": "invalidAudio",
+            "audio": null
+          },
+          "state": {
+            "dataBytes": 4,
+            "dataSHA256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+            "sampleRate": 24000,
+            "encoded": null
+          }
+        },
+        {
+          "result": {
+            "audio": {
+              "bytes": 46,
+              "format": "wav",
+              "sha256": "d8ddcc0cb152ee0adc55b0cf22891fc978781a178cb466cab762ee0129524635"
+            },
+            "error": null
+          },
+          "state": {
+            "dataBytes": 4,
+            "dataSHA256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+            "sampleRate": 24000,
+            "encoded": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "package-empty",
+      "actions": [
+        {
+          "op": "package",
+          "rate": 24000
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "macSource": "Cotabby/Services/Speech/SpeechExportBuffer.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "error": "invalidAudio",
+            "audio": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          }
+        },
+        {
+          "result": {
+            "error": "invalidAudio",
+            "audio": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "package-rate-7999",
+      "actions": [
+        {
+          "op": "package",
+          "rate": 7999,
+          "bits": [
+            0
+          ]
+        }
+      ],
+      "macSource": "Cotabby/Services/Speech/SpeechExportBuffer.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "error": "invalidAudio",
+            "audio": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "package-rate-8000",
+      "actions": [
+        {
+          "op": "package",
+          "rate": 8000,
+          "bits": [
+            0
+          ]
+        }
+      ],
+      "macSource": "Cotabby/Services/Speech/SpeechExportBuffer.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "audio": {
+              "bytes": 46,
+              "format": "wav",
+              "sha256": "4aebda3a657a0d8f532d11ceacb1679081d7bdf7d7d301a53f1096af3580be91"
+            },
+            "error": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "package-rate-192000",
+      "actions": [
+        {
+          "op": "package",
+          "rate": 192000,
+          "bits": [
+            0
+          ]
+        }
+      ],
+      "macSource": "Cotabby/Services/Speech/SpeechExportBuffer.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "audio": {
+              "bytes": 46,
+              "format": "wav",
+              "sha256": "108579728c55634867ff5e41f99153876c0f017696693dfad1fe70c300c7f15f"
+            },
+            "error": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "package-rate-192001",
+      "actions": [
+        {
+          "op": "package",
+          "rate": 192001,
+          "bits": [
+            0
+          ]
+        }
+      ],
+      "macSource": "Cotabby/Services/Speech/SpeechExportBuffer.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "error": "invalidAudio",
+            "audio": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "invalid-pcm-before-append",
+      "actions": [
+        {
+          "op": "pcm",
+          "rate": 24000,
+          "bits": [
+            2139095040
+          ]
+        },
+        {
+          "op": "pcm",
+          "rate": 24000,
+          "bits": [
+            0
+          ]
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "macSource": "Cotabby/Services/Speech/SpeechExportBuffer.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "error": "invalidAudio",
+            "audio": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          }
+        },
+        {
+          "state": {
+            "dataBytes": 4,
+            "dataSHA256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+            "sampleRate": 24000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "audio": {
+              "bytes": 46,
+              "format": "wav",
+              "sha256": "d8ddcc0cb152ee0adc55b0cf22891fc978781a178cb466cab762ee0129524635"
+            },
+            "error": null
+          },
+          "state": {
+            "dataBytes": 4,
+            "dataSHA256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+            "sampleRate": 24000,
+            "encoded": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "cancel-invalid-pcm-construction-first",
+      "actions": [
+        {
+          "op": "pcm",
+          "rate": 24000,
+          "bits": [
+            2139095040
+          ],
+          "cancel": true
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "macSource": "Cotabby/Services/Speech/SpeechExportBuffer.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "error": "invalidAudio",
+            "audio": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          }
+        },
+        {
+          "result": {
+            "error": "invalidAudio",
+            "audio": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "package-does-not-seed-buffer",
+      "actions": [
+        {
+          "op": "package",
+          "rate": 24000,
+          "bits": [
+            0
+          ]
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "macSource": "Cotabby/Services/Speech/SpeechExportBuffer.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "audio": {
+              "bytes": 46,
+              "format": "wav",
+              "sha256": "d8ddcc0cb152ee0adc55b0cf22891fc978781a178cb466cab762ee0129524635"
+            },
+            "error": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          }
+        },
+        {
+          "result": {
+            "error": "invalidAudio",
+            "audio": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "cancel-second-pcm-preserves-first",
+      "actions": [
+        {
+          "op": "pcm",
+          "rate": 24000,
+          "bits": [
+            1065353216
+          ]
+        },
+        {
+          "op": "pcm",
+          "rate": 24000,
+          "bits": [
+            0
+          ],
+          "cancel": true
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "macSource": "Cotabby/Services/Speech/SpeechExportBuffer.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 4,
+            "dataSHA256": "e00e5eb9444182f352323374ef4e08ebcb784725fdd4fd612d7730540b3e0c8c",
+            "sampleRate": 24000,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "error": "cancelled",
+            "audio": null
+          },
+          "state": {
+            "dataBytes": 4,
+            "dataSHA256": "e00e5eb9444182f352323374ef4e08ebcb784725fdd4fd612d7730540b3e0c8c",
+            "sampleRate": 24000,
+            "encoded": null
+          }
+        },
+        {
+          "result": {
+            "audio": {
+              "bytes": 46,
+              "format": "wav",
+              "sha256": "7c5e6f02e4645cd0582a364a505bd0de2a2b71d6720c7257d30233bdec84f318"
+            },
+            "error": null
+          },
+          "state": {
+            "dataBytes": 4,
+            "dataSHA256": "e00e5eb9444182f352323374ef4e08ebcb784725fdd4fd612d7730540b3e0c8c",
+            "sampleRate": 24000,
+            "encoded": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "mixed-mp3-after-valid-wav",
+      "actions": [
+        {
+          "op": "encoded",
+          "prefix": "UklGRigAAABXQVZFZm10IBAAAAABAAEAwF0AAIC7AAACABAAZGF0YQQAAAD/fwGA"
+        },
+        {
+          "op": "encoded",
+          "prefix": "SUQz"
+        },
+        {
+          "op": "finish"
+        }
+      ],
+      "macSource": "Cotabby/Services/Speech/SpeechExportBuffer.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sampleRate": null,
+            "encoded": null
+          },
+          "result": null
+        },
+        {
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "encoded": {
+              "bytes": 48,
+              "format": "wav",
+              "sha256": "a9c0ae757720891ac77cc5d2b6f65a2288b8165e347d30d71507d64b22583543"
+            },
+            "sampleRate": null
+          },
+          "result": null
+        },
+        {
+          "result": {
+            "error": "invalidAudio",
+            "audio": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "encoded": {
+              "bytes": 48,
+              "format": "wav",
+              "sha256": "a9c0ae757720891ac77cc5d2b6f65a2288b8165e347d30d71507d64b22583543"
+            },
+            "sampleRate": null
+          }
+        },
+        {
+          "result": {
+            "audio": {
+              "bytes": 48,
+              "format": "wav",
+              "sha256": "a9c0ae757720891ac77cc5d2b6f65a2288b8165e347d30d71507d64b22583543"
+            },
+            "error": null
+          },
+          "state": {
+            "dataBytes": 0,
+            "dataSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "encoded": {
+              "bytes": 48,
+              "format": "wav",
+              "sha256": "a9c0ae757720891ac77cc5d2b6f65a2288b8165e347d30d71507d64b22583543"
+            },
+            "sampleRate": null
+          }
+        }
+      ]
+    }
+  ]
+}

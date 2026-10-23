@@ -13,6 +13,12 @@ public static partial class SpeechExportPolicy
     public static string Digest(ReadOnlySpan<byte> data) => Convert.ToHexStringLower(SHA256.HashData(data));
     public static string Filename(SpeechExportAudio audio) => "lingrove-" + Digest(audio.Bytes) + "." + audio.FileExtension;
     public static bool ValidFilename(string? value) => value is not null && FilenamePattern().IsMatch(value);
+    /// <summary>Typed frozen values let admission read owned bytes without first cloning an
+    /// oversized producer body. The view stays inside Core and never escapes to mutable callers.</summary>
+    public static SpeechExportAudio Wav(SystemSpeechRecording recording)
+    { ArgumentNullException.ThrowIfNull(recording); return Wav(recording.Bytes, recording.SampleRate); }
+    public static SpeechExportAudio Encoded(SpeechAudioChunk.Encoded chunk)
+    { ArgumentNullException.ThrowIfNull(chunk); return Encoded(chunk.Bytes); }
     public static SpeechExportAudio Wav(ReadOnlySpan<byte> bytes, int sampleRate)
     {
         if (bytes.IsEmpty || bytes.Length > MaximumBytes - 44 || bytes.Length % 4 != 0 || sampleRate is < 8000 or > 192000 || bytes.Length / 4 > sampleRate * 90) throw Invalid();

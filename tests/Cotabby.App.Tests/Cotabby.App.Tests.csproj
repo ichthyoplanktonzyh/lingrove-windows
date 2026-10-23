@@ -6,6 +6,7 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="..\..\fixtures\parity\speech-buffer-v1.json" Link="fixtures\speech-buffer-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\fixtures\parity\anki-settings-interaction-v1.json" Link="fixtures\anki-settings-interaction-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <Compile Include="..\Shared\AnkiReviewTestEffects.cs" Link="Shared\AnkiReviewTestEffects.cs" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />

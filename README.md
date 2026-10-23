@@ -148,7 +148,8 @@ now supplies card CAS and acknowledged receipt storage. The [review settings ada
 connects one inert AppHost owner, explicit connection controls and normal-quit drain. Review navigation,
 card preparation and the send transaction remain open. The [PCM foundation](docs/SPEECH_PCM_FOUNDATION.md)
 now adapts bounded Float32 blocks and playback queue accounting. The [frame decoder](docs/SPEECH_FRAME_DECODER.md)
-adds bounded fragmented helper-stream admission; live speech remains work.
+adds bounded fragmented helper-stream admission. The [export buffer](docs/SPEECH_EXPORT_BUFFER.md)
+now serializes request-owned audio accumulation/packaging; live speech remains work.
 
 Windows CI also executes the [compiled WPF learning-view suite](docs/WPF_VIEW_TESTS.md): actual
 XAML/resource loading, window layout, in-memory rendering, native no-activation styles and

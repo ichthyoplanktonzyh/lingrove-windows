@@ -123,6 +123,53 @@ public sealed class VocabularyExportSessionTests(WpfDispatcher dispatcher)
         await s.PrepareAsync(); s.Scope = VocabularyExportScope.Filtered; Assert.False(await s.SaveAsync(package, "chosen"));
         s.Scope = VocabularyExportScope.All; s.Configuration = s.Configuration with { Notes = false }; Assert.False(await s.SaveAsync(package, "chosen")); Assert.Equal(0, writes);
     });
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task RetiredDispatcherCannotHoldArchiveAcknowledgementOpen(bool saving)
+    {
+        var ready = new TaskCompletionSource<(System.Windows.Threading.Dispatcher Dispatcher, Action Retire, Task Operation)>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var prepared = new TaskCompletionSource<VocabularyExportPackage>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var written = NewSignal(); var package = VocabularyExportPolicy.Package(Seed().Entries, new());
+        var thread = new Thread(() =>
+        {
+            try
+            {
+                var owner = System.Windows.Threading.Dispatcher.CurrentDispatcher;
+                var session = new VocabularyExportSession(owner, Request("prepare"),
+                    (_, _, _) => saving ? Task.FromResult(package) : prepared.Task, (_, _, _) => written.Task);
+                if (saving)
+                {
+                    var initialized = session.PrepareAsync(); // Completed provider on its owning dispatcher; no pump or wait is needed.
+                    if (!initialized.IsCompletedSuccessfully) throw new InvalidOperationException("Expected synchronous test preparation.", initialized.Exception);
+                }
+                Task operation = saving ? session.SaveAsync(package, "chosen") : session.PrepareAsync();
+                ready.SetResult((owner, () => { session.Cancel(); owner.BeginInvokeShutdown(System.Windows.Threading.DispatcherPriority.Send); }, operation));
+                System.Windows.Threading.Dispatcher.Run();
+            }
+            catch (Exception error) { ready.TrySetException(error); }
+        }) { IsBackground = true };
+        thread.SetApartmentState(ApartmentState.STA); thread.Start();
+        try
+        {
+            var value = await ready.Task.WaitAsync(TimeSpan.FromSeconds(10));
+            await value.Dispatcher.InvokeAsync(value.Retire).Task;
+            Assert.True(await Task.Run(() => thread.Join(TimeSpan.FromSeconds(10))));
+            prepared.TrySetResult(package); written.TrySetResult();
+            await value.Operation.WaitAsync(TimeSpan.FromSeconds(10));
+            if (saving) Assert.True(await (Task<bool>)value.Operation);
+        }
+        finally
+        {
+            prepared.TrySetResult(package); written.TrySetResult();
+            if (ready.Task.IsCompletedSuccessfully)
+            {
+                var value = await ready.Task;
+                if (!value.Dispatcher.HasShutdownStarted) _ = value.Dispatcher.BeginInvoke(value.Retire);
+            }
+            Assert.True(await Task.Run(() => thread.Join(TimeSpan.FromSeconds(10))));
+        }
+    }
     private static TaskCompletionSource NewSignal() => new(TaskCreationOptions.RunContinuationsAsynchronously);
     private static VocabularyExportRequest Request(string mode) => new(
         [new(Id(1), mode == "stale" ? Id(99) : Id(2))], [new(Id(1), Id(4))], [],

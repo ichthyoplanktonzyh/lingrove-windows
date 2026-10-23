@@ -47,19 +47,24 @@ internal sealed class VocabularyExportSession
         _generation = id; Loading = true; Message = null; Package = null; _preparedKey = null; Notify();
         try
         {
-            var prepared = await _prepare(Request.Selections(key.Scope), key.Configuration, cancellationToken);
-            Verify(); cancellationToken.ThrowIfCancellationRequested();
-            if (!IsActive || _generation != id || CurrentKey != key) return;
-            Package = prepared; _preparedKey = key; Notify();
+            var prepared = await _prepare(Request.Selections(key.Scope), key.Configuration, cancellationToken).ConfigureAwait(false);
+            cancellationToken.ThrowIfCancellationRequested();
+            await OnUiAsync(() =>
+            {
+                if (!IsActive || _generation != id || CurrentKey != key) return;
+                Package = prepared; _preparedKey = key; Notify();
+            }).ConfigureAwait(false);
         }
         catch (Exception error)
         {
-            Verify();
-            if (IsActive && _generation == id && error is not OperationCanceledException) { Message = error.Message; Notify(); }
+            await OnUiAsync(() =>
+            {
+                if (IsActive && _generation == id && error is not OperationCanceledException) { Message = error.Message; Notify(); }
+            }).ConfigureAwait(false);
         }
         finally
         {
-            Verify(); if (_generation == id) { Loading = false; Notify(); }
+            await OnUiAsync(() => { if (_generation == id) { Loading = false; Notify(); } }).ConfigureAwait(false);
         }
     }
     internal async Task<bool> SaveAsync(VocabularyExportPackage package, string destination, CancellationToken cancellationToken = default)
@@ -70,20 +75,33 @@ internal sealed class VocabularyExportSession
         try
         {
             cancellationToken.ThrowIfCancellationRequested();
-            await _write(package, destination, cancellationToken); Verify();
+            await _write(package, destination, cancellationToken).ConfigureAwait(false);
             // The archive has acknowledged publication. Closing or late cancellation cannot
             // turn those already-written bytes into a failed save after its commit point.
             return true;
         }
         catch (Exception error)
         {
-            Verify(); if (IsActive && error is not OperationCanceledException) { Message = error.Message; Notify(); }
+            await OnUiAsync(() =>
+            {
+                if (IsActive && error is not OperationCanceledException) { Message = error.Message; Notify(); }
+            }).ConfigureAwait(false);
             return false;
         }
-        finally { Verify(); Saving = false; Notify(); }
+        finally { await OnUiAsync(() => { Saving = false; Notify(); }).ConfigureAwait(false); }
     }
     internal void Cancel()
     { Verify(); IsActive = false; _generation = Guid.NewGuid(); Package = null; Notify(); }
+    private async Task OnUiAsync(Action action)
+    {
+        // Archive acknowledgement must finish even if WPF has stopped pumping messages. Retiring
+        // the view cancels its authority first; a stopped/aborted dispatcher simply gets no reply.
+        if (_dispatcher.HasShutdownStarted || _dispatcher.HasShutdownFinished) return;
+        if (_dispatcher.CheckAccess()) { action(); return; }
+        try { await _dispatcher.InvokeAsync(action, DispatcherPriority.DataBind).Task.ConfigureAwait(false); }
+        catch (OperationCanceledException) when (_dispatcher.HasShutdownStarted) { }
+        catch (InvalidOperationException) when (_dispatcher.HasShutdownStarted) { }
+    }
     private void Verify() => _dispatcher.VerifyAccess();
     private void Notify()
     {

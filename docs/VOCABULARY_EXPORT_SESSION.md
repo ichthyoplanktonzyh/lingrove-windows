@@ -42,9 +42,13 @@ SQLite/Store/archive, and actual native save for the success case. For queued ca
 waits before calling the real Store, while the Mac gate waits on the actual archive actor; both
 control response ordering without replacing selection/encoding. The small session corpus observes
 state and file existence, while the separate [save suite](VOCABULARY_EXPORT_SAVE.md) establishes full
-output bytes and native effects. Five additional controlled-delegate cases cover late failure,
+output bytes and native effects. Seven additional controlled-delegate cases cover late failure,
 package/path forwarding, save reentry, close-after-admission acknowledgement, local failure/retry,
-and revocation before the next preparation. Delegate acknowledgement cases are state-machine tests,
+revocation before the next preparation, and prepare/save completion after an owned dispatcher exits.
+Those two tests retire a separate STA dispatcher without creating another WPF Application; archive
+acknowledgement finishes without waiting for an unpumped UI continuation. Dispatcher callbacks are
+skipped after shutdown while all active-view state publication remains on its owner.
+Delegate acknowledgement cases are state-machine tests,
 not additional filesystem or desktop execution claims.
 
 ```sh

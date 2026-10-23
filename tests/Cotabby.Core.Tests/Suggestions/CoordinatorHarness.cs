@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 namespace Cotabby.Core.Tests.Suggestions;
 
 /// <summary>A coordinator wired to fakes, with helpers that type like a user and wait for the overlay.</summary>
-public abstract class CoordinatorHarness : IAsyncDisposable
+public abstract class CoordinatorHarness : IAsyncDisposable, IAsyncLifetime
 {
     protected static readonly KeyboardEvent Backtick =
         Keys.Special(KeyKind.Character, KeyBinding.VkBacktick) with { Character = '`' };
@@ -22,7 +22,7 @@ public abstract class CoordinatorHarness : IAsyncDisposable
     protected SuggestionCoordinator Coordinator { get; }
     protected bool BatterySaver { get; set; }
 
-    protected CoordinatorHarness(TypoCorrectionAdvisor? typos = null, IClipboardReader? clipboard = null)
+    protected CoordinatorHarness(TypoCorrectionAdvisor? typos = null, IClipboardReader? clipboard = null, TimeProvider? clock = null)
     {
         Coordinator = new SuggestionCoordinator(
             Hook, Focus, Engine, Overlay, Focus,
@@ -30,10 +30,16 @@ public abstract class CoordinatorHarness : IAsyncDisposable
             NullLogger<SuggestionCoordinator>.Instance, _pump,
             batterySaverOn: () => BatterySaver,
             typos: typos,
-            clipboard: clipboard);
+            clipboard: clipboard,
+            clock: clock);
         Coordinator.Start();
         Focus.Focus(Fields.Text(""));
     }
+
+    // xUnit v2 calls IAsyncLifetime, not IAsyncDisposable. Bridge to the existing cleanup so
+    // every test actually stops its coordinator and joins the dedicated UI pump.
+    Task IAsyncLifetime.InitializeAsync() => Task.CompletedTask;
+    Task IAsyncLifetime.DisposeAsync() => DisposeAsync().AsTask();
 
     public async ValueTask DisposeAsync()
     {

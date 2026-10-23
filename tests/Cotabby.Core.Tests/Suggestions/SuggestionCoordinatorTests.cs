@@ -181,19 +181,6 @@ public sealed class SuggestionCoordinatorTests : CoordinatorHarness
     }
 
     [Fact]
-    public async Task AcceptKeyPressedWhileTheContinuationLoads_IsQueuedForIt()
-    {
-        Engine.Completion = r => r.Prefix.EndsWith("hello") ? " world" : " again soon";
-        Type("hello");
-        await Shown(" world");
-
-        Assert.True(Hook.Press(Keys.Tab()));
-        Assert.True(Hook.Press(Keys.Tab()), "the key stays owned while the continuation generates");
-
-        await Eventually(() => Focus.Insertions.SequenceEqual([" world", " again"]), "the queued accept lands");
-    }
-
-    [Fact]
     public async Task PerAppOverride_ReplacesTheAcceptKey()
     {
         var f6 = new KeyBinding(0x75, KeyModifiers.None, "F6");

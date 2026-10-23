@@ -162,5 +162,8 @@ jobs:
       - name: Verify archive export snapshots against complete original Mac ownership
         run: python3 scripts/verify-vocabulary-export-snapshot-macos-parity.py --mac-repo .mac-baseline
 
+      - name: Verify stored ZIP bytes and bounds against complete original Mac encoder
+        run: python3 scripts/verify-vocabulary-export-zip-macos-parity.py --mac-repo .mac-baseline
+
   # Routine CI stops after validation. Packaging, artifact uploads and releases
   # are deliberately absent; distribution is a separately authorized task.

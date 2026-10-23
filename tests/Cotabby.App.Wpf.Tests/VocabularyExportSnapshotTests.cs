@@ -33,11 +33,18 @@ public sealed class VocabularyExportSnapshotTests(WpfDispatcher dispatcher)
     private static async Task<object> Observe(JsonElement row, VocabularyArchive archive)
     {
         string mode = row.GetProperty("mode").GetString()!; var image = Image; var initial = Seed();
-        if (mode == "budget")
-            initial = initial with { Entries = [initial.Entries[0] with { Senses = Enumerable.Range(0, 9).Select(owner => new VocabularySense(Id(100 + owner), "", DateTimeOffset.UnixEpoch, DateTimeOffset.UnixEpoch) {
-                Content = Enumerable.Range(0, 4).Select(part => Block(200 + owner * 4 + part, new((owner * 4 + part).ToString("x64", CultureInfo.InvariantCulture), 1, 1, VocabularyContentPolicy.MaximumImageBytes))).ToArray() }).ToArray() }] };
+        if (mode.StartsWith("budget", StringComparison.Ordinal))
+        {
+            int count = mode == "budgetExact" ? 32 : mode == "budgetPlusOne" ? 33 : 36;
+            initial = initial with { Entries = [initial.Entries[0] with { Senses = Enumerable.Range(0, (count + 3) / 4).Select(owner => new VocabularySense(Id(100 + owner), "", DateTimeOffset.UnixEpoch, DateTimeOffset.UnixEpoch) {
+                Content = Enumerable.Range(0, Math.Min(4, count - owner * 4)).Select(part => {
+                    int index = owner * 4 + part;
+                    return Block(200 + index, new(index.ToString("x64", CultureInfo.InvariantCulture), 1, 1,
+                        mode == "budgetPlusOne" && index == 32 ? 1 : VocabularyContentPolicy.MaximumImageBytes));
+                }).ToArray() }).ToArray() }] };
+        }
         await archive.CommitAsync(initial); var edited = initial.Entries[0];
-        if (mode != "budget")
+        if (!mode.StartsWith("budget", StringComparison.Ordinal))
         {
             var senses = edited.Senses.ToArray(); int owner = mode == "otherSense" ? 1 : 0;
             senses[owner] = senses[owner] with { Content = [Block(owner == 1 ? 21 : 20, image)] };
@@ -62,7 +69,7 @@ public sealed class VocabularyExportSnapshotTests(WpfDispatcher dispatcher)
             case "alias": selections = [new(Id(1), Id(90))]; break;
             case "duplicate": selections = [selections[0], selections[0]]; break;
             case "shared": case "ordered": selections = [new(Id(1), Id(4)), new(Id(1), Id(2))]; break;
-            case "budget": selections = initial.Entries[0].Senses.Select(s => new VocabularySelection(Id(1), s.Id)).ToArray(); break;
+            case "budget": case "budgetExact": case "budgetPlusOne": selections = initial.Entries[0].Senses.Select(s => new VocabularySelection(Id(1), s.Id)).ToArray(); break;
         }
         ulong before = (await archive.LoadAsync()).Revision;
         try

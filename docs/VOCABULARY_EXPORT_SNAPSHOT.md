@@ -19,7 +19,8 @@ must fit 128 MiB before reading any image. Each image owner validates the comple
 returns detached bytes. Reader failures map to the fixed `missingImage` export failure, as in the
 Mac catch boundary. Cancellation checks are outside that reader catch: selected IDs, before every
 image, after the snapshot, package preparation and after media attachment retain their source order.
-An empty selected scope still reports `empty` before cancellation; the pure package factory has a
+The cancelled source probes use a controlled start gate, so cancellation is set before the actor
+call can begin. An empty selected scope still reports `empty` before cancellation; the pure package factory has a
 separate initial cancellation contract. Preparing performs no SQL mutation and retains revision.
 
 The returned [package](VOCABULARY_EXPORT_PACKAGE.md) owns encoded material and all captured images.
@@ -28,15 +29,18 @@ existing operations before closing SQLite. Cancelling a caller does not silently
 media or redirect the selection to a merged alias. This slice adds no Store callback, export command,
 window, destination, file write, ZIP generation, full backup, inference or network transmission.
 
-Nineteen fixture probes execute the complete original Mac archive with actual SQLite/ImageIO memory
+Twenty-one fixture probes execute the complete original Mac archive with actual SQLite/ImageIO memory
 owners and a fixed literal PNG. All relevant bodies remain original, including the complete ZIP
 implementation only to satisfy the unexercised write method's dependency. Source preparation calls
 never invoke write/ZIP. The fixtures compare prepared data digest/count, exact media names/hashes,
 counts and unchanged revision. Cases include missing/mismatched media, flags and selected-sense
 exclusion, shared-image dedup, order/duplicate selection, retired aliases/stale IDs, cancellation,
-128 MiB admission and package ownership after actual source deletion.
+exact 128 MiB metadata admission versus +1 rejection, and package ownership after actual source deletion.
 
-Windows CI executes those nineteen corresponding archive + WIC/media cases and an additional named
+The exact-limit metadata case proceeds to the missing-image reader boundary; no 128 MiB PNG set is
+claimed to pass image validation. The +1 case fails budget admission before reading.
+
+Windows CI executes those twenty-one corresponding archive + WIC/media cases and an additional named
 file/lock regression. Its forwarding reader pauses only after a real validated image read; a second
 archive must receive `StorageBusy` when trying to delete while the first shared snapshot span is
 held. After release, deletion succeeds and the package retains the original bytes. These are actual

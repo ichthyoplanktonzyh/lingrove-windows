@@ -351,6 +351,30 @@
         },
         "revisionUnchanged": true
       }
+    },
+    {
+      "id": "budgetExact-json",
+      "mode": "budgetExact",
+      "format": "json",
+      "images": true,
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "error": "missingImage",
+        "revisionUnchanged": true
+      }
+    },
+    {
+      "id": "budgetPlusOne-json",
+      "mode": "budgetPlusOne",
+      "format": "json",
+      "images": true,
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "error": "tooLarge",
+        "revisionUnchanged": true
+      }
     }
   ]
 }

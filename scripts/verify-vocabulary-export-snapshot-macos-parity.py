@@ -33,15 +33,20 @@ func observe(_ row: Row, _ data: Data) async throws -> [String: Any] {
     let archive = VocabularyArchive(url:nil), image = VocabularyImageReference(digest:VocabularyImageStorage.digest(data),width:80,height:40,byteCount:data.count)
     try VocabularyImageStorage.validate(data,reference:image)
     var initial = seed()
-    if row.mode == "budget" {
-        initial.entries[0].senses = (0..<9).map { owner in
+    if row.mode.hasPrefix("budget") {
+        let count = row.mode == "budgetExact" ? 32 : row.mode == "budgetPlusOne" ? 33 : 36
+        initial.entries[0].senses = (0..<((count+3)/4)).map { owner in
             var s = VocabularySense(id:id(100+owner),meaning:"",createdAt:now,updatedAt:now)
-            s.content = (0..<4).map { part in block(200+owner*4+part,.init(digest:String(format:"%064x",owner*4+part),width:1,height:1,byteCount:VocabularyContentPolicy.maximumImageBytes)) }; return s
+            s.content = (0..<min(4,count-owner*4)).map { part in
+                let index = owner*4+part
+                return block(200+index,.init(digest:String(format:"%064x",index),width:1,height:1,
+                    byteCount:row.mode == "budgetPlusOne" && index == 32 ? 1 : VocabularyContentPolicy.maximumImageBytes))
+            }; return s
         }
     }
     _ = try await archive.commit(initial)
     var edited = initial.entries[0]
-    if row.mode != "budget" {
+    if !row.mode.hasPrefix("budget") {
         if row.mode == "otherSense" { edited.senses[1].content = [block(21,image)] }
         else { edited.senses[0].content = [block(20,image)] }
         if row.mode == "shared" { edited.senses[0].content!.append(block(22,image)); edited.senses[1].content = [block(23,image)] }
@@ -65,7 +70,7 @@ func observe(_ row: Row, _ data: Data) async throws -> [String: Any] {
     case "alias": selections = [.init(entryID:id(1),senseID:id(90))]
     case "duplicate": selections.append(selections[0])
     case "shared","ordered": selections = [.init(entryID:id(1),senseID:id(4)),.init(entryID:id(1),senseID:id(2))]
-    case "budget": selections = initial.entries[0].senses.map{.init(entryID:id(1),senseID:$0.id)}
+    case "budget","budgetExact","budgetPlusOne": selections = initial.entries[0].senses.map{.init(entryID:id(1),senseID:$0.id)}
     default: break
     }
     let before = try await archive.load().revision
@@ -73,8 +78,14 @@ func observe(_ row: Row, _ data: Data) async throws -> [String: Any] {
         let p: VocabularyExportPackage
         if row.mode.hasPrefix("cancelled") {
             let captured = selections, configuration = c
-            let task = Task { try await archive.prepareExport(selections:captured,configuration:configuration) }
-            task.cancel(); p = try await task.value
+            // No archive call may start until the parent has set cancellation. Stream termination
+            // also wakes a child that has not begun iterating yet, without depending on a timer.
+            let (start, continuation) = AsyncStream<Void>.makeStream()
+            let task = Task {
+                for await _ in start { break }
+                return try await archive.prepareExport(selections:captured,configuration:configuration)
+            }
+            task.cancel(); continuation.finish(); p = try await task.value
         } else { p = try await archive.prepareExport(selections:selections,configuration:c) }
         let after = try await archive.load().revision
         if row.mode == "removeAfter" {

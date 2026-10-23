@@ -16,6 +16,7 @@
     <!-- Compile the actual non-WPF app boundaries for portable lifetime/settings tests. This is
          no replacement for compiling the complete WPF app or exercising a Windows desktop. -->
     <Compile Include="..\..\src\Cotabby.Win32\Review\AnkiConnectClient.cs" Link="Production\AnkiConnectClient.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Review\AnkiReviewSettings.cs" Link="Production\AnkiReviewSettings.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.cs" Link="Production\AppSettings.cs" />
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularySQLiteConnection.cs" Link="Production\VocabularySQLiteConnection.cs" />
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularySQLiteDatabase.cs" Link="Production\VocabularySQLiteDatabase.cs" />
@@ -27,6 +28,7 @@
     <Compile Include="..\..\src\Cotabby.App\Vocabulary\VocabularyStore.Images.cs" Link="Production\VocabularyStore.Images.cs" />
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularyWindowsFile.cs" Link="Production\VocabularyWindowsFile.cs" />
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularyWindowsFileLock.cs" Link="Production\VocabularyWindowsFileLock.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Review.cs" Link="Production\AppSettings.Review.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Vocabulary.cs" Link="Production\AppSettings.Vocabulary.cs" />
     <Compile Include="..\..\src\Cotabby.App\Vocabulary\VocabularyGraphPreferences.cs" Link="Production\VocabularyGraphPreferences.cs" />
     <Compile Include="..\..\src\Cotabby.App\Vocabulary\VocabularyGraphPresentation.cs" Link="Production\VocabularyGraphPresentation.cs" />
@@ -41,6 +43,7 @@
     <ProjectReference Include="..\..\src\Cotabby.Inference\Cotabby.Inference.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\fixtures\parity\anki-settings-v1.json" Link="fixtures\anki-settings-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\fixtures\parity\anki-connect-v1.json" Link="fixtures\anki-connect-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\fixtures\parity\vocabulary-graph-presentation-v1.json" Link="fixtures\vocabulary-graph-presentation-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\fixtures\parity\vocabulary-sqlite-v1.json" Link="fixtures\vocabulary-sqlite-v1.json" CopyToOutputDirectory="PreserveNewest" />

@@ -224,3 +224,6 @@ jobs:
 
       - name: Verify audio export bytes and filenames against complete original Mac policy
         run: python3 scripts/verify-speech-export-macos-parity.py --mac-repo .mac-baseline
+
+      - name: Verify review preferences against complete original Mac settings without Keychain
+        run: python3 scripts/verify-anki-settings-macos-parity.py --mac-repo .mac-baseline

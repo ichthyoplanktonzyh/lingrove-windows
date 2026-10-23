@@ -148,6 +148,7 @@ the [graph preference/presentation library](docs/VOCABULARY_GRAPH_PRESENTATION.m
 the [compiled graph canvas component](docs/VOCABULARY_GRAPH_CANVAS.md) now adapts drawing/input/lifecycle/virtual peers;
 the [notebook graph integration](docs/VOCABULARY_GRAPH_NOTEBOOK.md) now connects original mode/chrome/settings and shared Store/detail selection;
 the [review card material](docs/REVIEW_CARD_MATERIAL.md) now resolves original card sources, layouts, static previews and JSON values;
+the [review preference boundary](docs/ANKI_REVIEW_SETTINGS.md) now preserves original settings, mapping bytes and explicit credential reads;
 compressed/profiled bitmap variants, virtual/pixel drops, review UI/Anki transactions and other dictionary providers remain work. Do not flatten senses into
 one translation string, regenerate stable IDs during edits, or treat a generated explanation as the
 user's authored meaning. See the vocabulary models and porting gates in the linked docs. Storage
@@ -213,6 +214,7 @@ python3 scripts/verify-anki-connect-macos-parity.py --mac-repo /path/to/macOS-li
 python3 scripts/verify-anki-fields-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-speech-text-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-speech-export-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
+python3 scripts/verify-anki-settings-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 ```
 
 The verifiers read the pinned macOS sources from Git and check the same JSON cases. The lexical

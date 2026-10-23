@@ -82,6 +82,7 @@ jobs:
             Cotabby/Models/Review
             Cotabby/Models/Runtime
             Cotabby/Models/Speech/LearningSpeechModels.swift
+            Cotabby/Models/Speech/SpeechExportModels.swift
             Cotabby/Services/Review/AnkiConnectClient.swift
             CotabbyTests/Services/Vocabulary/VocabularyContentTests.swift
             CotabbyTests/Support/Review/ReviewCardPolicyTests.swift
@@ -220,3 +221,6 @@ jobs:
 
       - name: Verify spoken text and receipt freshness against original Mac rules
         run: python3 scripts/verify-speech-text-macos-parity.py --mac-repo .mac-baseline
+
+      - name: Verify audio export bytes and filenames against complete original Mac policy
+        run: python3 scripts/verify-speech-export-macos-parity.py --mac-repo .mac-baseline

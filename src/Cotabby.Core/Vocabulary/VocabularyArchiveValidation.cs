@@ -1,5 +1,5 @@
+using Cotabby.Core.Speech;
 using System.Globalization;
-using System.Text.RegularExpressions;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Review;
 using Cotabby.Core.Text;
@@ -89,7 +89,7 @@ public static partial class VocabularyArchiveValidation
         }
     }
     /// <summary>Mac retained-filename format only; no file, audio bytes or digest is verified.</summary>
-    public static bool IsValidAudioFilename(string? value) => Fits(value) && AudioFilename().IsMatch(value!);
+    public static bool IsValidAudioFilename(string? value) => Fits(value) && SpeechExportPolicy.ValidFilename(value);
     private static void ValidateCards(IReadOnlyList<VocabularyReview> cards, HashSet<Guid> ids)
     {
         if (cards.Count > 64) throw Invalid();
@@ -128,8 +128,4 @@ public static partial class VocabularyArchiveValidation
     private static bool Optional(string? text, int maximum = int.MaxValue) => text is null || Fits(text, maximum);
     private static bool Fits(string? text, int maximum = int.MaxValue) => LearningExplanationText.Fits(text, maximum);
     private static VocabularyException Invalid() => new(VocabularyFailure.InvalidArchive);
-    // Foundation/ICU's $ allows one final Unicode newline sequence; .NET's $ only handles LF.
-    // Keep that admission behavior here without trimming or changing the retained filename.
-    [GeneratedRegex("^lingrove-[a-f0-9]{64}\\.(wav|mp3)(?:\\r\\n|[\\r\\n\\u0085\\u2028\\u2029\\v\\f])?\\z", RegexOptions.CultureInvariant)]
-    private static partial Regex AudioFilename();
 }

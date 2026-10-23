@@ -391,3 +391,14 @@ adaptations of four existing SpeechTextPolicyTests regressions. The complete spe
 exact original freshness/digest helpers execute with native JSON strings, byte/grapheme limits
 and receipt hashes. It establishes no voice, playback, remote media or send transaction; see
 [scope and mapping](../../docs/SPEECH_TEXT_POLICY.md).
+
+`speech-export-v1.json` contains73 observations from the complete original in-memory audio exporter,
+with exact bytes for small results and byte count/SHA-256/extension/filename for large results.
+Synthetic PCM/WAV/MP3 headers exercise original bounds and normalization without a voice/device.
+Strict source-observed filename anchors also cover the archive receipt admission path. See
+[scope and correction evidence](../../docs/SPEECH_EXPORT_POLICY.md).
+
+The124-case archive validation corpus now retains16 `bridgedExpected` diagnostics alongside native
+JSONDecoder expectations for filename cases. Eight final-newline decisions differ by Foundation
+String storage even with identical UTF-8 bytes; both original observations are preserved. The
+Windows boundary follows native notebook/wire decoding. See the audio-export correction evidence.

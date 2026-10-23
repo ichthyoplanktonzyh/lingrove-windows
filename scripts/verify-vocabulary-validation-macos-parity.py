@@ -6,10 +6,22 @@ from pathlib import Path
 import subprocess
 import tempfile
 
-from macos_vocabulary_reference import BASELINE, archive_validation_sources
+from macos_vocabulary_reference import BASELINE, archive_validation_sources, source
 
 DRIVER = r'''
 import Foundation
+// JSONDecoder supplies native Swift strings, as notebook/wire decoding does. Keep the old
+// NSString bridge as a separately observed diagnostic, not as the production admission oracle.
+func nativeInput(_ value: AnkiValue) -> Any {
+    switch value {
+    case let .object(map): return map.mapValues(nativeInput)
+    case let .array(values): return values.map(nativeInput)
+    case let .string(value): return value
+    case let .number(value): return Int(value)
+    case let .bool(value): return value
+    case .null: return NSNull()
+    }
+}
 func id(_ n: Int) -> UUID { UUID(uuidString: String(format: "00000000-0000-0000-0000-%012x", n))! }
 let now = Date(timeIntervalSince1970: 0)
 func usage(_ n: Int = 3) -> VocabularyExample {
@@ -130,8 +142,19 @@ func observe(_ row: [String: Any]) -> [String: Any] {
     } catch let error as VocabularyError { return ["error": String(describing: error)] }
     catch { fatalError("Unexpected validation failure") }
 }
-let corpus = try JSONSerialization.jsonObject(with: Data(contentsOf: URL(fileURLWithPath: CommandLine.arguments[1]))) as! [String: Any]
-let results = (corpus["cases"] as! [[String: Any]]).map { row in ["id": row["id"]!, "expected": observe(row)] }
+let inputData = try Data(contentsOf: URL(fileURLWithPath: CommandLine.arguments[1]))
+let corpus = nativeInput(try JSONDecoder().decode(AnkiValue.self, from: inputData)) as! [String: Any]
+let nativeRows = corpus["cases"] as! [[String: Any]]
+let bridgedCorpus = try JSONSerialization.jsonObject(with: inputData) as! [String: Any]
+let bridgedRows = bridgedCorpus["cases"] as! [[String: Any]]
+let results = nativeRows.enumerated().map { index, row -> [String: Any] in
+    var value: [String: Any] = ["id": row["id"]!, "expected": observe(row)]
+    if row["operation"] as! String == "filename" {
+        precondition((row["text"] as! String).utf8.elementsEqual((bridgedRows[index]["text"] as! String).utf8))
+        value["bridgedExpected"] = observe(bridgedRows[index])
+    }
+    return value
+}
 FileHandle.standardOutput.write(try JSONSerialization.data(withJSONObject: results, options: [.sortedKeys]))
 '''
 
@@ -152,7 +175,7 @@ def main():
         parser.error('Validation probes require exact source provenance')
     with tempfile.TemporaryDirectory(prefix='lingrove-validation-') as temporary:
         root = Path(temporary); inputs = []
-        for index, value in enumerate(archive_validation_sources(args.mac_repo)):
+        for index, value in enumerate(archive_validation_sources(args.mac_repo) + [source(args.mac_repo, "Cotabby/Models/Review/AnkiWireModels.swift")]):
             path = root / f'source{index}.swift'; path.write_text(value, encoding='utf-8'); inputs.append(str(path))
         driver = root / 'main.swift'; driver.write_text(DRIVER, encoding='utf-8'); binary = root / 'validation-parity'
         subprocess.run(['swiftc', '-swift-version', '6', '-O', *inputs, str(driver), '-o', str(binary)], check=True)
@@ -163,7 +186,9 @@ def main():
         print(f'Captured {len(observations)} actual Mac archive validation observations'); return
     if len(observations) != len(rows): raise SystemExit('Validation observation count changed')
     for row, observed in zip(rows, observations):
-        if observed != {'id': row['id'], 'expected': row['expected']}: raise SystemExit(f"Mac validation mismatch: {row['id']}")
+        expected = {'id': row['id'], 'expected': row['expected']}
+        if row['operation'] == 'filename': expected['bridgedExpected'] = row['bridgedExpected']
+        if observed != expected: raise SystemExit(f"Mac validation mismatch: {row['id']}")
     print(f'Verified {len(observations)} archive validation cases against actual pinned Mac policies')
 
 

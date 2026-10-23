@@ -1,0 +1,949 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "pcm-zero",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "pcm",
+      "samples": [
+        0
+      ],
+      "expected": {
+        "audio": {
+          "bytes": 46,
+          "digest": "d8ddcc0cb152ee0adc55b0cf22891fc978781a178cb466cab762ee0129524635",
+          "extension": "wav",
+          "filename": "lingrove-d8ddcc0cb152ee0adc55b0cf22891fc978781a178cb466cab762ee0129524635.wav",
+          "hex": "524946462600000057415645666d74201000000001000100c05d000080bb00000200100064617461020000000000"
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "pcm-extremes",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "pcm",
+      "samples": [
+        0,
+        0.5,
+        -0.5,
+        1,
+        -1,
+        2,
+        -2
+      ],
+      "expected": {
+        "audio": {
+          "bytes": 58,
+          "digest": "f24313bfc5fd776eb20f779d9c731cc83cf5284fc8149afcee520deefd8eb408",
+          "extension": "wav",
+          "filename": "lingrove-f24313bfc5fd776eb20f779d9c731cc83cf5284fc8149afcee520deefd8eb408.wav",
+          "hex": "524946463200000057415645666d74201000000001000100c05d000080bb000002001000646174610e0000000000004000c0ff7f0180ff7f0180"
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "pcm-rounding",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "pcm",
+      "samples": [
+        1.5259254737998596e-05,
+        -1.5259254737998596e-05,
+        1e-05,
+        -1e-05,
+        0.99999,
+        -0.99999
+      ],
+      "expected": {
+        "audio": {
+          "bytes": 56,
+          "digest": "75a3117f37cbbc50bf57f4535239fcf111659f5e18ead78d13f05a5f195e6c1c",
+          "extension": "wav",
+          "filename": "lingrove-75a3117f37cbbc50bf57f4535239fcf111659f5e18ead78d13f05a5f195e6c1c.wav",
+          "hex": "524946463000000057415645666d74201000000001000100c05d000080bb000002001000646174610c0000000100ffff00000000ff7f0180"
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "pcm-nan",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "pcm",
+      "bits": [
+        2143289344
+      ],
+      "expected": {
+        "error": "The speech provider returned audio that could not be played.",
+        "valid": false
+      }
+    },
+    {
+      "id": "pcm-positive-inf",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "pcm",
+      "bits": [
+        2139095040
+      ],
+      "expected": {
+        "error": "The speech provider returned audio that could not be played.",
+        "valid": false
+      }
+    },
+    {
+      "id": "pcm-negative-inf",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "pcm",
+      "bits": [
+        4286578688
+      ],
+      "expected": {
+        "error": "The speech provider returned audio that could not be played.",
+        "valid": false
+      }
+    },
+    {
+      "id": "pcm-minus-zero",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "pcm",
+      "bits": [
+        2147483648
+      ],
+      "expected": {
+        "audio": {
+          "bytes": 46,
+          "digest": "d8ddcc0cb152ee0adc55b0cf22891fc978781a178cb466cab762ee0129524635",
+          "extension": "wav",
+          "filename": "lingrove-d8ddcc0cb152ee0adc55b0cf22891fc978781a178cb466cab762ee0129524635.wav",
+          "hex": "524946462600000057415645666d74201000000001000100c05d000080bb00000200100064617461020000000000"
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "pcm-denormal",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "pcm",
+      "bits": [
+        1
+      ],
+      "expected": {
+        "audio": {
+          "bytes": 46,
+          "digest": "d8ddcc0cb152ee0adc55b0cf22891fc978781a178cb466cab762ee0129524635",
+          "extension": "wav",
+          "filename": "lingrove-d8ddcc0cb152ee0adc55b0cf22891fc978781a178cb466cab762ee0129524635.wav",
+          "hex": "524946462600000057415645666d74201000000001000100c05d000080bb00000200100064617461020000000000"
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "pcm-rate-0",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "pcm",
+      "samples": [
+        0.25
+      ],
+      "rate": 0,
+      "expected": {
+        "error": "The speech provider returned audio that could not be played.",
+        "valid": false
+      }
+    },
+    {
+      "id": "pcm-rate-7999",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "pcm",
+      "samples": [
+        0.25
+      ],
+      "rate": 7999,
+      "expected": {
+        "error": "The speech provider returned audio that could not be played.",
+        "valid": false
+      }
+    },
+    {
+      "id": "pcm-rate-8000",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "pcm",
+      "samples": [
+        0.25
+      ],
+      "rate": 8000,
+      "expected": {
+        "audio": {
+          "bytes": 46,
+          "digest": "baee7bfeaadc5ce67fdcc38259844158c60cafd3a56eefae5e5566d097430cb6",
+          "extension": "wav",
+          "filename": "lingrove-baee7bfeaadc5ce67fdcc38259844158c60cafd3a56eefae5e5566d097430cb6.wav",
+          "hex": "524946462600000057415645666d74201000000001000100401f0000803e00000200100064617461020000000020"
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "pcm-rate-24000",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "pcm",
+      "samples": [
+        0.25
+      ],
+      "rate": 24000,
+      "expected": {
+        "audio": {
+          "bytes": 46,
+          "digest": "57af06b1328297a3c51cdcba524db683bebb2a15d4cf49d8affcfae6d24c134f",
+          "extension": "wav",
+          "filename": "lingrove-57af06b1328297a3c51cdcba524db683bebb2a15d4cf49d8affcfae6d24c134f.wav",
+          "hex": "524946462600000057415645666d74201000000001000100c05d000080bb00000200100064617461020000000020"
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "pcm-rate-192000",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "pcm",
+      "samples": [
+        0.25
+      ],
+      "rate": 192000,
+      "expected": {
+        "audio": {
+          "bytes": 46,
+          "digest": "86ea4620af82d30096c9818d7e335b55f3712f1ba8dad9061c72891d6fdcb08d",
+          "extension": "wav",
+          "filename": "lingrove-86ea4620af82d30096c9818d7e335b55f3712f1ba8dad9061c72891d6fdcb08d.wav",
+          "hex": "524946462600000057415645666d7420100000000100010000ee020000dc05000200100064617461020000000020"
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "pcm-rate-192001",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "pcm",
+      "samples": [
+        0.25
+      ],
+      "rate": 192001,
+      "expected": {
+        "error": "The speech provider returned audio that could not be played.",
+        "valid": false
+      }
+    },
+    {
+      "id": "pcm-align-0",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "pcm",
+      "bytes": "",
+      "expected": {
+        "error": "The speech provider returned audio that could not be played.",
+        "valid": false
+      }
+    },
+    {
+      "id": "pcm-align-1",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "pcm",
+      "bytes": "AA==",
+      "expected": {
+        "error": "The speech provider returned audio that could not be played.",
+        "valid": false
+      }
+    },
+    {
+      "id": "pcm-align-2",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "pcm",
+      "bytes": "AAA=",
+      "expected": {
+        "error": "The speech provider returned audio that could not be played.",
+        "valid": false
+      }
+    },
+    {
+      "id": "pcm-align-3",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "pcm",
+      "bytes": "AAAA",
+      "expected": {
+        "error": "The speech provider returned audio that could not be played.",
+        "valid": false
+      }
+    },
+    {
+      "id": "pcm-align-5",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "pcm",
+      "bytes": "AAAAAAA=",
+      "expected": {
+        "error": "The speech provider returned audio that could not be played.",
+        "valid": false
+      }
+    },
+    {
+      "id": "pcm-duration-2880000",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "pcm",
+      "zeroBytes": 2880000,
+      "rate": 8000,
+      "expected": {
+        "audio": {
+          "bytes": 1440044,
+          "digest": "167bb54e345f7883be41080dab3c2f4ff63d153f00faccc989f9040cc5973973",
+          "extension": "wav",
+          "filename": "lingrove-167bb54e345f7883be41080dab3c2f4ff63d153f00faccc989f9040cc5973973.wav"
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "pcm-duration-2880004",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "pcm",
+      "zeroBytes": 2880004,
+      "rate": 8000,
+      "expected": {
+        "error": "The speech provider returned audio that could not be played.",
+        "valid": false
+      }
+    },
+    {
+      "id": "pcm-size-12582868",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "pcm",
+      "zeroBytes": 12582868,
+      "rate": 192000,
+      "expected": {
+        "audio": {
+          "bytes": 6291478,
+          "digest": "f5b6d4a04e4e6084765d3c7c75fdd225dd057ffecede83367dc42e286230956a",
+          "extension": "wav",
+          "filename": "lingrove-f5b6d4a04e4e6084765d3c7c75fdd225dd057ffecede83367dc42e286230956a.wav"
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "pcm-size-12582872",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "pcm",
+      "zeroBytes": 12582872,
+      "rate": 192000,
+      "expected": {
+        "error": "The speech provider returned audio that could not be played.",
+        "valid": false
+      }
+    },
+    {
+      "id": "encoded-empty",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "bytes": "",
+      "expected": {
+        "error": "The speech audio exceeded the size limit. Try a shorter passage.",
+        "valid": false
+      }
+    },
+    {
+      "id": "encoded-id3",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "bytes": "SUQz",
+      "expected": {
+        "audio": {
+          "bytes": 3,
+          "digest": "041149186b23a9502aea5a4e81bbc9620d2b4b76b4bad94e36c744abcf9d3771",
+          "extension": "mp3",
+          "filename": "lingrove-041149186b23a9502aea5a4e81bbc9620d2b4b76b4bad94e36c744abcf9d3771.mp3",
+          "hex": "494433"
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "encoded-id3-short",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "bytes": "SUQ=",
+      "expected": {
+        "error": "The speech provider returned audio that could not be played.",
+        "valid": false
+      }
+    },
+    {
+      "id": "encoded-mpeg",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "bytes": "//sA",
+      "expected": {
+        "audio": {
+          "bytes": 3,
+          "digest": "3e7823c3cdf3b2b5b3153d51c137d7a9cbfe8ec9a045b61e640fd0bd389469e6",
+          "extension": "mp3",
+          "filename": "lingrove-3e7823c3cdf3b2b5b3153d51c137d7a9cbfe8ec9a045b61e640fd0bd389469e6.mp3",
+          "hex": "fffb00"
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "encoded-mpeg-invalid-layer",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "bytes": "//kA",
+      "expected": {
+        "error": "The speech provider returned audio that could not be played.",
+        "valid": false
+      }
+    },
+    {
+      "id": "encoded-mpeg-invalid-version",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "bytes": "/+sA",
+      "expected": {
+        "error": "The speech provider returned audio that could not be played.",
+        "valid": false
+      }
+    },
+    {
+      "id": "encoded-mpeg-short",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "bytes": "//s=",
+      "expected": {
+        "error": "The speech provider returned audio that could not be played.",
+        "valid": false
+      }
+    },
+    {
+      "id": "encoded-junk",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "bytes": "dW5rbm93bg==",
+      "expected": {
+        "error": "The speech provider returned audio that could not be played.",
+        "valid": false
+      }
+    },
+    {
+      "id": "encoded-size-12582909",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "zeroBytes": 12582909,
+      "prefix": "SUQz",
+      "expected": {
+        "audio": {
+          "bytes": 12582912,
+          "digest": "1dd30759d68c176a55f766a80d5afdaf27eacbb12349f2d6021444ba9ee66644",
+          "extension": "mp3",
+          "filename": "lingrove-1dd30759d68c176a55f766a80d5afdaf27eacbb12349f2d6021444ba9ee66644.mp3"
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "encoded-size-12582910",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "zeroBytes": 12582910,
+      "prefix": "SUQz",
+      "expected": {
+        "error": "The speech audio exceeded the size limit. Try a shorter passage.",
+        "valid": false
+      }
+    },
+    {
+      "id": "wave-mono16",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "bytes": "UklGRgAAAABXQVZFZm10IBAAAAABAAEAwF0AAIC7AAACABAAZGF0YQYAAAAAAP9/AYA=",
+      "expected": {
+        "audio": {
+          "bytes": 50,
+          "digest": "90cf7d8b6f7aeb75934648264487448cb3477ee26c43256c710f2717dd237368",
+          "extension": "wav",
+          "filename": "lingrove-90cf7d8b6f7aeb75934648264487448cb3477ee26c43256c710f2717dd237368.wav",
+          "hex": "524946462a00000057415645666d74201000000001000100c05d000080bb00000200100064617461060000000000ff7f0180"
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "wave-stereo16",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "bytes": "UklGRgAAAABXQVZFZm10IBAAAAABAAIAwF0AAAB3AQAEABAAZGF0YQQAAAAAAP9/",
+      "expected": {
+        "audio": {
+          "bytes": 48,
+          "digest": "56c8918bcb05f8a49de3e0cc22d06d411f0c073fa9bf6c947f109ff482850fa2",
+          "extension": "wav",
+          "filename": "lingrove-56c8918bcb05f8a49de3e0cc22d06d411f0c073fa9bf6c947f109ff482850fa2.wav",
+          "hex": "524946462800000057415645666d74201000000001000200c05d0000007701000400100064617461040000000000ff7f"
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "wave-float32",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "bytes": "UklGRgAAAABXQVZFZm10IBAAAAADAAEAwF0AAIC7AAACACAAZGF0YQwAAAAAAAC/AAAAAAAAAD8=",
+      "expected": {
+        "audio": {
+          "bytes": 50,
+          "digest": "4040a2ead637ae69ed8549d527ecaeaccce06aaebb334e500049e84856510291",
+          "extension": "wav",
+          "filename": "lingrove-4040a2ead637ae69ed8549d527ecaeaccce06aaebb334e500049e84856510291.wav",
+          "hex": "524946462a00000057415645666d74201000000001000100c05d000080bb000002001000646174610600000000c000000040"
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "wave-stereo-float",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "bytes": "UklGRgAAAABXQVZFZm10IBAAAAADAAIAwF0AAAB3AQAEACAAZGF0YQgAAAAAAAAAAAAAAA==",
+      "expected": {
+        "error": "The speech provider returned audio that could not be played.",
+        "valid": false
+      }
+    },
+    {
+      "id": "wave-bad-channels",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "bytes": "UklGRgAAAABXQVZFZm10IBAAAAABAAMAwF0AAIAyAgAGABAAZGF0YQYAAAAAAAAAAAA=",
+      "expected": {
+        "error": "The speech provider returned audio that could not be played.",
+        "valid": false
+      }
+    },
+    {
+      "id": "wave-bad-rate",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "bytes": "UklGRgAAAABXQVZFZm10IBAAAAABAAEAPx8AAH4+AAACABAAZGF0YQIAAAAAAA==",
+      "expected": {
+        "error": "The speech provider returned audio that could not be played.",
+        "valid": false
+      }
+    },
+    {
+      "id": "wave-pcm8",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "bytes": "UklGRgAAAABXQVZFZm10IBAAAAABAAEAwF0AAIC7AAACAAgAZGF0YQIAAAAAAA==",
+      "expected": {
+        "error": "The speech provider returned audio that could not be played.",
+        "valid": false
+      }
+    },
+    {
+      "id": "wave-bad-tag",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "bytes": "UklGRgAAAABXQVZFZm10IBAAAABjAAEAwF0AAIC7AAACABAAZGF0YQIAAAAAAA==",
+      "expected": {
+        "error": "The speech provider returned audio that could not be played.",
+        "valid": false
+      }
+    },
+    {
+      "id": "wave-bad-align",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "bytes": "UklGRgAAAABXQVZFZm10IBAAAAABAAIAwF0AAAB3AQAEABAAZGF0YQIAAAAAAA==",
+      "expected": {
+        "error": "The speech provider returned audio that could not be played.",
+        "valid": false
+      }
+    },
+    {
+      "id": "wave-empty-data",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "bytes": "UklGRgAAAABXQVZFZm10IBAAAAABAAEAwF0AAIC7AAACABAAZGF0YQAAAAA=",
+      "expected": {
+        "error": "The speech provider returned audio that could not be played.",
+        "valid": false
+      }
+    },
+    {
+      "id": "wave-unknown-odd",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "bytes": "UklGRgAAAABXQVZFSlVOSwMAAABhYmMAZm10IBAAAAABAAEAwF0AAIC7AAACABAAZGF0YQIAAAABAg==",
+      "expected": {
+        "audio": {
+          "bytes": 46,
+          "digest": "e6b42c30de22e8dfc2d1da741bcd08b6723f4a9c66abb3e6890484c60c49389c",
+          "extension": "wav",
+          "filename": "lingrove-e6b42c30de22e8dfc2d1da741bcd08b6723f4a9c66abb3e6890484c60c49389c.wav",
+          "hex": "524946462600000057415645666d74201000000001000100c05d000080bb00000200100064617461020000000102"
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "wave-data-first",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "bytes": "UklGRgAAAABXQVZFZGF0YQIAAAABAmZtdCAQAAAAAQABAMBdAACAuwAAAgAQAA==",
+      "expected": {
+        "audio": {
+          "bytes": 46,
+          "digest": "e6b42c30de22e8dfc2d1da741bcd08b6723f4a9c66abb3e6890484c60c49389c",
+          "extension": "wav",
+          "filename": "lingrove-e6b42c30de22e8dfc2d1da741bcd08b6723f4a9c66abb3e6890484c60c49389c.wav",
+          "hex": "524946462600000057415645666d74201000000001000100c05d000080bb00000200100064617461020000000102"
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "wave-duplicate-fmt-last",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "bytes": "UklGRgAAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZm10IBAAAAABAAEAgLsAAAB3AQACABAAZGF0YQIAAAABAg==",
+      "expected": {
+        "audio": {
+          "bytes": 46,
+          "digest": "4f33eacd89fb55f0a9f024dfc4671f6616db3d5ddc6b8a068387a42d284daa02",
+          "extension": "wav",
+          "filename": "lingrove-4f33eacd89fb55f0a9f024dfc4671f6616db3d5ddc6b8a068387a42d284daa02.wav",
+          "hex": "524946462600000057415645666d7420100000000100010080bb0000007701000200100064617461020000000102"
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "wave-duplicate-data-last",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "bytes": "UklGRgAAAABXQVZFZm10IBAAAAABAAEAwF0AAIC7AAACABAAZGF0YQIAAAABAmRhdGECAAAAAwQ=",
+      "expected": {
+        "audio": {
+          "bytes": 46,
+          "digest": "f859f22586cc62fef9e7ad3e8ecd25d5e1bd8e2f1f743d1db052b60ab72d6ad9",
+          "extension": "wav",
+          "filename": "lingrove-f859f22586cc62fef9e7ad3e8ecd25d5e1bd8e2f1f743d1db052b60ab72d6ad9.wav",
+          "hex": "524946462600000057415645666d74201000000001000100c05d000080bb00000200100064617461020000000304"
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "wave-missing-fmt",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "bytes": "UklGRgAAAABXQVZFZGF0YRgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+      "expected": {
+        "error": "The speech provider returned audio that could not be played.",
+        "valid": false
+      }
+    },
+    {
+      "id": "wave-missing-data",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "bytes": "UklGRgAAAABXQVZFZm10IBAAAAABAAEAwF0AAIC7AAACABAASlVOSwgAAAAAAAAAAAAAAA==",
+      "expected": {
+        "error": "The speech provider returned audio that could not be played.",
+        "valid": false
+      }
+    },
+    {
+      "id": "wave-short-fmt",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "bytes": "UklGRgAAAABXQVZFZm10IA4AAAAAAAAAAAAAAAAAAAAAAGRhdGEEAAAAAAAAAA==",
+      "expected": {
+        "error": "The speech provider returned audio that could not be played.",
+        "valid": false
+      }
+    },
+    {
+      "id": "wave-size-overflow",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "bytes": "UklGRgAAAABXQVZFZm10IBAAAAABAAEAwF0AAIC7AAACABAAZGF0Yf////8=",
+      "expected": {
+        "error": "The speech provider returned audio that could not be played.",
+        "valid": false
+      }
+    },
+    {
+      "id": "wave-trailing-fragment",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "bytes": "UklGRgAAAABXQVZFZm10IBAAAAABAAEAwF0AAIC7AAACABAAZGF0YQIAAAABAmFiYw==",
+      "expected": {
+        "audio": {
+          "bytes": 46,
+          "digest": "e6b42c30de22e8dfc2d1da741bcd08b6723f4a9c66abb3e6890484c60c49389c",
+          "extension": "wav",
+          "filename": "lingrove-e6b42c30de22e8dfc2d1da741bcd08b6723f4a9c66abb3e6890484c60c49389c.wav",
+          "hex": "524946462600000057415645666d74201000000001000100c05d000080bb00000200100064617461020000000102"
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "wave-invalid-final-chunk",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "bytes": "UklGRgAAAABXQVZFZm10IBAAAAABAAEAwF0AAIC7AAACABAAZGF0YQIAAAABAkpVTktkAAAA",
+      "expected": {
+        "error": "The speech provider returned audio that could not be played.",
+        "valid": false
+      }
+    },
+    {
+      "id": "wave-short-header",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "bytes": "UklGRgAAAABXQVZF",
+      "expected": {
+        "error": "The speech provider returned audio that could not be played.",
+        "valid": false
+      }
+    },
+    {
+      "id": "identity-empty",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "identity",
+      "extension": "wav",
+      "bytes": "",
+      "expected": {
+        "audio": {
+          "bytes": 0,
+          "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "extension": "wav",
+          "filename": "lingrove-e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.wav",
+          "hex": ""
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "identity-other-extension",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "identity",
+      "extension": "anything",
+      "bytes": "YWJj",
+      "expected": {
+        "audio": {
+          "bytes": 3,
+          "digest": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+          "extension": "anything",
+          "filename": "lingrove-ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad.anything",
+          "hex": "616263"
+        },
+        "valid": true
+      }
+    },
+    {
+      "id": "filename-0",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "filename",
+      "name": "lingrove-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.wav",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "filename-1",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "filename",
+      "name": "lingrove-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.mp3",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "filename-2",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "filename",
+      "name": "Xlingrove-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.wav",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "filename-3",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "filename",
+      "name": "lingrove-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.wavx",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "filename-4",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "filename",
+      "name": "lingrove-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.wav\n",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "filename-5",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "filename",
+      "name": "lingrove-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.wav\r\n",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "filename-6",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "filename",
+      "name": "lingrove-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.wav\r",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "filename-7",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "filename",
+      "name": "lingrove-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.wav",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "filename-8",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "filename",
+      "name": "lingrove-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.wav ",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "filename-9",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "filename",
+      "name": "lingrove-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.wav ",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "filename-10",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "filename",
+      "name": "lingrove-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.wav\u000b",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "filename-11",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "filename",
+      "name": "lingrove-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.wav\f",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "filename-12",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "filename",
+      "name": "lingrove-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.wav\n\n",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "filename-13",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "filename",
+      "name": "LINGROVE-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.WAV",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "filename-14",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "filename",
+      "name": "lingrove-gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg.wgv",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "filename-15",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "filename",
+      "name": "../lingrove-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.wav",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "filename-16",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "kind": "filename",
+      "name": "lingrove-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.WAV",
+      "expected": {
+        "valid": false
+      }
+    }
+  ]
+}

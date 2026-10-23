@@ -6,7 +6,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 
-BASELINE = "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f"
+from macos_vocabulary_reference import BASELINE, model_sources
 DRIVER = r'''
 import Foundation
 
@@ -135,15 +135,6 @@ FileHandle.standardOutput.write(try JSONSerialization.data(withJSONObject: resul
 '''
 
 
-def source(repo, path):
-    return subprocess.check_output(["git", "-C", str(repo), "show", f"{BASELINE}:{path}"], text=True)
-
-
-def before(value, marker):
-    if value.count(marker) != 1: raise RuntimeError("Pinned declaration marker must be unique")
-    return value[:value.index(marker)]
-
-
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--mac-repo", type=Path, required=True)
@@ -160,15 +151,7 @@ def main():
                 "Cotabby/Models/Vocabulary/VocabularyModels.swift", "Cotabby/Models/Review/ReviewModels.swift",
                 "Cotabby/Models/Review/ReviewLayout.swift", "Cotabby/Support/Review/AnkiReviewPolicy.swift")):
             parser.error("Model probes require explicit source provenance")
-    paths = ["Cotabby/Models/Context/LanguageCatalog.swift", "Cotabby/Models/LanguageLearning/LearningLanguage.swift",
-        "Cotabby/Models/Vocabulary/VocabularyModels.swift", "Cotabby/Models/Vocabulary/VocabularyContentModels.swift",
-        "Cotabby/Models/Review/ReviewModels.swift", "Cotabby/Models/Review/ReviewLayout.swift"]
-    values = [source(args.mac_repo, path) for path in paths]
-    explanation = source(args.mac_repo, "Cotabby/Models/LanguageLearning/LearningExplanationModels.swift")
-    values.append("import Foundation\n" + before(explanation[explanation.index("nonisolated enum LearningExplanationContext:"):], "/// UI sessions borrow this app-owned boundary."))
-    values.append(before(source(args.mac_repo, "Cotabby/Models/Review/ReviewAudioModels.swift"), "/// A preparation sheet retains only its explicitly generated audio."))
-    merge = source(args.mac_repo, "Cotabby/Support/Review/AnkiReviewPolicy.swift")
-    values.append("import Foundation\nnonisolated enum AnkiReviewPolicy {\n" + merge[merge.index("    static func merged("):merge.rindex("\n}")] + "\n}\n")
+    values = model_sources(args.mac_repo)
     # Complete notebook/review/layout/content declarations, original audio values (excluding its
     # SpeechExportAudio draft), pure explanation values and the exact original merged function.
     with tempfile.TemporaryDirectory(prefix="lingrove-model-graph-") as temporary:

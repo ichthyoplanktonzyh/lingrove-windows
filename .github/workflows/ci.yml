@@ -42,6 +42,8 @@ jobs:
         run: dotnet test tests/Cotabby.Inference.Tests/Cotabby.Inference.Tests.csproj --configuration Release --no-build --no-restore --filter 'FullyQualifiedName!~ClipboardTextReaderTests'
       - name: Test portable app settings and task ownership
         run: dotnet test tests/Cotabby.App.Tests/Cotabby.App.Tests.csproj --configuration Release --no-build --no-restore
+      - name: Test compiled WPF learning views on an isolated STA dispatcher
+        run: dotnet test tests/Cotabby.App.Wpf.Tests/Cotabby.App.Wpf.Tests.csproj --configuration Release --no-build --no-restore --blame-hang-timeout 2m
 
   portable-core:
     name: Portable core and Swift parity on macOS ARM64

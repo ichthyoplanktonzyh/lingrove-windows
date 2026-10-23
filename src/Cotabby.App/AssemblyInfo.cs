@@ -1,4 +1,9 @@
 using System.Windows;
+using System.Runtime.CompilerServices;
+
+// Windows-only view tests borrow the compiled card boundaries without starting AppHost,
+// global listeners or inference. Keep these presentation methods internal in the product API.
+[assembly: InternalsVisibleTo("Cotabby.App.Wpf.Tests")]
 
 [assembly:ThemeInfo(
     ResourceDictionaryLocation.None,            //where theme specific resource dictionaries are located

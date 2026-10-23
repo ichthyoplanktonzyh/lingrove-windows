@@ -25,10 +25,10 @@
         <ScrollViewer MaxHeight="560" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <StackPanel>
                 <DockPanel Margin="0,0,0,12">
-                    <Button x:Name="CloseButton" DockPanel.Dock="Right" Content="×" Width="28" Height="28"
+                    <Button x:Name="CloseButton" DockPanel.Dock="Right" Content="×" Width="28" Height="28" Focusable="False"
                             Padding="0" FontSize="18" Background="Transparent" BorderThickness="0"
                             Foreground="{DynamicResource TextSecondary}" Click="OnCloseClick" />
-                    <Button x:Name="ExplanationButton" DockPanel.Dock="Right" Content="✦" Width="28" Height="28"
+                    <Button x:Name="ExplanationButton" DockPanel.Dock="Right" Content="✦" Width="28" Height="28" Focusable="False"
                             Padding="0" FontSize="16" Background="Transparent" BorderThickness="0"
                             Foreground="{DynamicResource AccentBrush}" Click="OnExplanationClick" Visibility="Collapsed" />
                     <TextBlock x:Name="TitleText" Text="Sentence translation" FontSize="15" FontWeight="SemiBold"
@@ -84,10 +84,10 @@
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button x:Name="RetryButton" Content="Retry" Padding="12,5" Margin="0,0,8,0"
+                    <Button x:Name="RetryButton" Content="Retry" Padding="12,5" Margin="0,0,8,0" Focusable="False"
                             Background="{DynamicResource KeycapBg}" BorderBrush="{DynamicResource CardBorder}"
                             Foreground="{DynamicResource TextPrimary}" Click="OnRetryClick" Visibility="Collapsed" />
-                    <Button x:Name="CancelButton" Content="Cancel" Padding="12,5"
+                    <Button x:Name="CancelButton" Content="Cancel" Padding="12,5" Focusable="False"
                             Background="{DynamicResource KeycapBg}" BorderBrush="{DynamicResource CardBorder}"
                             Foreground="{DynamicResource TextPrimary}" Click="OnCancelClick" />
                 </StackPanel>

@@ -44,6 +44,9 @@ Portable App tests check repeated/discontiguous/overlapping ranges, raw decompos
 invalid grapheme ranges, context-None behavior and the whole-sentence-only reciprocal line.
 Existing Core contextual/session and six Swift fixture suites keep their documented scope.
 Full compilation checks WPF/XAML types, not pixels, UIA timing or actual mouse interaction.
+The separate [Windows WPF view suite](WPF_VIEW_TESTS.md) runs the compiled windows, layout and
+in-memory rendering with synthetic snapshots; it checks routed-command identity and native style
+bits while keeping external-editor behavior as a separate gate.
 
 Native Windows verification still needs a host walkthrough: no activation/focus theft, context
 clicks, Details/scroll/resize, DPI/work-area placement, field changes, IME and real model output.

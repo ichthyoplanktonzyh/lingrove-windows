@@ -114,6 +114,7 @@ public partial class LearningDictionaryWindow : Window
     public void HideCard()
     {
         _state = null; _viewport = new(); _contextInput = null;
+        TitleText.Text = QueryText.Text = string.Empty;
         DefinitionContent.Children.Clear(); WordButtons.Children.Clear(); AttributionText.Inlines.Clear();
         ContextualMeaning.Text = ExplanationProse.Text = ExplanationStatus.Text = string.Empty;
         ContextualExampleTranslation.Text = DictionaryExampleTranslation.Text = string.Empty;

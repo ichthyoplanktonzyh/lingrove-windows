@@ -88,7 +88,7 @@ public sealed class VocabularyExportProjectionParityTests
             .ThenBy(i => i.Width).ThenBy(i => i.Height).ThenBy(i => i.ByteCount).Select(ImageFacts);
         throw new InvalidOperationException("Unknown export probe.");
     }
-    private static VocabularyExportConfiguration Configuration(JsonElement row)
+    internal static VocabularyExportConfiguration Configuration(JsonElement row)
     {
         bool Flag(string name, bool fallback) => row.TryGetProperty(name, out var value) ? value.GetBoolean() : fallback;
         return new() { Format = row.TryGetProperty("format", out var format) ? Enum.Parse<VocabularyExportFormat>(format.GetString()!, true) : VocabularyExportFormat.Text,

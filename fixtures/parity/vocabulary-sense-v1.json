@@ -1,0 +1,1710 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "save-new",
+      "operation": "save-new",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "expected": {
+        "contains": true,
+        "entries": [
+          {
+            "created": 1,
+            "expression": "bank",
+            "id": "new",
+            "senses": [
+              {
+                "aliases": [],
+                "alternate": [],
+                "cards": null,
+                "content": null,
+                "created": 1,
+                "id": "new",
+                "language": null,
+                "meaning": "",
+                "note": "",
+                "origin": "captured",
+                "preserved": [],
+                "records": [],
+                "review": null,
+                "standalone": false,
+                "tags": [],
+                "updated": 1,
+                "usages": [
+                  {
+                    "app": "fixture.app",
+                    "created": 0,
+                    "id": "00000000-0000-0000-0000-00000000000a",
+                    "language": null,
+                    "meaning": "context meaning",
+                    "origin": "captured",
+                    "ranges": [
+                      [
+                        4,
+                        4
+                      ]
+                    ],
+                    "records": [],
+                    "text": "The bank.",
+                    "translation": "银行。",
+                    "translationLanguage": "zh-Hans",
+                    "variants": [
+                      {
+                        "language": "zh-Hans",
+                        "text": "银行。"
+                      }
+                    ]
+                  }
+                ],
+                "variants": []
+              }
+            ],
+            "updated": 1
+          }
+        ],
+        "returnedMatches": true
+      }
+    },
+    {
+      "id": "save-attach",
+      "operation": "save-attach",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "expected": {
+        "contains": true,
+        "entries": [
+          {
+            "created": 1,
+            "expression": "bank",
+            "id": "new",
+            "senses": [
+              {
+                "aliases": [],
+                "alternate": [],
+                "cards": null,
+                "content": null,
+                "created": 1,
+                "id": "new",
+                "language": null,
+                "meaning": "",
+                "note": "",
+                "origin": "captured",
+                "preserved": [],
+                "records": [],
+                "review": null,
+                "standalone": false,
+                "tags": [],
+                "updated": 1,
+                "usages": [
+                  {
+                    "app": "fixture.app",
+                    "created": 0,
+                    "id": "00000000-0000-0000-0000-00000000000a",
+                    "language": "zh-Hans",
+                    "meaning": "generated",
+                    "origin": "ai",
+                    "ranges": [
+                      [
+                        4,
+                        4
+                      ]
+                    ],
+                    "records": [
+                      {
+                        "id": "00000000-0000-0000-0000-000000000064",
+                        "language": "zh-Hans",
+                        "meaning": "generated"
+                      }
+                    ],
+                    "text": "The bank.",
+                    "translation": "银行。",
+                    "translationLanguage": "zh-Hans",
+                    "variants": [
+                      {
+                        "language": "zh-Hans",
+                        "text": "银行。"
+                      }
+                    ]
+                  }
+                ],
+                "variants": []
+              }
+            ],
+            "updated": 1
+          }
+        ],
+        "returnedMatches": true
+      }
+    },
+    {
+      "id": "save-duplicate",
+      "operation": "save-duplicate",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "expected": {
+        "entries": [
+          {
+            "created": 0,
+            "expression": "bank",
+            "id": "new",
+            "senses": [
+              {
+                "aliases": [],
+                "alternate": [],
+                "cards": null,
+                "content": null,
+                "created": 0,
+                "id": "new",
+                "language": null,
+                "meaning": "",
+                "note": "",
+                "origin": "captured",
+                "preserved": [],
+                "records": [],
+                "review": null,
+                "standalone": false,
+                "tags": [],
+                "updated": 1,
+                "usages": [
+                  {
+                    "app": "fixture.app",
+                    "created": 0,
+                    "id": "00000000-0000-0000-0000-00000000000a",
+                    "language": null,
+                    "meaning": "context meaning",
+                    "origin": "captured",
+                    "ranges": [
+                      [
+                        4,
+                        4
+                      ]
+                    ],
+                    "records": [],
+                    "text": "The bank.",
+                    "translation": "银行。",
+                    "translationLanguage": "zh-Hans",
+                    "variants": [
+                      {
+                        "language": "zh-Hans",
+                        "text": "银行。"
+                      },
+                      {
+                        "language": "es",
+                        "text": "Banco."
+                      }
+                    ]
+                  }
+                ],
+                "variants": []
+              }
+            ],
+            "updated": 1
+          }
+        ],
+        "returnedEntryMatches": true,
+        "sameEntry": true,
+        "sameFirstSense": true,
+        "usageIDsUnique": true
+      }
+    },
+    {
+      "id": "save-context",
+      "operation": "save-context",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "expected": {
+        "entries": [
+          {
+            "created": 0,
+            "expression": "bank",
+            "id": "new",
+            "senses": [
+              {
+                "aliases": [],
+                "alternate": [],
+                "cards": null,
+                "content": null,
+                "created": 0,
+                "id": "new",
+                "language": null,
+                "meaning": "",
+                "note": "",
+                "origin": "captured",
+                "preserved": [],
+                "records": [],
+                "review": null,
+                "standalone": false,
+                "tags": [],
+                "updated": 0,
+                "usages": [
+                  {
+                    "app": "fixture.app",
+                    "created": 0,
+                    "id": "00000000-0000-0000-0000-00000000000a",
+                    "language": null,
+                    "meaning": "context meaning",
+                    "origin": "captured",
+                    "ranges": [
+                      [
+                        4,
+                        4
+                      ]
+                    ],
+                    "records": [],
+                    "text": "The bank.",
+                    "translation": "银行。",
+                    "translationLanguage": "zh-Hans",
+                    "variants": [
+                      {
+                        "language": "zh-Hans",
+                        "text": "银行。"
+                      }
+                    ]
+                  }
+                ],
+                "variants": []
+              },
+              {
+                "aliases": [],
+                "alternate": [],
+                "cards": null,
+                "content": null,
+                "created": 1,
+                "id": "new",
+                "language": null,
+                "meaning": "",
+                "note": "",
+                "origin": "captured",
+                "preserved": [],
+                "records": [],
+                "review": null,
+                "standalone": false,
+                "tags": [],
+                "updated": 1,
+                "usages": [
+                  {
+                    "app": "fixture.app",
+                    "created": 0,
+                    "id": "00000000-0000-0000-0000-00000000000b",
+                    "language": null,
+                    "meaning": "context meaning",
+                    "origin": "captured",
+                    "ranges": [
+                      [
+                        2,
+                        4
+                      ]
+                    ],
+                    "records": [],
+                    "text": "A bank opened.",
+                    "translation": "银行。",
+                    "translationLanguage": "zh-Hans",
+                    "variants": [
+                      {
+                        "language": "zh-Hans",
+                        "text": "银行。"
+                      }
+                    ]
+                  }
+                ],
+                "variants": []
+              }
+            ],
+            "updated": 1
+          }
+        ],
+        "returnedEntryMatches": true,
+        "sameEntry": true,
+        "sameFirstSense": true,
+        "usageIDsUnique": true
+      }
+    },
+    {
+      "id": "save-cross",
+      "operation": "save-cross",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "expected": {
+        "entries": [
+          {
+            "created": 0,
+            "expression": "bank",
+            "id": "new",
+            "senses": [
+              {
+                "aliases": [],
+                "alternate": [],
+                "cards": null,
+                "content": null,
+                "created": 0,
+                "id": "new",
+                "language": null,
+                "meaning": "",
+                "note": "",
+                "origin": "captured",
+                "preserved": [],
+                "records": [],
+                "review": null,
+                "standalone": false,
+                "tags": [],
+                "updated": 0,
+                "usages": [
+                  {
+                    "app": "fixture.app",
+                    "created": 0,
+                    "id": "00000000-0000-0000-0000-00000000000a",
+                    "language": null,
+                    "meaning": "context meaning",
+                    "origin": "captured",
+                    "ranges": [
+                      [
+                        4,
+                        4
+                      ]
+                    ],
+                    "records": [],
+                    "text": "The bank.",
+                    "translation": "银行。",
+                    "translationLanguage": "zh-Hans",
+                    "variants": [
+                      {
+                        "language": "zh-Hans",
+                        "text": "银行。"
+                      }
+                    ]
+                  }
+                ],
+                "variants": []
+              }
+            ],
+            "updated": 0
+          },
+          {
+            "created": 1,
+            "expression": "other",
+            "id": "new",
+            "senses": [
+              {
+                "aliases": [],
+                "alternate": [],
+                "cards": null,
+                "content": null,
+                "created": 1,
+                "id": "new",
+                "language": null,
+                "meaning": "",
+                "note": "",
+                "origin": "captured",
+                "preserved": [],
+                "records": [],
+                "review": null,
+                "standalone": false,
+                "tags": [],
+                "updated": 1,
+                "usages": [
+                  {
+                    "app": "fixture.app",
+                    "created": 0,
+                    "id": "new",
+                    "language": null,
+                    "meaning": "context meaning",
+                    "origin": "captured",
+                    "ranges": [
+                      [
+                        4,
+                        4
+                      ]
+                    ],
+                    "records": [],
+                    "text": "The bank.",
+                    "translation": "银行。",
+                    "translationLanguage": "zh-Hans",
+                    "variants": [
+                      {
+                        "language": "zh-Hans",
+                        "text": "银行。"
+                      }
+                    ]
+                  }
+                ],
+                "variants": []
+              }
+            ],
+            "updated": 1
+          }
+        ],
+        "returnedEntryMatches": true,
+        "sameEntry": false,
+        "sameFirstSense": true,
+        "usageIDsUnique": true
+      }
+    },
+    {
+      "id": "save-occurrence",
+      "operation": "save-occurrence",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "expected": {
+        "entries": [
+          {
+            "created": 0,
+            "expression": "bank",
+            "id": "new",
+            "senses": [
+              {
+                "aliases": [],
+                "alternate": [],
+                "cards": null,
+                "content": null,
+                "created": 0,
+                "id": "new",
+                "language": null,
+                "meaning": "",
+                "note": "",
+                "origin": "captured",
+                "preserved": [],
+                "records": [],
+                "review": null,
+                "standalone": false,
+                "tags": [],
+                "updated": 0,
+                "usages": [
+                  {
+                    "app": "fixture.app",
+                    "created": 0,
+                    "id": "00000000-0000-0000-0000-00000000000a",
+                    "language": null,
+                    "meaning": "context meaning",
+                    "origin": "captured",
+                    "ranges": [
+                      [
+                        0,
+                        4
+                      ]
+                    ],
+                    "records": [],
+                    "text": "bank and bank.",
+                    "translation": "银行。",
+                    "translationLanguage": "zh-Hans",
+                    "variants": [
+                      {
+                        "language": "zh-Hans",
+                        "text": "银行。"
+                      }
+                    ]
+                  }
+                ],
+                "variants": []
+              },
+              {
+                "aliases": [],
+                "alternate": [],
+                "cards": null,
+                "content": null,
+                "created": 1,
+                "id": "new",
+                "language": null,
+                "meaning": "",
+                "note": "",
+                "origin": "captured",
+                "preserved": [],
+                "records": [],
+                "review": null,
+                "standalone": false,
+                "tags": [],
+                "updated": 1,
+                "usages": [
+                  {
+                    "app": "fixture.app",
+                    "created": 0,
+                    "id": "new",
+                    "language": null,
+                    "meaning": "context meaning",
+                    "origin": "captured",
+                    "ranges": [
+                      [
+                        9,
+                        4
+                      ]
+                    ],
+                    "records": [],
+                    "text": "bank and bank.",
+                    "translation": "银行。",
+                    "translationLanguage": "zh-Hans",
+                    "variants": [
+                      {
+                        "language": "zh-Hans",
+                        "text": "银行。"
+                      }
+                    ]
+                  }
+                ],
+                "variants": []
+              }
+            ],
+            "updated": 1
+          }
+        ],
+        "returnedEntryMatches": true,
+        "sameEntry": true,
+        "sameFirstSense": true,
+        "usageIDsUnique": true
+      }
+    },
+    {
+      "id": "save-standalone",
+      "operation": "save-standalone",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "expected": {
+        "entries": [
+          {
+            "created": 0,
+            "expression": "bank",
+            "id": "new",
+            "senses": [
+              {
+                "aliases": [],
+                "alternate": [],
+                "cards": null,
+                "content": null,
+                "created": 0,
+                "id": "new",
+                "language": "zh-Hans",
+                "meaning": "User summary",
+                "note": "",
+                "origin": "user",
+                "preserved": [],
+                "records": [],
+                "review": null,
+                "standalone": true,
+                "tags": [],
+                "updated": 1,
+                "usages": [],
+                "variants": [
+                  {
+                    "language": "zh-Hans",
+                    "text": "first"
+                  },
+                  {
+                    "language": "es",
+                    "text": "second"
+                  }
+                ]
+              }
+            ],
+            "updated": 1
+          }
+        ],
+        "returnedEntryMatches": true,
+        "sameEntry": true,
+        "sameFirstSense": true,
+        "usageIDsUnique": true
+      }
+    },
+    {
+      "id": "save-missing",
+      "operation": "save-missing",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "expected": {
+        "error": "invalidContent"
+      }
+    },
+    {
+      "id": "save-conflict",
+      "operation": "save-conflict",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "expected": {
+        "error": "editConflict"
+      }
+    },
+    {
+      "id": "save-standalone-conflict",
+      "operation": "save-standalone-conflict",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "expected": {
+        "error": "editConflict"
+      }
+    },
+    {
+      "id": "destination-alias",
+      "operation": "destination-alias",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift",
+      "expected": {
+        "aliasIndex": 0,
+        "contains": true,
+        "sense": "00000000-0000-0000-0000-000000000002",
+        "usage": "00000000-0000-0000-0000-00000000000a"
+      }
+    },
+    {
+      "id": "destination-ambiguous",
+      "operation": "destination-ambiguous",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift",
+      "expected": {
+        "aliasIndex": 0,
+        "contains": false,
+        "sense": null,
+        "usage": null
+      }
+    },
+    {
+      "id": "merge-full",
+      "operation": "merge-full",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift",
+      "expected": {
+        "entry": {
+          "created": 0,
+          "expression": "bank",
+          "id": "00000000-0000-0000-0000-000000000001",
+          "senses": [
+            {
+              "aliases": [
+                "00000000-0000-0000-0000-000000000002",
+                "00000000-0000-0000-0000-000000000063"
+              ],
+              "alternate": [
+                "Source",
+                "Older source"
+              ],
+              "cards": [
+                "00000000-0000-0000-0000-00000000012e"
+              ],
+              "content": [
+                "00000000-0000-0000-0000-0000000000c8",
+                "00000000-0000-0000-0000-0000000000c9"
+              ],
+              "created": 0,
+              "id": "00000000-0000-0000-0000-000000000003",
+              "language": null,
+              "meaning": "Target",
+              "note": "Target note\n\nSource note",
+              "origin": "user",
+              "preserved": [
+                "00000000-0000-0000-0000-00000000012c"
+              ],
+              "records": [
+                {
+                  "id": "00000000-0000-0000-0000-000000000064",
+                  "language": "zh-Hans",
+                  "meaning": "source record"
+                }
+              ],
+              "review": "00000000-0000-0000-0000-00000000012d",
+              "standalone": true,
+              "tags": [
+                "café",
+                "f",
+                "",
+                "😀"
+              ],
+              "updated": 1,
+              "usages": [
+                {
+                  "app": "fixture.app",
+                  "created": 0,
+                  "id": "00000000-0000-0000-0000-00000000000b",
+                  "language": null,
+                  "meaning": "context meaning",
+                  "origin": "captured",
+                  "ranges": [
+                    [
+                      2,
+                      4
+                    ]
+                  ],
+                  "records": [],
+                  "text": "A bank opened.",
+                  "translation": "银行。",
+                  "translationLanguage": "zh-Hans",
+                  "variants": []
+                },
+                {
+                  "app": "fixture.app",
+                  "created": 0,
+                  "id": "00000000-0000-0000-0000-00000000000a",
+                  "language": null,
+                  "meaning": "context meaning",
+                  "origin": "captured",
+                  "ranges": [
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "records": [],
+                  "text": "The bank.",
+                  "translation": "银行。",
+                  "translationLanguage": "zh-Hans",
+                  "variants": []
+                }
+              ],
+              "variants": [
+                {
+                  "language": "es",
+                  "text": "standalone"
+                }
+              ]
+            }
+          ],
+          "updated": 1
+        }
+      }
+    },
+    {
+      "id": "merge-adopt",
+      "operation": "merge-adopt",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift",
+      "expected": {
+        "entry": {
+          "created": 0,
+          "expression": "bank",
+          "id": "00000000-0000-0000-0000-000000000001",
+          "senses": [
+            {
+              "aliases": [
+                "00000000-0000-0000-0000-000000000002"
+              ],
+              "alternate": [],
+              "cards": [],
+              "content": [],
+              "created": 0,
+              "id": "00000000-0000-0000-0000-000000000003",
+              "language": "es",
+              "meaning": "Adopt",
+              "note": "Target note\n\nSource note",
+              "origin": "user",
+              "preserved": [],
+              "records": [],
+              "review": null,
+              "standalone": false,
+              "tags": [],
+              "updated": 1,
+              "usages": [
+                {
+                  "app": "fixture.app",
+                  "created": 0,
+                  "id": "00000000-0000-0000-0000-00000000000a",
+                  "language": null,
+                  "meaning": "context meaning",
+                  "origin": "captured",
+                  "ranges": [
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "records": [],
+                  "text": "The bank.",
+                  "translation": "银行。",
+                  "translationLanguage": "zh-Hans",
+                  "variants": []
+                }
+              ],
+              "variants": []
+            }
+          ],
+          "updated": 1
+        }
+      }
+    },
+    {
+      "id": "merge-empty",
+      "operation": "merge-empty",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift",
+      "expected": {
+        "entry": {
+          "created": 0,
+          "expression": "bank",
+          "id": "00000000-0000-0000-0000-000000000001",
+          "senses": [
+            {
+              "aliases": [
+                "00000000-0000-0000-0000-000000000002"
+              ],
+              "alternate": [],
+              "cards": [],
+              "content": [],
+              "created": 0,
+              "id": "00000000-0000-0000-0000-000000000003",
+              "language": null,
+              "meaning": "",
+              "note": "",
+              "origin": "captured",
+              "preserved": [],
+              "records": [],
+              "review": null,
+              "standalone": false,
+              "tags": [],
+              "updated": 1,
+              "usages": [],
+              "variants": []
+            }
+          ],
+          "updated": 1
+        }
+      }
+    },
+    {
+      "id": "merge-duplicate",
+      "operation": "merge-duplicate",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift",
+      "expected": {
+        "error": "editConflict"
+      }
+    },
+    {
+      "id": "merge-alias",
+      "operation": "merge-alias",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift",
+      "expected": {
+        "error": "invalidContent"
+      }
+    },
+    {
+      "id": "move-existing",
+      "operation": "move-existing",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift",
+      "expected": {
+        "entry": {
+          "created": 0,
+          "expression": "bank",
+          "id": "00000000-0000-0000-0000-000000000001",
+          "senses": [
+            {
+              "aliases": [
+                "00000000-0000-0000-0000-000000000063"
+              ],
+              "alternate": [],
+              "cards": null,
+              "content": null,
+              "created": 0,
+              "id": "00000000-0000-0000-0000-000000000002",
+              "language": null,
+              "meaning": "",
+              "note": "Keep source",
+              "origin": "captured",
+              "preserved": [],
+              "records": [],
+              "review": "00000000-0000-0000-0000-00000000012c",
+              "standalone": false,
+              "tags": [],
+              "updated": 1,
+              "usages": [],
+              "variants": []
+            },
+            {
+              "aliases": [
+                "00000000-0000-0000-0000-000000000062"
+              ],
+              "alternate": [],
+              "cards": null,
+              "content": null,
+              "created": 0,
+              "id": "00000000-0000-0000-0000-000000000003",
+              "language": null,
+              "meaning": "",
+              "note": "",
+              "origin": "captured",
+              "preserved": [],
+              "records": [],
+              "review": null,
+              "standalone": false,
+              "tags": [],
+              "updated": 1,
+              "usages": [
+                {
+                  "app": "fixture.app",
+                  "created": 0,
+                  "id": "00000000-0000-0000-0000-00000000000a",
+                  "language": null,
+                  "meaning": "context meaning",
+                  "origin": "captured",
+                  "ranges": [
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "records": [],
+                  "text": "The bank.",
+                  "translation": "银行。",
+                  "translationLanguage": "zh-Hans",
+                  "variants": []
+                }
+              ],
+              "variants": []
+            }
+          ],
+          "updated": 1
+        },
+        "target": "00000000-0000-0000-0000-000000000003",
+        "targetOwnsUsage": true
+      }
+    },
+    {
+      "id": "move-new",
+      "operation": "move-new",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift",
+      "expected": {
+        "entry": {
+          "created": 0,
+          "expression": "bank",
+          "id": "00000000-0000-0000-0000-000000000001",
+          "senses": [
+            {
+              "aliases": [
+                "00000000-0000-0000-0000-000000000063"
+              ],
+              "alternate": [],
+              "cards": null,
+              "content": null,
+              "created": 0,
+              "id": "00000000-0000-0000-0000-000000000002",
+              "language": null,
+              "meaning": "",
+              "note": "Keep source",
+              "origin": "captured",
+              "preserved": [],
+              "records": [],
+              "review": "00000000-0000-0000-0000-00000000012c",
+              "standalone": false,
+              "tags": [],
+              "updated": 1,
+              "usages": [],
+              "variants": []
+            },
+            {
+              "aliases": [
+                "00000000-0000-0000-0000-000000000062"
+              ],
+              "alternate": [],
+              "cards": null,
+              "content": null,
+              "created": 0,
+              "id": "00000000-0000-0000-0000-000000000003",
+              "language": null,
+              "meaning": "",
+              "note": "",
+              "origin": "captured",
+              "preserved": [],
+              "records": [],
+              "review": null,
+              "standalone": false,
+              "tags": [],
+              "updated": 0,
+              "usages": [],
+              "variants": []
+            },
+            {
+              "aliases": [],
+              "alternate": [],
+              "cards": null,
+              "content": null,
+              "created": 1,
+              "id": "new",
+              "language": null,
+              "meaning": "",
+              "note": "",
+              "origin": "captured",
+              "preserved": [],
+              "records": [],
+              "review": null,
+              "standalone": false,
+              "tags": [],
+              "updated": 1,
+              "usages": [
+                {
+                  "app": "fixture.app",
+                  "created": 0,
+                  "id": "00000000-0000-0000-0000-00000000000a",
+                  "language": null,
+                  "meaning": "context meaning",
+                  "origin": "captured",
+                  "ranges": [
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "records": [],
+                  "text": "The bank.",
+                  "translation": "银行。",
+                  "translationLanguage": "zh-Hans",
+                  "variants": []
+                }
+              ],
+              "variants": []
+            }
+          ],
+          "updated": 1
+        },
+        "target": "new",
+        "targetOwnsUsage": true
+      }
+    },
+    {
+      "id": "move-duplicate",
+      "operation": "move-duplicate",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift",
+      "expected": {
+        "error": "editConflict"
+      }
+    },
+    {
+      "id": "move-missing",
+      "operation": "move-missing",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift",
+      "expected": {
+        "error": "editConflict"
+      }
+    },
+    {
+      "id": "move-source-alias",
+      "operation": "move-source-alias",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift",
+      "expected": {
+        "error": "editConflict"
+      }
+    },
+    {
+      "id": "move-target-alias",
+      "operation": "move-target-alias",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift",
+      "expected": {
+        "error": "invalidContent"
+      }
+    },
+    {
+      "id": "move-same",
+      "operation": "move-same",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularySensePolicy.swift",
+      "expected": {
+        "error": "invalidContent"
+      }
+    },
+    {
+      "id": "record-moved",
+      "operation": "record-moved",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "expected": {
+        "accepts": true,
+        "entry": {
+          "created": 0,
+          "expression": "bank",
+          "id": "00000000-0000-0000-0000-000000000001",
+          "senses": [
+            {
+              "aliases": [],
+              "alternate": [],
+              "cards": null,
+              "content": null,
+              "created": 0,
+              "id": "00000000-0000-0000-0000-000000000002",
+              "language": null,
+              "meaning": "",
+              "note": "",
+              "origin": "captured",
+              "preserved": [],
+              "records": [],
+              "review": null,
+              "standalone": false,
+              "tags": [],
+              "updated": 1,
+              "usages": [],
+              "variants": []
+            },
+            {
+              "aliases": [],
+              "alternate": [],
+              "cards": null,
+              "content": null,
+              "created": 0,
+              "id": "00000000-0000-0000-0000-000000000003",
+              "language": null,
+              "meaning": "",
+              "note": "",
+              "origin": "captured",
+              "preserved": [],
+              "records": [],
+              "review": null,
+              "standalone": false,
+              "tags": [],
+              "updated": 1,
+              "usages": [
+                {
+                  "app": "fixture.app",
+                  "created": 0,
+                  "id": "00000000-0000-0000-0000-00000000000a",
+                  "language": "zh-Hans",
+                  "meaning": "generated",
+                  "origin": "ai",
+                  "ranges": [
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "records": [
+                    {
+                      "id": "00000000-0000-0000-0000-000000000064",
+                      "language": "zh-Hans",
+                      "meaning": "generated"
+                    }
+                  ],
+                  "text": "The bank.",
+                  "translation": "银行。",
+                  "translationLanguage": "zh-Hans",
+                  "variants": []
+                }
+              ],
+              "variants": []
+            }
+          ],
+          "updated": 1
+        }
+      }
+    },
+    {
+      "id": "record-deleted",
+      "operation": "record-deleted",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "expected": {
+        "accepts": false,
+        "entry": {
+          "created": 0,
+          "expression": "bank",
+          "id": "00000000-0000-0000-0000-000000000001",
+          "senses": [
+            {
+              "aliases": [],
+              "alternate": [],
+              "cards": null,
+              "content": null,
+              "created": 0,
+              "id": "00000000-0000-0000-0000-000000000002",
+              "language": null,
+              "meaning": "",
+              "note": "",
+              "origin": "captured",
+              "preserved": [],
+              "records": [],
+              "review": null,
+              "standalone": false,
+              "tags": [],
+              "updated": 0,
+              "usages": [],
+              "variants": []
+            }
+          ],
+          "updated": 0
+        }
+      }
+    },
+    {
+      "id": "record-edited",
+      "operation": "record-edited",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "expected": {
+        "accepts": false,
+        "entry": {
+          "created": 0,
+          "expression": "bank",
+          "id": "00000000-0000-0000-0000-000000000001",
+          "senses": [
+            {
+              "aliases": [],
+              "alternate": [],
+              "cards": null,
+              "content": null,
+              "created": 0,
+              "id": "00000000-0000-0000-0000-000000000002",
+              "language": null,
+              "meaning": "",
+              "note": "",
+              "origin": "captured",
+              "preserved": [],
+              "records": [],
+              "review": null,
+              "standalone": false,
+              "tags": [],
+              "updated": 0,
+              "usages": [
+                {
+                  "app": "fixture.app",
+                  "created": 0,
+                  "id": "00000000-0000-0000-0000-00000000000a",
+                  "language": null,
+                  "meaning": "context meaning",
+                  "origin": "captured",
+                  "ranges": [
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "records": [],
+                  "text": "The bank changed.",
+                  "translation": "银行。",
+                  "translationLanguage": "zh-Hans",
+                  "variants": []
+                }
+              ],
+              "variants": []
+            }
+          ],
+          "updated": 0
+        }
+      }
+    },
+    {
+      "id": "record-user",
+      "operation": "record-user",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "expected": {
+        "accepts": true,
+        "entry": {
+          "created": 0,
+          "expression": "bank",
+          "id": "00000000-0000-0000-0000-000000000001",
+          "senses": [
+            {
+              "aliases": [],
+              "alternate": [],
+              "cards": null,
+              "content": null,
+              "created": 0,
+              "id": "00000000-0000-0000-0000-000000000002",
+              "language": null,
+              "meaning": "",
+              "note": "",
+              "origin": "captured",
+              "preserved": [],
+              "records": [],
+              "review": null,
+              "standalone": false,
+              "tags": [],
+              "updated": 0,
+              "usages": [
+                {
+                  "app": "fixture.app",
+                  "created": 0,
+                  "id": "00000000-0000-0000-0000-00000000000a",
+                  "language": null,
+                  "meaning": "User wording",
+                  "origin": "user",
+                  "ranges": [
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "records": [
+                    {
+                      "id": "00000000-0000-0000-0000-000000000064",
+                      "language": "zh-Hans",
+                      "meaning": "generated"
+                    }
+                  ],
+                  "text": "The bank.",
+                  "translation": "银行。",
+                  "translationLanguage": "zh-Hans",
+                  "variants": []
+                }
+              ],
+              "variants": []
+            }
+          ],
+          "updated": 0
+        }
+      }
+    },
+    {
+      "id": "record-general",
+      "operation": "record-general",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "expected": {
+        "accepts": true,
+        "entry": {
+          "created": 0,
+          "expression": "bank",
+          "id": "00000000-0000-0000-0000-000000000001",
+          "senses": [
+            {
+              "aliases": [],
+              "alternate": [],
+              "cards": null,
+              "content": null,
+              "created": 0,
+              "id": "00000000-0000-0000-0000-000000000002",
+              "language": "zh-Hans",
+              "meaning": "first",
+              "note": "",
+              "origin": "ai",
+              "preserved": [],
+              "records": [
+                {
+                  "id": "00000000-0000-0000-0000-000000000065",
+                  "language": "zh-Hans",
+                  "meaning": "second"
+                }
+              ],
+              "review": null,
+              "standalone": true,
+              "tags": [],
+              "updated": 0,
+              "usages": [],
+              "variants": []
+            }
+          ],
+          "updated": 0
+        }
+      }
+    },
+    {
+      "id": "record-nonempty",
+      "operation": "record-nonempty",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "expected": {
+        "accepts": true,
+        "entry": {
+          "created": 0,
+          "expression": "bank",
+          "id": "00000000-0000-0000-0000-000000000001",
+          "senses": [
+            {
+              "aliases": [],
+              "alternate": [],
+              "cards": null,
+              "content": null,
+              "created": 0,
+              "id": "00000000-0000-0000-0000-000000000002",
+              "language": null,
+              "meaning": "Captured core",
+              "note": "",
+              "origin": "captured",
+              "preserved": [],
+              "records": [
+                {
+                  "id": "00000000-0000-0000-0000-000000000065",
+                  "language": "zh-Hans",
+                  "meaning": "second"
+                }
+              ],
+              "review": null,
+              "standalone": true,
+              "tags": [],
+              "updated": 0,
+              "usages": [],
+              "variants": []
+            }
+          ],
+          "updated": 0
+        }
+      }
+    },
+    {
+      "id": "record-userblank",
+      "operation": "record-userblank",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "expected": {
+        "accepts": true,
+        "entry": {
+          "created": 0,
+          "expression": "bank",
+          "id": "00000000-0000-0000-0000-000000000001",
+          "senses": [
+            {
+              "aliases": [],
+              "alternate": [],
+              "cards": null,
+              "content": null,
+              "created": 0,
+              "id": "00000000-0000-0000-0000-000000000002",
+              "language": null,
+              "meaning": "",
+              "note": "",
+              "origin": "user",
+              "preserved": [],
+              "records": [
+                {
+                  "id": "00000000-0000-0000-0000-000000000065",
+                  "language": "zh-Hans",
+                  "meaning": "second"
+                }
+              ],
+              "review": null,
+              "standalone": true,
+              "tags": [],
+              "updated": 0,
+              "usages": [],
+              "variants": []
+            }
+          ],
+          "updated": 0
+        }
+      }
+    },
+    {
+      "id": "record-bounded",
+      "operation": "record-bounded",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "expected": {
+        "accepts": true,
+        "entry": {
+          "created": 0,
+          "expression": "bank",
+          "id": "00000000-0000-0000-0000-000000000001",
+          "senses": [
+            {
+              "aliases": [],
+              "alternate": [],
+              "cards": null,
+              "content": null,
+              "created": 0,
+              "id": "00000000-0000-0000-0000-000000000002",
+              "language": null,
+              "meaning": "",
+              "note": "",
+              "origin": "captured",
+              "preserved": [],
+              "records": [],
+              "review": null,
+              "standalone": false,
+              "tags": [],
+              "updated": 0,
+              "usages": [
+                {
+                  "app": "fixture.app",
+                  "created": 0,
+                  "id": "00000000-0000-0000-0000-00000000000a",
+                  "language": "zh-Hans",
+                  "meaning": "refresh",
+                  "origin": "ai",
+                  "ranges": [
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "records": [
+                    {
+                      "id": "00000000-0000-0000-0000-0000000000c9",
+                      "language": "es",
+                      "meaning": "old 1"
+                    },
+                    {
+                      "id": "00000000-0000-0000-0000-0000000000ca",
+                      "language": "es",
+                      "meaning": "old 2"
+                    },
+                    {
+                      "id": "00000000-0000-0000-0000-0000000000cb",
+                      "language": "es",
+                      "meaning": "old 3"
+                    },
+                    {
+                      "id": "00000000-0000-0000-0000-0000000000cc",
+                      "language": "es",
+                      "meaning": "old 4"
+                    },
+                    {
+                      "id": "00000000-0000-0000-0000-0000000000cd",
+                      "language": "es",
+                      "meaning": "old 5"
+                    },
+                    {
+                      "id": "00000000-0000-0000-0000-0000000000ce",
+                      "language": "es",
+                      "meaning": "old 6"
+                    },
+                    {
+                      "id": "00000000-0000-0000-0000-0000000000cf",
+                      "language": "es",
+                      "meaning": "old 7"
+                    },
+                    {
+                      "id": "00000000-0000-0000-0000-0000000000d0",
+                      "language": "es",
+                      "meaning": "old 8"
+                    },
+                    {
+                      "id": "00000000-0000-0000-0000-0000000000d1",
+                      "language": "es",
+                      "meaning": "old 9"
+                    },
+                    {
+                      "id": "00000000-0000-0000-0000-0000000000d2",
+                      "language": "es",
+                      "meaning": "old 10"
+                    },
+                    {
+                      "id": "00000000-0000-0000-0000-0000000000d3",
+                      "language": "es",
+                      "meaning": "old 11"
+                    },
+                    {
+                      "id": "00000000-0000-0000-0000-0000000000d4",
+                      "language": "es",
+                      "meaning": "old 12"
+                    },
+                    {
+                      "id": "00000000-0000-0000-0000-0000000000d5",
+                      "language": "es",
+                      "meaning": "old 13"
+                    },
+                    {
+                      "id": "00000000-0000-0000-0000-0000000000d6",
+                      "language": "es",
+                      "meaning": "old 14"
+                    },
+                    {
+                      "id": "00000000-0000-0000-0000-0000000000d7",
+                      "language": "es",
+                      "meaning": "old 15"
+                    },
+                    {
+                      "id": "00000000-0000-0000-0000-0000000000d8",
+                      "language": "es",
+                      "meaning": "old 16"
+                    },
+                    {
+                      "id": "00000000-0000-0000-0000-0000000000d9",
+                      "language": "es",
+                      "meaning": "old 17"
+                    },
+                    {
+                      "id": "00000000-0000-0000-0000-0000000000da",
+                      "language": "es",
+                      "meaning": "old 18"
+                    },
+                    {
+                      "id": "00000000-0000-0000-0000-0000000000db",
+                      "language": "es",
+                      "meaning": "old 19"
+                    },
+                    {
+                      "id": "00000000-0000-0000-0000-0000000000dc",
+                      "language": "es",
+                      "meaning": "old 20"
+                    },
+                    {
+                      "id": "00000000-0000-0000-0000-0000000000dd",
+                      "language": "es",
+                      "meaning": "old 21"
+                    },
+                    {
+                      "id": "00000000-0000-0000-0000-0000000000de",
+                      "language": "es",
+                      "meaning": "old 22"
+                    },
+                    {
+                      "id": "00000000-0000-0000-0000-0000000000df",
+                      "language": "es",
+                      "meaning": "old 23"
+                    },
+                    {
+                      "id": "00000000-0000-0000-0000-000000000065",
+                      "language": "zh-Hans",
+                      "meaning": "refresh"
+                    }
+                  ],
+                  "text": "The bank.",
+                  "translation": "银行。",
+                  "translationLanguage": "zh-Hans",
+                  "variants": []
+                }
+              ],
+              "variants": []
+            }
+          ],
+          "updated": 0
+        }
+      }
+    },
+    {
+      "id": "record-invalid",
+      "operation": "record-invalid",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "expected": {
+        "accepts": true,
+        "entry": {
+          "created": 0,
+          "expression": "bank",
+          "id": "00000000-0000-0000-0000-000000000001",
+          "senses": [
+            {
+              "aliases": [],
+              "alternate": [],
+              "cards": null,
+              "content": null,
+              "created": 0,
+              "id": "00000000-0000-0000-0000-000000000002",
+              "language": null,
+              "meaning": "",
+              "note": "",
+              "origin": "captured",
+              "preserved": [],
+              "records": [],
+              "review": null,
+              "standalone": false,
+              "tags": [],
+              "updated": 0,
+              "usages": [
+                {
+                  "app": "fixture.app",
+                  "created": 0,
+                  "id": "00000000-0000-0000-0000-00000000000a",
+                  "language": null,
+                  "meaning": "context meaning",
+                  "origin": "captured",
+                  "ranges": [
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "records": [],
+                  "text": "The bank.",
+                  "translation": "银行。",
+                  "translationLanguage": "zh-Hans",
+                  "variants": []
+                }
+              ],
+              "variants": []
+            }
+          ],
+          "updated": 0
+        }
+      }
+    }
+  ]
+}

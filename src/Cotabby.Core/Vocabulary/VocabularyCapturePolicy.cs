@@ -24,6 +24,7 @@ public static class VocabularyCapturePolicy
     }
 
     public static string EntryKey(VocabularyCapture capture) => Key([capture.Language.Code(), KindCode(capture.Kind), Normalized(capture.Expression)]);
+    public static string EntryKey(VocabularyEntry entry) => Key([entry.Language.Code(), KindCode(entry.Kind), Normalized(entry.Expression)]);
     public static string ExampleKey(VocabularyExample? example) => example is null ? "no-context"
         : ExampleKey(example.Text, example.Ranges, example.Completeness);
 
@@ -50,10 +51,14 @@ public static class VocabularyCapturePolicy
     public static void Validate(VocabularyCapture capture)
     {
         if (capture is null || !Enum.IsDefined(capture.Language) || !Enum.IsDefined(capture.Kind)
+            || !ValidLanguage(capture.MeaningLanguage)
             || !LearningExplanationText.Fits(capture.Expression, MaximumTextBytes) || Normalized(capture.Expression).Length == 0)
             throw new VocabularyContentValidationException();
         if (capture.Example is not { } example) return;
-        if (!Enum.IsDefined(example.Completeness) || string.IsNullOrEmpty(example.Text)
+        if (!Enum.IsDefined(example.Completeness) || !Enum.IsDefined(example.MeaningOrigin)
+            || !ValidLanguage(example.MeaningLanguage) || !ValidLanguage(example.TranslationLanguage) || string.IsNullOrEmpty(example.Text)
+            || !example.TranslationVariants.All(meaning => meaning is not null && ValidLanguage(meaning.Language))
+            || !example.Explanations.All(SupportedRecordEnums)
             || !LearningExplanationText.Fits(example.Text, MaximumTextBytes)) throw new VocabularyContentValidationException();
         var boundaries = FoundationTextRanges.Boundaries(example.Text);
         if (!example.Ranges.All(range => FoundationTextRanges.IsValid(range.Location, range.Length, example.Text, boundaries)))
@@ -66,6 +71,12 @@ public static class VocabularyCapturePolicy
         VocabularyEntryKind.Pattern => "pattern", VocabularyEntryKind.Sentence => "sentence",
         _ => throw new VocabularyContentValidationException(),
     };
+    private static bool ValidLanguage(LearningLanguage? language) => language is null || Enum.IsDefined(language.Value);
+    // Swift's closed enums cannot contain cast integers; check the same nested capture values
+    // .NET callers can construct. This is not full explanation-content or notebook validation.
+    private static bool SupportedRecordEnums(LearningExplanationRecord record) => record is { Input: not null, Result: not null }
+        && Enum.IsDefined(record.Language) && Enum.IsDefined(record.Input.Language) && Enum.IsDefined(record.Input.Kind)
+        && Enum.IsDefined(record.Input.ContextKind);
     private static string Key(IReadOnlyList<string> parts)
     {
         try

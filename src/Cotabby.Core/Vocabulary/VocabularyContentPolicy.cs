@@ -108,4 +108,4 @@ public static class VocabularyContentPolicy
 }
 
 /// <summary>Fixed recoverable validation failure; do not leak notebook text or media paths in errors.</summary>
-public sealed class VocabularyContentValidationException() : Exception("This vocabulary content could not be verified.");
+public sealed class VocabularyContentValidationException() : VocabularyException(VocabularyFailure.InvalidContent);

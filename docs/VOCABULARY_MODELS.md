@@ -66,7 +66,7 @@ Twenty-seven standalone cases additionally check detached drafts/readonly snapsh
 hash consistency and raw preservation, explicit UUID creation, authored metadata, stable Int64 note
 IDs, optional differences, source-history retention and binding identity boundaries. Further native
 archive/media/restart, complete model/codec roundtrip, template portability/binding, localized labels,
-review resolution, Save/merge/move operations and Anki conflict/send verification remain unfinished.
+review resolution, durable Save/merge/move operations and Anki conflict/send verification remain unfinished. The next [save/sense rule slice](VOCABULARY_SENSE_RULES.md) now supplies pure draft mutations; it does not yet publish a durable transaction.
 
 ```sh
 DOTNET_ROOT="$PWD/.dotnet" .dotnet/dotnet test tests/Cotabby.Core.Tests/Cotabby.Core.Tests.csproj --configuration Release

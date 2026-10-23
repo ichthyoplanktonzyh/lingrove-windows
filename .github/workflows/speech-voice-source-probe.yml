@@ -1,0 +1,35 @@
+name: Inspect original Mac speech collation
+on:
+  push:
+    branches: [codex/speech-voice-source-probe]
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: macos-26-intel
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          repository: ichthyoplanktonzyh/lingrove
+          ref: 43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f
+          path: .mac-baseline
+          persist-credentials: false
+      - name: Capture complete original voice observations without changing expectations
+        shell: bash
+        run: |
+          python3 scripts/verify-speech-voices-macos-parity.py --mac-repo .mac-baseline --capture-output "$RUNNER_TEMP/voice-source-observations.json"
+          python3 - <<'PY'
+          import json, os, platform
+          from pathlib import Path
+          rows=json.loads((Path(os.environ['RUNNER_TEMP'])/'voice-source-observations.json').read_text())
+          fixture=json.loads(Path('fixtures/parity/speech-voices-v1.json').read_text())['cases']
+          print('SOURCE_PLATFORM',platform.platform())
+          for row, actual in zip(fixture, rows):
+              if row['expected'] != actual['expected']:
+                  print('ORIGINAL_SOURCE_OBSERVATION',json.dumps(actual,ensure_ascii=False,sort_keys=True))
+          print('SOURCE_OBSERVATION_COUNT',len(rows))
+          PY

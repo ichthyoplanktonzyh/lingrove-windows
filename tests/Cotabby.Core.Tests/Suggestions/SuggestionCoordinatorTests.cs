@@ -285,7 +285,9 @@ public sealed class SuggestionCoordinatorTests : CoordinatorHarness
     [Fact]
     public async Task Metrics_CountAcceptedWords()
     {
-        Type("hello");
+        // This case measures one offer. Keep the typing burst on the coordinator's pump so
+        // the 5ms test debounce cannot publish intermediate offers on a busy CI host.
+        await RunOnUiAsync(() => Type("hello"));
         await Shown(" world again");
 
         Hook.Press(Backtick);

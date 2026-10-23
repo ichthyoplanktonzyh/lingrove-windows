@@ -41,9 +41,9 @@ media is included. These names are portable relative names, not OS file paths. `
 full image-reference values from sense content only, excluding review/template images. It performs
 no storage reads and does not prove that referenced files exist.
 
-All exported collections detach on construction. The archive will later own snapshot/media
-collection and the sheet will own a prepared immutable package; the formatter will consume only
-this reduced document. Those effects stay outside this pure policy.
+All exported collections detach on construction. The [archive snapshot](VOCABULARY_EXPORT_SNAPSHOT.md)
+owns media collection; the [prepared package](VOCABULARY_EXPORT_PACKAGE.md) retains its captured bytes.
+Formatters consume this reduced document. Those separate boundaries stay outside projection rules.
 
 Thirty-seven shared probes capture observations by compiling the actual pinned Swift declarations,
 including the complete original formatter solely to satisfy the unexercised `package` dependency.
@@ -60,6 +60,7 @@ python3 scripts/verify-vocabulary-export-projection-macos-parity.py --mac-repo /
 DOTNET_ROOT="$PWD/.dotnet" .dotnet/dotnet test tests/Cotabby.Core.Tests/Cotabby.Core.Tests.csproj --configuration Release --filter FullyQualifiedName~VocabularyExport
 ```
 
-Formatter output, CSV spreadsheet escaping, preview byte limits, packages, media capture, atomic
-writing, ZIP, full backup/restore and the export window remain later work. Native Windows clipboard,
+Later adapters cover [TXT/CSV rendering](VOCABULARY_EXPORT_NOTES.md), [JSON bytes](VOCABULARY_EXPORT_JSON.md),
+[CSV/preview boundaries](VOCABULARY_EXPORT_TEXT.md), packages, media capture and [ZIP](VOCABULARY_EXPORT_ZIP.md).
+Atomic destination writing, full backup/restore and the export window remain work. Native Windows clipboard,
 IME, UIA, overlay/insertion and model/GPU gates are unchanged by portable export tests.

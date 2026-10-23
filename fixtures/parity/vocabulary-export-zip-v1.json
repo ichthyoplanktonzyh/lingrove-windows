@@ -527,6 +527,23 @@
       "expected": {
         "error": "tooLarge"
       }
+    },
+    {
+      "id": "maximum-files-payload-limit-final-over",
+      "format": "text",
+      "generatedFiles": 9998,
+      "images": [
+        {
+          "name": "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+          "byteCount": 201326592,
+          "fill": 7
+        }
+      ],
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
+      "expected": {
+        "error": "tooLarge"
+      }
     }
   ]
 }

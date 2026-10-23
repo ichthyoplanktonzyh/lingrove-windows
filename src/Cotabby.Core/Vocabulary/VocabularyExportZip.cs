@@ -29,8 +29,11 @@ public static class VocabularyExportZip
         }
         // Mac admits aggregate payload before cancellation, then checks once per file. The
         // admitted bytes plus at most 10,000 fixed-size headers bound temporary allocation too.
-        using var output = new MemoryStream(checked((int)total + files.Count * 200));
-        using var central = new MemoryStream();
+        // All admitted paths are ASCII. Size the actual local + central records instead of
+        // carrying Mac's reserve hint into MemoryStream's geometric growth at a near-limit input.
+        int names = files.Sum(file => file.Path.Length);
+        using var output = new MemoryStream(checked((int)total + files.Count * 76 + names * 2 + 22));
+        using var central = new MemoryStream(files.Count * 46 + names);
         foreach (var (path, bytes) in files)
         {
             cancellationToken.ThrowIfCancellationRequested();

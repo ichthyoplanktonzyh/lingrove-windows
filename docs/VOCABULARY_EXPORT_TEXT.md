@@ -41,4 +41,7 @@ DOTNET_ROOT="$PWD/.dotnet" .dotnet/dotnet test tests/Cotabby.Core.Tests/Cotabby.
 
 These tests do not establish full CSV/TXT/JSON output, column/row selection, localized labels,
 ISO date rendering, the 64 MiB whole-export limit, prepared packages, writing, ZIP or export-window
-behavior. Those must use the same pinned Mac formatter and archive/session sources in later slices.
+behavior. See the later [TXT/CSV](VOCABULARY_EXPORT_NOTES.md), [JSON](VOCABULARY_EXPORT_JSON.md),
+[package](VOCABULARY_EXPORT_PACKAGE.md), [snapshot](VOCABULARY_EXPORT_SNAPSHOT.md) and
+[ZIP](VOCABULARY_EXPORT_ZIP.md) adapters for their own evidence. Destination writing and export UI
+remain work.

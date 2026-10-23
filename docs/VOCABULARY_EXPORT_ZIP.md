@@ -27,13 +27,14 @@ There are no extras/comments or timestamps derived from the clock.
 
 Only trusted Core code borrows internal read-only memory views of package-owned bytes. This avoids
 another whole-media copy before ZIP budget admission; public callers still receive defensive copies.
-The returned ZIP owns its result. Compared with Swift's copy-on-write values, C# package preparation
+Exact header capacity avoids geometric growth when the maximum file count and near-limit payload
+are combined. The returned ZIP owns its result. Compared with Swift's copy-on-write values, C# package preparation
 and final `MemoryStream.ToArray` can temporarily retain additional bounded copies. Budget admission
 limits file size, rather than promising peak allocation equals that size.
 
-Thirty-five fixture probes compile the complete original Mac archive/export declarations and call
+Thirty-six fixture probes compile the complete original Mac archive/export declarations and call
 the actual ZIP implementation. None invokes destination writing or image decoding. Small fixtures
-store full ZIP bytes plus SHA/count; the 10,000-file case and four near-192-MiB cases store SHA/count
+store full ZIP bytes plus SHA/count; the 10,000-file case and four near-192-MiB cases and a combined maximum-file/payload case store SHA/count
 or the actual fixed error, without committing large binary data. The exact final-limit case contains
 201,326,592 bytes; adding one payload byte fails. The aggregate-input limit can also pass while the
 headers push the final file over its limit. Invalid path/count admission retains its precedence over

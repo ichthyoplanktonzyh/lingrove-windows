@@ -11,7 +11,7 @@ references, renders with the captured options/labels, and returns one prepared v
 adapts Swift array value semantics: an `IReadOnlyList` could otherwise wrap a mutable .NET list.
 Payload and counts use the same captured graph. TXT/CSV retain their loop cancellation checkpoints;
 JSON has no in-render check. There is no invented post-render cancellation check in this pure factory.
-The archive will later keep its separate check after collecting media and preparing the package.
+The [archive snapshot](VOCABULARY_EXPORT_SNAPSHOT.md) keeps its separate check after collecting media and preparing the package.
 
 Counts describe the input graph, not deduplicated expression-list lines: entry and sense counts
 include all input entries/senses, and example count is zero when examples are off or TXT expression
@@ -33,7 +33,8 @@ filenames, admit image bytes, read files or enforce the archive's separate media
 
 `VocabularyExportFormatter.Render` now dispatches all three existing pure encoders. TXT alone
 consumes a presentation-supplied label snapshot. This is the complete portable preparation library;
-archive selection/media capture, destination validation, writing, ZIP and export-window/session
+[archive selection/media capture](VOCABULARY_EXPORT_SNAPSHOT.md) and [ZIP bytes](VOCABULARY_EXPORT_ZIP.md)
+now have their separate adapters. Destination validation/writing and export-window/session
 integration remain work. A prepared package is not a full backup or an installer artifact.
 
 Thirty-three probes execute the actual original Mac factory and value declarations. They compare
@@ -50,6 +51,7 @@ python3 scripts/verify-vocabulary-export-package-macos-parity.py --mac-repo /pat
 DOTNET_ROOT="$PWD/.dotnet" .dotnet/dotnet test tests/Cotabby.Core.Tests/Cotabby.Core.Tests.csproj --configuration Release --filter FullyQualifiedName~VocabularyExportPackage
 ```
 
-No public export command or destination is connected. Source deletion/media snapshot transactions,
-Windows destination/atomic replacement behavior, ZIP bytes, save-session staleness and the actual
-export window still need their pinned Mac archive/session/UI counterparts and tests.
+No public export command or destination is connected. Source deletion/media snapshot transactions
+and ZIP bytes are covered by the linked adapters, rather than by these package-value probes.
+Windows destination/atomic replacement behavior, save-session staleness and the actual export
+window still need their pinned Mac archive/session/UI counterparts and tests.

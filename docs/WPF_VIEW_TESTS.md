@@ -135,3 +135,9 @@ direct native frame test exposes WIC failures independently of the fixed UI erro
 The [export snapshot suite](VOCABULARY_EXPORT_SNAPSHOT.md) adds twenty-one actual archive/SQLite/WIC
 fixture cases and one named-file shared-lock regression. These run without external editors, models
 or clipboard access; their execution requires Windows and does not establish desktop export UI.
+
+The [export save suite](VOCABULARY_EXPORT_SAVE.md) executes nineteen original-Mac counterpart cases
+with real Windows destination bytes, hard-link/file identities, ACL creation and same-directory
+publication. Twenty-eight additional native file cases cover collision/cleanup, cancellation, ACL
+replacement, path retargeting and publication failure; four archive cases cover source deletion and
+closed admission. This exercises owned temporary files rather than a save picker or desktop action.

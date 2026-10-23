@@ -10,7 +10,7 @@ existing [portable material document](VOCABULARY_EXPORT_PROJECTION.md) and
 [CSV/preview helpers](VOCABULARY_EXPORT_TEXT.md). The explicit library APIs are `RenderText` and
 `RenderCsv`. Separate adapters now cover [JSON rendering](VOCABULARY_EXPORT_JSON.md),
 [format dispatch/packages](VOCABULARY_EXPORT_PACKAGE.md), [media snapshots](VOCABULARY_EXPORT_SNAPSHOT.md)
-and [ZIP bytes](VOCABULARY_EXPORT_ZIP.md). Destination writing and the export window remain work;
+and [ZIP bytes](VOCABULARY_EXPORT_ZIP.md). [Destination writing](VOCABULARY_EXPORT_SAVE.md) has a separate adapter; the export window remains work;
 these renderer methods are not connected to a product command.
 
 Each call owns one bounded byte writer. It checks the exact UTF-8 byte count before encoding and

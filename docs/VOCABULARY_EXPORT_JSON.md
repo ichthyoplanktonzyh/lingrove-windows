@@ -41,6 +41,6 @@ DOTNET_ROOT="$PWD/.dotnet" .dotnet/dotnet test tests/Cotabby.Core.Tests/Cotabby.
 
 `RenderJson` sits beside TXT/CSV methods. Subsequent adapters provide [dispatch and prepared package
 ownership](VOCABULARY_EXPORT_PACKAGE.md), [media snapshots](VOCABULARY_EXPORT_SNAPSHOT.md) and
-[ZIP bytes](VOCABULARY_EXPORT_ZIP.md). Destination writing, full backup/restore and export UI remain
-work. These JSON tests do not establish database compatibility or native desktop behavior, and
+[ZIP bytes](VOCABULARY_EXPORT_ZIP.md). [Destination writing](VOCABULARY_EXPORT_SAVE.md) has a separate adapter. Full backup/restore and
+export UI remain work. These JSON tests do not establish database compatibility or native desktop behavior, and
 this encoder introduces no model, clipboard, filesystem or network effects.

@@ -4,8 +4,7 @@ Reference: macOS `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`,
 `Cotabby/Support/Vocabulary/VocabularyExportZIP.swift`, complete encoder and path check.
 `VocabularyArchive.maximumBackupBytes` remains the original 192 MiB outer-file ceiling.
 
-`VocabularyExportZip` is a deterministic Core adapter over one prepared package. The archive's later
-write operation will call it on its serialized worker, without reading the live notebook or media
+`VocabularyExportZip` is a deterministic Core adapter over one prepared package. The [archive save adapter](VOCABULARY_EXPORT_SAVE.md) calls it on its serialized worker, without reading the live notebook or media
 again. This file owns the ZIP envelope only: it does not choose a destination, write files, decode
 images, generate backups or publish an export command/window. PNG media is already compressed; the
 original format uses stored entries with no compression service or subprocess.
@@ -14,7 +13,7 @@ The data entry comes first; image keys follow in ordinal order (all admitted nam
 The closed grammar admits only the three data filenames and `images/lg-image-<64 lowercase hex>.png`.
 No directory, absolute path, alternate stream, traversal, Unicode/uppercase digest or arbitrary
 attachment name is accepted. As in Mac, a direct encoder call includes the package's attached image
-map even when its configuration disables images. The later archive write chooses whether to invoke
+map even when its configuration disables images. The archive save adapter chooses whether to invoke
 ZIP from `IncludesImages`; this encoder does not silently filter or repair that captured map.
 Image values here are opaque bytes: path admission alone proves no PNG/reference/hash validity.
 The archive snapshot/image owner supplies that separate guarantee.
@@ -50,6 +49,6 @@ python3 scripts/verify-vocabulary-export-zip-macos-parity.py --mac-repo /path/to
 DOTNET_ROOT="$PWD/.dotnet" .dotnet/dotnet test tests/Cotabby.Core.Tests/Cotabby.Core.Tests.csproj --configuration Release --filter FullyQualifiedName~VocabularyExportZip
 ```
 
-Atomic destination admission/writing, Store/session callbacks, stale save-session guards, the export
-window and full backup/restore remain later work. Windows desktop UIA/IME/overlay/insertion and
+[Atomic destination admission/writing](VOCABULARY_EXPORT_SAVE.md) has a separate adapter. Store/session
+callbacks, stale save-session guards, the export window and full backup/restore remain work. Windows desktop UIA/IME/overlay/insertion and
 model/GPU gates are unchanged by this portable byte-format slice.

@@ -1,0 +1,326 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "new-text",
+      "format": "text",
+      "images": false,
+      "mode": "new",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "expected": {
+        "destinationBase64": "",
+        "error": null,
+        "mediaUnchanged": true,
+        "notebookExists": false,
+        "protectedUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "new-csv",
+      "format": "csv",
+      "images": false,
+      "mode": "new",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "expected": {
+        "destinationBase64": "77u/ImVudHJ5X2lkIiwiZXhwcmVzc2lvbiIsImRpY3Rpb25hcnlfZm9ybSIsImxhbmd1YWdlIiwidHlwZSIsInNlbnNlX2lkIiwic2F2ZWRfYXQiLCJtZWFuaW5nIiwibWVhbmluZ19sYW5ndWFnZSIsIm90aGVyX21lYW5pbmdzIiwidXNhZ2VfaWQiLCJ1c2FnZV9zYXZlZF9hdCIsImV4YW1wbGUiLCJ0cmFuc2xhdGlvbiIsInRyYW5zbGF0aW9uX2xhbmd1YWdlIiwib3RoZXJfdHJhbnNsYXRpb25zIiwiY29udGV4dHVhbF9tZWFuaW5nIiwiY29udGV4dHVhbF9tZWFuaW5nX2xhbmd1YWdlIiwibm90ZXMiLCJ0YWdzIiwic3VwcGxlbWVudGFsX3RleHQiLCJpbWFnZXMiLCJpbWFnZV9jYXB0aW9ucyINCg==",
+        "error": null,
+        "mediaUnchanged": true,
+        "notebookExists": false,
+        "protectedUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "new-json",
+      "format": "json",
+      "images": false,
+      "mode": "new",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "expected": {
+        "destinationBase64": "ewogICJlbnRyaWVzIiA6IFsKCiAgXSwKICAiZm9ybWF0IiA6ICJsaW5ncm92ZS12b2NhYnVsYXJ5LWV4cG9ydCIsCiAgInZlcnNpb24iIDogMQp9",
+        "error": null,
+        "mediaUnchanged": true,
+        "notebookExists": false,
+        "protectedUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "replace-json",
+      "format": "json",
+      "images": false,
+      "mode": "new",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "replace": true,
+      "expected": {
+        "destinationBase64": "ewogICJlbnRyaWVzIiA6IFsKCiAgXSwKICAiZm9ybWF0IiA6ICJsaW5ncm92ZS12b2NhYnVsYXJ5LWV4cG9ydCIsCiAgInZlcnNpb24iIDogMQp9",
+        "error": null,
+        "mediaUnchanged": true,
+        "notebookExists": false,
+        "protectedUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "zip-empty",
+      "format": "json",
+      "images": true,
+      "mode": "new",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "expected": {
+        "destinationBase64": "UEsDBBQAAAAAAAAAIQAfvANiVAAAAFQAAAAYAAAATGluZ3JvdmUtdm9jYWJ1bGFyeS5qc29uewogICJlbnRyaWVzIiA6IFsKCiAgXSwKICAiZm9ybWF0IiA6ICJsaW5ncm92ZS12b2NhYnVsYXJ5LWV4cG9ydCIsCiAgInZlcnNpb24iIDogMQp9UEsBAhQAFAAAAAAAAAAhAB+8A2JUAAAAVAAAABgAAAAAAAAAAAAAAAAAAAAAAExpbmdyb3ZlLXZvY2FidWxhcnkuanNvblBLBQYAAAAAAQABAEYAAACKAAAAAAA=",
+        "error": null,
+        "mediaUnchanged": true,
+        "notebookExists": false,
+        "protectedUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "zip-attached",
+      "format": "json",
+      "images": true,
+      "mode": "new",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "attachment": true,
+      "expected": {
+        "destinationBase64": "UEsDBBQAAAAAAAAAIQAfvANiVAAAAFQAAAAYAAAATGluZ3JvdmUtdm9jYWJ1bGFyeS5qc29uewogICJlbnRyaWVzIiA6IFsKCiAgXSwKICAiZm9ybWF0IiA6ICJsaW5ncm92ZS12b2NhYnVsYXJ5LWV4cG9ydCIsCiAgInZlcnNpb24iIDogMQp9UEsDBBQAAAAAAAAAIQAdgLxVAwAAAAMAAABUAAAAaW1hZ2VzL2xnLWltYWdlLWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWEucG5nAQIDUEsBAhQAFAAAAAAAAAAhAB+8A2JUAAAAVAAAABgAAAAAAAAAAAAAAAAAAAAAAExpbmdyb3ZlLXZvY2FidWxhcnkuanNvblBLAQIUABQAAAAAAAAAIQAdgLxVAwAAAAMAAABUAAAAAAAAAAAAAAAAAIoAAABpbWFnZXMvbGctaW1hZ2UtYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYS5wbmdQSwUGAAAAAAIAAgDIAAAA/wAAAAAA",
+        "error": null,
+        "mediaUnchanged": true,
+        "notebookExists": false,
+        "protectedUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "disabled-images-bad-map-ignored",
+      "format": "json",
+      "images": false,
+      "mode": "new",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "attachment": true,
+      "badImage": true,
+      "expected": {
+        "destinationBase64": "ewogICJlbnRyaWVzIiA6IFsKCiAgXSwKICAiZm9ybWF0IiA6ICJsaW5ncm92ZS12b2NhYnVsYXJ5LWV4cG9ydCIsCiAgInZlcnNpb24iIDogMQp9",
+        "error": null,
+        "mediaUnchanged": true,
+        "notebookExists": false,
+        "protectedUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "enabled-images-bad-map-rejected",
+      "format": "json",
+      "images": true,
+      "mode": "new",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "attachment": true,
+      "badImage": true,
+      "replace": true,
+      "expected": {
+        "destinationBase64": "CQgH",
+        "error": "tooLarge",
+        "mediaUnchanged": true,
+        "notebookExists": false,
+        "protectedUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "protected-file-0",
+      "format": "json",
+      "images": false,
+      "mode": "protected",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "suffix": "",
+      "expected": {
+        "destinationBase64": "CQgH",
+        "error": "invalidContent",
+        "mediaUnchanged": true,
+        "notebookExists": true,
+        "protectedUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "protected-file-1",
+      "format": "json",
+      "images": false,
+      "mode": "protected",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "suffix": "-wal",
+      "expected": {
+        "destinationBase64": "CQgH",
+        "error": "invalidContent",
+        "mediaUnchanged": true,
+        "notebookExists": false,
+        "protectedUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "protected-file-2",
+      "format": "json",
+      "images": false,
+      "mode": "protected",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "suffix": "-shm",
+      "expected": {
+        "destinationBase64": "CQgH",
+        "error": "invalidContent",
+        "mediaUnchanged": true,
+        "notebookExists": false,
+        "protectedUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "protected-file-3",
+      "format": "json",
+      "images": false,
+      "mode": "protected",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "suffix": "-journal",
+      "expected": {
+        "destinationBase64": "CQgH",
+        "error": "invalidContent",
+        "mediaUnchanged": true,
+        "notebookExists": false,
+        "protectedUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "protected-file-4",
+      "format": "json",
+      "images": false,
+      "mode": "protected",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "suffix": ".lock",
+      "expected": {
+        "destinationBase64": "CQgH",
+        "error": "invalidContent",
+        "mediaUnchanged": true,
+        "notebookExists": false,
+        "protectedUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "media-root",
+      "format": "json",
+      "images": false,
+      "mode": "mediaRoot",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "expected": {
+        "destinationBase64": null,
+        "error": "invalidContent",
+        "mediaUnchanged": true,
+        "notebookExists": false,
+        "protectedUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "media-child",
+      "format": "json",
+      "images": false,
+      "mode": "mediaChild",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "expected": {
+        "destinationBase64": "CQgH",
+        "error": "invalidContent",
+        "mediaUnchanged": true,
+        "notebookExists": false,
+        "protectedUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "hard-link",
+      "format": "json",
+      "images": false,
+      "mode": "hardLink",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "expected": {
+        "destinationBase64": "CQgH",
+        "error": "invalidContent",
+        "mediaUnchanged": true,
+        "notebookExists": true,
+        "protectedUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "symbolic-link",
+      "format": "json",
+      "images": false,
+      "mode": "symlink",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "expected": {
+        "destinationBase64": "CQgH",
+        "error": "invalidContent",
+        "mediaUnchanged": true,
+        "notebookExists": true,
+        "protectedUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "cancelled-replace",
+      "format": "json",
+      "images": false,
+      "mode": "new",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "replace": true,
+      "cancelled": true,
+      "expected": {
+        "destinationBase64": "CQgH",
+        "error": "cancelled",
+        "mediaUnchanged": true,
+        "notebookExists": false,
+        "protectedUnchanged": true,
+        "stages": 0
+      }
+    },
+    {
+      "id": "cancelled-protected-precedence",
+      "format": "json",
+      "images": false,
+      "mode": "protected",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift",
+      "suffix": "",
+      "cancelled": true,
+      "expected": {
+        "destinationBase64": "CQgH",
+        "error": "cancelled",
+        "mediaUnchanged": true,
+        "notebookExists": true,
+        "protectedUnchanged": true,
+        "stages": 0
+      }
+    }
+  ]
+}

@@ -9,5 +9,5 @@ public sealed partial class VocabularyArchive
     /// they do not compile this constructor or pretend to run a Windows codec on macOS.
     /// </summary>
     public VocabularyArchive(string? path) : this(() => path is null ? VocabularySQLiteDatabase.CreateMemory() : VocabularySQLiteDatabase.OpenFile(path),
-        TimeProvider.System, new WindowsVocabularyImageStorage(path)) { }
+        TimeProvider.System, new WindowsVocabularyImageStorage(path)) { _exportNotebookPath = path is null ? null : VocabularyWindowsFile.FullPath(path); }
 }

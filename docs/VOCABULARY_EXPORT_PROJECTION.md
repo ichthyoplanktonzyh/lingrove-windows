@@ -62,5 +62,6 @@ DOTNET_ROOT="$PWD/.dotnet" .dotnet/dotnet test tests/Cotabby.Core.Tests/Cotabby.
 
 Later adapters cover [TXT/CSV rendering](VOCABULARY_EXPORT_NOTES.md), [JSON bytes](VOCABULARY_EXPORT_JSON.md),
 [CSV/preview boundaries](VOCABULARY_EXPORT_TEXT.md), packages, media capture and [ZIP](VOCABULARY_EXPORT_ZIP.md).
-Atomic destination writing, full backup/restore and the export window remain work. Native Windows clipboard,
+[Atomic destination writing](VOCABULARY_EXPORT_SAVE.md) has a separate adapter. Full backup/restore
+and the export window remain work. Native Windows clipboard,
 IME, UIA, overlay/insertion and model/GPU gates are unchanged by portable export tests.

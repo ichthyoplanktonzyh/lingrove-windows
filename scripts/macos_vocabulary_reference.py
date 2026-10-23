@@ -77,3 +77,16 @@ def archive_validation_sources(repo):
         "import Foundation\nnonisolated enum SpeechExportPolicy {\n" +
         between(speech, "    static func validFilename(", "    static func wav(") + "}\n"]
     return values
+
+
+def archive_edit_sources(repo):
+    """Run original private merge helpers and commit's exact pruning loop, without storage fakes."""
+    archive = source(repo, "Cotabby/Services/Vocabulary/VocabularyArchive.swift")
+    wrapper = "import Foundation\nnonisolated struct VocabularyArchiveEditReference {\n" + between(archive,
+        "    private func mergeSenses(", "    func remove(id:")
+    wrapper += "\n    func mergeProbe(_ baseline: [VocabularySense], _ current: [VocabularySense], _ edited: [VocabularySense]) throws -> [VocabularySense] {\n"
+    wrapper += "        try mergeSenses(baseline: baseline, current: current, edited: edited)\n    }\n"
+    wrapper += "    func pruneProbe(_ document: VocabularyDocument) -> VocabularyDocument {\n        var next = document\n"
+    wrapper += between(archive, "        for index in next.entries.indices {", "        try validate(next)")
+    wrapper += "        return next\n    }\n}\n"
+    return sense_policy_sources(repo) + [wrapper]

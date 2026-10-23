@@ -82,6 +82,7 @@ jobs:
             Cotabby/UI/Settings/Panes/LearningReviewSettingsSection.swift
             Cotabby/Models/Review
             Cotabby/Models/Runtime
+            Cotabby/Models/Speech/SpeechAudioChunk.swift
             Cotabby/Models/Speech/LearningSpeechModels.swift
             Cotabby/Models/Speech/SpeechExportModels.swift
             Cotabby/Services/Review/AnkiConnectClient.swift
@@ -240,3 +241,6 @@ jobs:
 
       - name: Verify original review settings key methods with synthetic effects
         run: python3 scripts/verify-anki-settings-interaction-macos-parity.py --mac-repo .mac-baseline
+
+      - name: Verify original PCM block admission and playback queue accounting
+        run: python3 scripts/verify-speech-pcm-macos-parity.py --mac-repo .mac-baseline

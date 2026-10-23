@@ -97,3 +97,8 @@ native-ICU cases (112 total), covering explicit query, word/Back navigation, sha
 definitions, retained expansion, form edits, collapse/reopen/late results, preparation failure/retry
 and canceled pending queries during explicit Show or empty-form expression editing. Source fallback,
 physical input and external editor behavior remain outside this evidence.
+
+The [image preparation library](VOCABULARY_IMAGE_PREPARATION.md) adds 26 native WIC/PNG cases
+(138 total WPF-assembly cases). These exercise an unconnected decoder/preparer, not user-facing
+image import or notebook media writes. Ten cases share actual Mac ImageIO observations; platform
+orientation/profile/multiframe and output-byte-ceiling cases have separate evidence scope.

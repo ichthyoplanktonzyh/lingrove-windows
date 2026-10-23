@@ -31,6 +31,7 @@ public sealed class NonactivatingSelectableText : TextBlock
     private AdornerLayer? _adornerLayer;
     private LiteralTextSelectionMap? _textMap;
     private string? _mappedSource;
+    private object? _lastLayoutSignature;
     private int _anchor;
     private int _updatingContent;
     private bool _dragging;
@@ -55,7 +56,7 @@ public sealed class NonactivatingSelectableText : TextBlock
         Cursor = Cursors.IBeam;
         IsVisibleChanged += (_, _) => { if (!IsVisible) ClearSelection(); };
         Unloaded += (_, _) => ClearSelection();
-        LayoutUpdated += (_, _) => _adorner?.InvalidateVisual();
+        LayoutUpdated += (_, _) => UpdateSelectionLayout();
     }
 
     public object? DocumentIdentity { get => GetValue(DocumentIdentityProperty); set => SetValue(DocumentIdentityProperty, value); }
@@ -215,10 +216,7 @@ public sealed class NonactivatingSelectableText : TextBlock
     internal IReadOnlyList<Rect> SelectionRectangles()
     {
         if (_selection is not { Length: > 0 } selected || !string.Equals(selected.Source, Text, StringComparison.Ordinal)) return [];
-        Rect visible = new(RenderSize);
-        for (DependencyObject? ancestor = VisualTreeHelper.GetParent(this); ancestor is Visual; ancestor = VisualTreeHelper.GetParent(ancestor))
-            if (ancestor is ScrollContentPresenter viewport)
-                visible.Intersect(viewport.TransformToVisual(this).TransformBounds(new Rect(viewport.RenderSize)));
+        Rect visible = VisibleBounds();
         if (visible.IsEmpty || visible.Height <= 0) return [];
         int first = selected.Start, last = first + selected.Length;
         var top = GetPositionFromPoint(new Point(visible.Left, visible.Top), true)?.GetLineStartPosition(0);
@@ -267,6 +265,27 @@ public sealed class NonactivatingSelectableText : TextBlock
     {
         if (_adorner is not null) _adornerLayer?.Remove(_adorner);
         _adorner = null; _adornerLayer = null;
+        _lastLayoutSignature = null;
+    }
+    private Rect VisibleBounds()
+    {
+        Rect visible = new(RenderSize);
+        for (DependencyObject? ancestor = VisualTreeHelper.GetParent(this); ancestor is Visual; ancestor = VisualTreeHelper.GetParent(ancestor))
+            if (ancestor is ScrollContentPresenter viewport)
+                visible.Intersect(viewport.TransformToVisual(this).TransformBounds(new Rect(viewport.RenderSize)));
+        return visible;
+    }
+    private void UpdateSelectionLayout()
+    {
+        if (_adorner is null) return;
+        var signature = (RenderSize, VisibleBounds(), FontFamily, FontSize, FontWeight, FontStyle,
+            FontStretch, FlowDirection, TextAlignment, TextWrapping, TextTrimming, LineHeight, LineStackingStrategy, Padding, Language);
+        if (Equals(_lastLayoutSignature, signature)) return;
+        _lastLayoutSignature = signature;
+        // InvalidateVisual also invalidates arrange. Calling it on every LayoutUpdated would
+        // sustain a render/layout loop and starve input/idle. Scroll/font/size changes need one
+        // repaint; a matching layout signature must leave the dispatcher idle afterward.
+        _adorner.InvalidateVisual();
     }
     private sealed class SelectionAdorner(NonactivatingSelectableText owner) : Adorner(owner)
     {

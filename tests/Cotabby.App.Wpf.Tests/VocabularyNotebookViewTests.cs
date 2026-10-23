@@ -119,10 +119,11 @@ public sealed class VocabularyNotebookViewTests(WpfDispatcher dispatcher)
     [Fact]
     public Task ColdLoadUsesDirectedSelectionOnceAndLaterSaveKeepsUserSelection() => dispatcher.RunAsync(async () =>
     {
-        var archive = new VocabularyArchive((string?)null); var bank = Capture(); var coffee = Capture("Le café.", "café", LearningLanguage.French);
+        var archive = new VocabularyArchive((string?)null); await using var store = Store(archive);
+        var bank = Capture(); var coffee = Capture("Le café.", "café", LearningLanguage.French);
         await archive.SaveAsync(bank); var snapshot = await archive.SaveAsync(coffee);
         var entry = snapshot.Document.Entries.Single(value => value.Expression == "bank"); var target = new VocabularySelection(entry.Id, entry.Senses[0].Id);
-        await using var store = Store(archive); var window = new VocabularyNotebookWindow(store, new WindowsVocabularyTextSearch());
+        var window = new VocabularyNotebookWindow(store, new WindowsVocabularyTextSearch());
         try
         {
             window.Reveal(target); window.Show(); await Refresh(window); Assert.Null(window.Selection);

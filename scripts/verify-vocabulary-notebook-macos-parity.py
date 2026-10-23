@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Execute pinned Mac notebook browse projections, search and sense-title policy."""
 import argparse
+from collections import Counter
 import importlib.util
 import json
 from pathlib import Path
@@ -95,6 +96,8 @@ def main():
     parser.add_argument('--capture-output', type=Path)
     args = parser.parse_args(); corpus = json.loads(args.fixture.read_text()); rows = corpus['cases']; ids = [r.get('id') for r in rows]
     if corpus.get('version') != 1 or corpus.get('macReference') != BASELINE or not rows or len(set(ids)) != len(ids) or any(not i for i in ids): parser.error('Notebook cases require pinned unique schema')
+    if Counter(r.get('operation') for r in rows) != {'matches': 29, 'title': 5, 'visible': 7, 'selection': 6, 'highlight': 4}:
+        parser.error('The 51 observed notebook cases must retain every operation group')
     if any(r.get('macSource') != 'Cotabby/UI/Vocabulary/VocabularyNotebookView.swift'
         or r.get('macSecondarySource') != 'Cotabby/Support/Vocabulary/VocabularyPolicy.swift'
         or r.get('macSenseSource') != 'Cotabby/Support/Vocabulary/VocabularySensePolicy.swift'

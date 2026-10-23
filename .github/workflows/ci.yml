@@ -81,6 +81,7 @@ jobs:
             Cotabby/Models/Runtime
             CotabbyTests/Services/Vocabulary/VocabularyContentTests.swift
             Cotabby/Services/Vocabulary/VocabularyArchive.swift
+            Cotabby/Services/Vocabulary/VocabularyGraphLayoutWorker.swift
             Cotabby/Services/Vocabulary/VocabularyArchive+ReviewCards.swift
             Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift
             Cotabby/Services/Vocabulary/VocabularyArchive+Export.swift
@@ -197,3 +198,5 @@ jobs:
   # are deliberately absent; distribution is a separately authorized task.
       - name: Verify graph particle forces against complete original GraphSimulation and Grape
         run: python3 scripts/verify-vocabulary-graph-layout-macos-parity.py --mac-repo .mac-baseline
+      - name: Verify graph epoch/cache worker against complete original actor and Grape
+        run: python3 scripts/verify-vocabulary-graph-worker-macos-parity.py --mac-repo .mac-baseline

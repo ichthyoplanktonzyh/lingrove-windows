@@ -1,0 +1,2115 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "empty",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyGraphLayoutWorker.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "configure",
+          "epoch": 1,
+          "nodes": []
+        },
+        {
+          "op": "advance",
+          "epoch": 1,
+          "count": 1
+        }
+      ],
+      "expected": [
+        {
+          "count": 0,
+          "finite": true,
+          "positions": {},
+          "running": false
+        },
+        null
+      ]
+    },
+    {
+      "id": "head-seeds",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyGraphLayoutWorker.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "configure",
+          "epoch": 1,
+          "nodes": [
+            "h1",
+            "h2",
+            "h3"
+          ]
+        }
+      ],
+      "expected": [
+        {
+          "count": 3,
+          "finite": true,
+          "positions": {
+            "h1": [
+              60,
+              0
+            ],
+            "h2": [
+              -62.56782407101158,
+              57.317252123762394
+            ],
+            "h3": [
+              9.085547825898281,
+              -103.52513134839923
+            ]
+          },
+          "running": true
+        }
+      ]
+    },
+    {
+      "id": "sense-seed",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyGraphLayoutWorker.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "configure",
+          "epoch": 1,
+          "nodes": [
+            "s1_2"
+          ]
+        }
+      ],
+      "expected": [
+        {
+          "count": 1,
+          "finite": true,
+          "positions": {
+            "s1_2": [
+              105,
+              0
+            ]
+          },
+          "running": true
+        }
+      ]
+    },
+    {
+      "id": "first-expanded",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyGraphLayoutWorker.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "configure",
+          "epoch": 1,
+          "nodes": [
+            "h1",
+            "s1_2"
+          ],
+          "edges": [
+            [
+              "h1",
+              "s1_2"
+            ]
+          ]
+        }
+      ],
+      "expected": [
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              60,
+              0
+            ],
+            "s1_2": [
+              -77.42373219822358,
+              70.92648089746001
+            ]
+          },
+          "running": true
+        }
+      ]
+    },
+    {
+      "id": "expand-cached",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyGraphLayoutWorker.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "configure",
+          "epoch": 1,
+          "nodes": [
+            "h1"
+          ]
+        },
+        {
+          "op": "advance",
+          "epoch": 1,
+          "count": 10
+        },
+        {
+          "op": "configure",
+          "epoch": 2,
+          "nodes": [
+            "h1",
+            "s1_2"
+          ],
+          "edges": [
+            [
+              "h1",
+              "s1_2"
+            ]
+          ]
+        },
+        {
+          "op": "advance",
+          "epoch": 2,
+          "count": 10
+        }
+      ],
+      "expected": [
+        {
+          "count": 1,
+          "finite": true,
+          "positions": {
+            "h1": [
+              60,
+              0
+            ]
+          },
+          "running": true
+        },
+        {
+          "count": 1,
+          "finite": true,
+          "positions": {
+            "h1": [
+              56.08782737347005,
+              0
+            ]
+          },
+          "running": true
+        },
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              56.08782737347005,
+              0
+            ],
+            "s1_2": [
+              -21.335904824753527,
+              70.92648089746001
+            ]
+          },
+          "running": true
+        },
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              59.57993404292279,
+              -7.248105050899593
+            ],
+            "s1_2": [
+              -27.808462033501733,
+              73.54997533064055
+            ]
+          },
+          "running": true
+        }
+      ]
+    },
+    {
+      "id": "advance",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyGraphLayoutWorker.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "configure",
+          "epoch": 1,
+          "nodes": [
+            "h1",
+            "h2"
+          ],
+          "edges": [
+            [
+              "h1",
+              "h2"
+            ]
+          ]
+        },
+        {
+          "op": "advance",
+          "epoch": 1,
+          "count": 20
+        }
+      ],
+      "expected": [
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              60,
+              0
+            ],
+            "h2": [
+              -62.56782407101158,
+              57.317252123762394
+            ]
+          },
+          "running": true
+        },
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              54.657377598080586,
+              -0.8748785378299493
+            ],
+            "h2": [
+              -56.916486218017674,
+              51.301190762906984
+            ]
+          },
+          "running": true
+        }
+      ]
+    },
+    {
+      "id": "cosmetic-cold",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyGraphLayoutWorker.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "configure",
+          "epoch": 1,
+          "nodes": [
+            "h1",
+            "h2"
+          ],
+          "edges": [
+            [
+              "h1",
+              "h2"
+            ]
+          ]
+        },
+        {
+          "op": "advance",
+          "epoch": 1,
+          "count": 160
+        },
+        {
+          "op": "configure",
+          "epoch": 2,
+          "nodes": [
+            "h1",
+            "h2"
+          ],
+          "edges": [
+            [
+              "h1",
+              "h2"
+            ]
+          ],
+          "settings": {
+            "nodeSize": 23,
+            "linkWidth": 2,
+            "labels": "all"
+          }
+        },
+        {
+          "op": "advance",
+          "epoch": 2,
+          "count": 1
+        }
+      ],
+      "expected": [
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              60,
+              0
+            ],
+            "h2": [
+              -62.56782407101158,
+              57.317252123762394
+            ]
+          },
+          "running": true
+        },
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              54.49337181922142,
+              -4.01630578358896
+            ],
+            "h2": [
+              -56.45796525463206,
+              47.86864696588775
+            ]
+          },
+          "running": false
+        },
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              54.49337181922142,
+              -4.01630578358896
+            ],
+            "h2": [
+              -56.45796525463206,
+              47.86864696588775
+            ]
+          },
+          "running": false
+        },
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              54.49337181922142,
+              -4.01630578358896
+            ],
+            "h2": [
+              -56.45796525463206,
+              47.86864696588775
+            ]
+          },
+          "running": false
+        }
+      ]
+    },
+    {
+      "id": "labels-cold",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyGraphLayoutWorker.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "configure",
+          "epoch": 1,
+          "nodes": [
+            "h1",
+            "h2"
+          ],
+          "edges": [
+            [
+              "h1",
+              "h2"
+            ]
+          ]
+        },
+        {
+          "op": "advance",
+          "epoch": 1,
+          "count": 160
+        },
+        {
+          "op": "configure",
+          "epoch": 2,
+          "nodes": [
+            "h1",
+            "h2"
+          ],
+          "edges": [
+            [
+              "h1",
+              "h2"
+            ]
+          ],
+          "labels": {
+            "h1": "renamed"
+          },
+          "matches": [
+            "h2"
+          ],
+          "query": "changed"
+        },
+        {
+          "op": "advance",
+          "epoch": 2,
+          "count": 1
+        }
+      ],
+      "expected": [
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              60,
+              0
+            ],
+            "h2": [
+              -62.56782407101158,
+              57.317252123762394
+            ]
+          },
+          "running": true
+        },
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              54.49337181922142,
+              -4.01630578358896
+            ],
+            "h2": [
+              -56.45796525463206,
+              47.86864696588775
+            ]
+          },
+          "running": false
+        },
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              54.49337181922142,
+              -4.01630578358896
+            ],
+            "h2": [
+              -56.45796525463206,
+              47.86864696588775
+            ]
+          },
+          "running": false
+        },
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              54.49337181922142,
+              -4.01630578358896
+            ],
+            "h2": [
+              -56.45796525463206,
+              47.86864696588775
+            ]
+          },
+          "running": false
+        }
+      ]
+    },
+    {
+      "id": "force-reheat",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyGraphLayoutWorker.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "configure",
+          "epoch": 1,
+          "nodes": [
+            "h1",
+            "h2"
+          ],
+          "edges": [
+            [
+              "h1",
+              "h2"
+            ]
+          ]
+        },
+        {
+          "op": "advance",
+          "epoch": 1,
+          "count": 160
+        },
+        {
+          "op": "configure",
+          "epoch": 2,
+          "nodes": [
+            "h1",
+            "h2"
+          ],
+          "edges": [
+            [
+              "h1",
+              "h2"
+            ]
+          ],
+          "settings": {
+            "repulsion": 500
+          }
+        },
+        {
+          "op": "advance",
+          "epoch": 2,
+          "count": 5
+        }
+      ],
+      "expected": [
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              60,
+              0
+            ],
+            "h2": [
+              -62.56782407101158,
+              57.317252123762394
+            ]
+          },
+          "running": true
+        },
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              54.49337181922142,
+              -4.01630578358896
+            ],
+            "h2": [
+              -56.45796525463206,
+              47.86864696588775
+            ]
+          },
+          "running": false
+        },
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              54.49337181922142,
+              -4.01630578358896
+            ],
+            "h2": [
+              -56.45796525463206,
+              47.86864696588775
+            ]
+          },
+          "running": true
+        },
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              59.033396836047245,
+              -6.771592466570943
+            ],
+            "h2": [
+              -60.94013251092933,
+              49.33247140074735
+            ]
+          },
+          "running": true
+        }
+      ]
+    },
+    {
+      "id": "edge-reheat",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyGraphLayoutWorker.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "configure",
+          "epoch": 1,
+          "nodes": [
+            "h1",
+            "h2"
+          ]
+        },
+        {
+          "op": "advance",
+          "epoch": 1,
+          "count": 160
+        },
+        {
+          "op": "configure",
+          "epoch": 2,
+          "nodes": [
+            "h1",
+            "h2"
+          ],
+          "edges": [
+            [
+              "h1",
+              "h2"
+            ]
+          ]
+        },
+        {
+          "op": "advance",
+          "epoch": 2,
+          "count": 5
+        }
+      ],
+      "expected": [
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              60,
+              0
+            ],
+            "h2": [
+              -62.56782407101158,
+              57.317252123762394
+            ]
+          },
+          "running": true
+        },
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              75.17828186740842,
+              -13.68933549897646
+            ],
+            "h2": [
+              -77.142875302819,
+              57.54167668127527
+            ]
+          },
+          "running": false
+        },
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              75.17828186740842,
+              -13.68933549897646
+            ],
+            "h2": [
+              -77.142875302819,
+              57.54167668127527
+            ]
+          },
+          "running": true
+        },
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              68.5882473464091,
+              -11.239794295706611
+            ],
+            "h2": [
+              -70.49498302129113,
+              53.80067322988305
+            ]
+          },
+          "running": true
+        }
+      ]
+    },
+    {
+      "id": "reorder",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyGraphLayoutWorker.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "configure",
+          "epoch": 1,
+          "nodes": [
+            "h1",
+            "h2",
+            "h3"
+          ]
+        },
+        {
+          "op": "advance",
+          "epoch": 1,
+          "count": 5
+        },
+        {
+          "op": "configure",
+          "epoch": 2,
+          "nodes": [
+            "h3",
+            "h1",
+            "h2"
+          ]
+        },
+        {
+          "op": "advance",
+          "epoch": 2,
+          "count": 5
+        }
+      ],
+      "expected": [
+        {
+          "count": 3,
+          "finite": true,
+          "positions": {
+            "h1": [
+              60,
+              0
+            ],
+            "h2": [
+              -62.56782407101158,
+              57.317252123762394
+            ],
+            "h3": [
+              9.085547825898281,
+              -103.52513134839923
+            ]
+          },
+          "running": true
+        },
+        {
+          "count": 3,
+          "finite": true,
+          "positions": {
+            "h1": [
+              67.58787934056653,
+              4.062266759843933
+            ],
+            "h2": [
+              -68.72119615592726,
+              62.946433932723984
+            ],
+            "h3": [
+              7.459595809240981,
+              -111.85931828301196
+            ]
+          },
+          "running": true
+        },
+        {
+          "count": 3,
+          "finite": true,
+          "positions": {
+            "h1": [
+              67.58787934056653,
+              4.062266759843933
+            ],
+            "h2": [
+              -68.72119615592726,
+              62.946433932723984
+            ],
+            "h3": [
+              7.459595809240981,
+              -111.85931828301196
+            ]
+          },
+          "running": true
+        },
+        {
+          "count": 3,
+          "finite": true,
+          "positions": {
+            "h1": [
+              73.53850955608922,
+              7.580534839627437
+            ],
+            "h2": [
+              -73.32265195253976,
+              67.02187962563227
+            ],
+            "h3": [
+              5.846928027654043,
+              -117.58497659079812
+            ]
+          },
+          "running": true
+        }
+      ]
+    },
+    {
+      "id": "filter-return",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyGraphLayoutWorker.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "configure",
+          "epoch": 1,
+          "nodes": [
+            "h1",
+            "h2"
+          ],
+          "edges": [
+            [
+              "h1",
+              "h2"
+            ]
+          ]
+        },
+        {
+          "op": "advance",
+          "epoch": 1,
+          "count": 5
+        },
+        {
+          "op": "configure",
+          "epoch": 2,
+          "nodes": [
+            "h2"
+          ]
+        },
+        {
+          "op": "advance",
+          "epoch": 2,
+          "count": 5
+        },
+        {
+          "op": "configure",
+          "epoch": 3,
+          "nodes": [
+            "h1",
+            "h2"
+          ],
+          "edges": [
+            [
+              "h1",
+              "h2"
+            ]
+          ]
+        }
+      ],
+      "expected": [
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              60,
+              0
+            ],
+            "h2": [
+              -62.56782407101158,
+              57.317252123762394
+            ]
+          },
+          "running": true
+        },
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              59.26657738626166,
+              -0.481177108185885
+            ],
+            "h2": [
+              -61.75897689433242,
+              56.1148525651477
+            ]
+          },
+          "running": true
+        },
+        {
+          "count": 1,
+          "finite": true,
+          "positions": {
+            "h2": [
+              -61.75897689433242,
+              56.1148525651477
+            ]
+          },
+          "running": true
+        },
+        {
+          "count": 1,
+          "finite": true,
+          "positions": {
+            "h2": [
+              -57.09302448938703,
+              52.798564983532955
+            ]
+          },
+          "running": true
+        },
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              59.26657738626166,
+              -0.481177108185885
+            ],
+            "h2": [
+              -57.09302448938703,
+              52.798564983532955
+            ]
+          },
+          "running": true
+        }
+      ]
+    },
+    {
+      "id": "pin-release",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyGraphLayoutWorker.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "configure",
+          "epoch": 1,
+          "nodes": [
+            "h1",
+            "s1_2"
+          ],
+          "edges": [
+            [
+              "h1",
+              "s1_2"
+            ]
+          ]
+        },
+        {
+          "op": "advance",
+          "epoch": 1,
+          "count": 20,
+          "pinned": "h1",
+          "position": [
+            400,
+            100
+          ]
+        },
+        {
+          "op": "advance",
+          "epoch": 1,
+          "count": 240
+        },
+        {
+          "op": "advance",
+          "epoch": 1,
+          "count": 1
+        }
+      ],
+      "expected": [
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              60,
+              0
+            ],
+            "s1_2": [
+              -77.42373219822358,
+              70.92648089746001
+            ]
+          },
+          "running": true
+        },
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              400,
+              100
+            ],
+            "s1_2": [
+              109.60132962618343,
+              74.26589710154468
+            ]
+          },
+          "running": true
+        },
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              300.32396816942077,
+              83.19593132115632
+            ],
+            "s1_2": [
+              156.21489875705154,
+              70.04356369096301
+            ]
+          },
+          "running": false
+        },
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              300.32396816942077,
+              83.19593132115632
+            ],
+            "s1_2": [
+              156.21489875705154,
+              70.04356369096301
+            ]
+          },
+          "running": false
+        }
+      ]
+    },
+    {
+      "id": "stale-configure",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyGraphLayoutWorker.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "configure",
+          "epoch": 3,
+          "nodes": [
+            "h1",
+            "h2"
+          ],
+          "edges": [
+            [
+              "h1",
+              "h2"
+            ]
+          ]
+        },
+        {
+          "op": "advance",
+          "epoch": 3,
+          "count": 5
+        },
+        {
+          "op": "configure",
+          "epoch": 2,
+          "nodes": [
+            "h999"
+          ]
+        },
+        {
+          "op": "advance",
+          "epoch": 3,
+          "count": 1
+        }
+      ],
+      "expected": [
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              60,
+              0
+            ],
+            "h2": [
+              -62.56782407101158,
+              57.317252123762394
+            ]
+          },
+          "running": true
+        },
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              59.26657738626166,
+              -0.481177108185885
+            ],
+            "h2": [
+              -61.75897689433242,
+              56.1148525651477
+            ]
+          },
+          "running": true
+        },
+        null,
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              58.670467547324975,
+              -0.41096311801523067
+            ],
+            "h2": [
+              -61.14378112554879,
+              55.61861520935656
+            ]
+          },
+          "running": true
+        }
+      ]
+    },
+    {
+      "id": "stale-advance",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyGraphLayoutWorker.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "configure",
+          "epoch": 3,
+          "nodes": [
+            "h1",
+            "h2"
+          ],
+          "edges": [
+            [
+              "h1",
+              "h2"
+            ]
+          ]
+        },
+        {
+          "op": "advance",
+          "epoch": 2,
+          "count": 1,
+          "pinned": "h1",
+          "position": [
+            999,
+            999
+          ]
+        },
+        {
+          "op": "advance",
+          "epoch": 4,
+          "count": 1
+        },
+        {
+          "op": "advance",
+          "epoch": 3,
+          "count": 1
+        }
+      ],
+      "expected": [
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              60,
+              0
+            ],
+            "h2": [
+              -62.56782407101158,
+              57.317252123762394
+            ]
+          },
+          "running": true
+        },
+        null,
+        null,
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              60.58452591741793,
+              -0.36486345903254275
+            ],
+            "h2": [
+              -63.14397451665709,
+              57.49516390154287
+            ]
+          },
+          "running": true
+        }
+      ]
+    },
+    {
+      "id": "suspend-reopen",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyGraphLayoutWorker.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "configure",
+          "epoch": 1,
+          "nodes": [
+            "h1",
+            "h2"
+          ],
+          "edges": [
+            [
+              "h1",
+              "h2"
+            ]
+          ]
+        },
+        {
+          "op": "advance",
+          "epoch": 1,
+          "count": 5
+        },
+        {
+          "op": "suspend",
+          "epoch": 2
+        },
+        {
+          "op": "advance",
+          "epoch": 1,
+          "count": 1
+        },
+        {
+          "op": "configure",
+          "epoch": 3,
+          "nodes": [
+            "h1",
+            "h2"
+          ],
+          "edges": [
+            [
+              "h1",
+              "h2"
+            ]
+          ]
+        }
+      ],
+      "expected": [
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              60,
+              0
+            ],
+            "h2": [
+              -62.56782407101158,
+              57.317252123762394
+            ]
+          },
+          "running": true
+        },
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              59.26657738626166,
+              -0.481177108185885
+            ],
+            "h2": [
+              -61.75897689433242,
+              56.1148525651477
+            ]
+          },
+          "running": true
+        },
+        null,
+        null,
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              59.26657738626166,
+              -0.481177108185885
+            ],
+            "h2": [
+              -61.75897689433242,
+              56.1148525651477
+            ]
+          },
+          "running": true
+        }
+      ]
+    },
+    {
+      "id": "stale-suspend",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyGraphLayoutWorker.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "configure",
+          "epoch": 3,
+          "nodes": [
+            "h1",
+            "h2"
+          ],
+          "edges": [
+            [
+              "h1",
+              "h2"
+            ]
+          ]
+        },
+        {
+          "op": "advance",
+          "epoch": 3,
+          "count": 5
+        },
+        {
+          "op": "suspend",
+          "epoch": 2,
+          "finalNode": "h1",
+          "finalPosition": [
+            999,
+            999
+          ]
+        },
+        {
+          "op": "advance",
+          "epoch": 3,
+          "count": 1
+        }
+      ],
+      "expected": [
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              60,
+              0
+            ],
+            "h2": [
+              -62.56782407101158,
+              57.317252123762394
+            ]
+          },
+          "running": true
+        },
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              59.26657738626166,
+              -0.481177108185885
+            ],
+            "h2": [
+              -61.75897689433242,
+              56.1148525651477
+            ]
+          },
+          "running": true
+        },
+        null,
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              58.670467547324975,
+              -0.41096311801523067
+            ],
+            "h2": [
+              -61.14378112554879,
+              55.61861520935656
+            ]
+          },
+          "running": true
+        }
+      ]
+    },
+    {
+      "id": "suspend-final",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyGraphLayoutWorker.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "configure",
+          "epoch": 1,
+          "nodes": [
+            "h1",
+            "h2"
+          ],
+          "edges": [
+            [
+              "h1",
+              "h2"
+            ]
+          ]
+        },
+        {
+          "op": "suspend",
+          "epoch": 2,
+          "finalNode": "h1",
+          "finalPosition": [
+            700,
+            200
+          ]
+        },
+        {
+          "op": "configure",
+          "epoch": 3,
+          "nodes": [
+            "h1",
+            "h2"
+          ],
+          "edges": [
+            [
+              "h1",
+              "h2"
+            ]
+          ]
+        }
+      ],
+      "expected": [
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              60,
+              0
+            ],
+            "h2": [
+              -62.56782407101158,
+              57.317252123762394
+            ]
+          },
+          "running": true
+        },
+        null,
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              700,
+              200
+            ],
+            "h2": [
+              -62.56782407101158,
+              57.317252123762394
+            ]
+          },
+          "running": true
+        }
+      ]
+    },
+    {
+      "id": "suspend-empty",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyGraphLayoutWorker.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "suspend",
+          "epoch": 2
+        },
+        {
+          "op": "configure",
+          "epoch": 3,
+          "nodes": []
+        },
+        {
+          "op": "suspend",
+          "epoch": 4
+        },
+        {
+          "op": "advance",
+          "epoch": 4,
+          "count": 1
+        }
+      ],
+      "expected": [
+        null,
+        {
+          "count": 0,
+          "finite": true,
+          "positions": {},
+          "running": false
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "id": "dangling-edge",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyGraphLayoutWorker.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "configure",
+          "epoch": 1,
+          "nodes": [
+            "h1",
+            "h2"
+          ],
+          "edges": [
+            [
+              "h1",
+              "h2"
+            ],
+            [
+              "h1",
+              "h999"
+            ]
+          ]
+        },
+        {
+          "op": "advance",
+          "epoch": 1,
+          "count": 5
+        }
+      ],
+      "expected": [
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              60,
+              0
+            ],
+            "h2": [
+              -62.56782407101158,
+              57.317252123762394
+            ]
+          },
+          "running": true
+        },
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              59.26657738626166,
+              -0.481177108185885
+            ],
+            "h2": [
+              -61.75897689433242,
+              56.1148525651477
+            ]
+          },
+          "running": true
+        }
+      ]
+    },
+    {
+      "id": "drop-pin",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyGraphLayoutWorker.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "configure",
+          "epoch": 1,
+          "nodes": [
+            "h1",
+            "s1_2"
+          ],
+          "edges": [
+            [
+              "h1",
+              "s1_2"
+            ]
+          ]
+        },
+        {
+          "op": "advance",
+          "epoch": 1,
+          "count": 5,
+          "pinned": "s1_2",
+          "position": [
+            300,
+            400
+          ]
+        },
+        {
+          "op": "configure",
+          "epoch": 2,
+          "nodes": [
+            "h1"
+          ]
+        },
+        {
+          "op": "advance",
+          "epoch": 2,
+          "count": 1,
+          "pinned": "s1_2",
+          "position": [
+            999,
+            999
+          ]
+        }
+      ],
+      "expected": [
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              60,
+              0
+            ],
+            "s1_2": [
+              -77.42373219822358,
+              70.92648089746001
+            ]
+          },
+          "running": true
+        },
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              78.42252103335954,
+              35.74752008637023
+            ],
+            "s1_2": [
+              300,
+              400
+            ]
+          },
+          "running": true
+        },
+        {
+          "count": 1,
+          "finite": true,
+          "positions": {
+            "h1": [
+              78.42252103335954,
+              35.74752008637023
+            ]
+          },
+          "running": true
+        },
+        {
+          "count": 1,
+          "finite": true,
+          "positions": {
+            "h1": [
+              82.29081246054476,
+              43.14398525721879
+            ]
+          },
+          "running": true
+        }
+      ]
+    },
+    {
+      "id": "normalized-forces",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyGraphLayoutWorker.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "configure",
+          "epoch": 1,
+          "nodes": [
+            "h1",
+            "h2"
+          ],
+          "edges": [
+            [
+              "h1",
+              "h2"
+            ]
+          ],
+          "settings": {
+            "center": -1,
+            "repulsion": 5000,
+            "linkStrength": -1,
+            "linkDistance": 999
+          }
+        },
+        {
+          "op": "advance",
+          "epoch": 1,
+          "count": 5
+        }
+      ],
+      "expected": [
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              60,
+              0
+            ],
+            "h2": [
+              -62.56782407101158,
+              57.317252123762394
+            ]
+          },
+          "running": true
+        },
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              80.70736619929951,
+              -9.683531042997735
+            ],
+            "h2": [
+              -83.2751902703111,
+              67.00078316676013
+            ]
+          },
+          "running": true
+        }
+      ]
+    },
+    {
+      "id": "new-epoch",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyGraphLayoutWorker.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "configure",
+          "epoch": 1,
+          "nodes": [
+            "h1",
+            "h2"
+          ],
+          "edges": [
+            [
+              "h1",
+              "h2"
+            ]
+          ]
+        },
+        {
+          "op": "advance",
+          "epoch": 1,
+          "count": 160
+        },
+        {
+          "op": "configure",
+          "epoch": 99,
+          "nodes": [
+            "h1",
+            "h2"
+          ],
+          "edges": [
+            [
+              "h1",
+              "h2"
+            ]
+          ]
+        },
+        {
+          "op": "advance",
+          "epoch": 99,
+          "count": 1
+        }
+      ],
+      "expected": [
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              60,
+              0
+            ],
+            "h2": [
+              -62.56782407101158,
+              57.317252123762394
+            ]
+          },
+          "running": true
+        },
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              54.49337181922142,
+              -4.01630578358896
+            ],
+            "h2": [
+              -56.45796525463206,
+              47.86864696588775
+            ]
+          },
+          "running": false
+        },
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              54.49337181922142,
+              -4.01630578358896
+            ],
+            "h2": [
+              -56.45796525463206,
+              47.86864696588775
+            ]
+          },
+          "running": false
+        },
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h1": [
+              54.49337181922142,
+              -4.01630578358896
+            ],
+            "h2": [
+              -56.45796525463206,
+              47.86864696588775
+            ]
+          },
+          "running": false
+        }
+      ]
+    },
+    {
+      "id": "cache-at-limit",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyGraphLayoutWorker.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "configure",
+          "epoch": 1,
+          "count": 4096
+        },
+        {
+          "op": "configure",
+          "epoch": 2,
+          "nodes": [
+            "h5000"
+          ]
+        },
+        {
+          "op": "configure",
+          "epoch": 3,
+          "nodes": [
+            "h3"
+          ]
+        }
+      ],
+      "probes": [
+        "h3",
+        "h5000"
+      ],
+      "expected": [
+        {
+          "count": 4096,
+          "finite": true,
+          "positions": {
+            "h3": [
+              9.085547825898281,
+              -103.52513134839923
+            ]
+          },
+          "running": true
+        },
+        {
+          "count": 1,
+          "finite": true,
+          "positions": {
+            "h5000": [
+              60,
+              0
+            ]
+          },
+          "running": true
+        },
+        {
+          "count": 1,
+          "finite": true,
+          "positions": {
+            "h3": [
+              9.085547825898281,
+              -103.52513134839923
+            ]
+          },
+          "running": true
+        }
+      ]
+    },
+    {
+      "id": "cache-over-limit",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyGraphLayoutWorker.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "configure",
+          "epoch": 1,
+          "count": 4097
+        },
+        {
+          "op": "configure",
+          "epoch": 2,
+          "nodes": [
+            "h5000"
+          ]
+        },
+        {
+          "op": "configure",
+          "epoch": 3,
+          "nodes": [
+            "h3"
+          ]
+        }
+      ],
+      "probes": [
+        "h3",
+        "h5000"
+      ],
+      "expected": [
+        {
+          "count": 4097,
+          "finite": true,
+          "positions": {
+            "h3": [
+              9.085547825898281,
+              -103.52513134839923
+            ]
+          },
+          "running": true
+        },
+        {
+          "count": 1,
+          "finite": true,
+          "positions": {
+            "h5000": [
+              60,
+              0
+            ]
+          },
+          "running": true
+        },
+        {
+          "count": 1,
+          "finite": true,
+          "positions": {
+            "h3": [
+              60,
+              0
+            ]
+          },
+          "running": true
+        }
+      ]
+    },
+    {
+      "id": "suspend-cache-bound",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyGraphLayoutWorker.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "configure",
+          "epoch": 1,
+          "count": 4097
+        },
+        {
+          "op": "suspend",
+          "epoch": 2
+        },
+        {
+          "op": "configure",
+          "epoch": 3,
+          "nodes": [
+            "h3",
+            "h4097"
+          ]
+        }
+      ],
+      "probes": [
+        "h3",
+        "h4097"
+      ],
+      "expected": [
+        {
+          "count": 4097,
+          "finite": true,
+          "positions": {
+            "h3": [
+              9.085547825898281,
+              -103.52513134839923
+            ],
+            "h4097": [
+              -3759.2883558301755,
+              -785.4623210056945
+            ]
+          },
+          "running": true
+        },
+        null,
+        {
+          "count": 2,
+          "finite": true,
+          "positions": {
+            "h3": [
+              9.085547825898281,
+              -103.52513134839923
+            ],
+            "h4097": [
+              -62.56782407101158,
+              57.317252123762394
+            ]
+          },
+          "running": true
+        }
+      ]
+    },
+    {
+      "id": "thousand-heads",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyGraphLayoutWorker.swift",
+      "provenanceKind": "source-policy-extension",
+      "actions": [
+        {
+          "op": "configure",
+          "epoch": 1,
+          "count": 1000
+        },
+        {
+          "op": "advance",
+          "epoch": 1,
+          "count": 20
+        }
+      ],
+      "probes": [
+        "h1",
+        "h2",
+        "h500",
+        "h1000"
+      ],
+      "expected": [
+        {
+          "count": 1000,
+          "finite": true,
+          "positions": {
+            "h1": [
+              60,
+              0
+            ],
+            "h2": [
+              -62.56782407101158,
+              57.317252123762394
+            ],
+            "h500": [
+              -1080.2358957278718,
+              -795.6697867714988
+            ],
+            "h1000": [
+              -1638.907755469484,
+              -956.0237282944281
+            ]
+          },
+          "running": true
+        },
+        {
+          "count": 1000,
+          "finite": true,
+          "positions": {
+            "h1": [
+              81.09870285979525,
+              -2.118823362168004
+            ],
+            "h2": [
+              -84.10208394436239,
+              71.79235556725719
+            ],
+            "h500": [
+              -1602.1368894797304,
+              -1179.5604470921135
+            ],
+            "h1000": [
+              -2420.622877341127,
+              -1415.959660575282
+            ]
+          },
+          "running": true
+        }
+      ]
+    }
+  ]
+}

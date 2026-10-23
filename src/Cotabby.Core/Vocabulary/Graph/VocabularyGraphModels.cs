@@ -41,7 +41,7 @@ public sealed record VocabularyGraphSnapshot
         CollectionValues.SequenceHash(Nodes), CollectionValues.SequenceHash(Edges), CollectionValues.SetHash(Matches));
 }
 
-/// <summary>Copied layout output. A future serialized worker owns the mutable solver; consumers
+/// <summary>Copied layout output. The serialized graph worker owns the mutable solver; consumers
 /// receive these immutable positions and running state, without borrowing native buffers.</summary>
 public sealed record VocabularyGraphFrame
 {

@@ -1,0 +1,1827 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "first",
+      "operation": "first",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyNotebookSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "dictionary": {
+          "open": false,
+          "query": "",
+          "unit": null
+        },
+        "dictionaryCalls": 0,
+        "dictionaryRequests": [],
+        "displays": 0,
+        "entry": "00000000-0000-0000-0000-000000000001",
+        "generations": 0,
+        "priorStopped": null,
+        "reused": null,
+        "rows": [
+          {
+            "generating": false,
+            "input": {
+              "context": "The bank.",
+              "contextKind": "sentence",
+              "dictionaryForm": "bank",
+              "kind": "word",
+              "language": "en",
+              "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 4
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "00000000-0000-0000-0000-000000000003",
+            "meaning": null
+          },
+          {
+            "generating": false,
+            "input": {
+              "context": "bank",
+              "contextKind": "none",
+              "dictionaryForm": "bank",
+              "kind": "word",
+              "language": "en",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 0
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "standalone",
+            "meaning": null
+          }
+        ],
+        "sense": "00000000-0000-0000-0000-000000000002"
+      },
+      "facts": [],
+      "macChildSources": [
+        "Cotabby/Services/LanguageLearning/LearningExplanationSession.swift",
+        "Cotabby/Services/LanguageLearning/LearningDictionarySession.swift"
+      ]
+    },
+    {
+      "id": "missing",
+      "operation": "missing",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyNotebookSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "dictionary": {
+          "open": false,
+          "query": "",
+          "unit": null
+        },
+        "dictionaryCalls": 0,
+        "dictionaryRequests": [],
+        "displays": 0,
+        "entry": "00000000-0000-0000-0000-000000000001",
+        "generations": 0,
+        "priorStopped": null,
+        "reused": null,
+        "rows": [
+          {
+            "generating": false,
+            "input": {
+              "context": "The bank.",
+              "contextKind": "sentence",
+              "dictionaryForm": "bank",
+              "kind": "word",
+              "language": "en",
+              "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 4
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "00000000-0000-0000-0000-000000000003",
+            "meaning": null
+          },
+          {
+            "generating": false,
+            "input": {
+              "context": "bank",
+              "contextKind": "none",
+              "dictionaryForm": "bank",
+              "kind": "word",
+              "language": "en",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 0
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "standalone",
+            "meaning": null
+          }
+        ],
+        "sense": "00000000-0000-0000-0000-000000000002"
+      },
+      "facts": [],
+      "macChildSources": [
+        "Cotabby/Services/LanguageLearning/LearningExplanationSession.swift",
+        "Cotabby/Services/LanguageLearning/LearningDictionarySession.swift"
+      ]
+    },
+    {
+      "id": "alias",
+      "operation": "alias",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyNotebookSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "dictionary": {
+          "open": false,
+          "query": "",
+          "unit": null
+        },
+        "dictionaryCalls": 0,
+        "dictionaryRequests": [],
+        "displays": 0,
+        "entry": "00000000-0000-0000-0000-000000000001",
+        "generations": 0,
+        "priorStopped": null,
+        "reused": null,
+        "rows": [
+          {
+            "generating": false,
+            "input": {
+              "context": "The bank.",
+              "contextKind": "sentence",
+              "dictionaryForm": "bank",
+              "kind": "word",
+              "language": "en",
+              "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 4
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "00000000-0000-0000-0000-000000000003",
+            "meaning": null
+          },
+          {
+            "generating": false,
+            "input": {
+              "context": "bank",
+              "contextKind": "none",
+              "dictionaryForm": "bank",
+              "kind": "word",
+              "language": "en",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 0
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "standalone",
+            "meaning": null
+          }
+        ],
+        "sense": "00000000-0000-0000-0000-000000000002"
+      },
+      "facts": [],
+      "macChildSources": [
+        "Cotabby/Services/LanguageLearning/LearningExplanationSession.swift",
+        "Cotabby/Services/LanguageLearning/LearningDictionarySession.swift"
+      ]
+    },
+    {
+      "id": "second",
+      "operation": "second",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyNotebookSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "dictionary": {
+          "open": false,
+          "query": "",
+          "unit": null
+        },
+        "dictionaryCalls": 0,
+        "dictionaryRequests": [],
+        "displays": 0,
+        "entry": "00000000-0000-0000-0000-000000000001",
+        "generations": 1,
+        "priorStopped": true,
+        "reused": null,
+        "rows": [
+          {
+            "generating": false,
+            "input": {
+              "context": "My bank.",
+              "contextKind": "sentence",
+              "dictionaryForm": "bank",
+              "kind": "word",
+              "language": "en",
+              "occurrenceIdentity": "c14898d894e55ed571da7781a663e8fec8a4ba0c01e6ccac60adc5fd8d56790a",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 3
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "00000000-0000-0000-0000-000000000006",
+            "meaning": null
+          }
+        ],
+        "sense": "00000000-0000-0000-0000-000000000004"
+      },
+      "facts": [],
+      "macChildSources": [
+        "Cotabby/Services/LanguageLearning/LearningExplanationSession.swift",
+        "Cotabby/Services/LanguageLearning/LearningDictionarySession.swift"
+      ]
+    },
+    {
+      "id": "same",
+      "operation": "same",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyNotebookSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "dictionary": {
+          "open": false,
+          "query": "",
+          "unit": null
+        },
+        "dictionaryCalls": 0,
+        "dictionaryRequests": [],
+        "displays": 0,
+        "entry": "00000000-0000-0000-0000-000000000001",
+        "generations": 0,
+        "priorStopped": null,
+        "reused": true,
+        "rows": [
+          {
+            "generating": false,
+            "input": {
+              "context": "The bank.",
+              "contextKind": "sentence",
+              "dictionaryForm": "bank",
+              "kind": "word",
+              "language": "en",
+              "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 4
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "00000000-0000-0000-0000-000000000003",
+            "meaning": null
+          },
+          {
+            "generating": false,
+            "input": {
+              "context": "bank",
+              "contextKind": "none",
+              "dictionaryForm": "bank",
+              "kind": "word",
+              "language": "en",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 0
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "standalone",
+            "meaning": null
+          }
+        ],
+        "sense": "00000000-0000-0000-0000-000000000002"
+      },
+      "facts": [],
+      "macChildSources": [
+        "Cotabby/Services/LanguageLearning/LearningExplanationSession.swift",
+        "Cotabby/Services/LanguageLearning/LearningDictionarySession.swift"
+      ]
+    },
+    {
+      "id": "note",
+      "operation": "note",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyNotebookSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "dictionary": {
+          "open": false,
+          "query": "",
+          "unit": null
+        },
+        "dictionaryCalls": 0,
+        "dictionaryRequests": [],
+        "displays": 0,
+        "entry": "00000000-0000-0000-0000-000000000001",
+        "generations": 1,
+        "priorStopped": null,
+        "reused": true,
+        "rows": [
+          {
+            "generating": true,
+            "input": {
+              "context": "The bank.",
+              "contextKind": "sentence",
+              "dictionaryForm": "bank",
+              "kind": "word",
+              "language": "en",
+              "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 4
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "00000000-0000-0000-0000-000000000003",
+            "meaning": null
+          },
+          {
+            "generating": false,
+            "input": {
+              "context": "bank",
+              "contextKind": "none",
+              "dictionaryForm": "bank",
+              "kind": "word",
+              "language": "en",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 0
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "standalone",
+            "meaning": null
+          }
+        ],
+        "sense": "00000000-0000-0000-0000-000000000002"
+      },
+      "facts": [],
+      "macChildSources": [
+        "Cotabby/Services/LanguageLearning/LearningExplanationSession.swift",
+        "Cotabby/Services/LanguageLearning/LearningDictionarySession.swift"
+      ]
+    },
+    {
+      "id": "context",
+      "operation": "context",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyNotebookSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "dictionary": {
+          "open": false,
+          "query": "",
+          "unit": null
+        },
+        "dictionaryCalls": 0,
+        "dictionaryRequests": [],
+        "displays": 0,
+        "entry": "00000000-0000-0000-0000-000000000001",
+        "generations": 1,
+        "priorStopped": null,
+        "reused": true,
+        "rows": [
+          {
+            "generating": false,
+            "input": {
+              "context": "The bank opens.",
+              "contextKind": "sentence",
+              "dictionaryForm": "bank",
+              "kind": "word",
+              "language": "en",
+              "occurrenceIdentity": "ac67e171bf47c92846ebb72c8afa66ee3f94347ebe69deb15e61856a6f074742",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 4
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "00000000-0000-0000-0000-000000000003",
+            "meaning": null
+          },
+          {
+            "generating": false,
+            "input": {
+              "context": "bank",
+              "contextKind": "none",
+              "dictionaryForm": "bank",
+              "kind": "word",
+              "language": "en",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 0
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "standalone",
+            "meaning": null
+          }
+        ],
+        "sense": "00000000-0000-0000-0000-000000000002"
+      },
+      "facts": [],
+      "macChildSources": [
+        "Cotabby/Services/LanguageLearning/LearningExplanationSession.swift",
+        "Cotabby/Services/LanguageLearning/LearningDictionarySession.swift"
+      ]
+    },
+    {
+      "id": "remove",
+      "operation": "remove",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyNotebookSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "dictionary": {
+          "open": false,
+          "query": "",
+          "unit": null
+        },
+        "dictionaryCalls": 0,
+        "dictionaryRequests": [],
+        "displays": 0,
+        "entry": "00000000-0000-0000-0000-000000000001",
+        "generations": 1,
+        "priorStopped": true,
+        "reused": null,
+        "rows": [
+          {
+            "generating": false,
+            "input": {
+              "context": "bank",
+              "contextKind": "none",
+              "dictionaryForm": "bank",
+              "kind": "word",
+              "language": "en",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 0
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "standalone",
+            "meaning": null
+          }
+        ],
+        "sense": "00000000-0000-0000-0000-000000000002"
+      },
+      "facts": [],
+      "macChildSources": [
+        "Cotabby/Services/LanguageLearning/LearningExplanationSession.swift",
+        "Cotabby/Services/LanguageLearning/LearningDictionarySession.swift"
+      ]
+    },
+    {
+      "id": "standalone",
+      "operation": "standalone",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyNotebookSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "dictionary": {
+          "open": false,
+          "query": "",
+          "unit": null
+        },
+        "dictionaryCalls": 0,
+        "dictionaryRequests": [],
+        "displays": 0,
+        "entry": "00000000-0000-0000-0000-000000000001",
+        "generations": 0,
+        "priorStopped": null,
+        "reused": null,
+        "rows": [
+          {
+            "generating": false,
+            "input": {
+              "context": "bank",
+              "contextKind": "none",
+              "dictionaryForm": "bank",
+              "kind": "word",
+              "language": "en",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 0
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "standalone",
+            "meaning": null
+          }
+        ],
+        "sense": "00000000-0000-0000-0000-000000000002"
+      },
+      "facts": [],
+      "macChildSources": [
+        "Cotabby/Services/LanguageLearning/LearningExplanationSession.swift",
+        "Cotabby/Services/LanguageLearning/LearningDictionarySession.swift"
+      ]
+    },
+    {
+      "id": "no-standalone",
+      "operation": "no-standalone",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyNotebookSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "dictionary": {
+          "open": false,
+          "query": "",
+          "unit": null
+        },
+        "dictionaryCalls": 0,
+        "dictionaryRequests": [],
+        "displays": 0,
+        "entry": "00000000-0000-0000-0000-000000000001",
+        "generations": 0,
+        "priorStopped": null,
+        "reused": null,
+        "rows": [
+          {
+            "generating": false,
+            "input": {
+              "context": "The bank.",
+              "contextKind": "sentence",
+              "dictionaryForm": "bank",
+              "kind": "word",
+              "language": "en",
+              "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 4
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "00000000-0000-0000-0000-000000000003",
+            "meaning": null
+          }
+        ],
+        "sense": "00000000-0000-0000-0000-000000000002"
+      },
+      "facts": [],
+      "macChildSources": [
+        "Cotabby/Services/LanguageLearning/LearningExplanationSession.swift",
+        "Cotabby/Services/LanguageLearning/LearningDictionarySession.swift"
+      ]
+    },
+    {
+      "id": "nil",
+      "operation": "nil",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyNotebookSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "dictionary": {
+          "open": false,
+          "query": "",
+          "unit": null
+        },
+        "dictionaryCalls": 0,
+        "dictionaryRequests": [],
+        "displays": 0,
+        "entry": null,
+        "generations": 0,
+        "priorStopped": null,
+        "reused": null,
+        "rows": [],
+        "sense": null
+      },
+      "facts": [],
+      "macChildSources": [
+        "Cotabby/Services/LanguageLearning/LearningExplanationSession.swift",
+        "Cotabby/Services/LanguageLearning/LearningDictionarySession.swift"
+      ]
+    },
+    {
+      "id": "saved",
+      "operation": "saved",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyNotebookSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "dictionary": {
+          "open": false,
+          "query": "",
+          "unit": null
+        },
+        "dictionaryCalls": 0,
+        "dictionaryRequests": [],
+        "displays": 0,
+        "entry": "00000000-0000-0000-0000-000000000001",
+        "generations": 0,
+        "priorStopped": null,
+        "reused": null,
+        "rows": [
+          {
+            "generating": false,
+            "input": {
+              "context": "The bank.",
+              "contextKind": "sentence",
+              "dictionaryForm": "bank",
+              "kind": "word",
+              "language": "en",
+              "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 4
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "00000000-0000-0000-0000-000000000003",
+            "meaning": "saved"
+          },
+          {
+            "generating": false,
+            "input": {
+              "context": "bank",
+              "contextKind": "none",
+              "dictionaryForm": "bank",
+              "kind": "word",
+              "language": "en",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 0
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "standalone",
+            "meaning": null
+          }
+        ],
+        "sense": "00000000-0000-0000-0000-000000000002"
+      },
+      "facts": [],
+      "macChildSources": [
+        "Cotabby/Services/LanguageLearning/LearningExplanationSession.swift",
+        "Cotabby/Services/LanguageLearning/LearningDictionarySession.swift"
+      ]
+    },
+    {
+      "id": "wrong-language",
+      "operation": "wrong-language",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyNotebookSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "dictionary": {
+          "open": false,
+          "query": "",
+          "unit": null
+        },
+        "dictionaryCalls": 0,
+        "dictionaryRequests": [],
+        "displays": 0,
+        "entry": "00000000-0000-0000-0000-000000000001",
+        "generations": 0,
+        "priorStopped": null,
+        "reused": null,
+        "rows": [
+          {
+            "generating": false,
+            "input": {
+              "context": "The bank.",
+              "contextKind": "sentence",
+              "dictionaryForm": "bank",
+              "kind": "word",
+              "language": "en",
+              "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 4
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "00000000-0000-0000-0000-000000000003",
+            "meaning": null
+          },
+          {
+            "generating": false,
+            "input": {
+              "context": "bank",
+              "contextKind": "none",
+              "dictionaryForm": "bank",
+              "kind": "word",
+              "language": "en",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 0
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "standalone",
+            "meaning": null
+          }
+        ],
+        "sense": "00000000-0000-0000-0000-000000000002"
+      },
+      "facts": [],
+      "macChildSources": [
+        "Cotabby/Services/LanguageLearning/LearningExplanationSession.swift",
+        "Cotabby/Services/LanguageLearning/LearningDictionarySession.swift"
+      ]
+    },
+    {
+      "id": "activate",
+      "operation": "activate",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyNotebookSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "dictionary": {
+          "open": false,
+          "query": "",
+          "unit": null
+        },
+        "dictionaryCalls": 0,
+        "dictionaryRequests": [],
+        "displays": 1,
+        "entry": "00000000-0000-0000-0000-000000000001",
+        "generations": 2,
+        "priorStopped": true,
+        "reused": null,
+        "rows": [
+          {
+            "generating": false,
+            "input": {
+              "context": "The bank.",
+              "contextKind": "sentence",
+              "dictionaryForm": "bank",
+              "kind": "word",
+              "language": "en",
+              "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 4
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "00000000-0000-0000-0000-000000000003",
+            "meaning": null
+          },
+          {
+            "generating": false,
+            "input": {
+              "context": "bank",
+              "contextKind": "none",
+              "dictionaryForm": "bank",
+              "kind": "word",
+              "language": "en",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 0
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "standalone",
+            "meaning": "generated"
+          }
+        ],
+        "sense": "00000000-0000-0000-0000-000000000002"
+      },
+      "facts": [],
+      "macChildSources": [
+        "Cotabby/Services/LanguageLearning/LearningExplanationSession.swift",
+        "Cotabby/Services/LanguageLearning/LearningDictionarySession.swift"
+      ]
+    },
+    {
+      "id": "cancel",
+      "operation": "cancel",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyNotebookSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "dictionary": {
+          "open": false,
+          "query": "",
+          "unit": null
+        },
+        "dictionaryCalls": 0,
+        "dictionaryRequests": [],
+        "displays": 0,
+        "entry": "00000000-0000-0000-0000-000000000001",
+        "generations": 1,
+        "priorStopped": true,
+        "reused": null,
+        "rows": [
+          {
+            "generating": false,
+            "input": {
+              "context": "The bank.",
+              "contextKind": "sentence",
+              "dictionaryForm": "bank",
+              "kind": "word",
+              "language": "en",
+              "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 4
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "00000000-0000-0000-0000-000000000003",
+            "meaning": null
+          },
+          {
+            "generating": false,
+            "input": {
+              "context": "bank",
+              "contextKind": "none",
+              "dictionaryForm": "bank",
+              "kind": "word",
+              "language": "en",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 0
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "standalone",
+            "meaning": null
+          }
+        ],
+        "sense": "00000000-0000-0000-0000-000000000002"
+      },
+      "facts": [],
+      "macChildSources": [
+        "Cotabby/Services/LanguageLearning/LearningExplanationSession.swift",
+        "Cotabby/Services/LanguageLearning/LearningDictionarySession.swift"
+      ]
+    },
+    {
+      "id": "dictionary-open",
+      "operation": "dictionary-open",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyNotebookSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "dictionary": {
+          "open": true,
+          "query": "bank",
+          "unit": {
+            "id": 0,
+            "kind": "word",
+            "query": "bank",
+            "ranges": [
+              [
+                0,
+                4
+              ]
+            ],
+            "surface": "bank",
+            "words": [
+              {
+                "length": 4,
+                "location": 0,
+                "text": "bank"
+              }
+            ]
+          }
+        },
+        "dictionaryCalls": 1,
+        "dictionaryRequests": [
+          {
+            "expression": false,
+            "language": "en",
+            "query": "bank"
+          }
+        ],
+        "displays": 0,
+        "entry": "00000000-0000-0000-0000-000000000001",
+        "generations": 0,
+        "priorStopped": null,
+        "reused": null,
+        "rows": [
+          {
+            "generating": false,
+            "input": {
+              "context": "The bank.",
+              "contextKind": "sentence",
+              "dictionaryForm": "bank",
+              "kind": "word",
+              "language": "en",
+              "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 4
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "00000000-0000-0000-0000-000000000003",
+            "meaning": null
+          },
+          {
+            "generating": false,
+            "input": {
+              "context": "bank",
+              "contextKind": "none",
+              "dictionaryForm": "bank",
+              "kind": "word",
+              "language": "en",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 0
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "standalone",
+            "meaning": null
+          }
+        ],
+        "sense": "00000000-0000-0000-0000-000000000002"
+      },
+      "facts": [
+        {
+          "language": "en",
+          "query": "bank",
+          "words": [
+            {
+              "length": 4,
+              "location": 0,
+              "text": "bank"
+            }
+          ]
+        }
+      ],
+      "macChildSources": [
+        "Cotabby/Services/LanguageLearning/LearningExplanationSession.swift",
+        "Cotabby/Services/LanguageLearning/LearningDictionarySession.swift"
+      ]
+    },
+    {
+      "id": "dictionary-repeat",
+      "operation": "dictionary-repeat",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyNotebookSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "dictionary": {
+          "open": true,
+          "query": "bank",
+          "unit": {
+            "id": 0,
+            "kind": "word",
+            "query": "bank",
+            "ranges": [
+              [
+                0,
+                4
+              ]
+            ],
+            "surface": "bank",
+            "words": [
+              {
+                "length": 4,
+                "location": 0,
+                "text": "bank"
+              }
+            ]
+          }
+        },
+        "dictionaryCalls": 1,
+        "dictionaryRequests": [
+          {
+            "expression": false,
+            "language": "en",
+            "query": "bank"
+          }
+        ],
+        "displays": 0,
+        "entry": "00000000-0000-0000-0000-000000000001",
+        "generations": 0,
+        "priorStopped": null,
+        "reused": null,
+        "rows": [
+          {
+            "generating": false,
+            "input": {
+              "context": "The bank.",
+              "contextKind": "sentence",
+              "dictionaryForm": "bank",
+              "kind": "word",
+              "language": "en",
+              "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 4
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "00000000-0000-0000-0000-000000000003",
+            "meaning": null
+          },
+          {
+            "generating": false,
+            "input": {
+              "context": "bank",
+              "contextKind": "none",
+              "dictionaryForm": "bank",
+              "kind": "word",
+              "language": "en",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 0
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "standalone",
+            "meaning": null
+          }
+        ],
+        "sense": "00000000-0000-0000-0000-000000000002"
+      },
+      "facts": [
+        {
+          "language": "en",
+          "query": "bank",
+          "words": [
+            {
+              "length": 4,
+              "location": 0,
+              "text": "bank"
+            }
+          ]
+        },
+        {
+          "language": "en",
+          "query": "bank",
+          "words": [
+            {
+              "length": 4,
+              "location": 0,
+              "text": "bank"
+            }
+          ]
+        }
+      ],
+      "macChildSources": [
+        "Cotabby/Services/LanguageLearning/LearningExplanationSession.swift",
+        "Cotabby/Services/LanguageLearning/LearningDictionarySession.swift"
+      ]
+    },
+    {
+      "id": "dictionary-hide",
+      "operation": "dictionary-hide",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyNotebookSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "dictionary": {
+          "open": false,
+          "query": "",
+          "unit": null
+        },
+        "dictionaryCalls": 1,
+        "dictionaryRequests": [
+          {
+            "expression": false,
+            "language": "en",
+            "query": "bank"
+          }
+        ],
+        "displays": 0,
+        "entry": "00000000-0000-0000-0000-000000000001",
+        "generations": 0,
+        "priorStopped": null,
+        "reused": null,
+        "rows": [
+          {
+            "generating": false,
+            "input": {
+              "context": "The bank.",
+              "contextKind": "sentence",
+              "dictionaryForm": "bank",
+              "kind": "word",
+              "language": "en",
+              "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 4
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "00000000-0000-0000-0000-000000000003",
+            "meaning": null
+          },
+          {
+            "generating": false,
+            "input": {
+              "context": "bank",
+              "contextKind": "none",
+              "dictionaryForm": "bank",
+              "kind": "word",
+              "language": "en",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 0
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "standalone",
+            "meaning": null
+          }
+        ],
+        "sense": "00000000-0000-0000-0000-000000000002"
+      },
+      "facts": [
+        {
+          "language": "en",
+          "query": "bank",
+          "words": [
+            {
+              "length": 4,
+              "location": 0,
+              "text": "bank"
+            }
+          ]
+        }
+      ],
+      "macChildSources": [
+        "Cotabby/Services/LanguageLearning/LearningExplanationSession.swift",
+        "Cotabby/Services/LanguageLearning/LearningDictionarySession.swift"
+      ]
+    },
+    {
+      "id": "dictionary-resume",
+      "operation": "dictionary-resume",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyNotebookSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "dictionary": {
+          "open": true,
+          "query": "bank",
+          "unit": {
+            "id": 0,
+            "kind": "word",
+            "query": "bank",
+            "ranges": [
+              [
+                0,
+                4
+              ]
+            ],
+            "surface": "bank",
+            "words": [
+              {
+                "length": 4,
+                "location": 0,
+                "text": "bank"
+              }
+            ]
+          }
+        },
+        "dictionaryCalls": 2,
+        "dictionaryRequests": [
+          {
+            "expression": false,
+            "language": "en",
+            "query": "bank"
+          },
+          {
+            "expression": false,
+            "language": "en",
+            "query": "bank"
+          }
+        ],
+        "displays": 0,
+        "entry": "00000000-0000-0000-0000-000000000001",
+        "generations": 0,
+        "priorStopped": null,
+        "reused": null,
+        "rows": [
+          {
+            "generating": false,
+            "input": {
+              "context": "The bank.",
+              "contextKind": "sentence",
+              "dictionaryForm": "bank",
+              "kind": "word",
+              "language": "en",
+              "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 4
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "00000000-0000-0000-0000-000000000003",
+            "meaning": null
+          },
+          {
+            "generating": false,
+            "input": {
+              "context": "bank",
+              "contextKind": "none",
+              "dictionaryForm": "bank",
+              "kind": "word",
+              "language": "en",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 0
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "standalone",
+            "meaning": null
+          }
+        ],
+        "sense": "00000000-0000-0000-0000-000000000002"
+      },
+      "facts": [
+        {
+          "language": "en",
+          "query": "bank",
+          "words": [
+            {
+              "length": 4,
+              "location": 0,
+              "text": "bank"
+            }
+          ]
+        }
+      ],
+      "macChildSources": [
+        "Cotabby/Services/LanguageLearning/LearningExplanationSession.swift",
+        "Cotabby/Services/LanguageLearning/LearningDictionarySession.swift"
+      ]
+    },
+    {
+      "id": "dictionary-form",
+      "operation": "dictionary-form",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyNotebookSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "dictionary": {
+          "open": true,
+          "query": "riverbank",
+          "unit": {
+            "id": 0,
+            "kind": "word",
+            "query": "riverbank",
+            "ranges": [
+              [
+                0,
+                9
+              ]
+            ],
+            "surface": "riverbank",
+            "words": [
+              {
+                "length": 9,
+                "location": 0,
+                "text": "riverbank"
+              }
+            ]
+          }
+        },
+        "dictionaryCalls": 2,
+        "dictionaryRequests": [
+          {
+            "expression": false,
+            "language": "en",
+            "query": "bank"
+          },
+          {
+            "expression": false,
+            "language": "en",
+            "query": "riverbank"
+          }
+        ],
+        "displays": 0,
+        "entry": "00000000-0000-0000-0000-000000000001",
+        "generations": 0,
+        "priorStopped": null,
+        "reused": null,
+        "rows": [
+          {
+            "generating": false,
+            "input": {
+              "context": "The bank.",
+              "contextKind": "sentence",
+              "dictionaryForm": "riverbank",
+              "kind": "word",
+              "language": "en",
+              "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 4
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "00000000-0000-0000-0000-000000000003",
+            "meaning": null
+          },
+          {
+            "generating": false,
+            "input": {
+              "context": "bank",
+              "contextKind": "none",
+              "dictionaryForm": "riverbank",
+              "kind": "word",
+              "language": "en",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 0
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "standalone",
+            "meaning": null
+          }
+        ],
+        "sense": "00000000-0000-0000-0000-000000000002"
+      },
+      "facts": [
+        {
+          "language": "en",
+          "query": "bank",
+          "words": [
+            {
+              "length": 4,
+              "location": 0,
+              "text": "bank"
+            }
+          ]
+        },
+        {
+          "language": "en",
+          "query": "riverbank",
+          "words": [
+            {
+              "length": 9,
+              "location": 0,
+              "text": "riverbank"
+            }
+          ]
+        }
+      ],
+      "macChildSources": [
+        "Cotabby/Services/LanguageLearning/LearningExplanationSession.swift",
+        "Cotabby/Services/LanguageLearning/LearningDictionarySession.swift"
+      ]
+    },
+    {
+      "id": "dictionary-language",
+      "operation": "dictionary-language",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyNotebookSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "dictionary": {
+          "open": false,
+          "query": "",
+          "unit": null
+        },
+        "dictionaryCalls": 1,
+        "dictionaryRequests": [
+          {
+            "expression": false,
+            "language": "en",
+            "query": "bank"
+          }
+        ],
+        "displays": 0,
+        "entry": "00000000-0000-0000-0000-000000000001",
+        "generations": 0,
+        "priorStopped": null,
+        "reused": null,
+        "rows": [
+          {
+            "generating": false,
+            "input": {
+              "context": "The bank.",
+              "contextKind": "sentence",
+              "dictionaryForm": "bank",
+              "kind": "word",
+              "language": "fr",
+              "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 4
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "00000000-0000-0000-0000-000000000003",
+            "meaning": null
+          },
+          {
+            "generating": false,
+            "input": {
+              "context": "bank",
+              "contextKind": "none",
+              "dictionaryForm": "bank",
+              "kind": "word",
+              "language": "fr",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 0
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "standalone",
+            "meaning": null
+          }
+        ],
+        "sense": "00000000-0000-0000-0000-000000000002"
+      },
+      "facts": [
+        {
+          "language": "en",
+          "query": "bank",
+          "words": [
+            {
+              "length": 4,
+              "location": 0,
+              "text": "bank"
+            }
+          ]
+        }
+      ],
+      "macChildSources": [
+        "Cotabby/Services/LanguageLearning/LearningExplanationSession.swift",
+        "Cotabby/Services/LanguageLearning/LearningDictionarySession.swift"
+      ]
+    },
+    {
+      "id": "dictionary-empty-form",
+      "operation": "dictionary-empty-form",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyNotebookSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "dictionary": {
+          "open": true,
+          "query": "bank",
+          "unit": {
+            "id": 0,
+            "kind": "word",
+            "query": "bank",
+            "ranges": [
+              [
+                0,
+                4
+              ]
+            ],
+            "surface": "bank",
+            "words": [
+              {
+                "length": 4,
+                "location": 0,
+                "text": "bank"
+              }
+            ]
+          }
+        },
+        "dictionaryCalls": 1,
+        "dictionaryRequests": [
+          {
+            "expression": false,
+            "language": "en",
+            "query": "bank"
+          }
+        ],
+        "displays": 0,
+        "entry": "00000000-0000-0000-0000-000000000001",
+        "generations": 0,
+        "priorStopped": null,
+        "reused": null,
+        "rows": [
+          {
+            "generating": false,
+            "input": {
+              "context": "The bank.",
+              "contextKind": "sentence",
+              "dictionaryForm": "",
+              "kind": "word",
+              "language": "en",
+              "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 4
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "00000000-0000-0000-0000-000000000003",
+            "meaning": null
+          },
+          {
+            "generating": false,
+            "input": {
+              "context": "bank",
+              "contextKind": "none",
+              "dictionaryForm": "",
+              "kind": "word",
+              "language": "en",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 0
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "standalone",
+            "meaning": null
+          }
+        ],
+        "sense": "00000000-0000-0000-0000-000000000002"
+      },
+      "facts": [
+        {
+          "language": "en",
+          "query": "bank",
+          "words": [
+            {
+              "length": 4,
+              "location": 0,
+              "text": "bank"
+            }
+          ]
+        }
+      ],
+      "macChildSources": [
+        "Cotabby/Services/LanguageLearning/LearningExplanationSession.swift",
+        "Cotabby/Services/LanguageLearning/LearningDictionarySession.swift"
+      ]
+    },
+    {
+      "id": "dictionary-pattern",
+      "operation": "dictionary-pattern",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyNotebookSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "dictionary": {
+          "open": true,
+          "query": "keep someone posted",
+          "unit": {
+            "id": 0,
+            "kind": "expression",
+            "query": "keep someone posted",
+            "ranges": [
+              [
+                0,
+                19
+              ]
+            ],
+            "surface": "keep someone posted",
+            "words": [
+              {
+                "length": 4,
+                "location": 0,
+                "text": "keep"
+              },
+              {
+                "length": 7,
+                "location": 5,
+                "text": "someone"
+              },
+              {
+                "length": 6,
+                "location": 13,
+                "text": "posted"
+              }
+            ]
+          }
+        },
+        "dictionaryCalls": 1,
+        "dictionaryRequests": [
+          {
+            "expression": true,
+            "language": "en",
+            "query": "keep someone posted"
+          }
+        ],
+        "displays": 0,
+        "entry": "00000000-0000-0000-0000-000000000001",
+        "generations": 0,
+        "priorStopped": null,
+        "reused": null,
+        "rows": [
+          {
+            "generating": false,
+            "input": {
+              "context": "keep me posted",
+              "contextKind": "none",
+              "dictionaryForm": "keep someone posted",
+              "kind": "pattern",
+              "language": "en",
+              "ranges": [
+                {
+                  "length": 14,
+                  "location": 0
+                }
+              ],
+              "target": "keep me posted"
+            },
+            "key": "standalone",
+            "meaning": null
+          }
+        ],
+        "sense": "00000000-0000-0000-0000-000000000002"
+      },
+      "facts": [
+        {
+          "language": "en",
+          "query": "keep someone posted",
+          "words": [
+            {
+              "length": 4,
+              "location": 0,
+              "text": "keep"
+            },
+            {
+              "length": 7,
+              "location": 5,
+              "text": "someone"
+            },
+            {
+              "length": 6,
+              "location": 13,
+              "text": "posted"
+            }
+          ]
+        }
+      ],
+      "macChildSources": [
+        "Cotabby/Services/LanguageLearning/LearningExplanationSession.swift",
+        "Cotabby/Services/LanguageLearning/LearningDictionarySession.swift"
+      ]
+    },
+    {
+      "id": "dictionary-canonical",
+      "operation": "dictionary-canonical",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyNotebookSession.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "dictionary": {
+          "open": true,
+          "query": "café",
+          "unit": {
+            "id": 0,
+            "kind": "word",
+            "query": "café",
+            "ranges": [
+              [
+                0,
+                4
+              ]
+            ],
+            "surface": "café",
+            "words": [
+              {
+                "length": 4,
+                "location": 0,
+                "text": "café"
+              }
+            ]
+          }
+        },
+        "dictionaryCalls": 1,
+        "dictionaryRequests": [
+          {
+            "expression": false,
+            "language": "en",
+            "query": "café"
+          }
+        ],
+        "displays": 0,
+        "entry": "00000000-0000-0000-0000-000000000001",
+        "generations": 0,
+        "priorStopped": null,
+        "reused": null,
+        "rows": [
+          {
+            "generating": false,
+            "input": {
+              "context": "The bank.",
+              "contextKind": "sentence",
+              "dictionaryForm": "café",
+              "kind": "word",
+              "language": "en",
+              "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 4
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "00000000-0000-0000-0000-000000000003",
+            "meaning": null
+          },
+          {
+            "generating": false,
+            "input": {
+              "context": "bank",
+              "contextKind": "none",
+              "dictionaryForm": "café",
+              "kind": "word",
+              "language": "en",
+              "ranges": [
+                {
+                  "length": 4,
+                  "location": 0
+                }
+              ],
+              "target": "bank"
+            },
+            "key": "standalone",
+            "meaning": null
+          }
+        ],
+        "sense": "00000000-0000-0000-0000-000000000002"
+      },
+      "facts": [
+        {
+          "language": "en",
+          "query": "café",
+          "words": [
+            {
+              "length": 4,
+              "location": 0,
+              "text": "café"
+            }
+          ]
+        },
+        {
+          "language": "en",
+          "query": "café",
+          "words": [
+            {
+              "length": 5,
+              "location": 0,
+              "text": "café"
+            }
+          ]
+        }
+      ],
+      "macChildSources": [
+        "Cotabby/Services/LanguageLearning/LearningExplanationSession.swift",
+        "Cotabby/Services/LanguageLearning/LearningDictionarySession.swift"
+      ]
+    }
+  ]
+}

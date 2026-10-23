@@ -51,7 +51,8 @@ admission makes no open/data/lock calls. These fixtures never read or replace th
 They do not prove physical Ctrl+V/IME behavior, real producer interoperation or AppHost desktop
 shutdown. Existing file/image tests continue to cover budgets, pruning, rollback and preview.
 
-Encoded PNG/TIFF/JPEG are the current clipboard subset. `CF_DIB`/`CF_DIBV5`/`CF_BITMAP` producers,
+Encoded PNG/TIFF/JPEG retain precedence. The [DIB adapter](VOCABULARY_CLIPBOARD_DIB.md) now adds
+supported packed `CF_DIBV5`/`CF_DIB` formats to this same flow. Compressed/profiled variants,
 virtual/pixel-only drops and native Windows clipboard producer checks remain open. A successful
 compile or fixture paste is not evidence that every Windows app exposes a supported image format.
 

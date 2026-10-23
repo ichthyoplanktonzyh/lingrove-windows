@@ -11,8 +11,9 @@ cancellation even if the foreign provider never calls back. These are the behavi
 
 This slice initially supplied the Windows extraction library and its ordinary build dependency.
 The [image paste integration](VOCABULARY_IMAGE_PASTE.md) now connects the button and explanation
-section command through one AppHost owner. Clipboard text, DIB/bitmap conversion,
-virtual files and pixel-only drops are outside this library's implemented formats.
+section command through one AppHost owner. The [DIB adapter](VOCABULARY_CLIPBOARD_DIB.md) now adds
+bounded Windows bitmap envelopes after the encoded groups. Clipboard text, virtual files and
+pixel-only drops remain outside this library's implemented formats.
 
 ## Ownership and data flow
 
@@ -31,7 +32,8 @@ the WPF test output. This adds no installer, upload, release job or downloaded m
 
 The reader opens the clipboard read-only with three bounded acquisition attempts. It checks the
 captured sequence before and after acquiring the open, then requests fixed HGLOBAL representations:
-registered `PNG`/`image/png`, standard `CF_TIFF`, and registered `JFIF`/`JPEG`/`image/jpeg`.
+registered `PNG`/`image/png`, standard `CF_TIFF`, registered `JFIF`/`JPEG`/`image/jpeg`, then
+standard `CF_DIBV5`/`CF_DIB` (detached/validated into BMP by the linked DIB adapter).
 Registered names are explicit producer conventions; no automatic format conversion is requested.
 Only the first non-null handle is copied, including an empty allocation. Its global size is
 bounded to 24 MiB before allocation/locking. Clipboard owner and sequence must stay stable through
@@ -59,10 +61,10 @@ and [standard formats](https://learn.microsoft.com/en-us/windows/win32/dataxchg/
 
 ## Validation boundary
 
-Thirty reader/protocol cases use app-owned unmanaged memory, scripted native calls and
+Thirty-six reader/protocol cases use app-owned unmanaged memory, scripted native calls and
 independent literal wire frames. They verify representation ordering, nil versus invalid/empty
 data, busy/stale opens, size-before-lock, failed lock cleanup, delayed-render sequence admission,
-owner/copy races, metadata-only admission and malformed framing. They never open or change the runner clipboard.
+owner/copy races, metadata-only admission, DIB selection/close ordering and malformed framing. They never open or change the runner clipboard.
 
 Twelve process cases launch actual installed Windows PowerShell fixture processes with fixed
 test bytes and private PID markers. They verify data/empty/unavailable replies, fixed failures,
@@ -72,8 +74,8 @@ clipboard APIs. One WPF output case checks all four real helper sidecars and lau
 helper with invalid arguments, proving startup/exit before any clipboard access.
 
 These tests do not establish actual foreign producer compatibility, delayed-render interoperability
-or PNG/TIFF/JPEG availability from Paint, browsers or Office. DIB-only producers still need a
-separate platform adapter. Native clipboard producer checks remain a Windows desktop gate.
+or actual PNG/TIFF/JPEG/DIB availability from Paint, browsers or Office. The DIB adapter has
+separate structure and WIC pixel cases, with compressed/profiled variants explicitly unsupported. Native clipboard producer checks remain a Windows desktop gate.
 
 ```sh
 DOTNET_ROOT="$PWD/.dotnet" .dotnet/dotnet build Cotabby.sln --configuration Release -p:EnableWindowsTargeting=true

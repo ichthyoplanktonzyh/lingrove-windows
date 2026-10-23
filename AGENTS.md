@@ -122,8 +122,8 @@ The [image UI](docs/VOCABULARY_IMAGE_UI.md) now connects file import, draft prev
 The [existing-file drop adapter](docs/VOCABULARY_FILE_DROP.md) adds a narrow Unicode Shell path;
 the [image clipboard transfer library](docs/VOCABULARY_CLIPBOARD_TRANSFER.md) isolates bounded encoded-image
 reads in a cancellable child process. [Image paste](docs/VOCABULARY_IMAGE_PASTE.md) now connects its
-shared owner to the editor button and explanation-section command. Clipboard DIB/bitmap formats,
-virtual/pixel drops, review/export and other dictionary providers remain work. Do not flatten senses into
+shared owner to the editor button and explanation-section command. The [DIB adapter](docs/VOCABULARY_CLIPBOARD_DIB.md)
+adds bounded Windows bitmap envelopes to that same path. Compressed/profiled bitmap variants, virtual/pixel drops, review/export and other dictionary providers remain work. Do not flatten senses into
 one translation string, regenerate stable IDs during edits, or treat a generated explanation as the
 user's authored meaning. See the vocabulary models and porting gates in the linked docs. Storage
 compatibility with macOS is not assumed; migrations must be explicit and tested.

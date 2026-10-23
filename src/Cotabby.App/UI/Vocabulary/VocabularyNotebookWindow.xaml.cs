@@ -53,8 +53,8 @@ public partial class VocabularyNotebookWindow : Window
         LanguageFilter.SelectedIndex = 0; _presenting = false;
         _store.Changed += OnStoreChanged;
         Closing += OnClosing;
-        Closed += (_, _) => { _retired = true; _store.Changed -= OnStoreChanged; CancelFiltering(); RetireActions(); RetireLearning(); RetireExport(); ClearImages(); };
-        IsVisibleChanged += (_, _) => { if (IsInitialized) { if (!IsVisible) RetireExport(); UpdateExportAdmission(); } };
+        Closed += (_, _) => { _retired = true; _store.Changed -= OnStoreChanged; CancelFiltering(); RetireActions(); RetireLearning(); RetireExport(); RetireBackupPresentation(); ClearImages(); };
+        IsVisibleChanged += (_, _) => { if (IsInitialized) { if (!IsVisible) { RetireExport(); RetireBackupPresentation(); } UpdateExportAdmission(); UpdateBackupAdmission(); } };
         RequestRefresh();
     }
     internal void Reveal(VocabularySelection? selection)
@@ -92,6 +92,7 @@ public partial class VocabularyNotebookWindow : Window
     private void RequestRefresh()
     {
         Dispatcher.VerifyAccess(); if (_retired) return;
+        UpdateBackupAdmission();
         CancelFiltering(); var source = new CancellationTokenSource(); _filterWork = source; long version = ++_version;
         InvalidateExportOffer();
         var state = _store.ReadState(); var document = state.Snapshot.Document; string query = SearchText.Text;
@@ -275,7 +276,7 @@ public partial class VocabularyNotebookWindow : Window
     }
     private void OnClosing(object? sender, CancelEventArgs args)
     {
-        if (_closing) return; args.Cancel = true; CloseActionMenus(); RetireExport(); _learning?.Cancel(); Hide(); CancelFiltering(); ++_version; InvalidateExportOffer();
+        if (_closing) return; args.Cancel = true; CloseActionMenus(); RetireExport(); RetireBackupPresentation(); _learning?.Cancel(); Hide(); CancelFiltering(); ++_version; InvalidateExportOffer();
     }
     private void CancelFiltering()
     {
@@ -289,7 +290,7 @@ public partial class VocabularyNotebookWindow : Window
         if (!_retired)
         {
             _retired = true; _store.Changed -= OnStoreChanged; CancelFiltering(); ++_version;
-            RetireActions(); RetireLearning(); RetireExport();
+            RetireActions(); RetireLearning(); RetireExport(); RetireBackupPresentation();
             if (_editor is { } editor) Track(editor.RetireAsync());
             _closing = true; Close();
         }

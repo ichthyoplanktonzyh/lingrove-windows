@@ -174,3 +174,9 @@ The [backup/restore native panels](VOCABULARY_BACKUP_DIALOGS.md) add twelve star
 thread/admission cases (449 total). They instantiate actual Shell Save/Open COM objects without
 Show, and the unchanged eleven export-dialog cases cover the shared-owner extraction. Product
 command/confirmation wiring and physical Shell interaction remain separate work.
+
+The [notebook backup/restore UI](VOCABULARY_BACKUP_UI.md) adds fourteen actual compiled notebook/
+confirmation cases with real Store/files/media/SQLite (463 total). File-panel human replies are
+controlled, while the owned WPF confirmation uses actual modal ShowDialog and routed buttons.
+Immediate-close and queued-hide regressions prove accepted operations belong to Store before
+presentation retirement. No native Shell modal Show runs; physical interaction remains a desktop gate.

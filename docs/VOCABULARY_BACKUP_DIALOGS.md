@@ -6,9 +6,9 @@ The save panel uses the `lingrove` type and `Lingrove-vocabulary.lingrove` filen
 panel chooses one backup. The view's separate `Replace notebook?` alert still precedes restore.
 
 `WindowsVocabularyBackupDialog` adapts those two panels and fixes their type/default. It returns
-only a filesystem path. A notebook command will own one invocation; selecting a restore source
-does not itself authorize archive replacement. Notebook command wiring and explicit replacement
-confirmation remain the next slice.
+only a filesystem path. A notebook command owns one invocation; selecting a restore source
+does not itself authorize archive replacement. The [notebook commands](VOCABULARY_BACKUP_UI.md)
+now connect these panels and the owned explicit replacement confirmation.
 
 `WindowsVocabularyFileDialog` now owns the shared native thread/cancellation/COM boundary that
 previously lived in `WindowsVocabularyExportDialog`. The export facade retains its captured type,

@@ -1,0 +1,1272 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "document-empty",
+      "operation": "document",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "empty",
+      "expected": {
+        "error": "none"
+      }
+    },
+    {
+      "id": "document-valid",
+      "operation": "document",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "valid",
+      "expected": {
+        "error": "none"
+      }
+    },
+    {
+      "id": "document-schema",
+      "operation": "document",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "schema",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "document-noSenses",
+      "operation": "document",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "noSenses",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "document-expressionBlank",
+      "operation": "document",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "expressionBlank",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "document-expressionLong",
+      "operation": "document",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "expressionLong",
+      "expected": {
+        "error": "none"
+      }
+    },
+    {
+      "id": "document-duplicateKey",
+      "operation": "document",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "duplicateKey",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "document-aliasEntry",
+      "operation": "document",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "aliasEntry",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "document-aliasSelf",
+      "operation": "document",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "aliasSelf",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "document-blockSense",
+      "operation": "document",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "blockSense",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "document-blockInvalid",
+      "operation": "document",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "blockInvalid",
+      "expected": {
+        "error": "invalidContent"
+      }
+    },
+    {
+      "id": "document-duplicateUsageKey",
+      "operation": "document",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "duplicateUsageKey",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "document-duplicateUsageID",
+      "operation": "document",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "duplicateUsageID",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "document-twoStandalone",
+      "operation": "document",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "twoStandalone",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "document-usageBlank",
+      "operation": "document",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "usageBlank",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "document-usageBOM",
+      "operation": "document",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "usageBOM",
+      "expected": {
+        "error": "none"
+      }
+    },
+    {
+      "id": "document-emptyRanges",
+      "operation": "document",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "emptyRanges",
+      "expected": {
+        "error": "none"
+      }
+    },
+    {
+      "id": "document-overlap",
+      "operation": "document",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "overlap",
+      "expected": {
+        "error": "none"
+      }
+    },
+    {
+      "id": "document-partialGrapheme",
+      "operation": "document",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "partialGrapheme",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "document-invalidRange",
+      "operation": "document",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "invalidRange",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "document-staleRecord",
+      "operation": "document",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "staleRecord",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "document-cardNoLayout",
+      "operation": "document",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "cardNoLayout",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "document-cardEntryID",
+      "operation": "document",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "cardEntryID",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "document-legacyEntryID",
+      "operation": "document",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "legacyEntryID",
+      "expected": {
+        "error": "none"
+      }
+    },
+    {
+      "id": "document-sharedLegacyCardPlan",
+      "operation": "document",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "sharedLegacyCardPlan",
+      "expected": {
+        "error": "none"
+      }
+    },
+    {
+      "id": "document-templateEntryID",
+      "operation": "document",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "templateEntryID",
+      "expected": {
+        "error": "none"
+      }
+    },
+    {
+      "id": "document-usageLong-262144",
+      "operation": "document",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "usageLong",
+      "count": 262144,
+      "expected": {
+        "error": "none"
+      }
+    },
+    {
+      "id": "document-usageLong-262145",
+      "operation": "document",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "usageLong",
+      "count": 262145,
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "document-senseRecords-128",
+      "operation": "document",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "senseRecords",
+      "count": 128,
+      "expected": {
+        "error": "none"
+      }
+    },
+    {
+      "id": "document-senseRecords-129",
+      "operation": "document",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "senseRecords",
+      "count": 129,
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "document-usageRecords-24",
+      "operation": "document",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "usageRecords",
+      "count": 24,
+      "expected": {
+        "error": "none"
+      }
+    },
+    {
+      "id": "document-usageRecords-25",
+      "operation": "document",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "usageRecords",
+      "count": 25,
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "layout-empty",
+      "operation": "layout",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/ReviewLayoutPolicy.swift",
+      "mode": "empty",
+      "expected": {
+        "error": "none"
+      }
+    },
+    {
+      "id": "layout-duplicateParts",
+      "operation": "layout",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/ReviewLayoutPolicy.swift",
+      "mode": "duplicateParts",
+      "expected": {
+        "error": "invalidContent"
+      }
+    },
+    {
+      "id": "layout-foreignContent",
+      "operation": "layout",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/ReviewLayoutPolicy.swift",
+      "mode": "foreignContent",
+      "expected": {
+        "error": "invalidContent"
+      }
+    },
+    {
+      "id": "layout-duplicateBlocks",
+      "operation": "layout",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/ReviewLayoutPolicy.swift",
+      "mode": "duplicateBlocks",
+      "expected": {
+        "error": "invalidContent"
+      }
+    },
+    {
+      "id": "layout-aggregateBlocks",
+      "operation": "layout",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/ReviewLayoutPolicy.swift",
+      "mode": "aggregateBlocks",
+      "expected": {
+        "error": "invalidContent"
+      }
+    },
+    {
+      "id": "layout-dangling",
+      "operation": "layout",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/ReviewLayoutPolicy.swift",
+      "mode": "dangling",
+      "expected": {
+        "error": "none"
+      }
+    },
+    {
+      "id": "layout-parts-64",
+      "operation": "layout",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/ReviewLayoutPolicy.swift",
+      "mode": "parts",
+      "count": 64,
+      "expected": {
+        "error": "none"
+      }
+    },
+    {
+      "id": "layout-parts-65",
+      "operation": "layout",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/ReviewLayoutPolicy.swift",
+      "mode": "parts",
+      "count": 65,
+      "expected": {
+        "error": "invalidContent"
+      }
+    },
+    {
+      "id": "templates-count-64",
+      "operation": "templates",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+ReviewCards.swift",
+      "mode": "count",
+      "count": 64,
+      "expected": {
+        "error": "none"
+      }
+    },
+    {
+      "id": "templates-count-65",
+      "operation": "templates",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+ReviewCards.swift",
+      "mode": "count",
+      "count": 65,
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "templates-duplicate",
+      "operation": "templates",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+ReviewCards.swift",
+      "mode": "duplicate",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "templates-blank",
+      "operation": "templates",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+ReviewCards.swift",
+      "mode": "blank",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "templates-bom",
+      "operation": "templates",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+ReviewCards.swift",
+      "mode": "bom",
+      "expected": {
+        "error": "none"
+      }
+    },
+    {
+      "id": "templates-name-512",
+      "operation": "templates",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+ReviewCards.swift",
+      "mode": "name",
+      "count": 512,
+      "expected": {
+        "error": "none"
+      }
+    },
+    {
+      "id": "templates-name-513",
+      "operation": "templates",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive+ReviewCards.swift",
+      "mode": "name",
+      "count": 513,
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "review-default",
+      "operation": "review",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "default",
+      "expected": {
+        "error": "none"
+      }
+    },
+    {
+      "id": "review-duplicateBinding",
+      "operation": "review",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "duplicateBinding",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "review-missingActive",
+      "operation": "review",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "missingActive",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "review-bindingValid",
+      "operation": "review",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "bindingValid",
+      "expected": {
+        "error": "none"
+      }
+    },
+    {
+      "id": "review-noteZero",
+      "operation": "review",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "noteZero",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "review-noteNull",
+      "operation": "review",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "noteNull",
+      "expected": {
+        "error": "none"
+      }
+    },
+    {
+      "id": "review-endpoint",
+      "operation": "review",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "endpoint",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "review-identityCase",
+      "operation": "review",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "identityCase",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "review-receipt",
+      "operation": "review",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "receipt",
+      "expected": {
+        "error": "none"
+      }
+    },
+    {
+      "id": "review-receiptEmoji",
+      "operation": "review",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "receiptEmoji",
+      "expected": {
+        "error": "none"
+      }
+    },
+    {
+      "id": "review-receiptCombining",
+      "operation": "review",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "receiptCombining",
+      "expected": {
+        "error": "none"
+      }
+    },
+    {
+      "id": "review-receiptShort",
+      "operation": "review",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "receiptShort",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "review-name-512",
+      "operation": "review",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "name",
+      "count": 512,
+      "expected": {
+        "error": "none"
+      }
+    },
+    {
+      "id": "review-name-513",
+      "operation": "review",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "name",
+      "count": 513,
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "review-answer-262144",
+      "operation": "review",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "answer",
+      "count": 262144,
+      "expected": {
+        "error": "none"
+      }
+    },
+    {
+      "id": "review-answer-262145",
+      "operation": "review",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "answer",
+      "count": 262145,
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "review-overrides-32",
+      "operation": "review",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "overrides",
+      "count": 32,
+      "expected": {
+        "error": "none"
+      }
+    },
+    {
+      "id": "review-overrides-33",
+      "operation": "review",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "overrides",
+      "count": 33,
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "review-overrideKey-200",
+      "operation": "review",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "overrideKey",
+      "count": 200,
+      "expected": {
+        "error": "none"
+      }
+    },
+    {
+      "id": "review-overrideKey-201",
+      "operation": "review",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "overrideKey",
+      "count": 201,
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "review-overrideValue-1000000",
+      "operation": "review",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "overrideValue",
+      "count": 1000000,
+      "expected": {
+        "error": "none"
+      }
+    },
+    {
+      "id": "review-overrideValue-1000001",
+      "operation": "review",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "overrideValue",
+      "count": 1000001,
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "review-preserved-64",
+      "operation": "review",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "preserved",
+      "count": 64,
+      "expected": {
+        "error": "none"
+      }
+    },
+    {
+      "id": "review-preserved-65",
+      "operation": "review",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "preserved",
+      "count": 65,
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "review-bindings-64",
+      "operation": "review",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "bindings",
+      "count": 64,
+      "expected": {
+        "error": "none"
+      }
+    },
+    {
+      "id": "review-bindings-65",
+      "operation": "review",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
+      "mode": "bindings",
+      "count": 65,
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "endpoint-74",
+      "operation": "endpoint",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "text": "http://localhost:8765/",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "endpoint-75",
+      "operation": "endpoint",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "text": "HTTP://localhost",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "endpoint-76",
+      "operation": "endpoint",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "text": "http://LOCALHOST",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "endpoint-77",
+      "operation": "endpoint",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "text": "http://127.0.0.01",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "endpoint-78",
+      "operation": "endpoint",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "text": "http://127.1",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "endpoint-79",
+      "operation": "endpoint",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "text": "http://[::1]",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "endpoint-80",
+      "operation": "endpoint",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "text": "http://%6cocalhost",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "endpoint-81",
+      "operation": "endpoint",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "text": "http://localhost:",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "endpoint-82",
+      "operation": "endpoint",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "text": "http://localhost:00080",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "endpoint-83",
+      "operation": "endpoint",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "text": "http://localhost:0",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "endpoint-84",
+      "operation": "endpoint",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "text": "http://localhost?",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "endpoint-85",
+      "operation": "endpoint",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "text": "http://localhost#",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "endpoint-86",
+      "operation": "endpoint",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "text": "http://localhost\\",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "endpoint-87",
+      "operation": "endpoint",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "text": "http://localhost/%2f",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "endpoint-88",
+      "operation": "endpoint",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "text": "http://localhost/%2e",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "endpoint-89",
+      "operation": "endpoint",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "text": "http://localhost:65536",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "endpoint-90",
+      "operation": "endpoint",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "text": "http://localhost:１２",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "endpoint-91",
+      "operation": "endpoint",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "text": "http://localhost: 80",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "endpoint-92",
+      "operation": "endpoint",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "text": "http://localhost.",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "endpoint-93",
+      "operation": "endpoint",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "text": "http://[0:0:0:0:0:0:0:1]",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "endpoint-94",
+      "operation": "endpoint",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "text": "http://localhost\n:80",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "endpoint-95",
+      "operation": "endpoint",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "text": "http://localhost\t:80",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "endpoint-96",
+      "operation": "endpoint",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "text": "http://localhost\n",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "endpoint-97",
+      "operation": "endpoint",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "text": "http://@localhost",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "endpoint-98",
+      "operation": "endpoint",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "text": "http:localhost",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "endpoint-99",
+      "operation": "endpoint",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "text": "http://localhost//",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "endpoint-100",
+      "operation": "endpoint",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "text": "http://127.0.0.1:65535",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "endpoint-101",
+      "operation": "endpoint",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "text": "https://localhost",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "endpoint-102",
+      "operation": "endpoint",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "text": "http://example.com",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "endpoint-103",
+      "operation": "endpoint",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "text": "http://user:pass@localhost",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "endpoint-104",
+      "operation": "endpoint",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "text": "http://localhost/path",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "endpoint-105",
+      "operation": "endpoint",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "text": "http://localhost?q=1",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "endpoint-106",
+      "operation": "endpoint",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "text": "http://localhost#fragment",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "endpoint-107",
+      "operation": "endpoint",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "text": "http://::1",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "endpoint-108",
+      "operation": "endpoint",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Review/AnkiReviewPolicy.swift",
+      "text": "http://%5b%3a%3a1%5d",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "filename-109",
+      "operation": "filename",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "text": "lingrove-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.wav",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "filename-110",
+      "operation": "filename",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "text": "lingrove-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.mp3",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "filename-111",
+      "operation": "filename",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "text": "lingrove-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.wav\n",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "filename-112",
+      "operation": "filename",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "text": "lingrove-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.wav\r\n",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "filename-113",
+      "operation": "filename",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "text": "LINGROVE-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.WAV",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "filename-114",
+      "operation": "filename",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "text": "/lingrove-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.wav",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "filename-115",
+      "operation": "filename",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "text": "lingrove-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.ogg",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "filename-116",
+      "operation": "filename",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "text": "lingrove-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.wav",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "filename-117",
+      "operation": "filename",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "text": "lingrove-😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀.wav",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "filename-final-CR",
+      "operation": "filename",
+      "text": "lingrove-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.wav\r",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "filename-final-NEL",
+      "operation": "filename",
+      "text": "lingrove-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.wav",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "filename-final-LS",
+      "operation": "filename",
+      "text": "lingrove-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.wav ",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "filename-final-PS",
+      "operation": "filename",
+      "text": "lingrove-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.wav ",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "filename-final-VT",
+      "operation": "filename",
+      "text": "lingrove-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.wav\u000b",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "filename-final-FF",
+      "operation": "filename",
+      "text": "lingrove-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.wav\f",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "filename-final-twoLF",
+      "operation": "filename",
+      "text": "lingrove-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.wav\n\n",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Speech/SpeechExportPolicy.swift",
+      "expected": {
+        "valid": false
+      }
+    }
+  ]
+}

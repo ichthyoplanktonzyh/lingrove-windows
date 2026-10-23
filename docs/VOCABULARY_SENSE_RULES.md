@@ -69,5 +69,5 @@ python3 scripts/verify-vocabulary-models-macos-parity.py --mac-repo /path/to/mac
 python3 scripts/verify-vocabulary-sense-macos-parity.py --mac-repo /path/to/macOS-lingrove
 ```
 
-Whole-graph validation, codec/version handling, field-level concurrent edit merge, atomic durable
+[Whole-graph validation](VOCABULARY_ARCHIVE_VALIDATION.md) is now a pure library. Codec/version handling, field-level concurrent edit merge, atomic durable
 write/revision comparison, media lifetime, notebook editing and Save UI remain migration work.

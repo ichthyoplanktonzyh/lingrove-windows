@@ -5,9 +5,10 @@ using Cotabby.Core.Support;
 namespace Cotabby.Core.Vocabulary;
 
 /// <summary>
-/// Mac's pure export selection/projection over an immutable notebook snapshot. The archive will
-/// call this before collecting media; a formatter consumes only the reduced portable document.
-/// This boundary performs no file reads, byte serialization, review mutation or UI publication.
+/// Mac's pure export selection/projection over an immutable notebook snapshot. The archive
+/// calls selection before collecting media; formatters consume only the reduced document. The
+/// package factory composes those pure encoders. No file reads, review mutation or UI publication
+/// belongs to this boundary.
 /// </summary>
 public static class VocabularyExportPolicy
 {

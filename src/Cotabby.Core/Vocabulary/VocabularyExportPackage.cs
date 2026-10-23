@@ -32,6 +32,11 @@ public sealed class VocabularyExportPackage
     public int DataByteCount => _data.Length;
     public string DataFilename => "Lingrove-vocabulary." + Configuration.Format.FileExtension();
     public string Filename => Configuration.IncludesImages ? "Lingrove-vocabulary.zip" : DataFilename;
+    // Only the trusted Core encoder borrows these views; callers still receive defensive copies.
+    // Keeping the arrays private avoids copying up to the whole media budget before ZIP admission.
+    internal ReadOnlyMemory<byte> DataBytes => _data;
+    internal IEnumerable<KeyValuePair<string, ReadOnlyMemory<byte>>> ImageBytes => _images.Select(pair =>
+        new KeyValuePair<string, ReadOnlyMemory<byte>>(pair.Key, pair.Value));
     public byte[] CopyData() => (byte[])_data.Clone();
     public IReadOnlyDictionary<string, byte[]> CopyImages() => CollectionValues.Map(_images.Select(pair =>
         new KeyValuePair<string, byte[]>(pair.Key, (byte[])pair.Value.Clone())));

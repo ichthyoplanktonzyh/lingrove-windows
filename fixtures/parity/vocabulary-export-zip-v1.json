@@ -1,0 +1,549 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "text-data-only",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
+      "format": "text",
+      "images": [],
+      "captureBytes": true,
+      "expected": {
+        "base64": "UEsDBBQAAAAAAAAAIQAAAAAAAAAAAAAAAAAXAAAATGluZ3JvdmUtdm9jYWJ1bGFyeS50eHRQSwECFAAUAAAAAAAAACEAAAAAAAAAAAAAAAAAFwAAAAAAAAAAAAAAAAAAAAAATGluZ3JvdmUtdm9jYWJ1bGFyeS50eHRQSwUGAAAAAAEAAQBFAAAANQAAAAAA",
+        "byteCount": 144,
+        "sha256": "a5ada8c580cbd218d8d1f00fe4aae455d5156f46cc0a365007c71ff40a245445"
+      }
+    },
+    {
+      "id": "csv-data-only",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
+      "format": "csv",
+      "images": [],
+      "captureBytes": true,
+      "expected": {
+        "base64": "UEsDBBQAAAAAAAAAIQDO/6KxVAEAAFQBAAAXAAAATGluZ3JvdmUtdm9jYWJ1bGFyeS5jc3bvu78iZW50cnlfaWQiLCJleHByZXNzaW9uIiwiZGljdGlvbmFyeV9mb3JtIiwibGFuZ3VhZ2UiLCJ0eXBlIiwic2Vuc2VfaWQiLCJzYXZlZF9hdCIsIm1lYW5pbmciLCJtZWFuaW5nX2xhbmd1YWdlIiwib3RoZXJfbWVhbmluZ3MiLCJ1c2FnZV9pZCIsInVzYWdlX3NhdmVkX2F0IiwiZXhhbXBsZSIsInRyYW5zbGF0aW9uIiwidHJhbnNsYXRpb25fbGFuZ3VhZ2UiLCJvdGhlcl90cmFuc2xhdGlvbnMiLCJjb250ZXh0dWFsX21lYW5pbmciLCJjb250ZXh0dWFsX21lYW5pbmdfbGFuZ3VhZ2UiLCJub3RlcyIsInRhZ3MiLCJzdXBwbGVtZW50YWxfdGV4dCIsImltYWdlcyIsImltYWdlX2NhcHRpb25zIg0KUEsBAhQAFAAAAAAAAAAhAM7/orFUAQAAVAEAABcAAAAAAAAAAAAAAAAAAAAAAExpbmdyb3ZlLXZvY2FidWxhcnkuY3N2UEsFBgAAAAABAAEARQAAAIkBAAAAAA==",
+        "byteCount": 484,
+        "sha256": "f1c4dc0f9e1abcbd4b2b779458bd7f72d28295f901060bb0d891b8cfc9f323ac"
+      }
+    },
+    {
+      "id": "json-data-only",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
+      "format": "json",
+      "images": [],
+      "captureBytes": true,
+      "expected": {
+        "base64": "UEsDBBQAAAAAAAAAIQAfvANiVAAAAFQAAAAYAAAATGluZ3JvdmUtdm9jYWJ1bGFyeS5qc29uewogICJlbnRyaWVzIiA6IFsKCiAgXSwKICAiZm9ybWF0IiA6ICJsaW5ncm92ZS12b2NhYnVsYXJ5LWV4cG9ydCIsCiAgInZlcnNpb24iIDogMQp9UEsBAhQAFAAAAAAAAAAhAB+8A2JUAAAAVAAAABgAAAAAAAAAAAAAAAAAAAAAAExpbmdyb3ZlLXZvY2FidWxhcnkuanNvblBLBQYAAAAAAQABAEYAAACKAAAAAAA=",
+        "byteCount": 230,
+        "sha256": "12fb96817aca01234ea33684a4be2ef7d16ac08d7b352314ca36cbd2113bf6ec"
+      }
+    },
+    {
+      "id": "sorted-images-crc",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
+      "format": "json",
+      "images": [
+        {
+          "name": "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+          "base64": "MTIzNDU2Nzg5"
+        },
+        {
+          "name": "lg-image-0000000000000000000000000000000000000000000000000000000000000000.png",
+          "base64": "AP9/w6k="
+        }
+      ],
+      "captureBytes": true,
+      "expected": {
+        "base64": "UEsDBBQAAAAAAAAAIQAfvANiVAAAAFQAAAAYAAAATGluZ3JvdmUtdm9jYWJ1bGFyeS5qc29uewogICJlbnRyaWVzIiA6IFsKCiAgXSwKICAiZm9ybWF0IiA6ICJsaW5ncm92ZS12b2NhYnVsYXJ5LWV4cG9ydCIsCiAgInZlcnNpb24iIDogMQp9UEsDBBQAAAAAAAAAIQBAQVcIBQAAAAUAAABUAAAAaW1hZ2VzL2xnLWltYWdlLTAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAucG5nAP9/w6lQSwMEFAAAAAAAAAAhACY59MsJAAAACQAAAFQAAABpbWFnZXMvbGctaW1hZ2UtYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYS5wbmcxMjM0NTY3ODlQSwECFAAUAAAAAAAAACEAH7wDYlQAAABUAAAAGAAAAAAAAAAAAAAAAAAAAAAATGluZ3JvdmUtdm9jYWJ1bGFyeS5qc29uUEsBAhQAFAAAAAAAAAAhAEBBVwgFAAAABQAAAFQAAAAAAAAAAAAAAAAAigAAAGltYWdlcy9sZy1pbWFnZS0wMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwLnBuZ1BLAQIUABQAAAAAAAAAIQAmOfTLCQAAAAkAAABUAAAAAAAAAAAAAAAAAAEBAABpbWFnZXMvbGctaW1hZ2UtYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYS5wbmdQSwUGAAAAAAMAAwBKAQAAfAEAAAAA",
+        "byteCount": 732,
+        "sha256": "d1e2043d47b42e2b9a2c5e6f085d53fa29e55cf870793ec83169b16786b59127"
+      }
+    },
+    {
+      "id": "empty-image-data",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
+      "format": "text",
+      "images": [
+        {
+          "name": "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+          "byteCount": 0
+        }
+      ],
+      "captureBytes": true,
+      "expected": {
+        "base64": "UEsDBBQAAAAAAAAAIQAAAAAAAAAAAAAAAAAXAAAATGluZ3JvdmUtdm9jYWJ1bGFyeS50eHRQSwMEFAAAAAAAAAAhAAAAAAAAAAAAAAAAAFQAAABpbWFnZXMvbGctaW1hZ2UtYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYS5wbmdQSwECFAAUAAAAAAAAACEAAAAAAAAAAAAAAAAAFwAAAAAAAAAAAAAAAAAAAAAATGluZ3JvdmUtdm9jYWJ1bGFyeS50eHRQSwECFAAUAAAAAAAAACEAAAAAAAAAAAAAAAAAVAAAAAAAAAAAAAAAAAA1AAAAaW1hZ2VzL2xnLWltYWdlLWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWEucG5nUEsFBgAAAAACAAIAxwAAAKcAAAAAAA==",
+        "byteCount": 388,
+        "sha256": "2bd351f34d05c840432649633ecabca0373a0075b520576063d659f24c3146bf"
+      }
+    },
+    {
+      "id": "images-flag-false-still-explicit-encoder",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
+      "format": "csv",
+      "imagesFlag": false,
+      "images": [
+        {
+          "name": "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+          "base64": "AQID"
+        }
+      ],
+      "captureBytes": true,
+      "expected": {
+        "base64": "UEsDBBQAAAAAAAAAIQDO/6KxVAEAAFQBAAAXAAAATGluZ3JvdmUtdm9jYWJ1bGFyeS5jc3bvu78iZW50cnlfaWQiLCJleHByZXNzaW9uIiwiZGljdGlvbmFyeV9mb3JtIiwibGFuZ3VhZ2UiLCJ0eXBlIiwic2Vuc2VfaWQiLCJzYXZlZF9hdCIsIm1lYW5pbmciLCJtZWFuaW5nX2xhbmd1YWdlIiwib3RoZXJfbWVhbmluZ3MiLCJ1c2FnZV9pZCIsInVzYWdlX3NhdmVkX2F0IiwiZXhhbXBsZSIsInRyYW5zbGF0aW9uIiwidHJhbnNsYXRpb25fbGFuZ3VhZ2UiLCJvdGhlcl90cmFuc2xhdGlvbnMiLCJjb250ZXh0dWFsX21lYW5pbmciLCJjb250ZXh0dWFsX21lYW5pbmdfbGFuZ3VhZ2UiLCJub3RlcyIsInRhZ3MiLCJzdXBwbGVtZW50YWxfdGV4dCIsImltYWdlcyIsImltYWdlX2NhcHRpb25zIg0KUEsDBBQAAAAAAAAAIQAdgLxVAwAAAAMAAABUAAAAaW1hZ2VzL2xnLWltYWdlLWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWEucG5nAQIDUEsBAhQAFAAAAAAAAAAhAM7/orFUAQAAVAEAABcAAAAAAAAAAAAAAAAAAAAAAExpbmdyb3ZlLXZvY2FidWxhcnkuY3N2UEsBAhQAFAAAAAAAAAAhAB2AvFUDAAAAAwAAAFQAAAAAAAAAAAAAAAAAiQEAAGltYWdlcy9sZy1pbWFnZS1hYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhLnBuZ1BLBQYAAAAAAgACAMcAAAD+AQAAAAA=",
+        "byteCount": 731,
+        "sha256": "70aec7e29fe5a2e463139fdc6f8cafcf01445a9497ff0e56133275129f99f747"
+      }
+    },
+    {
+      "id": "expression-style-does-not-filter-explicit-media",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
+      "format": "text",
+      "style": "expressions",
+      "images": [
+        {
+          "name": "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+          "base64": "AQID"
+        }
+      ],
+      "captureBytes": true,
+      "expected": {
+        "base64": "UEsDBBQAAAAAAAAAIQAAAAAAAAAAAAAAAAAXAAAATGluZ3JvdmUtdm9jYWJ1bGFyeS50eHRQSwMEFAAAAAAAAAAhAB2AvFUDAAAAAwAAAFQAAABpbWFnZXMvbGctaW1hZ2UtYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYS5wbmcBAgNQSwECFAAUAAAAAAAAACEAAAAAAAAAAAAAAAAAFwAAAAAAAAAAAAAAAAAAAAAATGluZ3JvdmUtdm9jYWJ1bGFyeS50eHRQSwECFAAUAAAAAAAAACEAHYC8VQMAAAADAAAAVAAAAAAAAAAAAAAAAAA1AAAAaW1hZ2VzL2xnLWltYWdlLWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWEucG5nUEsFBgAAAAACAAIAxwAAAKoAAAAAAA==",
+        "byteCount": 391,
+        "sha256": "d7f775d509921fae9addb363de0ab446a61e5bd29f4c0c74ebddeebfdeb127e2"
+      }
+    },
+    {
+      "id": "invalid-path-01",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
+      "format": "json",
+      "images": [
+        {
+          "name": "../lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+          "base64": "AQID"
+        }
+      ],
+      "expected": {
+        "error": "tooLarge"
+      }
+    },
+    {
+      "id": "invalid-path-02",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
+      "format": "json",
+      "images": [
+        {
+          "name": "images/lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+          "base64": "AQID"
+        }
+      ],
+      "expected": {
+        "error": "tooLarge"
+      }
+    },
+    {
+      "id": "invalid-path-03",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
+      "format": "json",
+      "images": [
+        {
+          "name": "/tmp/lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+          "base64": "AQID"
+        }
+      ],
+      "expected": {
+        "error": "tooLarge"
+      }
+    },
+    {
+      "id": "invalid-path-04",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
+      "format": "json",
+      "images": [
+        {
+          "name": "C:\\lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+          "base64": "AQID"
+        }
+      ],
+      "expected": {
+        "error": "tooLarge"
+      }
+    },
+    {
+      "id": "invalid-path-05",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
+      "format": "json",
+      "images": [
+        {
+          "name": "..\\lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+          "base64": "AQID"
+        }
+      ],
+      "expected": {
+        "error": "tooLarge"
+      }
+    },
+    {
+      "id": "invalid-path-06",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
+      "format": "json",
+      "images": [
+        {
+          "name": "LG-IMAGE-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.PNG",
+          "base64": "AQID"
+        }
+      ],
+      "expected": {
+        "error": "tooLarge"
+      }
+    },
+    {
+      "id": "invalid-path-07",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
+      "format": "json",
+      "images": [
+        {
+          "name": "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+          "base64": "AQID"
+        }
+      ],
+      "expected": {
+        "error": "tooLarge"
+      }
+    },
+    {
+      "id": "invalid-path-08",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
+      "format": "json",
+      "images": [
+        {
+          "name": "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+          "base64": "AQID"
+        }
+      ],
+      "expected": {
+        "error": "tooLarge"
+      }
+    },
+    {
+      "id": "invalid-path-09",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
+      "format": "json",
+      "images": [
+        {
+          "name": "lg-image-gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg.png",
+          "base64": "AQID"
+        }
+      ],
+      "expected": {
+        "error": "tooLarge"
+      }
+    },
+    {
+      "id": "invalid-path-10",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
+      "format": "json",
+      "images": [
+        {
+          "name": "lg-image-ＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡＡ.png",
+          "base64": "AQID"
+        }
+      ],
+      "expected": {
+        "error": "tooLarge"
+      }
+    },
+    {
+      "id": "invalid-path-11",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
+      "format": "json",
+      "images": [
+        {
+          "name": "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.PNG",
+          "base64": "AQID"
+        }
+      ],
+      "expected": {
+        "error": "tooLarge"
+      }
+    },
+    {
+      "id": "invalid-path-12",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
+      "format": "json",
+      "images": [
+        {
+          "name": "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png/child",
+          "base64": "AQID"
+        }
+      ],
+      "expected": {
+        "error": "tooLarge"
+      }
+    },
+    {
+      "id": "invalid-path-13",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
+      "format": "json",
+      "images": [
+        {
+          "name": "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png\u0000",
+          "base64": "AQID"
+        }
+      ],
+      "expected": {
+        "error": "tooLarge"
+      }
+    },
+    {
+      "id": "invalid-path-14",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
+      "format": "json",
+      "images": [
+        {
+          "name": "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png:stream",
+          "base64": "AQID"
+        }
+      ],
+      "expected": {
+        "error": "tooLarge"
+      }
+    },
+    {
+      "id": "invalid-path-15",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
+      "format": "json",
+      "images": [
+        {
+          "name": "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.jpg",
+          "base64": "AQID"
+        }
+      ],
+      "expected": {
+        "error": "tooLarge"
+      }
+    },
+    {
+      "id": "invalid-path-16",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
+      "format": "json",
+      "images": [
+        {
+          "name": "Lingrove-vocabulary.json",
+          "base64": "AQID"
+        }
+      ],
+      "expected": {
+        "error": "tooLarge"
+      }
+    },
+    {
+      "id": "invalid-path-17",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
+      "format": "json",
+      "images": [
+        {
+          "name": "",
+          "base64": "AQID"
+        }
+      ],
+      "expected": {
+        "error": "tooLarge"
+      }
+    },
+    {
+      "id": "invalid-path-18",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
+      "format": "json",
+      "images": [
+        {
+          "name": "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png ",
+          "base64": "AQID"
+        }
+      ],
+      "expected": {
+        "error": "tooLarge"
+      }
+    },
+    {
+      "id": "invalid-path-19",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
+      "format": "json",
+      "images": [
+        {
+          "name": "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaá.png",
+          "base64": "AQID"
+        }
+      ],
+      "expected": {
+        "error": "tooLarge"
+      }
+    },
+    {
+      "id": "maximum-files",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
+      "format": "text",
+      "generatedFiles": 9999,
+      "expected": {
+        "byteCount": 2439900,
+        "sha256": "9fa0d8c819f491601537d5cdb99ccfcc4b1a0660916110a6a42402e8e94bb75d"
+      }
+    },
+    {
+      "id": "too-many-files",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
+      "format": "text",
+      "generatedFiles": 10000,
+      "expected": {
+        "error": "tooLarge"
+      }
+    },
+    {
+      "id": "cancelled-valid",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
+      "format": "json",
+      "images": [],
+      "cancelled": true,
+      "expected": {
+        "error": "cancelled"
+      }
+    },
+    {
+      "id": "cancelled-invalid-path",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
+      "format": "json",
+      "images": [
+        {
+          "name": "../lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+          "base64": "AQID"
+        }
+      ],
+      "cancelled": true,
+      "expected": {
+        "error": "tooLarge"
+      }
+    },
+    {
+      "id": "cancelled-too-many-files",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
+      "format": "json",
+      "generatedFiles": 10000,
+      "cancelled": true,
+      "expected": {
+        "error": "tooLarge"
+      }
+    },
+    {
+      "id": "final-exact-limit",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
+      "format": "json",
+      "images": [
+        {
+          "name": "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+          "byteCount": 201326118,
+          "fill": 7
+        }
+      ],
+      "expected": {
+        "byteCount": 201326592,
+        "sha256": "d4ba680c7f7953f16789e559bd225db608805bad30b3cdf34d4a28ad83630239"
+      }
+    },
+    {
+      "id": "final-limit-plus-one",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
+      "format": "json",
+      "images": [
+        {
+          "name": "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+          "byteCount": 201326119,
+          "fill": 7
+        }
+      ],
+      "expected": {
+        "error": "tooLarge"
+      }
+    },
+    {
+      "id": "payload-exact-limit-final-over",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
+      "format": "json",
+      "images": [
+        {
+          "name": "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+          "byteCount": 201326508,
+          "fill": 7
+        }
+      ],
+      "expected": {
+        "error": "tooLarge"
+      }
+    },
+    {
+      "id": "payload-limit-plus-one",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
+      "format": "json",
+      "images": [
+        {
+          "name": "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+          "byteCount": 201326509,
+          "fill": 7
+        }
+      ],
+      "expected": {
+        "error": "tooLarge"
+      }
+    },
+    {
+      "id": "maximum-files-payload-limit-final-over",
+      "format": "text",
+      "generatedFiles": 9998,
+      "images": [
+        {
+          "name": "lg-image-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png",
+          "byteCount": 201326592,
+          "fill": 7
+        }
+      ],
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyExportZIP.swift",
+      "expected": {
+        "error": "tooLarge"
+      }
+    }
+  ]
+}

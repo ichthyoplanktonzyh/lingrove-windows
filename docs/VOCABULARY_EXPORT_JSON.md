@@ -23,7 +23,7 @@ export ceiling counts the final encoded bytes. Mac first completes JSONEncoder a
 ceiling in `package`; Windows applies the same final data/error boundary while appending output, so
 oversized JSON does not need a complete additional output allocation. This difference in check
 timing does not change allowed payloads. There are no in-render cancellation checks, as in the Mac
-JSON path; the later package factory must keep its separate initial cancellation check.
+JSON path; the [package factory](VOCABULARY_EXPORT_PACKAGE.md) keeps its separate initial cancellation check.
 
 Nineteen fixtures execute the actual original JSONEncoder branch, with no replacement encoding
 body. Smaller cases compare complete UTF-8 text and byte count, including optional omission,
@@ -39,7 +39,8 @@ python3 scripts/verify-vocabulary-export-json-macos-parity.py --mac-repo /path/t
 DOTNET_ROOT="$PWD/.dotnet" .dotnet/dotnet test tests/Cotabby.Core.Tests/Cotabby.Core.Tests.csproj --configuration Release --filter FullyQualifiedName~VocabularyExportJsonParityTests
 ```
 
-This adds `RenderJson` beside the existing TXT/CSV methods. Combined format dispatch, prepared
-package identity/byte ownership/counts/preview, snapshot/media collection, file and ZIP writing,
-full backup/restore and export UI remain work. It is not a database compatibility or native desktop
-claim and introduces no model, clipboard, filesystem or network effects.
+`RenderJson` sits beside TXT/CSV methods. Subsequent adapters provide [dispatch and prepared package
+ownership](VOCABULARY_EXPORT_PACKAGE.md), [media snapshots](VOCABULARY_EXPORT_SNAPSHOT.md) and
+[ZIP bytes](VOCABULARY_EXPORT_ZIP.md). Destination writing, full backup/restore and export UI remain
+work. These JSON tests do not establish database compatibility or native desktop behavior, and
+this encoder introduces no model, clipboard, filesystem or network effects.

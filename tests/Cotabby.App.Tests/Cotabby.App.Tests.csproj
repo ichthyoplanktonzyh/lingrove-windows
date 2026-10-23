@@ -26,6 +26,9 @@
     <Compile Include="..\..\src\Cotabby.App\Vocabulary\VocabularyStore.Images.cs" Link="Production\VocabularyStore.Images.cs" />
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularyWindowsFile.cs" Link="Production\VocabularyWindowsFile.cs" />
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularyWindowsFileLock.cs" Link="Production\VocabularyWindowsFileLock.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Vocabulary.cs" Link="Production\AppSettings.Vocabulary.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Vocabulary\VocabularyGraphPreferences.cs" Link="Production\VocabularyGraphPreferences.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Vocabulary\VocabularyGraphPresentation.cs" Link="Production\VocabularyGraphPresentation.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Explanation.cs" Link="Production\AppSettings.Explanation.cs" />
     <Compile Include="..\..\src\Cotabby.App\Learning\LearningExplanationController.cs" Link="Production\LearningExplanationController.cs" />
     <Compile Include="..\..\src\Cotabby.App\Learning\LearningTextCopyController.cs" Link="Production\LearningTextCopyController.cs" />
@@ -37,6 +40,7 @@
     <ProjectReference Include="..\..\src\Cotabby.Inference\Cotabby.Inference.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\fixtures\parity\vocabulary-graph-presentation-v1.json" Link="fixtures\vocabulary-graph-presentation-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\fixtures\parity\vocabulary-sqlite-v1.json" Link="fixtures\vocabulary-sqlite-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\fixtures\parity\vocabulary-archive-v1.json" Link="fixtures\vocabulary-archive-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\fixtures\parity\vocabulary-store-v1.json" Link="fixtures\vocabulary-store-v1.json" CopyToOutputDirectory="PreserveNewest" />

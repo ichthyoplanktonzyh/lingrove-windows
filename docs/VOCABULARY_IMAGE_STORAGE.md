@@ -44,10 +44,11 @@ and oversized files. The Windows tests perform those same operations with actual
 Read failure projects as unavailable because Mac filesystem failures include native Foundation
 errors; no claim is made that native error types or encoder bytes match.
 
-Six additional Windows cases check private root/file ACLs and no-rewrite reuse, public directory and
+Seven additional Windows cases check private root/file ACLs and no-rewrite reuse, public directory and
 file permission rejection, pinned-root rename prevention and ancestor-alias retarget detection,
 four owners under the existing archive lock publishing one complete PNG, and invalid digest path
-admission. These are native tests, not filesystem fakes. They do not yet prove SQL rollback or
+admission, plus a forced CREATE_NEW collision proving cleanup never deletes a file it did not
+create. The collision fixes an independent review finding. These are native tests, not filesystem fakes. They do not yet prove SQL rollback or
 shared-reference cleanup: the archive still rejects new editor image references. Backup/restore,
 editor import/paste/drop, visible image loading and review/export media remain unconnected. Crash
 or hardware durability, adversarial mutation by the same Windows principal, broad codec/color

@@ -352,6 +352,6 @@ regressions. [Image preparation scope](../../docs/VOCABULARY_IMAGE_PREPARATION.m
 PNG bytes, reuse/new-write flags, corrupt-file repair, missing/read removal, invalid-byte and
 metadata rejection, directory/root-link/leaf-link admission and oversized-read rejection. The
 verifier supplies only inputs/driver calls; it does not replace storage or expected behavior. Native
-filesystem error types project as unavailable, and platform encoder bytes are not compared. Six
-additional Windows cases exercise ACL/identity/publish protections independently. Archive
+filesystem error types project as unavailable, and platform encoder bytes are not compared. Seven
+additional Windows cases exercise ACL/identity/publish/cleanup ownership protections independently. Archive
 transactions, backup/restore and editor image UI remain open.

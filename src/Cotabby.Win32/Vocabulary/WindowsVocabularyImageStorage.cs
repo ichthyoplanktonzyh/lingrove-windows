@@ -17,9 +17,12 @@ namespace Cotabby.Win32.Vocabulary;
 internal sealed class WindowsVocabularyImageStorage
 {
     private readonly Dictionary<string, byte[]> _memory = new(StringComparer.Ordinal);
+    private readonly Func<Guid> _stagingIdentity;
     internal string? DirectoryPath { get; }
-    internal WindowsVocabularyImageStorage(string? notebook)
-    { DirectoryPath = notebook is null ? null : VocabularyWindowsFile.FullPath(notebook) + ".media"; }
+    internal WindowsVocabularyImageStorage(string? notebook) : this(notebook, Guid.NewGuid) { }
+    /// <summary>Tests may force a CREATE_NEW collision without changing actual file operations.</summary>
+    internal WindowsVocabularyImageStorage(string? notebook, Func<Guid> stagingIdentity)
+    { DirectoryPath = notebook is null ? null : VocabularyWindowsFile.FullPath(notebook) + ".media"; _stagingIdentity = stagingIdentity; }
 
     internal byte[] Read(VocabularyImageReference image) => ContentOperation(() =>
     {
@@ -60,9 +63,10 @@ internal sealed class WindowsVocabularyImageStorage
         using (var current = root.OpenFile(image.Filename))
         {
             existed = current is not null;
-            if (current is not null && Matches(current, image)) return false;
+            if (current is not null && Matches(current, image)) { root.Verify(); return false; }
         }
-        string staging = System.IO.Path.Combine(root.Path, ".vocabulary-image-" + Guid.NewGuid().ToString("N") + ".tmp");
+        string staging = System.IO.Path.Combine(root.Path, ".vocabulary-image-" + _stagingIdentity().ToString("N") + ".tmp");
+        bool ownsStaging = false;
         try
         {
             // CREATE_NEW with a protected ACL precedes the first byte. No inherited public-data
@@ -70,25 +74,31 @@ internal sealed class WindowsVocabularyImageStorage
             // private to this operation and is the only path the finally block may erase.
             using (var stream = new FileInfo(staging).Create(FileMode.CreateNew, FileSystemRights.FullControl,
                 FileShare.None, 65536, FileOptions.None, VocabularyWindowsFile.NewFileSecurity()))
-            { stream.Write(bytes); stream.Flush(flushToDisk: true); }
+            { ownsStaging = true; stream.Write(bytes); stream.Flush(flushToDisk: true); }
             root.Verify();
             if (!existed)
             {
-                if (VocabularyWindowsFile.Native.MoveFileExW(staging, destination, 8)) return true;
+                if (VocabularyWindowsFile.Native.MoveFileExW(staging, destination, 8)) { ownsStaging = false; return true; }
                 if (Marshal.GetLastPInvokeError() is not 80 and not 183) throw Invalid();
                 // Another writer won publication. Verify that actual leaf rather than assuming
                 // equal hash names imply equal bytes; a valid winner is reused without rewriting.
                 using var winner = root.OpenFile(image.Filename) ?? throw Invalid();
-                if (Matches(winner, image)) return false;
+                if (Matches(winner, image)) { root.Verify(); return false; }
             }
             // Re-open immediately before repair: replacing an unsafe leaf is never recovery.
             // Drop our read handle before rename, because it deliberately denies delete sharing.
             using (var repair = root.OpenFile(image.Filename) ?? throw Invalid()) { }
             root.Verify();
             if (!VocabularyWindowsFile.Native.MoveFileExW(staging, destination, 8 | 1)) throw Invalid();
+            ownsStaging = false;
             return false;
         }
-        finally { try { File.Delete(staging); } catch (IOException) { } catch (UnauthorizedAccessException) { } }
+        finally
+        {
+            // CREATE_NEW can fail on an existing path. That file never belonged to us; cleanup
+            // starts only after our create succeeded and ends when publication moves it away.
+            if (ownsStaging) { try { File.Delete(staging); } catch (IOException) { } catch (UnauthorizedAccessException) { } }
+        }
     }
 
     internal void Remove(VocabularyImageReference image)

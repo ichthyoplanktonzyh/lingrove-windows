@@ -154,6 +154,16 @@ public sealed class VocabularyImageStorageTests(WpfDispatcher dispatcher)
         Assert.Equal(data, new WindowsVocabularyImageStorage(folder.Notebook).Read(image));
     });
     [Fact]
+    public Task ACreateNewCollisionNeverDeletesThePreexistingStagingFile() => dispatcher.Run(() =>
+    {
+        using var folder = new Folder(); VocabularyWindowsFile.CreateParentDirectory(folder.Media);
+        var identity = new Guid("afbeafbe-0000-4000-8000-000000000001");
+        string stage = Path.Combine(folder.Media, ".vocabulary-image-" + identity.ToString("N") + ".tmp"); File.WriteAllBytes(stage, [7]);
+        var store = new WindowsVocabularyImageStorage(folder.Notebook, () => identity); byte[] data = Input;
+        Assert.False(Accepted(store, data, Image(data))); Assert.Equal(new byte[] { 7 }, File.ReadAllBytes(stage));
+        Assert.Single(Directory.GetFileSystemEntries(folder.Media)); Assert.False(File.Exists(Path.Combine(folder.Media, Image(data).Filename)));
+    });
+    [Fact]
     public Task InvalidHashCannotEscapeTheMediaDirectoryOrCreateIt() => dispatcher.Run(() =>
     {
         using var folder = new Folder(); byte[] data = Input; var image = Image(data) with { Digest = "../outside" };

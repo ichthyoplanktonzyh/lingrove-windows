@@ -103,6 +103,6 @@ The [image preparation library](VOCABULARY_IMAGE_PREPARATION.md) adds 26 native 
 image import or notebook media writes. Ten cases share actual Mac ImageIO observations; platform
 orientation/profile/multiframe and output-byte-ceiling cases have separate evidence scope.
 
-The [media storage library](VOCABULARY_IMAGE_STORAGE.md) adds 18 real file/WIC cases: twelve
-complete original Mac storage observations plus six Windows ACL, identity, publication and path
+The [media storage library](VOCABULARY_IMAGE_STORAGE.md) adds 19 real file/WIC cases: twelve
+complete original Mac storage observations plus seven Windows ACL, identity, publication and path
 admission regressions. No editor import or archive media transaction is connected yet.

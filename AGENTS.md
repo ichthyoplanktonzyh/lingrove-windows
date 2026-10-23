@@ -151,6 +151,7 @@ the [review card material](docs/REVIEW_CARD_MATERIAL.md) now resolves original c
 the [review preference boundary](docs/ANKI_REVIEW_SETTINGS.md) now preserves original settings, mapping bytes and explicit credential reads;
 the [Windows Anki credential adapter](docs/ANKI_CREDENTIAL_STORAGE.md) now supplies exact-key current-user DPAPI storage independently of inference;
 the [review controller](docs/ANKI_REVIEW_CONTROLLER.md) now adapts operation scopes, probes, status, navigation and protected template upgrades;
+the [review/template transactions](docs/VOCABULARY_REVIEW_TRANSACTIONS.md) now preserve card CAS, merged-sense receipts and acknowledged Store publication;
 compressed/profiled bitmap variants, virtual/pixel drops, review UI/Anki transactions and other dictionary providers remain work. Do not flatten senses into
 one translation string, regenerate stable IDs during edits, or treat a generated explanation as the
 user's authored meaning. See the vocabulary models and porting gates in the linked docs. Storage
@@ -218,6 +219,7 @@ python3 scripts/verify-speech-text-macos-parity.py --mac-repo /path/to/macOS-lin
 python3 scripts/verify-speech-export-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-anki-settings-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-anki-controller-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
+python3 scripts/verify-vocabulary-review-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 ```
 
 The verifiers read the pinned macOS sources from Git and check the same JSON cases. The lexical

@@ -27,6 +27,8 @@
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularyArchive.Export.cs" Link="Production\VocabularyArchive.Export.cs" />
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\IVocabularyImageStorage.cs" Link="Production\IVocabularyImageStorage.cs" />
     <Compile Include="..\..\src\Cotabby.App\Vocabulary\VocabularyStore.cs" Link="Production\VocabularyStore.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Vocabulary\VocabularyStore.Review.cs" Link="Production\VocabularyStore.Review.cs" />
+    <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularyArchive.Review.cs" Link="Production\VocabularyArchive.Review.cs" />
     <Compile Include="..\..\src\Cotabby.App\Vocabulary\VocabularyStore.Images.cs" Link="Production\VocabularyStore.Images.cs" />
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularyWindowsFile.cs" Link="Production\VocabularyWindowsFile.cs" />
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularyWindowsFileLock.cs" Link="Production\VocabularyWindowsFileLock.cs" />
@@ -47,6 +49,7 @@
   <ItemGroup>
     <None Include="..\..\fixtures\parity\anki-settings-v1.json" Link="fixtures\anki-settings-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\fixtures\parity\anki-controller-v1.json" Link="fixtures\anki-controller-v1.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\fixtures\parity\vocabulary-review-v1.json" Link="fixtures\vocabulary-review-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\fixtures\parity\anki-connect-v1.json" Link="fixtures\anki-connect-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\fixtures\parity\vocabulary-graph-presentation-v1.json" Link="fixtures\vocabulary-graph-presentation-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\fixtures\parity\vocabulary-sqlite-v1.json" Link="fixtures\vocabulary-sqlite-v1.json" CopyToOutputDirectory="PreserveNewest" />

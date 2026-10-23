@@ -110,9 +110,13 @@ public sealed class VocabularyGraphCanvasTests(WpfDispatcher dispatcher)
     {
         await using var view = new View(Graph()); await Cooled(view); var canvas = view.Canvas; var p = view.Presentation;
         var point = canvas.Screen(canvas.Positions[Head(1)]); canvas.PointerDown(point); canvas.PointerDrag(new(point.X + 2, point.Y)); canvas.PointerUp();
-        Assert.Contains(Id(1), p.Expanded); int frames = canvas.RenderedFrameCount; var old = p.Camera.Offset;
+        Assert.Contains(Id(1), p.Expanded); int frames = canvas.RenderedFrameCount; var old = p.Camera.Offset; var particles = canvas.Positions;
         Assert.Null(canvas.Hit(new(8, 8))); canvas.PointerDown(new(8, 8)); canvas.PointerDrag(new(28, 38)); canvas.PointerUp();
-        Assert.Equal(new VocabularyGraphPoint(old.X + 20, old.Y + 30), p.Camera.Offset); Assert.False(canvas.IsAnimating); Assert.Equal(frames, canvas.RenderedFrameCount);
+        Assert.Equal(new VocabularyGraphPoint(old.X + 20, old.Y + 30), p.Camera.Offset);
+        // Original mouseUp calls wake for every completed drag, including background pan.
+        // A cold configure publishes one frame without advancing/reheating any particle.
+        await Cooled(view); Assert.Equal(frames + 1, canvas.RenderedFrameCount);
+        Assert.All(particles, pair => AssertPoint(pair.Value, canvas.Positions[pair.Key]));
     });
     [Fact]
     public Task CameraAndKeyboardCommandsNavigateWithoutChangingParticleCoordinates() => dispatcher.RunAsync(async () =>

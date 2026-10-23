@@ -36,6 +36,9 @@ exact sense activation, Tab/Shift+Tab traversal, Enter/Space, Escape, +/- and ar
 retain the source transitions. Explicit search/selection navigation disables settling fit so the
 next frame cannot undo it. Camera operations do not heat or modify particles. Routed WPF events
 convert input into these same transitions; controlled transition tests are not OS input injection.
+As in original `mouseUp`, completing even a background drag calls `wake`: a cooled worker publishes
+one unchanged configure frame before returning to idle. The pan test waits for that handoff and
+checks the exact extra frame and unchanged coordinates, rather than requiring synchronous idle.
 
 ## Rendering and platform adaptations
 

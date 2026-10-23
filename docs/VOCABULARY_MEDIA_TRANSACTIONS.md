@@ -2,8 +2,8 @@
 
 `VocabularyArchive.Images.cs` adapts `Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift`
 and archive `update`/`commitUnlocked` at Mac pin `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`.
-The existing archive now owns real [image storage](VOCABULARY_IMAGE_STORAGE.md). This connects
-transaction behavior, not editor image import or visible images, backup/restore, or review mutations.
+The existing archive now owns real [image storage](VOCABULARY_IMAGE_STORAGE.md).
+The [image UI](VOCABULARY_IMAGE_UI.md) borrows these transactions for file import and visible images. Backup/restore and review mutations remain unconnected.
 
 `VocabularyArchive.Windows.cs` composes SQLite and the WIC/file adapter for the same notebook path,
 including real memory-mode image bytes. The constructor remains inert. It lives separately so
@@ -17,7 +17,7 @@ There is no second store, runtime, worker observer, network request or UI public
 SQLite or writes media; discarding a prepared draft leaves no resources. `ReadImageAsync` holds
 the archive's shared access lock while reading/validating bytes. `UpdateAsync` snapshots an optional
 dictionary of immutable prepared images before queuing the existing three-way edit. The editor's
-current text-only calls remain valid; a later UI slice can pass its draft images at Save.
+text-only calls remain valid; image editors pass their referenced draft images at Save.
 
 The exclusive `VocabularySQLiteDatabase.Access(true, ...)` spans all of these steps:
 

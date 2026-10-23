@@ -34,6 +34,7 @@ public partial class VocabularyNotebookWindow : Window
     private sealed record DetailKey(Guid Entry, string Expression, string Form, LearningLanguage Language, VocabularyEntryKind Kind, VocabularySense Sense);
     private DetailKey? _renderedDetail;
     private bool _hasRenderedDetail;
+    private readonly List<VocabularyImageView> _images = [];
     internal Task LastRefresh { get; private set; } = Task.CompletedTask;
     internal VocabularySelection? Selection => VocabularyNotebookPolicy.ResolveSelection(_store.Snapshot.Document, _selection);
     private sealed record LanguageOption(LearningLanguage? Value, string Label);
@@ -50,7 +51,7 @@ public partial class VocabularyNotebookWindow : Window
         LanguageFilter.SelectedIndex = 0; _presenting = false;
         _store.Changed += OnStoreChanged;
         Closing += OnClosing;
-        Closed += (_, _) => { _retired = true; _store.Changed -= OnStoreChanged; CancelFiltering(); RetireActions(); RetireLearning(); };
+        Closed += (_, _) => { _retired = true; _store.Changed -= OnStoreChanged; CancelFiltering(); RetireActions(); RetireLearning(); ClearImages(); };
         RequestRefresh();
     }
     internal void Reveal(VocabularySelection? selection)
@@ -181,7 +182,7 @@ public partial class VocabularyNotebookWindow : Window
         SelectLearning(entry, sense);
         UpdateActions();
         CloseActionMenus(); ++_detailVersion;
-        _hasRenderedDetail = true; _renderedDetail = key; DetailContent.Children.Clear();
+        _hasRenderedDetail = true; _renderedDetail = key; ClearImages(); DetailContent.Children.Clear();
         if (entry is null || sense is null) { DetailContent.Children.Add(Label("Vocabulary", 22, bold: true)); return; }
         DetailContent.Children.Add(Literal(entry.Expression, 22, entry.Language, bold: true));
         DetailContent.Children.Add(Label(entry.Language.Label() + " · " + entry.Kind, 12));
@@ -198,7 +199,7 @@ public partial class VocabularyNotebookWindow : Window
                         text.Value.Style == VocabularyTextStyle.Heading ? 17 : 14, bold: text.Value.Bold || text.Value.Style == VocabularyTextStyle.Heading, italic: text.Value.Italic));
                 else if (block.Content is VocabularyBlockContent.Image image)
                 {
-                    content.Children.Add(Label("Image unavailable", 12));
+                    var view = new VocabularyImageView(_store, image.Reference, caption: image.Caption); _images.Add(view); content.Children.Add(view);
                     if (image.Caption.Length > 0) content.Children.Add(Literal(image.Caption, 13));
                 }
             }
@@ -239,6 +240,7 @@ public partial class VocabularyNotebookWindow : Window
     }
     private static TextBlock Label(string text, double size, bool bold = false) => new()
     { Text = text, FontSize = size, FontWeight = bold ? FontWeights.SemiBold : FontWeights.Normal, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 4) };
+    private void ClearImages() { foreach (var image in _images) image.Dispose(); _images.Clear(); }
     private static TextBox Literal(string text, double size, LearningLanguage? language = null, bool bold = false, bool italic = false)
     {
         var box = new TextBox { Text = text, IsReadOnly = true, TextWrapping = TextWrapping.Wrap, FontSize = size, BorderThickness = new Thickness(0),

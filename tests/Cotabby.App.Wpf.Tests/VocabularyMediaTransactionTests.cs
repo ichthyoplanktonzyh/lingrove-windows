@@ -232,6 +232,7 @@ public sealed class VocabularyMediaTransactionTests(WpfDispatcher dispatcher)
     {
         private readonly WindowsVocabularyImageStorage _storage = new(notebook);
         public VocabularyPreparedImage Prepare(ReadOnlySpan<byte> data, CancellationToken cancellationToken) => _storage.Prepare(data, cancellationToken);
+        public VocabularyPreparedImage PrepareFile(string path, CancellationToken cancellationToken) => _storage.PrepareFile(path, cancellationToken);
         public byte[] Read(VocabularyImageReference image) => _storage.Read(image);
         public bool Write(ReadOnlySpan<byte> data, VocabularyImageReference image) { bool created = _storage.Write(data, image); afterWrite(); return created; }
         public void Remove(VocabularyImageReference image) => _storage.Remove(image);

@@ -110,3 +110,8 @@ admission regressions. No editor import or archive media transaction is connecte
 The [archive media integration](VOCABULARY_MEDIA_TRANSACTIONS.md) adds 21 actual archive/WIC/SQLite
 cases: twelve complete original Mac actor observations and nine named-file acknowledgement, rollback,
 cancellation, cleanup, cross-owner lock and stale-revision regressions. Image editor UI remains open.
+
+The [image UI](VOCABULARY_IMAGE_UI.md) adds sixteen compiled-control/native cases for file import,
+draft ownership/pruning, cancellation, budgets, save/retry, lazy reads and enlargement. The tests
+invoke the production picker callback; the OS file dialog and cross-process clipboard/drop are not
+claimed as exercised. Source, notebook and media bytes are private temporary fixtures.

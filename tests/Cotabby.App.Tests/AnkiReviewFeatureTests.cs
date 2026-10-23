@@ -55,9 +55,22 @@ public sealed class AnkiReviewFeatureTests
         await using var store = Store(); var client = new AnkiTestClient();
         var feature = new AnkiReviewFeature(() => new AppSettings(), () => { }, store, client, new AnkiTestCredentials());
         var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-        Task action = feature.RunAsync(async ct => { using var registration = ct.Register(() => throw new AnkiReviewException("callback failure")); await release.Task; });
-        Task close = feature.DisposeAsync().AsTask(); Assert.False(close.IsCompleted); Assert.Equal(0, client.Disposals);
-        release.SetResult(); await action;
+        var callbackStarted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        Task action = feature.RunAsync(async ct =>
+        {
+            using var registration = ct.Register(() => { callbackStarted.TrySetResult(); throw new AnkiReviewException("callback failure"); });
+            await release.Task;
+        });
+        Task close = feature.DisposeAsync().AsTask();
+        try
+        {
+            // CancelAsync schedules callbacks. Releasing the action before this signal can
+            // unregister a callback that never began, making a required throw depend on timing.
+            await callbackStarted.Task.WaitAsync(TimeSpan.FromSeconds(10));
+            Assert.False(close.IsCompleted); Assert.Equal(0, client.Disposals);
+        }
+        finally { release.TrySetResult(); }
+        await action;
         await Assert.ThrowsAsync<AggregateException>(() => close); Assert.Equal(1, client.Disposals);
         await Assert.ThrowsAsync<AggregateException>(() => feature.DisposeAsync().AsTask());
     }

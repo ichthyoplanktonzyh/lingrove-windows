@@ -62,6 +62,7 @@ owner-thread test uses a bounded dedicated background thread, not a timing-depen
 identity. Tests serialize/reparse the actual SettingsStore representation without touching the
 user's settings folder. Initial targeted results: Core21 and App18 passed, no failures/skips.
 
-AppHost injection, the list/graph switch, canvas/drawing/accessibility, visible layout/pointer input
-and physical Windows behavior remain unimplemented in this slice. Ordinary compilation or these
-portable state checks cannot establish that desktop behavior.
+The subsequent [canvas](VOCABULARY_GRAPH_CANVAS.md) and [notebook integration](VOCABULARY_GRAPH_NOTEBOOK.md)
+connect AppHost injection, mode/chrome/settings, drawing/input/peers and the shared detail/Store.
+Those compiled WPF tests do not establish physical Windows desktop behavior. General Settings
+Reset preserves the independent raw graph keys, matching the original Mac reset key set.

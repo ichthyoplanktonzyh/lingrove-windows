@@ -8,6 +8,30 @@ namespace Cotabby.App.Tests.Settings;
 
 public sealed class VocabularyGraphPreferencesTests
 {
+    [Theory]
+    [InlineData("valid")]
+    [InlineData("malformed")]
+    [InlineData("wrong-shapes")]
+    public void GeneralResetKeepsIndependentNotebookRawPreferences(string shape)
+    {
+        var original = SettingsStore.Parse(shape == "wrong-shapes"
+            ? "{\"Enabled\":false,\"vocabularyGraphSettings.v1\":12,\"vocabularyBrowserMode\":true}"
+            : "{\"Enabled\":false,\"vocabularyGraphSettings.v1\":\"not-base64\",\"vocabularyBrowserMode\":\"future-mode\"}");
+        original.ActiveModelId = "kept-model"; original.ShowFirstRunWelcome = false; original.WordsAccepted = 4;
+        if (shape == "valid")
+        { original.VocabularyBrowserMode = "graph"; original.WriteVocabularyGraphSettings(VocabularyGraphSettingsCodec.EncodeNormalized(new() { NodeSize = 23 })); }
+        var current = original; int saves = 0; var preferences = new VocabularyGraphPreferences(() => current, () => saves++);
+        current = current.ResetGeneralPreferences(123);
+        Assert.NotSame(original, current); Assert.False(original.Enabled); Assert.True(current.Enabled);
+        Assert.Equal("kept-model", current.ActiveModelId); Assert.False(current.ShowFirstRunWelcome); Assert.Equal(123, current.WordsAccepted);
+        Assert.Equal(original.VocabularyGraphSettingsValue!.Value.GetRawText(), current.VocabularyGraphSettingsValue!.Value.GetRawText());
+        Assert.Equal(original.VocabularyBrowserModeValue!.Value.GetRawText(), current.VocabularyBrowserModeValue!.Value.GetRawText());
+        var restarted = SettingsStore.Parse(SettingsStore.Serialize(current));
+        Assert.Equal(current.VocabularyGraphSettingsValue.Value.GetRawText(), restarted.VocabularyGraphSettingsValue!.Value.GetRawText());
+        Assert.Equal(current.VocabularyBrowserModeValue.Value.GetRawText(), restarted.VocabularyBrowserModeValue!.Value.GetRawText());
+        preferences.BrowserMode = "list"; Assert.Equal("list", current.VocabularyBrowserMode); Assert.Equal(1, saves);
+        Assert.Equal(4, original.WordsAccepted);
+    }
     [Fact]
     public void BadPreferenceShapesDoNotDiscardUnrelatedSettingsAndOriginalKeysRoundTrip()
     {

@@ -35,6 +35,18 @@ public enum LearningTranslationBackend
 /// </summary>
 public sealed partial class AppSettings
 {
+    /// <summary>Returns fresh general/runtime defaults without resetting independent notebook
+    /// preferences. Mac's settings reset removes an explicit key set; graph mode/data live outside
+    /// it. AppHost replaces its current owner with this value, then persists/applies it once.</summary>
+    public AppSettings ResetGeneralPreferences(long wordsAccepted) => new()
+    {
+        ActiveModelId = ActiveModelId,
+        ShowFirstRunWelcome = ShowFirstRunWelcome,
+        WordsAccepted = wordsAccepted,
+        VocabularyGraphSettingsValue = VocabularyGraphSettingsValue,
+        VocabularyBrowserModeValue = VocabularyBrowserModeValue,
+    };
+
     // General
     public bool Enabled { get; set; } = true;
     public PauseState? Pause { get; set; }

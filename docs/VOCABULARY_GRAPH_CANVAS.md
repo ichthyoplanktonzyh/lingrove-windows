@@ -2,8 +2,8 @@
 
 Reference: stable Mac `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`, complete
 `Cotabby/UI/Vocabulary/VocabularyGraphCanvasView.swift`. This slice adapts the existing AppKit
-surface as a compiled WPF component. Notebook mode/chrome, settings controls and AppHost preference
-injection are still the next slice; this component is not yet reachable from the notebook UI.
+surface as a compiled WPF component. The subsequent [notebook integration](VOCABULARY_GRAPH_NOTEBOOK.md)
+now connects mode/chrome, settings controls and AppHost preference injection to the notebook UI.
 
 | Original responsibility | Windows file under `App/UI/Vocabulary/Graph/` |
 | --- | --- |

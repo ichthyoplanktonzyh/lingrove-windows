@@ -159,7 +159,10 @@ public sealed class AppHost : IAsyncDisposable
         VocabularyWindow = new VocabularyWindowController(Vocabulary, overlay.Dispatcher,
             () => new VocabularyNotebookSession(overlay.Dispatcher, _services.GetRequiredService<ILearningDictionaryProviding>(),
                 _services.GetRequiredService<ILearningLexicalText>(), LearningExplanation.Service),
-            () => SettingsWindow.ShowLearning(this), _vocabularyClipboard);
+            () => SettingsWindow.ShowLearning(this), _vocabularyClipboard,
+            // Notebook preferences share the existing settings owner, but do not re-apply engine
+            // or generation settings when only graph appearance/browser mode changes.
+            new VocabularyGraphPreferences(() => Settings, () => SettingsStore.Save(Settings)));
         Vocabulary.EnrichCapture = capture =>
         {
             var input = LearningExplanationPolicy.Input(capture);
@@ -254,12 +257,7 @@ public sealed class AppHost : IAsyncDisposable
     /// <summary>Restores every preference to its default. The chosen model and onboarding state stay.</summary>
     public void ResetSettings()
     {
-        Settings = new AppSettings
-        {
-            ActiveModelId = Settings.ActiveModelId,
-            ShowFirstRunWelcome = Settings.ShowFirstRunWelcome,
-            WordsAccepted = Coordinator.Metrics.WordsAccepted,
-        };
+        Settings = Settings.ResetGeneralPreferences(Coordinator.Metrics.WordsAccepted);
         PersistSettings();
     }
 

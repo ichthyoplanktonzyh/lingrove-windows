@@ -76,7 +76,7 @@ internal sealed partial class VocabularyGraphCanvas
     }
     internal void Activate(VocabularyGraphNodeId id)
     {
-        Dispatcher.VerifyAccess(); if (_retired || !_snapshot.Nodes.Any(node => node.Id == id)) return;
+        Dispatcher.VerifyAccess(); if (_retired || !IsEnabled || !_snapshot.Nodes.Any(node => node.Id == id)) return;
         _presentation.FitsInitialLayout = false;
         if (id.Selection is { } selection) { _presentation.Reveal(selection); _select(selection); }
         else { _presentation.Toggle(id.EntryId); _select(null); }

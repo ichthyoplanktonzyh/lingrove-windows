@@ -62,8 +62,10 @@ now supplies an explicit full-value draft and acknowledged Save/Cancel. [Sense/u
 now supply New/Merge/Delete/Move with durable acknowledgement. [Contextual explanation/adoption](VOCABULARY_EXPLANATION_UI.md)
 and [explicit bundled dictionary lookup](VOCABULARY_DICTIONARY_UI.md) now borrow notebook-owned sessions.
 The [image UI](VOCABULARY_IMAGE_UI.md) now reads actual validated media and supports enlargement.
-Clipboard/drop, speech, review/Anki, batch selection, graph, export/backup/restore, localization and
-persisted window geometry remain open. Source-application attribution is also pending: current
+Subsequent slices connect existing-file drop/image paste, [batch export](VOCABULARY_EXPORT_WINDOW.md),
+[full backup/restore](VOCABULARY_BACKUP_UI.md) and the [original graph](VOCABULARY_GRAPH_NOTEBOOK.md).
+Virtual/pixel drops, additional image formats, speech, review/Anki, localization and persisted window
+geometry remain open. Source-application attribution is also pending: current
 Windows captures leave application identity absent rather than substituting a process basename.
 Existing stored source identifiers are retained but not resolved/displayed by this window.
 

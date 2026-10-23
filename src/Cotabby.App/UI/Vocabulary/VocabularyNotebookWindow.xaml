@@ -31,6 +31,10 @@
     </Window.Resources>
     <DockPanel>
         <WrapPanel DockPanel.Dock="Top" Margin="12">
+            <StackPanel Orientation="Horizontal" Margin="0,0,8,0" AutomationProperties.Name="Browse vocabulary">
+                <RadioButton x:Name="ListModeButton" Content="List" Tag="list" GroupName="VocabularyBrowserMode" Width="65" Style="{StaticResource Segment}" Checked="OnBrowserMode" IsChecked="True" />
+                <RadioButton x:Name="GraphModeButton" Content="Graph" Tag="graph" GroupName="VocabularyBrowserMode" Width="65" Style="{StaticResource Segment}" Checked="OnBrowserMode" />
+            </StackPanel>
             <TextBox x:Name="SearchText" Width="230" Padding="7,5" Margin="0,0,8,0" TextChanged="OnFiltersChanged" Style="{StaticResource Input}" Tag="Search vocabulary"
                      AutomationProperties.Name="Search vocabulary" Background="{DynamicResource InputBg}"
                      Foreground="{DynamicResource TextPrimary}" BorderBrush="{DynamicResource CardBorder}" />
@@ -46,20 +50,24 @@
             <Button x:Name="BackupButton" Content="Full notebook backup…" Padding="10,4" Margin="8,0,0,0" Click="OnBackupNotebook" IsEnabled="False" />
             <Button x:Name="RestoreNotebookButton" Content="Restore notebook…" Padding="10,4" Margin="8,0,0,0" Click="OnRestoreNotebook" IsEnabled="False" />
         </WrapPanel>
-        <TextBlock x:Name="StorageError" DockPanel.Dock="Top" Margin="12,0,12,8" TextWrapping="Wrap"
-                   Foreground="{DynamicResource OrangeBrush}" Visibility="Collapsed" />
+        <DockPanel DockPanel.Dock="Top" Margin="12,0,12,8">
+            <Button x:Name="RetryBrowseButton" DockPanel.Dock="Right" Content="Retry" AutomationProperties.Name="Retry vocabulary browsing" Click="OnRetryBrowse" Visibility="Collapsed" Padding="10,4" Margin="8,0,0,0" />
+            <TextBlock x:Name="StorageError" TextWrapping="Wrap" Foreground="{DynamicResource OrangeBrush}" Visibility="Collapsed" />
+        </DockPanel>
         <Grid>
-            <Grid.ColumnDefinitions><ColumnDefinition Width="290" MinWidth="230" MaxWidth="420" /><ColumnDefinition Width="5" /><ColumnDefinition Width="*" MinWidth="300" /></Grid.ColumnDefinitions>
+            <Grid.ColumnDefinitions><ColumnDefinition x:Name="BrowserColumn" Width="290" MinWidth="230" MaxWidth="420" /><ColumnDefinition x:Name="DividerColumn" Width="5" /><ColumnDefinition x:Name="DetailColumn" Width="*" MinWidth="300" /></Grid.ColumnDefinitions>
             <Grid Grid.Column="0" Background="{DynamicResource SidebarBg}">
                 <TreeView x:Name="EntriesTree" Background="Transparent" BorderThickness="0" Padding="8"
                           SelectedItemChanged="OnSelectedItemChanged" VirtualizingStackPanel.IsVirtualizing="True"
                           VirtualizingStackPanel.VirtualizationMode="Recycling" ScrollViewer.CanContentScroll="True" />
                 <TextBlock x:Name="EmptyText" Text="No saved expressions" TextWrapping="Wrap" Margin="24"
                            Foreground="{DynamicResource TextSecondary}" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" />
+                <Grid x:Name="GraphHost" Visibility="Collapsed" />
             </Grid>
-            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="{DynamicResource CardBorder}" />
-            <DockPanel Grid.Column="2">
+            <GridSplitter x:Name="DetailDivider" Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="{DynamicResource CardBorder}" />
+            <DockPanel x:Name="DetailsPane" Grid.Column="2">
                 <WrapPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Right" Margin="12,8">
+                    <Button x:Name="CloseGraphDetailButton" Content="×" ToolTip="Close details" AutomationProperties.Name="Close details" Click="OnCloseGraphDetail" Padding="10,4" Margin="0,0,6,0" Visibility="Collapsed" />
                     <Button x:Name="EditButton" Content="Edit" Click="OnEdit" Padding="12,4" IsEnabled="False" />
                     <Button x:Name="NewSenseButton" Content="New sense" Click="OnNewSense" Padding="12,4" Margin="6,0,0,0" IsEnabled="False" />
                     <Button x:Name="MergeSenseButton" Content="Merge sense" Click="OnMergeSense" Padding="12,4" Margin="6,0,0,0" IsEnabled="False" />

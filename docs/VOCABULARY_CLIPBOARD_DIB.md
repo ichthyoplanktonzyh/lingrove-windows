@@ -39,11 +39,22 @@ byte, while bitfield alpha must be contiguous and disjoint from RGB. A V4 header
 is extended to V5 with perceptual intent and zero profile fields before WIC sees it, preserving
 the existing color masks and rows. Sixteen-bit alpha is explicitly unsupported.
 
-Tests use literal DIB rows and app-owned memory, never the runner clipboard. Structure cases cover
+A direct native probe on Windows CI (run `39959795480`, head `74e20792c8a0a25b3e1d45c02ba8221e604ddcd9`)
+reported `WINCODEC_ERR_UNSUPPORTEDOPERATION` (`0x88982F81`) from BMP frame color-context enumeration.
+That error does not establish absence of color metadata. `WindowsVocabularyImageFrame` now accepts
+it only for the BMP container when the shared nonallocating layout parser independently proves
+bounded, consistent file headers/rows and default V3 RGB or explicit V4/V5 sRGB/Windows RGB with
+no profile area. Calibrated/unknown sources still fail when their required color evidence cannot
+be read; every other codec/error keeps the prior failure path. Unadapted V4 alpha also fails this
+check, avoiding a silent alpha loss in direct file imports. The [query contract](https://learn.microsoft.com/en-us/windows/win32/api/wincodec/nf-wincodec-iwicbitmapframedecode-getcolorcontexts)
+and [HRESULT table](https://learn.microsoft.com/en-us/windows/win32/wic/-wic-codec-error-codes)
+identify the API/result; the unsupported behavior above is an actual CI observation.
+
+Tests use literal DIB rows and app-owned memory, never the runner clipboard. Fifty-two structure/color-evidence cases cover
 headers, row direction, palette/mask offsets, malformed dimensions/sizes/planes/depth/compression,
 profile rejection, alpha admission, input/output budgets, unused tail trimming and V4 extension.
 Reader cases cover metadata-only admission, encoded-format priority, null bitmap fallback,
-detachment/close ordering and no fallback after invalid selected data. Ten actual WIC/archive/PNG
+detachment/close ordering and no fallback after invalid selected data. A direct native frame case and ten actual WIC/archive/PNG
 cases check red top/blue bottom pixels for all three headers and both directions, plus V4/V5
 BI_RGB/bitfield alpha. These are format/pixel regressions, not evidence of physical keyboard,
 Paint/browser/Office clipboard production, color-profile parity or complete Mac image-provider parity.

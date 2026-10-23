@@ -129,4 +129,5 @@ physical keyboard/IME checks remain open.
 
 The [DIB adapter](VOCABULARY_CLIPBOARD_DIB.md) adds ten actual WIC/archive/PNG color, row-direction
 and alpha cases with literal bitmap bytes. These never open a clipboard or claim real producer
-interoperability; 39 structure cases and six additional reader cases run in Inference.Tests.
+interoperability; 52 structure/color-evidence cases and six additional reader cases run in Inference.Tests. One
+direct native frame test exposes WIC failures independently of the fixed UI error.

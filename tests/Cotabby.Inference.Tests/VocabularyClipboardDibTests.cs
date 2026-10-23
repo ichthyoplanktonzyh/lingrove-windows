@@ -132,5 +132,42 @@ public sealed class VocabularyClipboardDibTests
         VocabularyDibFixture.I32(dib, 4, 5461); VocabularyDibFixture.I32(dib, 8, 1535); dib[12] = 1; dib[14] = 24; VocabularyDibFixture.U32(dib, 32, 4086);
         Assert.Throws<InvalidDataException>(() => VocabularyClipboardDib.Wrap(dib));
     }
+    [Theory]
+    [InlineData(40, 0u, true)]
+    [InlineData(108, 0x73524742u, true)]
+    [InlineData(124, 0x73524742u, true)]
+    [InlineData(124, 0x57696E20u, true)]
+    [InlineData(108, 0u, false)]
+    [InlineData(124, 0u, false)]
+    public void ColorQueryFallbackRequiresIndependentSrgbEvidence(int header, uint colorSpace, bool expected)
+    {
+        byte[] dib = VocabularyDibFixture.Image(header); if (header >= 108) VocabularyDibFixture.U32(dib, 56, colorSpace);
+        Assert.Equal(expected, VocabularyClipboardDib.HasProvenSrgbBitmap(VocabularyClipboardDib.Wrap(dib)));
+    }
+    [Theory]
+    [InlineData("signature")]
+    [InlineData("size")]
+    [InlineData("reserved")]
+    [InlineData("pixel-offset")]
+    [InlineData("linked-profile")]
+    [InlineData("profile-area")]
+    [InlineData("unadapted-v4-alpha")]
+    public void MalformedOrUnadaptedFilesCannotBypassAColorContextFailure(string mode)
+    {
+        byte[] bmp = VocabularyClipboardDib.Wrap(VocabularyDibFixture.Image(124));
+        switch (mode)
+        {
+            case "signature": bmp[0] = 0; break;
+            case "size": VocabularyDibFixture.U32(bmp, 2, 0); break;
+            case "reserved": bmp[6] = 1; break;
+            case "pixel-offset": VocabularyDibFixture.U32(bmp, 10, 1); break;
+            case "linked-profile": VocabularyDibFixture.U32(bmp, 70, 0x4C494E4B); break;
+            case "profile-area": VocabularyDibFixture.U32(bmp, 126, 124); break;
+            case "unadapted-v4-alpha":
+                byte[] dib = VocabularyDibFixture.Image(108, alpha: true); bmp = new byte[146]; bmp[0] = 66; bmp[1] = 77;
+                VocabularyDibFixture.U32(bmp, 2, 146); VocabularyDibFixture.U32(bmp, 10, 122); dib.CopyTo(bmp, 14); break;
+        }
+        Assert.False(VocabularyClipboardDib.HasProvenSrgbBitmap(bmp));
+    }
     private static uint U32(byte[] bytes, int offset) => BinaryPrimitives.ReadUInt32LittleEndian(bytes.AsSpan(offset));
 }

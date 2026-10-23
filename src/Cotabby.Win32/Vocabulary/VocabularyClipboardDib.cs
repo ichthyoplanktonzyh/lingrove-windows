@@ -12,7 +12,10 @@ namespace Cotabby.Win32.Vocabulary;
 /// </summary>
 internal static class VocabularyClipboardDib
 {
-    internal static byte[] Wrap(ReadOnlySpan<byte> dib, bool requiresV5 = false)
+    // One parsed layout serves wrapping and the decoder's narrow color-evidence check. Keeping
+    // them together prevents a looser second parser from admitting a profile or different rows.
+    private readonly record struct Layout(uint Header, long Offset, long Pixels, int Extension, int Length);
+    private static Layout ReadLayout(ReadOnlySpan<byte> dib, bool requiresV5)
     {
         if (dib.Length < 40 || dib.Length > VocabularyClipboardImageReader.MaximumBytes) throw Invalid();
         uint header = U32(dib, 0);
@@ -58,19 +61,40 @@ internal static class VocabularyClipboardDib
         int extension = header == 108 && alpha != 0 ? 16 : 0;
         long length = 14 + extension + offset + pixels;
         if (length > VocabularyClipboardImageReader.MaximumBytes) throw Invalid();
-
-        byte[] bmp = new byte[(int)length]; bmp[0] = (byte)'B'; bmp[1] = (byte)'M';
-        BinaryPrimitives.WriteUInt32LittleEndian(bmp.AsSpan(2), (uint)length);
-        BinaryPrimitives.WriteUInt32LittleEndian(bmp.AsSpan(10), (uint)(14 + extension + offset));
+        return new(header, offset, pixels, extension, (int)length);
+    }
+    internal static byte[] Wrap(ReadOnlySpan<byte> dib, bool requiresV5 = false)
+    {
+        var layout = ReadLayout(dib, requiresV5);
+        byte[] bmp = new byte[layout.Length]; bmp[0] = (byte)'B'; bmp[1] = (byte)'M';
+        BinaryPrimitives.WriteUInt32LittleEndian(bmp.AsSpan(2), (uint)layout.Length);
+        BinaryPrimitives.WriteUInt32LittleEndian(bmp.AsSpan(10), (uint)(14 + layout.Extension + layout.Offset));
         // Discard unused HGLOBAL allocation tail; biSizeImage describes only admitted pixel rows.
-        dib[..(int)header].CopyTo(bmp.AsSpan(14));
-        dib[(int)header..(int)(offset + pixels)].CopyTo(bmp.AsSpan(14 + (int)header + extension));
-        if (extension != 0)
+        dib[..(int)layout.Header].CopyTo(bmp.AsSpan(14));
+        dib[(int)layout.Header..(int)(layout.Offset + layout.Pixels)].CopyTo(bmp.AsSpan(14 + (int)layout.Header + layout.Extension));
+        if (layout.Extension != 0)
         {
             BinaryPrimitives.WriteUInt32LittleEndian(bmp.AsSpan(14), 124);
             BinaryPrimitives.WriteUInt32LittleEndian(bmp.AsSpan(122), 4); // V5 perceptual intent; no profile data.
         }
-        BinaryPrimitives.WriteUInt32LittleEndian(bmp.AsSpan(34), (uint)pixels); return bmp;
+        BinaryPrimitives.WriteUInt32LittleEndian(bmp.AsSpan(34), (uint)layout.Pixels); return bmp;
+    }
+    /// <summary>
+    /// Independent positive evidence for WIC BMP codecs that cannot enumerate color contexts.
+    /// V3 carries no profile; V4/V5 must explicitly name sRGB/Windows RGB and have no profile area.
+    /// Calibrated/unknown sources remain failures when their color context cannot be obtained.
+    /// </summary>
+    internal static bool HasProvenSrgbBitmap(ReadOnlySpan<byte> bmp)
+    {
+        if (bmp.Length < 54 || bmp.Length > VocabularyClipboardImageReader.MaximumBytes || bmp[0] != 'B' || bmp[1] != 'M'
+            || U32(bmp, 2) != bmp.Length || U32(bmp, 6) != 0) return false;
+        try
+        {
+            var layout = ReadLayout(bmp[14..], requiresV5: false);
+            return layout.Extension == 0 && U32(bmp, 10) == 14 + layout.Offset
+                && (layout.Header == 40 || U32(bmp, 70) is 0x73524742 or 0x57696E20);
+        }
+        catch (InvalidDataException) { return false; }
     }
     private static uint U32(ReadOnlySpan<byte> bytes, int offset) => BinaryPrimitives.ReadUInt32LittleEndian(bytes[offset..]);
     private static bool Mask(uint value, uint allowed)

@@ -41,9 +41,14 @@ internal sealed unsafe class WindowsVocabularyImageFrame : IDisposable
             (Width, Height) = Size(_frame); Orientation = ReadOrientation();
             uint contexts = 0;
             int colors = ((delegate* unmanaged[Stdcall]<nint, uint, nint*, uint*, int>)Slots(_frame)[9])(_frame, 0, null, &contexts);
-            // Success with zero contexts means unprofiled. Unsupported is not that evidence:
-            // stripping unknown profile metadata after a failed query would change colors.
-            Check(colors); ColorContextCount = contexts;
+            // The Windows BMP codec reports UNSUPPORTEDOPERATION even for a plain sRGB BMP.
+            // That failure alone proves nothing about color. Only a separately validated BMP
+            // header with no profile and explicit/default RGB evidence can replace this query;
+            // calibrated/unknown/profiled sources and every other codec/error stay fail-closed.
+            if (colors == unchecked((int)0x88982F81) && Container == new Guid("0af1d87e-fcfe-4188-bdeba7906471cbe3")
+                && VocabularyClipboardDib.HasProvenSrgbBitmap(data)) contexts = 0;
+            else Check(colors);
+            ColorContextCount = contexts;
         }
         catch { Dispose(); throw; }
     }

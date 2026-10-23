@@ -67,3 +67,10 @@ cold load, merged aliases/deletion, latest-wins workers and draining, and the sh
 route. Its render check uses the actual wider notebook bounds. Native activation styles establish
 the intended window type, not physical activation behavior in another app. No model or notebook
 file is used by these view tests.
+
+The [entry editor](VOCABULARY_EDITOR.md) adds seven cases (54 total view cases): isolated Cancel,
+Save admission, original-text reset, acknowledged Save/pruning, conflict retention, concurrent
+captures, text formatting/order, existing image-reference preservation, pending-save retirement
+and the actual modal route from a filtered browser. A graph-only reference fixture does not prove
+media bytes; a controlled TimeProvider blocks scheduling of a real archive operation. Views still
+use actual Store/SQLite and no external editor, model or clipboard.

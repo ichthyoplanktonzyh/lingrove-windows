@@ -1,0 +1,586 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "tags-0",
+      "operation": "tags",
+      "text": "",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "macContentSource": "Cotabby/UI/Vocabulary/VocabularyContentEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "tags": []
+      }
+    },
+    {
+      "id": "tags-1",
+      "operation": "tags",
+      "text": ",， ,",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "macContentSource": "Cotabby/UI/Vocabulary/VocabularyContentEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "tags": []
+      }
+    },
+    {
+      "id": "tags-2",
+      "operation": "tags",
+      "text": "Work,Home，Work",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "macContentSource": "Cotabby/UI/Vocabulary/VocabularyContentEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "tags": [
+          "Home",
+          "Work"
+        ]
+      }
+    },
+    {
+      "id": "tags-3",
+      "operation": "tags",
+      "text": " work ,Work",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "macContentSource": "Cotabby/UI/Vocabulary/VocabularyContentEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "tags": [
+          "Work",
+          "work"
+        ]
+      }
+    },
+    {
+      "id": "tags-4",
+      "operation": "tags",
+      "text": "café,café",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "macContentSource": "Cotabby/UI/Vocabulary/VocabularyContentEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "tags": [
+          "café"
+        ]
+      }
+    },
+    {
+      "id": "tags-5",
+      "operation": "tags",
+      "text": "​Work​，Home",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "macContentSource": "Cotabby/UI/Vocabulary/VocabularyContentEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "tags": [
+          "Home",
+          "Work"
+        ]
+      }
+    },
+    {
+      "id": "tags-6",
+      "operation": "tags",
+      "text": ",́a, b",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "macContentSource": "Cotabby/UI/Vocabulary/VocabularyContentEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "tags": [
+          ",́a",
+          "b"
+        ]
+      }
+    },
+    {
+      "id": "tags-7",
+      "operation": "tags",
+      "text": "😀,",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "macContentSource": "Cotabby/UI/Vocabulary/VocabularyContentEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "tags": [
+          "",
+          "😀"
+        ]
+      }
+    },
+    {
+      "operation": "change",
+      "id": "change-new",
+      "text": "A new bank.",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "macContentSource": "Cotabby/UI/Vocabulary/VocabularyContentEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "example": {
+          "appBundleIdentifier": "source.application",
+          "completeness": "fragment",
+          "createdAt": -978307200,
+          "explanations": [
+            {
+              "createdAt": -978307200,
+              "id": "00000000-0000-0000-0000-000000000064",
+              "input": {
+                "context": "The bank.",
+                "contextKind": "sentence",
+                "dictionaryForm": "bank",
+                "kind": "word",
+                "language": "en",
+                "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+                "ranges": [
+                  {
+                    "length": 4,
+                    "location": 4
+                  }
+                ],
+                "target": "bank"
+              },
+              "language": "zh-Hans",
+              "model": "fixture",
+              "result": {
+                "explanation": "explanation",
+                "meaning": "meaning"
+              }
+            }
+          ],
+          "id": "00000000-0000-0000-0000-000000000003",
+          "meaning": "",
+          "meaningOrigin": "captured",
+          "ranges": [],
+          "text": "A new bank.",
+          "translation": "",
+          "translationVariants": []
+        }
+      }
+    },
+    {
+      "operation": "change",
+      "id": "change-same",
+      "text": "The bank.",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "macContentSource": "Cotabby/UI/Vocabulary/VocabularyContentEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "example": {
+          "appBundleIdentifier": "source.application",
+          "completeness": "sentence",
+          "createdAt": -978307200,
+          "explanations": [
+            {
+              "createdAt": -978307200,
+              "id": "00000000-0000-0000-0000-000000000064",
+              "input": {
+                "context": "The bank.",
+                "contextKind": "sentence",
+                "dictionaryForm": "bank",
+                "kind": "word",
+                "language": "en",
+                "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+                "ranges": [
+                  {
+                    "length": 4,
+                    "location": 4
+                  }
+                ],
+                "target": "bank"
+              },
+              "language": "zh-Hans",
+              "model": "fixture",
+              "result": {
+                "explanation": "explanation",
+                "meaning": "meaning"
+              }
+            }
+          ],
+          "id": "00000000-0000-0000-0000-000000000003",
+          "meaning": "context",
+          "meaningLanguage": "en",
+          "meaningOrigin": "user",
+          "ranges": [
+            {
+              "length": 4,
+              "location": 4
+            }
+          ],
+          "text": "The bank.",
+          "translation": "原句",
+          "translationLanguage": "zh-Hans",
+          "translationVariants": [
+            {
+              "language": "fr",
+              "text": "variant"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "operation": "change",
+      "id": "change-empty",
+      "text": "",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "macContentSource": "Cotabby/UI/Vocabulary/VocabularyContentEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "example": {
+          "appBundleIdentifier": "source.application",
+          "completeness": "fragment",
+          "createdAt": -978307200,
+          "explanations": [
+            {
+              "createdAt": -978307200,
+              "id": "00000000-0000-0000-0000-000000000064",
+              "input": {
+                "context": "The bank.",
+                "contextKind": "sentence",
+                "dictionaryForm": "bank",
+                "kind": "word",
+                "language": "en",
+                "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+                "ranges": [
+                  {
+                    "length": 4,
+                    "location": 4
+                  }
+                ],
+                "target": "bank"
+              },
+              "language": "zh-Hans",
+              "model": "fixture",
+              "result": {
+                "explanation": "explanation",
+                "meaning": "meaning"
+              }
+            }
+          ],
+          "id": "00000000-0000-0000-0000-000000000003",
+          "meaning": "",
+          "meaningOrigin": "captured",
+          "ranges": [],
+          "text": "",
+          "translation": "",
+          "translationVariants": []
+        }
+      }
+    },
+    {
+      "operation": "change",
+      "id": "change-canonical",
+      "before": "café",
+      "text": "café",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "macContentSource": "Cotabby/UI/Vocabulary/VocabularyContentEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "example": {
+          "appBundleIdentifier": "source.application",
+          "completeness": "sentence",
+          "createdAt": -978307200,
+          "explanations": [
+            {
+              "createdAt": -978307200,
+              "id": "00000000-0000-0000-0000-000000000064",
+              "input": {
+                "context": "The bank.",
+                "contextKind": "sentence",
+                "dictionaryForm": "bank",
+                "kind": "word",
+                "language": "en",
+                "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+                "ranges": [
+                  {
+                    "length": 4,
+                    "location": 4
+                  }
+                ],
+                "target": "bank"
+              },
+              "language": "zh-Hans",
+              "model": "fixture",
+              "result": {
+                "explanation": "explanation",
+                "meaning": "meaning"
+              }
+            }
+          ],
+          "id": "00000000-0000-0000-0000-000000000003",
+          "meaning": "context",
+          "meaningLanguage": "en",
+          "meaningOrigin": "user",
+          "ranges": [
+            {
+              "length": 4,
+              "location": 4
+            }
+          ],
+          "text": "café",
+          "translation": "原句",
+          "translationLanguage": "zh-Hans",
+          "translationVariants": [
+            {
+              "language": "fr",
+              "text": "variant"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "operation": "change",
+      "id": "change-emoji",
+      "text": "😀 bank",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "macContentSource": "Cotabby/UI/Vocabulary/VocabularyContentEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "example": {
+          "appBundleIdentifier": "source.application",
+          "completeness": "fragment",
+          "createdAt": -978307200,
+          "explanations": [
+            {
+              "createdAt": -978307200,
+              "id": "00000000-0000-0000-0000-000000000064",
+              "input": {
+                "context": "The bank.",
+                "contextKind": "sentence",
+                "dictionaryForm": "bank",
+                "kind": "word",
+                "language": "en",
+                "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+                "ranges": [
+                  {
+                    "length": 4,
+                    "location": 4
+                  }
+                ],
+                "target": "bank"
+              },
+              "language": "zh-Hans",
+              "model": "fixture",
+              "result": {
+                "explanation": "explanation",
+                "meaning": "meaning"
+              }
+            }
+          ],
+          "id": "00000000-0000-0000-0000-000000000003",
+          "meaning": "",
+          "meaningOrigin": "captured",
+          "ranges": [],
+          "text": "😀 bank",
+          "translation": "",
+          "translationVariants": []
+        }
+      }
+    },
+    {
+      "operation": "save",
+      "id": "save-ready",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "macContentSource": "Cotabby/UI/Vocabulary/VocabularyContentEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "enabled": true
+      }
+    },
+    {
+      "operation": "save",
+      "id": "save-saving",
+      "saving": true,
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "macContentSource": "Cotabby/UI/Vocabulary/VocabularyContentEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "enabled": false
+      }
+    },
+    {
+      "operation": "save",
+      "id": "save-importing",
+      "importing": true,
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "macContentSource": "Cotabby/UI/Vocabulary/VocabularyContentEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "enabled": false
+      }
+    },
+    {
+      "operation": "save",
+      "id": "save-empty-expression",
+      "expression": "",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "macContentSource": "Cotabby/UI/Vocabulary/VocabularyContentEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "enabled": false
+      }
+    },
+    {
+      "operation": "save",
+      "id": "save-space-expression",
+      "expression": " ​\n",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "macContentSource": "Cotabby/UI/Vocabulary/VocabularyContentEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "enabled": false
+      }
+    },
+    {
+      "operation": "save",
+      "id": "save-missing",
+      "missingSense": true,
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "macContentSource": "Cotabby/UI/Vocabulary/VocabularyContentEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "enabled": false
+      }
+    },
+    {
+      "operation": "save",
+      "id": "save-empty-example",
+      "text": "",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "macContentSource": "Cotabby/UI/Vocabulary/VocabularyContentEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "enabled": false
+      }
+    },
+    {
+      "operation": "save",
+      "id": "save-space-example",
+      "text": "​\t",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "macContentSource": "Cotabby/UI/Vocabulary/VocabularyContentEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "enabled": false
+      }
+    },
+    {
+      "operation": "save",
+      "id": "save-empty-form",
+      "emptyForm": true,
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "macContentSource": "Cotabby/UI/Vocabulary/VocabularyContentEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "enabled": true
+      }
+    },
+    {
+      "operation": "save",
+      "id": "save-empty-content",
+      "emptyContent": true,
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "macContentSource": "Cotabby/UI/Vocabulary/VocabularyContentEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "enabled": true
+      }
+    },
+    {
+      "operation": "save",
+      "id": "save-no-examples",
+      "noExamples": true,
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "macContentSource": "Cotabby/UI/Vocabulary/VocabularyContentEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "enabled": true
+      }
+    },
+    {
+      "id": "move-0",
+      "operation": "move",
+      "block": 20,
+      "offset": -1,
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "macContentSource": "Cotabby/UI/Vocabulary/VocabularyContentEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ids": [
+          "00000000-0000-0000-0000-000000000014",
+          "00000000-0000-0000-0000-000000000015",
+          "00000000-0000-0000-0000-000000000016"
+        ],
+        "imageRetained": true
+      }
+    },
+    {
+      "id": "move-1",
+      "operation": "move",
+      "block": 22,
+      "offset": 1,
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "macContentSource": "Cotabby/UI/Vocabulary/VocabularyContentEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ids": [
+          "00000000-0000-0000-0000-000000000014",
+          "00000000-0000-0000-0000-000000000015",
+          "00000000-0000-0000-0000-000000000016"
+        ],
+        "imageRetained": true
+      }
+    },
+    {
+      "id": "move-2",
+      "operation": "move",
+      "block": 20,
+      "offset": 1,
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "macContentSource": "Cotabby/UI/Vocabulary/VocabularyContentEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ids": [
+          "00000000-0000-0000-0000-000000000015",
+          "00000000-0000-0000-0000-000000000014",
+          "00000000-0000-0000-0000-000000000016"
+        ],
+        "imageRetained": true
+      }
+    },
+    {
+      "id": "move-3",
+      "operation": "move",
+      "block": 22,
+      "offset": -1,
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "macContentSource": "Cotabby/UI/Vocabulary/VocabularyContentEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ids": [
+          "00000000-0000-0000-0000-000000000014",
+          "00000000-0000-0000-0000-000000000016",
+          "00000000-0000-0000-0000-000000000015"
+        ],
+        "imageRetained": true
+      }
+    },
+    {
+      "id": "move-4",
+      "operation": "move",
+      "block": 999,
+      "offset": 1,
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "macContentSource": "Cotabby/UI/Vocabulary/VocabularyContentEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ids": [
+          "00000000-0000-0000-0000-000000000014",
+          "00000000-0000-0000-0000-000000000015",
+          "00000000-0000-0000-0000-000000000016"
+        ],
+        "imageRetained": true
+      }
+    }
+  ]
+}

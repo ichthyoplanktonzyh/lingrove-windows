@@ -1,0 +1,40 @@
+<Window x:Class="Cotabby.App.UI.Vocabulary.VocabularyEntryEditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Edit vocabulary" Width="680" Height="650" MinWidth="580" MinHeight="460"
+        Background="{DynamicResource WindowBg}" Foreground="{DynamicResource TextPrimary}"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False" UseLayoutRounding="True">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries><ResourceDictionary Source="../Theme.xaml" /></ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <DockPanel Margin="20">
+        <StackPanel DockPanel.Dock="Bottom" Margin="0,12,0,0">
+            <TextBlock x:Name="FailureText" TextWrapping="Wrap" Foreground="{DynamicResource OrangeBrush}" Visibility="Collapsed" Margin="0,0,0,10" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button x:Name="CancelButton" Content="Cancel" IsCancel="True" Click="OnCancel" Padding="14,6" Margin="0,0,8,0" />
+                <Button x:Name="SaveButton" Content="Save" IsDefault="True" Click="OnSave" Padding="14,6" />
+            </StackPanel>
+        </StackPanel>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel x:Name="FormContent">
+                <TextBlock Text="Expression" Margin="0,0,0,5" />
+                <TextBox x:Name="ExpressionText" Style="{StaticResource Input}" AutomationProperties.Name="Expression" />
+                <TextBlock Text="Dictionary form" Margin="0,12,0,5" />
+                <TextBox x:Name="DictionaryText" Style="{StaticResource Input}" AutomationProperties.Name="Dictionary form" />
+                <TextBlock Text="Core meaning" Margin="0,12,0,5" />
+                <TextBox x:Name="MeaningText" Style="{StaticResource Input}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="50" AutomationProperties.Name="Core meaning" />
+                <TextBlock Text="Notes" Margin="0,12,0,5" />
+                <TextBox x:Name="NoteText" Style="{StaticResource Input}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="50" AutomationProperties.Name="Notes" />
+                <TextBlock Text="Tags" Margin="0,12,0,5" />
+                <TextBox x:Name="TagsText" Style="{StaticResource Input}" AutomationProperties.Name="Tags" />
+                <TextBlock Text="Sense explanation" FontWeight="SemiBold" Margin="0,18,0,6" />
+                <StackPanel x:Name="BlocksContent" />
+                <Button x:Name="AddTextButton" Content="Add text" Click="OnAddText" HorizontalAlignment="Left" Padding="10,5" Margin="0,6,0,0" />
+                <StackPanel x:Name="ExamplesContent" Margin="0,18,0,0" />
+                <Button x:Name="AddExampleButton" Content="Add example" Click="OnAddExample" HorizontalAlignment="Left" Padding="10,5" Margin="0,6,0,0" />
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</Window>

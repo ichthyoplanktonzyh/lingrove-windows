@@ -1,0 +1,3350 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "standalone-default",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word"
+      },
+      "expected": {
+        "captureKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e:standalone",
+        "entryKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e",
+        "exampleKey": "no-context",
+        "explanationReceipt": null,
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": true
+      }
+    },
+    {
+      "id": "kind-word",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word"
+      },
+      "expected": {
+        "captureKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e:standalone",
+        "entryKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e",
+        "exampleKey": "no-context",
+        "explanationReceipt": null,
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": true
+      }
+    },
+    {
+      "id": "kind-expression",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "expression"
+      },
+      "expected": {
+        "captureKey": "e3a1aeef47899ab557c79e181432a3b766b091d0aee88b855ea26b690ccad93f:standalone",
+        "entryKey": "e3a1aeef47899ab557c79e181432a3b766b091d0aee88b855ea26b690ccad93f",
+        "exampleKey": "no-context",
+        "explanationReceipt": null,
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "expression",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": true
+      }
+    },
+    {
+      "id": "kind-pattern",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "pattern"
+      },
+      "expected": {
+        "captureKey": "f7dc74d4a8fde20cd20ccffcd78ad8e1d989d85cd11b455658afad7314a4f388:standalone",
+        "entryKey": "f7dc74d4a8fde20cd20ccffcd78ad8e1d989d85cd11b455658afad7314a4f388",
+        "exampleKey": "no-context",
+        "explanationReceipt": null,
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "pattern",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": true
+      }
+    },
+    {
+      "id": "kind-sentence",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "sentence"
+      },
+      "expected": {
+        "captureKey": "fd5f01f9500cc32c5c54cf937447cd08a113f859cc87ecf21306ba829d35798b:standalone",
+        "entryKey": "fd5f01f9500cc32c5c54cf937447cd08a113f859cc87ecf21306ba829d35798b",
+        "exampleKey": "no-context",
+        "explanationReceipt": null,
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "sentence",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": true
+      }
+    },
+    {
+      "id": "language-en",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word"
+      },
+      "expected": {
+        "captureKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e:standalone",
+        "entryKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e",
+        "exampleKey": "no-context",
+        "explanationReceipt": null,
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": true
+      }
+    },
+    {
+      "id": "language-es",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "es",
+        "kind": "word"
+      },
+      "expected": {
+        "captureKey": "80a31e36022006f0bc4655646765d77e0289afe5dbf11135aa4bdf4a0c76597f:standalone",
+        "entryKey": "80a31e36022006f0bc4655646765d77e0289afe5dbf11135aa4bdf4a0c76597f",
+        "exampleKey": "no-context",
+        "explanationReceipt": null,
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "es",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": true
+      }
+    },
+    {
+      "id": "language-fr",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "fr",
+        "kind": "word"
+      },
+      "expected": {
+        "captureKey": "26519eb497df838713fd850456123e81599bad47423921754bb6898e07e96d8c:standalone",
+        "entryKey": "26519eb497df838713fd850456123e81599bad47423921754bb6898e07e96d8c",
+        "exampleKey": "no-context",
+        "explanationReceipt": null,
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "fr",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": true
+      }
+    },
+    {
+      "id": "language-de",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "de",
+        "kind": "word"
+      },
+      "expected": {
+        "captureKey": "e41a85a56a6a72287b78c9cceaa079c537945908c7eccc8503f8cb3e93262b65:standalone",
+        "entryKey": "e41a85a56a6a72287b78c9cceaa079c537945908c7eccc8503f8cb3e93262b65",
+        "exampleKey": "no-context",
+        "explanationReceipt": null,
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "de",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": true
+      }
+    },
+    {
+      "id": "language-it",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "it",
+        "kind": "word"
+      },
+      "expected": {
+        "captureKey": "b52ffc023f4a4abe7dac176a324f7904f8b6369c973369572eb360f579062c71:standalone",
+        "entryKey": "b52ffc023f4a4abe7dac176a324f7904f8b6369c973369572eb360f579062c71",
+        "exampleKey": "no-context",
+        "explanationReceipt": null,
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "it",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": true
+      }
+    },
+    {
+      "id": "language-pt",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "pt",
+        "kind": "word"
+      },
+      "expected": {
+        "captureKey": "96e8cf8fde8d1636e88a0404e963d1d65e40e58ca7c05a311093e2f28edaa474:standalone",
+        "entryKey": "96e8cf8fde8d1636e88a0404e963d1d65e40e58ca7c05a311093e2f28edaa474",
+        "exampleKey": "no-context",
+        "explanationReceipt": null,
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "pt",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": true
+      }
+    },
+    {
+      "id": "language-nl",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "nl",
+        "kind": "word"
+      },
+      "expected": {
+        "captureKey": "fd7f8126060cf4e95c5dba85240bd087eb6db49e871232a52addb19b17f5684a:standalone",
+        "entryKey": "fd7f8126060cf4e95c5dba85240bd087eb6db49e871232a52addb19b17f5684a",
+        "exampleKey": "no-context",
+        "explanationReceipt": null,
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "nl",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": true
+      }
+    },
+    {
+      "id": "language-ru",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "ru",
+        "kind": "word"
+      },
+      "expected": {
+        "captureKey": "9f55817f61daddcd410ef17324c109594a457da50edaebe81a8d54b92a33f168:standalone",
+        "entryKey": "9f55817f61daddcd410ef17324c109594a457da50edaebe81a8d54b92a33f168",
+        "exampleKey": "no-context",
+        "explanationReceipt": null,
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "ru",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": true
+      }
+    },
+    {
+      "id": "language-zh-Hans",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "zh-Hans",
+        "kind": "word"
+      },
+      "expected": {
+        "captureKey": "c8190b9b7032ec6ec5023eb4476ff3630dd648bb10e40f46eb5fc329636567ef:standalone",
+        "entryKey": "c8190b9b7032ec6ec5023eb4476ff3630dd648bb10e40f46eb5fc329636567ef",
+        "exampleKey": "no-context",
+        "explanationReceipt": null,
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "zh-Hans",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": true
+      }
+    },
+    {
+      "id": "language-zh-Hant",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "zh-Hant",
+        "kind": "word"
+      },
+      "expected": {
+        "captureKey": "884289259c8eacd569e53e02ff98fa8484f184697afa31c9f30a285f3f9b3605:standalone",
+        "entryKey": "884289259c8eacd569e53e02ff98fa8484f184697afa31c9f30a285f3f9b3605",
+        "exampleKey": "no-context",
+        "explanationReceipt": null,
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "zh-Hant",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": true
+      }
+    },
+    {
+      "id": "language-ja",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "ja",
+        "kind": "word"
+      },
+      "expected": {
+        "captureKey": "7923669a73545dfe6049cb89df3ebb9eed1e184afe57be0dd32be8855cf5335f:standalone",
+        "entryKey": "7923669a73545dfe6049cb89df3ebb9eed1e184afe57be0dd32be8855cf5335f",
+        "exampleKey": "no-context",
+        "explanationReceipt": null,
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "ja",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": true
+      }
+    },
+    {
+      "id": "language-ko",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "ko",
+        "kind": "word"
+      },
+      "expected": {
+        "captureKey": "7d3162a148a1eb86fb6fab5e072217d6052c33717a92e59071f47d2b690e0010:standalone",
+        "entryKey": "7d3162a148a1eb86fb6fab5e072217d6052c33717a92e59071f47d2b690e0010",
+        "exampleKey": "no-context",
+        "explanationReceipt": null,
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "ko",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": true
+      }
+    },
+    {
+      "id": "language-hi",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "hi",
+        "kind": "word"
+      },
+      "expected": {
+        "captureKey": "f06daa420b055905ac5b4da73c9a9f6887f25c7436e712cfec1a2cd929fdf787:standalone",
+        "entryKey": "f06daa420b055905ac5b4da73c9a9f6887f25c7436e712cfec1a2cd929fdf787",
+        "exampleKey": "no-context",
+        "explanationReceipt": null,
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "hi",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": true
+      }
+    },
+    {
+      "id": "language-ar",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "ar",
+        "kind": "word"
+      },
+      "expected": {
+        "captureKey": "2d8dca6d4a3d6058233bb005b8ef253630c44d9cd6a22d8a88775e6731a864ab:standalone",
+        "entryKey": "2d8dca6d4a3d6058233bb005b8ef253630c44d9cd6a22d8a88775e6731a864ab",
+        "exampleKey": "no-context",
+        "explanationReceipt": null,
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "ar",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": true
+      }
+    },
+    {
+      "id": "expression-casing",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "Posted",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word"
+      },
+      "expected": {
+        "captureKey": "517cf2f0467541f0f580c0a90e1fbebba44b1556034ea32dc82ead2e7887df87:standalone",
+        "entryKey": "517cf2f0467541f0f580c0a90e1fbebba44b1556034ea32dc82ead2e7887df87",
+        "exampleKey": "no-context",
+        "explanationReceipt": null,
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "afd80c5a1b84c378544290379f7195d17d994e3a6e30675372c6dc58446e0614",
+            "text": "Posted",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 6,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "afd80c5a1b84c378544290379f7195d17d994e3a6e30675372c6dc58446e0614",
+            "text": "Posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "Posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "afd80c5a1b84c378544290379f7195d17d994e3a6e30675372c6dc58446e0614",
+        "valid": true
+      }
+    },
+    {
+      "id": "expression-nfc",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "café",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word"
+      },
+      "expected": {
+        "captureKey": "dbea744a1e6ad8e3e17ce9732b6e0d7adfeab44f679bdc3d134657608da261bb:standalone",
+        "entryKey": "dbea744a1e6ad8e3e17ce9732b6e0d7adfeab44f679bdc3d134657608da261bb",
+        "exampleKey": "no-context",
+        "explanationReceipt": null,
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "850f7dc43910ff890f8879c0ed26fe697c93a067ad93a7d50f466a7028a9bf4e",
+            "text": "café",
+            "utf8Bytes": 5
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 4,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "850f7dc43910ff890f8879c0ed26fe697c93a067ad93a7d50f466a7028a9bf4e",
+            "text": "café",
+            "utf8Bytes": 5
+          }
+        },
+        "normalized": "café",
+        "normalizedBytes": 5,
+        "normalizedSHA256": "850f7dc43910ff890f8879c0ed26fe697c93a067ad93a7d50f466a7028a9bf4e",
+        "valid": true
+      }
+    },
+    {
+      "id": "expression-decomposed",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "café",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word"
+      },
+      "expected": {
+        "captureKey": "dbea744a1e6ad8e3e17ce9732b6e0d7adfeab44f679bdc3d134657608da261bb:standalone",
+        "entryKey": "dbea744a1e6ad8e3e17ce9732b6e0d7adfeab44f679bdc3d134657608da261bb",
+        "exampleKey": "no-context",
+        "explanationReceipt": null,
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "81ef060bcd98adc7824eb5c1ada83c32491b16018e11e79f00ab9d09e04b015a",
+            "text": "café",
+            "utf8Bytes": 6
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 5,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "81ef060bcd98adc7824eb5c1ada83c32491b16018e11e79f00ab9d09e04b015a",
+            "text": "café",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "café",
+        "normalizedBytes": 5,
+        "normalizedSHA256": "850f7dc43910ff890f8879c0ed26fe697c93a067ad93a7d50f466a7028a9bf4e",
+        "valid": true
+      }
+    },
+    {
+      "id": "expression-collapse",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": " \tkeep\n me\r\nposted  ",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word"
+      },
+      "expected": {
+        "captureKey": "8c4eb9d96586cf4dfdd6d05d5b7a2ca3a0b3c8c7d98a23a766c4fa6ac4a98d4e:standalone",
+        "entryKey": "8c4eb9d96586cf4dfdd6d05d5b7a2ca3a0b3c8c7d98a23a766c4fa6ac4a98d4e",
+        "exampleKey": "no-context",
+        "explanationReceipt": null,
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "8790bb31d0a01a61aa56353948f98ea603e25775eef6792c044362a5e11a117b",
+            "text": " \tkeep\n me\r\nposted  ",
+            "utf8Bytes": 21
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 20,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "8790bb31d0a01a61aa56353948f98ea603e25775eef6792c044362a5e11a117b",
+            "text": " \tkeep\n me\r\nposted  ",
+            "utf8Bytes": 21
+          }
+        },
+        "normalized": "keep me posted",
+        "normalizedBytes": 14,
+        "normalizedSHA256": "f56943bf45c296a49228aa536e1603898c06cdf224d863101964dabc0ada4f75",
+        "valid": true
+      }
+    },
+    {
+      "id": "expression-whitespace-mark",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": " ́ x",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word"
+      },
+      "expected": {
+        "captureKey": "4446558dc79ee5de6261b35ad6421bffa64c15e1195561e368dda862009d8b7d:standalone",
+        "entryKey": "4446558dc79ee5de6261b35ad6421bffa64c15e1195561e368dda862009d8b7d",
+        "exampleKey": "no-context",
+        "explanationReceipt": null,
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "f998a9526559636a0cecd5e0ca64b69867e85d9b29b3dcb66b3b19b683b2eb8c",
+            "text": " ́ x",
+            "utf8Bytes": 5
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 4,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "f998a9526559636a0cecd5e0ca64b69867e85d9b29b3dcb66b3b19b683b2eb8c",
+            "text": " ́ x",
+            "utf8Bytes": 5
+          }
+        },
+        "normalized": "x",
+        "normalizedBytes": 1,
+        "normalizedSHA256": "2d711642b726b04401627ca9fbac32f5c8530fb1903cc4db02258717921a4881",
+        "valid": true
+      }
+    },
+    {
+      "id": "expression-zero-width-space",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "​",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word"
+      },
+      "expected": {
+        "captureKey": "ab33630ce27f7ecbef5684787335dae3dac21046f4465992a6ab12d6f56d2cf5:standalone",
+        "entryKey": "ab33630ce27f7ecbef5684787335dae3dac21046f4465992a6ab12d6f56d2cf5",
+        "exampleKey": "no-context",
+        "explanationReceipt": null,
+        "explanationValid": false,
+        "input": {
+          "context": {
+            "sha256": "f4e48e664a603543865edc77bbc76dd1dd53dc9d0c30f651bbad7c8231091348",
+            "text": "​",
+            "utf8Bytes": 3
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 1,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "f4e48e664a603543865edc77bbc76dd1dd53dc9d0c30f651bbad7c8231091348",
+            "text": "​",
+            "utf8Bytes": 3
+          }
+        },
+        "normalized": "​",
+        "normalizedBytes": 3,
+        "normalizedSHA256": "f4e48e664a603543865edc77bbc76dd1dd53dc9d0c30f651bbad7c8231091348",
+        "valid": true
+      }
+    },
+    {
+      "id": "expression-unicode-whitespace",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "  　",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word"
+      },
+      "expected": {
+        "captureKey": "62e07cca8d143f3b68cf1c05a60d5d635e85a659363ce7deb8b9ec3fb29626b1:standalone",
+        "entryKey": "62e07cca8d143f3b68cf1c05a60d5d635e85a659363ce7deb8b9ec3fb29626b1",
+        "exampleKey": "no-context",
+        "explanationReceipt": null,
+        "explanationValid": false,
+        "input": {
+          "context": {
+            "sha256": "af7475cd16a2bfde8bd44fdaa63747182321b50e4c4fbb1aafaa1c123116db69",
+            "text": "  　",
+            "utf8Bytes": 9
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 3,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "af7475cd16a2bfde8bd44fdaa63747182321b50e4c4fbb1aafaa1c123116db69",
+            "text": "  　",
+            "utf8Bytes": 9
+          }
+        },
+        "normalized": "",
+        "normalizedBytes": 0,
+        "normalizedSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "valid": false
+      }
+    },
+    {
+      "id": "expression-bom",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "﻿",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word"
+      },
+      "expected": {
+        "captureKey": "0067ee63a0f9c3d3f5e51a43675f3c5932ac107a5b55b973814c27594cb55298:standalone",
+        "entryKey": "0067ee63a0f9c3d3f5e51a43675f3c5932ac107a5b55b973814c27594cb55298",
+        "exampleKey": "no-context",
+        "explanationReceipt": null,
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "f1945cd6c19e56b3c1c78943ef5ec18116907a4ca1efc40a57d48ab1db7adfc5",
+            "text": "﻿",
+            "utf8Bytes": 3
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 1,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "f1945cd6c19e56b3c1c78943ef5ec18116907a4ca1efc40a57d48ab1db7adfc5",
+            "text": "﻿",
+            "utf8Bytes": 3
+          }
+        },
+        "normalized": "﻿",
+        "normalizedBytes": 3,
+        "normalizedSHA256": "f1945cd6c19e56b3c1c78943ef5ec18116907a4ca1efc40a57d48ab1db7adfc5",
+        "valid": true
+      }
+    },
+    {
+      "id": "expression-empty",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word"
+      },
+      "expected": {
+        "captureKey": "62e07cca8d143f3b68cf1c05a60d5d635e85a659363ce7deb8b9ec3fb29626b1:standalone",
+        "entryKey": "62e07cca8d143f3b68cf1c05a60d5d635e85a659363ce7deb8b9ec3fb29626b1",
+        "exampleKey": "no-context",
+        "explanationReceipt": null,
+        "explanationValid": false,
+        "input": {
+          "context": {
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "text": "",
+            "utf8Bytes": 0
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 0,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "text": "",
+            "utf8Bytes": 0
+          }
+        },
+        "normalized": "",
+        "normalizedBytes": 0,
+        "normalizedSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "valid": false
+      }
+    },
+    {
+      "id": "expression-delimiter",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "4:word:1:a",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word"
+      },
+      "expected": {
+        "captureKey": "5f821e5623a4a6d9c06e49887b40f03b08a1ff6e67a4b2d9694fbc066a9442c6:standalone",
+        "entryKey": "5f821e5623a4a6d9c06e49887b40f03b08a1ff6e67a4b2d9694fbc066a9442c6",
+        "exampleKey": "no-context",
+        "explanationReceipt": null,
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "8fc41774e0f52eaee9169cc5040e756e440e23cd520f83d1ae9c47c9ee7ad081",
+            "text": "4:word:1:a",
+            "utf8Bytes": 10
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 10,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "8fc41774e0f52eaee9169cc5040e756e440e23cd520f83d1ae9c47c9ee7ad081",
+            "text": "4:word:1:a",
+            "utf8Bytes": 10
+          }
+        },
+        "normalized": "4:word:1:a",
+        "normalizedBytes": 10,
+        "normalizedSHA256": "8fc41774e0f52eaee9169cc5040e756e440e23cd520f83d1ae9c47c9ee7ad081",
+        "valid": true
+      }
+    },
+    {
+      "id": "ascii-limit",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": {
+          "repeating": "a",
+          "count": 262144
+        },
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word"
+      },
+      "expected": {
+        "captureKey": "a047b6141953394031d440bad57af2b970a76dd74a259a79571151f69fffcc2f:standalone",
+        "entryKey": "a047b6141953394031d440bad57af2b970a76dd74a259a79571151f69fffcc2f",
+        "exampleKey": "no-context",
+        "explanationReceipt": null,
+        "explanationValid": false,
+        "input": {
+          "context": {
+            "sha256": "dd3dde87623d9a6b354c68c943d189c89c63652d945e7bbdf0986cae91a49521",
+            "utf8Bytes": 262144
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 262144,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "dd3dde87623d9a6b354c68c943d189c89c63652d945e7bbdf0986cae91a49521",
+            "utf8Bytes": 262144
+          }
+        },
+        "normalized": null,
+        "normalizedBytes": 262144,
+        "normalizedSHA256": "dd3dde87623d9a6b354c68c943d189c89c63652d945e7bbdf0986cae91a49521",
+        "valid": true
+      }
+    },
+    {
+      "id": "ascii-over",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": {
+          "repeating": "a",
+          "count": 262145
+        },
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word"
+      },
+      "expected": {
+        "captureKey": "a5dcd07df70ba540647d34a31a5e42e2028b21cbe6c711965c7e359a83b5e76d:standalone",
+        "entryKey": "a5dcd07df70ba540647d34a31a5e42e2028b21cbe6c711965c7e359a83b5e76d",
+        "exampleKey": "no-context",
+        "explanationReceipt": null,
+        "explanationValid": false,
+        "input": {
+          "context": {
+            "sha256": "c592f4a6b099700b5050ce8bc67367f0c8f44810203124e86405c3e7b6f1a2ba",
+            "utf8Bytes": 262145
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 262145,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "c592f4a6b099700b5050ce8bc67367f0c8f44810203124e86405c3e7b6f1a2ba",
+            "utf8Bytes": 262145
+          }
+        },
+        "normalized": null,
+        "normalizedBytes": 262145,
+        "normalizedSHA256": "c592f4a6b099700b5050ce8bc67367f0c8f44810203124e86405c3e7b6f1a2ba",
+        "valid": false
+      }
+    },
+    {
+      "id": "utf8-limit",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": {
+          "repeating": "é",
+          "count": 131072
+        },
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word"
+      },
+      "expected": {
+        "captureKey": "6b3933b59dd319f481ab721fbba455e071597353dd463aafc1671d0d28099d1e:standalone",
+        "entryKey": "6b3933b59dd319f481ab721fbba455e071597353dd463aafc1671d0d28099d1e",
+        "exampleKey": "no-context",
+        "explanationReceipt": null,
+        "explanationValid": false,
+        "input": {
+          "context": {
+            "sha256": "94914398e4fe14ac182b9e6080caa078bbde122682c352744929d55f7d038d10",
+            "utf8Bytes": 262144
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 131072,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "94914398e4fe14ac182b9e6080caa078bbde122682c352744929d55f7d038d10",
+            "utf8Bytes": 262144
+          }
+        },
+        "normalized": null,
+        "normalizedBytes": 262144,
+        "normalizedSHA256": "94914398e4fe14ac182b9e6080caa078bbde122682c352744929d55f7d038d10",
+        "valid": true
+      }
+    },
+    {
+      "id": "utf8-over",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": {
+          "repeating": "é",
+          "count": 131073
+        },
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word"
+      },
+      "expected": {
+        "captureKey": "5b9ec1662919bbf624649f685d91edc0ffc6a997dab81403b3b62722f9a4f624:standalone",
+        "entryKey": "5b9ec1662919bbf624649f685d91edc0ffc6a997dab81403b3b62722f9a4f624",
+        "exampleKey": "no-context",
+        "explanationReceipt": null,
+        "explanationValid": false,
+        "input": {
+          "context": {
+            "sha256": "f255f6867867b3951d82413e5cebf5973f140cbce4a0ea963630b38bcf6325ba",
+            "utf8Bytes": 262146
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 131073,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "f255f6867867b3951d82413e5cebf5973f140cbce4a0ea963630b38bcf6325ba",
+            "utf8Bytes": 262146
+          }
+        },
+        "normalized": null,
+        "normalizedBytes": 262146,
+        "normalizedSHA256": "f255f6867867b3951d82413e5cebf5973f140cbce4a0ea963630b38bcf6325ba",
+        "valid": false
+      }
+    },
+    {
+      "id": "spaces-over",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": {
+          "repeating": " ",
+          "count": 262145
+        },
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word"
+      },
+      "expected": {
+        "captureKey": "62e07cca8d143f3b68cf1c05a60d5d635e85a659363ce7deb8b9ec3fb29626b1:standalone",
+        "entryKey": "62e07cca8d143f3b68cf1c05a60d5d635e85a659363ce7deb8b9ec3fb29626b1",
+        "exampleKey": "no-context",
+        "explanationReceipt": null,
+        "explanationValid": false,
+        "input": {
+          "context": {
+            "sha256": "27cb03b898e978f2493818e414119edabc05246a6697a65ea42b21b682dc07d4",
+            "utf8Bytes": 262145
+          },
+          "contextKind": "none",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 262145,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "27cb03b898e978f2493818e414119edabc05246a6697a65ea42b21b682dc07d4",
+            "utf8Bytes": 262145
+          }
+        },
+        "normalized": "",
+        "normalizedBytes": 0,
+        "normalizedSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "valid": false
+      }
+    },
+    {
+      "id": "usage-original",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word",
+        "example": {
+          "text": "I saw a bat near the bat.",
+          "ranges": [
+            {
+              "location": 21,
+              "length": 3
+            }
+          ],
+          "completeness": "sentence"
+        }
+      },
+      "expected": {
+        "captureKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e:061165eaff41695c7322efda8fb1a6f9e9416b7a6f9761d73c910d5a50fc3ce5",
+        "entryKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e",
+        "exampleKey": "061165eaff41695c7322efda8fb1a6f9e9416b7a6f9761d73c910d5a50fc3ce5",
+        "explanationReceipt": "061165eaff41695c7322efda8fb1a6f9e9416b7a6f9761d73c910d5a50fc3ce5",
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "3cab18b1f3190c2c102235ab1c461b4e474d22e579f5ece837b370e5e4bb8652",
+            "text": "I saw a bat near the bat.",
+            "utf8Bytes": 25
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 3,
+              "location": 21
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": true
+      }
+    },
+    {
+      "id": "usage-first-occurrence",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word",
+        "example": {
+          "text": "I saw a bat near the bat.",
+          "ranges": [
+            {
+              "location": 8,
+              "length": 3
+            }
+          ],
+          "completeness": "sentence"
+        }
+      },
+      "expected": {
+        "captureKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e:851880eadc8452c630687a2dd9a95161343ae75bba74f0c91914b3d46593ef71",
+        "entryKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e",
+        "exampleKey": "851880eadc8452c630687a2dd9a95161343ae75bba74f0c91914b3d46593ef71",
+        "explanationReceipt": "851880eadc8452c630687a2dd9a95161343ae75bba74f0c91914b3d46593ef71",
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "3cab18b1f3190c2c102235ab1c461b4e474d22e579f5ece837b370e5e4bb8652",
+            "text": "I saw a bat near the bat.",
+            "utf8Bytes": 25
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 3,
+              "location": 8
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": true
+      }
+    },
+    {
+      "id": "usage-fragment",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word",
+        "example": {
+          "text": "I saw a bat near the bat.",
+          "ranges": [
+            {
+              "location": 21,
+              "length": 3
+            }
+          ],
+          "completeness": "fragment"
+        }
+      },
+      "expected": {
+        "captureKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e:4febd531a8bfae6b6d69953979f779b67025ff50aa1f8d8d441d1e10d0645c68",
+        "entryKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e",
+        "exampleKey": "4febd531a8bfae6b6d69953979f779b67025ff50aa1f8d8d441d1e10d0645c68",
+        "explanationReceipt": "4febd531a8bfae6b6d69953979f779b67025ff50aa1f8d8d441d1e10d0645c68",
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "3cab18b1f3190c2c102235ab1c461b4e474d22e579f5ece837b370e5e4bb8652",
+            "text": "I saw a bat near the bat.",
+            "utf8Bytes": 25
+          },
+          "contextKind": "fragment",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 3,
+              "location": 21
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": true
+      }
+    },
+    {
+      "id": "usage-two-ranges",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word",
+        "example": {
+          "text": "I saw a bat near the bat.",
+          "ranges": [
+            {
+              "location": 8,
+              "length": 3
+            },
+            {
+              "location": 21,
+              "length": 3
+            }
+          ],
+          "completeness": "sentence"
+        }
+      },
+      "expected": {
+        "captureKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e:4e6a16ba8fc9f9ff9653ae136eacd269b6c56031f30e54b19b137db7b61a2dd6",
+        "entryKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e",
+        "exampleKey": "4e6a16ba8fc9f9ff9653ae136eacd269b6c56031f30e54b19b137db7b61a2dd6",
+        "explanationReceipt": "4e6a16ba8fc9f9ff9653ae136eacd269b6c56031f30e54b19b137db7b61a2dd6",
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "3cab18b1f3190c2c102235ab1c461b4e474d22e579f5ece837b370e5e4bb8652",
+            "text": "I saw a bat near the bat.",
+            "utf8Bytes": 25
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 3,
+              "location": 8
+            },
+            {
+              "length": 3,
+              "location": 21
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": true
+      }
+    },
+    {
+      "id": "usage-reversed-range-order",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word",
+        "example": {
+          "text": "I saw a bat near the bat.",
+          "ranges": [
+            {
+              "location": 21,
+              "length": 3
+            },
+            {
+              "location": 8,
+              "length": 3
+            }
+          ],
+          "completeness": "sentence"
+        }
+      },
+      "expected": {
+        "captureKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e:f1aa7bcfa11484710f8d0244d81d56e2e5fb3d03f03588c1457036186f12d0eb",
+        "entryKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e",
+        "exampleKey": "f1aa7bcfa11484710f8d0244d81d56e2e5fb3d03f03588c1457036186f12d0eb",
+        "explanationReceipt": "f1aa7bcfa11484710f8d0244d81d56e2e5fb3d03f03588c1457036186f12d0eb",
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "3cab18b1f3190c2c102235ab1c461b4e474d22e579f5ece837b370e5e4bb8652",
+            "text": "I saw a bat near the bat.",
+            "utf8Bytes": 25
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 3,
+              "location": 21
+            },
+            {
+              "length": 3,
+              "location": 8
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": true
+      }
+    },
+    {
+      "id": "usage-overlap-not-an-added-rule",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word",
+        "example": {
+          "text": "I saw a bat near the bat.",
+          "ranges": [
+            {
+              "location": 8,
+              "length": 3
+            },
+            {
+              "location": 8,
+              "length": 3
+            }
+          ],
+          "completeness": "sentence"
+        }
+      },
+      "expected": {
+        "captureKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e:8bd4e58bafd41c57e12aea12cb3433dd2936ad60a19b208f82e3c86880d7407b",
+        "entryKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e",
+        "exampleKey": "8bd4e58bafd41c57e12aea12cb3433dd2936ad60a19b208f82e3c86880d7407b",
+        "explanationReceipt": "8bd4e58bafd41c57e12aea12cb3433dd2936ad60a19b208f82e3c86880d7407b",
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "3cab18b1f3190c2c102235ab1c461b4e474d22e579f5ece837b370e5e4bb8652",
+            "text": "I saw a bat near the bat.",
+            "utf8Bytes": 25
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 3,
+              "location": 8
+            },
+            {
+              "length": 3,
+              "location": 8
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": true
+      }
+    },
+    {
+      "id": "usage-empty-ranges-allowed",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word",
+        "example": {
+          "text": "I saw a bat near the bat.",
+          "ranges": [],
+          "completeness": "sentence"
+        }
+      },
+      "expected": {
+        "captureKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e:694ee301615aab7876135dee3c8e728a52a5efa4bf2d6c1498a40302ec4dc81c",
+        "entryKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e",
+        "exampleKey": "694ee301615aab7876135dee3c8e728a52a5efa4bf2d6c1498a40302ec4dc81c",
+        "explanationReceipt": "694ee301615aab7876135dee3c8e728a52a5efa4bf2d6c1498a40302ec4dc81c",
+        "explanationValid": false,
+        "input": {
+          "context": {
+            "sha256": "3cab18b1f3190c2c102235ab1c461b4e474d22e579f5ece837b370e5e4bb8652",
+            "text": "I saw a bat near the bat.",
+            "utf8Bytes": 25
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": true
+      }
+    },
+    {
+      "id": "usage-annotations-a",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word",
+        "meaning": "draft",
+        "meaningLanguage": "zh-Hans",
+        "example": {
+          "text": "I saw a bat near the bat.",
+          "ranges": [
+            {
+              "location": 21,
+              "length": 3
+            }
+          ],
+          "completeness": "sentence",
+          "translation": "我看到了。",
+          "translationLanguage": "zh-Hans",
+          "meaning": "动物",
+          "meaningLanguage": "zh-Hans",
+          "meaningOrigin": "captured",
+          "app": "test.a"
+        }
+      },
+      "expected": {
+        "captureKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e:061165eaff41695c7322efda8fb1a6f9e9416b7a6f9761d73c910d5a50fc3ce5",
+        "entryKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e",
+        "exampleKey": "061165eaff41695c7322efda8fb1a6f9e9416b7a6f9761d73c910d5a50fc3ce5",
+        "explanationReceipt": "061165eaff41695c7322efda8fb1a6f9e9416b7a6f9761d73c910d5a50fc3ce5",
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "3cab18b1f3190c2c102235ab1c461b4e474d22e579f5ece837b370e5e4bb8652",
+            "text": "I saw a bat near the bat.",
+            "utf8Bytes": 25
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 3,
+              "location": 21
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": true
+      }
+    },
+    {
+      "id": "usage-annotations-b",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "another form",
+        "language": "en",
+        "kind": "word",
+        "meaning": "User meaning",
+        "meaningLanguage": "es",
+        "senseID": "11111111-1111-1111-1111-111111111111",
+        "example": {
+          "text": "I saw a bat near the bat.",
+          "ranges": [
+            {
+              "location": 21,
+              "length": 3
+            }
+          ],
+          "completeness": "sentence",
+          "translation": "Vi uno.",
+          "translationLanguage": "es",
+          "meaning": "User wording",
+          "meaningLanguage": "es",
+          "meaningOrigin": "user",
+          "app": "test.b"
+        }
+      },
+      "expected": {
+        "captureKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e:061165eaff41695c7322efda8fb1a6f9e9416b7a6f9761d73c910d5a50fc3ce5",
+        "entryKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e",
+        "exampleKey": "061165eaff41695c7322efda8fb1a6f9e9416b7a6f9761d73c910d5a50fc3ce5",
+        "explanationReceipt": "061165eaff41695c7322efda8fb1a6f9e9416b7a6f9761d73c910d5a50fc3ce5",
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "3cab18b1f3190c2c102235ab1c461b4e474d22e579f5ece837b370e5e4bb8652",
+            "text": "I saw a bat near the bat.",
+            "utf8Bytes": 25
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "4bbb93f4436553361c59a45de563a4293ee62d5f3f77c1f82cf0b108f92f411f",
+            "text": "another form",
+            "utf8Bytes": 12
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 3,
+              "location": 21
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": true
+      }
+    },
+    {
+      "id": "range-empty",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word",
+        "example": {
+          "text": "",
+          "ranges": [],
+          "completeness": "sentence"
+        }
+      },
+      "expected": {
+        "captureKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e:24506f0e9c8b5c21dc417088a6eed2daedd6489357004c75d965ca07f228866f",
+        "entryKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e",
+        "exampleKey": "24506f0e9c8b5c21dc417088a6eed2daedd6489357004c75d965ca07f228866f",
+        "explanationReceipt": "24506f0e9c8b5c21dc417088a6eed2daedd6489357004c75d965ca07f228866f",
+        "explanationValid": false,
+        "input": {
+          "context": {
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "text": "",
+            "utf8Bytes": 0
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": false
+      }
+    },
+    {
+      "id": "range-space",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word",
+        "example": {
+          "text": " ",
+          "ranges": [
+            {
+              "location": 0,
+              "length": 1
+            }
+          ],
+          "completeness": "sentence"
+        }
+      },
+      "expected": {
+        "captureKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e:a8b4c74cf08e30421eb8c87416a50a65b81207e3be6e549eca56e2c2e3eb19f8",
+        "entryKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e",
+        "exampleKey": "a8b4c74cf08e30421eb8c87416a50a65b81207e3be6e549eca56e2c2e3eb19f8",
+        "explanationReceipt": "a8b4c74cf08e30421eb8c87416a50a65b81207e3be6e549eca56e2c2e3eb19f8",
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "36a9e7f1c95b82ffb99743e0c5c4ce95d83c9a430aac59f84ef3cbfab6145068",
+            "text": " ",
+            "utf8Bytes": 1
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 1,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": true
+      }
+    },
+    {
+      "id": "range-negative-location",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word",
+        "example": {
+          "text": "Hi",
+          "ranges": [
+            {
+              "location": -1,
+              "length": 1
+            }
+          ],
+          "completeness": "sentence"
+        }
+      },
+      "expected": {
+        "captureKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e:d36549c17995a760826fe6da669ebae3a3ce2292da36314c88a71a823903685f",
+        "entryKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e",
+        "exampleKey": "d36549c17995a760826fe6da669ebae3a3ce2292da36314c88a71a823903685f",
+        "explanationReceipt": "d36549c17995a760826fe6da669ebae3a3ce2292da36314c88a71a823903685f",
+        "explanationValid": false,
+        "input": {
+          "context": {
+            "sha256": "3639efcd08abb273b1619e82e78c29a7df02c1051b1820e99fc395dcaa3326b8",
+            "text": "Hi",
+            "utf8Bytes": 2
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 1,
+              "location": -1
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": false
+      }
+    },
+    {
+      "id": "range-zero-length",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word",
+        "example": {
+          "text": "Hi",
+          "ranges": [
+            {
+              "location": 0,
+              "length": 0
+            }
+          ],
+          "completeness": "sentence"
+        }
+      },
+      "expected": {
+        "captureKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e:6329220795ce8c03c22e094efa659388781803911eadf0a16a3f2fa57b936bea",
+        "entryKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e",
+        "exampleKey": "6329220795ce8c03c22e094efa659388781803911eadf0a16a3f2fa57b936bea",
+        "explanationReceipt": "6329220795ce8c03c22e094efa659388781803911eadf0a16a3f2fa57b936bea",
+        "explanationValid": false,
+        "input": {
+          "context": {
+            "sha256": "3639efcd08abb273b1619e82e78c29a7df02c1051b1820e99fc395dcaa3326b8",
+            "text": "Hi",
+            "utf8Bytes": 2
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 0,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": false
+      }
+    },
+    {
+      "id": "range-negative-length",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word",
+        "example": {
+          "text": "Hi",
+          "ranges": [
+            {
+              "location": 0,
+              "length": -1
+            }
+          ],
+          "completeness": "sentence"
+        }
+      },
+      "expected": {
+        "captureKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e:c72b0f599dc3433938eaeaff8e0802b6131b3e28a81930267cddd77934d10913",
+        "entryKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e",
+        "exampleKey": "c72b0f599dc3433938eaeaff8e0802b6131b3e28a81930267cddd77934d10913",
+        "explanationReceipt": "c72b0f599dc3433938eaeaff8e0802b6131b3e28a81930267cddd77934d10913",
+        "explanationValid": false,
+        "input": {
+          "context": {
+            "sha256": "3639efcd08abb273b1619e82e78c29a7df02c1051b1820e99fc395dcaa3326b8",
+            "text": "Hi",
+            "utf8Bytes": 2
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": -1,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": false
+      }
+    },
+    {
+      "id": "range-beyond-end",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word",
+        "example": {
+          "text": "Hi",
+          "ranges": [
+            {
+              "location": 3,
+              "length": 1
+            }
+          ],
+          "completeness": "sentence"
+        }
+      },
+      "expected": {
+        "captureKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e:db1857c60871d0219e2f14887ac9369ba02325f0647c5d440d40bb9054bf3240",
+        "entryKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e",
+        "exampleKey": "db1857c60871d0219e2f14887ac9369ba02325f0647c5d440d40bb9054bf3240",
+        "explanationReceipt": "db1857c60871d0219e2f14887ac9369ba02325f0647c5d440d40bb9054bf3240",
+        "explanationValid": false,
+        "input": {
+          "context": {
+            "sha256": "3639efcd08abb273b1619e82e78c29a7df02c1051b1820e99fc395dcaa3326b8",
+            "text": "Hi",
+            "utf8Bytes": 2
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 1,
+              "location": 3
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": false
+      }
+    },
+    {
+      "id": "range-int-max",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word",
+        "example": {
+          "text": "Hi",
+          "ranges": [
+            {
+              "location": 2147483647,
+              "length": 2147483647
+            }
+          ],
+          "completeness": "sentence"
+        }
+      },
+      "expected": {
+        "captureKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e:3f69ff9ef042f6c60791a475c35a8889294b5dd4d7e72f0b4419ccee3d2649bc",
+        "entryKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e",
+        "exampleKey": "3f69ff9ef042f6c60791a475c35a8889294b5dd4d7e72f0b4419ccee3d2649bc",
+        "explanationReceipt": "3f69ff9ef042f6c60791a475c35a8889294b5dd4d7e72f0b4419ccee3d2649bc",
+        "explanationValid": false,
+        "input": {
+          "context": {
+            "sha256": "3639efcd08abb273b1619e82e78c29a7df02c1051b1820e99fc395dcaa3326b8",
+            "text": "Hi",
+            "utf8Bytes": 2
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 2147483647,
+              "location": 2147483647
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": false
+      }
+    },
+    {
+      "id": "range-emoji-split",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word",
+        "example": {
+          "text": "🐟Hi",
+          "ranges": [
+            {
+              "location": 1,
+              "length": 1
+            }
+          ],
+          "completeness": "sentence"
+        }
+      },
+      "expected": {
+        "captureKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e:744fc63ab81263058de6123703d3f30e293feb4f1bfa8db5176cfc102659e924",
+        "entryKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e",
+        "exampleKey": "744fc63ab81263058de6123703d3f30e293feb4f1bfa8db5176cfc102659e924",
+        "explanationReceipt": "744fc63ab81263058de6123703d3f30e293feb4f1bfa8db5176cfc102659e924",
+        "explanationValid": false,
+        "input": {
+          "context": {
+            "sha256": "c29a6208692dcf3a8d5a0418ad7aa6ef90b667ab5d8e5ef65fce175a4df9bb71",
+            "text": "🐟Hi",
+            "utf8Bytes": 6
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 1,
+              "location": 1
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": false
+      }
+    },
+    {
+      "id": "range-emoji-full",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word",
+        "example": {
+          "text": "🐟Hi",
+          "ranges": [
+            {
+              "location": 0,
+              "length": 2
+            }
+          ],
+          "completeness": "sentence"
+        }
+      },
+      "expected": {
+        "captureKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e:a03ee712ea0c9669e9ae0daef83e3b5def21f41c062ca65da155ff0f33aed72d",
+        "entryKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e",
+        "exampleKey": "a03ee712ea0c9669e9ae0daef83e3b5def21f41c062ca65da155ff0f33aed72d",
+        "explanationReceipt": "a03ee712ea0c9669e9ae0daef83e3b5def21f41c062ca65da155ff0f33aed72d",
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "c29a6208692dcf3a8d5a0418ad7aa6ef90b667ab5d8e5ef65fce175a4df9bb71",
+            "text": "🐟Hi",
+            "utf8Bytes": 6
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 2,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": true
+      }
+    },
+    {
+      "id": "range-decomposed-base-only",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word",
+        "example": {
+          "text": "é",
+          "ranges": [
+            {
+              "location": 0,
+              "length": 1
+            }
+          ],
+          "completeness": "sentence"
+        }
+      },
+      "expected": {
+        "captureKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e:ae1a94cd08ddab63ef7a31118e2a7565fb18a73bade72b19ae3859085461f11d",
+        "entryKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e",
+        "exampleKey": "ae1a94cd08ddab63ef7a31118e2a7565fb18a73bade72b19ae3859085461f11d",
+        "explanationReceipt": "ae1a94cd08ddab63ef7a31118e2a7565fb18a73bade72b19ae3859085461f11d",
+        "explanationValid": false,
+        "input": {
+          "context": {
+            "sha256": "bf12767b0f2a56b2190075bae8169f656e3ce8d6357d4aff184bc6c7ea48f9f6",
+            "text": "é",
+            "utf8Bytes": 3
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 1,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": false
+      }
+    },
+    {
+      "id": "range-decomposed-full",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word",
+        "example": {
+          "text": "é",
+          "ranges": [
+            {
+              "location": 0,
+              "length": 2
+            }
+          ],
+          "completeness": "sentence"
+        }
+      },
+      "expected": {
+        "captureKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e:ee0b8473d62496a0dfb039ba696220b027abab15957d842f0c277c66e86e881d",
+        "entryKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e",
+        "exampleKey": "ee0b8473d62496a0dfb039ba696220b027abab15957d842f0c277c66e86e881d",
+        "explanationReceipt": "ee0b8473d62496a0dfb039ba696220b027abab15957d842f0c277c66e86e881d",
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "bf12767b0f2a56b2190075bae8169f656e3ce8d6357d4aff184bc6c7ea48f9f6",
+            "text": "é",
+            "utf8Bytes": 3
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 2,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": true
+      }
+    },
+    {
+      "id": "range-composed-full",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word",
+        "example": {
+          "text": "é",
+          "ranges": [
+            {
+              "location": 0,
+              "length": 1
+            }
+          ],
+          "completeness": "sentence"
+        }
+      },
+      "expected": {
+        "captureKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e:2e9bfee491bf8b334ce079d7ba90f1f97db8c41ec63ba5d41769df68e00ff84c",
+        "entryKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e",
+        "exampleKey": "2e9bfee491bf8b334ce079d7ba90f1f97db8c41ec63ba5d41769df68e00ff84c",
+        "explanationReceipt": "2e9bfee491bf8b334ce079d7ba90f1f97db8c41ec63ba5d41769df68e00ff84c",
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "4a99557e4033c3539de2eb65472017cad5f9557f7a0625a09f1c3f6e2ba69c4c",
+            "text": "é",
+            "utf8Bytes": 2
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 1,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": true
+      }
+    },
+    {
+      "id": "range-crlf-half",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word",
+        "example": {
+          "text": "a\r\nb",
+          "ranges": [
+            {
+              "location": 1,
+              "length": 1
+            }
+          ],
+          "completeness": "sentence"
+        }
+      },
+      "expected": {
+        "captureKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e:bb517dbbc36e83d520e7743f965a76ac3f5bed8a4a2ccc5b6805fc3f30afbb16",
+        "entryKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e",
+        "exampleKey": "bb517dbbc36e83d520e7743f965a76ac3f5bed8a4a2ccc5b6805fc3f30afbb16",
+        "explanationReceipt": "bb517dbbc36e83d520e7743f965a76ac3f5bed8a4a2ccc5b6805fc3f30afbb16",
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "18745f36a05e29072709042d6062ce54f1b08ff36c27ba80c39f81fb010c8ce2",
+            "text": "a\r\nb",
+            "utf8Bytes": 4
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 1,
+              "location": 1
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": true
+      }
+    },
+    {
+      "id": "range-crlf-full",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word",
+        "example": {
+          "text": "a\r\nb",
+          "ranges": [
+            {
+              "location": 1,
+              "length": 2
+            }
+          ],
+          "completeness": "sentence"
+        }
+      },
+      "expected": {
+        "captureKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e:a488ba9489d6d64312f7831c4ccca0aae759e82600977c9a3310857855444268",
+        "entryKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e",
+        "exampleKey": "a488ba9489d6d64312f7831c4ccca0aae759e82600977c9a3310857855444268",
+        "explanationReceipt": "a488ba9489d6d64312f7831c4ccca0aae759e82600977c9a3310857855444268",
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "18745f36a05e29072709042d6062ce54f1b08ff36c27ba80c39f81fb010c8ce2",
+            "text": "a\r\nb",
+            "utf8Bytes": 4
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 2,
+              "location": 1
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": true
+      }
+    },
+    {
+      "id": "range-zwj-full",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word",
+        "example": {
+          "text": "👩🏽‍💻",
+          "ranges": [
+            {
+              "location": 0,
+              "length": 7
+            }
+          ],
+          "completeness": "sentence"
+        }
+      },
+      "expected": {
+        "captureKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e:67cf7afb9724e05e5a6a32ebe444db8f8efe182a4b85914537783440b45ffe8e",
+        "entryKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e",
+        "exampleKey": "67cf7afb9724e05e5a6a32ebe444db8f8efe182a4b85914537783440b45ffe8e",
+        "explanationReceipt": "67cf7afb9724e05e5a6a32ebe444db8f8efe182a4b85914537783440b45ffe8e",
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "b1e0232190991f0337645cb23fb896790216a8488f6c1d59f4cdf874cf5ec806",
+            "text": "👩🏽‍💻",
+            "utf8Bytes": 15
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 7,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": true
+      }
+    },
+    {
+      "id": "range-zwj-half",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word",
+        "example": {
+          "text": "👩🏽‍💻",
+          "ranges": [
+            {
+              "location": 0,
+              "length": 2
+            }
+          ],
+          "completeness": "sentence"
+        }
+      },
+      "expected": {
+        "captureKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e:9864d07d3268fcaff925781a1dfbb1acfa6e23fda2e63e72b2a150198e9ffcbb",
+        "entryKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e",
+        "exampleKey": "9864d07d3268fcaff925781a1dfbb1acfa6e23fda2e63e72b2a150198e9ffcbb",
+        "explanationReceipt": "9864d07d3268fcaff925781a1dfbb1acfa6e23fda2e63e72b2a150198e9ffcbb",
+        "explanationValid": false,
+        "input": {
+          "context": {
+            "sha256": "b1e0232190991f0337645cb23fb896790216a8488f6c1d59f4cdf874cf5ec806",
+            "text": "👩🏽‍💻",
+            "utf8Bytes": 15
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 2,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": false
+      }
+    },
+    {
+      "id": "example-bytes-262144",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word",
+        "example": {
+          "text": {
+            "repeating": "a",
+            "count": 262144
+          },
+          "ranges": [
+            {
+              "location": 262143,
+              "length": 1
+            }
+          ],
+          "completeness": "sentence"
+        }
+      },
+      "expected": {
+        "captureKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e:9a0922a4e7dd341d435155d02e8be298894db87039111b37df225482143414ab",
+        "entryKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e",
+        "exampleKey": "9a0922a4e7dd341d435155d02e8be298894db87039111b37df225482143414ab",
+        "explanationReceipt": "9a0922a4e7dd341d435155d02e8be298894db87039111b37df225482143414ab",
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "dd3dde87623d9a6b354c68c943d189c89c63652d945e7bbdf0986cae91a49521",
+            "utf8Bytes": 262144
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 1,
+              "location": 262143
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": true
+      }
+    },
+    {
+      "id": "example-bytes-262145",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word",
+        "example": {
+          "text": {
+            "repeating": "a",
+            "count": 262145
+          },
+          "ranges": [
+            {
+              "location": 262144,
+              "length": 1
+            }
+          ],
+          "completeness": "sentence"
+        }
+      },
+      "expected": {
+        "captureKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e:649f92df7d7c71091941d2301b616d25875dc7d1869db217455ee5669b836c6f",
+        "entryKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e",
+        "exampleKey": "649f92df7d7c71091941d2301b616d25875dc7d1869db217455ee5669b836c6f",
+        "explanationReceipt": "649f92df7d7c71091941d2301b616d25875dc7d1869db217455ee5669b836c6f",
+        "explanationValid": false,
+        "input": {
+          "context": {
+            "sha256": "c592f4a6b099700b5050ce8bc67367f0c8f44810203124e86405c3e7b6f1a2ba",
+            "utf8Bytes": 262145
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 1,
+              "location": 262144
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": false
+      }
+    },
+    {
+      "id": "range-crlf-lf-half",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word",
+        "example": {
+          "text": "a\r\nb",
+          "ranges": [
+            {
+              "location": 2,
+              "length": 1
+            }
+          ],
+          "completeness": "sentence"
+        }
+      },
+      "expected": {
+        "captureKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e:b5110b88f3a66ac25e314f0f8f31e263698fa2724ab393a3a9164c3a0d969c7e",
+        "entryKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e",
+        "exampleKey": "b5110b88f3a66ac25e314f0f8f31e263698fa2724ab393a3a9164c3a0d969c7e",
+        "explanationReceipt": "b5110b88f3a66ac25e314f0f8f31e263698fa2724ab393a3a9164c3a0d969c7e",
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "18745f36a05e29072709042d6062ce54f1b08ff36c27ba80c39f81fb010c8ce2",
+            "text": "a\r\nb",
+            "utf8Bytes": 4
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 1,
+              "location": 2
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": true
+      }
+    },
+    {
+      "id": "range-crlf-end-between",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "capture": {
+        "expression": "posted",
+        "dictionaryForm": "post",
+        "language": "en",
+        "kind": "word",
+        "example": {
+          "text": "a\r\nb",
+          "ranges": [
+            {
+              "location": 0,
+              "length": 2
+            }
+          ],
+          "completeness": "sentence"
+        }
+      },
+      "expected": {
+        "captureKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e:a0a57f0d6b008ad9bc7d5ae5969487e098940c05180991660b36ac07f51267ce",
+        "entryKey": "4cde77c94edb1b948dcc91c94bbefebfe5a80ba17eceea66439c7900279b838e",
+        "exampleKey": "a0a57f0d6b008ad9bc7d5ae5969487e098940c05180991660b36ac07f51267ce",
+        "explanationReceipt": "a0a57f0d6b008ad9bc7d5ae5969487e098940c05180991660b36ac07f51267ce",
+        "explanationValid": true,
+        "input": {
+          "context": {
+            "sha256": "18745f36a05e29072709042d6062ce54f1b08ff36c27ba80c39f81fb010c8ce2",
+            "text": "a\r\nb",
+            "utf8Bytes": 4
+          },
+          "contextKind": "sentence",
+          "dictionaryForm": {
+            "sha256": "72231043bc1807e6f740b235eb7511ecb33255a6a375435631196de8a9750d4b",
+            "text": "post",
+            "utf8Bytes": 4
+          },
+          "kind": "word",
+          "language": "en",
+          "ranges": [
+            {
+              "length": 2,
+              "location": 0
+            }
+          ],
+          "target": {
+            "sha256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+            "text": "posted",
+            "utf8Bytes": 6
+          }
+        },
+        "normalized": "posted",
+        "normalizedBytes": 6,
+        "normalizedSHA256": "1637cc683d5c44284751994ea032108f8d54ef4e4b989a7a593d14e312c6a5e9",
+        "valid": true
+      }
+    }
+  ]
+}

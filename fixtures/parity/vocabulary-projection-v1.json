@@ -1,0 +1,862 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "metadata",
+      "operation": "metadata",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Models/Vocabulary/VocabularyDatabaseModels.swift",
+      "expected": {
+        "tables": [
+          {
+            "extra": [
+              "lookup_key",
+              "language",
+              "expression"
+            ],
+            "name": "entries",
+            "parent": null
+          },
+          {
+            "extra": [
+              "meaning"
+            ],
+            "name": "senses",
+            "parent": "entries"
+          },
+          {
+            "extra": [],
+            "name": "usages",
+            "parent": "senses"
+          },
+          {
+            "extra": [],
+            "name": "sense_explanations",
+            "parent": "senses"
+          },
+          {
+            "extra": [],
+            "name": "usage_explanations",
+            "parent": "usages"
+          },
+          {
+            "extra": [],
+            "name": "blocks",
+            "parent": "senses"
+          },
+          {
+            "extra": [],
+            "name": "reviews",
+            "parent": "senses"
+          },
+          {
+            "extra": [],
+            "name": "bindings",
+            "parent": "reviews"
+          },
+          {
+            "extra": [],
+            "name": "templates",
+            "parent": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "valid",
+      "operation": "valid",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyDatabaseProjection.swift",
+      "expected": {
+        "entryCount": 1,
+        "equalOriginal": true,
+        "legacyBindings": 1,
+        "rows": [
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000002:card:00000000-0000-0000-0000-00000000001E:00000000-0000-0000-0000-000000000028",
+            "parent": "00000000-0000-0000-0000-000000000002:card:00000000-0000-0000-0000-00000000001E",
+            "position": 0,
+            "table": "bindings"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000002:legacy:00000000-0000-0000-0000-000000000028",
+            "parent": "00000000-0000-0000-0000-000000000002:legacy",
+            "position": 0,
+            "table": "bindings"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000014",
+            "parent": "00000000-0000-0000-0000-000000000002",
+            "position": 0,
+            "table": "blocks"
+          },
+          {
+            "extra": [
+              "3ba66a03649d3b51ec2d43c9d31feec048900a524991f7d12ae2d5c49822b5b6",
+              "en",
+              "bank"
+            ],
+            "id": "00000000-0000-0000-0000-000000000001",
+            "parent": null,
+            "position": 0,
+            "table": "entries"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000002:card:00000000-0000-0000-0000-00000000001E",
+            "parent": "00000000-0000-0000-0000-000000000002",
+            "position": 1,
+            "table": "reviews"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000002:legacy",
+            "parent": "00000000-0000-0000-0000-000000000002",
+            "position": 0,
+            "table": "reviews"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000002:00000000-0000-0000-0000-000000000064",
+            "parent": "00000000-0000-0000-0000-000000000002",
+            "position": 0,
+            "table": "sense_explanations"
+          },
+          {
+            "extra": [
+              "core"
+            ],
+            "id": "00000000-0000-0000-0000-000000000002",
+            "parent": "00000000-0000-0000-0000-000000000001",
+            "position": 0,
+            "table": "senses"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000046",
+            "parent": null,
+            "position": 0,
+            "table": "templates"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000003:00000000-0000-0000-0000-000000000064",
+            "parent": "00000000-0000-0000-0000-000000000003",
+            "position": 0,
+            "table": "usage_explanations"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000003",
+            "parent": "00000000-0000-0000-0000-000000000002",
+            "position": 0,
+            "table": "usages"
+          }
+        ],
+        "templatesPresent": true,
+        "usageCount": 1
+      }
+    },
+    {
+      "id": "emptyAbsent",
+      "operation": "emptyAbsent",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyDatabaseProjection.swift",
+      "expected": {
+        "entryCount": 0,
+        "equalOriginal": true,
+        "legacyBindings": 0,
+        "rows": [],
+        "templatesPresent": false,
+        "usageCount": 0
+      }
+    },
+    {
+      "id": "emptyPresent",
+      "operation": "emptyPresent",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyDatabaseProjection.swift",
+      "expected": {
+        "entryCount": 0,
+        "equalOriginal": true,
+        "legacyBindings": 0,
+        "rows": [],
+        "templatesPresent": true,
+        "usageCount": 0
+      }
+    },
+    {
+      "id": "contentAbsent",
+      "operation": "contentAbsent",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyDatabaseProjection.swift",
+      "expected": {
+        "entryCount": 1,
+        "equalOriginal": true,
+        "legacyBindings": 1,
+        "rows": [
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000002:card:00000000-0000-0000-0000-00000000001E:00000000-0000-0000-0000-000000000028",
+            "parent": "00000000-0000-0000-0000-000000000002:card:00000000-0000-0000-0000-00000000001E",
+            "position": 0,
+            "table": "bindings"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000002:legacy:00000000-0000-0000-0000-000000000028",
+            "parent": "00000000-0000-0000-0000-000000000002:legacy",
+            "position": 0,
+            "table": "bindings"
+          },
+          {
+            "extra": [
+              "3ba66a03649d3b51ec2d43c9d31feec048900a524991f7d12ae2d5c49822b5b6",
+              "en",
+              "bank"
+            ],
+            "id": "00000000-0000-0000-0000-000000000001",
+            "parent": null,
+            "position": 0,
+            "table": "entries"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000002:card:00000000-0000-0000-0000-00000000001E",
+            "parent": "00000000-0000-0000-0000-000000000002",
+            "position": 1,
+            "table": "reviews"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000002:legacy",
+            "parent": "00000000-0000-0000-0000-000000000002",
+            "position": 0,
+            "table": "reviews"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000002:00000000-0000-0000-0000-000000000064",
+            "parent": "00000000-0000-0000-0000-000000000002",
+            "position": 0,
+            "table": "sense_explanations"
+          },
+          {
+            "extra": [
+              "core"
+            ],
+            "id": "00000000-0000-0000-0000-000000000002",
+            "parent": "00000000-0000-0000-0000-000000000001",
+            "position": 0,
+            "table": "senses"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000046",
+            "parent": null,
+            "position": 0,
+            "table": "templates"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000003:00000000-0000-0000-0000-000000000064",
+            "parent": "00000000-0000-0000-0000-000000000003",
+            "position": 0,
+            "table": "usage_explanations"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000003",
+            "parent": "00000000-0000-0000-0000-000000000002",
+            "position": 0,
+            "table": "usages"
+          }
+        ],
+        "templatesPresent": true,
+        "usageCount": 1
+      }
+    },
+    {
+      "id": "contentEmpty",
+      "operation": "contentEmpty",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyDatabaseProjection.swift",
+      "expected": {
+        "entryCount": 1,
+        "equalOriginal": true,
+        "legacyBindings": 1,
+        "rows": [
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000002:card:00000000-0000-0000-0000-00000000001E:00000000-0000-0000-0000-000000000028",
+            "parent": "00000000-0000-0000-0000-000000000002:card:00000000-0000-0000-0000-00000000001E",
+            "position": 0,
+            "table": "bindings"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000002:legacy:00000000-0000-0000-0000-000000000028",
+            "parent": "00000000-0000-0000-0000-000000000002:legacy",
+            "position": 0,
+            "table": "bindings"
+          },
+          {
+            "extra": [
+              "3ba66a03649d3b51ec2d43c9d31feec048900a524991f7d12ae2d5c49822b5b6",
+              "en",
+              "bank"
+            ],
+            "id": "00000000-0000-0000-0000-000000000001",
+            "parent": null,
+            "position": 0,
+            "table": "entries"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000002:card:00000000-0000-0000-0000-00000000001E",
+            "parent": "00000000-0000-0000-0000-000000000002",
+            "position": 1,
+            "table": "reviews"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000002:legacy",
+            "parent": "00000000-0000-0000-0000-000000000002",
+            "position": 0,
+            "table": "reviews"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000002:00000000-0000-0000-0000-000000000064",
+            "parent": "00000000-0000-0000-0000-000000000002",
+            "position": 0,
+            "table": "sense_explanations"
+          },
+          {
+            "extra": [
+              "core"
+            ],
+            "id": "00000000-0000-0000-0000-000000000002",
+            "parent": "00000000-0000-0000-0000-000000000001",
+            "position": 0,
+            "table": "senses"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000046",
+            "parent": null,
+            "position": 0,
+            "table": "templates"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000003:00000000-0000-0000-0000-000000000064",
+            "parent": "00000000-0000-0000-0000-000000000003",
+            "position": 0,
+            "table": "usage_explanations"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000003",
+            "parent": "00000000-0000-0000-0000-000000000002",
+            "position": 0,
+            "table": "usages"
+          }
+        ],
+        "templatesPresent": true,
+        "usageCount": 1
+      }
+    },
+    {
+      "id": "cardsAbsent",
+      "operation": "cardsAbsent",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyDatabaseProjection.swift",
+      "expected": {
+        "entryCount": 1,
+        "equalOriginal": true,
+        "legacyBindings": 1,
+        "rows": [
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000002:legacy:00000000-0000-0000-0000-000000000028",
+            "parent": "00000000-0000-0000-0000-000000000002:legacy",
+            "position": 0,
+            "table": "bindings"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000014",
+            "parent": "00000000-0000-0000-0000-000000000002",
+            "position": 0,
+            "table": "blocks"
+          },
+          {
+            "extra": [
+              "3ba66a03649d3b51ec2d43c9d31feec048900a524991f7d12ae2d5c49822b5b6",
+              "en",
+              "bank"
+            ],
+            "id": "00000000-0000-0000-0000-000000000001",
+            "parent": null,
+            "position": 0,
+            "table": "entries"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000002:legacy",
+            "parent": "00000000-0000-0000-0000-000000000002",
+            "position": 0,
+            "table": "reviews"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000002:00000000-0000-0000-0000-000000000064",
+            "parent": "00000000-0000-0000-0000-000000000002",
+            "position": 0,
+            "table": "sense_explanations"
+          },
+          {
+            "extra": [
+              "core"
+            ],
+            "id": "00000000-0000-0000-0000-000000000002",
+            "parent": "00000000-0000-0000-0000-000000000001",
+            "position": 0,
+            "table": "senses"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000046",
+            "parent": null,
+            "position": 0,
+            "table": "templates"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000003:00000000-0000-0000-0000-000000000064",
+            "parent": "00000000-0000-0000-0000-000000000003",
+            "position": 0,
+            "table": "usage_explanations"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000003",
+            "parent": "00000000-0000-0000-0000-000000000002",
+            "position": 0,
+            "table": "usages"
+          }
+        ],
+        "templatesPresent": true,
+        "usageCount": 1
+      }
+    },
+    {
+      "id": "cardsEmpty",
+      "operation": "cardsEmpty",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyDatabaseProjection.swift",
+      "expected": {
+        "entryCount": 1,
+        "equalOriginal": true,
+        "legacyBindings": 1,
+        "rows": [
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000002:legacy:00000000-0000-0000-0000-000000000028",
+            "parent": "00000000-0000-0000-0000-000000000002:legacy",
+            "position": 0,
+            "table": "bindings"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000014",
+            "parent": "00000000-0000-0000-0000-000000000002",
+            "position": 0,
+            "table": "blocks"
+          },
+          {
+            "extra": [
+              "3ba66a03649d3b51ec2d43c9d31feec048900a524991f7d12ae2d5c49822b5b6",
+              "en",
+              "bank"
+            ],
+            "id": "00000000-0000-0000-0000-000000000001",
+            "parent": null,
+            "position": 0,
+            "table": "entries"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000002:legacy",
+            "parent": "00000000-0000-0000-0000-000000000002",
+            "position": 0,
+            "table": "reviews"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000002:00000000-0000-0000-0000-000000000064",
+            "parent": "00000000-0000-0000-0000-000000000002",
+            "position": 0,
+            "table": "sense_explanations"
+          },
+          {
+            "extra": [
+              "core"
+            ],
+            "id": "00000000-0000-0000-0000-000000000002",
+            "parent": "00000000-0000-0000-0000-000000000001",
+            "position": 0,
+            "table": "senses"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000046",
+            "parent": null,
+            "position": 0,
+            "table": "templates"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000003:00000000-0000-0000-0000-000000000064",
+            "parent": "00000000-0000-0000-0000-000000000003",
+            "position": 0,
+            "table": "usage_explanations"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000003",
+            "parent": "00000000-0000-0000-0000-000000000002",
+            "position": 0,
+            "table": "usages"
+          }
+        ],
+        "templatesPresent": true,
+        "usageCount": 1
+      }
+    },
+    {
+      "id": "duplicate",
+      "operation": "duplicate",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyDatabaseProjection.swift",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "negativePosition",
+      "operation": "negativePosition",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyDatabaseProjection.swift",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "positionGap",
+      "operation": "positionGap",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyDatabaseProjection.swift",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "wrongEntryParent",
+      "operation": "wrongEntryParent",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyDatabaseProjection.swift",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "wrongEntryID",
+      "operation": "wrongEntryID",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyDatabaseProjection.swift",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "wrongExtra",
+      "operation": "wrongExtra",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyDatabaseProjection.swift",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "wrongPayload",
+      "operation": "wrongPayload",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyDatabaseProjection.swift",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "smuggledEntry",
+      "operation": "smuggledEntry",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyDatabaseProjection.swift",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "orphanUsage",
+      "operation": "orphanUsage",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyDatabaseProjection.swift",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "smuggledSense",
+      "operation": "smuggledSense",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyDatabaseProjection.swift",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "hiddenBlocks",
+      "operation": "hiddenBlocks",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyDatabaseProjection.swift",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "hiddenCards",
+      "operation": "hiddenCards",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyDatabaseProjection.swift",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "smuggledBindings",
+      "operation": "smuggledBindings",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyDatabaseProjection.swift",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "wrongReviewID",
+      "operation": "wrongReviewID",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyDatabaseProjection.swift",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "reviewOrder",
+      "operation": "reviewOrder",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyDatabaseProjection.swift",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    },
+    {
+      "id": "removeUsage",
+      "operation": "removeUsage",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyDatabaseProjection.swift",
+      "expected": {
+        "entryCount": 1,
+        "equalOriginal": false,
+        "legacyBindings": 1,
+        "rows": [
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000002:card:00000000-0000-0000-0000-00000000001E:00000000-0000-0000-0000-000000000028",
+            "parent": "00000000-0000-0000-0000-000000000002:card:00000000-0000-0000-0000-00000000001E",
+            "position": 0,
+            "table": "bindings"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000002:legacy:00000000-0000-0000-0000-000000000028",
+            "parent": "00000000-0000-0000-0000-000000000002:legacy",
+            "position": 0,
+            "table": "bindings"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000014",
+            "parent": "00000000-0000-0000-0000-000000000002",
+            "position": 0,
+            "table": "blocks"
+          },
+          {
+            "extra": [
+              "3ba66a03649d3b51ec2d43c9d31feec048900a524991f7d12ae2d5c49822b5b6",
+              "en",
+              "bank"
+            ],
+            "id": "00000000-0000-0000-0000-000000000001",
+            "parent": null,
+            "position": 0,
+            "table": "entries"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000002:card:00000000-0000-0000-0000-00000000001E",
+            "parent": "00000000-0000-0000-0000-000000000002",
+            "position": 1,
+            "table": "reviews"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000002:legacy",
+            "parent": "00000000-0000-0000-0000-000000000002",
+            "position": 0,
+            "table": "reviews"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000002:00000000-0000-0000-0000-000000000064",
+            "parent": "00000000-0000-0000-0000-000000000002",
+            "position": 0,
+            "table": "sense_explanations"
+          },
+          {
+            "extra": [
+              "core"
+            ],
+            "id": "00000000-0000-0000-0000-000000000002",
+            "parent": "00000000-0000-0000-0000-000000000001",
+            "position": 0,
+            "table": "senses"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000046",
+            "parent": null,
+            "position": 0,
+            "table": "templates"
+          }
+        ],
+        "templatesPresent": true,
+        "usageCount": 0
+      }
+    },
+    {
+      "id": "removeBinding",
+      "operation": "removeBinding",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyDatabaseProjection.swift",
+      "expected": {
+        "entryCount": 1,
+        "equalOriginal": false,
+        "legacyBindings": 0,
+        "rows": [
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000002:card:00000000-0000-0000-0000-00000000001E:00000000-0000-0000-0000-000000000028",
+            "parent": "00000000-0000-0000-0000-000000000002:card:00000000-0000-0000-0000-00000000001E",
+            "position": 0,
+            "table": "bindings"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000014",
+            "parent": "00000000-0000-0000-0000-000000000002",
+            "position": 0,
+            "table": "blocks"
+          },
+          {
+            "extra": [
+              "3ba66a03649d3b51ec2d43c9d31feec048900a524991f7d12ae2d5c49822b5b6",
+              "en",
+              "bank"
+            ],
+            "id": "00000000-0000-0000-0000-000000000001",
+            "parent": null,
+            "position": 0,
+            "table": "entries"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000002:card:00000000-0000-0000-0000-00000000001E",
+            "parent": "00000000-0000-0000-0000-000000000002",
+            "position": 1,
+            "table": "reviews"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000002:legacy",
+            "parent": "00000000-0000-0000-0000-000000000002",
+            "position": 0,
+            "table": "reviews"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000002:00000000-0000-0000-0000-000000000064",
+            "parent": "00000000-0000-0000-0000-000000000002",
+            "position": 0,
+            "table": "sense_explanations"
+          },
+          {
+            "extra": [
+              "core"
+            ],
+            "id": "00000000-0000-0000-0000-000000000002",
+            "parent": "00000000-0000-0000-0000-000000000001",
+            "position": 0,
+            "table": "senses"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000046",
+            "parent": null,
+            "position": 0,
+            "table": "templates"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000003:00000000-0000-0000-0000-000000000064",
+            "parent": "00000000-0000-0000-0000-000000000003",
+            "position": 0,
+            "table": "usage_explanations"
+          },
+          {
+            "extra": [],
+            "id": "00000000-0000-0000-0000-000000000003",
+            "parent": "00000000-0000-0000-0000-000000000002",
+            "position": 0,
+            "table": "usages"
+          }
+        ],
+        "templatesPresent": true,
+        "usageCount": 1
+      }
+    },
+    {
+      "id": "falseTemplateFlag",
+      "operation": "falseTemplateFlag",
+      "provenanceKind": "source-policy-extension",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyDatabaseProjection.swift",
+      "expected": {
+        "error": "invalidArchive"
+      }
+    }
+  ]
+}

@@ -73,6 +73,7 @@ public sealed class AppHost : IAsyncDisposable
     internal LearningPreviewController LearningPreview { get; }
     internal LearningExplanationController LearningExplanation { get; }
     internal VocabularyStore Vocabulary { get; }
+    internal VocabularyWindowController VocabularyWindow { get; }
 
     /// <summary>Raised on the UI thread after settings were applied or a model was loaded, so open windows and the tray can refresh.</summary>
     public event Action? SettingsApplied;
@@ -153,6 +154,7 @@ public sealed class AppHost : IAsyncDisposable
         Vocabulary = new VocabularyStore(new VocabularyArchive(System.IO.Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "Cotabby", "vocabulary", "vocabulary.sqlite")), ui);
+        VocabularyWindow = new VocabularyWindowController(Vocabulary, overlay.Dispatcher);
         Vocabulary.EnrichCapture = capture =>
         {
             var input = LearningExplanationPolicy.Input(capture);
@@ -377,6 +379,7 @@ public sealed class AppHost : IAsyncDisposable
         _hook.KeyEvent -= OnGlobalToggleKey;
         SystemEvents.PowerModeChanged -= OnPowerModeChanged;
         await LearningPreview.DisposeAsync().ConfigureAwait(false);
+        await VocabularyWindow.DisposeAsync().ConfigureAwait(false);
         Vocabulary.EnrichCapture = null;
         await LearningExplanation.DisposeAsync().ConfigureAwait(false);
         LearningExplanation.Service.Explained -= PersistExplanation;

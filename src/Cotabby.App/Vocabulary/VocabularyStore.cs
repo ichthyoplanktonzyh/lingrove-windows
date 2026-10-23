@@ -28,6 +28,9 @@ internal sealed class VocabularyStore(VocabularyArchive archive, Synchronization
     /// <summary>Composition may attach only an already cached/saved record; this callback never generates.</summary>
     internal Func<VocabularyCapture, VocabularyCapture>? EnrichCapture { get; set; }
     internal VocabularySnapshot Snapshot { get { lock (_gate) return _snapshot; } }
+    /// <summary>One UI request must capture loaded/error and graph together, like Mac MainActor access.</summary>
+    internal (VocabularySnapshot Snapshot, bool IsLoaded, string? ErrorMessage) ReadState()
+    { lock (_gate) return (_snapshot, _isLoaded, _errorMessage); }
     internal IReadOnlyList<VocabularyEntry> Entries => Snapshot.Document.Entries;
     internal IReadOnlyList<ReviewLayoutTemplate> ReviewTemplates => Snapshot.Document.ReviewTemplates ?? [];
     internal bool IsLoaded { get { lock (_gate) return _isLoaded; } }

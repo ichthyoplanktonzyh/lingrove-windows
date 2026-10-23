@@ -1,0 +1,56 @@
+<Window x:Class="Cotabby.App.UI.Vocabulary.VocabularyNotebookWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:Cotabby.App.UI.Vocabulary"
+        Title="Vocabulary" Width="940" Height="640" MinWidth="760" MinHeight="460"
+        Background="{DynamicResource WindowBg}" Foreground="{DynamicResource TextPrimary}"
+        WindowStartupLocation="CenterScreen" UseLayoutRounding="True">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries><ResourceDictionary Source="../Theme.xaml" /></ResourceDictionary.MergedDictionaries>
+            <HierarchicalDataTemplate DataType="{x:Type local:VocabularyEntryRow}" ItemsSource="{Binding Senses}">
+                <TextBlock Text="{Binding Expression}" FontWeight="SemiBold" FontSize="14" TextWrapping="Wrap" MaxWidth="330" />
+            </HierarchicalDataTemplate>
+            <DataTemplate DataType="{x:Type local:VocabularySenseRow}">
+                <StackPanel Margin="0,4" MaxWidth="320">
+                    <TextBlock Text="{Binding Title}" TextWrapping="Wrap" MaxHeight="40" TextTrimming="CharacterEllipsis" />
+                    <TextBlock Text="{Binding UsageCount}" FontSize="11" Foreground="{DynamicResource TextSecondary}" Margin="0,3,0,0" />
+                    <TextBlock Text="{Binding Example}" FontSize="11" Foreground="{DynamicResource TextSecondary}" TextTrimming="CharacterEllipsis" MaxWidth="300" />
+                </StackPanel>
+            </DataTemplate>
+            <Style TargetType="TreeViewItem">
+                <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
+                <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=OneWay}" />
+            </Style>
+        </ResourceDictionary>
+    </Window.Resources>
+    <DockPanel>
+        <WrapPanel DockPanel.Dock="Top" Margin="12">
+            <TextBox x:Name="SearchText" Width="230" Padding="7,5" Margin="0,0,8,0" TextChanged="OnFiltersChanged" Style="{StaticResource Input}" Tag="Search vocabulary"
+                     AutomationProperties.Name="Search vocabulary" Background="{DynamicResource InputBg}"
+                     Foreground="{DynamicResource TextPrimary}" BorderBrush="{DynamicResource CardBorder}" />
+            <ComboBox x:Name="LanguageFilter" Width="160" Margin="0,0,8,0" SelectionChanged="OnFiltersChanged" Style="{StaticResource Combo}"
+                      DisplayMemberPath="Label" SelectedValuePath="Value" AutomationProperties.Name="Language" />
+            <ComboBox x:Name="TagFilter" Width="130" Margin="0,0,8,0" SelectionChanged="OnFiltersChanged" Style="{StaticResource Combo}"
+                      DisplayMemberPath="Label" SelectedValuePath="Value" AutomationProperties.Name="Tags" />
+            <Button x:Name="SortButton" Content="Newest first" Padding="10,4" Click="OnSort" />
+        </WrapPanel>
+        <TextBlock x:Name="StorageError" DockPanel.Dock="Top" Margin="12,0,12,8" TextWrapping="Wrap"
+                   Foreground="{DynamicResource OrangeBrush}" Visibility="Collapsed" />
+        <Grid>
+            <Grid.ColumnDefinitions><ColumnDefinition Width="290" MinWidth="230" MaxWidth="420" /><ColumnDefinition Width="5" /><ColumnDefinition Width="*" MinWidth="300" /></Grid.ColumnDefinitions>
+            <Grid Grid.Column="0" Background="{DynamicResource SidebarBg}">
+                <TreeView x:Name="EntriesTree" Background="Transparent" BorderThickness="0" Padding="8"
+                          SelectedItemChanged="OnSelectedItemChanged" VirtualizingStackPanel.IsVirtualizing="True"
+                          VirtualizingStackPanel.VirtualizationMode="Recycling" ScrollViewer.CanContentScroll="True" />
+                <TextBlock x:Name="EmptyText" Text="No saved expressions" TextWrapping="Wrap" Margin="24"
+                           Foreground="{DynamicResource TextSecondary}" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" />
+            </Grid>
+            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="{DynamicResource CardBorder}" />
+            <ScrollViewer x:Name="DetailViewport" Grid.Column="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <StackPanel x:Name="DetailContent" Margin="24" />
+            </ScrollViewer>
+        </Grid>
+    </DockPanel>
+</Window>

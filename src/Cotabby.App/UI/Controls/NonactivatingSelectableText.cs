@@ -85,6 +85,8 @@ public sealed class NonactivatingSelectableText : TextBlock
         }
     }
 
+    public void SetLiteralText(string text) => UpdateLiteralContent(() => Text = text);
+
     internal void Select(int anchor, int extent)
     {
         Dispatcher.VerifyAccess();

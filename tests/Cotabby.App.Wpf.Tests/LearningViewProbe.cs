@@ -20,7 +20,7 @@ internal static class LearningViewProbe
 {
     public static readonly ScreenRect Anchor = new(80, 80, 1, 18);
     public static T Find<T>(Window window, string name) where T : FrameworkElement =>
-        Assert.IsType<T>(window.FindName(name));
+        Assert.IsAssignableFrom<T>(window.FindName(name));
     public static void Click(Button button) => button.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
     public static string Text(TextBlock block) => new TextRange(block.ContentStart, block.ContentEnd).Text;
 

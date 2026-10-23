@@ -50,5 +50,6 @@ same CI entry point; that initial result only covers its recorded revision.
 
 The independent [readonly text-selection adapter](LEARNING_TEXT_SELECTION.md) also runs here,
 including actual TextPointer hit testing, popup styles, scrolled clipping and in-memory pixel
-differences for selection paint. It is not yet wired to a product card; these cases add adapter
-evidence without closing the product/native selection gates.
+differences for selection paint. Card integration cases now verify immutable document/target events,
+selection retention across refresh/annotations, attribution-safe feedback and page/target/hide
+retirement. These cases leave physical pointer/native-host selection gates open.

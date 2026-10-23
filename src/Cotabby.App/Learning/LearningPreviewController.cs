@@ -1151,6 +1151,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         _window.LookupRequested += OnDictionaryLookupRequested;
         _window.ExplanationRequested += OnExplanationRequested;
         _window.CopyRequested += OnCopyRequested;
+        _window.SelectedCopyRequested += OnPreviewSelectedCopy;
         _window.Closed += (_, _) =>
         {
             _window = null;

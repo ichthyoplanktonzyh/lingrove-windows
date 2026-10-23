@@ -27,6 +27,7 @@ public partial class LearningPreviewWindow : Window
     public LearningPreviewWindow()
     {
         InitializeComponent();
+        InstallSelection();
         WindowTheme.Follow(this);
         SourceInitialized += (_, _) => LearningPanelPlacement.Install(this);
     }
@@ -179,8 +180,9 @@ public partial class LearningPreviewWindow : Window
         ExplanationSection.Visibility = state.Record is not null || state.IsGenerating || state.ErrorMessage is not null
             ? Visibility.Visible : Visibility.Collapsed;
         ExplanationResult.Visibility = state.Record is null ? Visibility.Collapsed : Visibility.Visible;
-        ExplanationMeaning.Text = state.Record?.Result.Meaning ?? string.Empty;
-        ExplanationText.Text = state.Record?.Result.Explanation ?? string.Empty;
+        ExplanationMeaning.DocumentIdentity = ExplanationText.DocumentIdentity = documentId;
+        ExplanationMeaning.SetLiteralText(state.Record?.Result.Meaning ?? string.Empty);
+        ExplanationText.SetLiteralText(state.Record?.Result.Explanation ?? string.Empty);
         ExplanationResult.FlowDirection = state.Record?.Language == LearningLanguage.Arabic
             ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
         ExplanationProgress.Visibility = state.IsGenerating ? Visibility.Visible : Visibility.Collapsed;
@@ -192,6 +194,7 @@ public partial class LearningPreviewWindow : Window
     private void ClearExplanation()
     {
         _displayedExplanation = null;
+        ExplanationMeaning.DocumentIdentity = ExplanationText.DocumentIdentity = null;
         ExplanationButton.Visibility = Visibility.Collapsed;
         ExplanationSection.Visibility = Visibility.Collapsed;
         ExplanationMeaning.Text = string.Empty;

@@ -1,6 +1,7 @@
 <Window x:Class="Cotabby.App.UI.Learning.LearningDictionaryWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:Cotabby.App.UI.Controls"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         Topmost="True" ShowInTaskbar="False" ShowActivated="False" Focusable="False"
         SizeToContent="WidthAndHeight" ResizeMode="NoResize" UseLayoutRounding="True">
@@ -44,20 +45,20 @@
             <ScrollViewer x:Name="DefinitionViewport" Height="120" VerticalScrollBarVisibility="Auto" Margin="0,0,0,10">
                 <StackPanel x:Name="BodyContent">
                     <StackPanel x:Name="ContextualContent" Visibility="Collapsed">
-                        <TextBlock x:Name="ContextualMeaning" TextWrapping="Wrap" FontSize="13" FontWeight="SemiBold"
+                        <controls:NonactivatingSelectableText x:Name="ContextualMeaning" TextWrapping="Wrap" FontSize="13" FontWeight="SemiBold"
                                    Foreground="{DynamicResource TextPrimary}" Margin="0,0,0,10" Visibility="Collapsed" />
                         <StackPanel x:Name="ContextualExample" Margin="0,0,0,10" Visibility="Collapsed">
                             <TextBlock x:Name="FragmentLabel" Text="Context fragment" FontSize="11"
                                        Foreground="{DynamicResource TextSecondary}" Visibility="Collapsed" Margin="0,0,0,5" />
-                            <TextBlock x:Name="ContextualExampleText" TextWrapping="Wrap" FontSize="13"
+                            <controls:NonactivatingSelectableText x:Name="ContextualExampleText" TextWrapping="Wrap" FontSize="13"
                                        Foreground="{DynamicResource TextPrimary}" />
-                            <TextBlock x:Name="ContextualExampleTranslation" TextWrapping="Wrap" FontSize="11" Margin="0,6,0,0"
+                            <controls:NonactivatingSelectableText x:Name="ContextualExampleTranslation" TextWrapping="Wrap" FontSize="11" Margin="0,6,0,0"
                                        Foreground="{DynamicResource TextSecondary}" Visibility="Collapsed" />
                         </StackPanel>
                         <Expander x:Name="ExplanationDetails" Header="Details" Focusable="False" FontSize="11"
                                   Foreground="{DynamicResource TextPrimary}" Visibility="Collapsed" Margin="0,0,0,10"
                                   Expanded="OnDetailsChanged" Collapsed="OnDetailsChanged">
-                            <TextBlock x:Name="ExplanationProse" TextWrapping="Wrap" FontSize="13" Margin="0,7,0,0"
+                            <controls:NonactivatingSelectableText x:Name="ExplanationProse" TextWrapping="Wrap" FontSize="13" Margin="0,7,0,0"
                                        Foreground="{DynamicResource TextPrimary}" />
                         </Expander>
                         <ProgressBar x:Name="ExplanationProgress" Height="3" IsIndeterminate="True" Visibility="Collapsed" Margin="0,0,0,8" />
@@ -77,6 +78,8 @@
                     </StackPanel>
                 </StackPanel>
             </ScrollViewer>
+            <TextBlock x:Name="CopyStatus" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,8" Visibility="Collapsed"
+                       Foreground="{DynamicResource TextSecondary}" />
             <TextBlock x:Name="AttributionText" FontSize="10" TextWrapping="Wrap" Height="32"
                        Foreground="{DynamicResource TextSecondary}" />
         </StackPanel>

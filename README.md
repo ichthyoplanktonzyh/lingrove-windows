@@ -50,6 +50,8 @@ The library service now adds saved-first lookup, profile/language isolation, com
 the Mac's bounded result cache. Its app-owned controller loads on demand and releases after 60 idle seconds.
 The sentence card now has Mac's explicit [Copy source text / Copy translation](docs/LEARNING_COPY.md)
 footer with immutable document guards; provisional translations cannot be copied.
+Explanation and contextual text now support [mouse selection and context Copy](docs/LEARNING_TEXT_SELECTION.md)
+through that same guarded worker; remaining selection/host interaction gaps are documented.
 
 The first foundation milestone is documentation, build-and-test CI, and shared behavior fixtures. It
 does not add a Windows installer, downloadable build, artifact upload, release workflow, or model

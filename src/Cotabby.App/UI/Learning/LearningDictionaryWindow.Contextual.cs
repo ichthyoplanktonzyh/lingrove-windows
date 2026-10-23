@@ -47,9 +47,9 @@ public partial class LearningDictionaryWindow
             ExplanationButton.ToolTip = explanation?.ErrorMessage is not null && state.ExplanationConfigured && !explanation.IsGenerating
                 ? label + "\n" + explanation.ErrorMessage : label;
             System.Windows.Automation.AutomationProperties.SetName(ExplanationButton, label);
-            ContextualMeaning.Text = explanation?.Record?.Result.Meaning ?? string.Empty;
+            ContextualMeaning.SetLiteralText(explanation?.Record?.Result.Meaning ?? string.Empty);
             ContextualMeaning.Visibility = explanation?.Record is null ? Visibility.Collapsed : Visibility.Visible;
-            ExplanationProse.Text = explanation?.Record?.Result.Explanation ?? string.Empty;
+            ExplanationProse.SetLiteralText(explanation?.Record?.Result.Explanation ?? string.Empty);
             ExplanationDetails.Visibility = explanation?.Record is null ? Visibility.Collapsed : Visibility.Visible;
             ContextualMeaning.FlowDirection = ExplanationProse.FlowDirection = state.ExplanationLanguage == LearningLanguage.Arabic
                 ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
@@ -57,7 +57,8 @@ public partial class LearningDictionaryWindow
             ExplanationStatus.Text = explanation?.IsGenerating == true ? "Explaining…" : explanation?.ErrorMessage ?? string.Empty;
             ExplanationStatus.Visibility = ExplanationStatus.Text.Length == 0 ? Visibility.Collapsed : Visibility.Visible;
             PresentExample();
-            ContextualExampleTranslation.Text = DictionaryExampleTranslation.Text = exampleTranslation?.Text ?? string.Empty;
+            ContextualExampleTranslation.SetLiteralText(exampleTranslation?.Text ?? string.Empty);
+            DictionaryExampleTranslation.Text = exampleTranslation?.Text ?? string.Empty;
             ContextualExampleTranslation.FlowDirection = DictionaryExampleTranslation.FlowDirection = exampleTranslation?.Language == LearningLanguage.Arabic
                 ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
             ContextualExampleTranslation.Visibility = DictionaryExampleTranslation.Visibility = exampleTranslation is null
@@ -70,20 +71,24 @@ public partial class LearningDictionaryWindow
     private void PresentExample()
     {
         var runs = LearningDictionaryCardPolicy.ContextRuns(_contextInput);
-        ContextualExampleText.Inlines.Clear(); DictionaryExampleText.Inlines.Clear();
-        foreach (var run in runs)
+        ContextualExampleText.UpdateLiteralContent(() =>
         {
-            Run Slice()
+            ContextualExampleText.Inlines.Clear();
+            foreach (var run in runs) ContextualExampleText.Inlines.Add(Slice(run.Text, run.IsTarget));
+        });
+        DictionaryExampleText.Inlines.Clear();
+        foreach (var run in runs)
+            DictionaryExampleText.Inlines.Add(Slice(run.Text, run.IsTarget));
+
+        static Run Slice(string text, bool target)
+        {
+            var slice = new Run(text);
+            if (target)
             {
-                var slice = new Run(run.Text);
-                if (run.IsTarget)
-                {
-                    slice.FontWeight = FontWeights.SemiBold;
-                    slice.SetResourceReference(TextElement.ForegroundProperty, "AccentBrush");
-                }
-                return slice;
+                slice.FontWeight = FontWeights.SemiBold;
+                slice.SetResourceReference(TextElement.ForegroundProperty, "AccentBrush");
             }
-            ContextualExampleText.Inlines.Add(Slice()); DictionaryExampleText.Inlines.Add(Slice());
+            return slice;
         }
         ContextualExampleText.FlowDirection = DictionaryExampleText.FlowDirection = _contextInput?.Language == LearningLanguage.Arabic
             ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;

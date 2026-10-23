@@ -173,6 +173,9 @@ public partial class VocabularyNotebookWindow : Window
         // Resolve retired aliases after merge. A list filter does not discard global selection;
         // Mac's detail remains available while its row is hidden by the current query.
         _selection = VocabularyNotebookPolicy.ResolveSelection(document, _selection)?.SenseId;
+        // Reconcile before projecting IsSelected flags. Otherwise the new list can still mark
+        // the just-cleared sense selected, and deferred container binding would select it again.
+        ApplyGraphBrowse(request, result);
         if (request.Query.Length > 0) _expanded.UnionWith(visible.Select(entry => entry.Id));
         _presenting = true;
         try
@@ -189,7 +192,7 @@ public partial class VocabularyNotebookWindow : Window
             StorageError.Text = request.Error ?? ""; StorageError.Visibility = StorageError.Text.Length == 0 ? Visibility.Collapsed : Visibility.Visible;
         }
         finally { _presenting = false; }
-        ApplyGraphBrowse(request, result);
+        RefreshGraph(); if (_graphView is { } graphView) graphView.IsEnabled = true;
         _exportOffer = new(request, visible); UpdateExportAdmission();
         RenderDetail(document);
     }

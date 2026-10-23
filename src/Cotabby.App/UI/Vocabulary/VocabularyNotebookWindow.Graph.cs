@@ -93,8 +93,6 @@ public partial class VocabularyNotebookWindow
             { _selection = null; _graphPresentation?.ClearFocus(); }
             _pendingGraphReconciliation = null;
         }
-        RefreshGraph();
-        if (_graphView is { } view) view.IsEnabled = true;
     }
     private bool GraphFilterExcludesSelection(GraphFilterConstraint filter, Guid selected, CancellationToken token)
     {

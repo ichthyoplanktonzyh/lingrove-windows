@@ -51,6 +51,8 @@ alias and clear the target between commit notification and command acknowledgeme
 Stale worker replies cannot publish or clear that later choice.
 TreeView container regeneration may replay the already selected row after the projection callback;
 that same logical selection (including its current alias) does not cancel a pending graph edit.
+Selection reconciliation precedes list-row projection, so a newly published row cannot retain
+an obsolete `IsSelected` flag and restore a sense that the same browse result just cleared.
 
 During pending browse, the old drawing can remain visible for continuity but graph controls and
 node intents are disabled. Virtual peers report disabled and reject direct Invoke; queued invocation

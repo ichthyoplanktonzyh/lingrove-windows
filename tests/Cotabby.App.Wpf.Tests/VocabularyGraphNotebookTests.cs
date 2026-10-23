@@ -363,6 +363,7 @@ public sealed class VocabularyGraphNotebookTests(WpfDispatcher dispatcher)
             }
             input.Text = second; search.Release.TrySetResult(); await Refresh(window); await original.WaitAsync(TimeSpan.FromSeconds(10));
             Assert.Equal(cleared ? null : Bank, window.Selection);
+            if (cleared) Assert.All(Rows(window), row => Assert.False(row.IsSelected));
             Assert.Equal(toList, !window.IsGraphMode);
             Assert.All(Rows(window), row => Assert.Equal(second == "bank" ? Id(1) : Id(10), row.Selection.EntryId));
         }

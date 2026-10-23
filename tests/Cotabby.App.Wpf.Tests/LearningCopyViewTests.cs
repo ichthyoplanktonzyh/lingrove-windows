@@ -78,6 +78,7 @@ public sealed class LearningCopyViewTests(WpfDispatcher dispatcher)
             Assert.Contains("try again", Find<TextBlock>(window, "CopyStatus").Text);
             window.ShowState(ready with { Status = LearningPreviewStatus.Failed, Result = null }, Anchor, true);
             Assert.Empty(Buttons(window));
+            Assert.Equal(Visibility.Collapsed, Find<StackPanel>(window, "SourceSection").Visibility);
             int copies = 0; window.CopyRequested += _ => copies++;
             Click(oldTranslation);
             Assert.Equal(0, copies);

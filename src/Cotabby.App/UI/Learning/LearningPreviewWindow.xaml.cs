@@ -44,7 +44,9 @@ public partial class LearningPreviewWindow : Window
         if (!LearningExplanationCardPolicy.SameDocument(_displayedPreview, state)) ClearExplanation();
         _displayedPreview = state;
         PresentCopyActions(state, anchor);
-        SourceSection.Visibility = Visibility.Visible;
+        // Mac's error branch replaces the details body. Keep the captured source out of that
+        // presentation as well as its Copy footer; retry still belongs to the controller capture.
+        SourceSection.Visibility = state.Status == LearningPreviewStatus.Failed ? Visibility.Collapsed : Visibility.Visible;
         SourceText.Text = state.Source;
         DirectionText.Text = state.Options is { } options
             ? $"{options.SourceLanguage.Label()}  →  {options.TargetLanguage.Label()}"

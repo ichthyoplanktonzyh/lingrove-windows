@@ -3,7 +3,7 @@
 This ports `LearningSentenceCard.copyActions` and its `LearningSentenceCardTests.swift` layout
 responsibility at Mac commit `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`. The Mac details footer
 offers Copy source text while translating and Copy translation for a complete nonempty translation.
-The Mac error branch hides details and its Copy footer; the Windows error card does the same.
+The Mac error branch hides source details and its Copy footer; the Windows error card does the same.
 `LearningSentenceDictionaryText` intentionally declines selection/first responder. The Windows
 sentence card follows this explicit-button flow; selecting the separate explanation text remains
 a later platform adaptation.

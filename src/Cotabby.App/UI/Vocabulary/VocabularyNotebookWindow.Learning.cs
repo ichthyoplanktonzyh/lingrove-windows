@@ -13,6 +13,7 @@ namespace Cotabby.App.UI.Vocabulary;
 public partial class VocabularyNotebookWindow
 {
     private readonly Dictionary<string, VocabularyExplanationRow> _explanationRows = [];
+    private VocabularyDictionarySection? _dictionarySection;
     private VocabularyNotebookSession? _learning;
     private Action? _configureExplanation;
     private bool _learningRetired;
@@ -44,7 +45,16 @@ public partial class VocabularyNotebookWindow
     }
     private void ClearLearningRows()
     {
+        _dictionarySection?.Dispose(); _dictionarySection = null;
         foreach (var row in _explanationRows.Values) row.Dispose(); _explanationRows.Clear();
+    }
+    private void AddDictionarySection(VocabularyEntry entry, VocabularySense sense)
+    {
+        if (_learning is null || _learningRetired) return;
+        _dictionarySection ??= new VocabularyDictionarySection(_learning, entry,
+            () => !_retired && IsVisible && Selection is { } selected && selected.EntryId == entry.Id && selected.SenseId == sense.Id);
+        if (_dictionarySection.Parent is Panel parent) parent.Children.Remove(_dictionarySection);
+        _dictionarySection.Update(entry); DetailContent.Children.Add(_dictionarySection);
     }
     private void RetireLearning()
     {

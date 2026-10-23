@@ -1,7 +1,7 @@
 # Notebook explanation and dictionary session library
 
 This slice adapts the stable Mac notebook's target and work ownership. It is a library in App,
-now connected to the notebook window by [contextual explanation rows](VOCABULARY_EXPLANATION_UI.md); dictionary UI follows separately. Browsing must restore saved explanations without
+now connected to the notebook window by [contextual explanation rows](VOCABULARY_EXPLANATION_UI.md); the [dictionary disclosure](VOCABULARY_DICTIONARY_UI.md) now connects explicit bundled lookup. Browsing must restore saved explanations without
 starting generation; each saved example and the optional standalone meaning keep separate child
 sessions. Explicit dictionary lookup has no explanation service and cannot implicitly start AI.
 
@@ -66,6 +66,6 @@ This is the twenty-first Swift verifier. No Windows editor, physical input, mode
 clipboard or network provider is exercised by these tests.
 
 Notebook row presentation, explicit adoption and selection-preserving Store updates now have
-[their UI adapter](VOCABULARY_EXPLANATION_UI.md). Dictionary presentation is the next integration slice. Media storage/import, review, templates, graph, export,
+[their UI adapter](VOCABULARY_EXPLANATION_UI.md). Dictionary presentation now has [its explicit disclosure adapter](VOCABULARY_DICTIONARY_UI.md). Media storage/import, review, templates, graph, export,
 backup/restore, speech, source-word providers and the documented search collation gaps remain open.
 No installer, artifact upload or release is produced.

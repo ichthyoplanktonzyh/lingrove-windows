@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -73,38 +72,7 @@ public partial class LearningDictionaryWindow : Window
         LearningPanelPlacement.Position(this, anchor);
     }
 
-    private void PresentDefinitions(LearningDictionaryState state)
-    {
-        DefinitionContent.Children.Clear();
-        bool contextual = state.Page == LearningDictionaryPage.Contextual;
-        if (!contextual) AttributionText.Inlines.Clear();
-        if (state.Status == LearningDictionaryContentStatus.Loading) AddText("Looking up…", secondary: true);
-        else if (state.Status == LearningDictionaryContentStatus.Failed)
-            AddText(state.ErrorMessage ?? "The dictionary could not complete this lookup.", secondary: true);
-        else if (state.Result is LearningDictionaryResult.Entries entries)
-        {
-            foreach (var entry in entries.Values)
-            {
-                if (entry.Headword.Normalize() != state.Query.Normalize()) AddText(entry.Headword, bold: true);
-                if (entry.Phonetics is { Count: > 0 }) AddText(string.Join(" · ", entry.Phonetics), secondary: true);
-                foreach (var sense in entry.Senses)
-                {
-                    AddText(sense.PartOfSpeech + (sense.Labels.Count == 0 ? "" : " · " + string.Join(", ", sense.Labels)), secondary: true);
-                    for (int index = 0; index < sense.Definitions.Count; index++) AddText($"{index + 1}. {sense.Definitions[index]}");
-                }
-                foreach (var example in entry.Examples ?? []) AddText(example, secondary: true);
-                AddLink(entry.SourceName ?? "Wiktionary / Kaikki", entry.SourceUrl);
-                if (entry.LicenseUrl is { } license) AddLink(entry.LicenseName ?? "License", license);
-                else if (entry.LicenseName is { Length: > 0 } name) AddText(name, secondary: true);
-            }
-            var attribution = Link("Wiktionary contributors / Kaikki · CC BY-SA 4.0",
-                "https://creativecommons.org/licenses/by-sa/4.0/");
-            if (!contextual && attribution is not null) AttributionText.Inlines.Add(attribution);
-        }
-        else AddText(state.IsExpression
-            ? "No dictionary entry was found for this expression. Select a word below to look it up."
-            : "No definition for this word was found in the available dictionary.", secondary: true);
-    }
+    private void PresentDefinitions(LearningDictionaryState state) => LearningDictionaryDefinitions.Populate(DefinitionContent, AttributionText, state);
 
     private void MeasureBody()
     {
@@ -138,31 +106,6 @@ public partial class LearningDictionaryWindow : Window
         Dispatcher.VerifyAccess();
         if (!IsVisible || _state?.TargetIdentity != target) return;
         FavoriteButton.Bind(store, capture, () => IsVisible && _state?.TargetIdentity == target && canAct());
-    }
-    private void AddText(string text, bool secondary = false, bool bold = false)
-    {
-        var block = new TextBlock { Text = text, TextWrapping = TextWrapping.Wrap, FontSize = secondary ? 11 : 13,
-            FontWeight = bold ? FontWeights.SemiBold : FontWeights.Normal, Margin = new Thickness(0, 0, 0, 7) };
-        block.SetResourceReference(TextBlock.ForegroundProperty, secondary ? "TextSecondary" : "TextPrimary");
-        DefinitionContent.Children.Add(block);
-    }
-    private void AddLink(string title, string value)
-    {
-        if (Link(title, value) is not { } link) return;
-        var block = new TextBlock { FontSize = 10, Margin = new Thickness(0, 0, 0, 7), TextWrapping = TextWrapping.Wrap };
-        block.Inlines.Add(link); DefinitionContent.Children.Add(block);
-    }
-    private static Hyperlink? Link(string title, string value)
-    {
-        if (DictionaryLinkPolicy.ExternalUrl(value) is not { } url) return null;
-        var link = new Hyperlink(new Run(title)) { Focusable = false, ToolTip = url.AbsoluteUri };
-        link.Click += (_, args) =>
-        {
-            args.Handled = true;
-            try { Process.Start(new ProcessStartInfo(url.AbsoluteUri) { UseShellExecute = true }); }
-            catch { /* An unavailable browser cannot fault the dictionary session or expose paths. */ }
-        };
-        return link;
     }
     private void OnClose(object sender, RoutedEventArgs args) { if (_state is { } state) CloseRequested?.Invoke(state.TargetIdentity); }
     private void OnBack(object sender, RoutedEventArgs args) { if (_state is { } state) BackRequested?.Invoke(state.TargetIdentity); }

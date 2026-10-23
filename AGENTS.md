@@ -114,7 +114,8 @@ now connects stable sense navigation and list/detail browsing. The [entry editor
 adds isolated drafts and acknowledged Save/Cancel. [Sense/usage actions](docs/VOCABULARY_ACTIONS.md)
 now connect acknowledged New/Merge/Delete/Move. The [notebook session library](docs/VOCABULARY_NOTEBOOK_SESSION.md)
 adds idle per-usage explanation ownership and explicit dictionary lifetime. [Notebook explanation rows](docs/VOCABULARY_EXPLANATION_UI.md)
-now connect explicit generation and acknowledged adoption; dictionary UI and media remain work. Do not flatten senses into
+now connect explicit generation and acknowledged adoption; the [dictionary disclosure](docs/VOCABULARY_DICTIONARY_UI.md)
+connects explicit bundled lookup and word navigation. Media/review/export and other dictionary providers remain work. Do not flatten senses into
 one translation string, regenerate stable IDs during edits, or treat a generated explanation as the
 user's authored meaning. See the vocabulary models and porting gates in the linked docs. Storage
 compatibility with macOS is not assumed; migrations must be explicit and tested.

@@ -29,6 +29,7 @@ internal sealed class VocabularyNotebookSession : IAsyncDisposable
     internal string? DictionaryError { get; private set; }
     internal bool IsConfigured => _service?.IsConfigured == true;
     internal Task LastDictionaryOperation { get; private set; } = Task.CompletedTask;
+    internal bool IsPreparingDictionary { get { VerifyAccess(); return _pendingDictionary is not null; } }
     internal event Action? Changed;
 
     internal VocabularyNotebookSession(Dispatcher dispatcher, ILearningDictionaryProviding provider, ILearningLexicalText text,

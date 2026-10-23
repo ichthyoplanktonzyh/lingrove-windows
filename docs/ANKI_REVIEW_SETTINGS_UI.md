@@ -39,7 +39,7 @@ Quit closes settings first, then awaits AppHost cleanup **before** asking WPF to
 dispatcher. The review owner closes admission, cancels and drains its admitted operations and
 disposes its HTTP owner before the shared notebook closes. Action failures return to the action
 caller without poisoning the drain reservation. A throwing cancellation callback still permits
-drain/disposal. WPF `OnExit` alone cannot await cleanup: forced process/OS termination remains a
+drain/disposal. A review cleanup error enters the host's finally block so notebook and existing downstream cleanup are still attempted. WPF `OnExit` alone cannot await cleanup: forced process/OS termination remains a
 native lifetime gate, with only best-effort fallback there.
 
 ## Evidence and limits

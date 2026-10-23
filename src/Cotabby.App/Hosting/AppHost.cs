@@ -394,16 +394,21 @@ public sealed class AppHost : IAsyncDisposable
         Vocabulary.EnrichCapture = null;
         await LearningExplanation.DisposeAsync().ConfigureAwait(false);
         LearningExplanation.Service.Explained -= PersistExplanation;
-        await Review.DisposeAsync().ConfigureAwait(false);
-        await Vocabulary.DisposeAsync().ConfigureAwait(false);
-        await LearningModels.DisposeAsync().ConfigureAwait(false);
-        EmojiPicker.Dispose();
-        Macros.Dispose();
-        _spelling.Dispose();
-        await Coordinator.DisposeAsync().ConfigureAwait(false);
-        await Runtime.DisposeAsync().ConfigureAwait(false);
-        EndpointClient.Dispose();
-        _learningHttpClient.Dispose();
-        await _services.DisposeAsync().ConfigureAwait(false);
+        try { await Review.DisposeAsync().ConfigureAwait(false); }
+        finally
+        {
+            // Review already drains all admitted actions even if cancellation/disposal reports
+            // an error. Its failure must not strand the shared notebook or skip existing cleanup.
+            await Vocabulary.DisposeAsync().ConfigureAwait(false);
+            await LearningModels.DisposeAsync().ConfigureAwait(false);
+            EmojiPicker.Dispose();
+            Macros.Dispose();
+            _spelling.Dispose();
+            await Coordinator.DisposeAsync().ConfigureAwait(false);
+            await Runtime.DisposeAsync().ConfigureAwait(false);
+            EndpointClient.Dispose();
+            _learningHttpClient.Dispose();
+            await _services.DisposeAsync().ConfigureAwait(false);
+        }
     }
 }

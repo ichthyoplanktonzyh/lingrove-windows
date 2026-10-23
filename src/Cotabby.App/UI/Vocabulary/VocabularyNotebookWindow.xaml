@@ -43,6 +43,8 @@
             <Button x:Name="SelectVisibleButton" Content="Select visible" Padding="10,4" Margin="8,0,0,0" Visibility="Collapsed" Click="OnSelectVisible" IsEnabled="False" />
             <Button x:Name="ExportSelectedButton" Content="Export selected…" Padding="10,4" Margin="8,0,0,0" Visibility="Collapsed" Click="OnExportSelected" IsEnabled="False" />
             <Button x:Name="ExportButton" Content="Export…" Padding="10,4" Margin="8,0,0,0" Click="OnExportNotebook" IsEnabled="False" />
+            <Button x:Name="BackupButton" Content="Full notebook backup…" Padding="10,4" Margin="8,0,0,0" Click="OnBackupNotebook" IsEnabled="False" />
+            <Button x:Name="RestoreNotebookButton" Content="Restore notebook…" Padding="10,4" Margin="8,0,0,0" Click="OnRestoreNotebook" IsEnabled="False" />
         </WrapPanel>
         <TextBlock x:Name="StorageError" DockPanel.Dock="Top" Margin="12,0,12,8" TextWrapping="Wrap"
                    Foreground="{DynamicResource OrangeBrush}" Visibility="Collapsed" />

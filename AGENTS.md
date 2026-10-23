@@ -138,7 +138,9 @@ the [full backup codec](docs/VOCABULARY_BACKUP_CODEC.md) now preserves the compl
 and base64 media envelope. The [archive backup](docs/VOCABULARY_BACKUP_ARCHIVE.md) now freezes all
 referenced media and atomically publishes the full notebook. The [restore transaction](docs/VOCABULARY_RESTORE.md)
 now validates complete packages before staged replacement/rollback. The [Store backup/restore owner](docs/VOCABULARY_BACKUP_STORE.md)
-now preserves shared-error and restored-media publication; backup/restore chooser/confirmation UI remains work;
+now preserves shared-error and restored-media publication. The [backup/restore panels](docs/VOCABULARY_BACKUP_DIALOGS.md)
+now adapt native Save/Open startup and ownership. The [notebook backup/restore UI](docs/VOCABULARY_BACKUP_UI.md)
+now connects the commands, explicit confirmation and accepted-operation drain; physical Shell interaction remains work;
 compressed/profiled bitmap variants, virtual/pixel drops, review and other dictionary providers remain work. Do not flatten senses into
 one translation string, regenerate stable IDs during edits, or treat a generated explanation as the
 user's authored meaning. See the vocabulary models and porting gates in the linked docs. Storage

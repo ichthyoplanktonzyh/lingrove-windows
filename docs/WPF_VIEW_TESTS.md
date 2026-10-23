@@ -169,3 +169,14 @@ The [Store backup/restore owner](VOCABULARY_BACKUP_STORE.md) adds thirteen actua
 counterparts and four publication/retired-dispatcher/IO-drain cases (437 total). Scheduling gates
 forward real native reads/writes; they do not fabricate successful archive outcomes. Physical
 chooser/confirmation interaction remains the next adaptation and a separate desktop gate.
+
+The [backup/restore native panels](VOCABULARY_BACKUP_DIALOGS.md) add twelve startup/configuration/
+thread/admission cases (449 total). They instantiate actual Shell Save/Open COM objects without
+Show, and the unchanged eleven export-dialog cases cover the shared-owner extraction. Product
+command/confirmation wiring and physical Shell interaction remain separate work.
+
+The [notebook backup/restore UI](VOCABULARY_BACKUP_UI.md) adds fourteen actual compiled notebook/
+confirmation cases with real Store/files/media/SQLite (463 total). File-panel human replies are
+controlled, while the owned WPF confirmation uses actual modal ShowDialog and routed buttons.
+Immediate-close and queued-hide regressions prove accepted operations belong to Store before
+presentation retirement. No native Shell modal Show runs; physical interaction remains a desktop gate.

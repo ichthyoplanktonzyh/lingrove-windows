@@ -28,8 +28,8 @@ keeps its non-delete-sharing stage handle open, repeats destination protection a
 before `SetFileInformationByHandle(FileRenameInfo)` replaces the admitted canonical destination
 with a null RootDirectory. Both requested and canonical parent names must still resolve to the pinned
 directory identity. The common absolute-name API form avoids a relative-root Win32 wrapper incompatibility. FullControl includes DELETE access for that handle-based rename. Failure cleanup marks the
-same stage handle with `FileDispositionInfo`; there is no pathname-based rename/deletion or cross-volume
-copy/delete fallback. A peer cannot swap the stage between fsync, publication and cleanup. No fallible action
+same stage handle with `FileDispositionInfo`; the staging source is never reopened for rename, cleanup never deletes a pathname, and there is no
+cross-volume copy/delete fallback. A peer cannot swap the stage between fsync, publication and cleanup. No fallible action
 or cancellation check follows successful publication, preventing an acknowledged save being
 reported as cancelled after its destination has changed.
 

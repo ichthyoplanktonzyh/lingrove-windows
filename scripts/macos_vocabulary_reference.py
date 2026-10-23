@@ -118,3 +118,29 @@ def database_archive_sources(repo):
         "Cotabby/Services/Vocabulary/VocabularyArchive.swift",
         "Cotabby/Services/Vocabulary/VocabularyArchive+ReviewCards.swift",
         "Cotabby/Services/Vocabulary/VocabularyArchive+Media.swift")]
+
+
+def vocabulary_store_sources(repo):
+    """Original UI-store slice around the complete real archive; no replacement mutation bodies."""
+    store = source(repo, "Cotabby/Services/Vocabulary/VocabularyStore.swift")
+    # CLI/media/review/export presentation is not in this Windows slice. Retain every exercised
+    # declaration/body exactly; omit only diagnostic lines whose module is app-specific.
+    wrapper = 'import Foundation\nimport Combine\n@MainActor final class VocabularyStore {\n'
+    wrapper += between(store, '    @Published private(set) var reviewTemplates:', '    /// The mailbox borrows')
+    wrapper += between(store, '    func loadIfNeeded()', '    func mergeSenses(')
+    wrapper += between(store, '    func mergeSenses(', '    func saveReview(')
+    wrapper += between(store, '    func remove(_ capture:', '    func prepareImage(_ data:')
+    wrapper += between(store, '    func remove(id:', '    func prepareExport(')
+    wrapper += store[store.index('    private func change('):]
+    if wrapper.count('CotabbyLogger.learning.') != 3: raise RuntimeError('Pinned store logging boundary changed')
+    wrapper = '\n'.join(line for line in wrapper.split('\n') if 'CotabbyLogger.learning.' not in line)
+    wrapper += '''
+extension VocabularyStore {
+    func applyProbe(_ snapshot: VocabularySnapshot) { apply(snapshot) }
+    func pendingCountProbe(_ capture: VocabularyCapture) -> Int { pendingCounts[VocabularyPolicy.captureKey(capture)] ?? 0 }
+    func controlledChangeProbe(_ capture: VocabularyCapture, gate: StoreProbeGate) async {
+        await change(capture) { await gate.wait(); return try await self.archive.save(capture) }
+    }
+}
+'''
+    return database_archive_sources(repo) + [wrapper]

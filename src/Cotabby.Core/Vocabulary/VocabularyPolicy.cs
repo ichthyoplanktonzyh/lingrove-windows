@@ -1,4 +1,5 @@
 using Cotabby.Core.LanguageLearning;
+using Cotabby.Core.Text;
 
 namespace Cotabby.Core.Vocabulary;
 
@@ -12,6 +13,36 @@ public sealed record VocabularySaveResult(VocabularyDocument Document, Guid Entr
 /// </summary>
 public static class VocabularyPolicy
 {
+    /// <summary>
+    /// Current Mac editor re-anchoring: prefer the normalized expression and use dictionary form
+    /// only if it has no valid occurrences. Raw search offsets advance independently of expanded
+    /// composed spans, retaining duplicate highlights when a combination contains several hits.
+    /// </summary>
+    public static IReadOnlyList<VocabularyTextRange> ReconciledRanges(string text, string expression, string dictionaryForm = "", CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        if (!LearningExplanationText.Fits(text, int.MaxValue) || !LearningExplanationText.Fits(expression, int.MaxValue)
+            || !LearningExplanationText.Fits(dictionaryForm, int.MaxValue) || text.Length == 0) return [];
+        var composed = FoundationTextRanges.Boundaries(text, cancellationToken);
+        var candidates = new[] { VocabularyCapturePolicy.Normalized(expression), VocabularyCapturePolicy.Normalized(dictionaryForm) };
+        cancellationToken.ThrowIfCancellationRequested();
+        foreach (string needle in candidates)
+        {
+            if (needle.Length == 0) continue;
+            var matches = new List<VocabularyTextRange>(); int start = 0;
+            var matcher = new FoundationSubstringMatcher(text, needle, cancellationToken);
+            while (start < text.Length && matcher.FindNext(start) is { } found)
+            {
+                if (found.End <= start || found.End > text.Length) break;
+                var expanded = composed.Expand(found.Start, found.End);
+                if (composed.IsValid(expanded.Start, expanded.End - expanded.Start)) matches.Add(new(expanded.Start, expanded.End - expanded.Start));
+                start = found.End;
+            }
+            if (matches.Count > 0) return matches.ToArray();
+        }
+        return [];
+    }
+
     public static bool Contains(VocabularyCapture capture, IReadOnlyList<VocabularyEntry> entries)
     {
         var entry = entries.FirstOrDefault(entry => VocabularyCapturePolicy.EntryKey(entry) == VocabularyCapturePolicy.EntryKey(capture));

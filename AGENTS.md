@@ -43,9 +43,11 @@ been rebranded or that its data is compatible with the macOS app.
   user-authored changes.
 - Keep changes within the requested scope. Coordinate before editing a shared file another worker
   owns.
-- Use the pinned macOS reference commit `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f` when comparing
-  behavior. Read it with `git -C <macOS-repository> show <commit>:<path>`; do not use an unrelated or
-  dirty macOS working tree as evidence.
+- The current stable alignment target is `cc468b89f5c360cc7210fac4f1a8b52197870bf2`; see
+  [the audited delta](docs/MAC_STABLE_DELTA.md). Existing modules/fixtures retain their explicit
+  initial reference `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f` until upgraded individually. Never
+  silently change a shared pin or fit old expectations to a new rule. Read committed evidence with
+  `git -C <macOS-repository> show <commit>:<path>` rather than a dirty working tree.
 
 ## Architecture and ownership
 
@@ -111,7 +113,8 @@ is owned once by AppHost and restores/persists saved explanations. The [writing 
 now preserves full example translations/provenance. [Writing-card favorites](docs/VOCABULARY_FAVORITES.md)
 connect Save and exact Remove to the shared Store. The [notebook browser](docs/VOCABULARY_NOTEBOOK.md)
 now connects stable sense navigation and list/detail browsing. The [entry editor](docs/VOCABULARY_EDITOR.md)
-adds isolated drafts and acknowledged Save/Cancel. [Sense/usage actions](docs/VOCABULARY_ACTIONS.md)
+adds isolated drafts and acknowledged Save/Cancel. [Current editor annotations](docs/VOCABULARY_EDITOR_CURRENT.md)
+now preserve authored fields and re-anchor only ranges at the explicit current-stable reference. [Sense/usage actions](docs/VOCABULARY_ACTIONS.md)
 now connect acknowledged New/Merge/Delete/Move. The [notebook session library](docs/VOCABULARY_NOTEBOOK_SESSION.md)
 adds idle per-usage explanation ownership and explicit dictionary lifetime. [Notebook explanation rows](docs/VOCABULARY_EXPLANATION_UI.md)
 now connect explicit generation and acknowledged adoption; the [dictionary disclosure](docs/VOCABULARY_DICTIONARY_UI.md)
@@ -210,6 +213,7 @@ python3 scripts/verify-vocabulary-store-macos-parity.py --mac-repo /path/to/macO
 python3 scripts/verify-vocabulary-card-capture-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-vocabulary-notebook-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-vocabulary-editor-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
+python3 scripts/verify-vocabulary-editor-current-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-vocabulary-notebook-session-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-vocabulary-image-preparation-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-vocabulary-image-storage-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
@@ -258,14 +262,17 @@ The Windows-targeting build can compile the full solution, including WPF, from m
 run the Windows test assembly or validate a Windows desktop; execute those tests on the Windows CI
 runner. This is ordinary compilation, not packaging or a release.
 
-The current `.github/workflows/ci.yml` has two validation jobs: Windows x64 restores and builds the
+The current `.github/workflows/ci.yml` has three validation jobs: Windows x64 restores and builds the
 full solution, then runs Core, portable App boundary and Inference tests, including noninteractive ICU sentence tests,
 and the compiled learning-card WPF view suite on its own STA dispatcher (see `docs/WPF_VIEW_TESTS.md`);
-macOS 26 x64 runs Core, portable App boundary tests and all sixty-three Swift parity verifiers against a sparse checkout of the pinned Mac
+macOS 26 x64 runs Core, portable App boundary tests and the committed Swift parity verifiers (currently 68) against a sparse checkout of the pinned Mac
 Support, language-learning/vocabulary models/services, content-test provenance, language catalog and pinned expression resource files. The separate
 `.github/workflows/upstream-baseline.yml` checks the original Windows fork at commit
 `b1e4031c70aca1be21aae2c57b138fde5fc22bb1` with .NET 9 on manual dispatch. Its initial setup run is
-recorded in the baseline note. It does not gate ordinary PRs; its result describes that old snapshot,
+recorded in the baseline note. The third ordinary job compiles the independently pinned native
+speech helper on Windows and runs model-free Git/protocol/platform checks; it produces no package.
+Current editor verification uses a separate sparse checkout at its explicit newer revision.
+The upstream baseline job does not gate ordinary PRs; its result describes that old snapshot,
 not the current .NET 10 tree.
 
 CI is for dependency restore, compiling, and tests. It must not download GGUF model weights, create

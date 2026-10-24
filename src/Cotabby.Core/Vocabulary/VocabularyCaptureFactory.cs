@@ -88,7 +88,7 @@ public sealed class VocabularyCaptureFactory(ILearningLexicalText lexicalText, I
             ranges.Select(range => new VocabularyTextRange(range.Location - scope.Location, range.Length)).ToArray(),
             sentence is null ? VocabularyExampleCompleteness.Fragment : VocabularyExampleCompleteness.Sentence, "", _clock.GetUtcNow()) { SourceApplicationId = app };
     }
-    private IReadOnlyList<LearningTextRange> SentenceRanges(string text, LearningLanguage language, int[] boundaries)
+    private IReadOnlyList<LearningTextRange> SentenceRanges(string text, LearningLanguage language, FoundationComposedText boundaries)
     {
         try
         {

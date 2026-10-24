@@ -7,7 +7,7 @@ namespace Cotabby.Core.Vocabulary;
 /// <summary>
 /// Value-draft rules from the stable Mac entry/content editors. A modal editor owns the full
 /// draft and original baseline; these helpers neither mutate Store nor acknowledge persistence.
-/// Original-text edits retire dependent annotations, while IDs/provenance remain stable until
+/// Original-text edits preserve annotations and re-anchor only ranges; IDs/provenance remain stable until
 /// archive commit prunes stale generated records. Existing media blocks are retained verbatim.
 /// </summary>
 public static class VocabularyEntryEditingPolicy
@@ -21,12 +21,22 @@ public static class VocabularyEntryEditingPolicy
         && draft.Senses.FirstOrDefault(value => value.Id == senseId) is { } selected
         && selected.Examples.All(example => LearningExplanationText.Trim(example.Text).Length > 0);
 
-    /// <summary>Called by the source-text onChange event, after its Swift-equivalent equality check.</summary>
-    public static VocabularyExample ChangeOriginalText(VocabularyExample example, string text)
+    /// <summary>Pure counterpart of source-text onChange, including its Swift-equivalent equality scheduling guard.</summary>
+    public static VocabularyExample ChangeOriginalText(VocabularyExample example, string text, string expression, string dictionaryForm = "")
     {
         if (CanonicalStringComparer.Instance.Equals(example.Text, text)) return example with { Text = text };
-        return example with { Text = text, Ranges = [], Translation = "", TranslationLanguage = null, TranslationVariants = [],
-            Meaning = "", MeaningLanguage = null, MeaningOrigin = VocabularyMeaningOrigin.Captured, Completeness = VocabularyExampleCompleteness.Fragment };
+        return example with { Text = text, Ranges = VocabularyPolicy.ReconciledRanges(text, expression, dictionaryForm) };
+    }
+
+    /// <summary>Expression onChange re-anchors examples belonging only to the editor's selected sense.</summary>
+    public static VocabularyEntry ChangeExpression(VocabularyEntry draft, Guid senseId, string expression)
+    {
+        if (CanonicalStringComparer.Instance.Equals(draft.Expression, expression)) return draft with { Expression = expression };
+        return draft with { Expression = expression, Senses = draft.Senses.Select(sense => sense.Id != senseId ? sense : sense with
+        {
+            Examples = sense.Examples.Select(example => example with
+            { Ranges = VocabularyPolicy.ReconciledRanges(example.Text, expression, draft.DictionaryForm) }).ToArray(),
+        }).ToArray() };
     }
 
     public static IReadOnlyList<VocabularyContentBlock>? MoveBlock(IReadOnlyList<VocabularyContentBlock>? blocks, Guid id, int offset)

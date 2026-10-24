@@ -1,0 +1,3910 @@
+{
+  "version": 2,
+  "macReference": "cc468b89f5c360cc7210fac4f1a8b52197870bf2",
+  "previousMacReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "referenceLocale": "en_US",
+  "cases": [
+    {
+      "id": "range-00",
+      "operation": "ranges",
+      "text": "🐟 Please keep me posted about the schedule.",
+      "expression": "Keep me posted",
+      "form": "keep someone posted",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "original-test-adaptation",
+      "sourceTest": "CotabbyTests/Support/Vocabulary/VocabularyPolicyTests.swift:reconciledRangesReanchorExpressionAfterExampleTextEdit",
+      "expected": {
+        "ranges": [
+          {
+            "length": 14,
+            "location": 10,
+            "text": "keep me posted"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-01",
+      "operation": "ranges",
+      "text": "bank bank banking BANK",
+      "expression": "bank",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 4,
+            "location": 0,
+            "text": "bank"
+          },
+          {
+            "length": 4,
+            "location": 5,
+            "text": "bank"
+          },
+          {
+            "length": 4,
+            "location": 10,
+            "text": "bank"
+          },
+          {
+            "length": 4,
+            "location": 18,
+            "text": "BANK"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-02",
+      "operation": "ranges",
+      "text": "café café CAFÉ",
+      "expression": "cafe",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 4,
+            "location": 0,
+            "text": "café"
+          },
+          {
+            "length": 5,
+            "location": 5,
+            "text": "café"
+          },
+          {
+            "length": 4,
+            "location": 11,
+            "text": "CAFÉ"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-03",
+      "operation": "ranges",
+      "text": "café café",
+      "expression": "CAFÉ",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 5,
+            "location": 0,
+            "text": "café"
+          },
+          {
+            "length": 4,
+            "location": 6,
+            "text": "café"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-04",
+      "operation": "ranges",
+      "text": "Straße STRASSE Straße",
+      "expression": "strasse",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 6,
+            "location": 0,
+            "text": "Straße"
+          },
+          {
+            "length": 7,
+            "location": 7,
+            "text": "STRASSE"
+          },
+          {
+            "length": 6,
+            "location": 15,
+            "text": "Straße"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-05",
+      "operation": "ranges",
+      "text": "Æsir aesir",
+      "expression": "aesir",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 5,
+            "location": 5,
+            "text": "aesir"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-06",
+      "operation": "ranges",
+      "text": "œuvre oeuvre",
+      "expression": "oeuvre",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 6,
+            "location": 6,
+            "text": "oeuvre"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-07",
+      "operation": "ranges",
+      "text": "I i İ ı",
+      "expression": "i",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 1,
+            "location": 0,
+            "text": "I"
+          },
+          {
+            "length": 1,
+            "location": 2,
+            "text": "i"
+          },
+          {
+            "length": 1,
+            "location": 4,
+            "text": "İ"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-08",
+      "operation": "ranges",
+      "text": "σ ς Σ",
+      "expression": "Σ",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 1,
+            "location": 0,
+            "text": "σ"
+          },
+          {
+            "length": 1,
+            "location": 2,
+            "text": "ς"
+          },
+          {
+            "length": 1,
+            "location": 4,
+            "text": "Σ"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-09",
+      "operation": "ranges",
+      "text": "Ａ A",
+      "expression": "A",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 1,
+            "location": 2,
+            "text": "A"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-10",
+      "operation": "ranges",
+      "text": "ﬁ fi",
+      "expression": "fi",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 1,
+            "location": 0,
+            "text": "ﬁ"
+          },
+          {
+            "length": 2,
+            "location": 2,
+            "text": "fi"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-11",
+      "operation": "ranges",
+      "text": "naïve naïve",
+      "expression": "naive",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 5,
+            "location": 0,
+            "text": "naïve"
+          },
+          {
+            "length": 5,
+            "location": 6,
+            "text": "naïve"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-12",
+      "operation": "ranges",
+      "text": "ไทย ภาษาไทย",
+      "expression": "ไทย",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 3,
+            "location": 0,
+            "text": "ไทย"
+          },
+          {
+            "length": 3,
+            "location": 8,
+            "text": "ไทย"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-13",
+      "operation": "ranges",
+      "text": "你好你好",
+      "expression": "你好",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 2,
+            "location": 0,
+            "text": "你好"
+          },
+          {
+            "length": 2,
+            "location": 2,
+            "text": "你好"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-14",
+      "operation": "ranges",
+      "text": "🐟🐟 fish",
+      "expression": "🐟",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 2,
+            "location": 0,
+            "text": "🐟"
+          },
+          {
+            "length": 2,
+            "location": 2,
+            "text": "🐟"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-15",
+      "operation": "ranges",
+      "text": "👩‍👩‍👧‍👦 👩 family",
+      "expression": "👩",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 11,
+            "location": 0,
+            "text": "👩‍👩‍👧‍👦"
+          },
+          {
+            "length": 11,
+            "location": 0,
+            "text": "👩‍👩‍👧‍👦"
+          },
+          {
+            "length": 2,
+            "location": 12,
+            "text": "👩"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-16",
+      "operation": "ranges",
+      "text": "👩‍👩‍👧‍👦 family",
+      "expression": "👩‍👩‍👧‍👦",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 11,
+            "location": 0,
+            "text": "👩‍👩‍👧‍👦"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-17",
+      "operation": "ranges",
+      "text": "🇺🇸 🇺🇳",
+      "expression": "🇺",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 4,
+            "location": 0,
+            "text": "🇺🇸"
+          },
+          {
+            "length": 4,
+            "location": 5,
+            "text": "🇺🇳"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-18",
+      "operation": "ranges",
+      "text": "🇺🇸 🇺🇳",
+      "expression": "🇺🇸",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 4,
+            "location": 0,
+            "text": "🇺🇸"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-19",
+      "operation": "ranges",
+      "text": "1️⃣ 1",
+      "expression": "1",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 3,
+            "location": 0,
+            "text": "1️⃣"
+          },
+          {
+            "length": 1,
+            "location": 4,
+            "text": "1"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-20",
+      "operation": "ranges",
+      "text": "👍🏽👍",
+      "expression": "👍",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 4,
+            "location": 0,
+            "text": "👍🏽"
+          },
+          {
+            "length": 2,
+            "location": 4,
+            "text": "👍"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-21",
+      "operation": "ranges",
+      "text": "é x",
+      "expression": "́",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 2,
+            "location": 0,
+            "text": "é"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-22",
+      "operation": "ranges",
+      "text": "क्ष क्षि",
+      "expression": "क",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 3,
+            "location": 0,
+            "text": "क्ष"
+          },
+          {
+            "length": 4,
+            "location": 4,
+            "text": "क्षि"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-23",
+      "operation": "ranges",
+      "text": "가 가",
+      "expression": "가",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 1,
+            "location": 0,
+            "text": "가"
+          },
+          {
+            "length": 2,
+            "location": 2,
+            "text": "가"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-24",
+      "operation": "ranges",
+      "text": "a\r\nb",
+      "expression": "\r",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-25",
+      "operation": "ranges",
+      "text": "a​b",
+      "expression": "​",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 1,
+            "location": 1,
+            "text": "​"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-26",
+      "operation": "ranges",
+      "text": "a­b",
+      "expression": "­",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 1,
+            "location": 1,
+            "text": "­"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-27",
+      "operation": "ranges",
+      "text": "a‍b",
+      "expression": "‍",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 3,
+            "location": 0,
+            "text": "a‍b"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-28",
+      "operation": "ranges",
+      "text": "x️ x",
+      "expression": "️",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 2,
+            "location": 0,
+            "text": "x️"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-29",
+      "operation": "ranges",
+      "text": "",
+      "expression": "bank",
+      "form": "bank",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-30",
+      "operation": "ranges",
+      "text": "bank",
+      "expression": "",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-31",
+      "operation": "ranges",
+      "text": "bank",
+      "expression": " \t\n",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-32",
+      "operation": "ranges",
+      "text": "bank",
+      "expression": "absent",
+      "form": "bank",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 4,
+            "location": 0,
+            "text": "bank"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-33",
+      "operation": "ranges",
+      "text": "bank river",
+      "expression": "river",
+      "form": "bank",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 5,
+            "location": 5,
+            "text": "river"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-34",
+      "operation": "ranges",
+      "text": "bank bank",
+      "expression": " bank\n\t bank ",
+      "form": "bank",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 9,
+            "location": 0,
+            "text": "bank bank"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-35",
+      "operation": "ranges",
+      "text": "bank\nbank",
+      "expression": "bank bank",
+      "form": "bank",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 4,
+            "location": 0,
+            "text": "bank"
+          },
+          {
+            "length": 4,
+            "location": 5,
+            "text": "bank"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-36",
+      "operation": "ranges",
+      "text": "aba ababa",
+      "expression": "aba",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 3,
+            "location": 0,
+            "text": "aba"
+          },
+          {
+            "length": 3,
+            "location": 4,
+            "text": "aba"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-37",
+      "operation": "ranges",
+      "text": "aaaaa",
+      "expression": "aa",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 2,
+            "location": 0,
+            "text": "aa"
+          },
+          {
+            "length": 2,
+            "location": 2,
+            "text": "aa"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-38",
+      "operation": "ranges",
+      "text": "aaaaa",
+      "expression": "aaa",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 3,
+            "location": 0,
+            "text": "aaa"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-39",
+      "operation": "ranges",
+      "text": "word.word sword",
+      "expression": "word",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 4,
+            "location": 0,
+            "text": "word"
+          },
+          {
+            "length": 4,
+            "location": 5,
+            "text": "word"
+          },
+          {
+            "length": 4,
+            "location": 11,
+            "text": "word"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-40",
+      "operation": "ranges",
+      "text": "foo\u0000bar",
+      "expression": "\u0000",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 1,
+            "location": 3,
+            "text": "\u0000"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-41",
+      "operation": "ranges",
+      "text": "👨‍💻 bank",
+      "expression": "bank",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 4,
+            "location": 6,
+            "text": "bank"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-42",
+      "operation": "ranges",
+      "text": "café",
+      "expression": "CAFE",
+      "form": "café",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 4,
+            "location": 0,
+            "text": "café"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-43",
+      "operation": "ranges",
+      "text": "① 1",
+      "expression": "1",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 1,
+            "location": 0,
+            "text": "①"
+          },
+          {
+            "length": 1,
+            "location": 2,
+            "text": "1"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-44",
+      "operation": "ranges",
+      "text": "ąa",
+      "expression": "a",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 1,
+            "location": 0,
+            "text": "ą"
+          },
+          {
+            "length": 1,
+            "location": 1,
+            "text": "a"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-45",
+      "operation": "ranges",
+      "text": "oø OØ",
+      "expression": "o",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 1,
+            "location": 0,
+            "text": "o"
+          },
+          {
+            "length": 1,
+            "location": 3,
+            "text": "O"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-46",
+      "operation": "ranges",
+      "text": "ｶﾞ ガ",
+      "expression": "ガ",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 1,
+            "location": 3,
+            "text": "ガ"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-47",
+      "operation": "ranges",
+      "text": "؀A A",
+      "expression": "A",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 1,
+            "location": 1,
+            "text": "A"
+          },
+          {
+            "length": 1,
+            "location": 3,
+            "text": "A"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-48",
+      "operation": "ranges",
+      "text": "ȩ́ e",
+      "expression": "e",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 2,
+            "location": 0,
+            "text": "ȩ́"
+          },
+          {
+            "length": 1,
+            "location": 3,
+            "text": "e"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-49",
+      "operation": "ranges",
+      "text": "Z\r\nZ",
+      "expression": "z",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 1,
+            "location": 0,
+            "text": "Z"
+          },
+          {
+            "length": 1,
+            "location": 3,
+            "text": "Z"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-50",
+      "operation": "ranges",
+      "text": "áá",
+      "expression": "á",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 2,
+            "location": 0,
+            "text": "á"
+          },
+          {
+            "length": 2,
+            "location": 2,
+            "text": "á"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-51",
+      "operation": "ranges",
+      "text": "bank",
+      "expression": "absent",
+      "form": "absent",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-52",
+      "operation": "ranges",
+      "text": "a b a b",
+      "expression": "a b",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 3,
+            "location": 0,
+            "text": "a b"
+          },
+          {
+            "length": 3,
+            "location": 4,
+            "text": "a b"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-53",
+      "operation": "ranges",
+      "text": "a  b",
+      "expression": "a b",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-54",
+      "operation": "ranges",
+      "text": "bank",
+      "expression": "bank",
+      "form": "bank",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 4,
+            "location": 0,
+            "text": "bank"
+          }
+        ]
+      }
+    },
+    {
+      "operation": "change",
+      "id": "current-change-new",
+      "text": "A new bank.",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "example": {
+          "appBundleIdentifier": "source.application",
+          "completeness": "sentence",
+          "createdAt": -978307200,
+          "explanations": [
+            {
+              "createdAt": -978307200,
+              "id": "00000000-0000-0000-0000-000000000064",
+              "input": {
+                "context": "The bank.",
+                "contextKind": "sentence",
+                "dictionaryForm": "bank",
+                "kind": "word",
+                "language": "en",
+                "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+                "ranges": [
+                  {
+                    "length": 4,
+                    "location": 4
+                  }
+                ],
+                "target": "bank"
+              },
+              "language": "zh-Hans",
+              "model": "fixture",
+              "result": {
+                "explanation": "explanation",
+                "meaning": "meaning"
+              }
+            }
+          ],
+          "id": "00000000-0000-0000-0000-000000000003",
+          "meaning": "context",
+          "meaningLanguage": "en",
+          "meaningOrigin": "user",
+          "ranges": [
+            {
+              "length": 4,
+              "location": 6
+            }
+          ],
+          "text": "A new bank.",
+          "translation": "原句",
+          "translationLanguage": "zh-Hans",
+          "translationVariants": [
+            {
+              "language": "fr",
+              "text": "variant"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "operation": "change",
+      "id": "current-change-same",
+      "text": "The bank.",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "example": {
+          "appBundleIdentifier": "source.application",
+          "completeness": "sentence",
+          "createdAt": -978307200,
+          "explanations": [
+            {
+              "createdAt": -978307200,
+              "id": "00000000-0000-0000-0000-000000000064",
+              "input": {
+                "context": "The bank.",
+                "contextKind": "sentence",
+                "dictionaryForm": "bank",
+                "kind": "word",
+                "language": "en",
+                "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+                "ranges": [
+                  {
+                    "length": 4,
+                    "location": 4
+                  }
+                ],
+                "target": "bank"
+              },
+              "language": "zh-Hans",
+              "model": "fixture",
+              "result": {
+                "explanation": "explanation",
+                "meaning": "meaning"
+              }
+            }
+          ],
+          "id": "00000000-0000-0000-0000-000000000003",
+          "meaning": "context",
+          "meaningLanguage": "en",
+          "meaningOrigin": "user",
+          "ranges": [
+            {
+              "length": 4,
+              "location": 4
+            }
+          ],
+          "text": "The bank.",
+          "translation": "原句",
+          "translationLanguage": "zh-Hans",
+          "translationVariants": [
+            {
+              "language": "fr",
+              "text": "variant"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "operation": "change",
+      "id": "current-change-empty",
+      "text": "",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "example": {
+          "appBundleIdentifier": "source.application",
+          "completeness": "sentence",
+          "createdAt": -978307200,
+          "explanations": [
+            {
+              "createdAt": -978307200,
+              "id": "00000000-0000-0000-0000-000000000064",
+              "input": {
+                "context": "The bank.",
+                "contextKind": "sentence",
+                "dictionaryForm": "bank",
+                "kind": "word",
+                "language": "en",
+                "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+                "ranges": [
+                  {
+                    "length": 4,
+                    "location": 4
+                  }
+                ],
+                "target": "bank"
+              },
+              "language": "zh-Hans",
+              "model": "fixture",
+              "result": {
+                "explanation": "explanation",
+                "meaning": "meaning"
+              }
+            }
+          ],
+          "id": "00000000-0000-0000-0000-000000000003",
+          "meaning": "context",
+          "meaningLanguage": "en",
+          "meaningOrigin": "user",
+          "ranges": [],
+          "text": "",
+          "translation": "原句",
+          "translationLanguage": "zh-Hans",
+          "translationVariants": [
+            {
+              "language": "fr",
+              "text": "variant"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "operation": "change",
+      "id": "current-change-canonical",
+      "before": "café",
+      "text": "café",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "example": {
+          "appBundleIdentifier": "source.application",
+          "completeness": "sentence",
+          "createdAt": -978307200,
+          "explanations": [
+            {
+              "createdAt": -978307200,
+              "id": "00000000-0000-0000-0000-000000000064",
+              "input": {
+                "context": "The bank.",
+                "contextKind": "sentence",
+                "dictionaryForm": "bank",
+                "kind": "word",
+                "language": "en",
+                "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+                "ranges": [
+                  {
+                    "length": 4,
+                    "location": 4
+                  }
+                ],
+                "target": "bank"
+              },
+              "language": "zh-Hans",
+              "model": "fixture",
+              "result": {
+                "explanation": "explanation",
+                "meaning": "meaning"
+              }
+            }
+          ],
+          "id": "00000000-0000-0000-0000-000000000003",
+          "meaning": "context",
+          "meaningLanguage": "en",
+          "meaningOrigin": "user",
+          "ranges": [
+            {
+              "length": 4,
+              "location": 4
+            }
+          ],
+          "text": "café",
+          "translation": "原句",
+          "translationLanguage": "zh-Hans",
+          "translationVariants": [
+            {
+              "language": "fr",
+              "text": "variant"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "operation": "change",
+      "id": "current-change-emoji",
+      "text": "😀 bank",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "example": {
+          "appBundleIdentifier": "source.application",
+          "completeness": "sentence",
+          "createdAt": -978307200,
+          "explanations": [
+            {
+              "createdAt": -978307200,
+              "id": "00000000-0000-0000-0000-000000000064",
+              "input": {
+                "context": "The bank.",
+                "contextKind": "sentence",
+                "dictionaryForm": "bank",
+                "kind": "word",
+                "language": "en",
+                "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+                "ranges": [
+                  {
+                    "length": 4,
+                    "location": 4
+                  }
+                ],
+                "target": "bank"
+              },
+              "language": "zh-Hans",
+              "model": "fixture",
+              "result": {
+                "explanation": "explanation",
+                "meaning": "meaning"
+              }
+            }
+          ],
+          "id": "00000000-0000-0000-0000-000000000003",
+          "meaning": "context",
+          "meaningLanguage": "en",
+          "meaningOrigin": "user",
+          "ranges": [
+            {
+              "length": 4,
+              "location": 3
+            }
+          ],
+          "text": "😀 bank",
+          "translation": "原句",
+          "translationLanguage": "zh-Hans",
+          "translationVariants": [
+            {
+              "language": "fr",
+              "text": "variant"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "edit-0",
+      "operation": "change",
+      "text": "🐟 Another bank.",
+      "expression": "bank",
+      "form": "bank",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "example": {
+          "appBundleIdentifier": "source.application",
+          "completeness": "sentence",
+          "createdAt": -978307200,
+          "explanations": [
+            {
+              "createdAt": -978307200,
+              "id": "00000000-0000-0000-0000-000000000064",
+              "input": {
+                "context": "The bank.",
+                "contextKind": "sentence",
+                "dictionaryForm": "bank",
+                "kind": "word",
+                "language": "en",
+                "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+                "ranges": [
+                  {
+                    "length": 4,
+                    "location": 4
+                  }
+                ],
+                "target": "bank"
+              },
+              "language": "zh-Hans",
+              "model": "fixture",
+              "result": {
+                "explanation": "explanation",
+                "meaning": "meaning"
+              }
+            }
+          ],
+          "id": "00000000-0000-0000-0000-000000000003",
+          "meaning": "context",
+          "meaningLanguage": "en",
+          "meaningOrigin": "user",
+          "ranges": [
+            {
+              "length": 4,
+              "location": 11
+            }
+          ],
+          "text": "🐟 Another bank.",
+          "translation": "原句",
+          "translationLanguage": "zh-Hans",
+          "translationVariants": [
+            {
+              "language": "fr",
+              "text": "variant"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "edit-1",
+      "operation": "change",
+      "text": "missing expression",
+      "expression": "bank",
+      "form": "bank",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "example": {
+          "appBundleIdentifier": "source.application",
+          "completeness": "sentence",
+          "createdAt": -978307200,
+          "explanations": [
+            {
+              "createdAt": -978307200,
+              "id": "00000000-0000-0000-0000-000000000064",
+              "input": {
+                "context": "The bank.",
+                "contextKind": "sentence",
+                "dictionaryForm": "bank",
+                "kind": "word",
+                "language": "en",
+                "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+                "ranges": [
+                  {
+                    "length": 4,
+                    "location": 4
+                  }
+                ],
+                "target": "bank"
+              },
+              "language": "zh-Hans",
+              "model": "fixture",
+              "result": {
+                "explanation": "explanation",
+                "meaning": "meaning"
+              }
+            }
+          ],
+          "id": "00000000-0000-0000-0000-000000000003",
+          "meaning": "context",
+          "meaningLanguage": "en",
+          "meaningOrigin": "user",
+          "ranges": [],
+          "text": "missing expression",
+          "translation": "原句",
+          "translationLanguage": "zh-Hans",
+          "translationVariants": [
+            {
+              "language": "fr",
+              "text": "variant"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "edit-2",
+      "operation": "change",
+      "text": "word and form",
+      "expression": "absent",
+      "form": "form",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "example": {
+          "appBundleIdentifier": "source.application",
+          "completeness": "sentence",
+          "createdAt": -978307200,
+          "explanations": [
+            {
+              "createdAt": -978307200,
+              "id": "00000000-0000-0000-0000-000000000064",
+              "input": {
+                "context": "The bank.",
+                "contextKind": "sentence",
+                "dictionaryForm": "bank",
+                "kind": "word",
+                "language": "en",
+                "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+                "ranges": [
+                  {
+                    "length": 4,
+                    "location": 4
+                  }
+                ],
+                "target": "bank"
+              },
+              "language": "zh-Hans",
+              "model": "fixture",
+              "result": {
+                "explanation": "explanation",
+                "meaning": "meaning"
+              }
+            }
+          ],
+          "id": "00000000-0000-0000-0000-000000000003",
+          "meaning": "context",
+          "meaningLanguage": "en",
+          "meaningOrigin": "user",
+          "ranges": [
+            {
+              "length": 4,
+              "location": 9
+            }
+          ],
+          "text": "word and form",
+          "translation": "原句",
+          "translationLanguage": "zh-Hans",
+          "translationVariants": [
+            {
+              "language": "fr",
+              "text": "variant"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "expression-0",
+      "operation": "expression",
+      "expression": "river",
+      "form": "bank",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "expression": "river",
+        "form": "bank",
+        "senses": [
+          {
+            "examples": [
+              {
+                "completeness": "sentence",
+                "createdAt": -978307200,
+                "explanations": [
+                  {
+                    "createdAt": -978307200,
+                    "id": "00000000-0000-0000-0000-000000000064",
+                    "input": {
+                      "context": "The bank.",
+                      "contextKind": "sentence",
+                      "dictionaryForm": "bank",
+                      "kind": "word",
+                      "language": "en",
+                      "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+                      "ranges": [
+                        {
+                          "length": 4,
+                          "location": 4
+                        }
+                      ],
+                      "target": "bank"
+                    },
+                    "language": "zh-Hans",
+                    "model": "fixture",
+                    "result": {
+                      "explanation": "explanation",
+                      "meaning": "meaning"
+                    }
+                  }
+                ],
+                "id": "00000000-0000-0000-0000-000000000003",
+                "meaning": "context",
+                "meaningOrigin": "captured",
+                "ranges": [
+                  {
+                    "length": 4,
+                    "location": 4
+                  }
+                ],
+                "text": "The bank.",
+                "translation": "原句",
+                "translationVariants": []
+              },
+              {
+                "completeness": "fragment",
+                "createdAt": -978307200,
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "meaning": "second meaning",
+                "meaningOrigin": "captured",
+                "ranges": [
+                  {
+                    "length": 5,
+                    "location": 0
+                  }
+                ],
+                "text": "river bank",
+                "translation": "second",
+                "translationVariants": []
+              }
+            ],
+            "id": "00000000-0000-0000-0000-000000000002"
+          },
+          {
+            "examples": [
+              {
+                "completeness": "sentence",
+                "createdAt": -978307200,
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000006",
+                "meaning": "other meaning",
+                "meaningOrigin": "captured",
+                "ranges": [
+                  {
+                    "length": 5,
+                    "location": 0
+                  }
+                ],
+                "text": "river bank",
+                "translation": "other",
+                "translationVariants": []
+              }
+            ],
+            "id": "00000000-0000-0000-0000-000000000005"
+          }
+        ]
+      }
+    },
+    {
+      "id": "expression-1",
+      "operation": "expression",
+      "expression": "BANK",
+      "form": "bank",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "expression": "BANK",
+        "form": "bank",
+        "senses": [
+          {
+            "examples": [
+              {
+                "completeness": "sentence",
+                "createdAt": -978307200,
+                "explanations": [
+                  {
+                    "createdAt": -978307200,
+                    "id": "00000000-0000-0000-0000-000000000064",
+                    "input": {
+                      "context": "The bank.",
+                      "contextKind": "sentence",
+                      "dictionaryForm": "bank",
+                      "kind": "word",
+                      "language": "en",
+                      "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+                      "ranges": [
+                        {
+                          "length": 4,
+                          "location": 4
+                        }
+                      ],
+                      "target": "bank"
+                    },
+                    "language": "zh-Hans",
+                    "model": "fixture",
+                    "result": {
+                      "explanation": "explanation",
+                      "meaning": "meaning"
+                    }
+                  }
+                ],
+                "id": "00000000-0000-0000-0000-000000000003",
+                "meaning": "context",
+                "meaningOrigin": "captured",
+                "ranges": [
+                  {
+                    "length": 4,
+                    "location": 4
+                  }
+                ],
+                "text": "The bank.",
+                "translation": "原句",
+                "translationVariants": []
+              },
+              {
+                "completeness": "fragment",
+                "createdAt": -978307200,
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "meaning": "second meaning",
+                "meaningOrigin": "captured",
+                "ranges": [
+                  {
+                    "length": 4,
+                    "location": 6
+                  }
+                ],
+                "text": "river bank",
+                "translation": "second",
+                "translationVariants": []
+              }
+            ],
+            "id": "00000000-0000-0000-0000-000000000002"
+          },
+          {
+            "examples": [
+              {
+                "completeness": "sentence",
+                "createdAt": -978307200,
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000006",
+                "meaning": "other meaning",
+                "meaningOrigin": "captured",
+                "ranges": [
+                  {
+                    "length": 5,
+                    "location": 0
+                  }
+                ],
+                "text": "river bank",
+                "translation": "other",
+                "translationVariants": []
+              }
+            ],
+            "id": "00000000-0000-0000-0000-000000000005"
+          }
+        ]
+      }
+    },
+    {
+      "id": "expression-2",
+      "operation": "expression",
+      "expression": "absent",
+      "form": "bank",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "expression": "absent",
+        "form": "bank",
+        "senses": [
+          {
+            "examples": [
+              {
+                "completeness": "sentence",
+                "createdAt": -978307200,
+                "explanations": [
+                  {
+                    "createdAt": -978307200,
+                    "id": "00000000-0000-0000-0000-000000000064",
+                    "input": {
+                      "context": "The bank.",
+                      "contextKind": "sentence",
+                      "dictionaryForm": "bank",
+                      "kind": "word",
+                      "language": "en",
+                      "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+                      "ranges": [
+                        {
+                          "length": 4,
+                          "location": 4
+                        }
+                      ],
+                      "target": "bank"
+                    },
+                    "language": "zh-Hans",
+                    "model": "fixture",
+                    "result": {
+                      "explanation": "explanation",
+                      "meaning": "meaning"
+                    }
+                  }
+                ],
+                "id": "00000000-0000-0000-0000-000000000003",
+                "meaning": "context",
+                "meaningOrigin": "captured",
+                "ranges": [
+                  {
+                    "length": 4,
+                    "location": 4
+                  }
+                ],
+                "text": "The bank.",
+                "translation": "原句",
+                "translationVariants": []
+              },
+              {
+                "completeness": "fragment",
+                "createdAt": -978307200,
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "meaning": "second meaning",
+                "meaningOrigin": "captured",
+                "ranges": [
+                  {
+                    "length": 4,
+                    "location": 6
+                  }
+                ],
+                "text": "river bank",
+                "translation": "second",
+                "translationVariants": []
+              }
+            ],
+            "id": "00000000-0000-0000-0000-000000000002"
+          },
+          {
+            "examples": [
+              {
+                "completeness": "sentence",
+                "createdAt": -978307200,
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000006",
+                "meaning": "other meaning",
+                "meaningOrigin": "captured",
+                "ranges": [
+                  {
+                    "length": 5,
+                    "location": 0
+                  }
+                ],
+                "text": "river bank",
+                "translation": "other",
+                "translationVariants": []
+              }
+            ],
+            "id": "00000000-0000-0000-0000-000000000005"
+          }
+        ]
+      }
+    },
+    {
+      "id": "expression-3",
+      "operation": "expression",
+      "expression": "",
+      "form": "",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "expression": "",
+        "form": "",
+        "senses": [
+          {
+            "examples": [
+              {
+                "completeness": "sentence",
+                "createdAt": -978307200,
+                "explanations": [
+                  {
+                    "createdAt": -978307200,
+                    "id": "00000000-0000-0000-0000-000000000064",
+                    "input": {
+                      "context": "The bank.",
+                      "contextKind": "sentence",
+                      "dictionaryForm": "bank",
+                      "kind": "word",
+                      "language": "en",
+                      "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+                      "ranges": [
+                        {
+                          "length": 4,
+                          "location": 4
+                        }
+                      ],
+                      "target": "bank"
+                    },
+                    "language": "zh-Hans",
+                    "model": "fixture",
+                    "result": {
+                      "explanation": "explanation",
+                      "meaning": "meaning"
+                    }
+                  }
+                ],
+                "id": "00000000-0000-0000-0000-000000000003",
+                "meaning": "context",
+                "meaningOrigin": "captured",
+                "ranges": [],
+                "text": "The bank.",
+                "translation": "原句",
+                "translationVariants": []
+              },
+              {
+                "completeness": "fragment",
+                "createdAt": -978307200,
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "meaning": "second meaning",
+                "meaningOrigin": "captured",
+                "ranges": [],
+                "text": "river bank",
+                "translation": "second",
+                "translationVariants": []
+              }
+            ],
+            "id": "00000000-0000-0000-0000-000000000002"
+          },
+          {
+            "examples": [
+              {
+                "completeness": "sentence",
+                "createdAt": -978307200,
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000006",
+                "meaning": "other meaning",
+                "meaningOrigin": "captured",
+                "ranges": [
+                  {
+                    "length": 5,
+                    "location": 0
+                  }
+                ],
+                "text": "river bank",
+                "translation": "other",
+                "translationVariants": []
+              }
+            ],
+            "id": "00000000-0000-0000-0000-000000000005"
+          }
+        ]
+      }
+    },
+    {
+      "id": "expression-4",
+      "operation": "expression",
+      "expression": "nope",
+      "form": "river",
+      "macSource": "Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "expression": "nope",
+        "form": "river",
+        "senses": [
+          {
+            "examples": [
+              {
+                "completeness": "sentence",
+                "createdAt": -978307200,
+                "explanations": [
+                  {
+                    "createdAt": -978307200,
+                    "id": "00000000-0000-0000-0000-000000000064",
+                    "input": {
+                      "context": "The bank.",
+                      "contextKind": "sentence",
+                      "dictionaryForm": "bank",
+                      "kind": "word",
+                      "language": "en",
+                      "occurrenceIdentity": "385239f5a278dca4a071d3396cad8e4ed55219bfa4bfc21c8236e940e56154ef",
+                      "ranges": [
+                        {
+                          "length": 4,
+                          "location": 4
+                        }
+                      ],
+                      "target": "bank"
+                    },
+                    "language": "zh-Hans",
+                    "model": "fixture",
+                    "result": {
+                      "explanation": "explanation",
+                      "meaning": "meaning"
+                    }
+                  }
+                ],
+                "id": "00000000-0000-0000-0000-000000000003",
+                "meaning": "context",
+                "meaningOrigin": "captured",
+                "ranges": [],
+                "text": "The bank.",
+                "translation": "原句",
+                "translationVariants": []
+              },
+              {
+                "completeness": "fragment",
+                "createdAt": -978307200,
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000004",
+                "meaning": "second meaning",
+                "meaningOrigin": "captured",
+                "ranges": [
+                  {
+                    "length": 5,
+                    "location": 0
+                  }
+                ],
+                "text": "river bank",
+                "translation": "second",
+                "translationVariants": []
+              }
+            ],
+            "id": "00000000-0000-0000-0000-000000000002"
+          },
+          {
+            "examples": [
+              {
+                "completeness": "sentence",
+                "createdAt": -978307200,
+                "explanations": [],
+                "id": "00000000-0000-0000-0000-000000000006",
+                "meaning": "other meaning",
+                "meaningOrigin": "captured",
+                "ranges": [
+                  {
+                    "length": 5,
+                    "location": 0
+                  }
+                ],
+                "text": "river bank",
+                "translation": "other",
+                "translationVariants": []
+              }
+            ],
+            "id": "00000000-0000-0000-0000-000000000005"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-55",
+      "operation": "ranges",
+      "text": "①",
+      "expression": "1",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 1,
+            "location": 0,
+            "text": "①"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-56",
+      "operation": "ranges",
+      "text": "Ａ",
+      "expression": "A",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-57",
+      "operation": "ranges",
+      "text": "ｶﾞ",
+      "expression": "ガ",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-58",
+      "operation": "ranges",
+      "text": "ガ",
+      "expression": "カ",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-59",
+      "operation": "ranges",
+      "text": "क्",
+      "expression": "क",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 2,
+            "location": 0,
+            "text": "क्"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-60",
+      "operation": "ranges",
+      "text": "कि",
+      "expression": "क",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 2,
+            "location": 0,
+            "text": "कि"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-61",
+      "operation": "ranges",
+      "text": "ø",
+      "expression": "o",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-62",
+      "operation": "ranges",
+      "text": "Æ",
+      "expression": "ae",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-63",
+      "operation": "ranges",
+      "text": "ﬁ",
+      "expression": "fi",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 1,
+            "location": 0,
+            "text": "ﬁ"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-64",
+      "operation": "ranges",
+      "text": "Ⅳ",
+      "expression": "iv",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-65",
+      "operation": "ranges",
+      "text": "⁴",
+      "expression": "4",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 1,
+            "location": 0,
+            "text": "⁴"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-66",
+      "operation": "ranges",
+      "text": "²",
+      "expression": "2",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 1,
+            "location": 0,
+            "text": "²"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-67",
+      "operation": "ranges",
+      "text": "⒜",
+      "expression": "(a)",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-68",
+      "operation": "ranges",
+      "text": "𝔸",
+      "expression": "a",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-69",
+      "operation": "ranges",
+      "text": "ﬃ",
+      "expression": "ffi",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 1,
+            "location": 0,
+            "text": "ﬃ"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-70",
+      "operation": "ranges",
+      "text": "℉",
+      "expression": "°f",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-71",
+      "operation": "ranges",
+      "text": "¼",
+      "expression": "1⁄4",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 1,
+            "location": 0,
+            "text": "¼"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-72",
+      "operation": "ranges",
+      "text": "㍍",
+      "expression": "メートル",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-73",
+      "operation": "ranges",
+      "text": "㌀",
+      "expression": "アパート",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-74",
+      "operation": "ranges",
+      "text": "⻀",
+      "expression": "艹",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-75",
+      "operation": "ranges",
+      "text": "ǅ",
+      "expression": "dz",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-76",
+      "operation": "ranges",
+      "text": "ǳ",
+      "expression": "dz",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-77",
+      "operation": "ranges",
+      "text": "ĳ",
+      "expression": "ij",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-78",
+      "operation": "ranges",
+      "text": "ﬓ",
+      "expression": "մն",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 1,
+            "location": 0,
+            "text": "ﬓ"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-79",
+      "operation": "ranges",
+      "text": "և",
+      "expression": "եւ",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 1,
+            "location": 0,
+            "text": "և"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-80",
+      "operation": "ranges",
+      "text": "ς",
+      "expression": "σ",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 1,
+            "location": 0,
+            "text": "ς"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-81",
+      "operation": "ranges",
+      "text": "ᾀ",
+      "expression": "αι",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-82",
+      "operation": "ranges",
+      "text": "й",
+      "expression": "и",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 2,
+            "location": 0,
+            "text": "й"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-83",
+      "operation": "ranges",
+      "text": "أ",
+      "expression": "ا",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 2,
+            "location": 0,
+            "text": "أ"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-84",
+      "operation": "ranges",
+      "text": "ا",
+      "expression": "أ",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-85",
+      "operation": "ranges",
+      "text": "å",
+      "expression": "a",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 1,
+            "location": 0,
+            "text": "å"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-86",
+      "operation": "ranges",
+      "text": "a‍b",
+      "expression": "ab",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-87",
+      "operation": "ranges",
+      "text": "a​b",
+      "expression": "ab",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-88",
+      "operation": "ranges",
+      "text": "a­b",
+      "expression": "ab",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-89",
+      "operation": "ranges",
+      "text": "x️",
+      "expression": "x",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 2,
+            "location": 0,
+            "text": "x️"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-90",
+      "operation": "ranges",
+      "text": "á",
+      "expression": "́",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 2,
+            "location": 0,
+            "text": "á"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-91",
+      "operation": "ranges",
+      "text": "👩‍👩‍👧‍👦",
+      "expression": "👩",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 11,
+            "location": 0,
+            "text": "👩‍👩‍👧‍👦"
+          },
+          {
+            "length": 11,
+            "location": 0,
+            "text": "👩‍👩‍👧‍👦"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-92",
+      "operation": "ranges",
+      "text": "क्षि",
+      "expression": "क",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 4,
+            "location": 0,
+            "text": "क्षि"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-93",
+      "operation": "ranges",
+      "text": "1",
+      "expression": "①",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-94",
+      "operation": "ranges",
+      "text": "1⁄4",
+      "expression": "¼",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-95",
+      "operation": "ranges",
+      "text": "4",
+      "expression": "⁴",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-96",
+      "operation": "ranges",
+      "text": "4",
+      "expression": "𝟜",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-97",
+      "operation": "ranges",
+      "text": "fi",
+      "expression": "ﬁ",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 2,
+            "location": 0,
+            "text": "fi"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-98",
+      "operation": "ranges",
+      "text": "ss",
+      "expression": "ß",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 2,
+            "location": 0,
+            "text": "ss"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-99",
+      "operation": "ranges",
+      "text": "ae",
+      "expression": "Æ",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-100",
+      "operation": "ranges",
+      "text": "oe",
+      "expression": "œ",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-101",
+      "operation": "ranges",
+      "text": "o",
+      "expression": "ø",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-102",
+      "operation": "ranges",
+      "text": "ß ss s",
+      "expression": "s",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 1,
+            "location": 2,
+            "text": "s"
+          },
+          {
+            "length": 1,
+            "location": 3,
+            "text": "s"
+          },
+          {
+            "length": 1,
+            "location": 5,
+            "text": "s"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-103",
+      "operation": "ranges",
+      "text": "ﬁ fi f i",
+      "expression": "f",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 1,
+            "location": 2,
+            "text": "f"
+          },
+          {
+            "length": 1,
+            "location": 5,
+            "text": "f"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-104",
+      "operation": "ranges",
+      "text": "ﬁ fi f i",
+      "expression": "i",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 1,
+            "location": 3,
+            "text": "i"
+          },
+          {
+            "length": 1,
+            "location": 7,
+            "text": "i"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-105",
+      "operation": "ranges",
+      "text": "ﬃ ffi ff f i",
+      "expression": "ff",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 2,
+            "location": 2,
+            "text": "ff"
+          },
+          {
+            "length": 2,
+            "location": 6,
+            "text": "ff"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-106",
+      "operation": "ranges",
+      "text": "sss ß ssss",
+      "expression": "ss",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 2,
+            "location": 0,
+            "text": "ss"
+          },
+          {
+            "length": 1,
+            "location": 4,
+            "text": "ß"
+          },
+          {
+            "length": 2,
+            "location": 6,
+            "text": "ss"
+          },
+          {
+            "length": 2,
+            "location": 8,
+            "text": "ss"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-107",
+      "operation": "ranges",
+      "text": "sßs ßss",
+      "expression": "sss",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 2,
+            "location": 0,
+            "text": "sß"
+          },
+          {
+            "length": 2,
+            "location": 4,
+            "text": "ßs"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-108",
+      "operation": "ranges",
+      "text": "𝟜 4",
+      "expression": "4",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 2,
+            "location": 0,
+            "text": "𝟜"
+          },
+          {
+            "length": 1,
+            "location": 3,
+            "text": "4"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-109",
+      "operation": "ranges",
+      "text": "4 𝟜",
+      "expression": "𝟜",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 2,
+            "location": 2,
+            "text": "𝟜"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-110",
+      "operation": "ranges",
+      "text": "①① 11",
+      "expression": "11",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 2,
+            "location": 0,
+            "text": "①①"
+          },
+          {
+            "length": 2,
+            "location": 3,
+            "text": "11"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-111",
+      "operation": "ranges",
+      "text": "⒜ (a)",
+      "expression": "(a)",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 3,
+            "location": 2,
+            "text": "(a)"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-112",
+      "operation": "ranges",
+      "text": "a͏b",
+      "expression": "b",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 3,
+            "location": 0,
+            "text": "a͏b"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-113",
+      "operation": "ranges",
+      "text": "a͏b",
+      "expression": "͏",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 3,
+            "location": 0,
+            "text": "a͏b"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-114",
+      "operation": "ranges",
+      "text": "a‍b",
+      "expression": "b",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 1,
+            "location": 2,
+            "text": "b"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-115",
+      "operation": "ranges",
+      "text": "a‍b",
+      "expression": "a",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 3,
+            "location": 0,
+            "text": "a‍b"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-116",
+      "operation": "ranges",
+      "text": "1‍A",
+      "expression": "A",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 1,
+            "location": 2,
+            "text": "A"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-117",
+      "operation": "ranges",
+      "text": "؀A A",
+      "expression": "؀",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 1,
+            "location": 0,
+            "text": "؀"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-118",
+      "operation": "ranges",
+      "text": "؀́A",
+      "expression": "A",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 1,
+            "location": 2,
+            "text": "A"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-119",
+      "operation": "ranges",
+      "text": "؀؁A",
+      "expression": "A",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 1,
+            "location": 2,
+            "text": "A"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-120",
+      "operation": "ranges",
+      "text": "क्‍ष",
+      "expression": "ष",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-121",
+      "operation": "ranges",
+      "text": "क्षि",
+      "expression": "ष",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-122",
+      "operation": "ranges",
+      "text": "👩‍👩‍👧‍👦",
+      "expression": "👧",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 11,
+            "location": 0,
+            "text": "👩‍👩‍👧‍👦"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-123",
+      "operation": "ranges",
+      "text": "🇺🇸🇨🇦",
+      "expression": "🇸",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 4,
+            "location": 0,
+            "text": "🇺🇸"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-124",
+      "operation": "ranges",
+      "text": "👍🏽👍",
+      "expression": "🏽",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 4,
+            "location": 0,
+            "text": "👍🏽"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-125",
+      "operation": "ranges",
+      "text": "éé é",
+      "expression": "e",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 1,
+            "location": 0,
+            "text": "é"
+          },
+          {
+            "length": 1,
+            "location": 1,
+            "text": "é"
+          },
+          {
+            "length": 2,
+            "location": 3,
+            "text": "é"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-126",
+      "operation": "ranges",
+      "text": "áb áb",
+      "expression": "ab",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 3,
+            "location": 0,
+            "text": "áb"
+          },
+          {
+            "length": 3,
+            "location": 4,
+            "text": "áb"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-127",
+      "operation": "ranges",
+      "text": "á̧ b",
+      "expression": "a",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 3,
+            "location": 0,
+            "text": "á̧"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-128",
+      "operation": "ranges",
+      "text": "é́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́",
+      "expression": "e",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 81,
+            "location": 0,
+            "text": "é́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́́"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-129",
+      "operation": "ranges",
+      "text": "x\u0000y",
+      "expression": "x\u0000y",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 3,
+            "location": 0,
+            "text": "x\u0000y"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-130",
+      "operation": "ranges",
+      "text": "a​b ab",
+      "expression": "ab",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 2,
+            "location": 4,
+            "text": "ab"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-131",
+      "operation": "ranges",
+      "text": "a­b ab",
+      "expression": "ab",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 2,
+            "location": 4,
+            "text": "ab"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-132",
+      "operation": "ranges",
+      "text": "é e",
+      "expression": "́",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-133",
+      "operation": "ranges",
+      "text": "¼",
+      "expression": "1",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-134",
+      "operation": "ranges",
+      "text": "¼",
+      "expression": "⁄",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-135",
+      "operation": "ranges",
+      "text": "¼",
+      "expression": "4",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-136",
+      "operation": "ranges",
+      "text": "¼",
+      "expression": "1⁄",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-137",
+      "operation": "ranges",
+      "text": "¼",
+      "expression": "⁄4",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-138",
+      "operation": "ranges",
+      "text": "¼",
+      "expression": "1⁄4",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 1,
+            "location": 0,
+            "text": "¼"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-139",
+      "operation": "ranges",
+      "text": "1",
+      "expression": "¼",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-140",
+      "operation": "ranges",
+      "text": "⁄",
+      "expression": "¼",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-141",
+      "operation": "ranges",
+      "text": "4",
+      "expression": "¼",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-142",
+      "operation": "ranges",
+      "text": "1⁄",
+      "expression": "¼",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-143",
+      "operation": "ranges",
+      "text": "⁄4",
+      "expression": "¼",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-144",
+      "operation": "ranges",
+      "text": "1⁄4",
+      "expression": "¼",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-145",
+      "operation": "ranges",
+      "text": "क्षक्ष",
+      "expression": "ष",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-146",
+      "operation": "ranges",
+      "text": "ক্ক",
+      "expression": "ক",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 3,
+            "location": 0,
+            "text": "ক্ক"
+          },
+          {
+            "length": 3,
+            "location": 0,
+            "text": "ক্ক"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-147",
+      "operation": "ranges",
+      "text": "क्क",
+      "expression": "क",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 3,
+            "location": 0,
+            "text": "क्क"
+          },
+          {
+            "length": 3,
+            "location": 0,
+            "text": "क्क"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-148",
+      "operation": "ranges",
+      "text": "ક્ષ",
+      "expression": "ષ",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": []
+      }
+    },
+    {
+      "id": "range-149",
+      "operation": "ranges",
+      "text": "x्A",
+      "expression": "A",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 3,
+            "location": 0,
+            "text": "x्A"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-150",
+      "operation": "ranges",
+      "text": "x्‍A",
+      "expression": "A",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 4,
+            "location": 0,
+            "text": "x्‍A"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-151",
+      "operation": "ranges",
+      "text": "1्A",
+      "expression": "A",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 1,
+            "location": 2,
+            "text": "A"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-152",
+      "operation": "ranges",
+      "text": "a͏b",
+      "expression": "b",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 3,
+            "location": 0,
+            "text": "a͏b"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-153",
+      "operation": "ranges",
+      "text": "a‍b",
+      "expression": "b",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 1,
+            "location": 2,
+            "text": "b"
+          }
+        ]
+      }
+    },
+    {
+      "id": "range-154",
+      "operation": "ranges",
+      "text": "؀́A",
+      "expression": "A",
+      "form": "",
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "ranges": [
+          {
+            "length": 1,
+            "location": 2,
+            "text": "A"
+          }
+        ]
+      }
+    },
+    {
+      "id": "valid-00",
+      "operation": "valid",
+      "text": "a‍b",
+      "location": 0,
+      "length": 2,
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "valid-01",
+      "operation": "valid",
+      "text": "a‍b",
+      "location": 2,
+      "length": 1,
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "valid-02",
+      "operation": "valid",
+      "text": "a‍b",
+      "location": 0,
+      "length": 3,
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "valid-03",
+      "operation": "valid",
+      "text": "a‍b",
+      "location": 1,
+      "length": 1,
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "valid-04",
+      "operation": "valid",
+      "text": "؀A",
+      "location": 1,
+      "length": 1,
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "valid-05",
+      "operation": "valid",
+      "text": "؀A",
+      "location": 0,
+      "length": 1,
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "valid-06",
+      "operation": "valid",
+      "text": "؀A",
+      "location": 0,
+      "length": 2,
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "valid-07",
+      "operation": "valid",
+      "text": "👩‍👩‍👧‍👦",
+      "location": 0,
+      "length": 2,
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "valid-08",
+      "operation": "valid",
+      "text": "👩‍👩‍👧‍👦",
+      "location": 3,
+      "length": 2,
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "valid-09",
+      "operation": "valid",
+      "text": "👩‍👩‍👧‍👦",
+      "location": 0,
+      "length": 11,
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "valid-10",
+      "operation": "valid",
+      "text": "क्षि",
+      "location": 2,
+      "length": 1,
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "id": "valid-11",
+      "operation": "valid",
+      "text": "क्षि",
+      "location": 0,
+      "length": 4,
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "valid-12",
+      "operation": "valid",
+      "text": "\r\n",
+      "location": 0,
+      "length": 1,
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "valid-13",
+      "operation": "valid",
+      "text": "\r\n",
+      "location": 1,
+      "length": 1,
+      "macSource": "Cotabby/Support/Vocabulary/VocabularyPolicy.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "valid": true
+      }
+    }
+  ]
+}

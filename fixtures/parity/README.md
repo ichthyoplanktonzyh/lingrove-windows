@@ -411,3 +411,17 @@ Windows boundary follows native notebook/wire decoding. See the audio-export cor
 without AVFoundation. Readiness waiters settle at explicit observation barriers; only uninjectable
 preparation milliseconds and random token identities are projected. State/events/errors remain
 exact. See [source mapping, evidence and native limits](../../docs/SPEECH_PCM_PLAYER.md).
+
+
+## Current stable editor annotations (v2)
+
+`vocabulary-editor-current-v2.json` explicitly advances the annotation/range module to Mac
+`cc468b89f5c360cc7210fac4f1a8b52197870bf2`: 155 re-anchoring observations, 14 original range-validity
+observations, 8 original-text callbacks and 5 expression callbacks. One adapts the original new
+regression test; 181 are source-policy extensions. The verifier compiles complete current policy
+and actual extracted callback bodies; only the explicit capture command writes a new output file.
+Expected values were collected from that native driver before C# implementation.
+The v43 editor corpus remains unchanged as historical evidence; current tests explicitly exclude
+its five superseded annotation-reset cases and retain the other 24 rules.
+See [current editor provenance and limits](../../docs/VOCABULARY_EDITOR_CURRENT.md), including the
+versioned all-scalar Darwin observation and its separate offline generator/Unicode licenses.

@@ -52,7 +52,7 @@ public sealed class VocabularyEntryEditorViewTests(WpfDispatcher dispatcher)
         finally { await window.RetireAsync(); }
     });
     [Fact]
-    public Task ChangedOriginalRetiresDependentAnnotationsAndSaveClosesAfterCommit() => dispatcher.RunAsync(async () =>
+    public Task ChangedOriginalPreservesAnnotationsReanchorsAndSaveClosesAfterCommit() => dispatcher.RunAsync(async () =>
     {
         await using var store = Store(new VocabularyArchive((string?)null)); var capture = Capture(); Assert.True(await store.SaveAsync(capture));
         var input = LearningExplanationPolicy.Input(capture); var record = new LearningExplanationRecord(Guid.NewGuid(), input, LearningLanguage.English,
@@ -60,20 +60,91 @@ public sealed class VocabularyEntryEditorViewTests(WpfDispatcher dispatcher)
         var baseline = Assert.Single(store.Entries); var before = baseline.Senses[0].Examples[0]; var window = new VocabularyEntryEditorWindow(store, baseline, baseline.Senses[0].Id);
         try
         {
-            window.Show(); window.UpdateLayout(); Field(window, "Original text").Text = "Another bank.";
+            window.Show(); window.UpdateLayout(); Field(window, "Original text").Text = "Another bank."; await window.LastReanchor;
             var changed = Assert.Single(window.Draft.Senses[0].Examples);
             Assert.Equal(before.Id, changed.Id); Assert.Equal(before.CreatedAt, changed.CreatedAt); Assert.Equal(before.SourceApplicationId, changed.SourceApplicationId);
-            Assert.Empty(changed.Ranges); Assert.Equal("", changed.Translation); Assert.Null(changed.TranslationLanguage); Assert.Empty(changed.TranslationVariants);
-            Assert.Equal("", changed.Meaning); Assert.Null(changed.MeaningLanguage); Assert.Equal(VocabularyMeaningOrigin.Captured, changed.MeaningOrigin);
-            Assert.Equal(VocabularyExampleCompleteness.Fragment, changed.Completeness); Assert.Equal(before.Explanations, changed.Explanations);
-            Assert.Equal("", Field(window, "Translation").Text); Assert.Equal("", Field(window, "Meaning in this context").Text);
+            Assert.Equal(new[] { new VocabularyTextRange(8, 4) }, changed.Ranges);
+            Assert.Equal(before.Translation, changed.Translation); Assert.Equal(before.TranslationLanguage, changed.TranslationLanguage); Assert.Equal(before.TranslationVariants, changed.TranslationVariants);
+            Assert.Equal(before.Meaning, changed.Meaning); Assert.Equal(before.MeaningLanguage, changed.MeaningLanguage); Assert.Equal(before.MeaningOrigin, changed.MeaningOrigin);
+            Assert.Equal(before.Completeness, changed.Completeness); Assert.Equal(before.Explanations, changed.Explanations);
+            Assert.Equal(before.Translation, Field(window, "Translation").Text); Assert.Equal(before.Meaning, Field(window, "Meaning in this context").Text);
             Assert.Equal(before, store.Entries[0].Examples[0]);
             Field(window, "Translation").Text = "my translation"; Field(window, "Meaning in this context").Text = "my meaning";
             Find<TextBox>(window, "TagsText").Text = "Work，Home,Work"; Click(Find<Button>(window, "SaveButton")); await window.LastOperation;
             Assert.False(window.IsVisible); var saved = Assert.Single(Assert.Single(store.Entries).Senses);
             Assert.Equal(new[] { "Home", "Work" }, saved.Tags); Assert.Equal("Another bank.", saved.Examples[0].Text);
+            Assert.Equal(new[] { new VocabularyTextRange(8, 4) }, saved.Examples[0].Ranges);
             Assert.Equal("my meaning", saved.Examples[0].Meaning); Assert.Equal(VocabularyMeaningOrigin.User, saved.Examples[0].MeaningOrigin);
             Assert.Empty(saved.Examples[0].Explanations); Assert.Equal(before.Id, saved.Examples[0].Id);
+        }
+        finally { await window.RetireAsync(); }
+    });
+    [Fact]
+    public Task ExpressionReanchorsOnlyTheSelectedSenseAndDictionaryFormWaitsForTheNextEdit() => dispatcher.RunAsync(async () =>
+    {
+        await using var store = Store(new VocabularyArchive((string?)null));
+        Assert.True(await store.SaveAsync(Capture())); Assert.True(await store.SaveAsync(Capture("river bank.")));
+        var baseline = Assert.Single(store.Entries); Assert.Equal(2, baseline.Senses.Count);
+        var window = new VocabularyEntryEditorWindow(store, baseline, baseline.Senses[0].Id);
+        try
+        {
+            window.Show(); window.UpdateLayout(); Field(window, "Original text").Text = "river bank."; await window.LastReanchor;
+            Assert.Equal(new[] { new VocabularyTextRange(6, 4) }, window.Draft.Senses[0].Examples[0].Ranges);
+            Find<TextBox>(window, "DictionaryText").Text = "river";
+            Assert.Equal(new[] { new VocabularyTextRange(6, 4) }, window.Draft.Senses[0].Examples[0].Ranges);
+            Find<TextBox>(window, "ExpressionText").Text = "missing"; await window.LastReanchor;
+            Assert.Equal(new[] { new VocabularyTextRange(0, 5) }, window.Draft.Senses[0].Examples[0].Ranges);
+            Assert.Equal(baseline.Senses[1], window.Draft.Senses[1]);
+            Find<TextBox>(window, "DictionaryText").Text = "bank";
+            Assert.Equal(new[] { new VocabularyTextRange(0, 5) }, window.Draft.Senses[0].Examples[0].Ranges);
+            Field(window, "Original text").Text = "another bank."; await window.LastReanchor;
+            Assert.Equal(new[] { new VocabularyTextRange(8, 4) }, window.Draft.Senses[0].Examples[0].Ranges);
+            Assert.Equal(baseline.Senses[0].Examples[0].TranslationVariants, window.Draft.Senses[0].Examples[0].TranslationVariants);
+            Assert.Equal(baseline.Senses[1], window.Draft.Senses[1]);
+            Click(Find<Button>(window, "CancelButton")); Assert.Equal(baseline, store.Entries[0]);
+        }
+        finally { await window.RetireAsync(); }
+    });
+    [Fact]
+    public Task SourceComposedRangesSurviveTheActualEditorArchiveAndNotebookProjection() => dispatcher.RunAsync(async () =>
+    {
+        await using var store = Store(new VocabularyArchive((string?)null)); Assert.True(await store.SaveAsync(Capture()));
+        var baseline = store.Entries[0]; var window = new VocabularyEntryEditorWindow(store, baseline, baseline.Senses[0].Id);
+        try
+        {
+            window.Show(); window.UpdateLayout(); Field(window, "Original text").Text = "\u0600A A";
+            Find<TextBox>(window, "ExpressionText").Text = "A"; await window.LastReanchor;
+            var ranges = new[] { new VocabularyTextRange(1, 1), new VocabularyTextRange(3, 1) };
+            Assert.Equal(ranges, window.Draft.Examples[0].Ranges);
+            Click(Find<Button>(window, "SaveButton")); await window.LastOperation;
+            Assert.False(window.IsVisible); var entry = Assert.Single(store.Entries); var example = Assert.Single(entry.Examples);
+            Assert.Equal(ranges, example.Ranges); Assert.Equal(baseline.Examples[0].Translation, example.Translation);
+            Assert.Equal(baseline.Examples[0].Completeness, example.Completeness);
+            var spans = VocabularyNotebookPolicy.UsageRuns(example);
+            Assert.Equal("\u0600A A", string.Concat(spans.Select(span => span.Text)));
+            Assert.Equal("AA", string.Concat(spans.Where(span => span.IsTarget).Select(span => span.Text)));
+        }
+        finally { await window.RetireAsync(); }
+    });
+    [Fact]
+    public Task LongUnicodeWorkLeavesTheDispatcherResponsiveAndRetiresStaleRanges() => dispatcher.RunAsync(async () =>
+    {
+        await using var store = Store(new VocabularyArchive((string?)null)); Assert.True(await store.SaveAsync(Capture()));
+        var baseline = store.Entries[0]; var window = new VocabularyEntryEditorWindow(store, baseline, baseline.Senses[0].Id);
+        try
+        {
+            window.Show(); window.UpdateLayout(); Find<TextBox>(window, "ExpressionText").Text = new string('é', 10_000) + "x";
+            Field(window, "Original text").Text = new string('é', 20_000); var stale = window.LastReanchor;
+            Assert.False(Find<Button>(window, "SaveButton").IsEnabled);
+            Field(window, "Translation").Text = "authored while computing";
+            Find<TextBox>(window, "ExpressionText").Text = "é";
+            await window.LastReanchor.WaitAsync(TimeSpan.FromSeconds(15));
+            var example = window.Draft.Examples[0]; Assert.Equal(20_000, example.Ranges.Count);
+            Assert.Equal("authored while computing", example.Translation); Assert.True(Find<Button>(window, "SaveButton").IsEnabled);
+            Find<TextBox>(window, "ExpressionText").Text = new string('é', 10_000) + "x";
+            var closingWork = window.LastReanchor;
+            await window.RetireAsync().WaitAsync(TimeSpan.FromSeconds(15));
+            Assert.True(stale.IsCompleted); Assert.True(closingWork.IsCompleted); Assert.Equal(baseline, store.Entries[0]);
         }
         finally { await window.RetireAsync(); }
     });

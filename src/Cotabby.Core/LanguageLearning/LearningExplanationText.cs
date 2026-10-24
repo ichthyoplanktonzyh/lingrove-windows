@@ -26,16 +26,14 @@ internal static class LearningExplanationText
     private static readonly char[] TrimCharacters =
         "\u0009\u000A\u000B\u000C\u000D\u0020\u0085\u00A0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u200B\u2028\u2029\u202F\u205F\u3000".ToCharArray();
 
-    public static int[] Boundaries(string text) => FoundationTextRanges.Boundaries(text);
-    public static bool ValidRange(int location, int length, string text, int[] boundaries) =>
+    public static FoundationComposedText Boundaries(string text) => FoundationTextRanges.Boundaries(text);
+    public static bool ValidRange(int location, int length, string text, FoundationComposedText boundaries) =>
         FoundationTextRanges.IsValid(location, length, text, boundaries);
 
-    public static string ExpandedWindow(string text, int start, int end, int[] boundaries)
+    public static string ExpandedWindow(string text, int start, int end, FoundationComposedText boundaries)
     {
-        int lower = Array.BinarySearch(boundaries, start), upper = Array.BinarySearch(boundaries, end);
-        if (lower < 0) start = boundaries[~lower - 1];
-        if (upper < 0) end = boundaries[~upper];
-        return text[start..end];
+        var expanded = boundaries.Expand(start, end);
+        return text[expanded.Start..expanded.End];
     }
 
     /// <summary>

@@ -275,3 +275,15 @@ revision/streaming overlay in a separate process. The complete original generati
 only binary stdio, Unicode paths, parent observation and reference metadata to platform adapters.
 CPU/native effect checks own no model weights or audio device. App copy, providers and activation
 remain separate composition work.
+
+## Current editor text boundary
+
+The [current editor annotation adaptation](docs/VOCABULARY_EDITOR_CURRENT.md) explicitly advances
+this module to Mac `cc468b89f5c360cc7210fac4f1a8b52197870bf2`. `VocabularyPolicy.ReconciledRanges`
+retains expression/form precedence and raw UTF-16 cursor behavior. `FoundationSubstringMatcher`
+isolated raw search from `FoundationComposedText` expansion/admission, with immutable embedded
+Darwin observations and pinned Unicode properties. The shared map is reused by capture, archive,
+notebook and explanation/review range consumers so newly re-anchored spans survive Save/display.
+The modal owns cancellable background range work and rejects stale publication; Save waits for its
+current result, while translations and other authored edits remain in the UI-owned draft.
+Other modules retain their documented references; see [the stable delta](docs/MAC_STABLE_DELTA.md).

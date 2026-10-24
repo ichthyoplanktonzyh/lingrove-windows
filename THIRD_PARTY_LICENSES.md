@@ -130,3 +130,14 @@ Copyright (c) 2023 Zhen Li. The complete license and original source checksum ta
 [`resources/ThirdParty/Grape/LICENSE`](resources/ThirdParty/Grape/LICENSE) and
 [`UPSTREAM.md`](resources/ThirdParty/Grape/UPSTREAM.md). The C# specialization uses managed buffers
 and copies snapshots; it does not copy upstream's SwiftUI rendering or substitute a different solver.
+
+## Foundation editor text adaptation and Unicode properties
+
+The current editor's case/diacritic search and composed-range adapters retain Core Foundation
+attribution and Apache License 2.0 with Runtime Library Exception. Their exhaustive scalar
+observation records the exact Darwin build and generator; it contains no user text and is not a
+Foundation binary. Unicode 17.0.0 InCB property rows retain the Unicode License V3.
+The [source/data notice](src/Cotabby.Core/Resources/Foundation/NOTICE.md),
+[Swift license](src/Cotabby.Core/Resources/Foundation/LICENSE.swift.txt), and
+[Unicode license](src/Cotabby.Core/Resources/Foundation/LICENSE.unicode.txt) accompany ordinary
+application output under `Resources/Foundation/`.

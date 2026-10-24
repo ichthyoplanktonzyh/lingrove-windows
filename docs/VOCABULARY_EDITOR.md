@@ -5,7 +5,9 @@ stable Mac editor rather than changing its workflow: a full detached entry is th
 acknowledged entry is the fixed baseline, Cancel writes nothing, and Save closes only after Store
 acknowledges the archive transaction. Failed saves keep the draft available with a fixed error.
 
-Reference: `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`.
+Initial reference: `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`. Example/expression annotation
+editing is now explicitly upgraded to current stable `cc468b89f5c360cc7210fac4f1a8b52197870bf2`;
+see [the current contract and evidence](VOCABULARY_EDITOR_CURRENT.md).
 
 | Original Mac responsibility | Windows mapping |
 | --- | --- |
@@ -26,12 +28,13 @@ canonical deduplication and scalar sort. Save admission retains the source check
 no image import, a nonblank expression, a live selected sense and no blank example text. A blank
 dictionary form or text block does not itself disable Save; archive validation remains authoritative.
 
-Changing original example text clears its ranges, translation/language/variants and contextual
-meaning/language, resets captured authorship and marks it a fragment. ID, timestamp, provenance and
-explanation list remain in the draft. Archive commit prunes obsolete generated records against the
-new semantic input. Swift-equivalent canonical string equality suppresses the reset when an
-onChange would not fire, even if retained UTF-16 spelling differs. Explicit meaning edits acquire
-user authorship through the existing archive merge, preserving its original concurrency semantics.
+Changing original example text now preserves its annotations and re-anchors only its ranges.
+Expression edits re-anchor only the selected sense's examples; dictionary form is read on the next
+such edit. Swift-equivalent canonical equality preserves onChange scheduling. The initial v43 reset
+behavior is retained only as historical native evidence. Archive commit still prunes obsolete
+explanations, and explicit contextual-meaning edits still acquire user authorship through its
+existing merge rules. Windows performs range work away from the dispatcher, retains each event's
+captured inputs, rejects stale output and waits before admitting Save.
 
 Only the selected sense changes. Untouched `Content == null` remains null, and existing image
 blocks are never filtered out of the draft. A content edit merges as one complete field. A stale
@@ -47,13 +50,14 @@ before Store disposal. Worker completion and canceled presentation do not requir
 ## Evidence and remaining work
 
 The twentieth Swift verifier compiles original pinned source snippets and runs 29 actual editor
-observations: tags, original-text reset, Save-admission predicates and content movement. The value
+observations: tags, historical original-text reset, Save-admission predicates and content movement. The value
 wrapper adds only exposure/effect qualifiers and Swift onChange scheduling based on value equality;
 it does not execute a full SwiftUI environment or render the source button. Expected JSON comes
 only from that native driver; normal verification never rewrites it.
 
-Seven Windows WPF tests exercise the actual modal/controls with a real memory SQLite archive:
-Cancel/blank-example admission, reset plus acknowledged save/pruning, conflict retention, concurrent
+The original seven Windows WPF tests, now updated for current annotation preservation and extended
+by range/scope/background-work cases, exercise the actual modal/controls with a real memory SQLite archive:
+Cancel/blank-example admission, preservation/re-anchoring plus acknowledged save/pruning, conflict retention, concurrent
 captures, content formatting/order and retained image references, pending save/retirement, and Edit
 from a tag-filtered browser using the full entry. The gated clock controls scheduling of a real
 archive operation. The image case admits existing graph metadata through the internal whole-graph

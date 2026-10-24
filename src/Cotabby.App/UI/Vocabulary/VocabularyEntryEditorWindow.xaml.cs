@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Threading;
 using Cotabby.App.Vocabulary;
 using Cotabby.Core.Vocabulary;
+using Cotabby.Core.Text;
 using Cotabby.Win32.Vocabulary;
 
 namespace Cotabby.App.UI.Vocabulary;
@@ -35,7 +36,13 @@ public partial class VocabularyEntryEditorWindow : Window
         AttachImagePaste();
         ExpressionText.Text = entry.Expression; DictionaryText.Text = entry.DictionaryForm;
         MeaningText.Text = Sense?.Meaning ?? ""; NoteText.Text = Sense?.Note ?? ""; TagsText.Text = string.Join(", ", Sense?.Tags ?? []);
-        ExpressionText.TextChanged += (_, _) => { _draft = _draft with { Expression = ExpressionText.Text }; UpdateAdmission(); };
+        ExpressionText.TextChanged += (_, _) =>
+        {
+            bool changed = !CanonicalStringComparer.Instance.Equals(_draft.Expression, ExpressionText.Text);
+            _draft = _draft with { Expression = ExpressionText.Text };
+            if (changed) QueueRanges(Sense?.Examples ?? []);
+            UpdateAdmission();
+        };
         DictionaryText.TextChanged += (_, _) => { _draft = _draft with { DictionaryForm = DictionaryText.Text }; UpdateAdmission(); };
         MeaningText.TextChanged += (_, _) => ChangeSense(value => value with { Meaning = MeaningText.Text });
         NoteText.TextChanged += (_, _) => ChangeSense(value => value with { Note = NoteText.Text });
@@ -47,7 +54,7 @@ public partial class VocabularyEntryEditorWindow : Window
             _retired = true; _lifetime.Cancel(); RetireImages(); _fileDrop?.Dispose(); _fileDrop = null;
             // Retirement joins the cancellable wait, while the token source must survive any
             // already admitted factory still registering/using its token off the dispatcher.
-            _ = Task.WhenAll(LastOperation, LastImport, _importPreparation).ContinueWith(completed => { _ = completed.Exception; _lifetime.Dispose(); }, CancellationToken.None,
+            _ = Task.WhenAll(LastOperation, LastImport, _importPreparation, _rangeDrain).ContinueWith(completed => { _ = completed.Exception; _lifetime.Dispose(); }, CancellationToken.None,
                 TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
         };
     }
@@ -55,7 +62,7 @@ public partial class VocabularyEntryEditorWindow : Window
     {
         if (_saving || _retired) return;
         _draft = _draft with { Senses = _draft.Senses.Select(value => value.Id == _senseId ? change(value) : value).ToArray() };
-        PruneImports();
+        PruneImports(); PruneRangeTargets();
         UpdateAdmission();
     }
     private void ChangeExample(Guid id, Func<VocabularyExample, VocabularyExample> change) =>
@@ -64,14 +71,14 @@ public partial class VocabularyEntryEditorWindow : Window
         ChangeSense(sense => sense with { Content = (sense.Content ?? []).Select(block => block.Id == id ? block with { Content = change(block.Content) } : block).ToArray() });
     private void UpdateAdmission()
     {
-        SaveButton.IsEnabled = !_retired && VocabularyEntryEditingPolicy.CanSave(_draft, _senseId, _saving, _importing);
+        SaveButton.IsEnabled = !_retired && !_reanchoring && !_rangeFailed && VocabularyEntryEditingPolicy.CanSave(_draft, _senseId, _saving, _importing);
         AddTextButton.IsEnabled = AddImageButton.IsEnabled = !_saving && !_retired && !_importing && (Sense?.Content?.Count ?? 0) < VocabularyContentPolicy.MaximumBlocks;
         PasteImageButton.IsEnabled = _clipboard is not null && CanImport();
     }
     private void OnCancel(object sender, RoutedEventArgs args) { if (!_saving && !_retired) Close(); }
     private void OnSave(object sender, RoutedEventArgs args)
     {
-        if (_retired || !VocabularyEntryEditingPolicy.CanSave(_draft, _senseId, _saving, _importing)) return;
+        if (_retired || _reanchoring || _rangeFailed || !VocabularyEntryEditingPolicy.CanSave(_draft, _senseId, _saving, _importing)) return;
         var tags = VocabularyEntryEditingPolicy.ParseTags(TagsText.Text);
         var value = _draft with { Senses = _draft.Senses.Select(sense => sense.Id == _senseId ? sense with { Tags = tags } : sense).ToArray() };
         _saving = true; FormContent.IsEnabled = false; CancelButton.IsEnabled = false; SaveButton.IsEnabled = false;
@@ -104,7 +111,7 @@ public partial class VocabularyEntryEditorWindow : Window
     {
         Dispatcher.VerifyAccess();
         if (!_retired) { _forceClose = true; Close(); }
-        return Task.WhenAll(LastOperation, LastImport);
+        return Task.WhenAll(LastOperation, LastImport, _rangeDrain);
     }
     private TextBox Editor(string text, string label, Action<string> changed, bool multiline = true)
     {
@@ -183,8 +190,10 @@ public partial class VocabularyEntryEditorWindow : Window
             TextBox? translation = null, meaning = null; ComboBox? completeness = null; bool presenting = false;
             panel.Children.Add(Label("Original text")); panel.Children.Add(Editor(example.Text, "Original text", changed =>
             {
-                ChangeExample(example.Id, value => VocabularyEntryEditingPolicy.ChangeOriginalText(value, changed));
+                var before = Sense?.Examples.FirstOrDefault(value => value.Id == example.Id);
+                ChangeExample(example.Id, value => value with { Text = changed });
                 if (Sense?.Examples.FirstOrDefault(value => value.Id == example.Id) is not { } current) return;
+                if (before is not null && !CanonicalStringComparer.Instance.Equals(before.Text, changed)) QueueRanges([current]);
                 presenting = true;
                 try { translation!.Text = current.Translation; meaning!.Text = current.Meaning; completeness!.SelectedValue = current.Completeness; }
                 finally { presenting = false; }

@@ -7,6 +7,12 @@ are reference points, not a claim that every Windows behavior has been validated
 still uses Cotabby names. The current learning addition is the scoped manual read-only preview
 recorded in [LEARNING_PREVIEW.md](LEARNING_PREVIEW.md); the wider learning product remains incomplete.
 
+The current stable target has advanced to `cc468b89f5c360cc7210fac4f1a8b52197870bf2`.
+[MAC_STABLE_DELTA.md](MAC_STABLE_DELTA.md) tracks its audited changes and the remaining integration
+work. Existing corpus revisions remain fixed; [current editor annotations](VOCABULARY_EDITOR_CURRENT.md)
+are an explicit module upgrade with 182 fresh source observations. Historical baseline statuses
+below must not be read as a declaration of full current product parity.
+
 ## Status meanings
 
 - **verified** — the behavior has passing automated parity evidence and, where it touches Windows

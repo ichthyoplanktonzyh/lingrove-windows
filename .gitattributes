@@ -5,3 +5,8 @@
 /native/tts/*.txt text eol=lf
 /native/tts/*.cpp text eol=lf
 /native/tts/*.h text eol=lf
+
+# Frozen text tables, source digests and accompanying notices are byte-verified.
+/src/Cotabby.Core/Resources/Foundation/* text eol=lf
+/scripts/capture-editor-foundation-data.swift text eol=lf
+/src/Cotabby.Core/Resources/Foundation/CFUniChar.reference.h text eol=lf whitespace=-blank-at-eol,-blank-at-eof

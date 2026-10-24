@@ -81,7 +81,7 @@ physical app shutdown path still require further evidence.
 ## Visual Studio source ownership
 
 The pinned upstream uses unity translation units for model sources while compiling its core
-`src/llama.cpp` separately. MSBuild also inventories the excluded `src/models/llama.cpp` member;
+`src/llama.cpp` separately. MSBuild also inventories the unity `src/models/llama.cpp` member;
 its shared default basename produced MSB8027 in the first Windows build. The logs alone did not
 establish an actual object overwrite. The port assigns the model inventory item a distinct
 `ObjectFileName` using source-scoped [CMake VS_SETTINGS](https://cmake.org/cmake/help/v3.24/prop_sf/VS_SETTINGS.html)
@@ -91,7 +91,13 @@ exclude an additional compiler input or edit the verified dependency overlay.
 Before compiling, `check-speech-vs-project.py` reads the actual generated `llama.vcxproj` and unity
 files. For every generated configuration it checks that core remains directly compiled, the model
 member is excluded from direct compilation with its distinct object metadata, and exactly one
-compiled unity unit owns that model without containing core. It prints only structural evidence.
+compiled unity unit includes that model exactly once without containing core. Modern Visual Studio
+represents a member with `IncludeInUnityFile="true"`, `CustomUnityFile="true"` and its owning
+`UnityFilesDirectory`, with `EnableUnitySupport` enabled, rather than `ExcludedFromBuild`. The
+checker admits that complete native-unity contract or explicit per-configuration exclusions;
+an absent exclusion by itself is never sufficient. This follows
+[CMake's Visual Studio generator](https://github.com/Kitware/CMake/blob/v3.31.6/Source/cmVisualStudio10TargetGenerator.cxx).
+It prints only structural evidence.
 The Windows MSBuild invocation promotes **MSB8027 specifically** to an error, retaining unrelated
 upstream compiler diagnostics rather than suppressing the collision warning. See
 [Microsoft's diagnostic](https://learn.microsoft.com/en-us/visualstudio/msbuild/errors/msb8027?view=visualstudio)

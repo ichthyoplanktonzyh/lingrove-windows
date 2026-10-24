@@ -32,7 +32,7 @@ endif()
 add_subdirectory("${LLAMA_SOURCE_DIR}" upstream EXCLUDE_FROM_ALL)
 if(CMAKE_GENERATOR MATCHES "^Visual Studio")
   # The pinned upstream compiles models/llama.cpp through a unity file and core llama.cpp
-  # directly. MSBuild still inventories the excluded model member and diagnoses their shared
+  # directly. MSBuild still inventories the unity model member and diagnoses their shared
   # default basename. Give that member distinct metadata without editing the upstream overlay,
   # excluding another source, or changing the unity/generation implementation.
   get_target_property(SPEECH_LLAMA_TARGET_SOURCE_DIR llama SOURCE_DIR)

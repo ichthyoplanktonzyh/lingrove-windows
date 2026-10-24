@@ -168,6 +168,7 @@ the [PCM facade](docs/SPEECH_PCM_PLAYER.md) preserves readiness, queue/drain, st
 the [shared speech controller](docs/SPEECH_CONTROLLER.md) preserves resolved requests, lazy catalog/model selection, playback/export exclusivity and joined task ownership without native providers or AppHost activation;
 the [independent speech HTTP adapter](docs/SPEECH_ENDPOINT.md) preserves bounded request-owned transport, compression, deadlines and redirect/cookie refusal without application activation;
 the [local speech runtime](docs/SPEECH_LOCAL_RUNTIME.md) adapts lazy helper ownership, shared reaping and bounded PCM exchange, with Windows process/job/pressure adapters and no application activation;
+the [native speech helper](docs/SPEECH_NATIVE_HELPER.md) preserves the full original generation loop and exact independent dependency overlay behind Windows effects; CPU build checks do not activate the application or establish model-backed playback;
 compressed/profiled bitmap variants, virtual/pixel drops, review navigation/preparation/batch UI and other dictionary providers remain work. Do not flatten senses into
 one translation string, regenerate stable IDs during edits, or treat a generated explanation as the
 user's authored meaning. See the vocabulary models and porting gates in the linked docs. Storage

@@ -30,6 +30,15 @@ if(NOT SPEECH_VERIFY_RESULT EQUAL 0)
   message(FATAL_ERROR "Independent speech source verification failed: ${SPEECH_VERIFY_ERROR}")
 endif()
 add_subdirectory("${LLAMA_SOURCE_DIR}" upstream EXCLUDE_FROM_ALL)
+if(CMAKE_GENERATOR MATCHES "^Visual Studio")
+  # The pinned upstream compiles models/llama.cpp through a unity file and core llama.cpp
+  # directly. MSBuild still inventories the excluded model member and diagnoses their shared
+  # default basename. Give that member distinct metadata without editing the upstream overlay,
+  # excluding another source, or changing the unity/generation implementation.
+  get_target_property(SPEECH_LLAMA_TARGET_SOURCE_DIR llama SOURCE_DIR)
+  set_source_files_properties("${SPEECH_LLAMA_TARGET_SOURCE_DIR}/models/llama.cpp"
+    TARGET_DIRECTORY llama PROPERTIES VS_SETTINGS "ObjectFileName=$(IntDir)lingrove-llama-model.obj")
+endif()
 if(WIN32)
   set(SPEECH_PLATFORM SpeechPlatformWindows.cpp)
   set(SPEECH_PLATFORM_LIBS mfplat mfreadwrite mfuuid ole32 propsys)

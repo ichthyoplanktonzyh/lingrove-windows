@@ -355,7 +355,9 @@ jobs:
         run: python scripts/test-speech-runtime-preparation.py --source-dir build/speech-native/llama.cpp
       - name: Configure static CPU speech helper independently of LLamaSharp
         run: cmake -S native/tts -B build/speech-native/cmake -G "Visual Studio 17 2022" -A x64 -DLLAMA_SOURCE_DIR="${{ github.workspace }}/build/speech-native/llama.cpp"
+      - name: Check actual Visual Studio unity membership and object metadata
+        run: python scripts/check-speech-vs-project.py --build-dir build/speech-native/cmake --source-dir build/speech-native/llama.cpp
       - name: Compile actual helper and native platform checks without model weights
-        run: cmake --build build/speech-native/cmake --config Release --target lingrove-tts-helper lingrove-tts-platform-check --parallel 2
+        run: cmake --build build/speech-native/cmake --config Release --target lingrove-tts-helper lingrove-tts-platform-check --parallel 2 -- /warnAsError:MSB8027
       - name: Check actual binary frames reference duration and abrupt parent exit
         run: python scripts/smoke-native-speech.py --helper build/speech-native/cmake/Release/lingrove-tts-helper.exe --platform build/speech-native/cmake/Release/lingrove-tts-platform-check.exe

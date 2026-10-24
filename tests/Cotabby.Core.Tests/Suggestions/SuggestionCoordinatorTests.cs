@@ -277,6 +277,10 @@ public sealed class SuggestionCoordinatorTests : CoordinatorHarness
         await RunOnUiAsync(() => Type("hello"));
         await Shown(" world again");
 
+        // Exhausting a tail deliberately schedules another prediction. This test counts one
+        // offer, so retire the scripted completion before accepting; otherwise a fast Windows
+        // runner can show the next offer before the metrics assertion observes the first one.
+        Engine.Completion = _ => "";
         Hook.Press(Backtick);
 
         await Eventually(() => Coordinator.Metrics.WordsAccepted == 2, "both words are counted");

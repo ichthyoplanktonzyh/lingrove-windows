@@ -23,6 +23,9 @@
     <Compile Include="..\..\src\Cotabby.App\Speech\LearningSpeechSettings.cs" Link="Production\LearningSpeechSettings.cs" />
     <Compile Include="..\..\src\Cotabby.App\Speech\SpeechParameterSettings.cs" Link="Production\SpeechParameterSettings.cs" />
     <None Include="..\..\fixtures\parity\speech-settings-v1.json" Link="fixtures\speech-settings-v1.json" CopyToOutputDirectory="PreserveNewest" />
+    <Compile Include="..\..\src\Cotabby.App\Runtime\PerformanceMetricsStore.cs" Link="Production\PerformanceMetricsStore.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Speech\SpeechTelemetry.cs" Link="Production\SpeechTelemetry.cs" />
+    <None Include="..\..\fixtures\parity\speech-telemetry-v1.json" Link="fixtures\speech-telemetry-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <!-- Compile the actual non-WPF app boundaries for portable lifetime/settings tests. This is
          no replacement for compiling the complete WPF app or exercising a Windows desktop. -->
     <Compile Include="..\..\src\Cotabby.Win32\Review\AnkiConnectClient.cs" Link="Production\AnkiConnectClient.cs" />
@@ -53,6 +56,7 @@
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularyWindowsFileLock.cs" Link="Production\VocabularyWindowsFileLock.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Review.cs" Link="Production\AppSettings.Review.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Speech.cs" Link="Production\AppSettings.Speech.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Metrics.cs" Link="Production\AppSettings.Metrics.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Vocabulary.cs" Link="Production\AppSettings.Vocabulary.cs" />
     <Compile Include="..\..\src\Cotabby.App\Vocabulary\VocabularyGraphPreferences.cs" Link="Production\VocabularyGraphPreferences.cs" />
     <Compile Include="..\..\src\Cotabby.App\Vocabulary\VocabularyGraphPresentation.cs" Link="Production\VocabularyGraphPresentation.cs" />

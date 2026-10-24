@@ -87,6 +87,8 @@ jobs:
             Cotabby/Models/Speech/SpeechExportModels.swift
             Cotabby/Models/Speech/LearningSpeechSettings.swift
             Cotabby/Models/Speech/SpeechGenerationProfile.swift
+            Cotabby/Models/Speech/SpeechRuntimeModels.swift
+            Cotabby/Services/Speech/SpeechTelemetry.swift
             Cotabby/Services/Runtime/OpenAICompatible/OpenAICompatibleCredentialStore.swift
             Cotabby/Services/Speech/SpeechExportBuffer.swift
             Cotabby/Services/Speech/SystemSpeechAudioExporter.swift
@@ -282,3 +284,6 @@ jobs:
 
       - name: Verify complete original speech preferences profiles and destination identity
         run: python3 scripts/verify-speech-settings-macos-parity.py --mac-repo .mac-baseline
+
+      - name: Verify complete original speech telemetry and bounded request history
+        run: python3 scripts/verify-speech-telemetry-macos-parity.py --mac-repo .mac-baseline

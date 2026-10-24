@@ -33,7 +33,7 @@ public static class SpeechProfileCodec
                     {
                         "recommended" => LearningModelSeedMode.Recommended, "random" => LearningModelSeedMode.Random,
                         "fixed" => LearningModelSeedMode.Fixed, _ => throw new JsonException(),
-                    }, checked((uint)Whole(sampling["fixedSeed"])));
+                    }, checked((uint)FoundationJsonInteger.Read(sampling["fixedSeed"])));
                 result.TryAdd(property.Key, new() { Sampling = value, ReferenceAudioPath = Text(fields, "referenceAudioPath"), EndpointVoice = Text(fields, "endpointVoice") });
             }
             return new ReadOnlyDictionary<string, SpeechGenerationProfile>(result);
@@ -51,14 +51,6 @@ public static class SpeechProfileCodec
         if (!values.TryGetValue(key, out var v) || v.ValueKind == JsonValueKind.Null) return null;
         double result = v.GetDouble(); return double.IsFinite(result) ? result : throw new JsonException();
     }
-    private static long? Integer(Dictionary<string, JsonElement> values, string key) => values.TryGetValue(key, out var v) && v.ValueKind != JsonValueKind.Null ? Whole(v) : null;
-    private static long Whole(JsonElement value)
-    {
-        if (value.TryGetInt64(out long integer)) return integer;
-        // Swift's integer Codable reader accepts exact decimal/exponent spellings. Decimal
-        // avoids rounding an out-of-range 64-bit integer through a binary Double first.
-        decimal number = value.GetDecimal();
-        return decimal.Truncate(number) == number ? checked((long)number) : throw new JsonException();
-    }
+    private static long? Integer(Dictionary<string, JsonElement> values, string key) => values.TryGetValue(key, out var v) && v.ValueKind != JsonValueKind.Null ? FoundationJsonInteger.Read(v) : null;
     private static string? Text(Dictionary<string, JsonElement> values, string key) => values.TryGetValue(key, out var v) && v.ValueKind != JsonValueKind.Null ? v.GetString() : null;
 }

@@ -120,7 +120,7 @@ public sealed class LearningSpeechSettingsTests
     { try { return JsonNode.Parse(value)!; } catch (JsonException) { return JsonValue.Create(value)!; } }
     // Raw preference display mirrors JSONSerialization, which accepts UTF-16/32 and, on the
     // pinned source runtime, keeps the first duplicate property like its Codable reader.
-    private static JsonNode? RawJson(byte[] bytes)
+    internal static JsonNode? RawJson(byte[] bytes)
     {
         Encoding encoding = new UTF8Encoding(false, true); int skip = bytes.AsSpan().StartsWith(new byte[] { 0xef, 0xbb, 0xbf }) ? 3 : 0;
         if (bytes.AsSpan().StartsWith(new byte[] { 0xff, 0xfe })) { encoding = new UnicodeEncoding(false, false, true); skip = 2; }
@@ -136,6 +136,14 @@ public sealed class LearningSpeechSettingsTests
             if (value.ValueKind == JsonValueKind.Object)
             { var result = new JsonObject(); foreach (var p in value.EnumerateObject()) if (!result.ContainsKey(p.Name)) result[p.Name] = Last(p.Value); return result; }
             if (value.ValueKind == JsonValueKind.Array) return new JsonArray(value.EnumerateArray().Select(Last).ToArray());
+            if (value.ValueKind == JsonValueKind.Number)
+            {
+                // JSONSerialization materializes NSNumber, rather than preserving arbitrary
+                // JSON number text. Exact signed/unsigned integers survive; its fallback is Double.
+                if (value.TryGetInt64(out long signed)) return JsonValue.Create(signed);
+                if (value.TryGetUInt64(out ulong unsigned)) return JsonValue.Create(unsigned);
+                return JsonValue.Create(value.GetDouble());
+            }
             return JsonNode.Parse(value.GetRawText());
         }
     }

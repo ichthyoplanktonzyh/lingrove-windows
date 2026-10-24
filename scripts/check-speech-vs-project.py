@@ -72,6 +72,9 @@ def check(build,source):
   for item,unity,includes in units:
    if (metadata(item,'ExcludedFromBuild',configuration)or '').lower()=='true':continue
    if (item.get('IncludeInUnityFile')or '').lower()=='true':raise ValueError('Generated unity unit is itself a native unity member')
+   if native and ((item.get('IncludeInUnityFile')or '').lower()!='false'
+    or(item.get('CustomUnityFile')or '').lower()!='true'
+    or path(project,item.get('UnityFilesDirectory')or '')!=unity.parent):raise ValueError('Incomplete native generated unity unit metadata')
    if core in includes:raise ValueError('Core source was added to a compiled unity translation unit')
    # Count occurrences as well as files: including the model twice in one active unit is also
    # invalid, and an exclusion in Release must not hide a duplicate compiled in Debug.

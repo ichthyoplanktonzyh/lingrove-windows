@@ -46,4 +46,12 @@ public interface ISystemSpeechAudioExporting
 public interface ISpeechAudioDuration
 {
     double Duration(ReadOnlySpan<byte> audio);
+    /// <summary>Native Windows decoding belongs to its COM worker. Existing synchronous
+    /// source/test adapters keep their behavior; the controller awaits real decoding and joins
+    /// cancellation before releasing export exclusivity, rather than abandoning a native task.</summary>
+    Task<double> DurationAsync(ReadOnlyMemory<byte> audio, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        return Task.FromResult(Duration(audio.Span));
+    }
 }

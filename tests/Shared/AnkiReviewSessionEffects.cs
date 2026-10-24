@@ -1,6 +1,9 @@
 using System.Text.Json;
 using Cotabby.Core.Review;
 using Cotabby.Core.Speech;
+using Cotabby.Core.LanguageLearning;
+using Cotabby.Inference.Speech;
+using System.Text;
 
 namespace Cotabby.ReviewTesting;
 
@@ -85,3 +88,25 @@ internal sealed class SessionTestServer : IAnkiConnecting
             return result;
         }
     }
+
+/// <summary>The original in-memory exporter effect: each request produces its numbered Float32
+/// sample, encoded by the real export policy. Pausing is caller-cancellable and emits no file.
+/// It supplies no plan, media-reuse or fingerprint policy beyond the original fake text digest.</summary>
+internal sealed class SessionTestSpeech : ISpeechExporting
+{
+    public int Exports { get; private set; }
+    public bool Pause { get; set; }
+    public TaskCompletionSource Entered { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    public string ExportConfigurationId => "fixture";
+    public SpeechExportRequest ExportRequest(string text, LearningLanguage language, string? context = null) => new(text, language, SpeechExportPolicy.Digest(Encoding.UTF8.GetBytes(text)), new SpeechExportRequest.Source.System("fixture"));
+    public async Task<SpeechExportAudio> ExportAudioAsync(SpeechExportRequest request, CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested(); Exports++; Entered.TrySetResult();
+        if (Pause) await Task.Delay(Timeout.Infinite, cancellationToken);
+        byte[] bytes = new byte[2400 * sizeof(float)]; float sample = Exports / 100f;
+        for (int i = 0; i < 2400; i++) BitConverter.TryWriteBytes(bytes.AsSpan(i * sizeof(float)), sample);
+        return SpeechExportPolicy.Wav(bytes, 24000);
+    }
+    public void Audition(SpeechExportAudio audio, Guid ownerId, LearningLanguage language) { }
+    public void Stop(Guid ownerId) { }
+}

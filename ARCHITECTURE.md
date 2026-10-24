@@ -228,3 +228,7 @@ Vulkan GPU behavior.
 The [review session library](docs/ANKI_REVIEW_SESSION.md) borrows the shared controller/Store and
 keeps one window-local draft/baseline. Its partials preserve original metadata, guarded send and
 media ordering; a future preparation window must own task cancellation and release its audio preview.
+
+The [serial batch session](docs/ANKI_REVIEW_BATCH.md) owns frozen presentation rows and one cancellable
+UI-context task. It delegates every send to the existing single-session transaction, resolving merged
+aliases and skipping successful rows on retry. The future sheet must stop and join accepted work.

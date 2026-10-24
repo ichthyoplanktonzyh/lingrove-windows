@@ -7,9 +7,11 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\fixtures\parity\review-audio-v1.json" Link="fixtures\review-audio-v1.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\fixtures\parity\anki-session-v1.json" Link="fixtures\anki-session-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\fixtures\parity\speech-buffer-v1.json" Link="fixtures\speech-buffer-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\fixtures\parity\anki-settings-interaction-v1.json" Link="fixtures\anki-settings-interaction-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <Compile Include="..\Shared\AnkiReviewTestEffects.cs" Link="Shared\AnkiReviewTestEffects.cs" />
+    <Compile Include="..\Shared\AnkiReviewSessionEffects.cs" Link="Shared\AnkiReviewSessionEffects.cs" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
     <PackageReference Include="xunit" Version="2.9.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
@@ -22,6 +24,11 @@
     <Compile Include="..\..\src\Cotabby.Win32\Review\AnkiConnectClient.cs" Link="Production\AnkiConnectClient.cs" />
     <Compile Include="..\..\src\Cotabby.App\Review\AnkiReviewFeature.cs" Link="Production\AnkiReviewFeature.cs" />
     <Compile Include="..\..\src\Cotabby.App\Review\ReviewAudioPreparation.cs" Link="Production\ReviewAudioPreparation.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Review\AnkiReviewSession.cs" Link="Production\AnkiReviewSession.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Review\AnkiReviewSession.Metadata.cs" Link="Production\AnkiReviewSession.Metadata.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Review\AnkiReviewSession.Sending.cs" Link="Production\AnkiReviewSession.Sending.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Review\AnkiReviewSession.Audio.cs" Link="Production\AnkiReviewSession.Audio.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Review\AnkiReviewSession.Images.cs" Link="Production\AnkiReviewSession.Images.cs" />
     <Compile Include="..\..\src\Cotabby.App\Review\AnkiReviewSettingsInteraction.cs" Link="Production\AnkiReviewSettingsInteraction.cs" />
     <Compile Include="..\..\src\Cotabby.App\Review\AnkiReviewSettings.cs" Link="Production\AnkiReviewSettings.cs" />
     <Compile Include="..\..\src\Cotabby.App\Review\AnkiReviewController.cs" Link="Production\AnkiReviewController.cs" />

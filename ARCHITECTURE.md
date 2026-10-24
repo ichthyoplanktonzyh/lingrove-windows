@@ -224,3 +224,7 @@ geometry, keyboard hook behavior, IME composition, clipboard formats, elevated-h
 GPU inference require Windows. Native x64 Windows is the primary verification target. An ARM Windows
 VM on Apple silicon can help inspect ARM-specific behavior, but it cannot establish x64 runtime or
 Vulkan GPU behavior.
+
+The [review session library](docs/ANKI_REVIEW_SESSION.md) borrows the shared controller/Store and
+keeps one window-local draft/baseline. Its partials preserve original metadata, guarded send and
+media ordering; a future preparation window must own task cancellation and release its audio preview.

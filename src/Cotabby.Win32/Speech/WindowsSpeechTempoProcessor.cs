@@ -25,6 +25,8 @@ internal sealed class WindowsSpeechTempoProcessor
     internal long InputSamples { get; private set; }
     internal long OutputSamples { get; private set; }
     internal long ExpectedOutputSamples => (long)Math.Round(InputSamples / _rate, MidpointRounding.AwayFromZero);
+    internal long OutputLookaheadSamples => _processor is null ? 0
+        : (long)Math.Ceiling(_processor.GetSetting(SettingId.InitialLatency) / _rate);
 
     internal WindowsSpeechTempoProcessor(int sampleRate, double rate)
     {

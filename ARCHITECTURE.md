@@ -237,3 +237,8 @@ The [speech preference owner](docs/SPEECH_SETTINGS.md) borrows the shared prefer
 explicit credential/file boundaries. Core retains exact destination identity and Codable profile
 values; paired asset edits restore only their model/decoder profile. Sampler edits apply to the next
 request without invalidating playback. AppHost/provider/player/settings UI wiring remains separate.
+
+The [speech observer and request history](docs/SPEECH_TELEMETRY.md) keep content-free stage timings
+and runtime identity beside a bounded 100-row preference Store. Old runtime events may patch an
+existing old metric before publication admission; generation/session/sequence guards protect the
+current PID/assets. UI-context serialization and real event/error log sinks belong to composition.

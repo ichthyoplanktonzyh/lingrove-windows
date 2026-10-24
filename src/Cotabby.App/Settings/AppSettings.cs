@@ -37,7 +37,8 @@ public sealed partial class AppSettings
 {
     /// <summary>Returns fresh general/runtime defaults while retaining independent notebook and
     /// review and speech preferences. Mac's reset removes an explicit key set; graph and Anki values live
-    /// outside it. AppHost replaces its current owner, then persists/applies it once.</summary>
+    /// outside it; opt-in request history is retained app state as well. AppHost replaces its
+    /// current owner, then persists/applies it once.</summary>
     public AppSettings ResetGeneralPreferences(long wordsAccepted) => new()
     {
         ActiveModelId = ActiveModelId,
@@ -53,6 +54,7 @@ public sealed partial class AppSettings
         SpeechEndpointUrlValue = SpeechEndpointUrlValue, SpeechEndpointModelValue = SpeechEndpointModelValue,
         SpeechEndpointVoiceValue = SpeechEndpointVoiceValue, SpeechRateValue = SpeechRateValue,
         SpeechVoiceIdsValue = SpeechVoiceIdsValue, SpeechParametersValue = SpeechParametersValue,
+        PerformanceMetricEntriesValue = PerformanceMetricEntriesValue,
     };
 
     // General

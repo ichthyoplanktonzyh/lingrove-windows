@@ -79,6 +79,9 @@ internal sealed class FakeFocus : IFocusTracker, ITextInserter
     public event EventHandler<FocusedField?>? FocusChanged;
 
     public List<string> Insertions { get; } = [];
+    // Overlay publication can beat the background host insertion. Read acknowledgement under
+    // the same gate as ApplyEdit instead of enumerating a List while another thread appends.
+    public string[] InsertionSnapshot { get { lock (_gate) return Insertions.ToArray(); } }
     public List<FocusedField> InsertTargets { get; } = [];
     public List<FocusedField> ReplaceTargets { get; } = [];
     public Func<FocusedField?>? RefreshOverride { get; set; }
@@ -295,25 +298,32 @@ internal sealed class RecordingOverlay : IOverlayPresenter
     public void Hide() => Update("");
 }
 
-/// <summary>Runs posted work in order on one dedicated thread, like a UI dispatcher.</summary>
+/// <summary>Runs admitted callbacks in order on one owned thread. Closing drains and joins it;
+/// best-effort late watcher posts are dropped like a dispatcher that has begun shutdown.</summary>
 internal sealed class PumpContext : SynchronizationContext, IDisposable
 {
     private readonly BlockingCollection<(SendOrPostCallback Callback, object? State)> _queue = new();
+    private readonly object _lifetime = new();
+    private readonly Thread _thread;
+    private bool _stopping;
+    internal bool IsAlive => _thread.IsAlive;
+    internal bool IsStopping { get { lock (_lifetime) return _stopping; } }
 
     public PumpContext()
     {
-        new Thread(() =>
+        _thread = new Thread(() =>
         {
             SetSynchronizationContext(this);
             foreach (var (callback, state) in _queue.GetConsumingEnumerable()) callback(state);
         })
-        { IsBackground = true }.Start();
+        { IsBackground = true, Name = "Coordinator test UI pump" };
+        _thread.Start();
     }
 
     public Task InvokeAsync(Action action)
     {
         var completed = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-        Post(_ =>
+        bool posted = TryPost(_ =>
         {
             try
             {
@@ -325,7 +335,7 @@ internal sealed class PumpContext : SynchronizationContext, IDisposable
                 completed.TrySetException(ex);
             }
         }, null);
-        return completed.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        return posted ? completed.Task.WaitAsync(TimeSpan.FromSeconds(5)) : Task.FromException(new ObjectDisposedException(nameof(PumpContext)));
     }
 
     public void BlockUntil(Task release, TaskCompletionSource<bool> entered) => Post(_ =>
@@ -334,7 +344,27 @@ internal sealed class PumpContext : SynchronizationContext, IDisposable
         release.GetAwaiter().GetResult();
     }, null);
 
-    public override void Post(SendOrPostCallback d, object? state) => _queue.Add((d, state));
-
-    public void Dispose() => _queue.CompleteAdding();
+    public override void Post(SendOrPostCallback callback, object? state) => TryPost(callback, state);
+    private bool TryPost(SendOrPostCallback callback, object? state)
+    {
+        lock (_lifetime)
+        {
+            // A disposed coordinator's best-effort watcher may wake after its UI closes.
+            // Match dispatcher shutdown: drop such raw posts instead of throwing on a worker.
+            if (_stopping) return false;
+            _queue.Add((callback, state)); return true;
+        }
+    }
+    public void Dispose()
+    {
+        if (Thread.CurrentThread == _thread) throw new InvalidOperationException("The test owner must join its pump from outside the UI thread.");
+        lock (_lifetime)
+        {
+            if (_stopping) return;
+            _stopping = true; _queue.CompleteAdding();
+        }
+        // Already-admitted callbacks drain in order; no producer can add after completion.
+        if (!_thread.Join(TimeSpan.FromSeconds(10))) throw new TimeoutException("Coordinator test pump did not drain.");
+        _queue.Dispose();
+    }
 }

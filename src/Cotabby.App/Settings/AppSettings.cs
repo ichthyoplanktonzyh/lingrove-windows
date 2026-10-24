@@ -36,7 +36,7 @@ public enum LearningTranslationBackend
 public sealed partial class AppSettings
 {
     /// <summary>Returns fresh general/runtime defaults while retaining independent notebook and
-    /// review preferences. Mac's reset removes an explicit key set; graph and Anki values live
+    /// review and speech preferences. Mac's reset removes an explicit key set; graph and Anki values live
     /// outside it. AppHost replaces its current owner, then persists/applies it once.</summary>
     public AppSettings ResetGeneralPreferences(long wordsAccepted) => new()
     {
@@ -48,6 +48,11 @@ public sealed partial class AppSettings
         AnkiReviewAddressValue = AnkiReviewAddressValue, AnkiReviewDeckValue = AnkiReviewDeckValue,
         AnkiReviewModelValue = AnkiReviewModelValue, AnkiReviewMappingValue = AnkiReviewMappingValue,
         AnkiReviewRecognitionValue = AnkiReviewRecognitionValue, AnkiReviewGapValue = AnkiReviewGapValue,
+        SpeechProviderValue = SpeechProviderValue, SpeechLocalModelValue = SpeechLocalModelValue,
+        SpeechLocalProjectionValue = SpeechLocalProjectionValue, SpeechReferenceAudioValue = SpeechReferenceAudioValue,
+        SpeechEndpointUrlValue = SpeechEndpointUrlValue, SpeechEndpointModelValue = SpeechEndpointModelValue,
+        SpeechEndpointVoiceValue = SpeechEndpointVoiceValue, SpeechRateValue = SpeechRateValue,
+        SpeechVoiceIdsValue = SpeechVoiceIdsValue, SpeechParametersValue = SpeechParametersValue,
     };
 
     // General

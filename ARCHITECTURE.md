@@ -232,3 +232,8 @@ media ordering; a future preparation window must own task cancellation and relea
 The [serial batch session](docs/ANKI_REVIEW_BATCH.md) owns frozen presentation rows and one cancellable
 UI-context task. It delegates every send to the existing single-session transaction, resolving merged
 aliases and skipping successful rows on retry. The future sheet must stop and join accepted work.
+
+The [speech preference owner](docs/SPEECH_SETTINGS.md) borrows the shared preference document and
+explicit credential/file boundaries. Core retains exact destination identity and Codable profile
+values; paired asset edits restore only their model/decoder profile. Sampler edits apply to the next
+request without invalidating playback. AppHost/provider/player/settings UI wiring remains separate.

@@ -164,6 +164,7 @@ the [review session library](docs/ANKI_REVIEW_SESSION.md) preserves draft/CAS, g
 the [serial batch library](docs/ANKI_REVIEW_BATCH.md) adds frozen rows, per-item retries/options and cancellation through the original single-session transaction;
 the [speech preferences](docs/SPEECH_SETTINGS.md) retain original destination profiles, explicit credential access and playback invalidation without activating a provider;
 the [speech observer and shared history](docs/SPEECH_TELEMETRY.md) preserve bounded correlation, runtime admission and opt-in metrics without activating a helper;
+the [PCM facade](docs/SPEECH_PCM_PLAYER.md) preserves readiness, queue/drain, stale callbacks and tracked shutdown without an audio-device implementation;
 compressed/profiled bitmap variants, virtual/pixel drops, review navigation/preparation/batch UI and other dictionary providers remain work. Do not flatten senses into
 one translation string, regenerate stable IDs during edits, or treat a generated explanation as the
 user's authored meaning. See the vocabulary models and porting gates in the linked docs. Storage
@@ -253,7 +254,7 @@ runner. This is ordinary compilation, not packaging or a release.
 The current `.github/workflows/ci.yml` has two validation jobs: Windows x64 restores and builds the
 full solution, then runs Core, portable App boundary and Inference tests, including noninteractive ICU sentence tests,
 and the compiled learning-card WPF view suite on its own STA dispatcher (see `docs/WPF_VIEW_TESTS.md`);
-macOS 26 x64 runs Core, portable App boundary tests and all sixty-two Swift parity verifiers against a sparse checkout of the pinned Mac
+macOS 26 x64 runs Core, portable App boundary tests and all sixty-three Swift parity verifiers against a sparse checkout of the pinned Mac
 Support, language-learning/vocabulary models/services, content-test provenance, language catalog and pinned expression resource files. The separate
 `.github/workflows/upstream-baseline.yml` checks the original Windows fork at commit
 `b1e4031c70aca1be21aae2c57b138fde5fc22bb1` with .NET 9 on manual dispatch. Its initial setup run is

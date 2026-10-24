@@ -1,0 +1,7826 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "shared-preparation-barrier",
+      "macSource": "Cotabby/Services/Speech/SpeechPCMPlayer.swift",
+      "provenanceKind": "original-test-adaptation",
+      "sourceTest": "preparesBeforeAudioAndFirstBlockAwaitsTheSameBarrier",
+      "actions": [
+        {
+          "op": "begin"
+        },
+        {
+          "op": "launch"
+        },
+        {
+          "op": "release"
+        },
+        {
+          "op": "join"
+        },
+        {
+          "op": "end"
+        },
+        {
+          "op": "played"
+        }
+      ],
+      "expected": [
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "0",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": []
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 19200,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 19200,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 19200,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 19200,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": true,
+            "playing": true,
+            "preparation": true,
+            "queued": 19200,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 19200,
+            "watchdog": true
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            },
+            {
+              "kind": "finished",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        }
+      ]
+    },
+    {
+      "id": "cancelled-preparation-new-request",
+      "macSource": "Cotabby/Services/Speech/SpeechPCMPlayer.swift",
+      "provenanceKind": "original-test-adaptation",
+      "sourceTest": "cancelledPreparationAndOldDeviceNotificationCannotRetireNewPlayback",
+      "actions": [
+        {
+          "op": "begin"
+        },
+        {
+          "op": "launch"
+        },
+        {
+          "op": "stop"
+        },
+        {
+          "op": "begin",
+          "token": "b",
+          "rate": 1.5
+        },
+        {
+          "op": "release",
+          "index": 1
+        },
+        {
+          "op": "enqueue",
+          "token": "b"
+        },
+        {
+          "op": "end",
+          "token": "b"
+        },
+        {
+          "op": "release"
+        },
+        {
+          "op": "join"
+        },
+        {
+          "op": "invalidate"
+        },
+        {
+          "op": "played",
+          "index": 1
+        }
+      ],
+      "expected": [
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "0",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": []
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1.5,
+            "revision": "5",
+            "sampleRate": 24000,
+            "token": "b",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2",
+              "5"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "b"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1.5,
+            "revision": "5",
+            "sampleRate": 24000,
+            "token": "b",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2",
+              "5"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "b"
+            },
+            {
+              "kind": "started",
+              "token": "b"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 19200,
+            "rate": 1.5,
+            "revision": "5",
+            "sampleRate": 24000,
+            "token": "b",
+            "total": 19200,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "5"
+            ],
+            "preparations": [
+              "2",
+              "5"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "b"
+            },
+            {
+              "kind": "started",
+              "token": "b"
+            }
+          ],
+          "player": {
+            "ended": true,
+            "playing": true,
+            "preparation": true,
+            "queued": 19200,
+            "rate": 1.5,
+            "revision": "5",
+            "sampleRate": 24000,
+            "token": "b",
+            "total": 19200,
+            "watchdog": true
+          },
+          "renderer": {
+            "enqueues": [
+              "5"
+            ],
+            "preparations": [
+              "2",
+              "5"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "b"
+            },
+            {
+              "kind": "started",
+              "token": "b"
+            }
+          ],
+          "player": {
+            "ended": true,
+            "playing": true,
+            "preparation": true,
+            "queued": 19200,
+            "rate": 1.5,
+            "revision": "5",
+            "sampleRate": 24000,
+            "token": "b",
+            "total": 19200,
+            "watchdog": true
+          },
+          "renderer": {
+            "enqueues": [
+              "5"
+            ],
+            "preparations": [
+              "2",
+              "5"
+            ]
+          },
+          "result": "cancelled"
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "b"
+            },
+            {
+              "kind": "started",
+              "token": "b"
+            }
+          ],
+          "player": {
+            "ended": true,
+            "playing": true,
+            "preparation": true,
+            "queued": 19200,
+            "rate": 1.5,
+            "revision": "5",
+            "sampleRate": 24000,
+            "token": "b",
+            "total": 19200,
+            "watchdog": true
+          },
+          "renderer": {
+            "enqueues": [
+              "5"
+            ],
+            "preparations": [
+              "2",
+              "5"
+            ]
+          },
+          "result": "cancelled"
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "b"
+            },
+            {
+              "kind": "started",
+              "token": "b"
+            }
+          ],
+          "player": {
+            "ended": true,
+            "playing": true,
+            "preparation": true,
+            "queued": 19200,
+            "rate": 1.5,
+            "revision": "5",
+            "sampleRate": 24000,
+            "token": "b",
+            "total": 19200,
+            "watchdog": true
+          },
+          "renderer": {
+            "enqueues": [
+              "5"
+            ],
+            "preparations": [
+              "2",
+              "5"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "b"
+            },
+            {
+              "kind": "started",
+              "token": "b"
+            },
+            {
+              "kind": "finished",
+              "token": "b"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1.5,
+            "revision": "6",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "5"
+            ],
+            "preparations": [
+              "2",
+              "5"
+            ]
+          },
+          "result": null
+        }
+      ]
+    },
+    {
+      "id": "buffer-zero-collision",
+      "macSource": "Cotabby/Services/Speech/SpeechPCMPlayer.swift",
+      "provenanceKind": "original-test-adaptation",
+      "sourceTest": "discardedScheduledBufferCannotDrainTheNextUtterancesMatchingBufferID",
+      "actions": [
+        {
+          "op": "begin"
+        },
+        {
+          "op": "release"
+        },
+        {
+          "op": "enqueue"
+        },
+        {
+          "op": "stop"
+        },
+        {
+          "op": "begin",
+          "token": "b"
+        },
+        {
+          "op": "release",
+          "index": 1
+        },
+        {
+          "op": "enqueue",
+          "token": "b"
+        },
+        {
+          "op": "end",
+          "token": "b"
+        },
+        {
+          "op": "played"
+        },
+        {
+          "op": "played",
+          "index": 1
+        }
+      ],
+      "expected": [
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "0",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": []
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 19200,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 19200,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "5",
+            "sampleRate": 24000,
+            "token": "b",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2",
+              "5"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            },
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "b"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "5",
+            "sampleRate": 24000,
+            "token": "b",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2",
+              "5"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            },
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "b"
+            },
+            {
+              "kind": "started",
+              "token": "b"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 19200,
+            "rate": 1,
+            "revision": "5",
+            "sampleRate": 24000,
+            "token": "b",
+            "total": 19200,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2",
+              "5"
+            ],
+            "preparations": [
+              "2",
+              "5"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            },
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "b"
+            },
+            {
+              "kind": "started",
+              "token": "b"
+            }
+          ],
+          "player": {
+            "ended": true,
+            "playing": true,
+            "preparation": true,
+            "queued": 19200,
+            "rate": 1,
+            "revision": "5",
+            "sampleRate": 24000,
+            "token": "b",
+            "total": 19200,
+            "watchdog": true
+          },
+          "renderer": {
+            "enqueues": [
+              "2",
+              "5"
+            ],
+            "preparations": [
+              "2",
+              "5"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            },
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "b"
+            },
+            {
+              "kind": "started",
+              "token": "b"
+            }
+          ],
+          "player": {
+            "ended": true,
+            "playing": true,
+            "preparation": true,
+            "queued": 19200,
+            "rate": 1,
+            "revision": "5",
+            "sampleRate": 24000,
+            "token": "b",
+            "total": 19200,
+            "watchdog": true
+          },
+          "renderer": {
+            "enqueues": [
+              "2",
+              "5"
+            ],
+            "preparations": [
+              "2",
+              "5"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            },
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "b"
+            },
+            {
+              "kind": "started",
+              "token": "b"
+            },
+            {
+              "kind": "finished",
+              "token": "b"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "6",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2",
+              "5"
+            ],
+            "preparations": [
+              "2",
+              "5"
+            ]
+          },
+          "result": null
+        }
+      ]
+    },
+    {
+      "id": "device-loss-once-recovery",
+      "macSource": "Cotabby/Services/Speech/SpeechPCMPlayer.swift",
+      "provenanceKind": "original-test-adaptation",
+      "sourceTest": "currentDeviceInvalidationFailsOnceAndTheNextRequestCanRecover",
+      "actions": [
+        {
+          "op": "begin"
+        },
+        {
+          "op": "release"
+        },
+        {
+          "op": "enqueue"
+        },
+        {
+          "op": "invalidate"
+        },
+        {
+          "op": "invalidate"
+        },
+        {
+          "op": "begin",
+          "token": "b"
+        },
+        {
+          "op": "release",
+          "index": 1
+        },
+        {
+          "op": "enqueue",
+          "token": "b"
+        }
+      ],
+      "expected": [
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "0",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": []
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 19200,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 19200,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            },
+            {
+              "kind": "failed",
+              "message": "The speech provider returned audio that could not be played.",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            },
+            {
+              "kind": "failed",
+              "message": "The speech provider returned audio that could not be played.",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            },
+            {
+              "kind": "failed",
+              "message": "The speech provider returned audio that could not be played.",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "5",
+            "sampleRate": 24000,
+            "token": "b",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2",
+              "5"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            },
+            {
+              "kind": "failed",
+              "message": "The speech provider returned audio that could not be played.",
+              "token": "a"
+            },
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "b"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "5",
+            "sampleRate": 24000,
+            "token": "b",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2",
+              "5"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            },
+            {
+              "kind": "failed",
+              "message": "The speech provider returned audio that could not be played.",
+              "token": "a"
+            },
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "b"
+            },
+            {
+              "kind": "started",
+              "token": "b"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 19200,
+            "rate": 1,
+            "revision": "5",
+            "sampleRate": 24000,
+            "token": "b",
+            "total": 19200,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2",
+              "5"
+            ],
+            "preparations": [
+              "2",
+              "5"
+            ]
+          },
+          "result": null
+        }
+      ]
+    },
+    {
+      "id": "prepare-failed-before-audio",
+      "macSource": "Cotabby/Services/Speech/SpeechPCMPlayer.swift",
+      "provenanceKind": "original-test-adaptation",
+      "sourceTest": "preparationFailureIsReportedBeforeAnyModelAudioArrives",
+      "actions": [
+        {
+          "op": "begin"
+        },
+        {
+          "op": "fail"
+        },
+        {
+          "op": "enqueue"
+        }
+      ],
+      "expected": [
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "0",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": []
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "failed",
+              "message": "The speech provider returned audio that could not be played.",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": "invalidAudio"
+        },
+        {
+          "events": [
+            {
+              "kind": "failed",
+              "message": "The speech provider returned audio that could not be played.",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": "cancelled"
+        }
+      ]
+    },
+    {
+      "id": "wrong-rate-before-schedule",
+      "macSource": "Cotabby/Services/Speech/SpeechPCMPlayer.swift",
+      "provenanceKind": "original-test-adaptation",
+      "sourceTest": "unexpectedSampleRateIsRejectedBeforeScheduling",
+      "actions": [
+        {
+          "op": "begin"
+        },
+        {
+          "op": "release"
+        },
+        {
+          "op": "enqueue",
+          "rateHz": 48000
+        }
+      ],
+      "expected": [
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "0",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": []
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "wrong-rate-before-readiness",
+      "macSource": "Cotabby/Services/Speech/SpeechPCMPlayer.swift",
+      "provenanceKind": "source-policy-extension",
+      "sourceTest": null,
+      "actions": [
+        {
+          "op": "begin"
+        },
+        {
+          "op": "enqueue",
+          "rateHz": 48000
+        },
+        {
+          "op": "release"
+        }
+      ],
+      "expected": [
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "0",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": []
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": "invalidAudio"
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        }
+      ]
+    },
+    {
+      "id": "stale-token-precedes-wrong-format",
+      "macSource": "Cotabby/Services/Speech/SpeechPCMPlayer.swift",
+      "provenanceKind": "source-policy-extension",
+      "sourceTest": null,
+      "actions": [
+        {
+          "op": "begin"
+        },
+        {
+          "op": "release"
+        },
+        {
+          "op": "enqueue",
+          "token": "b",
+          "rateHz": 48000
+        }
+      ],
+      "expected": [
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "0",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": []
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": "cancelled"
+        }
+      ]
+    },
+    {
+      "id": "short-tail-starts-at-eof",
+      "macSource": "Cotabby/Services/Speech/SpeechPCMPlayer.swift",
+      "provenanceKind": "source-policy-extension",
+      "sourceTest": null,
+      "actions": [
+        {
+          "op": "begin"
+        },
+        {
+          "op": "release"
+        },
+        {
+          "op": "enqueue",
+          "samples": 11999
+        },
+        {
+          "op": "end"
+        },
+        {
+          "op": "played"
+        }
+      ],
+      "expected": [
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "0",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": []
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 11999,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 11999,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": true,
+            "playing": true,
+            "preparation": true,
+            "queued": 11999,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 11999,
+            "watchdog": true
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            },
+            {
+              "kind": "finished",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        }
+      ]
+    },
+    {
+      "id": "exact-half-second-starts",
+      "macSource": "Cotabby/Services/Speech/SpeechPCMPlayer.swift",
+      "provenanceKind": "source-policy-extension",
+      "sourceTest": null,
+      "actions": [
+        {
+          "op": "begin"
+        },
+        {
+          "op": "release"
+        },
+        {
+          "op": "enqueue",
+          "samples": 12000
+        },
+        {
+          "op": "end"
+        },
+        {
+          "op": "played"
+        }
+      ],
+      "expected": [
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "0",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": []
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 12000,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 12000,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": true,
+            "playing": true,
+            "preparation": true,
+            "queued": 12000,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 12000,
+            "watchdog": true
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            },
+            {
+              "kind": "finished",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        }
+      ]
+    },
+    {
+      "id": "rate-half-threshold",
+      "macSource": "Cotabby/Services/Speech/SpeechPCMPlayer.swift",
+      "provenanceKind": "source-policy-extension",
+      "sourceTest": null,
+      "actions": [
+        {
+          "op": "begin",
+          "rate": 0.5
+        },
+        {
+          "op": "release"
+        },
+        {
+          "op": "enqueue",
+          "samples": 5999
+        },
+        {
+          "op": "enqueue",
+          "samples": 1
+        },
+        {
+          "op": "end"
+        },
+        {
+          "op": "played",
+          "buffer": 1
+        },
+        {
+          "op": "played"
+        }
+      ],
+      "expected": [
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "0",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": []
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 0.5,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 0.5,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 5999,
+            "rate": 0.5,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 5999,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 6000,
+            "rate": 0.5,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 6000,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2",
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": true,
+            "playing": true,
+            "preparation": true,
+            "queued": 6000,
+            "rate": 0.5,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 6000,
+            "watchdog": true
+          },
+          "renderer": {
+            "enqueues": [
+              "2",
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": true,
+            "playing": true,
+            "preparation": true,
+            "queued": 5999,
+            "rate": 0.5,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 6000,
+            "watchdog": true
+          },
+          "renderer": {
+            "enqueues": [
+              "2",
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            },
+            {
+              "kind": "finished",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 0.5,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2",
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        }
+      ]
+    },
+    {
+      "id": "rate-fast-threshold",
+      "macSource": "Cotabby/Services/Speech/SpeechPCMPlayer.swift",
+      "provenanceKind": "source-policy-extension",
+      "sourceTest": null,
+      "actions": [
+        {
+          "op": "begin",
+          "rate": 1.5
+        },
+        {
+          "op": "release"
+        },
+        {
+          "op": "enqueue",
+          "samples": 17999
+        },
+        {
+          "op": "enqueue",
+          "samples": 1
+        },
+        {
+          "op": "end"
+        },
+        {
+          "op": "played"
+        },
+        {
+          "op": "played",
+          "buffer": 1
+        }
+      ],
+      "expected": [
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "0",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": []
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1.5,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1.5,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 17999,
+            "rate": 1.5,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 17999,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 18000,
+            "rate": 1.5,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 18000,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2",
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": true,
+            "playing": true,
+            "preparation": true,
+            "queued": 18000,
+            "rate": 1.5,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 18000,
+            "watchdog": true
+          },
+          "renderer": {
+            "enqueues": [
+              "2",
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": true,
+            "playing": true,
+            "preparation": true,
+            "queued": 1,
+            "rate": 1.5,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 18000,
+            "watchdog": true
+          },
+          "renderer": {
+            "enqueues": [
+              "2",
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            },
+            {
+              "kind": "finished",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1.5,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2",
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        }
+      ]
+    },
+    {
+      "id": "rate-clamp-low",
+      "macSource": "Cotabby/Services/Speech/SpeechPCMPlayer.swift",
+      "provenanceKind": "source-policy-extension",
+      "sourceTest": null,
+      "actions": [
+        {
+          "op": "begin",
+          "rate": -10
+        },
+        {
+          "op": "release"
+        },
+        {
+          "op": "enqueue",
+          "samples": 6000
+        },
+        {
+          "op": "end"
+        },
+        {
+          "op": "played"
+        }
+      ],
+      "expected": [
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "0",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": []
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 0.5,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 0.5,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 6000,
+            "rate": 0.5,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 6000,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": true,
+            "playing": true,
+            "preparation": true,
+            "queued": 6000,
+            "rate": 0.5,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 6000,
+            "watchdog": true
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            },
+            {
+              "kind": "finished",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 0.5,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        }
+      ]
+    },
+    {
+      "id": "rate-clamp-high",
+      "macSource": "Cotabby/Services/Speech/SpeechPCMPlayer.swift",
+      "provenanceKind": "source-policy-extension",
+      "sourceTest": null,
+      "actions": [
+        {
+          "op": "begin",
+          "rate": 12
+        },
+        {
+          "op": "release"
+        },
+        {
+          "op": "enqueue",
+          "samples": 18000
+        },
+        {
+          "op": "end"
+        },
+        {
+          "op": "played"
+        }
+      ],
+      "expected": [
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "0",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": []
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1.5,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1.5,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 18000,
+            "rate": 1.5,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 18000,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": true,
+            "playing": true,
+            "preparation": true,
+            "queued": 18000,
+            "rate": 1.5,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 18000,
+            "watchdog": true
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            },
+            {
+              "kind": "finished",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1.5,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        }
+      ]
+    },
+    {
+      "id": "queue-drains-before-eof",
+      "macSource": "Cotabby/Services/Speech/SpeechPCMPlayer.swift",
+      "provenanceKind": "source-policy-extension",
+      "sourceTest": null,
+      "actions": [
+        {
+          "op": "begin"
+        },
+        {
+          "op": "release"
+        },
+        {
+          "op": "enqueue"
+        },
+        {
+          "op": "played"
+        },
+        {
+          "op": "end"
+        }
+      ],
+      "expected": [
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "0",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": []
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 19200,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 19200,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 19200,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            },
+            {
+              "kind": "finished",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        }
+      ]
+    },
+    {
+      "id": "queue-gap-is-not-finished",
+      "macSource": "Cotabby/Services/Speech/SpeechPCMPlayer.swift",
+      "provenanceKind": "source-policy-extension",
+      "sourceTest": null,
+      "actions": [
+        {
+          "op": "begin"
+        },
+        {
+          "op": "release"
+        },
+        {
+          "op": "enqueue"
+        },
+        {
+          "op": "played"
+        },
+        {
+          "op": "enqueue"
+        },
+        {
+          "op": "end"
+        },
+        {
+          "op": "played",
+          "buffer": 1
+        }
+      ],
+      "expected": [
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "0",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": []
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 19200,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 19200,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 19200,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 19200,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 38400,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2",
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": true,
+            "playing": true,
+            "preparation": true,
+            "queued": 19200,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 38400,
+            "watchdog": true
+          },
+          "renderer": {
+            "enqueues": [
+              "2",
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            },
+            {
+              "kind": "finished",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2",
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        }
+      ]
+    },
+    {
+      "id": "unknown-and-duplicate-callbacks",
+      "macSource": "Cotabby/Services/Speech/SpeechPCMPlayer.swift",
+      "provenanceKind": "source-policy-extension",
+      "sourceTest": null,
+      "actions": [
+        {
+          "op": "begin"
+        },
+        {
+          "op": "release"
+        },
+        {
+          "op": "enqueue"
+        },
+        {
+          "op": "played",
+          "buffer": 999
+        },
+        {
+          "op": "played"
+        },
+        {
+          "op": "played"
+        },
+        {
+          "op": "end"
+        }
+      ],
+      "expected": [
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "0",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": []
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 19200,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 19200,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 19200,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 19200,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 19200,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 19200,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            },
+            {
+              "kind": "finished",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        }
+      ]
+    },
+    {
+      "id": "empty-input-rejected",
+      "macSource": "Cotabby/Services/Speech/SpeechPCMPlayer.swift",
+      "provenanceKind": "source-policy-extension",
+      "sourceTest": null,
+      "actions": [
+        {
+          "op": "begin"
+        },
+        {
+          "op": "release"
+        },
+        {
+          "op": "end"
+        }
+      ],
+      "expected": [
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "0",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": []
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": "invalidAudio"
+        }
+      ]
+    },
+    {
+      "id": "duplicate-eof-rejected",
+      "macSource": "Cotabby/Services/Speech/SpeechPCMPlayer.swift",
+      "provenanceKind": "source-policy-extension",
+      "sourceTest": null,
+      "actions": [
+        {
+          "op": "begin"
+        },
+        {
+          "op": "release"
+        },
+        {
+          "op": "enqueue"
+        },
+        {
+          "op": "end"
+        },
+        {
+          "op": "end"
+        },
+        {
+          "op": "played"
+        }
+      ],
+      "expected": [
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "0",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": []
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 19200,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 19200,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": true,
+            "playing": true,
+            "preparation": true,
+            "queued": 19200,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 19200,
+            "watchdog": true
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": true,
+            "playing": true,
+            "preparation": true,
+            "queued": 19200,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 19200,
+            "watchdog": true
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": "invalidAudio"
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            },
+            {
+              "kind": "finished",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        }
+      ]
+    },
+    {
+      "id": "enqueue-after-eof-rejected",
+      "macSource": "Cotabby/Services/Speech/SpeechPCMPlayer.swift",
+      "provenanceKind": "source-policy-extension",
+      "sourceTest": null,
+      "actions": [
+        {
+          "op": "begin"
+        },
+        {
+          "op": "release"
+        },
+        {
+          "op": "enqueue"
+        },
+        {
+          "op": "end"
+        },
+        {
+          "op": "enqueue"
+        },
+        {
+          "op": "played"
+        }
+      ],
+      "expected": [
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "0",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": []
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 19200,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 19200,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": true,
+            "playing": true,
+            "preparation": true,
+            "queued": 19200,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 19200,
+            "watchdog": true
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": true,
+            "playing": true,
+            "preparation": true,
+            "queued": 19200,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 19200,
+            "watchdog": true
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": "invalidAudio"
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            },
+            {
+              "kind": "finished",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        }
+      ]
+    },
+    {
+      "id": "stopped-enqueue-and-eof",
+      "macSource": "Cotabby/Services/Speech/SpeechPCMPlayer.swift",
+      "provenanceKind": "source-policy-extension",
+      "sourceTest": null,
+      "actions": [
+        {
+          "op": "begin"
+        },
+        {
+          "op": "release"
+        },
+        {
+          "op": "enqueue"
+        },
+        {
+          "op": "stop"
+        },
+        {
+          "op": "enqueue"
+        },
+        {
+          "op": "end"
+        },
+        {
+          "op": "played"
+        },
+        {
+          "op": "invalidate"
+        }
+      ],
+      "expected": [
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "0",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": []
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 19200,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 19200,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": "cancelled"
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": "cancelled"
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        }
+      ]
+    },
+    {
+      "id": "shutdown-clears-without-cancel-event",
+      "macSource": "Cotabby/Services/Speech/SpeechPCMPlayer.swift",
+      "provenanceKind": "source-policy-extension",
+      "sourceTest": null,
+      "actions": [
+        {
+          "op": "begin"
+        },
+        {
+          "op": "release"
+        },
+        {
+          "op": "enqueue"
+        },
+        {
+          "op": "end"
+        },
+        {
+          "op": "shutdown"
+        },
+        {
+          "op": "played"
+        }
+      ],
+      "expected": [
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "0",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": []
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 19200,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 19200,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": true,
+            "playing": true,
+            "preparation": true,
+            "queued": 19200,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 19200,
+            "watchdog": true
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        }
+      ]
+    },
+    {
+      "id": "held-preparation-stop-responsive",
+      "macSource": "Cotabby/Services/Speech/SpeechPCMPlayer.swift",
+      "provenanceKind": "source-policy-extension",
+      "sourceTest": null,
+      "actions": [
+        {
+          "op": "begin"
+        },
+        {
+          "op": "launch"
+        },
+        {
+          "op": "stop"
+        },
+        {
+          "op": "release"
+        },
+        {
+          "op": "join"
+        }
+      ],
+      "expected": [
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "0",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": []
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": "cancelled"
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": "cancelled"
+        }
+      ]
+    },
+    {
+      "id": "caller-cancel-before-enqueue",
+      "macSource": "Cotabby/Services/Speech/SpeechPCMPlayer.swift",
+      "provenanceKind": "source-policy-extension",
+      "sourceTest": null,
+      "actions": [
+        {
+          "op": "begin"
+        },
+        {
+          "op": "release"
+        },
+        {
+          "op": "enqueue",
+          "cancel": true
+        }
+      ],
+      "expected": [
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "0",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": []
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": "cancelled"
+        }
+      ]
+    },
+    {
+      "id": "caller-cancel-while-awaiting-prepare",
+      "macSource": "Cotabby/Services/Speech/SpeechPCMPlayer.swift",
+      "provenanceKind": "source-policy-extension",
+      "sourceTest": null,
+      "actions": [
+        {
+          "op": "begin"
+        },
+        {
+          "op": "launch"
+        },
+        {
+          "op": "cancel"
+        },
+        {
+          "op": "release"
+        },
+        {
+          "op": "join"
+        }
+      ],
+      "expected": [
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "0",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": []
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": "cancelled"
+        }
+      ]
+    },
+    {
+      "id": "old-prepare-failure-after-new",
+      "macSource": "Cotabby/Services/Speech/SpeechPCMPlayer.swift",
+      "provenanceKind": "source-policy-extension",
+      "sourceTest": null,
+      "actions": [
+        {
+          "op": "begin"
+        },
+        {
+          "op": "launch"
+        },
+        {
+          "op": "begin",
+          "token": "b"
+        },
+        {
+          "op": "release",
+          "index": 1
+        },
+        {
+          "op": "enqueue",
+          "token": "b"
+        },
+        {
+          "op": "fail"
+        },
+        {
+          "op": "join"
+        },
+        {
+          "op": "end",
+          "token": "b"
+        },
+        {
+          "op": "played",
+          "index": 1
+        }
+      ],
+      "expected": [
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "0",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": []
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "4",
+            "sampleRate": 24000,
+            "token": "b",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2",
+              "4"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "b"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "4",
+            "sampleRate": 24000,
+            "token": "b",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2",
+              "4"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "b"
+            },
+            {
+              "kind": "started",
+              "token": "b"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 19200,
+            "rate": 1,
+            "revision": "4",
+            "sampleRate": 24000,
+            "token": "b",
+            "total": 19200,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "4"
+            ],
+            "preparations": [
+              "2",
+              "4"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "b"
+            },
+            {
+              "kind": "started",
+              "token": "b"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 19200,
+            "rate": 1,
+            "revision": "4",
+            "sampleRate": 24000,
+            "token": "b",
+            "total": 19200,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "4"
+            ],
+            "preparations": [
+              "2",
+              "4"
+            ]
+          },
+          "result": "invalidAudio"
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "b"
+            },
+            {
+              "kind": "started",
+              "token": "b"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 19200,
+            "rate": 1,
+            "revision": "4",
+            "sampleRate": 24000,
+            "token": "b",
+            "total": 19200,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "4"
+            ],
+            "preparations": [
+              "2",
+              "4"
+            ]
+          },
+          "result": "invalidAudio"
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "b"
+            },
+            {
+              "kind": "started",
+              "token": "b"
+            }
+          ],
+          "player": {
+            "ended": true,
+            "playing": true,
+            "preparation": true,
+            "queued": 19200,
+            "rate": 1,
+            "revision": "4",
+            "sampleRate": 24000,
+            "token": "b",
+            "total": 19200,
+            "watchdog": true
+          },
+          "renderer": {
+            "enqueues": [
+              "4"
+            ],
+            "preparations": [
+              "2",
+              "4"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "b"
+            },
+            {
+              "kind": "started",
+              "token": "b"
+            },
+            {
+              "kind": "finished",
+              "token": "b"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "5",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "4"
+            ],
+            "preparations": [
+              "2",
+              "4"
+            ]
+          },
+          "result": null
+        }
+      ]
+    },
+    {
+      "id": "device-loss-during-prepare",
+      "macSource": "Cotabby/Services/Speech/SpeechPCMPlayer.swift",
+      "provenanceKind": "source-policy-extension",
+      "sourceTest": null,
+      "actions": [
+        {
+          "op": "begin"
+        },
+        {
+          "op": "launch"
+        },
+        {
+          "op": "invalidate"
+        },
+        {
+          "op": "release"
+        },
+        {
+          "op": "join"
+        }
+      ],
+      "expected": [
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "0",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": []
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "failed",
+              "message": "The speech provider returned audio that could not be played.",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "failed",
+              "message": "The speech provider returned audio that could not be played.",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": "cancelled"
+        },
+        {
+          "events": [
+            {
+              "kind": "failed",
+              "message": "The speech provider returned audio that could not be played.",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": "cancelled"
+        }
+      ]
+    },
+    {
+      "id": "backpressure-drain-unblocks",
+      "macSource": "Cotabby/Services/Speech/SpeechPCMPlayer.swift",
+      "provenanceKind": "source-policy-extension",
+      "sourceTest": null,
+      "actions": [
+        {
+          "op": "begin"
+        },
+        {
+          "op": "release"
+        },
+        {
+          "op": "enqueue",
+          "samples": 48000
+        },
+        {
+          "op": "launch",
+          "samples": 1
+        },
+        {
+          "op": "played"
+        },
+        {
+          "op": "join"
+        },
+        {
+          "op": "end"
+        },
+        {
+          "op": "played",
+          "buffer": 1
+        }
+      ],
+      "expected": [
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "0",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": []
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 48000,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 48000,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 48000,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 48000,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 48000,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 1,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 48001,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2",
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": true,
+            "playing": true,
+            "preparation": true,
+            "queued": 1,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 48001,
+            "watchdog": true
+          },
+          "renderer": {
+            "enqueues": [
+              "2",
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            },
+            {
+              "kind": "finished",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2",
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        }
+      ]
+    },
+    {
+      "id": "backpressure-stop-cancels",
+      "macSource": "Cotabby/Services/Speech/SpeechPCMPlayer.swift",
+      "provenanceKind": "source-policy-extension",
+      "sourceTest": null,
+      "actions": [
+        {
+          "op": "begin"
+        },
+        {
+          "op": "release"
+        },
+        {
+          "op": "enqueue",
+          "samples": 48000
+        },
+        {
+          "op": "launch",
+          "samples": 1
+        },
+        {
+          "op": "stop"
+        },
+        {
+          "op": "join"
+        }
+      ],
+      "expected": [
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "0",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": []
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 48000,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 48000,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 48000,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 48000,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": "cancelled"
+        }
+      ]
+    },
+    {
+      "id": "backpressure-caller-cancel",
+      "macSource": "Cotabby/Services/Speech/SpeechPCMPlayer.swift",
+      "provenanceKind": "source-policy-extension",
+      "sourceTest": null,
+      "actions": [
+        {
+          "op": "begin"
+        },
+        {
+          "op": "release"
+        },
+        {
+          "op": "enqueue",
+          "samples": 48000
+        },
+        {
+          "op": "launch",
+          "samples": 1
+        },
+        {
+          "op": "cancel"
+        },
+        {
+          "op": "join"
+        }
+      ],
+      "expected": [
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "0",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": []
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 48000,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 48000,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 48000,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 48000,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 48000,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 48000,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 48000,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 48000,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": "cancelled"
+        }
+      ]
+    },
+    {
+      "id": "two-seconds-fast-rate-adjusted",
+      "macSource": "Cotabby/Services/Speech/SpeechPCMPlayer.swift",
+      "provenanceKind": "source-policy-extension",
+      "sourceTest": null,
+      "actions": [
+        {
+          "op": "begin",
+          "rate": 1.5
+        },
+        {
+          "op": "release"
+        },
+        {
+          "op": "enqueue",
+          "samples": 36000
+        },
+        {
+          "op": "enqueue",
+          "samples": 36000
+        },
+        {
+          "op": "launch",
+          "samples": 1
+        },
+        {
+          "op": "played"
+        },
+        {
+          "op": "join"
+        },
+        {
+          "op": "end"
+        },
+        {
+          "op": "played",
+          "buffer": 1
+        },
+        {
+          "op": "played",
+          "buffer": 2
+        }
+      ],
+      "expected": [
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "0",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": []
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1.5,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1.5,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 36000,
+            "rate": 1.5,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 36000,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 72000,
+            "rate": 1.5,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 72000,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2",
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 72000,
+            "rate": 1.5,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 72000,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2",
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 36000,
+            "rate": 1.5,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 72000,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2",
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 36001,
+            "rate": 1.5,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 72001,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2",
+              "2",
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": true,
+            "playing": true,
+            "preparation": true,
+            "queued": 36001,
+            "rate": 1.5,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 72001,
+            "watchdog": true
+          },
+          "renderer": {
+            "enqueues": [
+              "2",
+              "2",
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": true,
+            "playing": true,
+            "preparation": true,
+            "queued": 1,
+            "rate": 1.5,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 72001,
+            "watchdog": true
+          },
+          "renderer": {
+            "enqueues": [
+              "2",
+              "2",
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            },
+            {
+              "kind": "finished",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1.5,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2",
+              "2",
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        }
+      ]
+    },
+    {
+      "id": "current-invalidation-after-eof",
+      "macSource": "Cotabby/Services/Speech/SpeechPCMPlayer.swift",
+      "provenanceKind": "source-policy-extension",
+      "sourceTest": null,
+      "actions": [
+        {
+          "op": "begin"
+        },
+        {
+          "op": "release"
+        },
+        {
+          "op": "enqueue"
+        },
+        {
+          "op": "end"
+        },
+        {
+          "op": "invalidate"
+        },
+        {
+          "op": "played"
+        },
+        {
+          "op": "invalidate"
+        }
+      ],
+      "expected": [
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "0",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": []
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": true,
+            "preparation": true,
+            "queued": 19200,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 19200,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": true,
+            "playing": true,
+            "preparation": true,
+            "queued": 19200,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 19200,
+            "watchdog": true
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            },
+            {
+              "kind": "failed",
+              "message": "The speech provider returned audio that could not be played.",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            },
+            {
+              "kind": "failed",
+              "message": "The speech provider returned audio that could not be played.",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            },
+            {
+              "kind": "failed",
+              "message": "The speech provider returned audio that could not be played.",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        }
+      ]
+    },
+    {
+      "id": "watchdog-missing-device-drain",
+      "macSource": "Cotabby/Services/Speech/SpeechPCMPlayer.swift",
+      "provenanceKind": "source-policy-extension",
+      "sourceTest": null,
+      "actions": [
+        {
+          "op": "begin"
+        },
+        {
+          "op": "release"
+        },
+        {
+          "op": "enqueue",
+          "samples": 1
+        },
+        {
+          "op": "end"
+        },
+        {
+          "op": "waitFailure"
+        },
+        {
+          "op": "played"
+        }
+      ],
+      "expected": [
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "0",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": []
+          },
+          "result": null
+        },
+        {
+          "events": [],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 0,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": true,
+            "queued": 1,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 1,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": true,
+            "playing": true,
+            "preparation": true,
+            "queued": 1,
+            "rate": 1,
+            "revision": "2",
+            "sampleRate": 24000,
+            "token": "a",
+            "total": 1,
+            "watchdog": true
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            },
+            {
+              "kind": "failed",
+              "message": "The speech provider returned audio that could not be played.",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        },
+        {
+          "events": [
+            {
+              "kind": "prepared",
+              "milliseconds": "measured",
+              "token": "a"
+            },
+            {
+              "kind": "started",
+              "token": "a"
+            },
+            {
+              "kind": "failed",
+              "message": "The speech provider returned audio that could not be played.",
+              "token": "a"
+            }
+          ],
+          "player": {
+            "ended": false,
+            "playing": false,
+            "preparation": false,
+            "queued": 0,
+            "rate": 1,
+            "revision": "3",
+            "sampleRate": null,
+            "token": null,
+            "total": 0,
+            "watchdog": false
+          },
+          "renderer": {
+            "enqueues": [
+              "2"
+            ],
+            "preparations": [
+              "2"
+            ]
+          },
+          "result": null
+        }
+      ]
+    }
+  ]
+}

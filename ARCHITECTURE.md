@@ -242,3 +242,8 @@ The [speech observer and request history](docs/SPEECH_TELEMETRY.md) keep content
 and runtime identity beside a bounded 100-row preference Store. Old runtime events may patch an
 existing old metric before publication admission; generation/session/sequence guards protect the
 current PID/assets. UI-context serialization and real event/error log sinks belong to composition.
+
+The [PCM playback facade](docs/SPEECH_PCM_PLAYER.md) keeps the original UI-owned preparation barrier,
+queue/drain events and revision-scoped renderer seam. It marshals native callbacks to the caller UI
+context and tracks retirement through shutdown; an actual Windows audio renderer and controller
+composition remain open. Portable and STA gate tests establish scheduling, not audible playback.

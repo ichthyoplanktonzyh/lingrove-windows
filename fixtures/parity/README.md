@@ -402,3 +402,12 @@ The124-case archive validation corpus now retains16 `bridgedExpected` diagnostic
 JSONDecoder expectations for filename cases. Eight final-newline decisions differ by Foundation
 String storage even with identical UTF-8 bytes; both original observations are preserved. The
 Windows boundary follows native notebook/wire decoding. See the audio-export correction evidence.
+
+## PCM playback facade
+
+`speech-player-v1.json` contains33 complete-original facade traces (6 original-test adaptations,
+27 source-policy extensions), paired with `verify-speech-player-macos-parity.py` and the actual
+`SpeechPCMPlayerTests` C# owner tests. Complete pinned sources and verbatim gated renderer run
+without AVFoundation. Readiness waiters settle at explicit observation barriers; only uninjectable
+preparation milliseconds and random token identities are projected. State/events/errors remain
+exact. See [source mapping, evidence and native limits](../../docs/SPEECH_PCM_PLAYER.md).

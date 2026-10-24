@@ -77,7 +77,8 @@ C# runs the same17 observations over a separate test-only executable, with equiv
 ready/chunk/result/wait/wrong-sequence/truncation effects. Portable tests use an explicit test process
 factory; Windows-only inference tests use the production CreateProcess/job/pipes adapter. The test
 helper is built only as a test dependency and copied after its project builds, including a clean CI
-checkout. It is never copied to the application. Additional portable tests cover failed-reap retry,
+checkout. It is never copied to the application. After native/reader drain, Windows fixture deletion
+has a bounded retry for transient executable-image/scanner locks; persistent failures still fail. Additional portable tests cover failed-reap retry,
 lazy idle-only pressure, rejected ID/rate/finite samples/totals, process exit, explicit old-reader
 drain and source routing. Windows tests cover graceful EOF, forced reaping, shared/idempotent stops,
 descendant job retirement, startup cancellation/failure and repeated pressure-binding disposal without inducing low memory.

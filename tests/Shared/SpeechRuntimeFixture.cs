@@ -50,7 +50,19 @@ internal sealed class SpeechRuntimeFixture : IAsyncDisposable
     public async ValueTask DisposeAsync()
     {
         try { await Runtime.DisposeAsync(); }
-        finally { await Factory.DisposeAsync(); Directory.Delete(Root, recursive: true); }
+        finally { await Factory.DisposeAsync(); await DeleteReapedFixtureAsync(); }
+    }
+    private async Task DeleteReapedFixtureAsync()
+    {
+        // A signaled/reaped Windows child can briefly leave its executable image locked while
+        // the kernel or a scanner releases the mapping. Retry only this isolated test directory,
+        // after all owned children/streams have drained; never hide a failed reaping barrier.
+        for (int attempt = 0; ; attempt++)
+        {
+            try { Directory.Delete(Root, recursive: true); return; }
+            catch (Exception error) when (OperatingSystem.IsWindows() && attempt < 39 && error is IOException or UnauthorizedAccessException)
+            { await Task.Delay(50); }
+        }
     }
 }
 internal sealed class SpeechTestPressure : ISpeechMemoryPressureSource

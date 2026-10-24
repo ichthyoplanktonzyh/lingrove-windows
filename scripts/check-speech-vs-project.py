@@ -39,6 +39,11 @@ def check(build,source):
   if len(matches)!=1:raise ValueError('Expected exactly one source inventory item: '+expected.name)
   return matches[0]
  core_item,model_item=one(core),one(model)
+ # These two source inventory records are bounded build metadata, never generated/user text.
+ # Preserve the actual CMake representation in CI when a generator violates our assumptions.
+ print('Visual Studio direct-source metadata: '+json.dumps({label:[{'name':name(node),
+  'condition':node.get('Condition'),'value':(node.text or '').strip()}for node in item]
+  for label,item in [('core',core_item),('model',model_item)]},sort_keys=True),flush=True)
  for configuration in configurations:
   if (metadata(core_item,'ExcludedFromBuild',configuration)or '').lower()=='true':raise ValueError('Core source was excluded from direct compilation')
   if (metadata(model_item,'ExcludedFromBuild',configuration)or '').lower()!='true':raise ValueError('Unity member is also directly compiled')

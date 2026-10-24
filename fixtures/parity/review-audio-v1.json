@@ -1,0 +1,6221 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "cases": [
+    {
+      "id": "missing-owner",
+      "speech": false,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "request"
+        },
+        {
+          "op": "prepare"
+        },
+        {
+          "op": "audition"
+        },
+        {
+          "op": "stop"
+        },
+        {
+          "op": "discard"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "error": "Choose a speech model and voice in TTS settings first."
+          },
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "error": "Choose a speech model and voice in TTS settings first."
+          },
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "error": "Choose a speech model and voice in TTS settings first."
+          },
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        }
+      ]
+    },
+    {
+      "id": "request-en",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "request",
+          "kind": "expression",
+          "text": "actual phrase",
+          "sentence": "same-side context",
+          "language": "en"
+        },
+        {
+          "op": "request",
+          "kind": "sentence",
+          "text": "actual phrase",
+          "sentence": "same-side context",
+          "language": "en"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "en",
+            "text": "actual phrase"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": "same-side context",
+                "language": "en",
+                "op": "request",
+                "text": "actual phrase"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "en",
+            "text": "same-side context"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": "same-side context",
+                "language": "en",
+                "op": "request",
+                "text": "actual phrase"
+              },
+              {
+                "context": "same-side context",
+                "language": "en",
+                "op": "request",
+                "text": "same-side context"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        }
+      ]
+    },
+    {
+      "id": "request-es",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "request",
+          "kind": "expression",
+          "text": "actual phrase",
+          "sentence": "same-side context",
+          "language": "es"
+        },
+        {
+          "op": "request",
+          "kind": "sentence",
+          "text": "actual phrase",
+          "sentence": "same-side context",
+          "language": "es"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "es",
+            "text": "actual phrase"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": "same-side context",
+                "language": "es",
+                "op": "request",
+                "text": "actual phrase"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "es",
+            "text": "same-side context"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": "same-side context",
+                "language": "es",
+                "op": "request",
+                "text": "actual phrase"
+              },
+              {
+                "context": "same-side context",
+                "language": "es",
+                "op": "request",
+                "text": "same-side context"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        }
+      ]
+    },
+    {
+      "id": "request-fr",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "request",
+          "kind": "expression",
+          "text": "actual phrase",
+          "sentence": "same-side context",
+          "language": "fr"
+        },
+        {
+          "op": "request",
+          "kind": "sentence",
+          "text": "actual phrase",
+          "sentence": "same-side context",
+          "language": "fr"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "fr",
+            "text": "actual phrase"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": "same-side context",
+                "language": "fr",
+                "op": "request",
+                "text": "actual phrase"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "fr",
+            "text": "same-side context"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": "same-side context",
+                "language": "fr",
+                "op": "request",
+                "text": "actual phrase"
+              },
+              {
+                "context": "same-side context",
+                "language": "fr",
+                "op": "request",
+                "text": "same-side context"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        }
+      ]
+    },
+    {
+      "id": "request-de",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "request",
+          "kind": "expression",
+          "text": "actual phrase",
+          "sentence": "same-side context",
+          "language": "de"
+        },
+        {
+          "op": "request",
+          "kind": "sentence",
+          "text": "actual phrase",
+          "sentence": "same-side context",
+          "language": "de"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "de",
+            "text": "actual phrase"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": "same-side context",
+                "language": "de",
+                "op": "request",
+                "text": "actual phrase"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "de",
+            "text": "same-side context"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": "same-side context",
+                "language": "de",
+                "op": "request",
+                "text": "actual phrase"
+              },
+              {
+                "context": "same-side context",
+                "language": "de",
+                "op": "request",
+                "text": "same-side context"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        }
+      ]
+    },
+    {
+      "id": "request-it",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "request",
+          "kind": "expression",
+          "text": "actual phrase",
+          "sentence": "same-side context",
+          "language": "it"
+        },
+        {
+          "op": "request",
+          "kind": "sentence",
+          "text": "actual phrase",
+          "sentence": "same-side context",
+          "language": "it"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "it",
+            "text": "actual phrase"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": "same-side context",
+                "language": "it",
+                "op": "request",
+                "text": "actual phrase"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "it",
+            "text": "same-side context"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": "same-side context",
+                "language": "it",
+                "op": "request",
+                "text": "actual phrase"
+              },
+              {
+                "context": "same-side context",
+                "language": "it",
+                "op": "request",
+                "text": "same-side context"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        }
+      ]
+    },
+    {
+      "id": "request-pt",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "request",
+          "kind": "expression",
+          "text": "actual phrase",
+          "sentence": "same-side context",
+          "language": "pt"
+        },
+        {
+          "op": "request",
+          "kind": "sentence",
+          "text": "actual phrase",
+          "sentence": "same-side context",
+          "language": "pt"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "pt",
+            "text": "actual phrase"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": "same-side context",
+                "language": "pt",
+                "op": "request",
+                "text": "actual phrase"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "pt",
+            "text": "same-side context"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": "same-side context",
+                "language": "pt",
+                "op": "request",
+                "text": "actual phrase"
+              },
+              {
+                "context": "same-side context",
+                "language": "pt",
+                "op": "request",
+                "text": "same-side context"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        }
+      ]
+    },
+    {
+      "id": "request-nl",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "request",
+          "kind": "expression",
+          "text": "actual phrase",
+          "sentence": "same-side context",
+          "language": "nl"
+        },
+        {
+          "op": "request",
+          "kind": "sentence",
+          "text": "actual phrase",
+          "sentence": "same-side context",
+          "language": "nl"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "nl",
+            "text": "actual phrase"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": "same-side context",
+                "language": "nl",
+                "op": "request",
+                "text": "actual phrase"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "nl",
+            "text": "same-side context"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": "same-side context",
+                "language": "nl",
+                "op": "request",
+                "text": "actual phrase"
+              },
+              {
+                "context": "same-side context",
+                "language": "nl",
+                "op": "request",
+                "text": "same-side context"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        }
+      ]
+    },
+    {
+      "id": "request-ru",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "request",
+          "kind": "expression",
+          "text": "actual phrase",
+          "sentence": "same-side context",
+          "language": "ru"
+        },
+        {
+          "op": "request",
+          "kind": "sentence",
+          "text": "actual phrase",
+          "sentence": "same-side context",
+          "language": "ru"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "ru",
+            "text": "actual phrase"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": "same-side context",
+                "language": "ru",
+                "op": "request",
+                "text": "actual phrase"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "ru",
+            "text": "same-side context"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": "same-side context",
+                "language": "ru",
+                "op": "request",
+                "text": "actual phrase"
+              },
+              {
+                "context": "same-side context",
+                "language": "ru",
+                "op": "request",
+                "text": "same-side context"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        }
+      ]
+    },
+    {
+      "id": "request-zh-Hans",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "request",
+          "kind": "expression",
+          "text": "actual phrase",
+          "sentence": "same-side context",
+          "language": "zh-Hans"
+        },
+        {
+          "op": "request",
+          "kind": "sentence",
+          "text": "actual phrase",
+          "sentence": "same-side context",
+          "language": "zh-Hans"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "zh-Hans",
+            "text": "actual phrase"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": "same-side context",
+                "language": "zh-Hans",
+                "op": "request",
+                "text": "actual phrase"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "zh-Hans",
+            "text": "same-side context"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": "same-side context",
+                "language": "zh-Hans",
+                "op": "request",
+                "text": "actual phrase"
+              },
+              {
+                "context": "same-side context",
+                "language": "zh-Hans",
+                "op": "request",
+                "text": "same-side context"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        }
+      ]
+    },
+    {
+      "id": "request-zh-Hant",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "request",
+          "kind": "expression",
+          "text": "actual phrase",
+          "sentence": "same-side context",
+          "language": "zh-Hant"
+        },
+        {
+          "op": "request",
+          "kind": "sentence",
+          "text": "actual phrase",
+          "sentence": "same-side context",
+          "language": "zh-Hant"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "zh-Hant",
+            "text": "actual phrase"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": "same-side context",
+                "language": "zh-Hant",
+                "op": "request",
+                "text": "actual phrase"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "zh-Hant",
+            "text": "same-side context"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": "same-side context",
+                "language": "zh-Hant",
+                "op": "request",
+                "text": "actual phrase"
+              },
+              {
+                "context": "same-side context",
+                "language": "zh-Hant",
+                "op": "request",
+                "text": "same-side context"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        }
+      ]
+    },
+    {
+      "id": "request-ja",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "request",
+          "kind": "expression",
+          "text": "actual phrase",
+          "sentence": "same-side context",
+          "language": "ja"
+        },
+        {
+          "op": "request",
+          "kind": "sentence",
+          "text": "actual phrase",
+          "sentence": "same-side context",
+          "language": "ja"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "ja",
+            "text": "actual phrase"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": "same-side context",
+                "language": "ja",
+                "op": "request",
+                "text": "actual phrase"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "ja",
+            "text": "same-side context"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": "same-side context",
+                "language": "ja",
+                "op": "request",
+                "text": "actual phrase"
+              },
+              {
+                "context": "same-side context",
+                "language": "ja",
+                "op": "request",
+                "text": "same-side context"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        }
+      ]
+    },
+    {
+      "id": "request-ko",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "request",
+          "kind": "expression",
+          "text": "actual phrase",
+          "sentence": "same-side context",
+          "language": "ko"
+        },
+        {
+          "op": "request",
+          "kind": "sentence",
+          "text": "actual phrase",
+          "sentence": "same-side context",
+          "language": "ko"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "ko",
+            "text": "actual phrase"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": "same-side context",
+                "language": "ko",
+                "op": "request",
+                "text": "actual phrase"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "ko",
+            "text": "same-side context"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": "same-side context",
+                "language": "ko",
+                "op": "request",
+                "text": "actual phrase"
+              },
+              {
+                "context": "same-side context",
+                "language": "ko",
+                "op": "request",
+                "text": "same-side context"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        }
+      ]
+    },
+    {
+      "id": "request-hi",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "request",
+          "kind": "expression",
+          "text": "actual phrase",
+          "sentence": "same-side context",
+          "language": "hi"
+        },
+        {
+          "op": "request",
+          "kind": "sentence",
+          "text": "actual phrase",
+          "sentence": "same-side context",
+          "language": "hi"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "hi",
+            "text": "actual phrase"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": "same-side context",
+                "language": "hi",
+                "op": "request",
+                "text": "actual phrase"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "hi",
+            "text": "same-side context"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": "same-side context",
+                "language": "hi",
+                "op": "request",
+                "text": "actual phrase"
+              },
+              {
+                "context": "same-side context",
+                "language": "hi",
+                "op": "request",
+                "text": "same-side context"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        }
+      ]
+    },
+    {
+      "id": "request-ar",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "request",
+          "kind": "expression",
+          "text": "actual phrase",
+          "sentence": "same-side context",
+          "language": "ar"
+        },
+        {
+          "op": "request",
+          "kind": "sentence",
+          "text": "actual phrase",
+          "sentence": "same-side context",
+          "language": "ar"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "ar",
+            "text": "actual phrase"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": "same-side context",
+                "language": "ar",
+                "op": "request",
+                "text": "actual phrase"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "ar",
+            "text": "same-side context"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": "same-side context",
+                "language": "ar",
+                "op": "request",
+                "text": "actual phrase"
+              },
+              {
+                "context": "same-side context",
+                "language": "ar",
+                "op": "request",
+                "text": "same-side context"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        }
+      ]
+    },
+    {
+      "id": "context-0",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "request",
+          "text": "surface\u0000",
+          "sentence": ""
+        },
+        {
+          "op": "request",
+          "kind": "sentence",
+          "text": "surface",
+          "sentence": ""
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "en",
+            "text": "surface\u0000"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": null,
+                "language": "en",
+                "op": "request",
+                "text": "surface\u0000"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "en",
+            "text": ""
+          },
+          "state": {
+            "calls": [
+              {
+                "context": null,
+                "language": "en",
+                "op": "request",
+                "text": "surface\u0000"
+              },
+              {
+                "context": null,
+                "language": "en",
+                "op": "request",
+                "text": ""
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        }
+      ]
+    },
+    {
+      "id": "context-1",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "request",
+          "text": "surface\u0000",
+          "sentence": " "
+        },
+        {
+          "op": "request",
+          "kind": "sentence",
+          "text": "surface",
+          "sentence": " "
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "en",
+            "text": "surface\u0000"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": " ",
+                "language": "en",
+                "op": "request",
+                "text": "surface\u0000"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "en",
+            "text": " "
+          },
+          "state": {
+            "calls": [
+              {
+                "context": " ",
+                "language": "en",
+                "op": "request",
+                "text": "surface\u0000"
+              },
+              {
+                "context": " ",
+                "language": "en",
+                "op": "request",
+                "text": " "
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        }
+      ]
+    },
+    {
+      "id": "context-2",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "request",
+          "text": "surface\u0000",
+          "sentence": "\n"
+        },
+        {
+          "op": "request",
+          "kind": "sentence",
+          "text": "surface",
+          "sentence": "\n"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "en",
+            "text": "surface\u0000"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": "\n",
+                "language": "en",
+                "op": "request",
+                "text": "surface\u0000"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "en",
+            "text": "\n"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": "\n",
+                "language": "en",
+                "op": "request",
+                "text": "surface\u0000"
+              },
+              {
+                "context": "\n",
+                "language": "en",
+                "op": "request",
+                "text": "\n"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        }
+      ]
+    },
+    {
+      "id": "context-3",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "request",
+          "text": "surface\u0000",
+          "sentence": "context\u0000"
+        },
+        {
+          "op": "request",
+          "kind": "sentence",
+          "text": "surface",
+          "sentence": "context\u0000"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "en",
+            "text": "surface\u0000"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": "context\u0000",
+                "language": "en",
+                "op": "request",
+                "text": "surface\u0000"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "en",
+            "text": "context\u0000"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": "context\u0000",
+                "language": "en",
+                "op": "request",
+                "text": "surface\u0000"
+              },
+              {
+                "context": "context\u0000",
+                "language": "en",
+                "op": "request",
+                "text": "context\u0000"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        }
+      ]
+    },
+    {
+      "id": "context-4",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "request",
+          "text": "surface\u0000",
+          "sentence": "上下文"
+        },
+        {
+          "op": "request",
+          "kind": "sentence",
+          "text": "surface",
+          "sentence": "上下文"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "en",
+            "text": "surface\u0000"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": "上下文",
+                "language": "en",
+                "op": "request",
+                "text": "surface\u0000"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "en",
+            "text": "上下文"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": "上下文",
+                "language": "en",
+                "op": "request",
+                "text": "surface\u0000"
+              },
+              {
+                "context": "上下文",
+                "language": "en",
+                "op": "request",
+                "text": "上下文"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        }
+      ]
+    },
+    {
+      "id": "context-5",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "request",
+          "text": "surface\u0000",
+          "sentence": "é"
+        },
+        {
+          "op": "request",
+          "kind": "sentence",
+          "text": "surface",
+          "sentence": "é"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "en",
+            "text": "surface\u0000"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": "é",
+                "language": "en",
+                "op": "request",
+                "text": "surface\u0000"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "en",
+            "text": "é"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": "é",
+                "language": "en",
+                "op": "request",
+                "text": "surface\u0000"
+              },
+              {
+                "context": "é",
+                "language": "en",
+                "op": "request",
+                "text": "é"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        }
+      ]
+    },
+    {
+      "id": "request-fault",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "request",
+          "fail": "request"
+        },
+        {
+          "op": "request",
+          "fingerprint": "after-failure"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "error": "Speech generation failed. Check the model or connection and try again."
+          },
+          "state": {
+            "calls": [
+              {
+                "context": "sentence",
+                "language": "en",
+                "op": "request",
+                "text": "expression"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "after-failure",
+            "language": "en",
+            "text": "expression"
+          },
+          "state": {
+            "calls": [
+              {
+                "context": "sentence",
+                "language": "en",
+                "op": "request",
+                "text": "expression"
+              },
+              {
+                "context": "sentence",
+                "language": "en",
+                "op": "request",
+                "text": "expression"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        }
+      ]
+    },
+    {
+      "id": "reuse",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "prepare"
+        },
+        {
+          "op": "prepare"
+        },
+        {
+          "op": "prepare",
+          "force": true
+        },
+        {
+          "op": "prepare",
+          "fingerprint": "new"
+        },
+        {
+          "op": "prepare",
+          "fingerprint": "new"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+              }
+            }
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "new",
+            "sha256": "23d57194f25574beb479cf1c0b08b5d1eb5fc1447516b3b97192bd9617400ae4"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "new",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "new",
+                "sha256": "23d57194f25574beb479cf1c0b08b5d1eb5fc1447516b3b97192bd9617400ae4"
+              }
+            }
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "new",
+            "sha256": "23d57194f25574beb479cf1c0b08b5d1eb5fc1447516b3b97192bd9617400ae4"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "new",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "new",
+                "sha256": "23d57194f25574beb479cf1c0b08b5d1eb5fc1447516b3b97192bd9617400ae4"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "independent-slots",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "prepare"
+        },
+        {
+          "op": "prepare",
+          "kind": "sentence"
+        },
+        {
+          "op": "prepare"
+        },
+        {
+          "op": "prepare",
+          "kind": "sentence"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              },
+              "sentence": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+              }
+            }
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              },
+              "sentence": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+              }
+            }
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              },
+              "sentence": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "fingerprint-only",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "prepare",
+          "text": "old text"
+        },
+        {
+          "op": "prepare",
+          "text": "new text",
+          "language": "ja"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "old text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "old text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "canonical-fingerprint",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "prepare",
+          "fingerprint": "café"
+        },
+        {
+          "op": "prepare",
+          "fingerprint": "café"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "café",
+            "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "café",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "café",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "café",
+            "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "café",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "café",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "audition",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "audition"
+        },
+        {
+          "op": "audition"
+        },
+        {
+          "op": "audition",
+          "kind": "sentence",
+          "language": "fr"
+        },
+        {
+          "op": "stop"
+        },
+        {
+          "op": "prepare"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": null,
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "bytes": 7,
+                "language": "en",
+                "op": "audition",
+                "ownerMatches": true
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": null,
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "bytes": 7,
+                "language": "en",
+                "op": "audition",
+                "ownerMatches": true
+              },
+              {
+                "bytes": 7,
+                "language": "en",
+                "op": "audition",
+                "ownerMatches": true
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": null,
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "bytes": 7,
+                "language": "en",
+                "op": "audition",
+                "ownerMatches": true
+              },
+              {
+                "bytes": 7,
+                "language": "en",
+                "op": "audition",
+                "ownerMatches": true
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "fr",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "bytes": 7,
+                "language": "fr",
+                "op": "audition",
+                "ownerMatches": true
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              },
+              "sentence": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+              }
+            }
+          }
+        },
+        {
+          "outcome": null,
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "bytes": 7,
+                "language": "en",
+                "op": "audition",
+                "ownerMatches": true
+              },
+              {
+                "bytes": 7,
+                "language": "en",
+                "op": "audition",
+                "ownerMatches": true
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "fr",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "bytes": 7,
+                "language": "fr",
+                "op": "audition",
+                "ownerMatches": true
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              },
+              "sentence": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+              }
+            }
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "bytes": 7,
+                "language": "en",
+                "op": "audition",
+                "ownerMatches": true
+              },
+              {
+                "bytes": 7,
+                "language": "en",
+                "op": "audition",
+                "ownerMatches": true
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "fr",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "bytes": 7,
+                "language": "fr",
+                "op": "audition",
+                "ownerMatches": true
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              },
+              "sentence": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "audition-fault",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "audition",
+          "fail": "audition"
+        },
+        {
+          "op": "audition"
+        },
+        {
+          "op": "prepare"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "error": "Speech generation failed. Check the model or connection and try again."
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "bytes": 7,
+                "language": "en",
+                "op": "audition",
+                "ownerMatches": true
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": null,
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "bytes": 7,
+                "language": "en",
+                "op": "audition",
+                "ownerMatches": true
+              },
+              {
+                "bytes": 7,
+                "language": "en",
+                "op": "audition",
+                "ownerMatches": true
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "bytes": 7,
+                "language": "en",
+                "op": "audition",
+                "ownerMatches": true
+              },
+              {
+                "bytes": 7,
+                "language": "en",
+                "op": "audition",
+                "ownerMatches": true
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "export-fault",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "prepare",
+          "fail": "export"
+        },
+        {
+          "op": "prepare"
+        },
+        {
+          "op": "prepare",
+          "fingerprint": "new",
+          "fail": "export"
+        },
+        {
+          "op": "prepare"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "error": "Speech generation failed. Check the model or connection and try again."
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+              }
+            }
+          }
+        },
+        {
+          "outcome": {
+            "error": "Speech generation failed. Check the model or connection and try again."
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "new",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+              }
+            }
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "new",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "fake-cancellation",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "prepare",
+          "fail": "cancel"
+        },
+        {
+          "op": "prepare"
+        },
+        {
+          "op": "prepare",
+          "force": true,
+          "fail": "cancel"
+        },
+        {
+          "op": "prepare"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "error": "cancelled"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+              }
+            }
+          }
+        },
+        {
+          "outcome": {
+            "error": "cancelled"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+              }
+            }
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "cancel-before-uncached",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "prepare",
+          "cancel": true
+        },
+        {
+          "op": "prepare"
+        },
+        {
+          "op": "prepare",
+          "force": true,
+          "cancel": true
+        },
+        {
+          "op": "prepare"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "error": "cancelled"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+              }
+            }
+          }
+        },
+        {
+          "outcome": {
+            "error": "cancelled"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+              }
+            }
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "cancel-before-cached",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "prepare"
+        },
+        {
+          "op": "prepare",
+          "cancel": true
+        },
+        {
+          "op": "audition",
+          "cancel": true
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": null,
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "bytes": 7,
+                "language": "en",
+                "op": "audition",
+                "ownerMatches": true
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "discard-cache",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "prepare"
+        },
+        {
+          "op": "prepare",
+          "kind": "sentence"
+        },
+        {
+          "op": "discard"
+        },
+        {
+          "op": "prepare"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              },
+              "sentence": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+              }
+            }
+          }
+        },
+        {
+          "outcome": null,
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "23d57194f25574beb479cf1c0b08b5d1eb5fc1447516b3b97192bd9617400ae4"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "23d57194f25574beb479cf1c0b08b5d1eb5fc1447516b3b97192bd9617400ae4"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "stop-retains-cache",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "prepare"
+        },
+        {
+          "op": "stop"
+        },
+        {
+          "op": "prepare"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": null,
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "busy-slots",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "start"
+        },
+        {
+          "op": "prepare",
+          "kind": "sentence"
+        },
+        {
+          "op": "prepare"
+        },
+        {
+          "op": "audition",
+          "kind": "sentence"
+        },
+        {
+          "op": "complete"
+        },
+        {
+          "op": "prepare",
+          "kind": "sentence"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": null,
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": "expression",
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "error": "Stop the current speech operation first."
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": "expression",
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "error": "Stop the current speech operation first."
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": "expression",
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "error": "Stop the current speech operation first."
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": "expression",
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              },
+              "sentence": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "cache-before-busy",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "prepare"
+        },
+        {
+          "op": "start",
+          "kind": "sentence"
+        },
+        {
+          "op": "prepare"
+        },
+        {
+          "op": "prepare",
+          "fingerprint": "new"
+        },
+        {
+          "op": "complete"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": null,
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": "sentence",
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": "sentence",
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": {
+            "error": "Stop the current speech operation first."
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": "sentence",
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              },
+              "sentence": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "cache-before-busy-same-slot",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "prepare"
+        },
+        {
+          "op": "start",
+          "force": true,
+          "fingerprint": "new"
+        },
+        {
+          "op": "prepare"
+        },
+        {
+          "op": "prepare",
+          "fingerprint": "new"
+        },
+        {
+          "op": "complete"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": null,
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "new",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": "expression",
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "new",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": "expression",
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": {
+            "error": "Stop the current speech operation first."
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "new",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": "expression",
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "new",
+            "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "new",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "new",
+                "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "held-fault-recovery",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "prepare"
+        },
+        {
+          "op": "start",
+          "force": true,
+          "fingerprint": "new"
+        },
+        {
+          "op": "complete",
+          "fail": "export"
+        },
+        {
+          "op": "prepare"
+        },
+        {
+          "op": "prepare",
+          "fingerprint": "new"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": null,
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "new",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": "expression",
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": {
+            "error": "Speech generation failed. Check the model or connection and try again."
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "new",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "new",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "new",
+            "sha256": "23d57194f25574beb479cf1c0b08b5d1eb5fc1447516b3b97192bd9617400ae4"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "new",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "new",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "new",
+                "sha256": "23d57194f25574beb479cf1c0b08b5d1eb5fc1447516b3b97192bd9617400ae4"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "held-cancellation",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "start"
+        },
+        {
+          "op": "cancelPending"
+        },
+        {
+          "op": "complete"
+        },
+        {
+          "op": "prepare"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": null,
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": "expression",
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": null,
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": "expression",
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "error": "cancelled"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "held-cancel-keeps-prior",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "prepare"
+        },
+        {
+          "op": "start",
+          "force": true,
+          "fingerprint": "new"
+        },
+        {
+          "op": "cancelPending"
+        },
+        {
+          "op": "complete"
+        },
+        {
+          "op": "prepare"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": null,
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "new",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": "expression",
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": null,
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "new",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": "expression",
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": {
+            "error": "cancelled"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "new",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "new",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "discard-during-generation",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "prepare"
+        },
+        {
+          "op": "start",
+          "force": true,
+          "fingerprint": "new"
+        },
+        {
+          "op": "discard"
+        },
+        {
+          "op": "complete"
+        },
+        {
+          "op": "prepare",
+          "fingerprint": "new"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": null,
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "new",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": "expression",
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": null,
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "new",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              }
+            ],
+            "generating": "expression",
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "new",
+            "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "new",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "new",
+                "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+              }
+            }
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "new",
+            "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "new",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "new",
+                "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "discard-cancel-during-generation",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "prepare"
+        },
+        {
+          "op": "start",
+          "force": true,
+          "fingerprint": "new"
+        },
+        {
+          "op": "cancelPending"
+        },
+        {
+          "op": "discard"
+        },
+        {
+          "op": "complete"
+        },
+        {
+          "op": "prepare"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": null,
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "new",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": "expression",
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": null,
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "new",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": "expression",
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": null,
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "new",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              }
+            ],
+            "generating": "expression",
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "error": "cancelled"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "new",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              }
+            ],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "23d57194f25574beb479cf1c0b08b5d1eb5fc1447516b3b97192bd9617400ae4"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "new",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "23d57194f25574beb479cf1c0b08b5d1eb5fc1447516b3b97192bd9617400ae4"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "stop-during-generation",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "start"
+        },
+        {
+          "op": "stop"
+        },
+        {
+          "op": "complete"
+        },
+        {
+          "op": "prepare"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": null,
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": "expression",
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": null,
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              }
+            ],
+            "generating": "expression",
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "cached-audition-during-other-generation",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "prepare"
+        },
+        {
+          "op": "start",
+          "kind": "sentence"
+        },
+        {
+          "op": "audition"
+        },
+        {
+          "op": "complete"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": null,
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": "sentence",
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": null,
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "bytes": 7,
+                "language": "en",
+                "op": "audition",
+                "ownerMatches": true
+              }
+            ],
+            "generating": "sentence",
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "bytes": 7,
+                "language": "en",
+                "op": "audition",
+                "ownerMatches": true
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              },
+              "sentence": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "3fa437ad7adb6a3ef4f7cadd153b9d50f42d46e1d99f7d20d54cbfbe486d898c"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "request-during-generation",
+      "speech": true,
+      "scope": "preparation",
+      "actions": [
+        {
+          "op": "start"
+        },
+        {
+          "op": "request",
+          "text": "another target",
+          "language": "ja"
+        },
+        {
+          "op": "complete"
+        }
+      ],
+      "macSource": "Cotabby/Services/Review/ReviewAudioPreparation.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": null,
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              }
+            ],
+            "generating": "expression",
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "fingerprint": "request-fingerprint",
+            "language": "ja",
+            "text": "another target"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "context": "sentence",
+                "language": "ja",
+                "op": "request",
+                "text": "another target"
+              }
+            ],
+            "generating": "expression",
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "bytes": 7,
+            "extension": "wav",
+            "fingerprint": "fp",
+            "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+          },
+          "state": {
+            "calls": [
+              {
+                "op": "stop",
+                "ownerMatches": true
+              },
+              {
+                "fingerprint": "fp",
+                "language": "en",
+                "op": "export",
+                "text": "clicked text"
+              },
+              {
+                "context": "sentence",
+                "language": "ja",
+                "op": "request",
+                "text": "another target"
+              }
+            ],
+            "generating": null,
+            "prepared": {
+              "expression": {
+                "bytes": 7,
+                "extension": "wav",
+                "fingerprint": "fp",
+                "sha256": "5c31054a0ae4fbdb7a0d7f471a10e08a45932d662f23852e6722f91b14f28ced"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "speech-error-messages",
+      "speech": true,
+      "scope": "error-messages",
+      "actions": [
+        {
+          "op": "error",
+          "fail": "incompleteConfiguration"
+        },
+        {
+          "op": "error",
+          "fail": "missingLocalAssets"
+        },
+        {
+          "op": "error",
+          "fail": "mismatchedLocalAssets"
+        },
+        {
+          "op": "error",
+          "fail": "unsupportedLanguage"
+        },
+        {
+          "op": "error",
+          "fail": "unrecognizedLanguage"
+        },
+        {
+          "op": "error",
+          "fail": "runtimeUnavailable"
+        },
+        {
+          "op": "error",
+          "fail": "operationInProgress"
+        },
+        {
+          "op": "error",
+          "fail": "generationFailed"
+        },
+        {
+          "op": "error",
+          "fail": "invalidAudio"
+        },
+        {
+          "op": "error",
+          "fail": "invalidReferenceAudio"
+        },
+        {
+          "op": "error",
+          "fail": "responseTooLarge"
+        },
+        {
+          "op": "error",
+          "fail": "textTooLong"
+        },
+        {
+          "op": "error",
+          "fail": "endpointStatus",
+          "text": "-1"
+        },
+        {
+          "op": "error",
+          "fail": "endpointStatus",
+          "text": "0"
+        },
+        {
+          "op": "error",
+          "fail": "endpointStatus",
+          "text": "418"
+        },
+        {
+          "op": "error",
+          "fail": "endpointStatus",
+          "text": "500"
+        },
+        {
+          "op": "error",
+          "fail": "endpointStatus",
+          "text": "2147483647"
+        }
+      ],
+      "macSource": "Cotabby/Models/Speech/LearningSpeechModels.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": [
+        {
+          "outcome": null,
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "error": "Choose a speech model and voice in TTS settings first."
+          },
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "error": "Choose both the Qwen3-TTS model and its matching audio decoder."
+          },
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "error": "Choose the matching audio decoder for the selected speech model."
+          },
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "error": "This local speech model does not support this language."
+          },
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "error": "Speech is not available for the detected language."
+          },
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "error": "The local speech runtime is unavailable. Reinstall Lingrove and try again."
+          },
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "error": "Stop the current speech operation first."
+          },
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "error": "Speech generation failed. Check the model or connection and try again."
+          },
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "error": "The speech provider returned audio that could not be played."
+          },
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "error": "The reference voice file is unavailable. Choose a readable WAV or MP3 file."
+          },
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "error": "The speech audio exceeded the size limit. Try a shorter passage."
+          },
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "error": "This passage is too long to read aloud. Choose a shorter passage."
+          },
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "error": "The speech server returned HTTP -1. Check its TTS configuration."
+          },
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "error": "The speech server returned HTTP 0. Check its TTS configuration."
+          },
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "error": "The speech server returned HTTP 418. Check its TTS configuration."
+          },
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "error": "The speech server returned HTTP 500. Check its TTS configuration."
+          },
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        },
+        {
+          "outcome": {
+            "error": "The speech server returned HTTP 2,147,483,647. Check its TTS configuration."
+          },
+          "state": {
+            "calls": [],
+            "generating": null,
+            "prepared": {}
+          }
+        }
+      ]
+    }
+  ],
+  "referenceLocale": "en_US"
+}

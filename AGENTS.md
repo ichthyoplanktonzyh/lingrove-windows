@@ -159,6 +159,7 @@ the [export buffer](docs/SPEECH_EXPORT_BUFFER.md) now serializes request-owned a
 the [provider metadata rules](docs/SPEECH_PROVIDER_METADATA.md) preserve exact Qwen companions, local languages and voice-tag compatibility without catalog selection;
 the [speech language resolver](docs/SPEECH_LANGUAGE_RESOLUTION.md) preserves bounded phrase/context evidence and fallback without a native recognizer;
 the [voice selector](docs/SPEECH_VOICE_SELECTION.md) preserves ranking and compatible preference with required platform collation, without an installed catalog;
+the [recording preparation library](docs/REVIEW_AUDIO_PREPARATION.md) preserves sheet-local cache, busy/cancellation and borrowed speech contracts without a sheet/provider;
 compressed/profiled bitmap variants, virtual/pixel drops, review navigation/preparation/send and other dictionary providers remain work. Do not flatten senses into
 one translation string, regenerate stable IDs during edits, or treat a generated explanation as the
 user's authored meaning. See the vocabulary models and porting gates in the linked docs. Storage
@@ -234,6 +235,7 @@ python3 scripts/verify-speech-buffer-macos-parity.py --mac-repo /path/to/macOS-l
 python3 scripts/verify-speech-metadata-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-speech-language-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-speech-voices-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
+python3 scripts/verify-review-audio-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 ```
 
 The verifiers read the pinned macOS sources from Git and check the same JSON cases. The lexical
@@ -247,7 +249,7 @@ runner. This is ordinary compilation, not packaging or a release.
 The current `.github/workflows/ci.yml` has two validation jobs: Windows x64 restores and builds the
 full solution, then runs Core, portable App boundary and Inference tests, including noninteractive ICU sentence tests,
 and the compiled learning-card WPF view suite on its own STA dispatcher (see `docs/WPF_VIEW_TESTS.md`);
-macOS 26 x64 runs Core, portable App boundary tests and all fifty-seven Swift parity verifiers against a sparse checkout of the pinned Mac
+macOS 26 x64 runs Core, portable App boundary tests and all fifty-eight Swift parity verifiers against a sparse checkout of the pinned Mac
 Support, language-learning/vocabulary models/services, content-test provenance, language catalog and pinned expression resource files. The separate
 `.github/workflows/upstream-baseline.yml` checks the original Windows fork at commit
 `b1e4031c70aca1be21aae2c57b138fde5fc22bb1` with .NET 9 on manual dispatch. Its initial setup run is

@@ -165,6 +165,7 @@ the [serial batch library](docs/ANKI_REVIEW_BATCH.md) adds frozen rows, per-item
 the [speech preferences](docs/SPEECH_SETTINGS.md) retain original destination profiles, explicit credential access and playback invalidation without activating a provider;
 the [speech observer and shared history](docs/SPEECH_TELEMETRY.md) preserve bounded correlation, runtime admission and opt-in metrics without activating a helper;
 the [PCM facade](docs/SPEECH_PCM_PLAYER.md) preserves readiness, queue/drain, stale callbacks and tracked shutdown without an audio-device implementation;
+the [shared speech controller](docs/SPEECH_CONTROLLER.md) preserves resolved requests, lazy catalog/model selection, playback/export exclusivity and joined task ownership without native providers or AppHost activation;
 compressed/profiled bitmap variants, virtual/pixel drops, review navigation/preparation/batch UI and other dictionary providers remain work. Do not flatten senses into
 one translation string, regenerate stable IDs during edits, or treat a generated explanation as the
 user's authored meaning. See the vocabulary models and porting gates in the linked docs. Storage
@@ -183,6 +184,7 @@ dotnet --version
 dotnet test tests/Cotabby.Core.Tests/Cotabby.Core.Tests.csproj --configuration Release
 dotnet test tests/Cotabby.App.Tests/Cotabby.App.Tests.csproj --configuration Release
 dotnet build Cotabby.sln --configuration Release -p:EnableWindowsTargeting=true
+python3 scripts/verify-speech-controller-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-learning-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-learning-local-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout

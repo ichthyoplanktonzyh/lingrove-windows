@@ -260,6 +260,11 @@ from authored progress. The input adapter fragments large helper chunks before f
 epochs and graph identities protect retirement and joined device cleanup. Concrete native code is
 compiled, while hardware acceptance and application activation remain open.
 
+The [encoded speech codec](docs/SPEECH_AUDIO_CODEC.md) decodes bounded in-memory WAV/MP3 on a
+short-lived joined MTA. It preserves mono/stereo data, counts actual frames and releases every COM
+reference on its owner. Export awaits duration validation without releasing exclusivity on early
+cancellation. Encoded device playback and AppHost registration remain open.
+
 
 The [shared speech controller](docs/SPEECH_CONTROLLER.md) owns lazy catalog/model selection,
 resolved clicked-text requests, token-scoped playback and exclusive caller-owned export. Required

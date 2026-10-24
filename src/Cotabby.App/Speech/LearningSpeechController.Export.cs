@@ -79,7 +79,8 @@ internal sealed partial class LearningSpeechController : ISpeechExporting
                 default: throw new ArgumentOutOfRangeException();
             }
             cancellationToken.ThrowIfCancellationRequested(); if (_exportToken != request.Token) throw new OperationCanceledException();
-            double seconds = _duration.Duration(audio.CopyBytes());
+            double seconds = await _duration.DurationAsync(audio.CopyBytes(), cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested(); if (_exportToken != request.Token) throw new OperationCanceledException();
             if (!(seconds > 0 && seconds <= 90 && double.IsFinite(seconds))) throw new SpeechException(SpeechFailure.InvalidAudio);
             Telemetry.Generated(request.Token, audio.ByteCount); Telemetry.GenerationCompleted(request.Token); Telemetry.Finish(request.Token, ModelRequestOutcome.Completed);
             return audio;

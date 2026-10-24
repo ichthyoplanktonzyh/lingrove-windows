@@ -1,0 +1,7 @@
+{
+  "$schema": "https://aka.ms/CsWin32.schema.json",
+  "className": "SpeechNativeMethods",
+  "allowMarshaling": false,
+  "friendlyOverloads": { "enabled": false },
+  "comInterop": { "preserveSigMethods": ["*"] }
+}

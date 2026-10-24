@@ -7,11 +7,13 @@ namespace Cotabby.Core.LanguageLearning;
 /// Optional sampler changes for one model destination. Null values preserve that model family's
 /// recommendations; normalization is repeated when the profile is resolved so persisted or UI
 /// values cannot pass non-finite numbers or invalid native sampler arguments.
+/// Durable top-k retains Swift's 64-bit Int range; the bounded resolved sampler narrows it to
+/// the native int only after normalization clamps it to 1...256.
 /// </summary>
 public sealed record LearningModelSamplingOverrides(
     [property: JsonPropertyName("temperature")] double? Temperature = null,
     [property: JsonPropertyName("topP")] double? TopP = null,
-    [property: JsonPropertyName("topK")] int? TopK = null,
+    [property: JsonPropertyName("topK")] long? TopK = null,
     [property: JsonPropertyName("repetitionPenalty")] double? RepetitionPenalty = null,
     [property: JsonPropertyName("seedMode")] LearningModelSeedMode SeedMode = LearningModelSeedMode.Recommended,
     [property: JsonPropertyName("fixedSeed")] uint FixedSeed = 42)
@@ -98,7 +100,7 @@ public sealed record LearningModelSamplingValues(
         return new LearningModelSamplingValues(
             normalized.Temperature ?? Temperature,
             normalized.TopP ?? TopP,
-            normalized.TopK ?? TopK,
+            (int)(normalized.TopK ?? TopK),
             normalized.RepetitionPenalty ?? RepetitionPenalty,
             normalized.ResolveSeed(Seed));
     }

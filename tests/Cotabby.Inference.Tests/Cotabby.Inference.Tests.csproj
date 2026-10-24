@@ -30,6 +30,7 @@
          the user's settings directory. This file depends only on Core and Inference contracts. -->
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.cs" Link="AppSettings\AppSettings.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Review.cs" Link="Production\AppSettings.Review.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Speech.cs" Link="Production\AppSettings.Speech.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Vocabulary.cs" Link="AppSettings\AppSettings.Vocabulary.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Explanation.cs" Link="AppSettings\AppSettings.Explanation.cs" />
     <Compile Include="..\..\src\Cotabby.App\Learning\LearningModelCatalogManager.cs" Link="AppLearning\LearningModelCatalogManager.cs" />

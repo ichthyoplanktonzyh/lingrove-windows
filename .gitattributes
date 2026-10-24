@@ -1,0 +1,7 @@
+
+# Exact upstream overlay/license bytes are verified on both hosts.
+# Unified-diff context includes required single-space prefixes.
+/patches/*.patch -text whitespace=-blank-at-eol
+/native/tts/*.txt text eol=lf
+/native/tts/*.cpp text eol=lf
+/native/tts/*.h text eol=lf

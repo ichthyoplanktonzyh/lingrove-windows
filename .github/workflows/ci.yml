@@ -74,6 +74,8 @@ jobs:
           path: .mac-baseline
           sparse-checkout-cone-mode: false
           sparse-checkout: |
+            native/tts
+            patches/llama-tts-streaming.patch
             Cotabby/Support
             Packages/LingroveGraphLayout
             Cotabby/Models/Context
@@ -316,3 +318,26 @@ jobs:
 
       - name: Verify complete original local speech runtime with real protocol children
         run: python3 scripts/verify-speech-runtime-macos-parity.py --mac-repo .mac-baseline
+
+
+      - name: Verify complete native speech helper adaptation and exact upstream overlay
+        run: python3 scripts/verify-native-speech-macos-parity.py --mac-repo .mac-baseline
+
+  speech-native-windows:
+    name: Windows x64 isolated native speech helper
+    runs-on: windows-2022
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - name: Prepare exact independent speech source and reviewed streaming patch
+        run: python scripts/prepare-speech-runtime.py
+      - name: Verify dependency preparation preserves unknown local input
+        run: python scripts/test-speech-runtime-preparation.py --source-dir build/speech-native/llama.cpp
+      - name: Configure static CPU speech helper independently of LLamaSharp
+        run: cmake -S native/tts -B build/speech-native/cmake -G "Visual Studio 17 2022" -A x64 -DLLAMA_SOURCE_DIR="${{ github.workspace }}/build/speech-native/llama.cpp"
+      - name: Compile actual helper and native platform checks without model weights
+        run: cmake --build build/speech-native/cmake --config Release --target lingrove-tts-helper lingrove-tts-platform-check --parallel 2
+      - name: Check actual binary frames reference duration and abrupt parent exit
+        run: python scripts/smoke-native-speech.py --helper build/speech-native/cmake/Release/lingrove-tts-helper.exe --platform build/speech-native/cmake/Release/lingrove-tts-platform-check.exe

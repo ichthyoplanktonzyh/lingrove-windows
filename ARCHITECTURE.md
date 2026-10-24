@@ -268,3 +268,10 @@ stdio inheritance; low/high memory events request idle release. Session IO and r
 callbacks do not hold state locks, and host shutdown separately joins old readers. The audio
 generator routes frozen local/endpoint choices without sharing completion/learning state. The native
 model helper, audio devices, UI and AppHost activation remain separate work.
+
+
+The [native speech helper](docs/SPEECH_NATIVE_HELPER.md) statically links its own fixed libmtmd
+revision/streaming overlay in a separate process. The complete original generation loop delegates
+only binary stdio, Unicode paths, parent observation and reference metadata to platform adapters.
+CPU/native effect checks own no model weights or audio device. App copy, providers and activation
+remain separate composition work.

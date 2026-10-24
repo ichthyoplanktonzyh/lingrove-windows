@@ -1,0 +1,1355 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "referenceLocale": "en_US",
+  "cases": [
+    {
+      "id": "original-request",
+      "macSource": "Cotabby/Services/Speech/SpeechEndpointClient.swift",
+      "provenanceKind": "original-test-adaptation",
+      "sourceTest": "CotabbyTests/Services/Speech/SpeechEndpointClientTests.swift:sendsOnlyExplicitSpeechFields",
+      "original": true,
+      "baseURL": "https://request.test",
+      "text": "Hello.",
+      "model": "speech-model",
+      "voice": "voice-a",
+      "key": "speech-only-key",
+      "cancel": "none",
+      "expected": {
+        "request": null,
+        "result": {
+          "echo": {
+            "authorization": "Bearer speech-only-key",
+            "body": {
+              "input": "Hello.",
+              "model": "speech-model",
+              "response_format": "wav",
+              "voice": "voice-a"
+            },
+            "method": "POST",
+            "path": "/v1/audio/speech"
+          }
+        },
+        "transfer": {
+          "cache": false,
+          "cookies": false,
+          "cookieStorage": false,
+          "maximum": 33554432,
+          "resource": 120
+        }
+      }
+    },
+    {
+      "id": "original-status",
+      "macSource": "Cotabby/Services/Speech/SpeechEndpointClient.swift",
+      "provenanceKind": "original-test-adaptation",
+      "sourceTest": "CotabbyTests/Services/Speech/SpeechEndpointClientTests.swift:rejectsHTTPFailuresRedirectsAndDeclaredOrStreamedOversize",
+      "original": true,
+      "baseURL": "https://failure.test",
+      "text": "Hello.",
+      "model": "speech-model",
+      "voice": "voice-a",
+      "key": "speech-only-key",
+      "cancel": "none",
+      "expected": {
+        "request": null,
+        "result": {
+          "failure": "endpointStatus",
+          "message": "The speech server returned HTTP 401. Check its TTS configuration.",
+          "status": 401
+        },
+        "transfer": {
+          "cache": false,
+          "cookies": false,
+          "cookieStorage": false,
+          "maximum": 33554432,
+          "resource": 120
+        }
+      }
+    },
+    {
+      "id": "original-declared-limit",
+      "macSource": "Cotabby/Services/Speech/SpeechEndpointClient.swift",
+      "provenanceKind": "original-test-adaptation",
+      "sourceTest": "CotabbyTests/Services/Speech/SpeechEndpointClientTests.swift:rejectsHTTPFailuresRedirectsAndDeclaredOrStreamedOversize",
+      "original": true,
+      "baseURL": "https://oversized.test",
+      "text": "Hello.",
+      "model": "speech-model",
+      "voice": "voice-a",
+      "key": "speech-only-key",
+      "cancel": "none",
+      "expected": {
+        "request": null,
+        "result": {
+          "failure": "responseTooLarge",
+          "message": "The speech audio exceeded the size limit. Try a shorter passage."
+        },
+        "transfer": {
+          "cache": false,
+          "cookies": false,
+          "cookieStorage": false,
+          "maximum": 33554432,
+          "resource": 120
+        }
+      }
+    },
+    {
+      "id": "original-stream-limit",
+      "macSource": "Cotabby/Services/Speech/SpeechEndpointClient.swift",
+      "provenanceKind": "original-test-adaptation",
+      "sourceTest": "CotabbyTests/Services/Speech/SpeechEndpointClientTests.swift:rejectsHTTPFailuresRedirectsAndDeclaredOrStreamedOversize",
+      "original": true,
+      "baseURL": "https://streamed.test",
+      "text": "Hello.",
+      "model": "speech-model",
+      "voice": "voice-a",
+      "key": "speech-only-key",
+      "cancel": "none",
+      "expected": {
+        "request": null,
+        "result": {
+          "failure": "responseTooLarge",
+          "message": "The speech audio exceeded the size limit. Try a shorter passage."
+        },
+        "transfer": {
+          "cache": false,
+          "cookies": false,
+          "cookieStorage": false,
+          "maximum": 33554432,
+          "resource": 120
+        }
+      }
+    },
+    {
+      "id": "original-redirect",
+      "macSource": "Cotabby/Services/Speech/SpeechEndpointClient.swift",
+      "provenanceKind": "original-test-adaptation",
+      "sourceTest": "CotabbyTests/Services/Speech/SpeechEndpointClientTests.swift:rejectsHTTPFailuresRedirectsAndDeclaredOrStreamedOversize",
+      "original": true,
+      "baseURL": "https://redirect.test",
+      "text": "Hello.",
+      "model": "speech-model",
+      "voice": "voice-a",
+      "key": "speech-only-key",
+      "cancel": "none",
+      "expected": {
+        "request": null,
+        "result": {
+          "failure": "endpointStatus",
+          "message": "The speech server returned HTTP 302. Check its TTS configuration.",
+          "status": 302
+        },
+        "transfer": {
+          "cache": false,
+          "cookies": false,
+          "cookieStorage": false,
+          "maximum": 33554432,
+          "resource": 120
+        }
+      }
+    },
+    {
+      "id": "original-cancel",
+      "macSource": "Cotabby/Services/Speech/SpeechEndpointClient.swift",
+      "provenanceKind": "original-test-adaptation",
+      "sourceTest": "CotabbyTests/Services/Speech/SpeechEndpointClientTests.swift:cancellationStopsAResponseThatNeverCompletes",
+      "original": true,
+      "baseURL": "https://waiting.test",
+      "text": "Hello.",
+      "model": "speech-model",
+      "voice": "voice-a",
+      "key": "speech-only-key",
+      "cancel": "after-start",
+      "expected": {
+        "request": null,
+        "result": {
+          "failure": "cancelled"
+        },
+        "transfer": {
+          "cache": false,
+          "cookies": false,
+          "cookieStorage": false,
+          "maximum": 33554432,
+          "resource": 120
+        }
+      }
+    },
+    {
+      "id": "request-no-key",
+      "macSource": "Cotabby/Services/Speech/SpeechEndpointClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "key": null,
+      "expected": {
+        "request": {
+          "accept": "audio/wav, audio/mpeg",
+          "authorization": "",
+          "body": {
+            "input": "Hello.",
+            "model": "speech-model",
+            "response_format": "wav",
+            "voice": "voice-a"
+          },
+          "contentType": "application/json",
+          "idle": 90,
+          "method": "POST",
+          "url": "https://request-no-key.test/v1/audio/speech"
+        },
+        "result": {
+          "bytes": 3,
+          "digest": "71f3e86c42376ed1c9583f0117fad889f5139926594992b3f573e17939cb038f"
+        },
+        "transfer": {
+          "cache": false,
+          "cookies": false,
+          "cookieStorage": false,
+          "maximum": 33554432,
+          "resource": 120
+        }
+      }
+    },
+    {
+      "id": "request-empty-key",
+      "macSource": "Cotabby/Services/Speech/SpeechEndpointClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "key": "",
+      "expected": {
+        "request": {
+          "accept": "audio/wav, audio/mpeg",
+          "authorization": "",
+          "body": {
+            "input": "Hello.",
+            "model": "speech-model",
+            "response_format": "wav",
+            "voice": "voice-a"
+          },
+          "contentType": "application/json",
+          "idle": 90,
+          "method": "POST",
+          "url": "https://request-empty-key.test/v1/audio/speech"
+        },
+        "result": {
+          "bytes": 3,
+          "digest": "71f3e86c42376ed1c9583f0117fad889f5139926594992b3f573e17939cb038f"
+        },
+        "transfer": {
+          "cache": false,
+          "cookies": false,
+          "cookieStorage": false,
+          "maximum": 33554432,
+          "resource": 120
+        }
+      }
+    },
+    {
+      "id": "request-unicode",
+      "macSource": "Cotabby/Services/Speech/SpeechEndpointClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "text": "你好 “café”\n😀 / \\",
+      "model": " 模型/声 ",
+      "voice": "声/音 😀",
+      "key": "fixture-key",
+      "expected": {
+        "request": {
+          "accept": "audio/wav, audio/mpeg",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "input": "你好 “café”\n😀 / \\",
+            "model": "模型/声",
+            "response_format": "wav",
+            "voice": "声/音 😀"
+          },
+          "contentType": "application/json",
+          "idle": 90,
+          "method": "POST",
+          "url": "https://request-unicode.test/v1/audio/speech"
+        },
+        "result": {
+          "bytes": 3,
+          "digest": "71f3e86c42376ed1c9583f0117fad889f5139926594992b3f573e17939cb038f"
+        },
+        "transfer": {
+          "cache": false,
+          "cookies": false,
+          "cookieStorage": false,
+          "maximum": 33554432,
+          "resource": 120
+        }
+      }
+    },
+    {
+      "id": "request-base-path",
+      "macSource": "Cotabby/Services/Speech/SpeechEndpointClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "baseURL": "https://probe.test/proxy/v2",
+      "expected": {
+        "request": {
+          "accept": "audio/wav, audio/mpeg",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "input": "Hello.",
+            "model": "speech-model",
+            "response_format": "wav",
+            "voice": "voice-a"
+          },
+          "contentType": "application/json",
+          "idle": 90,
+          "method": "POST",
+          "url": "https://probe.test/proxy/v2/audio/speech"
+        },
+        "result": {
+          "bytes": 3,
+          "digest": "71f3e86c42376ed1c9583f0117fad889f5139926594992b3f573e17939cb038f"
+        },
+        "transfer": {
+          "cache": false,
+          "cookies": false,
+          "cookieStorage": false,
+          "maximum": 33554432,
+          "resource": 120
+        }
+      }
+    },
+    {
+      "id": "request-trailing-slash",
+      "macSource": "Cotabby/Services/Speech/SpeechEndpointClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "baseURL": "https://probe.test/v1///",
+      "expected": {
+        "request": {
+          "accept": "audio/wav, audio/mpeg",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "input": "Hello.",
+            "model": "speech-model",
+            "response_format": "wav",
+            "voice": "voice-a"
+          },
+          "contentType": "application/json",
+          "idle": 90,
+          "method": "POST",
+          "url": "https://probe.test/v1/audio/speech"
+        },
+        "result": {
+          "bytes": 3,
+          "digest": "71f3e86c42376ed1c9583f0117fad889f5139926594992b3f573e17939cb038f"
+        },
+        "transfer": {
+          "cache": false,
+          "cookies": false,
+          "cookieStorage": false,
+          "maximum": 33554432,
+          "resource": 120
+        }
+      }
+    },
+    {
+      "id": "request-empty-text",
+      "macSource": "Cotabby/Services/Speech/SpeechEndpointClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "text": "",
+      "expected": {
+        "request": {
+          "accept": "audio/wav, audio/mpeg",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "input": "",
+            "model": "speech-model",
+            "response_format": "wav",
+            "voice": "voice-a"
+          },
+          "contentType": "application/json",
+          "idle": 90,
+          "method": "POST",
+          "url": "https://request-empty-text.test/v1/audio/speech"
+        },
+        "result": {
+          "bytes": 3,
+          "digest": "71f3e86c42376ed1c9583f0117fad889f5139926594992b3f573e17939cb038f"
+        },
+        "transfer": {
+          "cache": false,
+          "cookies": false,
+          "cookieStorage": false,
+          "maximum": 33554432,
+          "resource": 120
+        }
+      }
+    },
+    {
+      "id": "status-200",
+      "macSource": "Cotabby/Services/Speech/SpeechEndpointClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "status": 200,
+      "expected": {
+        "request": {
+          "accept": "audio/wav, audio/mpeg",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "input": "Hello.",
+            "model": "speech-model",
+            "response_format": "wav",
+            "voice": "voice-a"
+          },
+          "contentType": "application/json",
+          "idle": 90,
+          "method": "POST",
+          "url": "https://status-200.test/v1/audio/speech"
+        },
+        "result": {
+          "bytes": 3,
+          "digest": "71f3e86c42376ed1c9583f0117fad889f5139926594992b3f573e17939cb038f"
+        },
+        "transfer": {
+          "cache": false,
+          "cookies": false,
+          "cookieStorage": false,
+          "maximum": 33554432,
+          "resource": 120
+        }
+      }
+    },
+    {
+      "id": "status-201",
+      "macSource": "Cotabby/Services/Speech/SpeechEndpointClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "status": 201,
+      "expected": {
+        "request": {
+          "accept": "audio/wav, audio/mpeg",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "input": "Hello.",
+            "model": "speech-model",
+            "response_format": "wav",
+            "voice": "voice-a"
+          },
+          "contentType": "application/json",
+          "idle": 90,
+          "method": "POST",
+          "url": "https://status-201.test/v1/audio/speech"
+        },
+        "result": {
+          "bytes": 3,
+          "digest": "71f3e86c42376ed1c9583f0117fad889f5139926594992b3f573e17939cb038f"
+        },
+        "transfer": {
+          "cache": false,
+          "cookies": false,
+          "cookieStorage": false,
+          "maximum": 33554432,
+          "resource": 120
+        }
+      }
+    },
+    {
+      "id": "status-206",
+      "macSource": "Cotabby/Services/Speech/SpeechEndpointClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "status": 206,
+      "expected": {
+        "request": {
+          "accept": "audio/wav, audio/mpeg",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "input": "Hello.",
+            "model": "speech-model",
+            "response_format": "wav",
+            "voice": "voice-a"
+          },
+          "contentType": "application/json",
+          "idle": 90,
+          "method": "POST",
+          "url": "https://status-206.test/v1/audio/speech"
+        },
+        "result": {
+          "bytes": 3,
+          "digest": "71f3e86c42376ed1c9583f0117fad889f5139926594992b3f573e17939cb038f"
+        },
+        "transfer": {
+          "cache": false,
+          "cookies": false,
+          "cookieStorage": false,
+          "maximum": 33554432,
+          "resource": 120
+        }
+      }
+    },
+    {
+      "id": "status-299",
+      "macSource": "Cotabby/Services/Speech/SpeechEndpointClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "status": 299,
+      "expected": {
+        "request": {
+          "accept": "audio/wav, audio/mpeg",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "input": "Hello.",
+            "model": "speech-model",
+            "response_format": "wav",
+            "voice": "voice-a"
+          },
+          "contentType": "application/json",
+          "idle": 90,
+          "method": "POST",
+          "url": "https://status-299.test/v1/audio/speech"
+        },
+        "result": {
+          "bytes": 3,
+          "digest": "71f3e86c42376ed1c9583f0117fad889f5139926594992b3f573e17939cb038f"
+        },
+        "transfer": {
+          "cache": false,
+          "cookies": false,
+          "cookieStorage": false,
+          "maximum": 33554432,
+          "resource": 120
+        }
+      }
+    },
+    {
+      "id": "status-300",
+      "macSource": "Cotabby/Services/Speech/SpeechEndpointClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "status": 300,
+      "expected": {
+        "request": {
+          "accept": "audio/wav, audio/mpeg",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "input": "Hello.",
+            "model": "speech-model",
+            "response_format": "wav",
+            "voice": "voice-a"
+          },
+          "contentType": "application/json",
+          "idle": 90,
+          "method": "POST",
+          "url": "https://status-300.test/v1/audio/speech"
+        },
+        "result": {
+          "failure": "endpointStatus",
+          "message": "The speech server returned HTTP 300. Check its TTS configuration.",
+          "status": 300
+        },
+        "transfer": {
+          "cache": false,
+          "cookies": false,
+          "cookieStorage": false,
+          "maximum": 33554432,
+          "resource": 120
+        }
+      }
+    },
+    {
+      "id": "status-307",
+      "macSource": "Cotabby/Services/Speech/SpeechEndpointClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "status": 307,
+      "expected": {
+        "request": {
+          "accept": "audio/wav, audio/mpeg",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "input": "Hello.",
+            "model": "speech-model",
+            "response_format": "wav",
+            "voice": "voice-a"
+          },
+          "contentType": "application/json",
+          "idle": 90,
+          "method": "POST",
+          "url": "https://status-307.test/v1/audio/speech"
+        },
+        "result": {
+          "failure": "endpointStatus",
+          "message": "The speech server returned HTTP 307. Check its TTS configuration.",
+          "status": 307
+        },
+        "transfer": {
+          "cache": false,
+          "cookies": false,
+          "cookieStorage": false,
+          "maximum": 33554432,
+          "resource": 120
+        }
+      }
+    },
+    {
+      "id": "status-400",
+      "macSource": "Cotabby/Services/Speech/SpeechEndpointClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "status": 400,
+      "expected": {
+        "request": {
+          "accept": "audio/wav, audio/mpeg",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "input": "Hello.",
+            "model": "speech-model",
+            "response_format": "wav",
+            "voice": "voice-a"
+          },
+          "contentType": "application/json",
+          "idle": 90,
+          "method": "POST",
+          "url": "https://status-400.test/v1/audio/speech"
+        },
+        "result": {
+          "failure": "endpointStatus",
+          "message": "The speech server returned HTTP 400. Check its TTS configuration.",
+          "status": 400
+        },
+        "transfer": {
+          "cache": false,
+          "cookies": false,
+          "cookieStorage": false,
+          "maximum": 33554432,
+          "resource": 120
+        }
+      }
+    },
+    {
+      "id": "status-401",
+      "macSource": "Cotabby/Services/Speech/SpeechEndpointClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "status": 401,
+      "expected": {
+        "request": {
+          "accept": "audio/wav, audio/mpeg",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "input": "Hello.",
+            "model": "speech-model",
+            "response_format": "wav",
+            "voice": "voice-a"
+          },
+          "contentType": "application/json",
+          "idle": 90,
+          "method": "POST",
+          "url": "https://status-401.test/v1/audio/speech"
+        },
+        "result": {
+          "failure": "endpointStatus",
+          "message": "The speech server returned HTTP 401. Check its TTS configuration.",
+          "status": 401
+        },
+        "transfer": {
+          "cache": false,
+          "cookies": false,
+          "cookieStorage": false,
+          "maximum": 33554432,
+          "resource": 120
+        }
+      }
+    },
+    {
+      "id": "status-500",
+      "macSource": "Cotabby/Services/Speech/SpeechEndpointClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "status": 500,
+      "expected": {
+        "request": {
+          "accept": "audio/wav, audio/mpeg",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "input": "Hello.",
+            "model": "speech-model",
+            "response_format": "wav",
+            "voice": "voice-a"
+          },
+          "contentType": "application/json",
+          "idle": 90,
+          "method": "POST",
+          "url": "https://status-500.test/v1/audio/speech"
+        },
+        "result": {
+          "failure": "endpointStatus",
+          "message": "The speech server returned HTTP 500. Check its TTS configuration.",
+          "status": 500
+        },
+        "transfer": {
+          "cache": false,
+          "cookies": false,
+          "cookieStorage": false,
+          "maximum": 33554432,
+          "resource": 120
+        }
+      }
+    },
+    {
+      "id": "response-empty",
+      "macSource": "Cotabby/Services/Speech/SpeechEndpointClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "chunks": [],
+      "expected": {
+        "request": {
+          "accept": "audio/wav, audio/mpeg",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "input": "Hello.",
+            "model": "speech-model",
+            "response_format": "wav",
+            "voice": "voice-a"
+          },
+          "contentType": "application/json",
+          "idle": 90,
+          "method": "POST",
+          "url": "https://response-empty.test/v1/audio/speech"
+        },
+        "result": {
+          "failure": "invalidAudio",
+          "message": "The speech provider returned audio that could not be played."
+        },
+        "transfer": {
+          "cache": false,
+          "cookies": false,
+          "cookieStorage": false,
+          "maximum": 33554432,
+          "resource": 120
+        }
+      }
+    },
+    {
+      "id": "response-unknown-length",
+      "macSource": "Cotabby/Services/Speech/SpeechEndpointClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "declared": null,
+      "chunks": [
+        1,
+        7,
+        19
+      ],
+      "expected": {
+        "request": {
+          "accept": "audio/wav, audio/mpeg",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "input": "Hello.",
+            "model": "speech-model",
+            "response_format": "wav",
+            "voice": "voice-a"
+          },
+          "contentType": "application/json",
+          "idle": 90,
+          "method": "POST",
+          "url": "https://response-unknown-length.test/v1/audio/speech"
+        },
+        "result": {
+          "bytes": 27,
+          "digest": "57f79883bce3d8a044130a2d12ae441e77d71f4946d1fac3df2af873cb88d8c1"
+        },
+        "transfer": {
+          "cache": false,
+          "cookies": false,
+          "cookieStorage": false,
+          "maximum": 33554432,
+          "resource": 120
+        }
+      }
+    },
+    {
+      "id": "response-one-byte",
+      "macSource": "Cotabby/Services/Speech/SpeechEndpointClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "chunks": [
+        1
+      ],
+      "expected": {
+        "request": {
+          "accept": "audio/wav, audio/mpeg",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "input": "Hello.",
+            "model": "speech-model",
+            "response_format": "wav",
+            "voice": "voice-a"
+          },
+          "contentType": "application/json",
+          "idle": 90,
+          "method": "POST",
+          "url": "https://response-one-byte.test/v1/audio/speech"
+        },
+        "result": {
+          "bytes": 1,
+          "digest": "bbeebd879e1dff6918546dc0c179fdde505f2a21591c9a9c96e36b054ec5af83"
+        },
+        "transfer": {
+          "cache": false,
+          "cookies": false,
+          "cookieStorage": false,
+          "maximum": 33554432,
+          "resource": 120
+        }
+      }
+    },
+    {
+      "id": "response-content-type-is-not-decoder",
+      "macSource": "Cotabby/Services/Speech/SpeechEndpointClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "contentType": "text/plain",
+      "chunks": [
+        3
+      ],
+      "expected": {
+        "request": {
+          "accept": "audio/wav, audio/mpeg",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "input": "Hello.",
+            "model": "speech-model",
+            "response_format": "wav",
+            "voice": "voice-a"
+          },
+          "contentType": "application/json",
+          "idle": 90,
+          "method": "POST",
+          "url": "https://response-content-type-is-not-decoder.test/v1/audio/speech"
+        },
+        "result": {
+          "bytes": 3,
+          "digest": "71f3e86c42376ed1c9583f0117fad889f5139926594992b3f573e17939cb038f"
+        },
+        "transfer": {
+          "cache": false,
+          "cookies": false,
+          "cookieStorage": false,
+          "maximum": 33554432,
+          "resource": 120
+        }
+      }
+    },
+    {
+      "id": "response-declared-too-large",
+      "macSource": "Cotabby/Services/Speech/SpeechEndpointClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "declared": 33554433,
+      "chunks": [],
+      "expected": {
+        "request": {
+          "accept": "audio/wav, audio/mpeg",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "input": "Hello.",
+            "model": "speech-model",
+            "response_format": "wav",
+            "voice": "voice-a"
+          },
+          "contentType": "application/json",
+          "idle": 90,
+          "method": "POST",
+          "url": "https://response-declared-too-large.test/v1/audio/speech"
+        },
+        "result": {
+          "failure": "responseTooLarge",
+          "message": "The speech audio exceeded the size limit. Try a shorter passage."
+        },
+        "transfer": {
+          "cache": false,
+          "cookies": false,
+          "cookieStorage": false,
+          "maximum": 33554432,
+          "resource": 120
+        }
+      }
+    },
+    {
+      "id": "response-declared-limit",
+      "macSource": "Cotabby/Services/Speech/SpeechEndpointClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "declared": 33554432,
+      "chunks": [
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576
+      ],
+      "expected": {
+        "request": {
+          "accept": "audio/wav, audio/mpeg",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "input": "Hello.",
+            "model": "speech-model",
+            "response_format": "wav",
+            "voice": "voice-a"
+          },
+          "contentType": "application/json",
+          "idle": 90,
+          "method": "POST",
+          "url": "https://response-declared-limit.test/v1/audio/speech"
+        },
+        "result": {
+          "bytes": 33554432,
+          "digest": "371036ccdfc733fa30542a26a4f276536147c906d1570f0becc1d6f8b868c311"
+        },
+        "transfer": {
+          "cache": false,
+          "cookies": false,
+          "cookieStorage": false,
+          "maximum": 33554432,
+          "resource": 120
+        }
+      }
+    },
+    {
+      "id": "response-streamed-limit",
+      "macSource": "Cotabby/Services/Speech/SpeechEndpointClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "declared": null,
+      "chunks": [
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576
+      ],
+      "expected": {
+        "request": {
+          "accept": "audio/wav, audio/mpeg",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "input": "Hello.",
+            "model": "speech-model",
+            "response_format": "wav",
+            "voice": "voice-a"
+          },
+          "contentType": "application/json",
+          "idle": 90,
+          "method": "POST",
+          "url": "https://response-streamed-limit.test/v1/audio/speech"
+        },
+        "result": {
+          "bytes": 33554432,
+          "digest": "371036ccdfc733fa30542a26a4f276536147c906d1570f0becc1d6f8b868c311"
+        },
+        "transfer": {
+          "cache": false,
+          "cookies": false,
+          "cookieStorage": false,
+          "maximum": 33554432,
+          "resource": 120
+        }
+      }
+    },
+    {
+      "id": "response-streamed-overflow",
+      "macSource": "Cotabby/Services/Speech/SpeechEndpointClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "declared": null,
+      "chunks": [
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1048576,
+        1
+      ],
+      "expected": {
+        "request": {
+          "accept": "audio/wav, audio/mpeg",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "input": "Hello.",
+            "model": "speech-model",
+            "response_format": "wav",
+            "voice": "voice-a"
+          },
+          "contentType": "application/json",
+          "idle": 90,
+          "method": "POST",
+          "url": "https://response-streamed-overflow.test/v1/audio/speech"
+        },
+        "result": {
+          "failure": "responseTooLarge",
+          "message": "The speech audio exceeded the size limit. Try a shorter passage."
+        },
+        "transfer": {
+          "cache": false,
+          "cookies": false,
+          "cookieStorage": false,
+          "maximum": 33554432,
+          "resource": 120
+        }
+      }
+    },
+    {
+      "id": "response-declared-shorter",
+      "macSource": "Cotabby/Services/Speech/SpeechEndpointClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "declared": 1,
+      "chunks": [
+        3
+      ],
+      "expected": {
+        "request": {
+          "accept": "audio/wav, audio/mpeg",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "input": "Hello.",
+            "model": "speech-model",
+            "response_format": "wav",
+            "voice": "voice-a"
+          },
+          "contentType": "application/json",
+          "idle": 90,
+          "method": "POST",
+          "url": "https://response-declared-shorter.test/v1/audio/speech"
+        },
+        "result": {
+          "bytes": 3,
+          "digest": "71f3e86c42376ed1c9583f0117fad889f5139926594992b3f573e17939cb038f"
+        },
+        "transfer": {
+          "cache": false,
+          "cookies": false,
+          "cookieStorage": false,
+          "maximum": 33554432,
+          "resource": 120
+        }
+      }
+    },
+    {
+      "id": "transport-failure",
+      "macSource": "Cotabby/Services/Speech/SpeechEndpointClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "networkError": true,
+      "expected": {
+        "request": {
+          "accept": "audio/wav, audio/mpeg",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "input": "Hello.",
+            "model": "speech-model",
+            "response_format": "wav",
+            "voice": "voice-a"
+          },
+          "contentType": "application/json",
+          "idle": 90,
+          "method": "POST",
+          "url": "https://transport-failure.test/v1/audio/speech"
+        },
+        "result": {
+          "failure": "transport"
+        },
+        "transfer": {
+          "cache": false,
+          "cookies": false,
+          "cookieStorage": false,
+          "maximum": 33554432,
+          "resource": 120
+        }
+      }
+    },
+    {
+      "id": "cancel-before-start",
+      "macSource": "Cotabby/Services/Speech/SpeechEndpointClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "cancel": "before-start",
+      "expected": {
+        "request": null,
+        "result": {
+          "failure": "cancelled"
+        },
+        "transfer": {
+          "cache": false,
+          "cookies": false,
+          "cookieStorage": false,
+          "maximum": 33554432,
+          "resource": 120
+        }
+      }
+    },
+    {
+      "id": "cancel-after-headers",
+      "macSource": "Cotabby/Services/Speech/SpeechEndpointClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "cancel": "after-start",
+      "waiting": true,
+      "expected": {
+        "request": {
+          "accept": "audio/wav, audio/mpeg",
+          "authorization": "Bearer fixture-key",
+          "body": {
+            "input": "Hello.",
+            "model": "speech-model",
+            "response_format": "wav",
+            "voice": "voice-a"
+          },
+          "contentType": "application/json",
+          "idle": 90,
+          "method": "POST",
+          "url": "https://cancel-after-headers.test/v1/audio/speech"
+        },
+        "result": {
+          "failure": "cancelled"
+        },
+        "transfer": {
+          "cache": false,
+          "cookies": false,
+          "cookieStorage": false,
+          "maximum": 33554432,
+          "resource": 120
+        }
+      }
+    },
+    {
+      "id": "wire-gzip",
+      "macSource": "Cotabby/Services/Speech/SpeechEndpointClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "wire": true,
+      "encoding": "gzip",
+      "decodedBytes": 3,
+      "expected": {
+        "request": {
+          "url": "$LOOPBACK/wire-gzip/audio/speech",
+          "method": "POST",
+          "authorization": "Bearer fixture-key",
+          "accept": "audio/wav, audio/mpeg",
+          "acceptEncoding": "gzip, deflate",
+          "contentType": "application/json",
+          "body": {
+            "input": "Hello.",
+            "response_format": "wav",
+            "model": "speech-model",
+            "voice": "voice-a"
+          }
+        },
+        "result": {
+          "bytes": 3,
+          "digest": "71f3e86c42376ed1c9583f0117fad889f5139926594992b3f573e17939cb038f"
+        },
+        "transfer": {
+          "cache": false,
+          "cookies": false,
+          "cookieStorage": false,
+          "maximum": 33554432,
+          "resource": 120
+        }
+      }
+    },
+    {
+      "id": "wire-zlib-deflate",
+      "macSource": "Cotabby/Services/Speech/SpeechEndpointClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "wire": true,
+      "encoding": "deflate",
+      "decodedBytes": 3,
+      "expected": {
+        "request": {
+          "url": "$LOOPBACK/wire-zlib-deflate/audio/speech",
+          "method": "POST",
+          "authorization": "Bearer fixture-key",
+          "accept": "audio/wav, audio/mpeg",
+          "acceptEncoding": "gzip, deflate",
+          "contentType": "application/json",
+          "body": {
+            "input": "Hello.",
+            "response_format": "wav",
+            "model": "speech-model",
+            "voice": "voice-a"
+          }
+        },
+        "result": {
+          "bytes": 3,
+          "digest": "71f3e86c42376ed1c9583f0117fad889f5139926594992b3f573e17939cb038f"
+        },
+        "transfer": {
+          "cache": false,
+          "cookies": false,
+          "cookieStorage": false,
+          "maximum": 33554432,
+          "resource": 120
+        }
+      }
+    },
+    {
+      "id": "wire-raw-deflate",
+      "macSource": "Cotabby/Services/Speech/SpeechEndpointClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "wire": true,
+      "encoding": "raw-deflate",
+      "decodedBytes": 3,
+      "expected": {
+        "request": {
+          "url": "$LOOPBACK/wire-raw-deflate/audio/speech",
+          "method": "POST",
+          "authorization": "Bearer fixture-key",
+          "accept": "audio/wav, audio/mpeg",
+          "acceptEncoding": "gzip, deflate",
+          "contentType": "application/json",
+          "body": {
+            "input": "Hello.",
+            "response_format": "wav",
+            "model": "speech-model",
+            "voice": "voice-a"
+          }
+        },
+        "result": {
+          "bytes": 3,
+          "digest": "71f3e86c42376ed1c9583f0117fad889f5139926594992b3f573e17939cb038f"
+        },
+        "transfer": {
+          "cache": false,
+          "cookies": false,
+          "cookieStorage": false,
+          "maximum": 33554432,
+          "resource": 120
+        }
+      }
+    },
+    {
+      "id": "wire-decoded-overflow",
+      "macSource": "Cotabby/Services/Speech/SpeechEndpointClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "wire": true,
+      "encoding": "gzip",
+      "decodedBytes": 33554433,
+      "expected": {
+        "request": {
+          "url": "$LOOPBACK/wire-decoded-overflow/audio/speech",
+          "method": "POST",
+          "authorization": "Bearer fixture-key",
+          "accept": "audio/wav, audio/mpeg",
+          "acceptEncoding": "gzip, deflate",
+          "contentType": "application/json",
+          "body": {
+            "input": "Hello.",
+            "response_format": "wav",
+            "model": "speech-model",
+            "voice": "voice-a"
+          }
+        },
+        "result": {
+          "failure": "responseTooLarge",
+          "message": "The speech audio exceeded the size limit. Try a shorter passage."
+        },
+        "transfer": {
+          "cache": false,
+          "cookies": false,
+          "cookieStorage": false,
+          "maximum": 33554432,
+          "resource": 120
+        }
+      }
+    },
+    {
+      "id": "wire-declared-overflow",
+      "macSource": "Cotabby/Services/Speech/SpeechEndpointClient.swift",
+      "provenanceKind": "source-policy-extension",
+      "wire": true,
+      "encoding": "gzip",
+      "decodedBytes": 3,
+      "declared": 33554433,
+      "expected": {
+        "request": {
+          "url": "$LOOPBACK/wire-declared-overflow/audio/speech",
+          "method": "POST",
+          "authorization": "Bearer fixture-key",
+          "accept": "audio/wav, audio/mpeg",
+          "acceptEncoding": "gzip, deflate",
+          "contentType": "application/json",
+          "body": {
+            "model": "speech-model",
+            "input": "Hello.",
+            "response_format": "wav",
+            "voice": "voice-a"
+          }
+        },
+        "result": {
+          "failure": "transport"
+        },
+        "transfer": {
+          "cache": false,
+          "cookies": false,
+          "cookieStorage": false,
+          "maximum": 33554432,
+          "resource": 120
+        }
+      }
+    }
+  ]
+}

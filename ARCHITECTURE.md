@@ -254,3 +254,9 @@ resolved clicked-text requests, token-scoped playback and exclusive caller-owned
 platform adapters keep recognition, codecs, generation and model transfer outside orchestration.
 Controller tasks drain explicitly, while export and PCM/native lifetimes remain host responsibilities.
 It is not registered in AppHost; provider/device implementations and presentation remain open.
+
+
+The [independent speech HTTP adapter](docs/SPEECH_ENDPOINT.md) owns one bounded transport per action,
+with separate idle/resource deadlines and decoded audio limits. The future audio generator borrows
+it; optional speech destination/settings disclosure remain composition responsibilities. It shares
+neither cookies, cancellation nor mutable endpoint state with completion or translation clients.

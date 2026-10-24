@@ -29,6 +29,7 @@
     <Compile Include="..\..\src\Cotabby.App\Speech\LearningSpeechController.cs" Link="Production\LearningSpeechController.cs" />
     <Compile Include="..\..\src\Cotabby.App\Speech\LearningSpeechController.Export.cs" Link="Production\LearningSpeechController.Export.cs" />
     <Compile Include="..\..\src\Cotabby.App\Speech\SpeechModelManagement.cs" Link="Production\SpeechModelManagement.cs" />
+    <None Include="..\..\fixtures\parity\speech-endpoint-v1.json" Link="fixtures\speech-endpoint-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\fixtures\parity\speech-controller-v1.json" Link="fixtures\speech-controller-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\fixtures\parity\speech-player-v1.json" Link="fixtures\speech-player-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\fixtures\parity\speech-telemetry-v1.json" Link="fixtures\speech-telemetry-v1.json" CopyToOutputDirectory="PreserveNewest" />

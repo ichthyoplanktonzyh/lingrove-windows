@@ -248,6 +248,12 @@ queue/drain events and revision-scoped renderer seam. It marshals native callbac
 context and tracks retirement through shutdown; an actual Windows audio renderer and controller
 composition remain open. Portable and STA gate tests establish scheduling, not audible playback.
 
+The [Windows tempo processor](docs/SPEECH_PCM_TEMPO.md) replaces the Mac graph's pitch-preserving
+speed effect with a separate managed dependency. It belongs to the serialized renderer, keeps
+helper chunks continuous, and flushes only at EOF. The facade separately tracks output-tail drain
+alongside source-buffer IDs so shutdown cannot truncate or abandon that tail. Native device
+implementation and activation remain separate work.
+
 
 The [shared speech controller](docs/SPEECH_CONTROLLER.md) owns lazy catalog/model selection,
 resolved clicked-text requests, token-scoped playback and exclusive caller-owned export. Required

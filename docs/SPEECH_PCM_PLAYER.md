@@ -20,7 +20,7 @@ before readiness/scheduling. At least half an audible second starts playback, ad
 EOF starts a shorter final tail. Two audible seconds apply20ms cancellable backpressure. The
 [existing ledger](SPEECH_PCM_FOUNDATION.md) supplies the lifetime budget, monotonic buffer IDs and
 idempotent acknowledgements. Queue drain alone does not finish generation. EOF plus zero queued
-samples finishes exactly once; EOF also starts the original queued-duration-plus-five-second
+samples and a drained renderer output tail finishes exactly once; EOF also starts the original queued-duration-plus-five-second
 watchdog. Preparation/device/watchdog failure retires the current token before emitting invalidAudio.
 
 Stop clears token/queue/preparation/watchdog/sample state before requesting native retirement.
@@ -30,6 +30,12 @@ in order: prepare requires a strictly newer revision, enqueue/play the current a
 equal/newer revision. Stop pauses/reuses resources; shutdown releases them. The future Windows
 renderer must invalidate its graph before acknowledging discarded buffers, detach device callbacks,
 and avoid stopping native audio inside its render-completion callback.
+
+The [Windows tempo adaptation](SPEECH_PCM_TEMPO.md) adds explicit EOF flush and output-drain barriers
+for a processor whose analysis window lives outside the native output queue. Existing renderers use
+completed defaults. Flush precedes ledger EOF even when the queue is already empty; a tracked output
+barrier prevents that empty ledger from stopping a newly flushed tail. The watchdog still applies,
+and shutdown joins the real barrier after retirement rather than abandoning it on cancellation.
 
 Mac MainActor becomes an explicit caller-owned serial UI SynchronizationContext. Construction/public
 calls require that owner; native callbacks marshal back to it, while async state resumptions keep it.

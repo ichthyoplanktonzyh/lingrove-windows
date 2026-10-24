@@ -39,6 +39,17 @@ public interface ISpeechPCMRendering
     Task PrepareAsync(int sampleRate, double rate, ulong revision, Func<long, Task> played,
         Func<Task> invalidated, CancellationToken cancellationToken);
     Task EnqueueAsync(SpeechPCMChunk chunk, long bufferId, ulong revision, CancellationToken cancellationToken);
+    /// <summary>Notify the device owner once that generation reached EOF, before the facade
+    /// marks its ledger ended. Windows tempo processors retain a trailing analysis window and
+    /// must flush it here; flushing each input block would insert seams. Renderers whose native
+    /// graph already owns that tail may use this no-op. This does not mean audio was played.</summary>
+    Task CompleteInputAsync(ulong revision, CancellationToken cancellationToken) => Task.CompletedTask;
+    /// <summary>After EOF has been flushed, settle only when all output including processor
+    /// tails has played. This registers a nonblocking barrier; it must not wait for Play inside
+    /// the call itself. Stop/device invalidation must settle an outstanding barrier for that
+    /// revision so the facade can join it. Native graphs whose buffer callbacks already cover
+    /// every tail may use the completed default. EOF and this barrier do not replace buffer IDs.</summary>
+    Task OutputDrainedAsync(ulong revision) => Task.CompletedTask;
     Task PlayAsync(ulong revision, CancellationToken cancellationToken);
     Task StopAsync(ulong revision, bool release);
 }

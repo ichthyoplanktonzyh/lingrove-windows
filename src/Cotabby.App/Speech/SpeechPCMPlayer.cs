@@ -25,6 +25,9 @@ internal sealed class SpeechPCMPlayer : ISpeechPCMPlaying
     private SpeechPCMPlaybackState _state = new();
     private bool _playing;
     private OwnedWork? _drainWatchdog;
+    private OwnedWork? _outputDrain;
+    private bool _outputDrained;
+    private bool _inputCompletionStarted;
     private Action<SpeechProviderEvent>? _eventHandler;
     public Action<SpeechProviderEvent>? EventHandler
     {
@@ -64,16 +67,16 @@ internal sealed class SpeechPCMPlayer : ISpeechPCMPlaying
 
     public async Task EnqueueAsync(SpeechPCMChunk chunk, SpeechPlaybackToken token, CancellationToken cancellationToken = default)
     {
-        RequireOwner(); RequireActive(token, cancellationToken);
+        RequireOwner(); RequireOpenInput(token, cancellationToken);
         if (_sampleRate != chunk.SampleRate) throw InvalidAudio();
         // As in Swift's Task.value, caller cancellation does not abandon the shared preparation.
         // Check it after readiness; Stop can still retire this token while native setup is held.
         if (_preparation is { } preparation) await preparation.Task;
-        RequireActive(token, cancellationToken);
+        RequireOpenInput(token, cancellationToken);
         while ((double)_state.QueuedSamples / chunk.SampleRate / _rate >= 2)
         {
             await Task.Delay(TimeSpan.FromMilliseconds(20), cancellationToken);
-            RequireActive(token, cancellationToken);
+            RequireOpenInput(token, cancellationToken);
         }
         long bufferId;
         try { bufferId = _state.Enqueue(chunk.SampleCount); }
@@ -96,8 +99,33 @@ internal sealed class SpeechPCMPlayer : ISpeechPCMPlaying
     public async Task EndInputAsync(SpeechPlaybackToken token, CancellationToken cancellationToken = default)
     {
         RequireOwner(); RequireActive(token, cancellationToken);
+        if (_state.TotalSamples == 0 || _state.InputEnded || _inputCompletionStarted) throw InvalidAudio();
+        _inputCompletionStarted = true;
+        // Windows' streaming tempo processor needs an explicit EOF to release its tail, even
+        // if earlier callbacks already emptied the ledger during a generation gap. Keep that
+        // ledger open during this await: its last played callback must not finish/stop the
+        // device before flushing itself has returned. Nonempty input has already joined prep.
+        await _renderer.CompleteInputAsync(_revision, cancellationToken);
+        RequireActive(token, cancellationToken);
         try { _state.EndInput(); }
         catch (SpeechExportException) { throw InvalidAudio(); }
+        Task drain = _renderer.OutputDrainedAsync(_revision);
+        _outputDrained = drain.IsCompletedSuccessfully;
+        if (!_outputDrained)
+        {
+            // The device may have an EOF tail beyond its earlier source-buffer callbacks.
+            // Reserve and join this barrier even if Play fails or Stop retires us next.
+            _outputDrain = StartOwned(async cancellation =>
+            {
+                try
+                {
+                    await drain; RequireActive(token, cancellation);
+                    _outputDrained = true; FinishIfDrained(token);
+                }
+                catch (OperationCanceledException) when (cancellation.IsCancellationRequested) { }
+                catch { Failed(token); }
+            });
+        }
         await StartIfBufferedAsync(token, cancellationToken);
         FinishIfDrained(token);
         if (_token != token || _sampleRate is not { } sampleRate) return;
@@ -117,6 +145,9 @@ internal sealed class SpeechPCMPlayer : ISpeechPCMPlaying
         _token = null; _revision++; ulong revision = _revision;
         if (_preparation?.Cancel() is { } preparationError) _retirementErrors.Add(preparationError); _preparation = null;
         if (_drainWatchdog?.Cancel() is { } watchdogError) _retirementErrors.Add(watchdogError); _drainWatchdog = null;
+        if (_outputDrain?.Cancel() is { } drainError) _retirementErrors.Add(drainError); _outputDrain = null;
+        _outputDrained = false;
+        _inputCompletionStarted = false;
         _state = new(); _sampleRate = null; _playing = false;
         StartOwned(async _ =>
         {
@@ -129,6 +160,11 @@ internal sealed class SpeechPCMPlayer : ISpeechPCMPlaying
         cancellationToken.ThrowIfCancellationRequested();
         if (_token != token) throw new OperationCanceledException();
     }
+    private void RequireOpenInput(SpeechPlaybackToken token, CancellationToken cancellationToken)
+    {
+        RequireActive(token, cancellationToken);
+        if (_inputCompletionStarted) throw InvalidAudio();
+    }
     private void Played(long bufferId, SpeechPlaybackToken token)
     {
         if (_token != token) return;
@@ -136,7 +172,7 @@ internal sealed class SpeechPCMPlayer : ISpeechPCMPlaying
     }
     private void FinishIfDrained(SpeechPlaybackToken token)
     {
-        if (!_state.IsFinished) return;
+        if (!_state.IsFinished || !_outputDrained) return;
         Stop(); _eventHandler?.Invoke(new SpeechProviderEvent.Finished(token));
     }
     private void Failed(SpeechPlaybackToken token)

@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cotabby.App.Wpf.Tests", "te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cotabby.ImageTransferHost", "src\Cotabby.ImageTransferHost\Cotabby.ImageTransferHost.csproj", "{AC52B605-DF51-49D7-A22D-F1411B54337D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cotabby.Speech.TestHelper", "tests\Cotabby.Speech.TestHelper\Cotabby.Speech.TestHelper.csproj", "{BD4BABF7-FBE8-4F3E-A823-B0D4861C8687}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -187,6 +189,18 @@ Global
 		{AC52B605-DF51-49D7-A22D-F1411B54337D}.Release|x64.Build.0 = Release|Any CPU
 		{AC52B605-DF51-49D7-A22D-F1411B54337D}.Release|x86.ActiveCfg = Release|Any CPU
 		{AC52B605-DF51-49D7-A22D-F1411B54337D}.Release|x86.Build.0 = Release|Any CPU
+		{BD4BABF7-FBE8-4F3E-A823-B0D4861C8687}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD4BABF7-FBE8-4F3E-A823-B0D4861C8687}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD4BABF7-FBE8-4F3E-A823-B0D4861C8687}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BD4BABF7-FBE8-4F3E-A823-B0D4861C8687}.Debug|x64.Build.0 = Debug|Any CPU
+		{BD4BABF7-FBE8-4F3E-A823-B0D4861C8687}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BD4BABF7-FBE8-4F3E-A823-B0D4861C8687}.Debug|x86.Build.0 = Debug|Any CPU
+		{BD4BABF7-FBE8-4F3E-A823-B0D4861C8687}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD4BABF7-FBE8-4F3E-A823-B0D4861C8687}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD4BABF7-FBE8-4F3E-A823-B0D4861C8687}.Release|x64.ActiveCfg = Release|Any CPU
+		{BD4BABF7-FBE8-4F3E-A823-B0D4861C8687}.Release|x64.Build.0 = Release|Any CPU
+		{BD4BABF7-FBE8-4F3E-A823-B0D4861C8687}.Release|x86.ActiveCfg = Release|Any CPU
+		{BD4BABF7-FBE8-4F3E-A823-B0D4861C8687}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -204,5 +218,6 @@ Global
 		{B3DC23C8-E85E-45D4-9EE7-48BE35357177} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 		{8CC359F5-EE46-4187-984A-A02D29E7721A} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 		{AC52B605-DF51-49D7-A22D-F1411B54337D} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{BD4BABF7-FBE8-4F3E-A823-B0D4861C8687} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 	EndGlobalSection
 EndGlobal

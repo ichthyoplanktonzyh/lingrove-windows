@@ -1,0 +1,634 @@
+{
+  "version": 1,
+  "macReference": "43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f",
+  "referenceLocale": "en_US",
+  "cases": [
+    {
+      "id": "reuse",
+      "macSource": "Cotabby/Services/Speech/LocalSpeechRuntime.swift",
+      "provenanceKind": "original-test-adaptation",
+      "sourceTest": "CotabbyTests/Services/Speech/LocalSpeechRuntimeTests.swift:fastReadyAndTwoSequentialRequestsReuseOneHelper",
+      "expected": {
+        "chunks": [
+          9600,
+          9600
+        ],
+        "parameters": [
+          {
+            "language": "en",
+            "matchingId": true,
+            "max_frames": 512,
+            "repetition_penalty": 1,
+            "seed": 42,
+            "temperature": 0.8,
+            "text": "first",
+            "top_k": 40,
+            "top_p": 0.95,
+            "type": "synthesize"
+          },
+          {
+            "language": "en",
+            "matchingId": true,
+            "max_frames": 512,
+            "repetition_penalty": 1,
+            "seed": 42,
+            "temperature": 0.8,
+            "text": "second",
+            "top_k": 40,
+            "top_p": 0.95,
+            "type": "synthesize"
+          }
+        ],
+        "reaped": true,
+        "results": [
+          "ok:9600:e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65",
+          "ok:9600:e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65"
+        ],
+        "starts": 1
+      }
+    },
+    {
+      "id": "sampling",
+      "macSource": "Cotabby/Services/Speech/LocalSpeechRuntime.swift",
+      "provenanceKind": "original-test-adaptation",
+      "sourceTest": "CotabbyTests/Services/Speech/LocalSpeechRuntimeTests.swift:requestSamplingChangesDoNotReloadTheSameModel",
+      "expected": {
+        "chunks": [
+          9600,
+          9600
+        ],
+        "parameters": [
+          {
+            "language": "en",
+            "matchingId": true,
+            "max_frames": 512,
+            "repetition_penalty": 1.1,
+            "seed": 81,
+            "temperature": 0.1,
+            "text": "first",
+            "top_k": 12,
+            "top_p": 0.7,
+            "type": "synthesize"
+          },
+          {
+            "language": "en",
+            "matchingId": true,
+            "max_frames": 512,
+            "repetition_penalty": 1,
+            "seed": 42,
+            "temperature": 0.8,
+            "text": "second",
+            "top_k": 40,
+            "top_p": 0.95,
+            "type": "synthesize"
+          }
+        ],
+        "reaped": true,
+        "results": [
+          "ok:9600:e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65",
+          "ok:9600:e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65"
+        ],
+        "starts": 1
+      }
+    },
+    {
+      "id": "cancel",
+      "macSource": "Cotabby/Services/Speech/LocalSpeechRuntime.swift",
+      "provenanceKind": "original-test-adaptation",
+      "sourceTest": "CotabbyTests/Services/Speech/LocalSpeechRuntimeTests.swift:cancelledRequestIsReapedAndNextRequestSucceeds",
+      "expected": {
+        "chunks": [
+          9600
+        ],
+        "parameters": [
+          {
+            "language": "en",
+            "matchingId": true,
+            "max_frames": 512,
+            "repetition_penalty": 1,
+            "seed": 42,
+            "temperature": 0.8,
+            "text": "wait",
+            "top_k": 40,
+            "top_p": 0.95,
+            "type": "synthesize"
+          },
+          {
+            "language": "en",
+            "matchingId": true,
+            "max_frames": 512,
+            "repetition_penalty": 1,
+            "seed": 42,
+            "temperature": 0.8,
+            "text": "after",
+            "top_k": 40,
+            "top_p": 0.95,
+            "type": "synthesize"
+          }
+        ],
+        "reaped": true,
+        "results": [
+          "failed",
+          "ok:9600:e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65"
+        ],
+        "starts": 2
+      }
+    },
+    {
+      "id": "idle",
+      "macSource": "Cotabby/Services/Speech/LocalSpeechRuntime.swift",
+      "provenanceKind": "original-test-adaptation",
+      "sourceTest": "CotabbyTests/Services/Speech/LocalSpeechRuntimeTests.swift:idleTimeoutUnloadsTheHelper",
+      "expected": {
+        "chunks": [
+          9600,
+          9600
+        ],
+        "parameters": [
+          {
+            "language": "en",
+            "matchingId": true,
+            "max_frames": 512,
+            "repetition_penalty": 1,
+            "seed": 42,
+            "temperature": 0.8,
+            "text": "first",
+            "top_k": 40,
+            "top_p": 0.95,
+            "type": "synthesize"
+          },
+          {
+            "language": "en",
+            "matchingId": true,
+            "max_frames": 512,
+            "repetition_penalty": 1,
+            "seed": 42,
+            "temperature": 0.8,
+            "text": "second",
+            "top_k": 40,
+            "top_p": 0.95,
+            "type": "synthesize"
+          }
+        ],
+        "reaped": true,
+        "results": [
+          "ok:9600:e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65",
+          "ok:9600:e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65"
+        ],
+        "starts": 2
+      }
+    },
+    {
+      "id": "timeout",
+      "macSource": "Cotabby/Services/Speech/LocalSpeechRuntime.swift",
+      "provenanceKind": "original-test-adaptation",
+      "sourceTest": "CotabbyTests/Services/Speech/LocalSpeechRuntimeTests.swift:operationTimeoutDoesNotPoisonTheNextRequest",
+      "expected": {
+        "chunks": [
+          9600
+        ],
+        "parameters": [
+          {
+            "language": "en",
+            "matchingId": true,
+            "max_frames": 512,
+            "repetition_penalty": 1,
+            "seed": 42,
+            "temperature": 0.8,
+            "text": "ignore-term",
+            "top_k": 40,
+            "top_p": 0.95,
+            "type": "synthesize"
+          },
+          {
+            "language": "en",
+            "matchingId": true,
+            "max_frames": 512,
+            "repetition_penalty": 1,
+            "seed": 42,
+            "temperature": 0.8,
+            "text": "after",
+            "top_k": 40,
+            "top_p": 0.95,
+            "type": "synthesize"
+          }
+        ],
+        "reaped": true,
+        "results": [
+          "failed",
+          "ok:9600:e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65"
+        ],
+        "starts": 2
+      }
+    },
+    {
+      "id": "cancel-drain",
+      "macSource": "Cotabby/Services/Speech/LocalSpeechRuntime.swift",
+      "provenanceKind": "original-test-adaptation",
+      "sourceTest": "CotabbyTests/Services/Speech/LocalSpeechRuntimeTests.swift:cancellationDuringDrainDoesNotNeedAnExplicitCancelCall",
+      "expected": {
+        "chunks": [
+          9600
+        ],
+        "parameters": [
+          {
+            "language": "en",
+            "matchingId": true,
+            "max_frames": 512,
+            "repetition_penalty": 1,
+            "seed": 42,
+            "temperature": 0.8,
+            "text": "ignore-term",
+            "top_k": 40,
+            "top_p": 0.95,
+            "type": "synthesize"
+          },
+          {
+            "language": "en",
+            "matchingId": true,
+            "max_frames": 512,
+            "repetition_penalty": 1,
+            "seed": 42,
+            "temperature": 0.8,
+            "text": "after",
+            "top_k": 40,
+            "top_p": 0.95,
+            "type": "synthesize"
+          }
+        ],
+        "reaped": true,
+        "results": [
+          "cancelled",
+          "failed",
+          "ok:9600:e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65"
+        ],
+        "starts": 2
+      }
+    },
+    {
+      "id": "blocked-events",
+      "macSource": "Cotabby/Services/Speech/LocalSpeechRuntime.swift",
+      "provenanceKind": "original-test-adaptation",
+      "sourceTest": "CotabbyTests/Services/Speech/LocalSpeechRuntimeTests.swift:blockedTelemetryDoesNotHoldGenerationOrReaping",
+      "expected": {
+        "chunks": [
+          9600
+        ],
+        "parameters": [
+          {
+            "language": "en",
+            "matchingId": true,
+            "max_frames": 512,
+            "repetition_penalty": 1,
+            "seed": 42,
+            "temperature": 0.8,
+            "text": "first",
+            "top_k": 40,
+            "top_p": 0.95,
+            "type": "synthesize"
+          }
+        ],
+        "reaped": true,
+        "results": [
+          "ok:9600:e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65"
+        ],
+        "starts": 1
+      }
+    },
+    {
+      "id": "blocked-receiver",
+      "macSource": "Cotabby/Services/Speech/LocalSpeechRuntime.swift",
+      "provenanceKind": "original-test-adaptation",
+      "sourceTest": "CotabbyTests/Services/Speech/LocalSpeechRuntimeTests.swift:blockedPlaybackReceiverDoesNotPreventCancellationOrNewSession",
+      "expected": {
+        "chunks": [
+          9600,
+          9600
+        ],
+        "parameters": [
+          {
+            "language": "en",
+            "matchingId": true,
+            "max_frames": 512,
+            "repetition_penalty": 1,
+            "seed": 42,
+            "temperature": 0.8,
+            "text": "first",
+            "top_k": 40,
+            "top_p": 0.95,
+            "type": "synthesize"
+          },
+          {
+            "language": "en",
+            "matchingId": true,
+            "max_frames": 512,
+            "repetition_penalty": 1,
+            "seed": 42,
+            "temperature": 0.8,
+            "text": "after",
+            "top_k": 40,
+            "top_p": 0.95,
+            "type": "synthesize"
+          }
+        ],
+        "reaped": true,
+        "results": [
+          "failed",
+          "ok:9600:e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65"
+        ],
+        "starts": 2
+      }
+    },
+    {
+      "id": "stream-cancel",
+      "macSource": "Cotabby/Services/Speech/LocalSpeechRuntime.swift",
+      "provenanceKind": "original-test-adaptation",
+      "sourceTest": "CotabbyTests/Services/Speech/LocalSpeechRuntimeTests.swift:deliversBeforeGenerationCompletesAndCancelsWhileReceiving",
+      "expected": {
+        "chunks": [
+          9600
+        ],
+        "parameters": [
+          {
+            "language": "en",
+            "matchingId": true,
+            "max_frames": 512,
+            "repetition_penalty": 1,
+            "seed": 42,
+            "temperature": 0.8,
+            "text": "chunk-then-wait",
+            "top_k": 40,
+            "top_p": 0.95,
+            "type": "synthesize"
+          }
+        ],
+        "reaped": true,
+        "results": [
+          "failed"
+        ],
+        "starts": 1
+      }
+    },
+    {
+      "id": "wrong-sequence",
+      "macSource": "Cotabby/Services/Speech/LocalSpeechRuntime.swift",
+      "provenanceKind": "original-test-adaptation",
+      "sourceTest": "CotabbyTests/Services/Speech/LocalSpeechRuntimeTests.swift:invalidStreamFailsAndNextRequestRecovers",
+      "expected": {
+        "chunks": [
+          9600,
+          9600
+        ],
+        "parameters": [
+          {
+            "language": "en",
+            "matchingId": true,
+            "max_frames": 512,
+            "repetition_penalty": 1,
+            "seed": 42,
+            "temperature": 0.8,
+            "text": "wrong-sequence",
+            "top_k": 40,
+            "top_p": 0.95,
+            "type": "synthesize"
+          },
+          {
+            "language": "en",
+            "matchingId": true,
+            "max_frames": 512,
+            "repetition_penalty": 1,
+            "seed": 42,
+            "temperature": 0.8,
+            "text": "after",
+            "top_k": 40,
+            "top_p": 0.95,
+            "type": "synthesize"
+          }
+        ],
+        "reaped": true,
+        "results": [
+          "failed",
+          "ok:9600:e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65"
+        ],
+        "starts": 2
+      }
+    },
+    {
+      "id": "truncated",
+      "macSource": "Cotabby/Services/Speech/LocalSpeechRuntime.swift",
+      "provenanceKind": "original-test-adaptation",
+      "sourceTest": "CotabbyTests/Services/Speech/LocalSpeechRuntimeTests.swift:invalidStreamFailsAndNextRequestRecovers",
+      "expected": {
+        "chunks": [
+          9600,
+          9600
+        ],
+        "parameters": [
+          {
+            "language": "en",
+            "matchingId": true,
+            "max_frames": 512,
+            "repetition_penalty": 1,
+            "seed": 42,
+            "temperature": 0.8,
+            "text": "truncated",
+            "top_k": 40,
+            "top_p": 0.95,
+            "type": "synthesize"
+          },
+          {
+            "language": "en",
+            "matchingId": true,
+            "max_frames": 512,
+            "repetition_penalty": 1,
+            "seed": 42,
+            "temperature": 0.8,
+            "text": "after",
+            "top_k": 40,
+            "top_p": 0.95,
+            "type": "synthesize"
+          }
+        ],
+        "reaped": true,
+        "results": [
+          "failed",
+          "ok:9600:e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65"
+        ],
+        "starts": 2
+      }
+    },
+    {
+      "id": "configuration",
+      "macSource": "Cotabby/Services/Speech/LocalSpeechRuntime.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "chunks": [
+          9600,
+          9600
+        ],
+        "parameters": [
+          {
+            "language": "en",
+            "matchingId": true,
+            "max_frames": 512,
+            "repetition_penalty": 1,
+            "seed": 42,
+            "temperature": 0.8,
+            "text": "first",
+            "top_k": 40,
+            "top_p": 0.95,
+            "type": "synthesize"
+          },
+          {
+            "language": "en",
+            "matchingId": true,
+            "max_frames": 512,
+            "repetition_penalty": 1,
+            "seed": 42,
+            "temperature": 0.8,
+            "text": "second",
+            "top_k": 40,
+            "top_p": 0.95,
+            "type": "synthesize"
+          }
+        ],
+        "reaped": true,
+        "results": [
+          "ok:9600:e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65",
+          "ok:9600:e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65"
+        ],
+        "starts": 2
+      }
+    },
+    {
+      "id": "reference",
+      "macSource": "Cotabby/Services/Speech/LocalSpeechRuntime.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "chunks": [
+          9600
+        ],
+        "parameters": [
+          {
+            "language": "en",
+            "matchingId": true,
+            "max_frames": 512,
+            "repetition_penalty": 1,
+            "seed": 42,
+            "speaker_audio_path": "$ROOT/speaker 声音.wav",
+            "temperature": 0.8,
+            "text": "reference",
+            "top_k": 40,
+            "top_p": 0.95,
+            "type": "synthesize"
+          }
+        ],
+        "reaped": true,
+        "results": [
+          "ok:9600:e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65"
+        ],
+        "starts": 1
+      }
+    },
+    {
+      "id": "unsupported",
+      "macSource": "Cotabby/Services/Speech/LocalSpeechRuntime.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "chunks": [],
+        "parameters": [],
+        "reaped": true,
+        "results": [
+          "failed"
+        ],
+        "starts": 0
+      }
+    },
+    {
+      "id": "pre-cancel",
+      "macSource": "Cotabby/Services/Speech/LocalSpeechRuntime.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "chunks": [],
+        "parameters": [],
+        "reaped": true,
+        "results": [
+          "cancelled"
+        ],
+        "starts": 0
+      }
+    },
+    {
+      "id": "receiver-reject",
+      "macSource": "Cotabby/Services/Speech/LocalSpeechRuntime.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "chunks": [
+          9600,
+          9600
+        ],
+        "parameters": [
+          {
+            "language": "en",
+            "matchingId": true,
+            "max_frames": 512,
+            "repetition_penalty": 1,
+            "seed": 42,
+            "temperature": 0.8,
+            "text": "reject",
+            "top_k": 40,
+            "top_p": 0.95,
+            "type": "synthesize"
+          },
+          {
+            "language": "en",
+            "matchingId": true,
+            "max_frames": 512,
+            "repetition_penalty": 1,
+            "seed": 42,
+            "temperature": 0.8,
+            "text": "after",
+            "top_k": 40,
+            "top_p": 0.95,
+            "type": "synthesize"
+          }
+        ],
+        "reaped": true,
+        "results": [
+          "failed",
+          "ok:9600:e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65"
+        ],
+        "starts": 2
+      }
+    },
+    {
+      "id": "sampling-bounds",
+      "macSource": "Cotabby/Services/Speech/LocalSpeechRuntime.swift",
+      "provenanceKind": "source-policy-extension",
+      "expected": {
+        "chunks": [
+          9600
+        ],
+        "parameters": [
+          {
+            "language": "en",
+            "matchingId": true,
+            "max_frames": 512,
+            "repetition_penalty": 1,
+            "seed": 4294967295,
+            "temperature": 2,
+            "text": "你好，héllo.\nNext",
+            "top_k": 256,
+            "top_p": 0.01,
+            "type": "synthesize"
+          }
+        ],
+        "reaped": true,
+        "results": [
+          "ok:9600:e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65"
+        ],
+        "starts": 1
+      }
+    }
+  ]
+}

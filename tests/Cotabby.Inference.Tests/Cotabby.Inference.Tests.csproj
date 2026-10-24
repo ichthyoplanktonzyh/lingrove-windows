@@ -43,4 +43,10 @@
     <ProjectReference Include="..\..\src\Cotabby.Win32\Cotabby.Win32.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="..\Shared\SpeechRuntimeFixture.cs" Link="Shared\SpeechRuntimeFixture.cs" />
+    <Compile Include="..\Shared\SpeechRuntimeCases.cs" Link="Shared\SpeechRuntimeCases.cs" />
+    <None Include="..\..\fixtures\parity\speech-runtime-v1.json" Link="fixtures\speech-runtime-v1.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <Import Project="..\Shared\SpeechTestHelper.targets" />
 </Project>

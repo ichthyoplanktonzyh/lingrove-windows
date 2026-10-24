@@ -1,0 +1,12 @@
+<Project>
+  <ItemGroup>
+    <ProjectReference Include="$(MSBuildThisFileDirectory)..\Cotabby.Speech.TestHelper\Cotabby.Speech.TestHelper.csproj" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+  <!-- Resolve files after ProjectReference has built them, including a clean CI checkout. -->
+  <Target Name="CopySpeechTestHelper" AfterTargets="Build">
+    <ItemGroup>
+      <SpeechHelperFiles Include="$(MSBuildThisFileDirectory)..\Cotabby.Speech.TestHelper\bin\$(Configuration)\net10.0\*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(SpeechHelperFiles)" DestinationFolder="$(OutDir)SpeechTestHelper" SkipUnchangedFiles="true" />
+  </Target>
+</Project>

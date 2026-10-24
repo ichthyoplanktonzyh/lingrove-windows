@@ -105,6 +105,9 @@ public sealed record LearningModelSamplingValues(
             normalized.ResolveSeed(Seed));
     }
 
+    /// <summary>The pinned speech helper recommendation belongs to one request, never resident model identity.</summary>
+    public static LearningModelSamplingValues Speech => new(0.8, 0.95, 40, 1, 42);
+
     public static LearningModelSamplingValues FromInstruction(LearningInstructionSampling sampling) =>
         new(sampling.Temperature, sampling.TopP, sampling.TopK, sampling.RepetitionPenalty);
 }

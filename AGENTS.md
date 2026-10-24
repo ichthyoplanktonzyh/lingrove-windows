@@ -167,6 +167,7 @@ the [speech observer and shared history](docs/SPEECH_TELEMETRY.md) preserve boun
 the [PCM facade](docs/SPEECH_PCM_PLAYER.md) preserves readiness, queue/drain, stale callbacks and tracked shutdown without an audio-device implementation;
 the [shared speech controller](docs/SPEECH_CONTROLLER.md) preserves resolved requests, lazy catalog/model selection, playback/export exclusivity and joined task ownership without native providers or AppHost activation;
 the [independent speech HTTP adapter](docs/SPEECH_ENDPOINT.md) preserves bounded request-owned transport, compression, deadlines and redirect/cookie refusal without application activation;
+the [local speech runtime](docs/SPEECH_LOCAL_RUNTIME.md) adapts lazy helper ownership, shared reaping and bounded PCM exchange, with Windows process/job/pressure adapters and no application activation;
 compressed/profiled bitmap variants, virtual/pixel drops, review navigation/preparation/batch UI and other dictionary providers remain work. Do not flatten senses into
 one translation string, regenerate stable IDs during edits, or treat a generated explanation as the
 user's authored meaning. See the vocabulary models and porting gates in the linked docs. Storage
@@ -187,6 +188,7 @@ dotnet test tests/Cotabby.App.Tests/Cotabby.App.Tests.csproj --configuration Rel
 dotnet build Cotabby.sln --configuration Release -p:EnableWindowsTargeting=true
 python3 scripts/verify-speech-controller-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-speech-endpoint-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
+python3 scripts/verify-speech-runtime-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-learning-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
 python3 scripts/verify-learning-local-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout

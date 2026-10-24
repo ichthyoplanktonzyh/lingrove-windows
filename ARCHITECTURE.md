@@ -257,6 +257,14 @@ It is not registered in AppHost; provider/device implementations and presentatio
 
 
 The [independent speech HTTP adapter](docs/SPEECH_ENDPOINT.md) owns one bounded transport per action,
-with separate idle/resource deadlines and decoded audio limits. The future audio generator borrows
+with separate idle/resource deadlines and decoded audio limits. The independent audio generator borrows
 it; optional speech destination/settings disclosure remain composition responsibilities. It shares
 neither cookies, cancellation nor mutable endpoint state with completion or translation clients.
+
+
+The [local speech runtime](docs/SPEECH_LOCAL_RUNTIME.md) owns one lazy helper session and shared
+uncancelled retirement. Windows atomically creates the child in a kill-on-close job with explicit
+stdio inheritance; low/high memory events request idle release. Session IO and receiver/observer
+callbacks do not hold state locks, and host shutdown separately joins old readers. The audio
+generator routes frozen local/endpoint choices without sharing completion/learning state. The native
+model helper, audio devices, UI and AppHost activation remain separate work.

@@ -11,6 +11,9 @@ namespace Cotabby.Core.Speech;
 public static class SpeechTextPolicy
 {
     public const int MaximumLength = 1000;
+    /// <summary>Playback/export reject the original click before sanitization or truncation.
+    /// UTF-8 bytes and extended graphemes are separate limits, matching the shared controller.</summary>
+    public static bool WithinRequestLimit(string text) => Encoding.UTF8.GetByteCount(text) <= 4096 && new GraphemeString(text).Count <= MaximumLength;
     public static string? SpokenText(LearningUnit unit)
     {
         string candidate;

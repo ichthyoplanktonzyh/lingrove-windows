@@ -247,3 +247,10 @@ The [PCM playback facade](docs/SPEECH_PCM_PLAYER.md) keeps the original UI-owned
 queue/drain events and revision-scoped renderer seam. It marshals native callbacks to the caller UI
 context and tracks retirement through shutdown; an actual Windows audio renderer and controller
 composition remain open. Portable and STA gate tests establish scheduling, not audible playback.
+
+
+The [shared speech controller](docs/SPEECH_CONTROLLER.md) owns lazy catalog/model selection,
+resolved clicked-text requests, token-scoped playback and exclusive caller-owned export. Required
+platform adapters keep recognition, codecs, generation and model transfer outside orchestration.
+Controller tasks drain explicitly, while export and PCM/native lifetimes remain host responsibilities.
+It is not registered in AppHost; provider/device implementations and presentation remain open.

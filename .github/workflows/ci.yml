@@ -89,6 +89,14 @@ jobs:
             Cotabby/Models/Speech/SpeechGenerationProfile.swift
             Cotabby/Models/Speech/SpeechRuntimeModels.swift
             Cotabby/Services/Speech/SpeechTelemetry.swift
+            Cotabby/Services/Speech/LearningSpeechController.swift
+            Cotabby/Services/Speech/LearningSpeechController+Export.swift
+            Cotabby/Services/Speech/SpeechAudioPlayer.swift
+            Cotabby/Services/Speech/SpeechAudioGenerator.swift
+            Cotabby/Models/Speech/SpeechModelCatalog.swift
+            Cotabby/Services/ModelManagement/ModelDownloadManager.swift
+            CotabbyTests/Services/Speech/LearningSpeechControllerTests.swift
+            CotabbyTests/Services/Speech/GeneratedSpeechControllerTests.swift
             Cotabby/Services/Speech/SpeechPCMPlayer.swift
             Cotabby/Services/Speech/SpeechPCMRenderer.swift
             CotabbyTests/Services/Speech/SpeechPCMPlayerTests.swift
@@ -293,3 +301,6 @@ jobs:
 
       - name: Verify complete original PCM player with original gated renderer
         run: python3 scripts/verify-speech-player-macos-parity.py --mac-repo .mac-baseline
+
+      - name: Verify complete original speech controller playback and export ownership
+        run: python3 scripts/verify-speech-controller-macos-parity.py --mac-repo .mac-baseline

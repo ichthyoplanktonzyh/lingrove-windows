@@ -6,7 +6,7 @@ unchanged at current stable `cc468b89f5c360cc7210fac4f1a8b52197870bf2`. The rend
 `AVAudioUnitTimePitch.rate` and resets its processing tail between utterances. Windows must preserve
 that responsibility; changing a device sample rate would also change pitch.
 
-`Win32/Speech/WindowsSpeechTempoProcessor` is owned once per utterance by the future serialized
+`Win32/Speech/WindowsSpeechTempoProcessor` is owned once per utterance by the serialized
 Windows renderer. It accepts detached validated mono Float32 chunks, processes their continuous
 stream away from UI, and returns renderer-owned little-endian output packets at the original sample
 rate. It opens no device and owns no generator, file or text. The unmodified managed
@@ -57,7 +57,8 @@ The separate SoundTouch assembly and its full LGPL2.1-or-later notice/license ar
 ordinary build output under `Speech/Notices/`. The restored package's repository commit matches
 the source above; the library is not copied into product source or modified.
 
-This slice does not implement or activate an audio device. Actual device-position accounting,
-default-device change/unplug, audible boundaries/underruns, encoded codecs, installed voices,
+The [subsequent Windows device adapter](SPEECH_PCM_DEVICE.md) supplies compiled WASAPI output,
+authored/device-position accounting and notification ownership. It is not activated in AppHost.
+Physical default-device change/unplug, audible boundaries/underruns, encoded codecs, installed voices,
 AppHost/settings/card/review integration and perceptual comparison remain work. Passing generated
 tone measurements establishes the tempo mechanism, not audible parity or complete speech support.

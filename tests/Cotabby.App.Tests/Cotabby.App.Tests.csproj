@@ -28,6 +28,10 @@
     <Compile Include="..\..\src\Cotabby.App\Speech\SpeechTelemetry.cs" Link="Production\SpeechTelemetry.cs" />
     <Compile Include="..\..\src\Cotabby.App\Speech\SpeechPCMPlayer.cs" Link="Production\SpeechPCMPlayer.cs" />
     <Compile Include="..\..\src\Cotabby.Win32\Speech\WindowsSpeechTempoProcessor.cs" Link="Production\WindowsSpeechTempoProcessor.cs" />
+    <Compile Include="..\..\src\Cotabby.Win32\Speech\WindowsSpeechPCMInputAdapter.cs" Link="Production\WindowsSpeechPCMInputAdapter.cs" />
+    <Compile Include="..\..\src\Cotabby.Win32\Speech\WindowsSpeechOutputTimeline.cs" Link="Production\WindowsSpeechOutputTimeline.cs" />
+    <Compile Include="..\..\src\Cotabby.Win32\Speech\WindowsSpeechOutputDevice.cs" Link="Production\WindowsSpeechOutputDevice.cs" />
+    <Compile Include="..\..\src\Cotabby.Win32\Speech\WindowsSpeechPCMRenderer.cs" Link="Production\WindowsSpeechPCMRenderer.cs" />
     <Compile Include="..\..\src\Cotabby.App\Speech\LearningSpeechController.cs" Link="Production\LearningSpeechController.cs" />
     <Compile Include="..\..\src\Cotabby.App\Speech\LearningSpeechController.Export.cs" Link="Production\LearningSpeechController.Export.cs" />
     <Compile Include="..\..\src\Cotabby.App\Speech\SpeechModelManagement.cs" Link="Production\SpeechModelManagement.cs" />

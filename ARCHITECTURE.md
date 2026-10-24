@@ -254,6 +254,12 @@ helper chunks continuous, and flushes only at EOF. The facade separately tracks 
 alongside source-buffer IDs so shutdown cannot truncate or abandon that tail. Native device
 implementation and activation remain separate work.
 
+The [Windows PCM device](docs/SPEECH_PCM_DEVICE.md) now separates the renderer's serialized tempo
+worker from a dedicated MTA WASAPI owner. A count-only timeline excludes generation-gap silence
+from authored progress. The input adapter fragments large helper chunks before facade backpressure;
+epochs and graph identities protect retirement and joined device cleanup. Concrete native code is
+compiled, while hardware acceptance and application activation remain open.
+
 
 The [shared speech controller](docs/SPEECH_CONTROLLER.md) owns lazy catalog/model selection,
 resolved clicked-text requests, token-scoped playback and exclusive caller-owned export. Required

@@ -89,4 +89,10 @@
     <None Include="..\..\fixtures\parity\vocabulary-projection-v1.json" Link="fixtures\vocabulary-projection-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\fixtures\parity\vocabulary-codec-v1.json" Link="fixtures\vocabulary-codec-v1.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Shared\SpeechRuntimeFixture.cs" Link="Shared\SpeechRuntimeFixture.cs" />
+    <Compile Include="..\Shared\SpeechRuntimeCases.cs" Link="Shared\SpeechRuntimeCases.cs" />
+    <None Include="..\..\fixtures\parity\speech-runtime-v1.json" Link="fixtures\speech-runtime-v1.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <Import Project="..\Shared\SpeechTestHelper.targets" />
 </Project>

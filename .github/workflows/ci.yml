@@ -89,6 +89,9 @@ jobs:
             Cotabby/Models/Speech/SpeechGenerationProfile.swift
             Cotabby/Models/Speech/SpeechRuntimeModels.swift
             Cotabby/Services/Speech/SpeechTelemetry.swift
+            Cotabby/Services/Speech/LocalSpeechRuntime.swift
+            CotabbyTests/Services/Speech/LocalSpeechRuntimeTests.swift
+            Cotabby/Models/Runtime/Parameters/ModelSamplingValues.swift
             Cotabby/Services/Speech/SpeechEndpointClient.swift
             CotabbyTests/Services/Speech/SpeechEndpointClientTests.swift
             Cotabby/Services/Speech/LearningSpeechController.swift
@@ -309,3 +312,7 @@ jobs:
 
       - name: Verify original speech HTTP adapter and real loopback compression
         run: python3 scripts/verify-speech-endpoint-macos-parity.py --mac-repo .mac-baseline
+
+
+      - name: Verify complete original local speech runtime with real protocol children
+        run: python3 scripts/verify-speech-runtime-macos-parity.py --mac-repo .mac-baseline

@@ -77,3 +77,33 @@ reported an upstream duplicate static llama library warning. Windows MSVC compil
 binary/platform checks and8 Git preparation checks are CI gates. Native PCM continuity with models,
 MP3/other-container behavior, GPU performance, actual reference cloning, audible playback and the
 physical app shutdown path still require further evidence.
+
+## Visual Studio source ownership
+
+The pinned upstream uses unity translation units for model sources while compiling its core
+`src/llama.cpp` separately. MSBuild also inventories the unity `src/models/llama.cpp` member;
+its shared default basename produced MSB8027 in the first Windows build. The logs alone did not
+establish an actual object overwrite. The port assigns the model inventory item a distinct
+`ObjectFileName` using source-scoped [CMake VS_SETTINGS](https://cmake.org/cmake/help/v3.24/prop_sf/VS_SETTINGS.html)
+in the existing `llama` target's directory. It does not rename code, change unity membership,
+exclude an additional compiler input or edit the verified dependency overlay.
+
+Before compiling, `check-speech-vs-project.py` reads the actual generated `llama.vcxproj` and unity
+files. For every generated configuration it checks that core remains directly compiled, the model
+member is excluded from direct compilation with its distinct object metadata, and exactly one
+compiled unity unit includes that model exactly once without containing core. Modern Visual Studio
+represents a member with `IncludeInUnityFile="true"`, `CustomUnityFile="true"` and its owning
+`UnityFilesDirectory`, with `EnableUnitySupport` enabled, rather than `ExcludedFromBuild`. The
+checker admits that complete native-unity contract or explicit per-configuration exclusions;
+an absent exclusion by itself is never sufficient. This follows
+[CMake's Visual Studio generator](https://github.com/Kitware/CMake/blob/v3.31.6/Source/cmVisualStudio10TargetGenerator.cxx).
+It prints only structural evidence.
+The Windows MSBuild invocation promotes **MSB8027 specifically** to an error, retaining unrelated
+upstream compiler diagnostics rather than suppressing the collision warning. See
+[Microsoft's diagnostic](https://learn.microsoft.com/en-us/visualstudio/msbuild/errors/msb8027?view=visualstudio)
+and [warning-code policy](https://learn.microsoft.com/en-us/visualstudio/msbuild/msbuild-command-line-reference?view=visualstudio).
+
+Local synthetic XML admission/rejection checks validate this parser, and Mac CMake configuration
+checks the unchanged non-Visual-Studio path. Only Windows CI can establish the generated Visual
+Studio metadata and subsequent native compilation. This additional build gate still uses no model
+weights, downloads no package output and does not establish model-backed inference or playback.

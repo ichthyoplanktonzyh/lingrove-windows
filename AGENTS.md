@@ -168,6 +168,7 @@ the [serial batch library](docs/ANKI_REVIEW_BATCH.md) adds frozen rows, per-item
 the [speech preferences](docs/SPEECH_SETTINGS.md) retain original destination profiles, explicit credential access and playback invalidation without activating a provider;
 the [speech observer and shared history](docs/SPEECH_TELEMETRY.md) preserve bounded correlation, runtime admission and opt-in metrics without activating a helper;
 the [PCM facade](docs/SPEECH_PCM_PLAYER.md) preserves readiness, queue/drain, stale callbacks and tracked shutdown without an audio-device implementation;
+the [Windows tempo effect](docs/SPEECH_PCM_TEMPO.md) supplies continuous pitch-preserving Float32 processing and explicit EOF/output-tail ownership, without activating a device;
 the [shared speech controller](docs/SPEECH_CONTROLLER.md) preserves resolved requests, lazy catalog/model selection, playback/export exclusivity and joined task ownership without native providers or AppHost activation;
 the [independent speech HTTP adapter](docs/SPEECH_ENDPOINT.md) preserves bounded request-owned transport, compression, deadlines and redirect/cookie refusal without application activation;
 the [local speech runtime](docs/SPEECH_LOCAL_RUNTIME.md) adapts lazy helper ownership, shared reaping and bounded PCM exchange, with Windows process/job/pressure adapters and no application activation;

@@ -17,6 +17,7 @@
     <PackageReference Include="xunit" Version="2.9.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
     <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.5" />
+    <PackageReference Include="SoundTouch.Net" Version="2.3.2" />
     <Using Include="Xunit" />
   </ItemGroup>
   <ItemGroup>
@@ -26,6 +27,7 @@
     <Compile Include="..\..\src\Cotabby.App\Runtime\PerformanceMetricsStore.cs" Link="Production\PerformanceMetricsStore.cs" />
     <Compile Include="..\..\src\Cotabby.App\Speech\SpeechTelemetry.cs" Link="Production\SpeechTelemetry.cs" />
     <Compile Include="..\..\src\Cotabby.App\Speech\SpeechPCMPlayer.cs" Link="Production\SpeechPCMPlayer.cs" />
+    <Compile Include="..\..\src\Cotabby.Win32\Speech\WindowsSpeechTempoProcessor.cs" Link="Production\WindowsSpeechTempoProcessor.cs" />
     <Compile Include="..\..\src\Cotabby.App\Speech\LearningSpeechController.cs" Link="Production\LearningSpeechController.cs" />
     <Compile Include="..\..\src\Cotabby.App\Speech\LearningSpeechController.Export.cs" Link="Production\LearningSpeechController.Export.cs" />
     <Compile Include="..\..\src\Cotabby.App\Speech\SpeechModelManagement.cs" Link="Production\SpeechModelManagement.cs" />

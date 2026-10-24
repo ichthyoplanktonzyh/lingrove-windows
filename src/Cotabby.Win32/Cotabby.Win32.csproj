@@ -13,9 +13,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="SoundTouch.Net" Version="2.3.2" />
     <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.5" />
     <ProjectReference Include="..\Cotabby.Core\Cotabby.Core.csproj" />
     <ProjectReference Include="..\Cotabby.Inference\Cotabby.Inference.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Speech\Notices\*" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

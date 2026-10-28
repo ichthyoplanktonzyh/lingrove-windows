@@ -74,6 +74,32 @@ public sealed partial class LearningSpeechControllerTests
     }
 
     [Fact]
+    public async Task CancelledExportKeepsExclusivityUntilAcceptedNativeDecodeJoins()
+    {
+        using var ui = new BatchUiContext();
+        await ui.RunAsync(async deadline =>
+        {
+            var duration = new HeldDuration(); await using var rig = new ControllerRig(duration); rig.Endpoint();
+            using var cancellation = new CancellationTokenSource();
+            var request = rig.Controller.ExportRequest("Hello.", LearningLanguage.English);
+            Task<SpeechExportAudio> export = rig.Controller.ExportAudioAsync(request, cancellation.Token);
+            try
+            {
+                await WaitFlow(() => rig.Generator.Requests.Count == 1, deadline);
+                await rig.Generator.CompleteWaveAsync(request.Token); await duration.Entered.Task.WaitAsync(deadline);
+                cancellation.Cancel(); Assert.False(export.IsCompleted);
+                var error = await Assert.ThrowsAsync<SpeechException>(() => rig.Controller.ExportAudioAsync(request));
+                Assert.Equal(SpeechFailure.OperationInProgress, error.Failure);
+                await Assert.ThrowsAsync<InvalidOperationException>(() => rig.Controller.DisposeAsync().AsTask());
+                duration.Release.TrySetResult(); await Assert.ThrowsAnyAsync<OperationCanceledException>(() => export);
+                rig.Controller.Toggle(new(new(Guid.NewGuid(), "new"), "Hello.", LearningLanguage.English, LanguageMode: SpeechLanguageMode.Fixed));
+                Assert.NotNull(rig.Controller.ActiveTarget); rig.Controller.Stop(); await rig.Controller.DrainAsync();
+            }
+            finally { duration.Release.TrySetResult(); cancellation.Cancel(); try { await export; } catch (OperationCanceledException) { } }
+        });
+    }
+
+    [Fact]
     public async Task PublishedVoiceAndModelInventoriesAreDetachedUntilAnExplicitRefresh()
     {
         using var ui = new BatchUiContext();
@@ -103,14 +129,22 @@ public sealed partial class LearningSpeechControllerTests
         internal MutableModels Models { get; } = new();
         internal LearningSpeechController Controller { get; }
         private bool _disposed;
-        internal ControllerRig()
+        internal ControllerRig(ISpeechAudioDuration? duration = null)
         {
             var saved = new AppSettings(); Settings = new(() => saved, () => { }, new Credentials());
-            Controller = new(Settings, new SpeechTelemetry((_, _, _) => { }), Provider, Generator, Device, Pcm, new FlowSystemExporter(), Device,
+            Controller = new(Settings, new SpeechTelemetry((_, _, _) => { }), Provider, Generator, Device, Pcm, new FlowSystemExporter(), duration ?? Device,
                 _ => new Dictionary<string, double>(), StringComparer.Ordinal, Path.GetTempPath(), () => Models);
         }
         internal void Endpoint() { Settings.SetEndpointBaseUrl("http://127.0.0.1:8888/v1"); Settings.SetEndpointModel("fixture-speech"); Settings.SetEndpointVoice("fixture-voice"); Settings.SelectProvider(LearningSpeechProviderKind.Endpoint); }
         public async ValueTask DisposeAsync() { if (!_disposed) { await Controller.DisposeAsync(); _disposed = true; } }
+    }
+    private sealed class HeldDuration : ISpeechAudioDuration
+    {
+        internal TaskCompletionSource Entered { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        internal TaskCompletionSource Release { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        public double Duration(ReadOnlySpan<byte> audio) => throw new InvalidOperationException("Native decoding must use its async boundary.");
+        public async Task<double> DurationAsync(ReadOnlyMemory<byte> audio, CancellationToken cancellationToken)
+        { Entered.TrySetResult(); await Release.Task; return .1; }
     }
     private sealed class MutableModels : ISpeechModelManagement
     {

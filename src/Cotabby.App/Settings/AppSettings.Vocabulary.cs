@@ -12,6 +12,8 @@ public sealed partial class AppSettings
     public JsonElement? VocabularyGraphSettingsValue { get; set; }
     [JsonPropertyName("vocabularyBrowserMode")]
     public JsonElement? VocabularyBrowserModeValue { get; set; }
+    [JsonPropertyName("vocabularyListDensity")]
+    public JsonElement? VocabularyListDensityValue { get; set; }
 
     public byte[]? ReadVocabularyGraphSettings() => VocabularyGraphSettingsValue is { ValueKind: JsonValueKind.String } value
         && value.TryGetBytesFromBase64(out var bytes) ? bytes : null;
@@ -21,5 +23,11 @@ public sealed partial class AppSettings
     {
         get => VocabularyBrowserModeValue is { ValueKind: JsonValueKind.String } value ? value.GetString()! : "list";
         set => VocabularyBrowserModeValue = JsonSerializer.SerializeToElement(value);
+    }
+    [JsonIgnore]
+    public string VocabularyListDensity
+    {
+        get => VocabularyListDensityValue is { ValueKind: JsonValueKind.String } value ? value.GetString()! : "compact";
+        set => VocabularyListDensityValue = JsonSerializer.SerializeToElement(value);
     }
 }

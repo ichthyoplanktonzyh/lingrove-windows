@@ -46,6 +46,7 @@ public sealed partial class AppSettings
         WordsAccepted = wordsAccepted,
         VocabularyGraphSettingsValue = VocabularyGraphSettingsValue,
         VocabularyBrowserModeValue = VocabularyBrowserModeValue,
+        VocabularyListDensityValue = VocabularyListDensityValue,
         AnkiReviewAddressValue = AnkiReviewAddressValue, AnkiReviewDeckValue = AnkiReviewDeckValue,
         AnkiReviewModelValue = AnkiReviewModelValue, AnkiReviewMappingValue = AnkiReviewMappingValue,
         AnkiReviewRecognitionValue = AnkiReviewRecognitionValue, AnkiReviewGapValue = AnkiReviewGapValue,

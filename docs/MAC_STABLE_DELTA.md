@@ -18,14 +18,15 @@ historical baseline and the scoped evidence for those slices.
 | Read-aloud speech | Original controller, endpoint transport, local runtime/process boundary and independently pinned helper generation loop have been adapted. The [PCM renderer/device](SPEECH_PCM_DEVICE.md) now supplies compiled WASAPI output and continuous tempo processing, with hardware acceptance open. Installed Windows voices/recognition/collation, system synthesis, encoded playback, local model management, AppHost ownership and card/tray controls/shortcuts still need implementation and integration. Model-backed generation/playback remains a separate acceptance gate. |
 | Anki review presentation | Existing card material, transactions, connection/controller, audio preparation and single/batch sessions are reusable. Notebook review actions, layout editing, preparation/batch windows and conflict-choice presentation still need the existing Mac flow adapted. |
 | Reading translation and OCR | Audit the current `OCRRuntime`, `OCRWorkerProcess`, `ScreenTextExtractor`, `VisualContextCoordinator`/activity and `LearningReadingSourceReader`, together with OCR lifecycle/isolation/reading integration tests. Existing Windows autocomplete visual context and manual learning preview do not establish this current reading flow. |
-| Notebook browsing | Adapt current persisted compact/detailed density, direct single-sense selection and multiple-sense expansion/initial selection from `VocabularyNotebookView`. Existing TreeView, Store/detail navigation and graph solver are present; graph HUD/detail presentation still has visual deltas. |
+| Notebook browsing | [Current sidebar adaptation](VOCABULARY_NOTEBOOK_CURRENT.md) connects persisted compact/detailed density, direct single-sense selection, multi-sense header expansion/selection and external selection reveal. Shared Store/detail navigation and the graph solver remain in use. Windows WPF/physical acceptance, native compact language names, graph HUD and remaining detail presentation deltas are tracked separately. |
 | First use and guidance | Adapt `HomeLearningDemo`/showcase, `ProductUsageGuide`, and versioned/resumable permission/readiness rules in `WelcomeCoordinator`/`OnboardingSetupPolicy`. The existing Windows step wizard does not establish these flows. |
 | Settings and language | Keep existing functional clipboard/application context controls while adapting current grouping and presentation. The current Mac change includes 224 additional translations; Windows still needs its interface-language resource system and corresponding product copy. Existing settings Ctrl+F is already connected. |
 | Runtime metrics and supporting capabilities | Audit current helper process-epoch/PID reuse handling against Windows lifecycle/metrics. The whole-target audit must also keep pre-existing gaps such as typing history, vocabulary CLI, and native host acceptance visible; the 22-commit delta alone is not the entire migration backlog. |
 
-Implementation order remains: preserve authored data first; finish the native speech boundary and
-connect the existing learning/review flows; then adapt current reading/OCR, notebook/onboarding and
-localization/presentation changes. Use the existing Mac subsystem ownership and contracts rather
+Current priority is the visible notebook and learning/review flows, followed by reading/OCR,
+onboarding and localization/presentation changes. Preserve authored data throughout. Speech
+provider/integration gaps remain explicit, with further audio expansion deferred while these
+visible workflows are adapted. Use the existing Mac subsystem ownership and contracts rather
 than inventing replacement products. Keep cancellation, stale-result checks, task-specific privacy
 and storage identity intact at every step.
 

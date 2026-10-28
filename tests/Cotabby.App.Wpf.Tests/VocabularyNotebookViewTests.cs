@@ -3,10 +3,12 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Interop;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using Cotabby.App.UI.Vocabulary;
+using Cotabby.App.Settings;
 using Cotabby.App.Vocabulary;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Vocabulary;
@@ -42,6 +44,7 @@ public sealed class VocabularyNotebookViewTests(WpfDispatcher dispatcher)
         var tree = Find<TreeView>(window, "EntriesTree");
         var row = tree.Items.Cast<VocabularyEntryRow>().Single(value => value.Senses.Any(sense => sense.Selection == selection));
         var entry = Assert.IsType<TreeViewItem>(tree.ItemContainerGenerator.ContainerFromItem(row));
+        if (row.IsSingle) { entry.IsSelected = true; return; }
         entry.IsExpanded = true; window.UpdateLayout();
         var sense = row.Senses.Single(value => value.Selection == selection);
         Assert.IsType<TreeViewItem>(entry.ItemContainerGenerator.ContainerFromItem(sense)).IsSelected = true;
@@ -54,6 +57,93 @@ public sealed class VocabularyNotebookViewTests(WpfDispatcher dispatcher)
             foreach (var value in Descendants<T>(child)) yield return value;
         }
     }
+    private static Guid CurrentId(int value) => Guid.Parse($"00000000-0000-0000-0000-{value:x12}");
+    private static async Task<VocabularyStore> CurrentStore()
+    {
+        var now = DateTimeOffset.UnixEpoch;
+        var archive = new VocabularyArchive((string?)null);
+        await archive.CommitAsync(new VocabularyDocument { Entries = [
+            new(CurrentId(1), "bank", "bank", LearningLanguage.English, VocabularyEntryKind.Word,
+                [new(CurrentId(2), "river shore", now, now), new(CurrentId(3), "financial institution", now, now)], now, now),
+            new(CurrentId(10), "café", "café", LearningLanguage.French, VocabularyEntryKind.Word,
+                [new VocabularySense(CurrentId(11), "coffee", now, now) { Examples = [new(CurrentId(12), "Je bois un café.", "I drink coffee.", [new(11, 4)], VocabularyExampleCompleteness.Sentence, "", now)] }], now, now),
+            new(CurrentId(20), "book", "book", LearningLanguage.English, VocabularyEntryKind.Word,
+                [new(CurrentId(21), "reading material", now, now)], now, now)] });
+        var store = Store(archive); await store.LoadAsync(); return store;
+    }
+    private static Border Header(VocabularyNotebookWindow window, VocabularyEntryRow row) => Descendants<Border>(window)
+        .Single(border => ReferenceEquals(border.DataContext, row) && border.ContextMenu is not null);
+    private static void ClickHeader(VocabularyNotebookWindow window, VocabularyEntryRow row) => Header(window, row).RaiseEvent(
+        new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseLeftButtonDownEvent });
+
+    [Fact]
+    public Task CurrentSidebarSelectsSingleRowsAndKeepsCompactHeightWhileHeadersRetainSenseIdentity() => dispatcher.RunAsync(async () =>
+    {
+        await using var store = await CurrentStore(); var window = new VocabularyNotebookWindow(store, new WindowsVocabularyTextSearch());
+        try
+        {
+            window.Show(); await Refresh(window); var tree = Find<TreeView>(window, "EntriesTree");
+            var single = Rows(window).Single(row => row.EntryId == CurrentId(10)); Assert.Empty(single.Children);
+            var container = Assert.IsType<TreeViewItem>(tree.ItemContainerGenerator.ContainerFromItem(single)); double before = container.ActualHeight;
+            ClickHeader(window, single); await Dispatcher.Yield(DispatcherPriority.ApplicationIdle); window.UpdateLayout();
+            Assert.Equal(new VocabularySelection(CurrentId(10), CurrentId(11)), window.Selection); Assert.True(single.ShowInlineMeaning); Assert.False(single.IsExpanded);
+            Assert.InRange(Math.Abs(before - container.ActualHeight), 0, .1);
+            var multi = Rows(window).Single(row => row.EntryId == CurrentId(1));
+            ClickHeader(window, multi); window.UpdateLayout(); Assert.True(multi.IsExpanded); Assert.Equal(CurrentId(2), window.Selection!.Value.SenseId);
+            Select(window, new(CurrentId(1), CurrentId(3))); ClickHeader(window, multi);
+            Assert.False(multi.IsExpanded); Assert.Equal(CurrentId(3), window.Selection!.Value.SenseId);
+            var root = Assert.IsType<TreeViewItem>(tree.ItemContainerGenerator.ContainerFromItem(multi)); root.Focus();
+            root.RaiseEvent(new KeyEventArgs(Keyboard.PrimaryDevice, PresentationSource.FromVisual(window)!, 0, Key.Space) { RoutedEvent = Keyboard.PreviewKeyDownEvent });
+            Assert.True(multi.IsExpanded); Assert.Equal(CurrentId(3), window.Selection!.Value.SenseId);
+        }
+        finally { await window.RetireAsync(); }
+    });
+
+    [Fact]
+    public Task DensityPersistsAndSearchSnippetsAndSingleSenseChecklistsUseTheCurrentRows() => dispatcher.RunAsync(async () =>
+    {
+        await using var store = await CurrentStore(); var settings = new AppSettings(); int saves = 0;
+        var preferences = new VocabularyNotebookListPreferences(() => settings, () => { settings = SettingsStore.Parse(SettingsStore.Serialize(settings)); saves++; });
+        var window = new VocabularyNotebookWindow(store, new WindowsVocabularyTextSearch(), listPreferences: preferences);
+        VocabularyNotebookWindow? reopened = null;
+        try
+        {
+            window.Show(); await Refresh(window); Assert.All(Rows(window), row => Assert.False(row.ShowDetailedMeaning));
+            Click(Find<Button>(window, "ListDensityButton")); await Refresh(window);
+            Assert.Equal("detailed", settings.VocabularyListDensity); Assert.Equal(1, saves); Assert.All(Rows(window), row => Assert.True(row.ShowDetailedMeaning));
+            await window.RetireAsync(); reopened = new VocabularyNotebookWindow(store, new WindowsVocabularyTextSearch(), listPreferences: preferences);
+            reopened.Show(); await Refresh(reopened); Assert.All(Rows(reopened), row => Assert.True(row.ShowDetailedMeaning));
+            Find<TextBox>(reopened, "SearchText").Text = "bois"; await Refresh(reopened);
+            Assert.Equal("Je bois un café.", Assert.Single(Rows(reopened)).Snippet);
+            Find<TextBox>(reopened, "SearchText").Text = ""; await Refresh(reopened);
+            Find<System.Windows.Controls.Primitives.ToggleButton>(reopened, "SelectSensesButton").IsChecked = true; await Refresh(reopened);
+            var multi = Rows(reopened).Single(row => row.EntryId == CurrentId(1)); var single = Rows(reopened).Single(row => row.EntryId == CurrentId(10));
+            Assert.False(multi.ShowBatchCheckbox); Assert.True(single.ShowBatchCheckbox);
+            Assert.DoesNotContain(Descendants<CheckBox>(Header(reopened, multi)), box => box.IsVisible);
+            var checkbox = Assert.Single(Descendants<CheckBox>(Header(reopened, single))); Assert.True(checkbox.IsVisible);
+            checkbox.IsChecked = true; Assert.True(single.SingleSense!.IsBatchSelected); Assert.True(Find<Button>(reopened, "ExportSelectedButton").IsEnabled);
+        }
+        finally { if (reopened is not null) await reopened.RetireAsync(); await window.RetireAsync(); }
+    });
+
+    [Fact]
+    public Task GatedRefreshRejectsRetainedHeaderRowsFromThePreviousProjection() => dispatcher.RunAsync(async () =>
+    {
+        await using var store = await CurrentStore(); var search = new GatedSearch(); var window = new VocabularyNotebookWindow(store, search);
+        try
+        {
+            window.Show(); await Refresh(window); var selected = Rows(window).Single(row => row.EntryId == CurrentId(10));
+            ClickHeader(window, selected); var old = Rows(window).Single(row => row.EntryId == CurrentId(1));
+            Find<TextBox>(window, "SearchText").Text = "slow";
+            await search.Gates["slow"].Entered.Task.WaitAsync(TimeSpan.FromSeconds(5));
+            Assert.False(Find<TreeView>(window, "EntriesTree").IsEnabled);
+            Assert.True(await store.RemoveSenseAsync(CurrentId(1), CurrentId(2)));
+            window.ActivateHeadword(old); Assert.Equal(CurrentId(11), window.Selection!.Value.SenseId); Assert.False(old.IsExpanded);
+            search.Gates["slow"].Release.TrySetResult(); await Refresh(window);
+            Assert.True(Find<TreeView>(window, "EntriesTree").IsEnabled); Assert.Equal(CurrentId(11), window.Selection!.Value.SenseId);
+        }
+        finally { search.Gates["slow"].Release.TrySetResult(); await window.RetireAsync(); }
+    });
     [Fact]
     public Task ActivatingNotebookRendersLiteralContentAndFullSavedExampleRanges() => dispatcher.RunAsync(async () =>
     {

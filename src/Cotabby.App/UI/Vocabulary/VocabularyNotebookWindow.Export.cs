@@ -64,18 +64,23 @@ public partial class VocabularyNotebookWindow
     { if (_batchSelection.Count > 0) BeginExport(VocabularyExportScope.Selected); }
     private void OnSenseExportMenuOpening(object sender, ContextMenuEventArgs args)
     {
-        if (sender is not FrameworkElement { DataContext: VocabularySenseRow row }
-            || !CanOfferExport || row.OfferVersion != _version)
+        if (sender is not FrameworkElement element || ExportMenuRow(element) is not { } row || !CanOfferExport || row.OfferVersion != _version)
         { args.Handled = true; return; }
     }
     private void OnSenseExportMenuOpened(object sender, RoutedEventArgs args)
     {
         if (sender is not ContextMenu menu) return;
-        if (!CanOfferExport || menu.PlacementTarget is not FrameworkElement { DataContext: VocabularySenseRow row } || row.OfferVersion != _version)
+        if (!CanOfferExport || menu.PlacementTarget is not FrameworkElement element || ExportMenuRow(element) is not { } row || row.OfferVersion != _version)
         { menu.IsOpen = false; return; }
         var item = (MenuItem)menu.Items[0]; item.Tag = new SenseExportReceipt(row.Selection, _version);
         _senseExportMenus.Add(menu);
     }
+    private static VocabularySenseRow? ExportMenuRow(FrameworkElement element) => element.DataContext switch
+    {
+        VocabularySenseRow sense => sense,
+        VocabularyEntryRow entry => entry.SingleSense,
+        _ => null,
+    };
     private void OnSenseExportMenuClosed(object sender, RoutedEventArgs args)
     {
         if (sender is not ContextMenu menu) return;

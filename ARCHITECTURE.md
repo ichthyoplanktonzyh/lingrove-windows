@@ -293,6 +293,11 @@ only binary stdio, Unicode paths, parent observation and reference metadata to p
 CPU/native effect checks own no model weights or audio device. App copy, providers and activation
 remain separate composition work.
 
+The [current notebook sidebar](docs/VOCABULARY_NOTEBOOK_CURRENT.md) preserves Mac flat singleton
+rows, multi-sense header selection/expansion and independently persisted density. Existing rows
+update selection in place; refresh revokes old interaction until publication. AppHost supplies
+the narrow density preference beside the shared Store and graph settings.
+
 ## Current editor text boundary
 
 The [current editor annotation adaptation](docs/VOCABULARY_EDITOR_CURRENT.md) explicitly advances

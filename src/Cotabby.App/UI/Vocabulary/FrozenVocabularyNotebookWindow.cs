@@ -57,14 +57,12 @@ internal sealed class FrozenVocabularyNotebookWindow : Window
         _session = new(Dispatcher, store, search) { PreferredLanguages = preferredLanguages ?? VocabularyMeaningLabelPolicy.PreferredLanguages(null, [CultureInfo.CurrentUICulture.Name]) };
         _session.Detailed = listPreferences?.Density == "detailed";
         _pickFile = pickFile ?? (() => { var dialog = new OpenFileDialog { Filter = "Word lists (*.csv;*.txt)|*.csv;*.txt", Multiselect = false }; return dialog.ShowDialog(this) == true ? dialog.FileName : null; });
-        Title = "Vocabulary notebook"; Width = 1100; Height = 720; MinWidth = 760; MinHeight = 460; Background = Brushes.White;
-        var root = new DockPanel { Background = Brushes.White }; Content = root;
-        var toolbar = new DockPanel { Margin = new Thickness(18, 14, 18, 12) };
-        var commands = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right };
+        Title = "Vocabulary notebook"; Width = 1100; Height = 720; MinWidth = 760; MinHeight = 460; VocabularyNotebookTheme.Follow(this);
+        var root = new DockPanel(); VocabularyNotebookTheme.Brush(root, Panel.BackgroundProperty, "WindowBg"); Content = root;
+        var toolbar = new WrapPanel { Margin = new Thickness(20, 16, 20, 8), Orientation = Orientation.Horizontal };
+        toolbar.Children.Add(new TextBlock { Text = "Vocabulary notebook", FontSize = 21, FontWeight = FontWeights.SemiBold, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 20, 8) });
         foreach (var button in new[] { _categoryToggle, _add, _import, Disabled("Graph", "Graph view is not available in this notebook yet."), Disabled("Review", "Review is not available in this notebook yet."), Disabled("Export", "Export is not available in this notebook yet.") })
-        { button.Margin = new Thickness(6, 0, 0, 0); commands.Children.Add(button); }
-        DockPanel.SetDock(commands, Dock.Right); toolbar.Children.Add(commands);
-        toolbar.Children.Add(new TextBlock { Text = "Vocabulary notebook", FontSize = 21, FontWeight = FontWeights.SemiBold, VerticalAlignment = VerticalAlignment.Center });
+        { VocabularyNotebookTheme.Button(button, button == _add); button.Margin = new Thickness(0, 0, 8, 8); toolbar.Children.Add(button); }
         DockPanel.SetDock(toolbar, Dock.Top); root.Children.Add(toolbar);
         var filters = new WrapPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(18, 0, 18, 6) };
         _organization.Items.Add("By entry"); _organization.Items.Add("By meaning"); _organization.SelectedIndex = 0;
@@ -72,11 +70,13 @@ internal sealed class FrozenVocabularyNotebookWindow : Window
         _tag.Items.Add(new TagChoice("All tags", "")); _tag.SelectedIndex = 0;
         _sort.Items.Add("Newest first"); _sort.Items.Add("Oldest first"); _sort.SelectedIndex = 0; _density.Items.Add("Compact"); _density.Items.Add("Detailed"); _density.SelectedIndex = 0;
         System.Windows.Automation.AutomationProperties.SetName(_query, "Search vocabulary"); System.Windows.Automation.AutomationProperties.SetName(_language, "Language filter"); System.Windows.Automation.AutomationProperties.SetName(_tag, "Tag filter"); System.Windows.Automation.AutomationProperties.SetName(_organization, "Browse organization"); System.Windows.Automation.AutomationProperties.SetName(_sort, "Sort order"); System.Windows.Automation.AutomationProperties.SetName(_density, "List density");
+        VocabularyNotebookTheme.Input(_query); _query.Tag = "Search vocabulary"; foreach (var box in new[] { _organization, _language, _tag, _sort, _density }) VocabularyNotebookTheme.Combo(box);
         foreach (var control in new FrameworkElement[] { _organization, _query, _language, _tag, _sort, _density }) { control.Margin = new Thickness(0, 0, 8, 6); filters.Children.Add(control); }
         DockPanel.SetDock(filters, Dock.Top); root.Children.Add(filters); root.Children.Add(_content);
-        ScrollViewer.SetHorizontalScrollBarVisibility(_entries, ScrollBarVisibility.Disabled);
+        ScrollViewer.SetHorizontalScrollBarVisibility(_entries, ScrollBarVisibility.Disabled); VocabularyNotebookTheme.Brush(_entries, Control.BackgroundProperty, "SidebarBg"); VocabularyNotebookTheme.Brush(_entries, Control.ForegroundProperty, "TextPrimary");
         _meanings = new("Other expressions", "Suggested grouping", SenseTitle, LanguageLabel);
         _categories = new(new("Categories", "Search categories", "All meanings", "Uncategorized meanings", "Content meanings", "Communicative functions", "New category", "Manage categories", "Edit category"), search) { AllowEditing = false };
+        _meanings.UseNotebookTheme(); _categories.UseNotebookTheme();
         _meanings.DestinationChanged += destination => { _session.Destination = destination; if (destination.SenseId is { } id) SelectSense(id, destination.NodeId); else _session.Refresh(); };
         _categories.SelectionChanged += value => { if (_updating) return; _session.Category = value; if (_session.Destination?.NodeId is { } id && !_session.MeaningItems.Any(x => x.Id == id)) _session.Destination = null; _session.Refresh(); };
         _query.TextChanged += (_, _) => { if (!_updating) { _session.Query = _query.Text; foreach (var e in _session.Visible) _expanded.Add(e.Id); _session.Refresh(); } };
@@ -92,7 +92,7 @@ internal sealed class FrozenVocabularyNotebookWindow : Window
         _session.Changed += Present; Loaded += (_, _) => { if (!_started && !_retiring) { _started = true; LastOperation = Track(_session.LoadAsync()); } }; Closing += OnClosing; Closed += (_, _) => _session.Dispose(); Present();
     }
     internal void SetPreferredLanguages(IReadOnlyList<LearningLanguage> languages) { _session.PreferredLanguages = Array.AsReadOnly(languages.ToArray()); _session.Refresh(); }
-    private static Button Disabled(string title, string tooltip) => new() { Content = title, ToolTip = tooltip, IsEnabled = false, Padding = new Thickness(10, 5, 10, 5) };
+    private static Button Disabled(string title, string tooltip) { var button = new Button { Content = title, ToolTip = tooltip, IsEnabled = false, Padding = new Thickness(10, 5, 10, 5) }; VocabularyNotebookTheme.Button(button); return button; }
     private sealed class Relay(Action action) : ICommand { public event EventHandler? CanExecuteChanged { add { } remove { } } public bool CanExecute(object? p) => true; public void Execute(object? p) => action(); }
     internal void Reveal(VocabularySelection? selection)
     {
@@ -180,7 +180,7 @@ internal sealed class FrozenVocabularyNotebookWindow : Window
             _add.IsEnabled = _import.IsEnabled = !_session.Loading && _session.Failure is null; _categoryToggle.Visibility = _session.MeaningMode ? Visibility.Visible : Visibility.Collapsed;
             _content.Children.Clear(); _content.ColumnDefinitions.Clear();
             if (_session.Loading) { _content.Children.Add(State("Loading vocabulary…")); return; }
-            if (_session.Failure is { } failure) { _content.Children.Add(State("Could not load vocabulary\n" + failure)); return; }
+            if (_session.Failure is { } failure) { _content.Children.Add(State("Could not load vocabulary\n" + failure, error: true)); return; }
             if (!_session.MeaningMode && _session.Entries.Count == 0) { _content.Children.Add(Empty()); return; }
             if (_session.MeaningMode) BuildMeaningLayout(); else BuildEntryLayout();
         }
@@ -190,18 +190,18 @@ internal sealed class FrozenVocabularyNotebookWindow : Window
     {
         var panel = new StackPanel { HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
         panel.Children.Add(new TextBlock { Text = "No saved expressions", FontSize = 22, FontWeight = FontWeights.SemiBold, HorizontalAlignment = HorizontalAlignment.Center });
-        panel.Children.Add(new TextBlock { Text = "Add an entry yourself or import a CSV or TXT word list.", Foreground = Brushes.DimGray, Margin = new Thickness(0, 9, 0, 16), HorizontalAlignment = HorizontalAlignment.Center });
+        panel.Children.Add(new TextBlock { Text = "Add an entry yourself or import a CSV or TXT word list.", Margin = new Thickness(0, 9, 0, 16), HorizontalAlignment = HorizontalAlignment.Center });
         var buttons = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Center };
         var add = new Button { Name = "frozenEmptyAdd", Content = "Add entry", Margin = new Thickness(4), Padding = new Thickness(12, 6, 12, 6) }; add.Click += (_, _) => LastOperation = AddAsync();
         var import = new Button { Name = "frozenEmptyImport", Content = "Import word list", Margin = new Thickness(4), Padding = new Thickness(12, 6, 12, 6) }; import.Click += (_, _) => LastOperation = ImportAsync();
-        buttons.Children.Add(add); buttons.Children.Add(import); panel.Children.Add(buttons); return panel;
+        VocabularyNotebookTheme.Button(add, true); VocabularyNotebookTheme.Button(import); buttons.Children.Add(add); buttons.Children.Add(import); panel.Children.Add(buttons); return panel;
     }
-    private static FrameworkElement State(string text) => new TextBlock { Text = text, Name = "frozenNotebookState", Foreground = Brushes.DimGray, FontSize = 16, TextWrapping = TextWrapping.Wrap, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
+    private static FrameworkElement State(string text, bool error = false) => VocabularyNotebookTheme.Brush(new TextBlock { Text = text, Name = "frozenNotebookState", FontSize = 16, TextWrapping = TextWrapping.Wrap, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center }, TextBlock.ForegroundProperty, error ? "OrangeBrush" : "TextSecondary");
     private void Columns(bool categories)
     {
         if (categories) { _content.ColumnDefinitions.Add(new() { Width = new GridLength(210), MinWidth = 160 }); _content.ColumnDefinitions.Add(new() { Width = new GridLength(5) }); }
         _content.ColumnDefinitions.Add(new() { Width = new GridLength(300), MinWidth = 200 }); _content.ColumnDefinitions.Add(new() { Width = new GridLength(5) }); _content.ColumnDefinitions.Add(new() { Width = new GridLength(1, GridUnitType.Star), MinWidth = 200 });
-        for (int i = categories ? 1 : 1; i < _content.ColumnDefinitions.Count - 1; i += 2) { var splitter = new GridSplitter { Width = 5, HorizontalAlignment = HorizontalAlignment.Stretch, Background = Brushes.Gainsboro }; Grid.SetColumn(splitter, i); _content.Children.Add(splitter); }
+        for (int i = categories ? 1 : 1; i < _content.ColumnDefinitions.Count - 1; i += 2) { var splitter = VocabularyNotebookTheme.Splitter(); Grid.SetColumn(splitter, i); _content.Children.Add(splitter); }
     }
     private void BuildEntryLayout()
     {
@@ -211,10 +211,10 @@ internal sealed class FrozenVocabularyNotebookWindow : Window
             if (entry.Senses.Count == 1) _entries.Items.Add(SenseRow(entry, entry.Senses[0], true));
             else
             {
-                var parent = new TreeViewItem { Header = EntryLabel(entry.Expression + "  ·  " + entry.Senses.Count), IsExpanded = _expanded.Contains(entry.Id), FontWeight = FontWeights.SemiBold };
-                parent.Expanded += (_, e) => { if (e.OriginalSource == parent) _expanded.Add(entry.Id); }; parent.Collapsed += (_, e) => { if (e.OriginalSource == parent) _expanded.Remove(entry.Id); };
+                var parent = new TreeViewItem { Style = VocabularyNotebookTheme.TreeRowStyle(), Header = EntryLabel(entry.Expression + "  ·  " + entry.Senses.Count), IsExpanded = _expanded.Contains(entry.Id), FontWeight = FontWeights.SemiBold };
+                System.Windows.Automation.AutomationProperties.SetName(parent, entry.Expression); parent.Expanded += (_, e) => { if (e.OriginalSource == parent) _expanded.Add(entry.Id); }; parent.Collapsed += (_, e) => { if (e.OriginalSource == parent) _expanded.Remove(entry.Id); };
                 foreach (var sense in entry.Senses) parent.Items.Add(SenseRow(entry, sense, false));
-                parent.PreviewMouseLeftButtonDown += (_, e) => { if (e.OriginalSource is DependencyObject origin && FindAncestor<TreeViewItem>(origin) == parent) { ActivateHeadword(entry); e.Handled = true; } };
+                parent.PreviewMouseLeftButtonDown += (_, e) => { if (e.OriginalSource is DependencyObject origin && FindAncestor<TreeViewItem>(origin) == parent && FindAncestor<System.Windows.Controls.Primitives.ToggleButton>(origin) is null) { ActivateHeadword(entry); e.Handled = true; } };
                 parent.Selected += (_, e) => { if (!_updating && e.OriginalSource == parent) { ActivateHeadword(entry); e.Handled = true; } };
                 _entries.Items.Add(parent);
             }
@@ -235,13 +235,13 @@ internal sealed class FrozenVocabularyNotebookWindow : Window
         string label = single ? VocabularyMeaningLabelPolicy.ExpressionTitle(entry, VocabularyMeaningLabelPolicy.HasMultipleLanguages(_session.Visible), LanguageLabel) : SenseTitle(sense);
         if (single && (_session.Detailed || _session.Selection?.SenseId == sense.Id) && SenseTitle(sense).Length != 0) label += "  ·  " + SenseTitle(sense);
         if (_session.Detailed && sense.Examples.FirstOrDefault() is { } example) label += "\n" + example.Text;
-        var row = new TreeViewItem { Header = EntryLabel(label), HorizontalContentAlignment = HorizontalAlignment.Stretch, Tag = new VocabularySelection(entry.Id, sense.Id), Padding = new Thickness(8, 5, 8, 5), IsSelected = _session.Selection?.SenseId == sense.Id };
-        row.Selected += (_, e) => { if (!_updating && e.OriginalSource == row) { SelectSense(sense.Id, null); e.Handled = true; } }; return row;
+        var row = new TreeViewItem { Style = VocabularyNotebookTheme.TreeRowStyle(), Header = EntryLabel(label), HorizontalContentAlignment = HorizontalAlignment.Stretch, Tag = new VocabularySelection(entry.Id, sense.Id), Padding = new Thickness(8, 5, 8, 5), IsSelected = _session.Selection?.SenseId == sense.Id };
+        System.Windows.Automation.AutomationProperties.SetName(row, label.Replace("\n", " · ")); row.Selected += (_, e) => { if (!_updating && e.OriginalSource == row) { SelectSense(sense.Id, null); e.Handled = true; } }; return row;
     }
     private TextBlock EntryLabel(string text)
     {
         var label = new TextBlock { Text = text, TextTrimming = TextTrimming.CharacterEllipsis, MaxHeight = _session.Detailed ? 44 : 22 };
-        label.SetBinding(FrameworkElement.MaxWidthProperty, new System.Windows.Data.Binding("ActualWidth") { Source = _entries, Converter = new SidebarWidth() }); return label;
+        VocabularyNotebookTheme.Brush(label, TextBlock.ForegroundProperty, "TextPrimary"); label.SetBinding(FrameworkElement.MaxWidthProperty, new System.Windows.Data.Binding("ActualWidth") { Source = _entries, Converter = new SidebarWidth() }); return label;
     }
     private sealed class SidebarWidth : System.Windows.Data.IValueConverter
     {
@@ -267,17 +267,17 @@ internal sealed class FrozenVocabularyNotebookWindow : Window
         else if (_session.MeaningMode)
         {
             Heading(panel, "Browse by meaning"); panel.Children.Add(Disabled("New meaning", "Meaning editing is not available in this notebook yet."));
-            if (_session.Unclassified.Count > 0) { var button = new Button { Content = $"Other expressions ({_session.Unclassified.Count})", HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 10, 0, 0) }; button.Click += (_, _) => { _session.Destination = new(VocabularyMeaningDestinationKind.Unclassified); _session.Refresh(); }; panel.Children.Add(button); }
+            if (_session.Unclassified.Count > 0) { var button = new Button { Content = $"Other expressions ({_session.Unclassified.Count})", HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 10, 0, 0) }; VocabularyNotebookTheme.Button(button); button.Click += (_, _) => { _session.Destination = new(VocabularyMeaningDestinationKind.Unclassified); _session.Refresh(); }; panel.Children.Add(button); }
         }
         else panel.Children.Add(State("Select an expression"));
-        return new ScrollViewer { Name = "frozenNotebookDetail", VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Content = panel };
+        return VocabularyNotebookTheme.Brush(new ScrollViewer { Name = "frozenNotebookDetail", VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Content = panel }, Control.BackgroundProperty, "CardBg");
     }
     private void Breadcrumb(StackPanel panel)
     {
         Guid? nodeId = _session.Destination?.NodeId; var node = _session.Snapshot!.Document.Semantics.Nodes.FirstOrDefault(n => n.Id == nodeId);
         var bar = new WrapPanel { Margin = new Thickness(0, 0, 0, 14) };
         var back = new Button { Name = "frozenMeaningBack", Content = "‹  " + (node is null ? "Other expressions" : VocabularyMeaningLabelPolicy.Title(node, _session.PreferredLanguages)), Padding = new Thickness(8, 4, 8, 4) };
-        back.Click += (_, _) => { _session.Destination = node is null ? new(VocabularyMeaningDestinationKind.Unclassified) : new(VocabularyMeaningDestinationKind.Node, node.Id); _session.Refresh(); }; bar.Children.Add(back);
+        VocabularyNotebookTheme.Button(back); back.Click += (_, _) => { _session.Destination = node is null ? new(VocabularyMeaningDestinationKind.Unclassified) : new(VocabularyMeaningDestinationKind.Node, node.Id); _session.Refresh(); }; bar.Children.Add(back);
         if (node is not null)
         {
             var ids = _session.Snapshot.Document.Semantics.Mappings.Where(m => m.NodeId == node.Id).Select(m => m.SenseId).ToHashSet();
@@ -285,7 +285,7 @@ internal sealed class FrozenVocabularyNotebookWindow : Window
             if (siblings.Length > 1) foreach (var sibling in siblings)
             {
                 var button = new Button { Content = sibling.entry.Expression, Margin = new Thickness(6, 0, 0, 0), Padding = new Thickness(8, 4, 8, 4), IsEnabled = sibling.sense.Id != _session.Selection?.SenseId };
-                button.Click += (_, _) => SelectSense(sibling.sense.Id, node.Id); bar.Children.Add(button);
+                VocabularyNotebookTheme.Button(button); button.Click += (_, _) => SelectSense(sibling.sense.Id, node.Id); bar.Children.Add(button);
             }
         }
         panel.Children.Add(bar);
@@ -321,7 +321,7 @@ internal sealed class FrozenVocabularyNotebookWindow : Window
         var matches = _session.Scoped.SelectMany(e => e.Senses.Where(s => ids.Contains(s.Id)).Select(s => new VocabularySelection(e.Id, s.Id))).ToArray();
         if (matches.Length == 0) panel.Children.Add(Caption("No matching expressions")); else foreach (var selection in matches) AddSenseCard(panel, selection);
         var relations = VocabularyMeaningBrowserProjection.ConfirmedRelations(doc.Semantics).Where(r => r.SourceId == node.Id || r.TargetId == node.Id).ToArray();
-        if (relations.Length > 0) { Section(panel, "Related meanings"); foreach (var relation in relations) { var target = doc.Semantics.Nodes.FirstOrDefault(n => n.Id == (relation.SourceId == node.Id ? relation.TargetId : relation.SourceId)); if (target is null) continue; var button = new Button { Content = relation.Kind + "  ·  " + VocabularyMeaningLabelPolicy.Title(target, _session.PreferredLanguages), HorizontalContentAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 3, 0, 3), Padding = new Thickness(10) }; button.Click += (_, _) => { _session.Category = "all"; _session.Destination = new(VocabularyMeaningDestinationKind.Node, target.Id); _session.Refresh(); }; panel.Children.Add(button); } }
+        if (relations.Length > 0) { Section(panel, "Related meanings"); foreach (var relation in relations) { var target = doc.Semantics.Nodes.FirstOrDefault(n => n.Id == (relation.SourceId == node.Id ? relation.TargetId : relation.SourceId)); if (target is null) continue; var button = new Button { Content = relation.Kind + "  ·  " + VocabularyMeaningLabelPolicy.Title(target, _session.PreferredLanguages), HorizontalContentAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 3, 0, 3), Padding = new Thickness(10) }; VocabularyNotebookTheme.CardButton(button); button.Click += (_, _) => { _session.Category = "all"; _session.Destination = new(VocabularyMeaningDestinationKind.Node, target.Id); _session.Refresh(); }; panel.Children.Add(button); } }
         var cueIds = doc.Semantics.CueTargets.Where(x => x.NodeId == node.Id && x.Provenance.Status == R.VocabularySemanticStatus.Confirmed).Select(x => x.CueId).ToHashSet();
         var cues = doc.Semantics.Cues.Where(x => cueIds.Contains(x.Id)).Select(x => x.Text).ToArray();
         if (node.Provenance.Source.Length > 0 || node.Roles.Count > 0 || cues.Length > 0) { Section(panel, "Details"); if (cues.Length > 0) panel.Children.Add(Caption(string.Join(" · ", cues))); foreach (var role in node.Roles) panel.Children.Add(Caption(role.Name + "  " + role.Description)); if (node.Provenance.Source.Length > 0) panel.Children.Add(Caption(node.Provenance.Source)); }
@@ -331,7 +331,7 @@ internal sealed class FrozenVocabularyNotebookWindow : Window
     {
         var entry = _session.Entries.FirstOrDefault(e => e.Id == selection.EntryId); var sense = entry?.Senses.FirstOrDefault(s => s.Id == selection.SenseId); if (entry is null || sense is null) return;
         var button = new Button { Content = entry.Expression + "  ·  " + SenseTitle(sense) + "  ·  " + LanguageLabel(entry.Language), HorizontalContentAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 4, 0, 4), Padding = new Thickness(12), Tag = selection };
-                button.Click += (_, _) => SelectSense(sense.Id, _session.Destination?.NodeId); panel.Children.Add(button);
+                VocabularyNotebookTheme.CardButton(button); button.Click += (_, _) => SelectSense(sense.Id, _session.Destination?.NodeId); panel.Children.Add(button);
         if (_session.Destination?.NodeId is { } node && _session.Snapshot is { } snapshot)
         {
             foreach (var mapping in snapshot.Document.Semantics.Mappings.Where(m => m.NodeId == node && m.SenseId == sense.Id))
@@ -357,7 +357,7 @@ internal sealed class FrozenVocabularyNotebookWindow : Window
     private static string LanguageLabel(LearningLanguage? language) => language?.Name() ?? "Unspecified";
     private static void Heading(Panel p, string value) => p.Children.Add(new TextBlock { Text = value, FontSize = 28, FontWeight = FontWeights.Bold, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, 8) });
     private static void Section(Panel p, string value) => p.Children.Add(new TextBlock { Text = value, FontSize = 15, FontWeight = FontWeights.SemiBold, Margin = new Thickness(0, 18, 0, 8) });
-    private static TextBlock Caption(string value) => new() { Text = value, FontSize = 13, Foreground = Brushes.DimGray, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 3, 0, 6) };
-    private static TextBox Paragraph(string value, double size = 15) => new() { Text = value, FontSize = size, TextWrapping = TextWrapping.Wrap, IsReadOnly = true, BorderThickness = new Thickness(0), Background = Brushes.Transparent, Padding = new Thickness(0), Margin = new Thickness(0, 4, 0, 6) };
+    private static TextBlock Caption(string value) => VocabularyNotebookTheme.Brush(new TextBlock { Text = value, FontSize = 13, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 3, 0, 6) }, TextBlock.ForegroundProperty, "TextSecondary");
+    private static TextBox Paragraph(string value, double size = 15) => VocabularyNotebookTheme.Brush(new TextBox { Text = value, FontSize = size, TextWrapping = TextWrapping.Wrap, IsReadOnly = true, BorderThickness = new Thickness(0), Background = Brushes.Transparent, Padding = new Thickness(0), Margin = new Thickness(0, 4, 0, 6) }, Control.ForegroundProperty, "TextPrimary");
     private static T? FindAncestor<T>(DependencyObject value) where T : DependencyObject { for (var p = value; p is not null; p = VisualTreeHelper.GetParent(p)) if (p is T found) return found; return null; }
 }

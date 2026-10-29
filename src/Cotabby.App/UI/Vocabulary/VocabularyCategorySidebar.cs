@@ -23,7 +23,7 @@ public sealed class VocabularyCategorySidebar : UserControl
     private readonly ListBox _list = new();
     private readonly TextBox _query = new();
     private readonly Button _create, _manage;
-    private bool _allowEditing = true;
+    private bool _allowEditing = true, _notebookTheme;
     public bool AllowEditing { get => _allowEditing; set { _allowEditing = value; _create.IsEnabled = value; _manage.IsEnabled = value; _create.Opacity = _manage.Opacity = value ? 1 : 0.35; Refresh(); } }
     private readonly HashSet<string> _expanded = new(StringComparer.Ordinal);
     private R.VocabularyClassificationIndex _index = new();
@@ -64,6 +64,12 @@ public sealed class VocabularyCategorySidebar : UserControl
         _list.SelectionChanged += OnSelectionChanged; _list.PreviewKeyDown += OnListKeyDown; root.Children.Add(_list); Content = root;
     }
 
+    internal void UseNotebookTheme()
+    {
+        _notebookTheme = true;
+        if (Content is DockPanel root) VocabularyNotebookTheme.Brush(root, Panel.BackgroundProperty, "SidebarBg");
+        VocabularyNotebookTheme.Input(_query); Refresh();
+    }
     public void Present(R.VocabularyClassificationIndex index, IReadOnlyList<F.VocabularyMeaningNode> nodes,
         IReadOnlyList<LearningLanguage> languages, string selection, double textScale = 1)
     {
@@ -101,6 +107,7 @@ public sealed class VocabularyCategorySidebar : UserControl
             }
         }
         finally { _updating = false; }
+        if (_notebookTheme) VocabularyNotebookTheme.Sidebar(this);
         if (restoreFocus) (_list.SelectedItem as ListBoxItem ?? (UIElement)_list).Focus();
     }
 

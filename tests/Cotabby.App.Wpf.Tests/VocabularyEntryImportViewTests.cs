@@ -94,7 +94,7 @@ public sealed class VocabularyEntryImportViewTests(WpfDispatcher dispatcher)
             var columns = window.Session.Configuration!.Columns.ToDictionary(); columns.Remove(VocabularyImportField.Expression);
             await window.Session.RefreshAsync(window.Session.Configuration with { Columns = columns });
             Assert.Contains("column", window.Session.Failure!, StringComparison.OrdinalIgnoreCase);
-            Assert.False(Find<Button>(window, "vocabularyConfirmImport").IsEnabled); window.Close();
+            Assert.False(Find<Button>(window, "vocabularyConfirmImport").IsEnabled); Render(window, "entry-import-error.png", 900, 760); window.Close();
         }
         finally { File.Delete(path); }
     });
@@ -213,11 +213,5 @@ public sealed class VocabularyEntryImportViewTests(WpfDispatcher dispatcher)
             if (FindOrNull<T>(VisualTreeHelper.GetChild(root, i), name) is { } found) return found;
         return null;
     }
-    private static void Render(Window window, string name, int width, int height)
-    {
-        var element = (FrameworkElement)window.Content; element.Measure(new(width, height)); element.Arrange(new Rect(0, 0, width, height)); element.UpdateLayout();
-        var bitmap = new RenderTargetBitmap(width, height, 96, 96, PixelFormats.Pbgra32); bitmap.Render(element);
-        if (Environment.GetEnvironmentVariable("LINGROVE_TEST_RENDER_DIR") is { Length: > 0 } dir)
-        { Directory.CreateDirectory(dir); var encoder = new PngBitmapEncoder(); encoder.Frames.Add(BitmapFrame.Create(bitmap)); using var stream = File.Create(Path.Combine(dir, name)); encoder.Save(stream); }
-    }
+    private static void Render(Window window, string name, int width, int height) => VocabularyThemeRender.Capture(window, name, width, height);
 }

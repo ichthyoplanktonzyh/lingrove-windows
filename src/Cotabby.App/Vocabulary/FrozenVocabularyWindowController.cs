@@ -22,6 +22,7 @@ internal sealed class FrozenVocabularyWindowController : IAsyncDisposable
     private FrozenVocabularyNotebookWindow? _window;
     private AnkiReviewFeature? _reviewFeature;
     private Action? _configureReview;
+    private IVocabularyGraphPreferences? _graphPreferences;
     private Task? _retirement;
     private bool _closed;
     internal FrozenVocabularyWindowController(IVocabularyEntryImportStore store, Dispatcher dispatcher,
@@ -34,11 +35,18 @@ internal sealed class FrozenVocabularyWindowController : IAsyncDisposable
         if (!_dispatcher.CheckAccess()) { if (!_dispatcher.HasShutdownStarted) _dispatcher.BeginInvoke(() => Show(selection)); return; }
         lock (_gate) if (_closed) return;
         _window ??= new FrozenVocabularyNotebookWindow(_store, _reader, _languages, listPreferences: _preferences, hideOnClose: true);
+        if (_graphPreferences is { } graph) _window.AttachGraphPreferences(graph);
         if (_reviewFeature is { } review && _configureReview is { } configure) _window.AttachReviewFeature(review, configure);
         _window.Reveal(selection); _window.Show();
         if (_window.WindowState == WindowState.Minimized) _window.WindowState = WindowState.Normal;
         _window.Activate();
     }
+    internal void AttachGraphPreferences(IVocabularyGraphPreferences preferences)
+    {
+        ArgumentNullException.ThrowIfNull(preferences); lock (_gate) { if (_closed) return; if (_graphPreferences is not null && !ReferenceEquals(_graphPreferences, preferences)) throw new InvalidOperationException("Graph preferences are already attached."); _graphPreferences = preferences; }
+        if (!_dispatcher.CheckAccess()) { if (!_dispatcher.HasShutdownStarted) _dispatcher.BeginInvoke(ApplyGraph); return; } ApplyGraph();
+    }
+    private void ApplyGraph() { IVocabularyGraphPreferences? preferences; lock (_gate) { if (_closed) return; preferences = _graphPreferences; } if (preferences is not null) _window?.AttachGraphPreferences(preferences); }
     internal void AttachReviewFeature(AnkiReviewFeature feature, Action configure)
     {
         lock (_gate) { if (_closed) return; if (_reviewFeature is not null && !ReferenceEquals(_reviewFeature, feature)) throw new InvalidOperationException("A review feature is already attached."); _reviewFeature = feature; _configureReview = configure; }

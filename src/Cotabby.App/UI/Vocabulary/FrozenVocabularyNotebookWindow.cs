@@ -63,7 +63,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
         var root = new DockPanel(); VocabularyNotebookTheme.Brush(root, Panel.BackgroundProperty, "WindowBg"); Content = root;
         var toolbar = new WrapPanel { Margin = new Thickness(20, 16, 20, 8), Orientation = Orientation.Horizontal };
         toolbar.Children.Add(new TextBlock { Text = "Vocabulary notebook", FontSize = 21, FontWeight = FontWeights.SemiBold, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 20, 8) });
-        foreach (var button in new[] { _categoryToggle, _newMeaning, _add, _import, Disabled("Graph", "Graph view is not available in this notebook yet."), Disabled("Export", "Export is not available in this notebook yet.") })
+        InitializeGraphButton(); foreach (var button in new[] { _categoryToggle, _newMeaning, _add, _import, _graphButton, Disabled("Export", "Export is not available in this notebook yet.") })
         { VocabularyNotebookTheme.Button(button, button == _add); button.Margin = new Thickness(0, 0, 8, 8); toolbar.Children.Add(button); }
         DockPanel.SetDock(toolbar, Dock.Top); root.Children.Add(toolbar);
         var filters = new WrapPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(18, 0, 18, 6) };
@@ -85,11 +85,11 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
         _meanings.DestinationChanged += destination => { ++_actionSelectionEpoch; _actionError = null; _session.Destination = destination; if (destination.SenseId is { } id) SelectSense(id, destination.NodeId); else _session.Refresh(); };
         _outline.Selected += destination => { ++_actionSelectionEpoch; _actionError = null; _session.Category = "all"; _session.Destination = destination; if (destination.SenseId is { } id) SelectSense(id, destination.NodeId); else _session.Refresh(); };
         _outline.NewCategory += parent => LastOperation = Track(OpenCategoryEditorAsync(null, parent)); _outline.EditCategory += id => LastOperation = Track(OpenCategoryEditorAsync(id, null)); _outline.NewMeaning += id => LastOperation = Track(OpenMeaningAsync(null, null, id)); _outline.ManageCategories += () => LastOperation = Track(OpenCategoryManagerAsync());
-        _outline.ShowUnexplored = listPreferences?.ShowUnexplored == true; _outline.ShowUnexploredChanged += value => { if (_listPreferences is not null) _listPreferences.ShowUnexplored = value; };
+        _outline.ShowUnexplored = listPreferences?.ShowUnexplored == true; _outline.ShowUnexploredChanged += value => { if (_listPreferences is not null) _listPreferences.ShowUnexplored = value; if (_graphMode) _session.Refresh(); };
         _categories.SelectionChanged += value => { if (_updating) return; ++_actionSelectionEpoch; _session.Category = value; if (_session.Destination?.NodeId is { } id && !_session.MeaningItems.Any(x => x.Id == id)) _session.Destination = null; _session.Refresh(); };
-        _query.TextChanged += (_, _) => { if (!_updating) { ++_actionSelectionEpoch; _session.Query = _query.Text; foreach (var e in _session.Visible) _expanded.Add(e.Id); _session.Refresh(); } };
-        _language.SelectionChanged += (_, _) => { if (!_updating) { ++_actionSelectionEpoch; _session.Language = (_language.SelectedItem as LanguageChoice)?.Value; _session.Refresh(); } };
-        _tag.SelectionChanged += (_, _) => { if (!_updating) { ++_actionSelectionEpoch; _session.Tag = (_tag.SelectedItem as TagChoice)?.Value ?? ""; _session.Refresh(); } };
+        _query.TextChanged += (_, _) => { if (!_updating) { ++_actionSelectionEpoch; _session.Query = _query.Text; foreach (var e in _session.Visible) _expanded.Add(e.Id); ReconcileGraphFilter(); _session.Refresh(); } };
+        _language.SelectionChanged += (_, _) => { if (!_updating) { ++_actionSelectionEpoch; _session.Language = (_language.SelectedItem as LanguageChoice)?.Value; ReconcileGraphFilter(); _session.Refresh(); } };
+        _tag.SelectionChanged += (_, _) => { if (!_updating) { ++_actionSelectionEpoch; _session.Tag = (_tag.SelectedItem as TagChoice)?.Value ?? ""; ReconcileGraphFilter(); _session.Refresh(); } };
         _sort.SelectionChanged += (_, _) => { if (!_updating) { _session.NewestFirst = _sort.SelectedIndex == 0; _session.Refresh(); } };
         _density.SelectionChanged += (_, _) => { if (!_updating) { _session.Detailed = _density.SelectedIndex == 1; if (_listPreferences is not null) _listPreferences.Density = _session.Detailed ? "detailed" : "compact"; _session.Refresh(); } };
         _organization.SelectionChanged += (_, _) => { if (!_updating) { ChangeOrganization(_organization.SelectedIndex == 1); } };
@@ -139,7 +139,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
         if (_modalDone is { } modal) await modal.Task;
         if (_senseCompletion is { } sense) await sense.Task;
         if (_semanticCompletion is { } semantic) await semantic.Task;
-        await _session.RetireAsync();
+        if (_graphView is not null) await _graphView.RetireAsync(); await _session.RetireAsync();
         while (_operations.Count != 0) { var operations = _operations.ToArray(); await Task.WhenAll(operations); _operations.RemoveWhere(t => t.IsCompleted); }
         _allowClose = true; Close(); if (reviewFailure is not null) throw reviewFailure;
     }
@@ -220,10 +220,12 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
             if (_session.Tag.Length > 0 && !tags.Contains(_session.Tag)) _session.Tag = "";
             _tag.Items.Clear(); _tag.Items.Add(new TagChoice("All tags", "")); foreach (var tag in tags) _tag.Items.Add(new TagChoice(tag, tag)); _tag.SelectedItem = _tag.Items.Cast<TagChoice>().First(x => x.Value == _session.Tag);
             _add.IsEnabled = _import.IsEnabled = !_session.Loading && _session.Failure is null; _categoryToggle.Visibility = Visibility.Collapsed; _newMeaning.Visibility = _session.MeaningMode ? Visibility.Visible : Visibility.Collapsed; _newMeaning.IsEnabled = CanSemantic && _store is ICanonicalVocabularyMeaningOrganizationStore; _categories.AllowEditing = CanSemantic;
+            _sort.Visibility = _density.Visibility = _graphMode ? Visibility.Collapsed : Visibility.Visible;
             _content.Children.Clear(); _content.ColumnDefinitions.Clear();
             if (_session.Loading) { _content.Children.Add(State("Loading vocabulary…")); return; }
             if (_session.Failure is { } failure) { _content.Children.Add(State("Could not load vocabulary\n" + failure, error: true)); return; }
-            if (!_session.MeaningMode && _session.Entries.Count == 0) { _content.Children.Add(Empty()); return; }
+            _graphButton.Content = _graphMode ? "List" : "Graph"; if (!_session.MeaningMode && _session.Entries.Count == 0) { _content.Children.Add(Empty()); return; }
+            if (_graphMode) { BuildGraphLayout(); return; }
             if (_session.MeaningMode) BuildMeaningLayout(); else BuildEntryLayout();
         }
         finally { _updating = false; }

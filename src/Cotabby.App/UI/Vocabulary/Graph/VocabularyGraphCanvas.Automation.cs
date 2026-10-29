@@ -14,9 +14,9 @@ internal sealed partial class VocabularyGraphCanvas
     private List<AutomationPeer> _automationNodes = [];
     private void RebuildAutomation()
     {
-        var heads = _snapshot.Nodes.Where(node => node.Id.Selection is null).ToDictionary(node => node.Id.EntryId, node => node.Label);
+        var heads = _snapshot.Nodes.Where(node => node.Id.Kind == VocabularyGraphNodeKind.Entry && node.Id.Selection is null).ToDictionary(node => node.Id.EntryId, node => node.Label);
         _automationNodes = _snapshot.Nodes.Select(node => (AutomationPeer)new GraphNodePeer(this, node,
-            node.Id.Selection is null ? node.Label : heads.GetValueOrDefault(node.Id.EntryId, "") + " · Core meaning: " + node.Label)).ToList();
+            node.Id.Selection is null || !heads.TryGetValue(node.Id.EntryId, out var head) ? node.Label : head + " · Core meaning: " + node.Label)).ToList();
         if (UIElementAutomationPeer.FromElement(this) is { } peer) { peer.ResetChildrenCache(); peer.InvalidatePeer(); }
     }
     protected override AutomationPeer OnCreateAutomationPeer() => new GraphCanvasPeer(this);
@@ -43,7 +43,7 @@ internal sealed partial class VocabularyGraphCanvas
         internal GraphNodePeer(VocabularyGraphCanvas canvas, VocabularyGraphNode node, string label)
         { _canvas = new(canvas); _id = node.Id; _label = label; }
         protected override string GetNameCore() => _label;
-        protected override string GetAutomationIdCore() => _id.EntryId.ToString("D") + (_id.SenseId is { } sense ? "/" + sense.ToString("D") : "");
+        protected override string GetAutomationIdCore() => (_id.Kind == VocabularyGraphNodeKind.Entry ? "" : _id.Kind + "/") + _id.EntryId.ToString("D") + (_id.SenseId is { } sense ? "/" + sense.ToString("D") : "");
         protected override string GetClassNameCore() => "VocabularyGraphNode";
         protected override AutomationControlType GetAutomationControlTypeCore() => AutomationControlType.Button;
         protected override Rect GetBoundingRectangleCore() => _canvas.TryGetTarget(out var canvas) ? canvas.NodeAutomationFrame(_id) : Rect.Empty;

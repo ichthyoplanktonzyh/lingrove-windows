@@ -23,7 +23,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow
         foreach (var button in new[] { _selectVisible, _clearReview, _prepareSelected, _finishSelection }) { VocabularyNotebookTheme.Button(button, button == _prepareSelected); button.Margin = new Thickness(0, 0, 8, 0); }
         _reviewSelectionBar.Children.Add(_reviewSelectionCount); _reviewSelectionBar.Children.Add(_selectVisible); _reviewSelectionBar.Children.Add(_clearReview); _reviewSelectionBar.Children.Add(_prepareSelected); _reviewSelectionBar.Children.Add(_finishSelection);
         DockPanel.SetDock(_reviewSelectionBar, Dock.Bottom); int contentIndex = root.Children.IndexOf(_content); root.Children.Insert(contentIndex < 0 ? root.Children.Count : contentIndex, _reviewSelectionBar);
-        _selectReview.Click += (_, _) => { _selectingReviewSenses = !_selectingReviewSenses; if (_selectingReviewSenses && _session.MeaningMode) _organization.SelectedIndex = 0; _session.Refresh(); };
+        _selectReview.Click += (_, _) => { _selectingReviewSenses = !_selectingReviewSenses; if (_selectingReviewSenses && _graphMode) SetGraphMode(false); if (_selectingReviewSenses && _session.MeaningMode) _organization.SelectedIndex = 0; _session.Refresh(); };
         _finishSelection.Click += (_, _) => { _selectingReviewSenses = false; _session.Refresh(); };
         _selectVisible.Click += (_, _) => { foreach (var entry in _session.Visible) foreach (var sense in entry.Senses) _reviewSelections.Add(new(entry.Id, sense.Id)); _session.Refresh(); };
         _clearReview.Click += (_, _) => { _reviewSelections.Clear(); _session.Refresh(); };

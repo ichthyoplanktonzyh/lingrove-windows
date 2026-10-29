@@ -7,22 +7,26 @@ upgraded; the campaign pin does not claim existing modules already match it.
 
 ## Scope and completion
 
-Alignment includes functionality, user flow, interaction, UI structure and visual design. Every
-user-facing module traces its navigation, windows/cards, information hierarchy, control placement,
-typography hierarchy, spacing, color, icons, density and state feedback to committed Mac evidence.
-Loading, empty, failure, retry, disabled, selection and cancellation states are part of the scope.
-Keyboard/focus/activation, dismissal, resizing and accessibility belong to the same module.
+Alignment includes functionality, user flow, interaction, information architecture (IA), content
+hierarchy and state expression. On 2026-10-29 the maintainer clarified that Windows need not visually
+duplicate Mac: the goal is an attractive, coherent, usable Windows product. Loading, empty, failure,
+retry, disabled, selection and cancellation states remain part of the scope, as do keyboard,
+focus/activation, dismissal, resizing and accessibility semantics.
 
-Use existing Mac views, styles, assets and tests as authority. Translate AppKit/SwiftUI to WPF/Win32
-while retaining the product contract. Native Windows chrome, available fonts, DPI and OS input
-conventions may require documented differences. No replacement product or design system is implied.
+Use committed Mac views and tests as the behavior, IA and state reference. Adapt AppKit/SwiftUI to
+WPF/Win32 while retaining navigation, information organization, operation discoverability, hierarchy
+and observable outcomes. Controls, typography, icons, spacing, colors and window chrome may use
+Windows/WPF's own design strengths; pixel equality and identical component geometry are not required.
+Review visual choices for beauty, clarity and consistency, and record Windows input, DPI and font
+choices. This visual freedom does not authorize a replacement product flow or business architecture.
 Runtime names, user-data destinations and identifiers retain the existing Cotabby compatibility
 boundary until an explicit migration is designed.
 
 Each handoff includes source SHA/paths, Windows mapping, functional checks, representative rendered
 Windows views/screenshots, available Mac visual references, known differences and pending native
-acceptance. Missing Mac screenshots are an evidence gap; source-based review alone is not a claimed
-pixel comparison. Test counts and successful XAML builds do not replace visible or desktop checks.
+acceptance. Use available Mac images to assess hierarchy and state expression, not pixel identity.
+Missing Mac screenshots limit direct comparison and are recorded without blocking source-based IA
+review. Test counts and successful XAML builds do not replace visible or desktop checks.
 
 ## Team and file ownership
 

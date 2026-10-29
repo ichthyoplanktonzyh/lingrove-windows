@@ -16,7 +16,7 @@ been rebranded or that its data is compatible with the macOS app.
 
 ## Migration principle: adapt the frozen macOS product
 
-**本轮 Windows 版本以固定的 macOS 稳定快照为基准，对齐功能、交互、UI 和视觉设计；不重新发明产品或业务架构。**
+**本轮 Windows 版本以固定的 macOS 稳定快照为基准，对齐功能行为、信息架构（IA）、内容层级与状态表达；以美观、协调、易用为目标，允许保留 Windows/WPF 的设计特色，无需像素级复刻 Mac；不重新发明产品或业务架构。**
 
 - Treat the frozen macOS implementation and its tests as the behavior and design reference. Read the relevant
   Mac subsystem before implementing its Windows counterpart; preserve its responsibilities, data
@@ -81,16 +81,19 @@ coordinators focused on sequencing, cancellation, and current UI state.
 
 ## UI, interaction and visual parity
 
-- Functional parity alone does not complete a user-facing module. Adapt the frozen Mac navigation,
-  information hierarchy, window/card structure, control placement, typography hierarchy, spacing,
-  color, icons, density, and loading/empty/error/disabled/selected states alongside its behavior.
+- Functional parity alone does not complete a user-facing module. Preserve the frozen Mac behavior,
+  information architecture, navigation, content hierarchy, operation discoverability and
+  loading/empty/error/disabled/selected state expression alongside its behavior.
+- The maintainer clarified on 2026-10-29 that Windows need not visually duplicate Mac. Use attractive,
+  coherent Windows/WPF controls, typography, icons, spacing, colors and window chrome while preserving
+  the product's information hierarchy and observable behavior. Pixel equality is not an acceptance gate.
 - Preserve keyboard interaction, focus/activation, dismissal, resizing and accessibility semantics.
   WPF is the rendering adapter; an existing Windows placeholder is not the design authority.
-- Trace UI decisions to committed Mac views, styles, resources and UI tests. Use comparable rendered
-  Windows views/screenshots for visual review. If a matching Mac screenshot is unavailable, record
-  that limit rather than claiming a completed pixel comparison.
-- Document necessary Windows differences such as native window chrome, available fonts, DPI and
-  platform input conventions. These differences do not authorize a separate visual redesign.
+- Trace behavior, IA and state decisions to committed Mac views, resources and UI tests. Review
+  rendered Windows views/screenshots for clarity, consistency and beauty, using available Mac images
+  to compare hierarchy and state expression. Record missing references without claiming a comparison.
+- Document Windows design choices, fonts, DPI and platform input conventions. Windows visual adaptation
+  is authorized; changes to product flows or business architecture require separate scope.
 - A compiled XAML/control test establishes component behavior, not physical desktop or visual
   acceptance. Record the executed checks and remaining native checks in the module handoff.
 

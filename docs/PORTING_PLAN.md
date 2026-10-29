@@ -14,7 +14,7 @@ later Mac commits enter scope only after an explicit maintainer baseline decisio
 
 ## Governing rule: port, then adapt platform details
 
-**直接基于固定 macOS 稳定快照对齐功能、交互、UI 和视觉设计，不重新发明产品或业务架构。**
+**直接基于固定 macOS 稳定快照对齐功能行为、信息架构、内容层级和状态表达；允许美观、协调、易用的 Windows/WPF 视觉适配，无需像素级复刻，不重新发明产品或业务架构。**
 
 The pinned Mac implementation and tests define each feature's intended behavior. For every slice:
 
@@ -29,8 +29,10 @@ The pinned Mac implementation and tests define each feature's intended behavior.
    replacing it with a simpler product flow or adjusting expected tests to the current Windows code.
 5. Validate the scoped port, review it independently, and merge the completed round to `main`.
    Architecture/design skills assist this adaptation; product redesign is outside the port's scope.
-6. Review the rendered UI against the frozen Mac views/resources and available reference images,
-   recording physical interaction checks and necessary Windows visual differences separately.
+6. Review rendered Windows UI for beauty, clarity and consistency. Compare behavior, IA, content
+   hierarchy and state expression with frozen Mac views/resources and available images; identical
+   pixels, controls, fonts or geometry are not required. Record physical interaction checks and
+   Windows design choices separately.
 
 The phases below sequence migration of existing Mac capabilities. A phase can deliver a documented
 subset, and passing its checks does not establish full feature parity. Fake engines are test inputs;

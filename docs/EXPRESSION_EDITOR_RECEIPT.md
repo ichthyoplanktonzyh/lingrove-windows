@@ -27,11 +27,13 @@ superseding request or unexpected focus; the normal insertion policy remains unc
 
 `UiaExpressionSelectionReader` is a bounded, read-only adapter: it checks secure and read-only
 metadata before asking for text, demands one actual TextPattern selection, and compares bounded
-before/selected/after reads with the full value. UIA can stall and mutate; its caller must run off
+before/selected/after reads with the full value. It rejects any embedded document child: UIA text
+flattening does not preserve those object boundaries. UIA can stall and mutate; its caller must run off
 the UI thread, bound its wait, and compare fresh field identity, focus and composition evidence on
 both sides before accepting its result. The reader has no live application ownership or commit path.
 Two hidden owned WPF tests confirm an emoji selection and reject a password and oversized field;
-no user editor, input or focus was touched.
+no user editor, input or focus was touched. A third owned hidden RichTextBox test confirms an
+embedded control is rejected.
 
 The common `InsertionTransactionGate` serializes owners but grants no permission to edit. The
 existing guarded inserter still applies its original policy; application composition must inject

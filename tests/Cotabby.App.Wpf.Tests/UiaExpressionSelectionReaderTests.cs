@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Interop;
 using Cotabby.Core.ExpressionAssist;
 using Cotabby.Win32.ExpressionAssist;
@@ -10,6 +11,32 @@ namespace Cotabby.App.Wpf.Tests;
 [Collection("WPF views")]
 public sealed class UiaExpressionSelectionReaderTests(WpfDispatcher dispatcher)
 {
+    [Fact]
+    public Task HiddenRichTextWithEmbeddedControlCannotProduceReceipt() => dispatcher.RunAsync(async () =>
+    {
+        using var parent = new HwndSource(new HwndSourceParameters("Hidden parent") { WindowStyle = 0, Width = 80, Height = 80 });
+        using var child = new HwndSource(new HwndSourceParameters("Hidden rich editor")
+        { ParentWindow = parent.Handle, WindowStyle = 0x50000000, Width = 80, Height = 80 });
+        var paragraph = new Paragraph(); paragraph.Inlines.Add(new Run("A"));
+        paragraph.Inlines.Add(new InlineUIContainer(new Button { Content = "owned" }));
+        paragraph.Inlines.Add(new Run("B"));
+        var rich = new RichTextBox(new FlowDocument(paragraph));
+        AutomationProperties.SetAutomationId(rich, "owned-embedded");
+        var panel = new StackPanel(); panel.Children.Add(rich); child.RootVisual = panel;
+        panel.Measure(new Size(80, 80)); panel.Arrange(new Rect(0, 0, 80, 80)); panel.UpdateLayout();
+        nint handle = child.Handle;
+        var result = await Task.Run(() =>
+        {
+            var root = AutomationElement.FromHandle(handle);
+            var element = root.FindFirst(TreeScope.Descendants, new PropertyCondition(AutomationElement.AutomationIdProperty, "owned-embedded"));
+            Assert.NotNull(element);
+            Assert.True(element.TryGetCurrentPattern(TextPattern.Pattern, out var raw));
+            Assert.NotEmpty(((TextPattern)raw).DocumentRange.GetChildren());
+            return UiaExpressionSelectionReader.Read(element);
+        });
+        Assert.Null(result);
+    });
+
     [Fact]
     public Task HiddenOversizedAndPasswordFieldsAreRejected() => dispatcher.RunAsync(async () =>
     {

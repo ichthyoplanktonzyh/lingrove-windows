@@ -31,6 +31,9 @@ internal static class UiaExpressionSelectionReader
             if (selections is not { Length: 1 }) return null;
             var selection = selections[0];
             var document = pattern.DocumentRange;
+            // GetText flattens embedded object boundaries. Without a native object/range anchor,
+            // an equal text concatenation cannot prove a safe selection replacement.
+            if (!Allowed() || document.GetChildren().Length != 0) return null;
             var before = document.Clone();
             before.MoveEndpointByRange(TextPatternRangeEndpoint.End, selection, TextPatternRangeEndpoint.Start);
             var after = document.Clone();

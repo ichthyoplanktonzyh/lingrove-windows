@@ -11,6 +11,19 @@ namespace Cotabby.App.Wpf.Tests;
 [Collection("WPF views")]
 public sealed class CanonicalCliMediaTests(WpfDispatcher dispatcher)
 {
+    private sealed class FailOnSecondPreparation(IOwnedVocabularyImageStorage inner) : IOwnedVocabularyImageStorage
+    {
+        public int Preparations { get; private set; }
+        public VocabularyPreparedImage Prepare(ReadOnlySpan<byte> bytes, CancellationToken token)
+        { if (++Preparations > 1) throw new InvalidOperationException("A replay must not prepare media again."); return inner.Prepare(bytes, token); }
+        public VocabularyPreparedImage PrepareFile(string path, CancellationToken token) => inner.PrepareFile(path, token);
+        public byte[] Read(VocabularyImageReference image) => inner.Read(image);
+        public bool Write(ReadOnlySpan<byte> data, VocabularyImageReference image) => inner.Write(data, image);
+        public void Remove(VocabularyImageReference image) => inner.Remove(image);
+        public VocabularyWindowsFile.FileIdentity? WriteOwned(ReadOnlySpan<byte> data, VocabularyImageReference image) => inner.WriteOwned(data, image);
+        public VocabularyWindowsFile.FileIdentity? CaptureIdentity(VocabularyImageReference image) => inner.CaptureIdentity(image);
+        public void RemoveOwned(VocabularyImageReference image, VocabularyWindowsFile.FileIdentity identity) => inner.RemoveOwned(image, identity);
+    }
     [Fact]
     public Task ImageAndReceiptRollbackAndRetryUseSameStore() => dispatcher.RunAsync(async () =>
     {
@@ -35,6 +48,24 @@ public sealed class CanonicalCliMediaTests(WpfDispatcher dispatcher)
             Assert.Equal(1UL, snapshot.Snapshot.Revision); Assert.True(File.Exists(Path.Combine(media, snapshot.Images.Single().Reference.Filename)));
             Assert.True((await cli.ExecuteCliAsync(request))["replayed"]!.GetValue<bool>());
             Assert.Equal(1UL, (await store.ReadAsync()).Revision);
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    });
+    [Fact]
+    public Task AcknowledgedReplayDoesNotPrepareImageAgain() => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "canonical-cli-replay-" + Guid.NewGuid().ToString("N"));
+        string file = Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName);
+        try
+        {
+            byte[] bytes = Convert.FromBase64String(JsonDocument.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "fixtures", "parity", "vocabulary-media-transactions-v1.json"))).RootElement.GetProperty("input").GetString()!);
+            var batch = JsonNode.Parse("""{"version":1,"idempotencyKey":"replay-image","operations":[{"add":{"expression":"bank","language":"en","kind":"word","meaning":"money","content":[{"image":{"data":"PLACEHOLDER"}}]}}]}""".Replace("PLACEHOLDER", Convert.ToBase64String(bytes)))!.AsObject();
+            var request = new CliRequest { Command = "apply", ExpiresAt = CliWire.Now() + 60, Batch = batch };
+            var storage = new FailOnSecondPreparation(WindowsVocabularyImageStorage.ForDirectory(Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalMediaDirectoryName)));
+            await using var store = new FrozenVocabularyImportStore(() => FrozenVocabularySQLiteDatabase.OpenFile(file), images: storage);
+            Assert.False((await store.ExecuteCliAsync(request))["replayed"]!.GetValue<bool>());
+            Assert.True((await store.ExecuteCliAsync(request))["replayed"]!.GetValue<bool>());
+            Assert.Equal(1, storage.Preparations); Assert.Equal(1UL, (await store.ReadAsync()).Revision);
         }
         finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
     });

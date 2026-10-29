@@ -1,6 +1,8 @@
 using Cotabby.App.Settings;
 using Cotabby.App.Vocabulary;
 using Cotabby.Core.Review;
+using Cotabby.Inference.Speech;
+using Cotabby.Core.Vocabulary.Frozen;
 
 namespace Cotabby.App.Review;
 
@@ -18,18 +20,20 @@ internal sealed class AnkiReviewFeature : IAsyncDisposable
     private readonly CancellationToken _token;
     internal AnkiReviewSettings Settings { get; }
     internal AnkiReviewController Controller { get; }
+    internal ICanonicalVocabularyStore? CanonicalStore { get; }
     internal AnkiReviewFeature(Func<AppSettings> current, Action persist, VocabularyStore? store,
-        IAnkiConnecting client, IAnkiCredentialStore credentials, Func<string?>? speechConfigurationId = null, Action? activateExisting = null)
+        IAnkiConnecting client, IAnkiCredentialStore credentials, Func<string?>? speechConfigurationId = null, Action? activateExisting = null, ISpeechExporting? speech = null, ICanonicalVocabularyStore? canonicalStore = null)
     {
+        CanonicalStore = canonicalStore;
         _client = client; _token = _cancellation.Token;
         Settings = new(current, persist, credentials);
-        Controller = new(Settings, store, client, speechConfigurationId, activateExisting);
+        Controller = new(Settings, store, client, speechConfigurationId, activateExisting, speech);
     }
     /// <summary>Real connection and preference owner without a legacy notebook. Canonical callers
     /// borrow this owner; no Store is constructed or opened here.</summary>
     internal static AnkiReviewFeature CreateConnectionSettings(Func<AppSettings> current, Action persist,
-        IAnkiConnecting client, IAnkiCredentialStore credentials, Action? activateExisting = null) =>
-        new(current, persist, null, client, credentials, activateExisting: activateExisting);
+        IAnkiConnecting client, IAnkiCredentialStore credentials, Action? activateExisting = null, ISpeechExporting? speech = null, ICanonicalVocabularyStore? canonicalStore = null) =>
+        new(current, persist, null, client, credentials, activateExisting: activateExisting, speech: speech, canonicalStore: canonicalStore);
     internal Task RunAsync(Func<CancellationToken, Task> operation)
     {
         var completion = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);

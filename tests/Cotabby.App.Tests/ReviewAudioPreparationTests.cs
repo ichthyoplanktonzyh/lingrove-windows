@@ -112,11 +112,11 @@ public sealed class ReviewAudioPreparationTests
         public string ExportConfigurationId => "fixture"; public Guid OwnerId; public string? Failure; public string Fingerprint = "request-fingerprint";
         public List<Dictionary<string, object?>> Calls { get; } = [];
         private bool _hold; public TaskCompletionSource<SpeechExportAudio>? Waiter; public TaskCompletionSource Entered { get; private set; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        public SpeechExportRequest ExportRequest(string text, LearningLanguage language, string? context = null)
+        public SpeechExportRequest ExportRequest(string text, LearningLanguage? language, string? context = null)
         {
-            Calls.Add(new() { ["op"] = "request", ["text"] = text, ["language"] = language.Code(), ["context"] = context });
+            Calls.Add(new() { ["op"] = "request", ["text"] = text, ["language"] = language?.Code(), ["context"] = context });
             if (Failure == "request") throw new SpeechException(SpeechFailure.GenerationFailed);
-            return new(text, language, Fingerprint, new SpeechExportRequest.Source.System("fixture"));
+            return new(text, language ?? throw new InvalidOperationException("Missing language"), Fingerprint, new SpeechExportRequest.Source.System("fixture"));
         }
         public Task<SpeechExportAudio> ExportAudioAsync(SpeechExportRequest request, CancellationToken cancellationToken = default)
         {

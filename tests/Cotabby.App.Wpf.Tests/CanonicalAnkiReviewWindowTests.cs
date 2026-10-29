@@ -34,6 +34,27 @@ public sealed class CanonicalAnkiReviewWindowTests(WpfDispatcher dispatcher)
     private static void Click(Button button) => button.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
     private static async Task Ready(CanonicalAnkiReviewWindow window) { if (window.LastOperation is { } op) await op; await window.PreviewOperation; }
     [Fact]
+    public Task AudioControlsPrepareAndSendWithBorrowedSpeech() => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "review-audio-ui-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            await using var store = FrozenVocabularyStoreFactory.Create(Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName), false);
+            await store.AddEntriesAsync([new VocabularyEntryInput(Expression: "bank", Meaning: "money")]); var entry = (await store.ReadAsync()).Document.CollectedEntries[0];
+            var speech = new SessionTestSpeech(); var server = new SessionTestServer(); var controller = new AnkiReviewController(Settings(), null, server, speech: speech);
+            var session = await CanonicalAnkiReviewSession.OpenAsync(controller, store, entry.Id, entry.Senses[0].Id);
+            var window = new CanonicalAnkiReviewWindow(session, action => action(CancellationToken.None), () => { }); window.Show(); await Ready(window);
+            window.ExpressionAudioToggle.IsChecked = true; window.ExpressionAudioToggle.RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); await window.PreviewOperation;
+            Assert.True(session.Plan.AudioKinds!.Contains(ReviewAudioKind.Expression));
+            Click(window.PreviewExpressionAudio); await Ready(window); Assert.Equal(1, speech.Exports);
+            window.ExpressionAudioToggle.BringIntoView(); await System.Windows.Threading.Dispatcher.Yield(System.Windows.Threading.DispatcherPriority.ApplicationIdle);
+            VocabularyThemeRender.Capture(window, "canonical-review-audio", 700, 710);
+            Click(window.SendButton); await Ready(window); await window.RetireAsync(); Assert.Equal(1, server.AddCount); Assert.Equal(1, speech.Exports);
+            Assert.NotNull((await store.ReadAsync()).Document.Collections[0].Review!.Plan.AudioReceipts![ReviewAudioKind.Expression]);
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    });
+    [Fact]
     public Task DraftSaveAndAudioRemovalUseAcknowledgedCanonicalStore() => dispatcher.RunAsync(async () =>
     {
         string root = Path.Combine(Path.GetTempPath(), "review-window-" + Guid.NewGuid().ToString("N"));
@@ -208,6 +229,52 @@ public sealed class CanonicalAnkiReviewWindowTests(WpfDispatcher dispatcher)
             Assert.True(next.SendButton.IsEnabled); Click(next.SendButton); await Ready(next); await next.RetireAsync();
             var receipt = (await store.ReadAsync()).Document.CollectedEntries[0].Senses[0].ReviewCards!.Single(); Assert.Equal(card, receipt.Plan.Id); Assert.Equal(card, receipt.ActiveBinding!.OriginSenseId); Assert.Equal(1, server.AddCount);
             Assert.Null((await store.ReadAsync()).Document.CollectedEntries[0].Senses[0].Review);
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    });
+    private sealed class ClipboardFixture(byte[] bytes) : IVocabularyClipboardImageTransfer
+    {
+        internal uint ReadSequence;
+        public VocabularyClipboardImageOffer Capture() => new(73, true);
+        public Task<byte[]?> ReadAsync(uint expectedSequence, CancellationToken token = default) { ReadSequence = expectedSequence; return Task.FromResult<byte[]?>(bytes.ToArray()); }
+    }
+    [Fact]
+    public Task IndependentCardAudioSlotPreparesAndSends() => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "review-card-audio-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            await using var store = FrozenVocabularyStoreFactory.Create(Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName), false);
+            await store.AddEntriesAsync([new VocabularyEntryInput(Expression: "bank", Meaning: "money")]); var entry = (await store.ReadAsync()).Document.CollectedEntries[0];
+            var speech = new SessionTestSpeech(); var server = new SessionTestServer(); Guid card = Guid.NewGuid();
+            var session = await CanonicalAnkiReviewSession.OpenAsync(new AnkiReviewController(Settings(), null, server, speech: speech), store, entry.Id, entry.Senses[0].Id, card);
+            var window = new CanonicalAnkiReviewWindow(session, action => action(CancellationToken.None), () => { }); window.Show(); await Ready(window);
+            window.AddPartChoice.SelectedValue = ReviewContentSource.ExpressionAudio; Click(window.AddPartButton); await window.PreviewOperation;
+            var audioPanel = (StackPanel)((Grid)((Border)window.LayoutParts.Children[window.LayoutParts.Children.Count - 1]).Child).Children[1];
+            Click(audioPanel.Children.OfType<Button>().First(b => Equals(b.Content, "Preview audio"))); await Ready(window); Assert.Equal(1, speech.Exports);
+            VocabularyThemeRender.Capture(window, "canonical-review-card-audio", 700, 710);
+            Click(window.SendButton); await Ready(window); await window.RetireAsync(); Assert.Equal(1, server.AddCount); Assert.Equal(1, speech.Exports);
+            var saved = (await store.ReadAsync()).Document.CollectedEntries[0].Senses[0].ReviewCards!.Single(); Assert.NotNull(saved.Plan.AudioReceipts![ReviewAudioKind.Expression]); Assert.Equal(card, saved.ActiveBinding!.OriginSenseId);
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    });
+    [Fact]
+    public Task CardClipboardImageUsesBorrowedTransferAndCommitsViaMediaOwner() => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "review-card-clipboard-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            await using var store = FrozenVocabularyStoreFactory.Create(Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName), false);
+            await store.AddEntriesAsync([new VocabularyEntryInput(Expression: "bank", Meaning: "money")]); var entry = (await store.ReadAsync()).Document.CollectedEntries[0];
+            using var json = JsonDocument.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "fixtures", "parity", "vocabulary-media-transactions-v1.json")));
+            var clip = new ClipboardFixture(Convert.FromBase64String(json.RootElement.GetProperty("input").GetString()!)); Guid card = Guid.NewGuid();
+            var session = await CanonicalAnkiReviewSession.OpenAsync(new AnkiReviewController(Settings(), null, new SessionTestServer()), store, entry.Id, entry.Senses[0].Id, card);
+            var window = new CanonicalAnkiReviewWindow(session, action => action(CancellationToken.None), () => { }, clip); window.Show(); await Ready(window);
+            window.AddPartChoice.SelectedValue = ReviewContentSource.Custom; Click(window.AddPartButton); await window.PreviewOperation; var custom = session.Plan.Layout!.Front.Last();
+            Assert.True(window.PasteLayoutImage(custom.Id)); await Ready(window); Assert.Equal(73u, clip.ReadSequence);
+            var image = (VocabularyBlockContent.Image)session.Plan.Layout!.Front.Last().Content.Single().Content;
+            byte[] prepared = session.ImportedImages[image.Reference.Filename].CopyBytes(); Click(window.SaveButton); await Ready(window); await window.RetireAsync();
+            Assert.Equal(prepared, await store.ReadImageAsync(image.Reference));
         }
         finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
     });

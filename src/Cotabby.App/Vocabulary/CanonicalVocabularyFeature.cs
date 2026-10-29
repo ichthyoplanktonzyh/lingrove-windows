@@ -15,6 +15,7 @@ internal sealed class CanonicalVocabularyFeature : IAsyncDisposable
     private readonly WindowsVocabularyClipboardTransfer _clipboard = new();
     private readonly object _gate = new();
     private Task? _disposal;
+    internal ICanonicalVocabularyStore Store => _backend;
     internal CanonicalWritingViewStore Writing { get; }
     internal FrozenVocabularyWindowController Window { get; }
 

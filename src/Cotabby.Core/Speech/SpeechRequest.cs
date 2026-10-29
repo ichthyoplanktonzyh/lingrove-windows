@@ -16,7 +16,7 @@ public enum SpeechLanguageMode { Automatic, Fixed }
 /// <summary>One explicit click captures its text/hint and optional same-side recognition context.
 /// The controller sanitizes/resolves it once, then creates a fixed request without Context before
 /// any provider sees it. Context is never spoken or sent to an endpoint.</summary>
-public sealed record SpeechRequest(SpeechTarget Target, string Text, LearningLanguage Language,
+public sealed record SpeechRequest(SpeechTarget Target, string Text, LearningLanguage? Language,
     string? Context = null, SpeechLanguageMode LanguageMode = SpeechLanguageMode.Automatic)
 {
     public bool Equals(SpeechRequest? other) => other is not null && Target == other.Target && Language == other.Language && LanguageMode == other.LanguageMode

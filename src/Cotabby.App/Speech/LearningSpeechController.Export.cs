@@ -28,7 +28,7 @@ internal sealed partial class LearningSpeechController : ISpeechExporting
             return SpeechExportPolicy.Digest(SpeechExportIdentity.Strings(identity)) + SpeechExportPolicy.Digest(profile);
         }
     }
-    public SpeechExportRequest ExportRequest(string text, LearningLanguage language, string? context = null)
+    public SpeechExportRequest ExportRequest(string text, LearningLanguage? language, string? context = null)
     {
         RequireOwner(); if (!SpeechTextPolicy.WithinRequestLimit(text)) throw new SpeechException(SpeechFailure.TextTooLong);
         string cleaned = SpeechTextPolicy.SanitizedText(text) ?? throw new SpeechException(SpeechFailure.UnrecognizedLanguage);

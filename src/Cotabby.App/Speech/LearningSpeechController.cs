@@ -16,7 +16,7 @@ namespace Cotabby.App.Speech;
 /// recognition/collation and lazy model management are required borrowed adapters, never fake
 /// defaults. They are not constructed by views. One serial UI context owns all published state.
 /// The host stops callers, shuts down, and drains accepted work before releasing dependencies.</summary>
-internal sealed partial class LearningSpeechController : INotifyPropertyChanged, IAsyncDisposable
+internal sealed partial class LearningSpeechController : INotifyPropertyChanged, ISpeechDestinationDisclosure, IAsyncDisposable
 {
     internal LearningSpeechSettings Settings { get; }
     internal SpeechTelemetry Telemetry { get; }
@@ -28,6 +28,49 @@ internal sealed partial class LearningSpeechController : INotifyPropertyChanged,
     internal SpeechTarget? ErrorTarget { get; private set; }
     internal string? PlaybackError { get; private set; }
     internal SpeechPlaybackPhase? Phase { get; private set; }
+    public bool IsDestinationAvailable
+    {
+        get
+        {
+            RequireOwner();
+            try { switch (Settings.SelectedProvider) { case LearningSpeechProviderKind.System: return true; case LearningSpeechProviderKind.Local: _ = Settings.LocalConfiguration(); return true; case LearningSpeechProviderKind.Endpoint: _ = Settings.EndpointConfiguration(); return true; default: return false; } }
+            catch { return false; }
+        }
+    }
+    public string DestinationDescription
+    {
+        get
+        {
+            RequireOwner();
+            switch (Settings.SelectedProvider)
+            {
+                case LearningSpeechProviderKind.System: return "System voice · audio stays on this device.";
+                case LearningSpeechProviderKind.Local: return "Local speech · audio stays on this device. Model: " + SafeModelName(Path.GetFileName(Settings.LocalModelPath));
+                case LearningSpeechProviderKind.Endpoint:
+                    try
+                    {
+                        var configuration = Settings.EndpointConfiguration(); var endpoint = configuration.Endpoint;
+                        return "Speech endpoint: " + endpoint.BaseUrl.GetLeftPart(UriPartial.Authority) + " · model: " + SafeModelName(endpoint.ModelName) + " · voice: " + SafeModelName(configuration.Voice, "configured voice") + ". The selected text is sent to this server.";
+                    }
+                    catch { return "Speech endpoint is not configured; no text can be sent."; }
+                default: return "Speech destination is unavailable.";
+            }
+        }
+    }
+    private static string SafeModelName(string value, string redacted = "configured model")
+    {
+        if (value.Length == 0) return "not selected";
+        if (value.Contains("://", StringComparison.Ordinal) || value.IndexOfAny(['?', '#', '@']) >= 0) return redacted;
+        var output = new StringBuilder(); int count = 0;
+        foreach (var rune in value.EnumerateRunes())
+        {
+            if (count++ == 96) { output.Append('…'); break; }
+            var category = Rune.GetUnicodeCategory(rune);
+            if (category is System.Globalization.UnicodeCategory.Control or System.Globalization.UnicodeCategory.Format or System.Globalization.UnicodeCategory.LineSeparator or System.Globalization.UnicodeCategory.ParagraphSeparator) output.Append(' ');
+            else output.Append(rune.ToString());
+        }
+        return output.ToString();
+    }
     private readonly ISpeechProviding _provider;
     private readonly ISpeechAudioGenerating _generator;
     private readonly ISpeechAudioPlaying _audioPlayer;
@@ -125,9 +168,10 @@ internal sealed partial class LearningSpeechController : INotifyPropertyChanged,
         if (Settings.SelectedProvider != LearningSpeechProviderKind.System) { StartGeneratedAudio(text, resolved); return; }
         if (!CatalogIsLoaded) RefreshVoices();
         if (VoiceCatalog.Count == 0) { SetError(VoiceCatalogError ?? "No system speech voices are available.", request.Target); return; }
-        if (SpeechVoicePolicy.Select(VoiceCatalog, resolved.Language, Settings.VoiceId(resolved.Language), _voiceComparer) is not { } voice)
+        var language = resolved.Language!.Value;
+        if (SpeechVoicePolicy.Select(VoiceCatalog, language, Settings.VoiceId(language), _voiceComparer) is not { } voice)
         { SetError("No speech voice is available for this language.", request.Target); return; }
-        var token = new SpeechPlaybackToken(); Telemetry.Begin(token, voice.Name, "system_speech", resolved.Language);
+        var token = new SpeechPlaybackToken(); Telemetry.Begin(token, voice.Name, "system_speech", language);
         _activeToken = token; _activeRequest = resolved; ActiveTarget = resolved.Target; Phase = SpeechPlaybackPhase.Preparing; Changed();
         try { _provider.Speak(text, voice, Settings.RateMultiplier, token); }
         catch (Exception error)
@@ -192,15 +236,16 @@ internal sealed partial class LearningSpeechController : INotifyPropertyChanged,
     };
     private void StartGeneratedAudio(string text, SpeechRequest request)
     {
+        var language = request.Language!.Value;
         SpeechAudioSource source;
-        try { if (GeneratedSource(request.Language) is not { } configured) return; source = configured; }
+        try { if (GeneratedSource(language) is not { } configured) return; source = configured; }
         catch (Exception error) { SetError(error.Message, request.Target); return; }
         var token = new SpeechPlaybackToken();
-        if (source is SpeechAudioSource.Local local) Telemetry.Begin(token, Path.GetFileName(local.Configuration.ModelUrl.LocalPath), "llama", request.Language);
-        else if (source is SpeechAudioSource.Endpoint endpoint) Telemetry.Begin(token, endpoint.Configuration.Endpoint.ModelName, "openai_compatible", request.Language);
+        if (source is SpeechAudioSource.Local local) Telemetry.Begin(token, Path.GetFileName(local.Configuration.ModelUrl.LocalPath), "llama", language);
+        else if (source is SpeechAudioSource.Endpoint endpoint) Telemetry.Begin(token, endpoint.Configuration.Endpoint.ModelName, "openai_compatible", language);
         double rate = Settings.RateMultiplier;
         _activeToken = token; ActiveTarget = request.Target; _activeRequest = request; Phase = SpeechPlaybackPhase.Preparing; Changed();
-        var audioRequest = new SpeechAudioRequest(token, text, request.Language, source, Settings.GenerationProfile.Sampling);
+        var audioRequest = new SpeechAudioRequest(token, text, language, source, Settings.GenerationProfile.Sampling);
         bool isLocal = source is SpeechAudioSource.Local;
         if (isLocal) _pcmPlayer.Begin(SpeechLocalConfiguration.OutputSampleRate, rate, token);
         _audioTask = StartOwned(cancellation => GenerateAudioAsync(audioRequest, rate, isLocal, cancellation));

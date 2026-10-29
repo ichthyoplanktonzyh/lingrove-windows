@@ -20,7 +20,7 @@ public static class VocabularyCapturePolicy
     public static string Normalized(string text)
     {
         if (!LearningExplanationText.Fits(text, int.MaxValue)) throw new VocabularyContentValidationException();
-        return string.Join(" ", GraphemeString.Words(text.Normalize(NormalizationForm.FormC)));
+        return string.Join(" ", GraphemeString.Words(FoundationUnicodeNormalization.Normalize(text)));
     }
 
     public static string EntryKey(VocabularyCapture capture) => Key([capture.Language.Code(), KindCode(capture.Kind), Normalized(capture.Expression)]);

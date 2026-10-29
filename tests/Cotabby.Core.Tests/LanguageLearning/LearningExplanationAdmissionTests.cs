@@ -6,13 +6,25 @@ namespace Cotabby.Core.Tests.LanguageLearning;
 public sealed class LearningExplanationAdmissionTests
 {
     [Fact]
+    public async Task ForeignAdmissionCleanupFailureIsSanitizedAndWorkIsRemoved()
+    {
+        var service = new LearningExplanationService(new() { LocalModel = "model.gguf" }, LearningLanguage.English,
+            _ => throw new InvalidOperationException(), reserveAdmission: _ => new BrokenAdmission());
+        var input = new LearningExplanationInput("know", "know", LearningLanguage.English, VocabularyEntryKind.Word, "Let me know.", [new(7, 4)]);
+        var error = await Assert.ThrowsAsync<LearningExplanationException>(() => service.GenerateAsync(input, "cleanup", refresh: true));
+        Assert.Equal(LearningExplanationFailure.ProviderFailure, error.Failure);
+        await service.DisposeAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+    }
+
+    [Fact]
     public async Task RefreshWorkerScheduledLateCannotReserveAfterNewerRefresh()
     {
         var blocked = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         using var release = new ManualResetEventSlim();
         CancellationTokenSource? current = null; int reservations = 0, factories = 0;
-        ILearningExplanationAdmission Reserve()
+        ILearningExplanationAdmission Reserve(CancellationToken caller)
         {
+            caller.ThrowIfCancellationRequested();
             current?.Cancel(); current = new CancellationTokenSource();
             return new Admission(current, Interlocked.Increment(ref reservations) == 1 ? () => { blocked.TrySetResult(); release.Wait(); } : null,
                 () => Interlocked.Increment(ref factories));
@@ -44,5 +56,11 @@ public sealed class LearningExplanationAdmissionTests
         public Task<LearningExplanationResult> GenerateAsync(LearningExplanationInput input, LearningLanguage language, int output, CancellationToken token) =>
             Task.FromResult(new LearningExplanationResult("new", "explanation"));
         public ValueTask DisposeAsync() => ValueTask.CompletedTask;
+    }
+    private sealed class BrokenAdmission : ILearningExplanationAdmission
+    {
+        public CancellationToken Token => CancellationToken.None;
+        public ILearningExplanationEngine CreateEngine(LearningModelSnapshot profile) => new Engine();
+        public void Dispose() => throw new InvalidOperationException("sensitive foreign message");
     }
 }

@@ -71,6 +71,16 @@ The speech settings owner still needs to record subsequent explicit speech selec
 checkpoint registers only its existing saved choice. Source maps describe this Windows settings
 envelope and do not imply Mac data compatibility.
 
+The Windows settings application compares the effective suggestion values and endpoint configuration
+before retiring the shared coordinator. Equivalent preferences and local-only model changes leave
+an in-flight endpoint request alone; endpoint destination, model or credential changes retire it.
+Completion status publications carry both the runtime selection epoch and a per-view operation
+sequence. Startup, tray, inline model list and welcome progress/results/failures discard obsolete
+callbacks, and endpoint or disabled startup does not publish a local-model warning. Custom filenames
+are bounded and stripped of control/format characters for display only; their stored IDs stay exact.
+These adaptations follow the frozen bootstrap/runtime ownership above and preserve the existing
+Windows coordinator and endpoint owners. Fake-driven coordinator and reordered-failure tests cover
+these transitions; they do not establish physical runtime or desktop behavior.
 ## Evidence and limits
 
 The Windows WPF test renders `ModelManagementView` at 720×640 with synthetic selected/unknown

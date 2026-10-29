@@ -45,6 +45,7 @@ public sealed class CompletionModelAdmission : ISuggestionEngine, IAsyncDisposab
     }
 
     public long Epoch { get { lock (_sync) return _epoch; } }
+    public long? LocalSelectionEpoch { get { lock (_sync) return !_closed && _local ? _epoch : null; } }
     /// <summary>Commit a short in-memory selection mutation only while the resolution epoch is current.
     /// The callback must not perform IO or reenter this owner.</summary>
     public bool CommitIfEpoch(long epoch, Action commit)
@@ -106,6 +107,7 @@ public sealed class CompletionModelAdmission : ISuggestionEngine, IAsyncDisposab
                 finally { _exclusive.Release(); }
             }
             catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested) { return false; }
+            catch (Exception) when (!IsCurrent(ticket)) { return false; }
         }, false, cancellationToken, ticket, preparation: true);
     }
 

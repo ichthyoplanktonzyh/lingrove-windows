@@ -52,12 +52,14 @@ public sealed class AppHost : IAsyncDisposable
     private readonly IKeyboardHook _hook;
     private readonly SuggestionEngineRouter _router;
     private readonly CompletionModelAdmission _completion;
+    private readonly SuggestionSettingsApplication _suggestionApplication;
     private readonly SynchronizationContext _ui;
     private readonly ILogger _logger;
     private readonly GhostOverlayWindow _macroPreview;
     private readonly SymSpellCorrector _spelling;
     private readonly HttpClient _learningHttpClient;
     private int _learningCredentialRevision;
+    private int _completionCredentialRevision;
     private bool _completionStarted;
     private volatile bool _shuttingDown;
     private CompletionModelSelection.PowerProfileState? _lastPowerSelection;
@@ -67,6 +69,7 @@ public sealed class AppHost : IAsyncDisposable
     /// <summary>Only an admitted current model is usable or presented as ready.</summary>
     public bool LocalModelReady => _completion.IsReady;
     public CotabbyModel? AdmittedLocalModel => _completion.ReadAdmitted(() => Runtime.ActiveModel);
+    public long? CompletionStatusEpoch => _shuttingDown ? null : _completion.LocalSelectionEpoch;
     public ModelDownloader Downloader { get; }
     public SettingsStore SettingsStore { get; }
     public AppSettings Settings { get; private set; }
@@ -221,6 +224,7 @@ public sealed class AppHost : IAsyncDisposable
             typos: new TypoCorrectionAdvisor(
                 _spelling, new SpellingLanguageResolver(), new WindowsSpellChecker(_spelling)),
             clipboard: _services.GetRequiredService<ClipboardTextReader>());
+        _suggestionApplication = new SuggestionSettingsApplication(Coordinator, _completion);
         Coordinator.InlineCaptureActive = () => EmojiPicker.IsCapturing || Macros.IsCapturing;
         EmojiPicker.CanCapture = Macros.CanCapture = Coordinator.IsAvailableIn;
         EmojiPicker.CommitKeyFor = Macros.CommitKeyFor = Coordinator.AcceptWordKeyFor;
@@ -259,7 +263,6 @@ public sealed class AppHost : IAsyncDisposable
     public void PersistSettings()
     {
         if (_shuttingDown) return;
-        WithdrawCompletion();
         ApplySettings();
         Settings.WordsAccepted = Coordinator.Metrics.WordsAccepted;
         SettingsStore.Save(Settings);
@@ -270,6 +273,13 @@ public sealed class AppHost : IAsyncDisposable
     {
         _learningCredentialRevision++;
         LearningPreview.ApplySettings(Settings, _learningCredentialRevision);
+    }
+
+    public void CompletionCredentialsChanged()
+    {
+        if (_shuttingDown) return;
+        _completionCredentialRevision++;
+        ApplySettings();
     }
 
     /// <summary>Restores every preference to its default. The chosen model and onboarding state stay.</summary>
@@ -285,6 +295,10 @@ public sealed class AppHost : IAsyncDisposable
         // An expired pause is dropped so the tray stops showing it.
         if (Settings.Pause?.IsActive(DateTimeOffset.Now) == false) Settings.Pause = null;
 
+        var suggestionSettings = Settings.ToSuggestionSettings();
+        var endpointSettings = EndpointSettings;
+        var transition = _suggestionApplication.Apply(suggestionSettings,
+            (endpointSettings, _completionCredentialRevision), LocalIdentity());
         var epoch = _completion.Epoch;
         var assignments = Settings.ModelAssignmentSnapshot();
         bool powerActive = Settings.Engine == EngineKind.Local && Settings.PowerModelSwitching;
@@ -295,7 +309,8 @@ public sealed class AppHost : IAsyncDisposable
         var power = powerChanged && powerActive ? PowerSourceModel(assignments, onBattery) : null;
         var nextId = CompletionModelSelection.ApplyPower(_lastPowerSelection, powerState, Settings.ActiveModelId, power?.Id, discoveryChanged);
         var desired = power is not null && nextId == power.Id ? power : ResolveMainModel(assignments);
-        var accepted = _completion.SelectIfEpoch(epoch, desired?.Id, Settings.Engine == EngineKind.Local && Settings.Enabled);
+        bool localEnabled = Settings.Engine == EngineKind.Local && Settings.Enabled;
+        var accepted = _completion.SelectIfEpoch(epoch, localEnabled ? desired?.Id : null, localEnabled);
         bool powerSelectionChanged = false;
         if (accepted is not null && _completion.CommitIfEpoch(accepted.Value.Epoch, () =>
         {
@@ -305,11 +320,11 @@ public sealed class AppHost : IAsyncDisposable
             if (Settings.ActiveModelId != nextId)
             { Settings.ActiveModelId = nextId; powerSelectionChanged = true; }
         }) && powerSelectionChanged) SaveAutomaticModelSelection();
-        Coordinator.Settings = Settings.ToSuggestionSettings();
+        _suggestionApplication.UpdateLocalIdentity(LocalIdentity());
         _router.UseEndpoint = Settings.Engine == EngineKind.Endpoint;
-        Endpoint.UpdateSettings(EndpointSettings);
+        if (transition.EndpointChanged) Endpoint.UpdateSettings(endpointSettings);
         // A cold local server would make the first suggestion wait for the model to load.
-        if (Settings.Engine == EngineKind.Endpoint) _ = Endpoint.PrewarmAsync();
+        if (Settings.Engine == EngineKind.Endpoint && transition.EndpointChanged) _ = Endpoint.PrewarmAsync();
         EmojiPicker.Enabled = Settings.EmojiPickerEnabled;
         EmojiPicker.PreferredSkinTone = Settings.EmojiSkinTone;
         EmojiPicker.PreferredGender = Settings.EmojiGender;
@@ -319,7 +334,7 @@ public sealed class AppHost : IAsyncDisposable
         Overlay.ApplyAppearance(Settings);
         _macroPreview.ApplyAppearance(Settings);
         LaunchAtLogin.Set(Settings.LaunchAtLogin);
-        LoadSelectedModelIfChanged();
+        if (!_completion.IsReady) LoadSelectedModelIfChanged();
         SettingsApplied?.Invoke();
     }
 
@@ -343,6 +358,22 @@ public sealed class AppHost : IAsyncDisposable
     {
         _completion.Withdraw();
         Coordinator.InvalidateSession();
+    }
+
+    private sealed record LocalSelectionIdentity(string? ActiveId, bool ActiveEligible, bool PowerEnabled, bool OnBattery,
+        string? BatteryId, bool BatteryEligible, string? PluggedId, bool PluggedEligible);
+    private LocalSelectionIdentity LocalIdentity()
+    {
+        bool Eligible(string? id)
+        {
+            if (string.IsNullOrEmpty(id)) return true;
+            return AppSettings.CompletionFilenameForId(id) is { } filename
+                && Settings.IsLocalModelCandidate(filename, LocalModelTask.Completion);
+        }
+        bool power = Settings.PowerModelSwitching;
+        return new(Settings.ActiveModelId, Eligible(Settings.ActiveModelId), power, power && PowerStatus.IsOnBattery,
+            power ? Settings.BatteryModelId : null, power && Eligible(Settings.BatteryModelId),
+            power ? Settings.PluggedInModelId : null, power && Eligible(Settings.PluggedInModelId));
     }
 
     /// <summary>Loads the selected model if it is already on disk. Never downloads.</summary>
@@ -413,7 +444,7 @@ public sealed class AppHost : IAsyncDisposable
         if (_completion.IsPreparing && !profileNeedsSelection) return;
         var next = _completion.IsPreparing ? Settings.ActiveModelId : CompletionModelSelection.Reconcile(Settings.ActiveModelId, installed);
         if (string.Equals(next, Settings.ActiveModelId, StringComparison.Ordinal) && !profileNeedsSelection) return;
-        WithdrawCompletion();
+        if (Settings.Engine == EngineKind.Local && Settings.Enabled) WithdrawCompletion();
         Settings.ActiveModelId = next;
         ApplySettings(discoveryChanged: true);
         SaveAutomaticModelSelection();

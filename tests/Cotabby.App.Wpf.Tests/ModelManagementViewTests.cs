@@ -79,6 +79,12 @@ public sealed class ModelManagementViewTests(WpfDispatcher dispatcher)
         var detailText = Assert.IsType<TextBlock>(disclosure.Content).Text;
         Assert.True(detailText.Length < 350); Assert.DoesNotContain('\u202e', detailText);
         Assert.Equal(source, settings.LocalModelSourcesValue["custom.gguf"]);
+        var filename = "safe\u202etxt.gguf";
+        var custom = new CotabbyModel { Id = "custom:" + filename, FileName = filename, DisplayName = filename, DownloadUrl = "", ApproxSizeBytes = 1, ContextLength = 4096 };
+        var choice = Assert.Single(EnginePane.PowerChoices([custom], custom.Id), item => item.Id == custom.Id);
+        Assert.Equal(custom.Id, choice.Id); Assert.DoesNotContain('\u202e', choice.Label);
+        Assert.DoesNotContain('\u202e', ModelDisplayText.Name(filename));
+        Assert.True(ModelDisplayText.Safe(string.Concat(Enumerable.Repeat("😀", 100)), maximumUtf16: 120).Length <= 120);
         Assert.Equal("Lingrove Base · not compatible with this task", ModelDisplayText.Unavailable("gemma-4-E2B.i1-Q6_K.gguf", LocalModelTask.Translation));
     });
 

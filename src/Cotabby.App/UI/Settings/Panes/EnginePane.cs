@@ -28,7 +28,7 @@ internal static class EnginePane
         context.OnRefresh(() =>
         {
             var active = context.Host.AdmittedLocalModel;
-            runtimeStatus.Set(active is not null, active is not null ? $"Ready · {active.DisplayName}" : "Not loaded");
+            runtimeStatus.Set(active is not null, active is not null ? $"Ready · {ModelDisplayText.Name(active.FileName)}" : "Not loaded");
         });
 
         return new SettingsPane("Engine & Model", "\uE950", "Choose the engine and models",
@@ -115,7 +115,7 @@ internal static class EnginePane
     {
         var choices = new List<PowerChoice> { new("", "Keep current model", true) };
         choices.AddRange(models.Select(model => new PowerChoice(ModelCatalog.MatchesId(selected, model.Id) ? selected : model.Id,
-            ModelDisplayText.Safe(model.DisplayName), true)));
+            ModelDisplayText.Name(model.FileName), true)));
         if (selected.Length > 0 && !choices.Any(choice => choice.Id == selected))
         {
             var filename = AppSettings.CompletionFilenameForId(selected) ?? selected;

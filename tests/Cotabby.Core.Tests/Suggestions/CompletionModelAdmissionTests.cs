@@ -95,6 +95,37 @@ public sealed class CompletionModelAdmissionTests
     }
 
     [Fact]
+    public async Task ObsoleteFailureCannotPublishOverNewerReadyStatus()
+    {
+        await using var owner = new CompletionModelAdmission(new Engine());
+        var gate = new CompletionStatusGate();
+        var a = owner.Select("A", true); var oldStatus = gate.Begin(a.Epoch);
+        var started = Signal<bool>(); var release = Signal<bool>();
+        var old = Prepare(owner, a, async () => { started.SetResult(true); await release.Task; throw new IOException("obsolete failure"); });
+        await started.Task.WaitAsync(Timeout);
+        var b = owner.Select("B", true); var newStatus = gate.Begin(b.Epoch);
+        string status = "loading B";
+        var next = Prepare(owner, b);
+        release.SetResult(true);
+        if (await old.WaitAsync(Timeout) == false && gate.IsCurrent(oldStatus, owner.LocalSelectionEpoch)) status = "old failure";
+        Assert.True(await next.WaitAsync(Timeout));
+        if (gate.IsCurrent(newStatus, owner.LocalSelectionEpoch)) status = "ready B";
+        Assert.Equal("ready B", status);
+        Assert.False(gate.IsCurrent(oldStatus, owner.LocalSelectionEpoch));
+        owner.Select(null, false);
+        Assert.False(gate.IsCurrent(newStatus, owner.LocalSelectionEpoch));
+        Assert.Null(owner.LocalSelectionEpoch);
+    }
+
+    [Fact]
+    public void StatusSequenceRejectsEarlierOperationsWithinTheSameEpoch()
+    {
+        var gate = new CompletionStatusGate();
+        var first = gate.Begin(42); var second = gate.Begin(42);
+        Assert.False(gate.IsCurrent(first, 42)); Assert.True(gate.IsCurrent(second, 42));
+        gate.Invalidate(); Assert.False(gate.IsCurrent(second, 42));
+    }
+    [Fact]
     public async Task FailedSwitchNeverExposesAnOldStillReadyEngine()
     {
         var engine = new Engine(); await using var owner = new CompletionModelAdmission(engine);

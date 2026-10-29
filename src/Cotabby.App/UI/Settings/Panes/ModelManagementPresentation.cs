@@ -12,21 +12,22 @@ internal static class ModelDisplayText
     internal static string Name(string filename) => LocalModelCatalog.Descriptor(filename)?.Name ?? Safe(filename);
     internal static string Unavailable(string filename, LocalModelTask task) => Name(filename) +
         (LocalModelTaskPolicy.Supports(filename, task) ? " (file unavailable)" : " · not compatible with this task");
-    internal static string Safe(string? value)
+    internal static string Safe(string? value, int maximumScalars = MaximumScalars, int maximumUtf16 = 512)
     {
         if (string.IsNullOrEmpty(value)) return "";
         var result = new StringBuilder(); int index = 0, count = 0;
-        while (index < value.Length && count < MaximumScalars)
+        while (index < value.Length && count < maximumScalars && result.Length < maximumUtf16)
         {
             var status = Rune.DecodeFromUtf16(value.AsSpan(index), out var rune, out int consumed);
             if (status != System.Buffers.OperationStatus.Done) { result.Append('\uFFFD'); index++; count++; continue; }
+            if (result.Length + rune.Utf16SequenceLength > maximumUtf16) break;
             index += consumed; count++;
             var category = Rune.GetUnicodeCategory(rune);
             if (category is UnicodeCategory.Control or UnicodeCategory.Format or UnicodeCategory.LineSeparator or UnicodeCategory.ParagraphSeparator)
                 result.Append(' ');
             else result.Append(rune.ToString());
         }
-        if (index < value.Length) result.Append('…');
+        if (index < value.Length && result.Length < maximumUtf16) result.Append('…');
         return result.ToString();
     }
 }

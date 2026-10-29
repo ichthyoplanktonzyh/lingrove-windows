@@ -5,6 +5,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using Cotabby.App.UI.Controls;
 using Cotabby.Core.Models;
+using Cotabby.Core.Suggestions;
 using Cotabby.Inference;
 
 namespace Cotabby.App.UI.Settings.Panes;
@@ -22,11 +23,14 @@ internal sealed class ModelList : StackPanel
     private string? _error;
     private TextBlock? _progressLabel;
     private ProgressBar? _progressBar;
+    private readonly CompletionStatusGate _statusGate = new();
+    private CompletionStatusGate.Token? _statusToken;
+    private bool _closed;
 
     public ModelList(SettingsContext context)
     {
         _context = context;
-        context.Closed += () => _loading?.Cancel();
+        context.Closed += () => { _closed = true; _statusGate.Invalidate(); CancelLoading(); };
         context.OnRefresh(Rebuild);
     }
 
@@ -34,6 +38,10 @@ internal sealed class ModelList : StackPanel
 
     private void Rebuild()
     {
+        if (_statusToken is { } token && !_statusGate.IsCurrent(token, _context.Host.CompletionStatusEpoch))
+        {
+            _statusGate.Invalidate(); _statusToken = null; CancelLoading(); _loading = null; _progress = null; _error = null;
+        }
         Children.Clear();
         _progressLabel = null;
         _progressBar = null;
@@ -59,7 +67,7 @@ internal sealed class ModelList : StackPanel
         bool loadingThis = Busy && selected;
 
         var names = new StackPanel { VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 12, 0) };
-        names.Children.Add(new TextBlock { Text = ModelDisplayText.Safe(model.DisplayName), FontSize = 13, FontWeight = FontWeights.SemiBold });
+        names.Children.Add(new TextBlock { Text = ModelDisplayText.Name(model.FileName), FontSize = 13, FontWeight = FontWeights.SemiBold });
         var subtitle = Ui.Text(model.Subtitle, "Caption");
         subtitle.Margin = new Thickness(0, 2, 0, 0);
         names.Children.Add(subtitle);
@@ -149,34 +157,48 @@ internal sealed class ModelList : StackPanel
     {
         if (Busy) return;
         if (_context.Settings.ActiveModelId != model.Id) _context.Change(s => s.ActiveModelId = model.Id);
+        if (_context.Host.CompletionStatusEpoch is not { } epoch) return;
 
-        _loading = new CancellationTokenSource();
+        using var transfer = new CancellationTokenSource();
+        _loading = transfer;
+        var token = _statusGate.Begin(epoch); _statusToken = token;
         _progress = null;
         _error = null;
         Rebuild();
 
         var progress = new Progress<ModelDownloader.Progress>(update =>
         {
+            if (_closed || !ReferenceEquals(_loading, transfer) || !_statusGate.IsCurrent(token, _context.Host.CompletionStatusEpoch)) return;
             _progress = update;
             ShowProgress();
         });
         try
         {
-            await _context.Host.EnsureModelReadyAsync(progress, _loading.Token);
+            bool ready = await _context.Host.EnsureModelReadyAsync(progress, transfer.Token);
+            if (!ready && !_closed && _statusGate.IsCurrent(token, _context.Host.CompletionStatusEpoch))
+                _error = "The selected model is unavailable.";
         }
         catch (OperationCanceledException)
         {
         }
         catch (Exception ex)
         {
-            _error = ex.Message;
+            if (!_closed && _statusGate.IsCurrent(token, _context.Host.CompletionStatusEpoch)) _error = ModelDisplayText.Safe(ex.Message);
         }
         finally
         {
-            _loading = null;
-            // The runtime status rows read the new state on this refresh.
-            _context.Refresh();
+            if (ReferenceEquals(_loading, transfer))
+            {
+                _loading = null;
+                // The runtime status rows read the new state on this refresh.
+                if (!_closed) _context.Refresh();
+            }
         }
+    }
+
+    private void CancelLoading()
+    {
+        try { _loading?.Cancel(); } catch (ObjectDisposedException) { } catch (AggregateException) { }
     }
 
     private void ShowProgress()

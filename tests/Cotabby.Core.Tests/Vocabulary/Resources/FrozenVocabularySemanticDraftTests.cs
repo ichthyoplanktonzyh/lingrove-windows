@@ -6,9 +6,30 @@ namespace Cotabby.Core.Tests.Vocabulary.Resources;
 
 public sealed class FrozenVocabularySemanticDraftTests
 {
+    [Fact]
+    public void MeaningOrganizationMergesBothIndexesAndRejectsConflictTogether()
+    {
+        var category = Category("category"); var baseline = new F.VocabularyDocument { Classification = new() { Categories = [category] } }; var node = Node("meaning");
+        var editedSemantics = baseline.Semantics with { Nodes = [node] }; var membership = new VocabularyMeaningCategoryMembership(Guid.NewGuid(), node.Id, category.Id); var editedClassification = baseline.Classification with { Memberships = [membership] };
+        var other = Category("concurrent"); var live = baseline with { Classification = baseline.Classification with { Categories = [category, other] } };
+        var result = F.VocabularySemanticDraftPolicy.UpdateMeaningOrganization(live, editedSemantics, baseline.Semantics, editedClassification, baseline.Classification);
+        Assert.Equal(node, Assert.Single(result.Semantics.Nodes)); Assert.Equal(membership, Assert.Single(result.Classification.Memberships)); Assert.Equal(2, result.Classification.Categories.Count);
+        var changed = live with { Classification = live.Classification with { Categories = [category with { Definition = "other" }, other] } };
+        var proposed = editedClassification with { Categories = [category with { Definition = "mine" }] };
+        Assert.Throws<VocabularyException>(() => F.VocabularySemanticDraftPolicy.UpdateMeaningOrganization(changed, editedSemantics, baseline.Semantics, proposed, baseline.Classification));
+        Assert.Empty(changed.Semantics.Nodes);
+    }
     private static readonly F.SourceDate Time = new(814759445.1234567);
     private static F.VocabularyMeaningNode Node(string name) => new(Guid.NewGuid(), [new VocabularyMeaningLabel(name)]) { CreatedAt = Time, UpdatedAt = Time };
     private static VocabularyCategory Category(string name) => new(Guid.NewGuid(), VocabularyCategoryAxis.Content, [new VocabularyMeaningLabel(name)]);
+    [Fact]
+    public void MeaningDraftCarriesCategoryAndSensesInOneUnpublishedValue()
+    {
+        var category = Category("function") with { Axis = VocabularyCategoryAxis.Function }; var classification = new VocabularyClassificationIndex { Categories = [category] }; var sense = Guid.NewGuid();
+        var draft = new F.VocabularyMeaningDraft(new(), classification, [], categoryId: category.Id, senseId: sense);
+        Assert.Equal(VocabularyMeaningNodeKind.Function, draft.Original.Kind); var values = draft.Indexes("greet", "", draft.Original.Kind, Time);
+        Assert.Equal(sense, Assert.Single(values.Semantics.Mappings).SenseId); Assert.Equal(VocabularyMappingRelation.RealizesFunction, values.Semantics.Mappings.Single().Relation); Assert.Equal(category.Id, Assert.Single(values.Classification.Memberships).CategoryId); Assert.Empty(classification.Memberships);
+    }
     [Fact]
     public void IndependentRowsMergeAndConflictingRowRejectsWhileDatesStayExact()
     {

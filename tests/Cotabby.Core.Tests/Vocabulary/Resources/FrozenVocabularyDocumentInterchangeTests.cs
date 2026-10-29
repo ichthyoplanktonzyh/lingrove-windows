@@ -51,7 +51,7 @@ public sealed class FrozenVocabularyDocumentInterchangeTests
                 Assert.Null(decoded.ReviewTemplates); Assert.Null(decoded.Collections[0].Content);
                 Assert.Null(decoded.Collections[0].ReviewCards);
             }
-            var encoded = F.VocabularyDocumentCodec.Encode(decoded);
+            var encoded = F.VocabularyDocumentCodec.EncodeAt35b(decoded);
             using var actual = JsonDocument.Parse(encoded);
             Assert.True(JsonElement.DeepEquals(expected, actual.RootElement), test.GetProperty("id").GetString());
             var originalBits = Bits(input); Assert.Equal(originalBits, Bits(decoded));

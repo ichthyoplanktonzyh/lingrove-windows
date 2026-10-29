@@ -18,6 +18,14 @@ namespace Cotabby.App.Wpf.Tests;
 [Collection("WPF views")]
 public sealed class FrozenVocabularyNotebookWindowTests(WpfDispatcher dispatcher)
 {
+    [Fact]
+    public Task CurrentCatalogOutlineShowsUnexploredAndCategoryGuidance() => dispatcher.RunAsync(async () =>
+    {
+        await using var store = new FrozenVocabularyImportStore(FrozenVocabularySQLiteDatabase.CreateMemory, installBundledClassification: true); var window = new FrozenVocabularyNotebookWindow(store, new WindowsVocabularyWordListReader()); window.Show(); await window.LastOperation!;
+        Find<ComboBox>(window, "frozenNotebookOrganization").SelectedIndex = 1; window.UpdateLayout(); var show = Find<CheckBox>(window, "canonicalShowUnexplored"); show.IsChecked = true; show.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent)); window.UpdateLayout();
+        var list = FindByAutomation<ListBox>(window, "vocabularyMeaningList"); var row = list.Items.Cast<ListBoxItem>().First(x => x.Tag is VocabularyMeaningDestination { CategoryId: not null }); list.SelectedItem = row; window.UpdateLayout(); Assert.Contains(Descendants(window).OfType<TextBlock>(), x => x.Text.Contains("Unexplored", StringComparison.Ordinal)); Render(window, "latest-catalog-detail.png");
+        Assert.Equal(4, window.Session.Snapshot!.Document.Classification.Frameworks.Single().Version); window.Close();
+    });
     private static readonly SourceDate Time = new(1e20);
     [Fact]
     public Task RealStoreEmptyCreateSearchAndSelection() => dispatcher.RunAsync(async () =>
@@ -55,10 +63,10 @@ public sealed class FrozenVocabularyNotebookWindowTests(WpfDispatcher dispatcher
         Assert.Equal(2, window.Session.Entries.Count); Assert.Equal(3, window.Session.Snapshot!.Document.Catalog.Count);
         Assert.Single(window.Session.Snapshot.Document.Sources); Assert.Equal(Time, window.Session.Snapshot.Document.Catalog[0].CreatedAt);
         Find<ComboBox>(window, "frozenNotebookOrganization").SelectedIndex = 1; window.UpdateLayout();
-        var category = FindByAutomation<ListBox>(window, "vocabularyCategoryList");
-        var categoryRow = category.Items.Cast<ListBoxItem>().Single(x => x.Tag is string id && id.Equals(cat.Id.ToString(), StringComparison.OrdinalIgnoreCase)); category.SelectedItem = categoryRow; window.UpdateLayout();
-        Assert.Equal(cat.Id, Guid.Parse(window.Session.Category));
-        var meaning = FindByAutomation<ListBox>(window, "vocabularyMeaningList"); var row = meaning.Items.Cast<ListBoxItem>().Single(x => x.Tag is VocabularyMeaningDestination { NodeId: not null }); meaning.SelectedItem = row; window.UpdateLayout();
+        var meaning = FindByAutomation<ListBox>(window, "vocabularyMeaningList"); var categoryRow = meaning.Items.Cast<ListBoxItem>().Single(x => x.Tag is VocabularyMeaningDestination { CategoryId: var id } && id == cat.Id); meaning.SelectedItem = categoryRow; window.UpdateLayout();
+        Assert.Equal(cat.Id, window.Session.Destination!.CategoryId);
+        Render(window, "latest-category-detail.png");
+        meaning = FindByAutomation<ListBox>(window, "vocabularyMeaningList"); var row = meaning.Items.Cast<ListBoxItem>().Single(x => x.Tag is VocabularyMeaningDestination { NodeId: not null }); meaning.SelectedItem = row; window.UpdateLayout();
         Assert.Equal(node.Id, window.Session.Destination!.NodeId); Assert.Contains(Descendants(window).OfType<TextBlock>(), t => t.Text == "河岸");
         Assert.Contains(Descendants(window).OfType<TextBox>(), t => t.Text == "Land beside a river" && t.IsReadOnly);
         window.SetPreferredLanguages([LearningLanguage.English]); window.UpdateLayout();
@@ -75,7 +83,6 @@ public sealed class FrozenVocabularyNotebookWindowTests(WpfDispatcher dispatcher
         Assert.Equal(bank.Senses[0].Id, window.Session.Destination!.SenseId); Assert.NotNull(Find<Button>(window, "frozenMeaningBack"));
         Render(window, "frozen-meaning-sense.png"); Find<Button>(window, "frozenMeaningBack").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); window.UpdateLayout();
         Assert.Equal(node.Id, window.Session.Destination!.NodeId); Assert.Null(window.Session.Destination.SenseId);
-        Find<Button>(window, "frozenToggleCategories").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); window.UpdateLayout();
         Assert.DoesNotContain(Descendants(window), x => AutomationProperties.GetAutomationId(x) == "vocabularyCategoryList");
         Assert.Equal(node.Id, window.Session.Destination!.NodeId);
         Find<TextBox>(window, "frozenNotebookSearch").Text = "river"; Assert.Single(window.Session.MeaningItems);

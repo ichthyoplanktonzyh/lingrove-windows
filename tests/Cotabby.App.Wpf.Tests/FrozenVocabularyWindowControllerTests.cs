@@ -15,7 +15,7 @@ namespace Cotabby.App.Wpf.Tests;
 [Collection("WPF views")]
 public sealed class FrozenVocabularyWindowControllerTests(WpfDispatcher dispatcher)
 {
-    private sealed class Preferences : IVocabularyNotebookListPreferences { public string Density { get; set; } = "detailed"; }
+    private sealed class Preferences : IVocabularyNotebookListPreferences { public string Density { get; set; } = "detailed"; public bool ShowUnexplored { get; set; } }
     [Fact]
     public Task LazyHideReopenAndExactShowPreservePreferencesAndBorrowedOwner() => dispatcher.RunAsync(async () =>
     {
@@ -27,6 +27,7 @@ public sealed class FrozenVocabularyWindowControllerTests(WpfDispatcher dispatch
         Assert.Null(controller.Window); Assert.Equal(0, tracked.Reads); Assert.Equal(0, tracked.Subscriptions);
         controller.Show(); var window = controller.Window!; await window.LastOperation!;
         Assert.True(window.IsVisible); Assert.True(window.Session.Detailed); Assert.Equal(1, tracked.Subscriptions);
+        Find<ComboBox>(window, "frozenNotebookOrganization").SelectedIndex = 1; window.UpdateLayout(); var unexplored = Find<CheckBox>(window, "canonicalShowUnexplored"); Assert.False(unexplored.IsChecked); unexplored.IsChecked = true; unexplored.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent)); Assert.True(prefs.ShowUnexplored); Find<ComboBox>(window, "frozenNotebookOrganization").SelectedIndex = 0;
         Find<TextBox>(window, "frozenNotebookSearch").Text = "other"; Find<ComboBox>(window, "frozenNotebookLanguage").SelectedIndex = 3;
         Find<ComboBox>(window, "frozenNotebookDensity").SelectedIndex = 0; Assert.Equal("compact", prefs.Density);
         window.Close(); Assert.False(window.IsVisible); Assert.True(window.Session.Active);

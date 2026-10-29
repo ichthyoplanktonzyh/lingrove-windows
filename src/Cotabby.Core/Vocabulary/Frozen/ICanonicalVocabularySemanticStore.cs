@@ -8,3 +8,9 @@ public interface ICanonicalVocabularySemanticStore
     Task<FrozenVocabularyImportSnapshot> UpdateSemanticsAsync(VocabularySemanticIndex edited, VocabularySemanticIndex baseline, CancellationToken cancellationToken = default);
     Task<FrozenVocabularyImportSnapshot> UpdateClassificationAsync(VocabularyClassificationIndex edited, VocabularyClassificationIndex baseline, CancellationToken cancellationToken = default);
 }
+
+/// <summary>Atomic meaning and directory draft on the same canonical owner.</summary>
+public interface ICanonicalVocabularyMeaningOrganizationStore
+{
+    Task<FrozenVocabularyImportSnapshot> UpdateMeaningOrganizationAsync(VocabularySemanticIndex editedSemantics, VocabularySemanticIndex semanticBaseline, VocabularyClassificationIndex editedClassification, VocabularyClassificationIndex classificationBaseline, CancellationToken cancellationToken = default);
+}

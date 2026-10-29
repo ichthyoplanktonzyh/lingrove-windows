@@ -9,6 +9,14 @@ namespace Cotabby.Core.Tests.Vocabulary.Resources;
 
 public sealed class FrozenClassificationInstallerTests
 {
+    [Fact]
+    public void CurrentCatalogPreservesSourceBytesAndInstallsGuidance()
+    {
+        using var stream = typeof(R.VocabularyClassificationCatalog).Assembly.GetManifestResourceStream(R.VocabularyClassificationCatalog.CurrentResourceName)!; using var buffer = new MemoryStream(); stream.CopyTo(buffer); var bytes = buffer.ToArray();
+        Assert.Equal("6ce156c0736c8a23373ace9cd56e81a26f24843c", Convert.ToHexString(SHA1.HashData([.. Encoding.ASCII.GetBytes($"blob {bytes.Length}\0"), .. bytes])).ToLowerInvariant());
+        var catalog = R.VocabularyClassificationCatalog.CurrentBundled(); Assert.Equal(4, catalog.Version); var (index, installed) = catalog.Install(new(), []); Assert.True(installed); Assert.Contains(index.Categories, x => x.References.Count > 0 && x.Localizations.Count > 0);
+        string[] locales = ["en", "zh-Hans", "zh-Hant", "ja", "ko", "fr", "de", "es", "pt-BR", "it", "ru", "ar", "hi", "id", "tr"]; foreach (var category in index.Categories) { Assert.Equal(locales.Order(), category.Localizations.Select(x => x.Language).Order()); Assert.All(category.Localizations, value => { Assert.False(string.IsNullOrEmpty(value.Name)); Assert.False(string.IsNullOrEmpty(value.Definition)); Assert.False(string.IsNullOrEmpty(value.ScopeNote)); }); }
+    }
     private static R.VocabularyClassificationCatalog Catalog(long version, bool child = true) => new()
     {
         Key = "test.core", Version = version, Authorship = "Fixture", Categories = child

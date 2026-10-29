@@ -13,6 +13,27 @@ namespace Cotabby.App.Wpf.Tests;
 [Collection("WPF views")]
 public sealed class FrozenVocabularyCategoryUiTests(WpfDispatcher dispatcher)
 {
+    [Fact]
+    public Task LatestNestedCategoryIsDetachedAndConcurrentMembershipSurvivesSave() => dispatcher.RunAsync(async () =>
+    {
+        await using var store = new FrozenVocabularyImportStore(FrozenVocabularySQLiteDatabase.CreateMemory()); var initial = await store.ReadAsync(); var node = new VocabularyMeaningNode(Guid.NewGuid(), [new R.VocabularyMeaningLabel("Meaning")]); await store.UpdateSemanticsAsync(initial.Document.Semantics with { Nodes = [node] }, initial.Document.Semantics);
+        var snapshot = await store.ReadAsync(); var a = new R.VocabularyCategory(Guid.NewGuid(), R.VocabularyCategoryAxis.Content, [new R.VocabularyMeaningLabel("A")]); var b = new R.VocabularyCategory(Guid.NewGuid(), R.VocabularyCategoryAxis.Function, [new R.VocabularyMeaningLabel("B")]); var existing = new R.VocabularyMeaningCategoryMembership(Guid.NewGuid(), node.Id, a.Id);
+        var saved = await store.UpdateClassificationAsync(snapshot.Document.Classification with { Categories = [a, b], Memberships = [existing] }, snapshot.Document.Classification); var baseline = saved.Document.Classification;
+        var picker = new FrozenVocabularyDraftPickerWindow(store, baseline, [], new HashSet<Guid> { a.Id }, R.VocabularyCategoryAxis.Content, commit: async (directory, ids) => { await store.UpdateClassificationAsync(VocabularyClassificationFormPolicy.SelectMemberships(directory, node.Id, ids), baseline); }); picker.Show();
+        _ = picker.Dispatcher.BeginInvoke(() => { var editor = Application.Current.Windows.OfType<FrozenVocabularyCategoryEditorWindow>().Single(); Find<TextBox>(editor, "categoryName").Text = "New"; Find<Button>(editor, "classificationSave").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); });
+        Find<Button>(picker, "meaningDraftNewCategory").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); await Task.Yield(); var live = (await store.ReadAsync()).Document.Classification; Assert.Equal(2, live.Categories.Count);
+        var concurrent = new R.VocabularyMeaningCategoryMembership(Guid.NewGuid(), node.Id, b.Id); await store.UpdateClassificationAsync(live with { Memberships = live.Memberships.Append(concurrent).ToArray() }, live);
+        Find<Button>(picker, "meaningDraftPickerSave").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); for (int i = 0; i < 200 && picker.IsVisible; i++) await Task.Delay(10); Assert.False(picker.IsVisible); await picker.RetireAsync(); var result = (await store.ReadAsync()).Document.Classification;
+        Assert.Equal(3, result.Categories.Count); Assert.Contains(result.Memberships, x => x.Id == concurrent.Id); Assert.Contains(result.Memberships, x => x.CategoryId == a.Id); Assert.Equal(3, result.Memberships.Count);
+    });
+    [Fact]
+    public Task LatestBuiltInRestoreRemovesLocalOverlayWithoutChangingSourceGuidance() => dispatcher.RunAsync(async () =>
+    {
+        var framework = new R.VocabularyClassificationFramework(Guid.NewGuid(), "catalog", 4); var category = new R.VocabularyCategory(Guid.NewGuid(), R.VocabularyCategoryAxis.Content, [new R.VocabularyMeaningLabel("Original")]) { FrameworkId = framework.Id, Key = "original", Examples = [new("example", "en")], Localizations = [new("en", "Original", "Definition")] };
+        var db = FrozenVocabularySQLiteDatabase.CreateMemory(); db.Write(new() { Classification = new() { Frameworks = [framework], Categories = [category], Overrides = [new(category.Id) { Localizations = [new("en", Name: "Local")], IsHidden = true }] } }, new(), 0); await using var store = new FrozenVocabularyImportStore(db); var baseline = (await store.ReadAsync()).Document.Classification;
+        var form = new FrozenVocabularyCategoryEditorWindow(store, baseline, [], category, currentRules: true); form.Show(); Assert.Equal("Local", Find<TextBox>(form, "categoryName").Text); Find<Button>(form, "categoryRestoreDefaults").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); Assert.Equal("Original", Find<TextBox>(form, "categoryName").Text); Find<Button>(form, "classificationSave").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); await form.LastOperation!; await form.RetireAsync();
+        var saved = (await store.ReadAsync()).Document.Classification; Assert.Empty(saved.Overrides); Assert.Equal(category, Assert.Single(saved.Categories));
+    });
     private sealed class HeldStore(ICanonicalVocabularySemanticStore inner) : ICanonicalVocabularySemanticStore
     {
         internal readonly TaskCompletionSource Written = new(TaskCreationOptions.RunContinuationsAsynchronously), Gate = new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -49,9 +70,9 @@ public sealed class FrozenVocabularyCategoryUiTests(WpfDispatcher dispatcher)
         var window = new FrozenVocabularyNotebookWindow(store, new WindowsVocabularyWordListReader()); window.Show(); await window.LastOperation!; window.Session.MeaningMode = true; window.Session.Destination = new(VocabularyMeaningDestinationKind.Node, node.Id); window.Session.Refresh();
         _ = window.Dispatcher.BeginInvoke(() =>
         {
-            var sheet = Application.Current.Windows.OfType<FrozenVocabularyMeaningCategoryWindow>().Single(); var search = Find<TextBox>(sheet, "categoryMembershipSearch"); search.Text = "newly"; sheet.UpdateLayout();
-            var check = Descendants(sheet).OfType<CheckBox>().Single(c => (string?)c.Content == "Newly selected"); check.IsChecked = true; search.Text = ""; sheet.UpdateLayout();
-            Assert.True(Descendants(sheet).OfType<CheckBox>().Single(c => (string?)c.Content == "Newly selected").IsChecked); Find<Button>(sheet, "classificationSave").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            var sheet = Application.Current.Windows.OfType<FrozenVocabularyDraftPickerWindow>().Single(); var search = Find<TextBox>(sheet, "meaningDraftPickerSearch"); search.Text = "newly"; sheet.UpdateLayout();
+            var check = Descendants(sheet).OfType<CheckBox>().Single(c => (string?)c.Content == "Newly selected"); check.IsChecked = true; check.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent)); search.Text = ""; sheet.UpdateLayout();
+            Assert.True(Descendants(sheet).OfType<CheckBox>().Single(c => (string?)c.Content == "Newly selected").IsChecked); Find<Button>(sheet, "meaningDraftPickerSave").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         });
         Find<Button>(window, "canonicalCategorizeMeaning").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); await window.LastOperation!; var result = (await store.ReadAsync()).Document.Classification;
         Assert.Equal(2, result.Memberships.Count); Assert.Equal(R.VocabularySemanticStatus.Confirmed, result.Memberships.Single(m => m.Id == proposal.Id).Provenance.Status); Assert.Contains(result.Memberships, m => m.CategoryId == b.Id && m.NodeId == node.Id); window.Close();
@@ -120,7 +141,7 @@ public sealed class FrozenVocabularyCategoryUiTests(WpfDispatcher dispatcher)
         await using var store = new FrozenVocabularyImportStore(FrozenVocabularySQLiteDatabase.CreateMemory()); var before = await store.ReadAsync(); var node = new VocabularyMeaningNode(Guid.NewGuid(), [new R.VocabularyMeaningLabel("Meaning")]); await store.UpdateSemanticsAsync(before.Document.Semantics with { Nodes = [node] }, before.Document.Semantics);
         var held = new HeldOwner(store, store); var window = new FrozenVocabularyNotebookWindow(held, new WindowsVocabularyWordListReader(), hideOnClose: true); window.Show(); await window.LastOperation!; window.Session.MeaningMode = true; window.Session.Destination = new(VocabularyMeaningDestinationKind.Node, node.Id); window.Session.Refresh();
         var done = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-        _ = window.Dispatcher.BeginInvoke(() => { var sheet = Application.Current.Windows.OfType<FrozenVocabularyMeaningCategoryWindow>().Single(); _ = sheet.Dispatcher.BeginInvoke(async () => { try { var child = Application.Current.Windows.OfType<FrozenVocabularyCategoryEditorWindow>().Single(); Find<TextBox>(child, "categoryName").Text = "New"; Find<Button>(child, "classificationSave").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); await held.Written.Task; var retirement = window.RetireAsync(); Assert.False(retirement.IsCompleted); Assert.Equal(0, held.Unsubscribed); held.Gate.SetResult(); await retirement; done.SetResult(); } catch (Exception e) { done.SetException(e); } }); Find<Button>(sheet, "membershipNewCategory").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); });
+        _ = window.Dispatcher.BeginInvoke(() => { var sheet = Application.Current.Windows.OfType<FrozenVocabularyDraftPickerWindow>().Single(); _ = sheet.Dispatcher.BeginInvoke(() => { var child = Application.Current.Windows.OfType<FrozenVocabularyCategoryEditorWindow>().Single(); Find<TextBox>(child, "categoryName").Text = "New"; Find<Button>(child, "classificationSave").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); }); Find<Button>(sheet, "meaningDraftNewCategory").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); _ = sheet.Dispatcher.BeginInvoke(async () => { try { Find<Button>(sheet, "meaningDraftPickerSave").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); await held.Written.Task; var retirement = window.RetireAsync(); Assert.False(retirement.IsCompleted); Assert.Equal(0, held.Unsubscribed); held.Gate.SetResult(); await retirement; done.SetResult(); } catch (Exception e) { done.SetException(e); } }); });
         Find<Button>(window, "canonicalCategorizeMeaning").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); await done.Task; Assert.Equal(1, held.Unsubscribed); Assert.Single((await store.ReadAsync()).Document.Classification.Categories);
     });
     [Fact]

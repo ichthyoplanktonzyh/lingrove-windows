@@ -18,7 +18,7 @@ public partial class VocabularyNotebookWindow
     private VocabularyEntry? _lastSelectedEntry;
     private bool IsDetailedList => _listPreferences.Density == "detailed";
     private sealed class TransientListPreferences : IVocabularyNotebookListPreferences
-    { public string Density { get; set; } = "compact"; }
+    { public string Density { get; set; } = "compact"; public bool ShowUnexplored { get; set; } }
     private void OnListDensity(object sender, RoutedEventArgs args)
     {
         if (_retired || _presenting || !IsInitialized) return;

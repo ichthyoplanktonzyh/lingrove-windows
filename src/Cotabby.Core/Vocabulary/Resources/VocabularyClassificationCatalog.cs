@@ -18,8 +18,9 @@ public sealed record VocabularyClassificationCatalog
     [JsonRequired] public string Authorship { get; init; } = "";
     [JsonRequired] public IReadOnlyList<VocabularyClassificationCatalogReference> References { get => _references; init => _references = CollectionValues.List(value ?? throw new JsonException("Catalog references cannot be null.")); }
     [JsonRequired] public IReadOnlyList<VocabularyClassificationCatalogCategory> Categories { get => _categories; init => _categories = CollectionValues.List(value ?? throw new JsonException("Catalog categories cannot be null.")); }
-    public const int MaximumCatalogBytes = 1_048_576;
+    public const int MaximumCatalogBytes = 4_194_304;
     public const string ResourceName = "Cotabby.Core.Vocabulary.Resources.VocabularyClassificationCatalog.json";
+    public const string CurrentResourceName = "Cotabby.Core.Vocabulary.Resources.VocabularyClassificationCatalog.3b.json";
 
     /// <summary>Only the versioned catalog manifest is decoded here, never an archive graph.</summary>
     public static VocabularyClassificationCatalog Decode(ReadOnlySpan<byte> bytes)
@@ -29,6 +30,7 @@ public sealed record VocabularyClassificationCatalog
         {
             var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase, PropertyNameCaseInsensitive = false, MaxDepth = 32 };
             options.Converters.Add(new ExactAxisConverter());
+            options.Converters.Add(new ExactRelationshipConverter());
             options.Converters.Add(new VocabularyPayloadCodec.FoundationInt64Converter());
             var catalog = JsonSerializer.Deserialize<VocabularyClassificationCatalog>(bytes, options) ?? throw VocabularyClassificationPolicy.Invalid();
             if (!VocabularyClassificationPolicy.Fits(catalog.Authorship, 16_384) || catalog.References.Count > 256
@@ -64,9 +66,16 @@ public sealed record VocabularyClassificationCatalog
                 _ => throw new JsonException(),
             });
     }
-    public static VocabularyClassificationCatalog Bundled()
+    private sealed class ExactRelationshipConverter : JsonConverter<VocabularyCategoryReferenceRelationship>
     {
-        using var stream = typeof(VocabularyClassificationCatalog).Assembly.GetManifestResourceStream(ResourceName)
+        public override VocabularyCategoryReferenceRelationship Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => reader.TokenType == JsonTokenType.String ? reader.GetString() switch { "adapted" => VocabularyCategoryReferenceRelationship.Adapted, "combined" => VocabularyCategoryReferenceRelationship.Combined, "narrower" => VocabularyCategoryReferenceRelationship.Narrower, _ => throw new JsonException() } : throw new JsonException();
+        public override void Write(Utf8JsonWriter writer, VocabularyCategoryReferenceRelationship value, JsonSerializerOptions options) => writer.WriteStringValue(value switch { VocabularyCategoryReferenceRelationship.Adapted => "adapted", VocabularyCategoryReferenceRelationship.Combined => "combined", VocabularyCategoryReferenceRelationship.Narrower => "narrower", _ => throw new JsonException() });
+    }
+    public static VocabularyClassificationCatalog Bundled() => LoadResource(ResourceName);
+    public static VocabularyClassificationCatalog CurrentBundled() => LoadResource(CurrentResourceName);
+    private static VocabularyClassificationCatalog LoadResource(string resourceName)
+    {
+        using var stream = typeof(VocabularyClassificationCatalog).Assembly.GetManifestResourceStream(resourceName)
             ?? throw new VocabularyException(VocabularyFailure.InvalidArchive);
         using var bytes = new MemoryStream();
         var buffer = new byte[8192]; int read;
@@ -107,7 +116,7 @@ public sealed record VocabularyClassificationCatalog
             categories.Add(new VocabularyCategory(Identifier(seed), category.Axis,
                 [new VocabularyMeaningLabel(category.English) { Id = Identifier(seed + ".en"), Language = LearningLanguage.English },
                  new VocabularyMeaningLabel(category.Chinese) { Id = Identifier(seed + ".zh"), Language = LearningLanguage.Chinese }])
-                { Definition = category.Definition, FrameworkId = frameworkId, Key = category.Key,
+                { Definition = category.Definition, Examples = category.Examples ?? [], ScopeNote = category.ScopeNote ?? "", References = category.References ?? [], Localizations = category.Localizations ?? [], FrameworkId = frameworkId, Key = category.Key,
                   Provenance = new() { Origin = VocabularySemanticOrigin.Imported, Status = VocabularySemanticStatus.Confirmed, Source = $"Lingrove classification catalog {Version}" } });
         }
         categories.AddRange(retired);
@@ -131,5 +140,9 @@ public sealed record VocabularyClassificationCatalogCategory
     [JsonRequired] public required string English { get; init; }
     [JsonRequired] public required string Chinese { get; init; }
     [JsonRequired] public string Definition { get; init; } = "";
+    public IReadOnlyList<VocabularyCategoryExample>? Examples { get; init; }
+    public string? ScopeNote { get; init; }
+    public IReadOnlyList<VocabularyCategoryReference>? References { get; init; }
+    public IReadOnlyList<VocabularyCategoryLocalization>? Localizations { get; init; }
     [JsonRequired] public IReadOnlyList<string> Parents { get => _parents; init => _parents = CollectionValues.List(value ?? throw new JsonException("Category parents cannot be null.")); }
 }

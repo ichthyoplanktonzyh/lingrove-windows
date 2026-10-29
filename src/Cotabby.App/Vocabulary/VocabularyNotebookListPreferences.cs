@@ -8,6 +8,7 @@ namespace Cotabby.App.Vocabulary;
 internal interface IVocabularyNotebookListPreferences
 {
     string Density { get; set; }
+    bool ShowUnexplored { get; set; }
 }
 
 /// <summary>AppHost owns this adapter beside its other notebook preferences. Resolving settings
@@ -15,6 +16,11 @@ internal interface IVocabularyNotebookListPreferences
 /// inference settings. As with Mac AppStorage, only the exact "detailed" value enables detail.</summary>
 internal sealed class VocabularyNotebookListPreferences(Func<AppSettings> current, Action persist) : IVocabularyNotebookListPreferences
 {
+    public bool ShowUnexplored
+    {
+        get => current().VocabularyShowsUnexplored;
+        set { current().VocabularyShowsUnexplored = value; try { persist(); } catch (Exception error) when (error is IOException or UnauthorizedAccessException) { } }
+    }
     public string Density
     {
         get => current().VocabularyListDensity;

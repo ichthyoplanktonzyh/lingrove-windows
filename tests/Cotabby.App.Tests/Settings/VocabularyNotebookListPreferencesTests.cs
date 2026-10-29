@@ -7,6 +7,16 @@ namespace Cotabby.App.Tests.Settings;
 public sealed class VocabularyNotebookListPreferencesTests
 {
     [Fact]
+    public void UnexploredUsesOriginalKeyAndDoesNotApplyModelSettings()
+    {
+        foreach (string raw in new[] { "null", "\"true\"", "42", "false", "true" })
+        {
+            var current = SettingsStore.Parse("{\"Enabled\":false,\"vocabularyShowsUnexplored\":" + raw + "}"); int writes = 0;
+            var preferences = new VocabularyNotebookListPreferences(() => current, () => writes++); Assert.Equal(raw == "true", preferences.ShowUnexplored); Assert.Equal(0, writes);
+            preferences.ShowUnexplored = true; Assert.Equal(1, writes); var reopened = SettingsStore.Parse(SettingsStore.Serialize(current)); Assert.True(reopened.VocabularyShowsUnexplored); Assert.False(reopened.Enabled);
+        }
+    }
+    [Fact]
     public void DensityUsesTheOriginalKeyAndSurvivesReplacementWithoutNormalizingUnknownValues()
     {
         foreach (string raw in new[] { "null", "true", "\"future-density\"", "\"detailed\"" })

@@ -14,6 +14,56 @@ namespace Cotabby.App.Wpf.Tests;
 public sealed class ModelManagementViewTests(WpfDispatcher dispatcher)
 {
     [Fact]
+    public Task SupersededScanFailuresAndClosedViewsCannotOverwriteCurrentResults() => dispatcher.RunAsync(async () =>
+    {
+        var scan = new ModelScanLifetime(); var old = new TaskCompletionSource<string>(); var newer = new TaskCompletionSource<string>();
+        string status = "loading";
+        var oldWork = scan.RunAsync(() => old.Task, value => status = value, () => status = "old failure", CancellationToken.None);
+        var newWork = scan.RunAsync(() => newer.Task, value => status = value, () => status = "new failure", CancellationToken.None);
+        newer.SetResult("new result"); await newWork; old.SetException(new IOException("fixture")); await oldWork;
+        Assert.Equal("new result", status);
+        var pending = new TaskCompletionSource<string>();
+        var last = scan.RunAsync(() => pending.Task, value => status = value, () => status = "late failure", CancellationToken.None);
+        scan.Close(); pending.SetException(new IOException("fixture")); await last; Assert.Equal("new result", status);
+    });
+
+    [Fact]
+    public Task TransferProgressAndFailureFollowTheReopenedView() => dispatcher.Run(() =>
+    {
+        var store = new ModelTransferStatusStore(); var previous = new TextBlock();
+        store.Bind("Model.gguf", previous, "Not installed"); store.Set("Model.gguf", "Downloading 20%");
+        Assert.Equal("Downloading 20%", previous.Text);
+        store.BeginView(); var current = new TextBlock(); store.Bind("model.gguf", current, "Not installed");
+        Assert.Equal("Downloading 20%", current.Text);
+        store.Set("MODEL.gguf", "Download failed");
+        Assert.Equal("Download failed", current.Text); Assert.Equal("Downloading 20%", previous.Text);
+    });
+
+    [Fact]
+    public Task RetainedSettingsAreBoundedOnlyForDisplayAndKnownAliasesRemainVisible() => dispatcher.Run(() =>
+    {
+        var raw = "unknown\n\u202e" + new string('x', 5000);
+        var settings = new AppSettings { LearningLocalModel = raw };
+        var view = new ModelManagementView("Translation", new TextBlock(), () => { }, () => { }, null);
+        view.ShowModels([], settings, LocalModelTask.Translation, raw);
+        var retained = Assert.IsType<TextBlock>(view.InstalledRows.Children[0]).Text;
+        Assert.True(retained.Length < 400); Assert.DoesNotContain('\n', retained); Assert.DoesNotContain('\u202e', retained);
+        Assert.Same(raw, settings.LearningLocalModel);
+        var source = "https://example.test/" + new string('y', 5000) + "\u202e";
+        var safe = ModelDisplayText.Safe(source); Assert.True(safe.Length <= 257); Assert.DoesNotContain('\u202e', safe);
+        settings.RecordLocalModelTask("custom.gguf", LocalModelTask.Translation);
+        settings.LocalModelSourcesValue["custom.gguf"] = source;
+        view.ShowModels([new LearningInstalledModel("custom.gguf", "custom", 1)], settings, LocalModelTask.Translation, "custom.gguf");
+        var row = Assert.IsType<DockPanel>(view.InstalledRows.Children[0]);
+        var details = Assert.IsType<StackPanel>(row.Children[1]);
+        var disclosure = Assert.IsType<Expander>(details.Children[1]);
+        var detailText = Assert.IsType<TextBlock>(disclosure.Content).Text;
+        Assert.True(detailText.Length < 350); Assert.DoesNotContain('\u202e', detailText);
+        Assert.Equal(source, settings.LocalModelSourcesValue["custom.gguf"]);
+        Assert.Equal("Lingrove Base · not compatible with this task", ModelDisplayText.Unavailable("gemma-4-E2B.i1-Q6_K.gguf", LocalModelTask.Translation));
+    });
+
+    [Fact]
     public Task IncompatibleRetainedSelectionIsShownWithoutBeingReplaced() => dispatcher.Run(() =>
     {
         var view = new ModelManagementView("Translation", new TextBlock(), () => { }, () => { }, null);

@@ -103,12 +103,12 @@ internal static class EnginePane
             catch (Exception) { models = []; }
             if (closed || current != generation) return;
             var choices = new List<PowerChoice> { new("", "Keep current model", true) };
-            choices.AddRange(models.Select(model => new PowerChoice(model.Id, model.DisplayName, true)));
+            choices.AddRange(models.Select(model => new PowerChoice(string.Equals(model.Id, selected, StringComparison.OrdinalIgnoreCase) ? selected : model.Id,
+                ModelDisplayText.Safe(model.DisplayName), true)));
             if (selected.Length > 0 && !choices.Any(choice => choice.Id == selected))
             {
                 var filename = AppSettings.CompletionFilenameForId(selected) ?? selected;
-                var label = LocalModelTaskPolicy.Supports(filename, LocalModelTask.Completion)
-                    ? $"{filename} (file unavailable)" : $"{filename} · not compatible with this task";
+                var label = ModelDisplayText.Unavailable(filename, LocalModelTask.Completion);
                 choices.Add(new(selected, label, false));
             }
             updating = true;

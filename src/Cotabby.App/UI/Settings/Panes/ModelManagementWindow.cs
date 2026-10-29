@@ -73,8 +73,7 @@ internal sealed class ModelManagementView : DockPanel
         }
         if (!string.IsNullOrEmpty(selected) && !models.Any(model => string.Equals(model.Filename, selected, StringComparison.OrdinalIgnoreCase)
             && settings.IsLocalModelCandidate(model.Filename, task)))
-            _installed.Children.Insert(0, new TextBlock { Text = LocalModelTaskPolicy.Supports(selected, task)
-                ? $"{selected} (file unavailable)" : $"{selected} · not compatible with this task",
+            _installed.Children.Insert(0, new TextBlock { Text = ModelDisplayText.Unavailable(selected, task),
                 Foreground = SystemColors.GrayTextBrush, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 6, 0, 6) });
         _customDisclosure.Visibility = _custom.Children.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
         if (_installed.Children.Count == 0) _installed.Children.Add(new TextBlock { Text = "No models available for this task.", Foreground = SystemColors.GrayTextBrush, Margin = new Thickness(0, 6, 0, 6) });
@@ -82,15 +81,15 @@ internal sealed class ModelManagementView : DockPanel
 
     private static FrameworkElement ModelRow(LearningInstalledModel model, bool selected, bool inUse, Action action, string actionLabel = "Select", string? directory = null, string? source = null)
     {
-        var title = LocalModelCatalog.Descriptor(model.Filename)?.Name ?? model.Filename;
+        var title = ModelDisplayText.Name(model.Filename);
         var details = new StackPanel();
         details.Children.Add(new TextBlock { Text = title, FontSize = 13, TextWrapping = TextWrapping.Wrap });
         var detail = new Expander { Header = "Model details", FontSize = 11, Foreground = SystemColors.GrayTextBrush };
         var descriptor = LocalModelCatalog.Descriptor(model.Filename);
-        var lines = new List<string> { model.Filename };
+        var lines = new List<string> { ModelDisplayText.Safe(model.Filename) };
         if (descriptor is not null) lines.Add("Quantization: " + descriptor.Quantization);
-        if (!string.IsNullOrEmpty(source)) lines.Add("Model source: " + source);
-        if (!string.IsNullOrEmpty(directory)) lines.Add(System.IO.Path.Combine(directory, model.Filename));
+        if (!string.IsNullOrEmpty(source)) lines.Add("Model source: " + ModelDisplayText.Safe(source));
+        if (!string.IsNullOrEmpty(directory)) lines.Add(ModelDisplayText.Safe(System.IO.Path.Combine(directory, model.Filename)));
         detail.Content = new TextBlock { Text = string.Join("\n", lines), TextWrapping = TextWrapping.Wrap, FontFamily = new FontFamily("Consolas") };
         details.Children.Add(detail);
         var row = new DockPanel { Margin = new Thickness(0, 6, 0, 6) };
@@ -99,7 +98,7 @@ internal sealed class ModelManagementView : DockPanel
             : ActionButton(actionLabel, action);
         // In-use rows remain selectable, but deletion is deliberately absent from this checkpoint.
         if (!selected && inUse && actionLabel == "Select") trailing = new StackPanel { Orientation = Orientation.Horizontal, Children = { trailing, ActionButton(actionLabel, action) } };
-        AutomationProperties.SetName(trailing, selected ? "Selected" : inUse ? "In Use" : actionLabel + " " + model.Filename);
+        AutomationProperties.SetName(trailing, selected ? "Selected" : inUse ? "In Use" : actionLabel + " " + ModelDisplayText.Safe(model.Filename));
         DockPanel.SetDock(trailing, Dock.Right); row.Children.Add(trailing); row.Children.Add(details);
         return row;
     }
@@ -118,7 +117,7 @@ internal sealed class ModelManagementWindow : Window
     private readonly Action _parentRefresh;
     private readonly CancellationTokenSource _lifetime = new();
     private readonly ModelManagementView _view;
-    private int _generation;
+    private readonly ModelScanLifetime _scan = new();
     private string _notice = "";
 
     internal ModelManagementWindow(SettingsContext context, LocalModelTask task, FrameworkElement recommendations, Action? import, Action parentRefresh, Action? cancelTransfer = null)
@@ -133,7 +132,7 @@ internal sealed class ModelManagementWindow : Window
         _view.AssignRequested += Assign;
         Content = _view;
         Loaded += (_, _) => Refresh();
-        Closed += (_, _) => { _lifetime.Cancel(); _lifetime.Dispose(); _parentRefresh(); };
+        Closed += (_, _) => { _scan.Close(); _lifetime.Cancel(); _lifetime.Dispose(); _parentRefresh(); };
     }
 
     private string Selected() => _task switch
@@ -145,16 +144,12 @@ internal sealed class ModelManagementWindow : Window
     };
     internal async void Refresh()
     {
-        int generation = ++_generation; _view.Status.Text = "Loading models…";
-        try
+        _view.Status.Text = "Loading models…";
+        await _scan.RunAsync(() => _context.Host.LearningModels.GetInstalledModelsAsync(_lifetime.Token), models =>
         {
-            var models = await _context.Host.LearningModels.GetInstalledModelsAsync(_lifetime.Token);
-            if (_lifetime.IsCancellationRequested || generation != _generation) return;
             _view.ShowModels(models, _context.Settings, _task, Selected(), _context.Host.LearningModels.ModelsDirectory);
             _view.Status.Text = _notice;
-        }
-        catch (OperationCanceledException) { }
-        catch (Exception) { if (!_lifetime.IsCancellationRequested) _view.Status.Text = "Models could not be listed. Refresh to try again."; }
+        }, () => _view.Status.Text = "Models could not be listed. Refresh to try again.", _lifetime.Token);
     }
     internal void Report(string text) { _notice = text; _view.Status.Text = text; }
     internal void SetTransferBusy(bool busy) { if (_view.CancelTransfer is { } cancel) cancel.IsEnabled = busy; }

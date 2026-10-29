@@ -60,7 +60,7 @@ internal sealed class ModelList : StackPanel
         bool loadingThis = Busy && selected;
 
         var names = new StackPanel { VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 12, 0) };
-        names.Children.Add(new TextBlock { Text = model.DisplayName, FontSize = 13, FontWeight = FontWeights.SemiBold });
+        names.Children.Add(new TextBlock { Text = ModelDisplayText.Safe(model.DisplayName), FontSize = 13, FontWeight = FontWeights.SemiBold });
         var subtitle = Ui.Text(model.Subtitle, "Caption");
         subtitle.Margin = new Thickness(0, 2, 0, 0);
         names.Children.Add(subtitle);

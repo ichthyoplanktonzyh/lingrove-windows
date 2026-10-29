@@ -115,14 +115,24 @@ public sealed class FrozenVocabularyEntryEditorWindowTests(WpfDispatcher dispatc
         public VocabularyClipboardImageOffer Capture() => Offer;
         public Task<byte[]?> ReadAsync(uint expectedSequence, CancellationToken token = default) { ReadSequence = expectedSequence; return Held?.Task ?? Task.FromResult(bytes); }
     }
-    [Fact]
-    public Task ExplicitPasteUsesCapturedSequenceAndPersistsMedia() => dispatcher.RunAsync(async () =>
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public Task ExplicitPasteUsesCapturedSequenceAndPersistsMedia(bool compressed) => dispatcher.RunAsync(async () =>
     {
         string root = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "canonical-paste-" + Guid.NewGuid().ToString("N"));
         try
         {
             using var json = System.Text.Json.JsonDocument.Parse(System.IO.File.ReadAllText(System.IO.Path.Combine(AppContext.BaseDirectory, "fixtures", "parity", "vocabulary-media-transactions-v1.json")));
-            var clipboard = new ClipboardFixture(Convert.FromBase64String(json.RootElement.GetProperty("input").GetString()!));
+            byte[] input = Convert.FromBase64String(json.RootElement.GetProperty("input").GetString()!);
+            if (compressed)
+            {
+                byte[] commands = [3, 1, 0, 0, 3, 2, 0, 0, 0, 1]; byte[] dib = new byte[104 + commands.Length];
+                VocabularyDibFixture.U32(dib, 0, 40); VocabularyDibFixture.I32(dib, 4, 3); VocabularyDibFixture.I32(dib, 8, 2);
+                dib[12] = 1; dib[14] = 8; VocabularyDibFixture.U32(dib, 16, 1); VocabularyDibFixture.U32(dib, 20, (uint)commands.Length); VocabularyDibFixture.U32(dib, 32, 16);
+                dib[44] = 255; dib[50] = 255; commands.CopyTo(dib, 104); input = VocabularyClipboardDib.Wrap(dib);
+            }
+            var clipboard = new ClipboardFixture(input);
             await using var store = FrozenVocabularyStoreFactory.Create(System.IO.Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName), false);
             await store.AddEntriesAsync([new(Expression: "image")]); var entry = (await store.ReadAsync()).Document.Entries.Single();
             var window = new FrozenVocabularyEntryEditorWindow(store, store, entry, entry.Senses.Single().Id, clipboard: clipboard); window.Show();

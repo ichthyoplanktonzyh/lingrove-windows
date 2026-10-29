@@ -7,6 +7,24 @@ namespace Cotabby.App.Wpf.Tests;
 [Collection("WPF views")]
 public sealed class VocabularyDibPreparationTests(WpfDispatcher dispatcher)
 {
+    [Theory]
+    [InlineData(4)]
+    [InlineData(8)]
+    public Task CompressedClipboardRowsReachTheExistingPngPreparation(int bits) => dispatcher.RunAsync(async () =>
+    {
+        byte[] commands = bits == 4 ? [3, 0x11, 0, 0, 3, 0x22, 0, 0, 0, 1] : [3, 1, 0, 0, 3, 2, 0, 0, 0, 1];
+        byte[] dib = new byte[40 + 16 * 4 + commands.Length]; VocabularyDibFixture.U32(dib, 0, 40);
+        VocabularyDibFixture.I32(dib, 4, 3); VocabularyDibFixture.I32(dib, 8, 2);
+        dib[12] = 1; dib[14] = (byte)bits; VocabularyDibFixture.U32(dib, 16, bits == 8 ? 1u : 2u);
+        VocabularyDibFixture.U32(dib, 20, (uint)commands.Length); VocabularyDibFixture.U32(dib, 32, 16);
+        dib[44] = 255; dib[50] = 255; commands.CopyTo(dib, 104);
+        await using var archive = new VocabularyArchive((string?)null);
+        var prepared = await archive.PrepareImageAsync(VocabularyClipboardDib.Wrap(dib));
+        var image = await Task.Run(() => WindowsVocabularyImageDecoder.Decode(prepared.CopyBytes(), prepared.Reference));
+        byte[] pixels = new byte[24]; image.CopyPixels(pixels, 12, 0);
+        Assert.Equal(new byte[] { 0, 0, 255, 255 }, pixels[..4]);
+        Assert.Equal(new byte[] { 255, 0, 0, 255 }, pixels[12..16]);
+    });
     [Fact]
     public Task RawWicBmpFrameCanBeOpenedBeforeArchiveNormalization() => dispatcher.Run(() =>
     {

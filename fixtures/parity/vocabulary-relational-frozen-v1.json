@@ -1,0 +1,2027 @@
+{
+  "macReference": "35b7fbe5c788c5524936ade1dfb7c89a3a285b04",
+  "provenance": "windows-projection-source-shaped",
+  "cases": [
+    {
+      "id": "full-v8",
+      "rows": [
+        {
+          "table": "bindings",
+          "id": "00000000-0000-0000-0000-000000000002:legacy:00000000-0000-0000-0000-000000000011",
+          "parent": "00000000-0000-0000-0000-000000000002:legacy",
+          "position": 0,
+          "extra": [],
+          "payload": {
+            "id": "00000000-0000-0000-0000-000000000011",
+            "originSenseID": "00000000-0000-0000-0000-000000000002",
+            "endpoint": "http://localhost:8765",
+            "profile": "Default",
+            "noteID": 42,
+            "model": "Model",
+            "deck": "Deck",
+            "identityField": "LingroveID",
+            "mapping": [
+              "LingroveID",
+              "LingroveID"
+            ],
+            "fields": {
+              "LingroveID": "00000000-0000-0000-0000-000000000002"
+            },
+            "syncedAt": -99.125
+          }
+        },
+        {
+          "table": "blocks",
+          "id": "00000000-0000-0000-0000-00000000000D",
+          "parent": "00000000-0000-0000-0000-000000000002",
+          "position": 0,
+          "extra": [],
+          "payload": {
+            "id": "00000000-0000-0000-0000-00000000000D",
+            "content": {
+              "image": {
+                "_0": {
+                  "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                  "width": 2,
+                  "height": 3,
+                  "byteCount": 20
+                },
+                "caption": "\u56FE"
+              }
+            }
+          }
+        },
+        {
+          "table": "categories",
+          "id": "00000000-0000-0000-0000-000000000009",
+          "parent": null,
+          "position": 0,
+          "extra": [
+            "00000000-0000-0000-0000-000000000022",
+            "root",
+            "content"
+          ],
+          "payload": {
+            "id": "00000000-0000-0000-0000-000000000009",
+            "axis": "content",
+            "labels": [
+              {
+                "text": "Category",
+                "id": "00000000-0000-0000-0000-00000000000A",
+                "preferred": true
+              }
+            ],
+            "definition": "",
+            "frameworkID": "00000000-0000-0000-0000-000000000022",
+            "key": "root",
+            "isRetired": false,
+            "provenance": {
+              "origin": "user",
+              "status": "confirmed",
+              "source": ""
+            }
+          }
+        },
+        {
+          "table": "categories",
+          "id": "00000000-0000-0000-0000-00000000001D",
+          "parent": null,
+          "position": 1,
+          "extra": [
+            null,
+            null,
+            "content"
+          ],
+          "payload": {
+            "id": "00000000-0000-0000-0000-00000000001D",
+            "axis": "content",
+            "labels": [
+              {
+                "text": "Child",
+                "id": "00000000-0000-0000-0000-00000000001E",
+                "preferred": true
+              }
+            ],
+            "definition": "",
+            "isRetired": false,
+            "provenance": {
+              "origin": "user",
+              "status": "confirmed",
+              "source": ""
+            }
+          }
+        },
+        {
+          "table": "category_memberships",
+          "id": "00000000-0000-0000-0000-00000000000B",
+          "parent": null,
+          "position": 0,
+          "extra": [
+            "00000000-0000-0000-0000-000000000006",
+            "00000000-0000-0000-0000-000000000009"
+          ],
+          "payload": {
+            "id": "00000000-0000-0000-0000-00000000000B",
+            "nodeID": "00000000-0000-0000-0000-000000000006",
+            "categoryID": "00000000-0000-0000-0000-000000000009",
+            "provenance": {
+              "origin": "user",
+              "status": "confirmed",
+              "source": ""
+            }
+          }
+        },
+        {
+          "table": "category_overrides",
+          "id": "00000000-0000-0000-0000-000000000009",
+          "parent": "00000000-0000-0000-0000-000000000009",
+          "position": 0,
+          "extra": [],
+          "payload": {
+            "categoryID": "00000000-0000-0000-0000-000000000009",
+            "labels": [
+              {
+                "text": "Local",
+                "id": "00000000-0000-0000-0000-000000000020",
+                "preferred": true
+              }
+            ],
+            "definition": "",
+            "isHidden": true
+          }
+        },
+        {
+          "table": "category_parents",
+          "id": "00000000-0000-0000-0000-00000000001F",
+          "parent": null,
+          "position": 0,
+          "extra": [
+            "00000000-0000-0000-0000-00000000001D",
+            "00000000-0000-0000-0000-000000000009"
+          ],
+          "payload": {
+            "id": "00000000-0000-0000-0000-00000000001F",
+            "categoryID": "00000000-0000-0000-0000-00000000001D",
+            "parentID": "00000000-0000-0000-0000-000000000009"
+          }
+        },
+        {
+          "table": "classification_frameworks",
+          "id": "00000000-0000-0000-0000-000000000022",
+          "parent": null,
+          "position": 0,
+          "extra": [
+            "framework"
+          ],
+          "payload": {
+            "id": "00000000-0000-0000-0000-000000000022",
+            "key": "framework",
+            "version": 2147483648
+          }
+        },
+        {
+          "table": "collection_interpretations",
+          "id": "00000000-0000-0000-0000-000000000002:00000000-0000-0000-0000-000000000005",
+          "parent": "00000000-0000-0000-0000-000000000002",
+          "position": 0,
+          "extra": [
+            "00000000-0000-0000-0000-000000000005"
+          ],
+          "payload": "00000000-0000-0000-0000-000000000005"
+        },
+        {
+          "table": "collections",
+          "id": "00000000-0000-0000-0000-000000000002",
+          "parent": null,
+          "position": 0,
+          "extra": [
+            "00000000-0000-0000-0000-000000000002"
+          ],
+          "payload": {
+            "senseID": "00000000-0000-0000-0000-000000000002",
+            "savedAt": 3.141592653589793,
+            "interpretationIDs": [],
+            "isSavedWithoutContext": false,
+            "note": "note",
+            "tags": [
+              "tag"
+            ],
+            "content": [],
+            "reviewCards": []
+          }
+        },
+        {
+          "table": "cue_targets",
+          "id": "00000000-0000-0000-0000-00000000001C",
+          "parent": "00000000-0000-0000-0000-00000000001A",
+          "position": 0,
+          "extra": [
+            "00000000-0000-0000-0000-000000000006"
+          ],
+          "payload": {
+            "cueID": "00000000-0000-0000-0000-00000000001A",
+            "nodeID": "00000000-0000-0000-0000-000000000006",
+            "id": "00000000-0000-0000-0000-00000000001C",
+            "conditions": "",
+            "provenance": {
+              "origin": "user",
+              "status": "confirmed",
+              "source": ""
+            }
+          }
+        },
+        {
+          "table": "entries",
+          "id": "00000000-0000-0000-0000-000000000001",
+          "parent": null,
+          "position": 0,
+          "extra": [
+            "e0bdfc9484981cd3ceaa9d1dae1674ef4363b15fb48848f16f71c1d8494b85f1",
+            "und",
+            "hello"
+          ],
+          "payload": {
+            "id": "00000000-0000-0000-0000-000000000001",
+            "expression": "hello",
+            "dictionaryForm": "hello",
+            "kind": "word",
+            "senses": [],
+            "createdAt": 814759445.1234567,
+            "updatedAt": -1E-08
+          }
+        },
+        {
+          "table": "mapping_evidence",
+          "id": "00000000-0000-0000-0000-000000000008:00000000-0000-0000-0000-000000000005",
+          "parent": "00000000-0000-0000-0000-000000000008",
+          "position": 0,
+          "extra": [
+            "00000000-0000-0000-0000-000000000005"
+          ],
+          "payload": "00000000-0000-0000-0000-000000000005"
+        },
+        {
+          "table": "mapping_roles",
+          "id": "00000000-0000-0000-0000-000000000019",
+          "parent": "00000000-0000-0000-0000-000000000008",
+          "position": 0,
+          "extra": [
+            "00000000-0000-0000-0000-000000000014",
+            "00000000-0000-0000-0000-000000000017"
+          ],
+          "payload": {
+            "roleID": "00000000-0000-0000-0000-000000000014",
+            "slotID": "00000000-0000-0000-0000-000000000017",
+            "id": "00000000-0000-0000-0000-000000000019"
+          }
+        },
+        {
+          "table": "meaning_labels",
+          "id": "00000000-0000-0000-0000-000000000007",
+          "parent": "00000000-0000-0000-0000-000000000006",
+          "position": 0,
+          "extra": [
+            "en",
+            "Greeting",
+            "yes"
+          ],
+          "payload": {
+            "text": "Greeting",
+            "id": "00000000-0000-0000-0000-000000000007",
+            "language": "en",
+            "preferred": true
+          }
+        },
+        {
+          "table": "meaning_labels",
+          "id": "00000000-0000-0000-0000-000000000016",
+          "parent": "00000000-0000-0000-0000-000000000015",
+          "position": 0,
+          "extra": [
+            "und",
+            "Other",
+            "yes"
+          ],
+          "payload": {
+            "text": "Other",
+            "id": "00000000-0000-0000-0000-000000000016",
+            "preferred": true
+          }
+        },
+        {
+          "table": "meaning_mappings",
+          "id": "00000000-0000-0000-0000-000000000008",
+          "parent": "00000000-0000-0000-0000-000000000002",
+          "position": 0,
+          "extra": [
+            "00000000-0000-0000-0000-000000000006",
+            "00000000-0000-0000-0000-000000000018",
+            "expressesContent"
+          ],
+          "payload": {
+            "nodeID": "00000000-0000-0000-0000-000000000006",
+            "senseID": "00000000-0000-0000-0000-000000000002",
+            "id": "00000000-0000-0000-0000-000000000008",
+            "patternID": "00000000-0000-0000-0000-000000000018",
+            "relation": "expressesContent",
+            "conditions": "",
+            "nuance": "",
+            "roleBindings": [],
+            "evidenceIDs": [],
+            "provenance": {
+              "origin": "model",
+              "status": "proposed",
+              "source": "test",
+              "confidence": 0.7
+            }
+          }
+        },
+        {
+          "table": "meaning_nodes",
+          "id": "00000000-0000-0000-0000-000000000006",
+          "parent": null,
+          "position": 0,
+          "extra": [
+            "concept"
+          ],
+          "payload": {
+            "id": "00000000-0000-0000-0000-000000000006",
+            "labels": [],
+            "kind": "concept",
+            "definition": "",
+            "scopeNote": "",
+            "roles": [],
+            "provenance": {
+              "origin": "user",
+              "status": "confirmed",
+              "source": ""
+            },
+            "createdAt": 1.5,
+            "updatedAt": -1.25
+          }
+        },
+        {
+          "table": "meaning_nodes",
+          "id": "00000000-0000-0000-0000-000000000015",
+          "parent": null,
+          "position": 1,
+          "extra": [
+            "concept"
+          ],
+          "payload": {
+            "id": "00000000-0000-0000-0000-000000000015",
+            "labels": [],
+            "kind": "concept",
+            "definition": "",
+            "scopeNote": "",
+            "roles": [],
+            "provenance": {
+              "origin": "user",
+              "status": "confirmed",
+              "source": ""
+            },
+            "createdAt": 2.5,
+            "updatedAt": -2.25
+          }
+        },
+        {
+          "table": "meaning_relations",
+          "id": "00000000-0000-0000-0000-00000000001B",
+          "parent": "00000000-0000-0000-0000-000000000006",
+          "position": 0,
+          "extra": [
+            "00000000-0000-0000-0000-000000000015",
+            "related"
+          ],
+          "payload": {
+            "sourceID": "00000000-0000-0000-0000-000000000006",
+            "targetID": "00000000-0000-0000-0000-000000000015",
+            "id": "00000000-0000-0000-0000-00000000001B",
+            "kind": "related",
+            "note": "",
+            "provenance": {
+              "origin": "user",
+              "status": "confirmed",
+              "source": ""
+            }
+          }
+        },
+        {
+          "table": "meaning_roles",
+          "id": "00000000-0000-0000-0000-000000000014",
+          "parent": "00000000-0000-0000-0000-000000000006",
+          "position": 0,
+          "extra": [
+            "object"
+          ],
+          "payload": {
+            "name": "object",
+            "id": "00000000-0000-0000-0000-000000000014",
+            "description": ""
+          }
+        },
+        {
+          "table": "occurrences",
+          "id": "00000000-0000-0000-0000-000000000004",
+          "parent": "00000000-0000-0000-0000-000000000003",
+          "position": 0,
+          "extra": [],
+          "payload": {
+            "id": "00000000-0000-0000-0000-000000000004",
+            "sourceID": "00000000-0000-0000-0000-000000000003",
+            "ranges": [
+              {
+                "location": 0,
+                "length": 5
+              }
+            ]
+          }
+        },
+        {
+          "table": "pattern_slots",
+          "id": "00000000-0000-0000-0000-000000000017",
+          "parent": "00000000-0000-0000-0000-000000000018",
+          "position": 0,
+          "extra": [
+            "object"
+          ],
+          "payload": {
+            "name": "object",
+            "id": "00000000-0000-0000-0000-000000000017",
+            "constraint": ""
+          }
+        },
+        {
+          "table": "retrieval_cues",
+          "id": "00000000-0000-0000-0000-00000000001A",
+          "parent": null,
+          "position": 0,
+          "extra": [
+            "zh-Hans",
+            "\u95EE\u5019"
+          ],
+          "payload": {
+            "text": "\u95EE\u5019",
+            "id": "00000000-0000-0000-0000-00000000001A",
+            "language": "zh-Hans",
+            "kind": "paraphrase"
+          }
+        },
+        {
+          "table": "reviews",
+          "id": "00000000-0000-0000-0000-000000000002:legacy",
+          "parent": "00000000-0000-0000-0000-000000000002",
+          "position": 0,
+          "extra": [],
+          "payload": {
+            "plan": {
+              "id": "00000000-0000-0000-0000-000000000010",
+              "layout": {
+                "front": [
+                  {
+                    "id": "00000000-0000-0000-0000-00000000000E",
+                    "source": "custom",
+                    "showCaption": false,
+                    "content": [
+                      {
+                        "id": "00000000-0000-0000-0000-00000000000F",
+                        "content": {
+                          "text": {
+                            "_0": {
+                              "text": "card",
+                              "style": "paragraph",
+                              "bold": false,
+                              "italic": false
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "back": []
+              },
+              "exampleID": "00000000-0000-0000-0000-000000000005",
+              "recognition": true,
+              "gap": false,
+              "includeNotes": false,
+              "includeExplanation": false,
+              "fieldOverrides": {
+                "Front": "Note"
+              },
+              "audioKinds": [
+                "expression"
+              ],
+              "audioReceipts": [
+                "expression",
+                {
+                  "fingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                  "textHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "endpoint": "http://localhost:8765",
+                  "profile": "Default",
+                  "filename": "lingrove-cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc.wav"
+                }
+              ]
+            },
+            "bindings": [],
+            "activeBindingID": "00000000-0000-0000-0000-000000000011",
+            "preservedPlans": []
+          }
+        },
+        {
+          "table": "sense_explanations",
+          "id": "00000000-0000-0000-0000-000000000002:00000000-0000-0000-0000-000000000023",
+          "parent": "00000000-0000-0000-0000-000000000002",
+          "position": 0,
+          "extra": [],
+          "payload": {
+            "id": "00000000-0000-0000-0000-000000000023",
+            "input": {
+              "target": "hello",
+              "dictionaryForm": "hello",
+              "kind": "word",
+              "context": "hello",
+              "ranges": [
+                {
+                  "location": 0,
+                  "length": 5
+                }
+              ],
+              "contextKind": "none",
+              "occurrenceIdentity": "sense:00000000-0000-0000-0000-000000000002"
+            },
+            "language": "zh-Hans",
+            "result": {
+              "meaning": "\u4F60\u597D",
+              "explanation": "\u95EE\u5019\u8BED\u3002"
+            },
+            "model": "local",
+            "createdAt": 7.125
+          }
+        },
+        {
+          "table": "senses",
+          "id": "00000000-0000-0000-0000-000000000002",
+          "parent": "00000000-0000-0000-0000-000000000001",
+          "position": 0,
+          "extra": [
+            "greeting"
+          ],
+          "payload": {
+            "id": "00000000-0000-0000-0000-000000000002",
+            "meaning": "greeting",
+            "createdAt": 1E-08,
+            "updatedAt": -123.4567890123,
+            "meaningOrigin": "captured",
+            "note": "",
+            "tags": [],
+            "examples": [],
+            "isSavedWithoutContext": false,
+            "standaloneMeanings": [
+              {
+                "text": "\u4F60\u597D",
+                "language": "zh-Hans"
+              }
+            ],
+            "explanations": [],
+            "alternateMeanings": [
+              {
+                "text": "salut",
+                "language": "fr"
+              }
+            ],
+            "mergedFrom": [],
+            "createdWithoutContext": true
+          }
+        },
+        {
+          "table": "sources",
+          "id": "00000000-0000-0000-0000-000000000003",
+          "parent": null,
+          "position": 0,
+          "extra": [],
+          "payload": {
+            "id": "00000000-0000-0000-0000-000000000003",
+            "text": "hello",
+            "kind": "imported",
+            "appBundleIdentifier": "org.test",
+            "encounteredAt": 1E+100
+          }
+        },
+        {
+          "table": "sources",
+          "id": "00000000-0000-0000-0000-000000000024",
+          "parent": null,
+          "position": 1,
+          "extra": [],
+          "payload": {
+            "id": "00000000-0000-0000-0000-000000000024",
+            "text": "uncollected",
+            "kind": "imported",
+            "encounteredAt": -99999999999999
+          }
+        },
+        {
+          "table": "templates",
+          "id": "00000000-0000-0000-0000-000000000021",
+          "parent": null,
+          "position": 0,
+          "extra": [],
+          "payload": {
+            "id": "00000000-0000-0000-0000-000000000021",
+            "name": "Template",
+            "layout": {
+              "front": [],
+              "back": []
+            }
+          }
+        },
+        {
+          "table": "usage_explanations",
+          "id": "00000000-0000-0000-0000-000000000005:00000000-0000-0000-0000-00000000000C",
+          "parent": "00000000-0000-0000-0000-000000000005",
+          "position": 0,
+          "extra": [],
+          "payload": {
+            "id": "00000000-0000-0000-0000-00000000000C",
+            "input": {
+              "target": "hello",
+              "dictionaryForm": "hello",
+              "kind": "word",
+              "context": "hello",
+              "ranges": [
+                {
+                  "location": 0,
+                  "length": 5
+                }
+              ],
+              "contextKind": "unknown",
+              "occurrenceIdentity": "c4a7706c333e599abcbeb7c0fb75d8fdeb9ccb662ea94ba0fcc814ad1dccbe22"
+            },
+            "language": "zh-Hans",
+            "result": {
+              "meaning": "\u4F60\u597D",
+              "explanation": "\u95EE\u5019\u8BED\u3002"
+            },
+            "model": "local",
+            "createdAt": 8.123456789
+          }
+        },
+        {
+          "table": "usage_patterns",
+          "id": "00000000-0000-0000-0000-000000000018",
+          "parent": "00000000-0000-0000-0000-000000000002",
+          "position": 0,
+          "extra": [
+            "hello [object]"
+          ],
+          "payload": {
+            "senseID": "00000000-0000-0000-0000-000000000002",
+            "template": "hello [object]",
+            "id": "00000000-0000-0000-0000-000000000018",
+            "slots": [],
+            "formality": "unspecified",
+            "medium": "unspecified",
+            "region": "",
+            "note": "",
+            "collocations": [
+              "hello friend"
+            ],
+            "provenance": {
+              "origin": "user",
+              "status": "confirmed",
+              "source": ""
+            }
+          }
+        },
+        {
+          "table": "usages",
+          "id": "00000000-0000-0000-0000-000000000005",
+          "parent": null,
+          "position": 0,
+          "extra": [
+            "00000000-0000-0000-0000-000000000004",
+            "00000000-0000-0000-0000-000000000002",
+            "accepted"
+          ],
+          "payload": {
+            "id": "00000000-0000-0000-0000-000000000005",
+            "occurrenceID": "00000000-0000-0000-0000-000000000004",
+            "createdAt": 7E-08,
+            "senseID": "00000000-0000-0000-0000-000000000002",
+            "status": "accepted",
+            "meaning": "",
+            "meaningOrigin": "captured",
+            "translation": "\u4F60\u597D",
+            "translationLanguage": "zh-Hans",
+            "translationVariants": [
+              {
+                "text": "\u4F60\u597D",
+                "language": "zh-Hans"
+              }
+            ],
+            "completeness": "unknown",
+            "provenance": {
+              "origin": "user",
+              "status": "confirmed",
+              "source": ""
+            },
+            "explanations": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "upgrade-v7",
+      "rows": [
+        {
+          "table": "bindings",
+          "id": "00000000-0000-0000-0000-000000000002:legacy:00000000-0000-0000-0000-000000000011",
+          "parent": "00000000-0000-0000-0000-000000000002:legacy",
+          "position": 0,
+          "extra": [],
+          "payload": {
+            "id": "00000000-0000-0000-0000-000000000011",
+            "originSenseID": "00000000-0000-0000-0000-000000000002",
+            "endpoint": "http://localhost:8765",
+            "profile": "Default",
+            "noteID": 42,
+            "model": "Model",
+            "deck": "Deck",
+            "identityField": "LingroveID",
+            "mapping": [
+              "LingroveID",
+              "LingroveID"
+            ],
+            "fields": {
+              "LingroveID": "00000000-0000-0000-0000-000000000002"
+            },
+            "syncedAt": -99.125
+          }
+        },
+        {
+          "table": "blocks",
+          "id": "00000000-0000-0000-0000-00000000000D",
+          "parent": "00000000-0000-0000-0000-000000000002",
+          "position": 0,
+          "extra": [],
+          "payload": {
+            "id": "00000000-0000-0000-0000-00000000000D",
+            "content": {
+              "image": {
+                "_0": {
+                  "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                  "width": 2,
+                  "height": 3,
+                  "byteCount": 20
+                },
+                "caption": "\u56FE"
+              }
+            }
+          }
+        },
+        {
+          "table": "collection_interpretations",
+          "id": "00000000-0000-0000-0000-000000000002:00000000-0000-0000-0000-000000000005",
+          "parent": "00000000-0000-0000-0000-000000000002",
+          "position": 0,
+          "extra": [
+            "00000000-0000-0000-0000-000000000005"
+          ],
+          "payload": "00000000-0000-0000-0000-000000000005"
+        },
+        {
+          "table": "collections",
+          "id": "00000000-0000-0000-0000-000000000002",
+          "parent": null,
+          "position": 0,
+          "extra": [
+            "00000000-0000-0000-0000-000000000002"
+          ],
+          "payload": {
+            "senseID": "00000000-0000-0000-0000-000000000002",
+            "savedAt": 3.141592653589793,
+            "interpretationIDs": [],
+            "isSavedWithoutContext": false,
+            "note": "note",
+            "tags": [
+              "tag"
+            ],
+            "content": [],
+            "reviewCards": []
+          }
+        },
+        {
+          "table": "cue_targets",
+          "id": "00000000-0000-0000-0000-00000000001C",
+          "parent": "00000000-0000-0000-0000-00000000001A",
+          "position": 0,
+          "extra": [
+            "00000000-0000-0000-0000-000000000006"
+          ],
+          "payload": {
+            "cueID": "00000000-0000-0000-0000-00000000001A",
+            "nodeID": "00000000-0000-0000-0000-000000000006",
+            "id": "00000000-0000-0000-0000-00000000001C",
+            "conditions": "",
+            "provenance": {
+              "origin": "user",
+              "status": "confirmed",
+              "source": ""
+            }
+          }
+        },
+        {
+          "table": "entries",
+          "id": "00000000-0000-0000-0000-000000000001",
+          "parent": null,
+          "position": 0,
+          "extra": [
+            "e0bdfc9484981cd3ceaa9d1dae1674ef4363b15fb48848f16f71c1d8494b85f1",
+            "und",
+            "hello"
+          ],
+          "payload": {
+            "id": "00000000-0000-0000-0000-000000000001",
+            "expression": "hello",
+            "dictionaryForm": "hello",
+            "kind": "word",
+            "senses": [],
+            "createdAt": 814759445.1234567,
+            "updatedAt": -1E-08
+          }
+        },
+        {
+          "table": "mapping_evidence",
+          "id": "00000000-0000-0000-0000-000000000008:00000000-0000-0000-0000-000000000005",
+          "parent": "00000000-0000-0000-0000-000000000008",
+          "position": 0,
+          "extra": [
+            "00000000-0000-0000-0000-000000000005"
+          ],
+          "payload": "00000000-0000-0000-0000-000000000005"
+        },
+        {
+          "table": "mapping_roles",
+          "id": "00000000-0000-0000-0000-000000000019",
+          "parent": "00000000-0000-0000-0000-000000000008",
+          "position": 0,
+          "extra": [
+            "00000000-0000-0000-0000-000000000014",
+            "00000000-0000-0000-0000-000000000017"
+          ],
+          "payload": {
+            "roleID": "00000000-0000-0000-0000-000000000014",
+            "slotID": "00000000-0000-0000-0000-000000000017",
+            "id": "00000000-0000-0000-0000-000000000019"
+          }
+        },
+        {
+          "table": "meaning_labels",
+          "id": "00000000-0000-0000-0000-000000000007",
+          "parent": "00000000-0000-0000-0000-000000000006",
+          "position": 0,
+          "extra": [
+            "en",
+            "Greeting",
+            "yes"
+          ],
+          "payload": {
+            "text": "Greeting",
+            "id": "00000000-0000-0000-0000-000000000007",
+            "language": "en",
+            "preferred": true
+          }
+        },
+        {
+          "table": "meaning_labels",
+          "id": "00000000-0000-0000-0000-000000000016",
+          "parent": "00000000-0000-0000-0000-000000000015",
+          "position": 0,
+          "extra": [
+            "und",
+            "Other",
+            "yes"
+          ],
+          "payload": {
+            "text": "Other",
+            "id": "00000000-0000-0000-0000-000000000016",
+            "preferred": true
+          }
+        },
+        {
+          "table": "meaning_mappings",
+          "id": "00000000-0000-0000-0000-000000000008",
+          "parent": "00000000-0000-0000-0000-000000000002",
+          "position": 0,
+          "extra": [
+            "00000000-0000-0000-0000-000000000006",
+            "00000000-0000-0000-0000-000000000018",
+            "expressesContent"
+          ],
+          "payload": {
+            "nodeID": "00000000-0000-0000-0000-000000000006",
+            "senseID": "00000000-0000-0000-0000-000000000002",
+            "id": "00000000-0000-0000-0000-000000000008",
+            "patternID": "00000000-0000-0000-0000-000000000018",
+            "relation": "expressesContent",
+            "conditions": "",
+            "nuance": "",
+            "roleBindings": [],
+            "evidenceIDs": [],
+            "provenance": {
+              "origin": "model",
+              "status": "proposed",
+              "source": "test",
+              "confidence": 0.7
+            }
+          }
+        },
+        {
+          "table": "meaning_nodes",
+          "id": "00000000-0000-0000-0000-000000000006",
+          "parent": null,
+          "position": 0,
+          "extra": [
+            "concept"
+          ],
+          "payload": {
+            "id": "00000000-0000-0000-0000-000000000006",
+            "labels": [],
+            "kind": "concept",
+            "definition": "",
+            "scopeNote": "",
+            "roles": [],
+            "provenance": {
+              "origin": "user",
+              "status": "confirmed",
+              "source": ""
+            },
+            "createdAt": 1.5,
+            "updatedAt": -1.25
+          }
+        },
+        {
+          "table": "meaning_nodes",
+          "id": "00000000-0000-0000-0000-000000000015",
+          "parent": null,
+          "position": 1,
+          "extra": [
+            "concept"
+          ],
+          "payload": {
+            "id": "00000000-0000-0000-0000-000000000015",
+            "labels": [],
+            "kind": "concept",
+            "definition": "",
+            "scopeNote": "",
+            "roles": [],
+            "provenance": {
+              "origin": "user",
+              "status": "confirmed",
+              "source": ""
+            },
+            "createdAt": 2.5,
+            "updatedAt": -2.25
+          }
+        },
+        {
+          "table": "meaning_relations",
+          "id": "00000000-0000-0000-0000-00000000001B",
+          "parent": "00000000-0000-0000-0000-000000000006",
+          "position": 0,
+          "extra": [
+            "00000000-0000-0000-0000-000000000015",
+            "related"
+          ],
+          "payload": {
+            "sourceID": "00000000-0000-0000-0000-000000000006",
+            "targetID": "00000000-0000-0000-0000-000000000015",
+            "id": "00000000-0000-0000-0000-00000000001B",
+            "kind": "related",
+            "note": "",
+            "provenance": {
+              "origin": "user",
+              "status": "confirmed",
+              "source": ""
+            }
+          }
+        },
+        {
+          "table": "meaning_roles",
+          "id": "00000000-0000-0000-0000-000000000014",
+          "parent": "00000000-0000-0000-0000-000000000006",
+          "position": 0,
+          "extra": [
+            "object"
+          ],
+          "payload": {
+            "name": "object",
+            "id": "00000000-0000-0000-0000-000000000014",
+            "description": ""
+          }
+        },
+        {
+          "table": "occurrences",
+          "id": "00000000-0000-0000-0000-000000000004",
+          "parent": "00000000-0000-0000-0000-000000000003",
+          "position": 0,
+          "extra": [],
+          "payload": {
+            "id": "00000000-0000-0000-0000-000000000004",
+            "sourceID": "00000000-0000-0000-0000-000000000003",
+            "ranges": [
+              {
+                "location": 0,
+                "length": 5
+              }
+            ]
+          }
+        },
+        {
+          "table": "pattern_slots",
+          "id": "00000000-0000-0000-0000-000000000017",
+          "parent": "00000000-0000-0000-0000-000000000018",
+          "position": 0,
+          "extra": [
+            "object"
+          ],
+          "payload": {
+            "name": "object",
+            "id": "00000000-0000-0000-0000-000000000017",
+            "constraint": ""
+          }
+        },
+        {
+          "table": "retrieval_cues",
+          "id": "00000000-0000-0000-0000-00000000001A",
+          "parent": null,
+          "position": 0,
+          "extra": [
+            "zh-Hans",
+            "\u95EE\u5019"
+          ],
+          "payload": {
+            "text": "\u95EE\u5019",
+            "id": "00000000-0000-0000-0000-00000000001A",
+            "language": "zh-Hans",
+            "kind": "paraphrase"
+          }
+        },
+        {
+          "table": "reviews",
+          "id": "00000000-0000-0000-0000-000000000002:legacy",
+          "parent": "00000000-0000-0000-0000-000000000002",
+          "position": 0,
+          "extra": [],
+          "payload": {
+            "plan": {
+              "id": "00000000-0000-0000-0000-000000000010",
+              "layout": {
+                "front": [
+                  {
+                    "id": "00000000-0000-0000-0000-00000000000E",
+                    "source": "custom",
+                    "showCaption": false,
+                    "content": [
+                      {
+                        "id": "00000000-0000-0000-0000-00000000000F",
+                        "content": {
+                          "text": {
+                            "_0": {
+                              "text": "card",
+                              "style": "paragraph",
+                              "bold": false,
+                              "italic": false
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "back": []
+              },
+              "exampleID": "00000000-0000-0000-0000-000000000005",
+              "recognition": true,
+              "gap": false,
+              "includeNotes": false,
+              "includeExplanation": false,
+              "fieldOverrides": {
+                "Front": "Note"
+              },
+              "audioKinds": [
+                "expression"
+              ],
+              "audioReceipts": [
+                "expression",
+                {
+                  "fingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                  "textHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "endpoint": "http://localhost:8765",
+                  "profile": "Default",
+                  "filename": "lingrove-cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc.wav"
+                }
+              ]
+            },
+            "bindings": [],
+            "activeBindingID": "00000000-0000-0000-0000-000000000011",
+            "preservedPlans": []
+          }
+        },
+        {
+          "table": "sense_explanations",
+          "id": "00000000-0000-0000-0000-000000000002:00000000-0000-0000-0000-000000000023",
+          "parent": "00000000-0000-0000-0000-000000000002",
+          "position": 0,
+          "extra": [],
+          "payload": {
+            "id": "00000000-0000-0000-0000-000000000023",
+            "input": {
+              "target": "hello",
+              "dictionaryForm": "hello",
+              "kind": "word",
+              "context": "hello",
+              "ranges": [
+                {
+                  "location": 0,
+                  "length": 5
+                }
+              ],
+              "contextKind": "none",
+              "occurrenceIdentity": "sense:00000000-0000-0000-0000-000000000002"
+            },
+            "language": "zh-Hans",
+            "result": {
+              "meaning": "\u4F60\u597D",
+              "explanation": "\u95EE\u5019\u8BED\u3002"
+            },
+            "model": "local",
+            "createdAt": 7.125
+          }
+        },
+        {
+          "table": "senses",
+          "id": "00000000-0000-0000-0000-000000000002",
+          "parent": "00000000-0000-0000-0000-000000000001",
+          "position": 0,
+          "extra": [
+            "greeting"
+          ],
+          "payload": {
+            "id": "00000000-0000-0000-0000-000000000002",
+            "meaning": "greeting",
+            "createdAt": 1E-08,
+            "updatedAt": -123.4567890123,
+            "meaningOrigin": "captured",
+            "note": "",
+            "tags": [],
+            "examples": [],
+            "isSavedWithoutContext": false,
+            "standaloneMeanings": [
+              {
+                "text": "\u4F60\u597D",
+                "language": "zh-Hans"
+              }
+            ],
+            "explanations": [],
+            "alternateMeanings": [
+              {
+                "text": "salut",
+                "language": "fr"
+              }
+            ],
+            "mergedFrom": [],
+            "createdWithoutContext": true
+          }
+        },
+        {
+          "table": "sources",
+          "id": "00000000-0000-0000-0000-000000000003",
+          "parent": null,
+          "position": 0,
+          "extra": [],
+          "payload": {
+            "id": "00000000-0000-0000-0000-000000000003",
+            "text": "hello",
+            "kind": "imported",
+            "appBundleIdentifier": "org.test",
+            "encounteredAt": 1E+100
+          }
+        },
+        {
+          "table": "sources",
+          "id": "00000000-0000-0000-0000-000000000024",
+          "parent": null,
+          "position": 1,
+          "extra": [],
+          "payload": {
+            "id": "00000000-0000-0000-0000-000000000024",
+            "text": "uncollected",
+            "kind": "imported",
+            "encounteredAt": -99999999999999
+          }
+        },
+        {
+          "table": "templates",
+          "id": "00000000-0000-0000-0000-000000000021",
+          "parent": null,
+          "position": 0,
+          "extra": [],
+          "payload": {
+            "id": "00000000-0000-0000-0000-000000000021",
+            "name": "Template",
+            "layout": {
+              "front": [],
+              "back": []
+            }
+          }
+        },
+        {
+          "table": "usage_explanations",
+          "id": "00000000-0000-0000-0000-000000000005:00000000-0000-0000-0000-00000000000C",
+          "parent": "00000000-0000-0000-0000-000000000005",
+          "position": 0,
+          "extra": [],
+          "payload": {
+            "id": "00000000-0000-0000-0000-00000000000C",
+            "input": {
+              "target": "hello",
+              "dictionaryForm": "hello",
+              "kind": "word",
+              "context": "hello",
+              "ranges": [
+                {
+                  "location": 0,
+                  "length": 5
+                }
+              ],
+              "contextKind": "unknown",
+              "occurrenceIdentity": "c4a7706c333e599abcbeb7c0fb75d8fdeb9ccb662ea94ba0fcc814ad1dccbe22"
+            },
+            "language": "zh-Hans",
+            "result": {
+              "meaning": "\u4F60\u597D",
+              "explanation": "\u95EE\u5019\u8BED\u3002"
+            },
+            "model": "local",
+            "createdAt": 8.123456789
+          }
+        },
+        {
+          "table": "usage_patterns",
+          "id": "00000000-0000-0000-0000-000000000018",
+          "parent": "00000000-0000-0000-0000-000000000002",
+          "position": 0,
+          "extra": [
+            "hello [object]"
+          ],
+          "payload": {
+            "senseID": "00000000-0000-0000-0000-000000000002",
+            "template": "hello [object]",
+            "id": "00000000-0000-0000-0000-000000000018",
+            "slots": [],
+            "formality": "unspecified",
+            "medium": "unspecified",
+            "region": "",
+            "note": "",
+            "collocations": [
+              "hello friend"
+            ],
+            "provenance": {
+              "origin": "user",
+              "status": "confirmed",
+              "source": ""
+            }
+          }
+        },
+        {
+          "table": "usages",
+          "id": "00000000-0000-0000-0000-000000000005",
+          "parent": null,
+          "position": 0,
+          "extra": [
+            "00000000-0000-0000-0000-000000000004",
+            "00000000-0000-0000-0000-000000000002",
+            "accepted"
+          ],
+          "payload": {
+            "id": "00000000-0000-0000-0000-000000000005",
+            "occurrenceID": "00000000-0000-0000-0000-000000000004",
+            "createdAt": 7E-08,
+            "senseID": "00000000-0000-0000-0000-000000000002",
+            "status": "accepted",
+            "meaning": "",
+            "meaningOrigin": "captured",
+            "translation": "\u4F60\u597D",
+            "translationLanguage": "zh-Hans",
+            "translationVariants": [
+              {
+                "text": "\u4F60\u597D",
+                "language": "zh-Hans"
+              }
+            ],
+            "completeness": "unknown",
+            "provenance": {
+              "origin": "user",
+              "status": "confirmed",
+              "source": ""
+            },
+            "explanations": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "optional-absence",
+      "rows": [
+        {
+          "table": "bindings",
+          "id": "00000000-0000-0000-0000-000000000002:legacy:00000000-0000-0000-0000-000000000011",
+          "parent": "00000000-0000-0000-0000-000000000002:legacy",
+          "position": 0,
+          "extra": [],
+          "payload": {
+            "id": "00000000-0000-0000-0000-000000000011",
+            "originSenseID": "00000000-0000-0000-0000-000000000002",
+            "endpoint": "http://localhost:8765",
+            "profile": "Default",
+            "noteID": 42,
+            "model": "Model",
+            "deck": "Deck",
+            "identityField": "LingroveID",
+            "mapping": [
+              "LingroveID",
+              "LingroveID"
+            ],
+            "fields": {
+              "LingroveID": "00000000-0000-0000-0000-000000000002"
+            },
+            "syncedAt": -99.125
+          }
+        },
+        {
+          "table": "categories",
+          "id": "00000000-0000-0000-0000-000000000009",
+          "parent": null,
+          "position": 0,
+          "extra": [
+            "00000000-0000-0000-0000-000000000022",
+            "root",
+            "content"
+          ],
+          "payload": {
+            "id": "00000000-0000-0000-0000-000000000009",
+            "axis": "content",
+            "labels": [
+              {
+                "text": "Category",
+                "id": "00000000-0000-0000-0000-00000000000A",
+                "preferred": true
+              }
+            ],
+            "definition": "",
+            "frameworkID": "00000000-0000-0000-0000-000000000022",
+            "key": "root",
+            "isRetired": false,
+            "provenance": {
+              "origin": "user",
+              "status": "confirmed",
+              "source": ""
+            }
+          }
+        },
+        {
+          "table": "categories",
+          "id": "00000000-0000-0000-0000-00000000001D",
+          "parent": null,
+          "position": 1,
+          "extra": [
+            null,
+            null,
+            "content"
+          ],
+          "payload": {
+            "id": "00000000-0000-0000-0000-00000000001D",
+            "axis": "content",
+            "labels": [
+              {
+                "text": "Child",
+                "id": "00000000-0000-0000-0000-00000000001E",
+                "preferred": true
+              }
+            ],
+            "definition": "",
+            "isRetired": false,
+            "provenance": {
+              "origin": "user",
+              "status": "confirmed",
+              "source": ""
+            }
+          }
+        },
+        {
+          "table": "category_memberships",
+          "id": "00000000-0000-0000-0000-00000000000B",
+          "parent": null,
+          "position": 0,
+          "extra": [
+            "00000000-0000-0000-0000-000000000006",
+            "00000000-0000-0000-0000-000000000009"
+          ],
+          "payload": {
+            "id": "00000000-0000-0000-0000-00000000000B",
+            "nodeID": "00000000-0000-0000-0000-000000000006",
+            "categoryID": "00000000-0000-0000-0000-000000000009",
+            "provenance": {
+              "origin": "user",
+              "status": "confirmed",
+              "source": ""
+            }
+          }
+        },
+        {
+          "table": "category_overrides",
+          "id": "00000000-0000-0000-0000-000000000009",
+          "parent": "00000000-0000-0000-0000-000000000009",
+          "position": 0,
+          "extra": [],
+          "payload": {
+            "categoryID": "00000000-0000-0000-0000-000000000009",
+            "labels": [
+              {
+                "text": "Local",
+                "id": "00000000-0000-0000-0000-000000000020",
+                "preferred": true
+              }
+            ],
+            "definition": "",
+            "isHidden": true
+          }
+        },
+        {
+          "table": "category_parents",
+          "id": "00000000-0000-0000-0000-00000000001F",
+          "parent": null,
+          "position": 0,
+          "extra": [
+            "00000000-0000-0000-0000-00000000001D",
+            "00000000-0000-0000-0000-000000000009"
+          ],
+          "payload": {
+            "id": "00000000-0000-0000-0000-00000000001F",
+            "categoryID": "00000000-0000-0000-0000-00000000001D",
+            "parentID": "00000000-0000-0000-0000-000000000009"
+          }
+        },
+        {
+          "table": "classification_frameworks",
+          "id": "00000000-0000-0000-0000-000000000022",
+          "parent": null,
+          "position": 0,
+          "extra": [
+            "framework"
+          ],
+          "payload": {
+            "id": "00000000-0000-0000-0000-000000000022",
+            "key": "framework",
+            "version": 2147483648
+          }
+        },
+        {
+          "table": "collection_interpretations",
+          "id": "00000000-0000-0000-0000-000000000002:00000000-0000-0000-0000-000000000005",
+          "parent": "00000000-0000-0000-0000-000000000002",
+          "position": 0,
+          "extra": [
+            "00000000-0000-0000-0000-000000000005"
+          ],
+          "payload": "00000000-0000-0000-0000-000000000005"
+        },
+        {
+          "table": "collections",
+          "id": "00000000-0000-0000-0000-000000000002",
+          "parent": null,
+          "position": 0,
+          "extra": [
+            "00000000-0000-0000-0000-000000000002"
+          ],
+          "payload": {
+            "senseID": "00000000-0000-0000-0000-000000000002",
+            "savedAt": 3.141592653589793,
+            "interpretationIDs": [],
+            "isSavedWithoutContext": false,
+            "note": "note",
+            "tags": [
+              "tag"
+            ]
+          }
+        },
+        {
+          "table": "cue_targets",
+          "id": "00000000-0000-0000-0000-00000000001C",
+          "parent": "00000000-0000-0000-0000-00000000001A",
+          "position": 0,
+          "extra": [
+            "00000000-0000-0000-0000-000000000006"
+          ],
+          "payload": {
+            "cueID": "00000000-0000-0000-0000-00000000001A",
+            "nodeID": "00000000-0000-0000-0000-000000000006",
+            "id": "00000000-0000-0000-0000-00000000001C",
+            "conditions": "",
+            "provenance": {
+              "origin": "user",
+              "status": "confirmed",
+              "source": ""
+            }
+          }
+        },
+        {
+          "table": "entries",
+          "id": "00000000-0000-0000-0000-000000000001",
+          "parent": null,
+          "position": 0,
+          "extra": [
+            "e0bdfc9484981cd3ceaa9d1dae1674ef4363b15fb48848f16f71c1d8494b85f1",
+            "und",
+            "hello"
+          ],
+          "payload": {
+            "id": "00000000-0000-0000-0000-000000000001",
+            "expression": "hello",
+            "dictionaryForm": "hello",
+            "kind": "word",
+            "senses": [],
+            "createdAt": 814759445.1234567,
+            "updatedAt": -1E-08
+          }
+        },
+        {
+          "table": "mapping_evidence",
+          "id": "00000000-0000-0000-0000-000000000008:00000000-0000-0000-0000-000000000005",
+          "parent": "00000000-0000-0000-0000-000000000008",
+          "position": 0,
+          "extra": [
+            "00000000-0000-0000-0000-000000000005"
+          ],
+          "payload": "00000000-0000-0000-0000-000000000005"
+        },
+        {
+          "table": "mapping_roles",
+          "id": "00000000-0000-0000-0000-000000000019",
+          "parent": "00000000-0000-0000-0000-000000000008",
+          "position": 0,
+          "extra": [
+            "00000000-0000-0000-0000-000000000014",
+            "00000000-0000-0000-0000-000000000017"
+          ],
+          "payload": {
+            "roleID": "00000000-0000-0000-0000-000000000014",
+            "slotID": "00000000-0000-0000-0000-000000000017",
+            "id": "00000000-0000-0000-0000-000000000019"
+          }
+        },
+        {
+          "table": "meaning_labels",
+          "id": "00000000-0000-0000-0000-000000000007",
+          "parent": "00000000-0000-0000-0000-000000000006",
+          "position": 0,
+          "extra": [
+            "en",
+            "Greeting",
+            "yes"
+          ],
+          "payload": {
+            "text": "Greeting",
+            "id": "00000000-0000-0000-0000-000000000007",
+            "language": "en",
+            "preferred": true
+          }
+        },
+        {
+          "table": "meaning_labels",
+          "id": "00000000-0000-0000-0000-000000000016",
+          "parent": "00000000-0000-0000-0000-000000000015",
+          "position": 0,
+          "extra": [
+            "und",
+            "Other",
+            "yes"
+          ],
+          "payload": {
+            "text": "Other",
+            "id": "00000000-0000-0000-0000-000000000016",
+            "preferred": true
+          }
+        },
+        {
+          "table": "meaning_mappings",
+          "id": "00000000-0000-0000-0000-000000000008",
+          "parent": "00000000-0000-0000-0000-000000000002",
+          "position": 0,
+          "extra": [
+            "00000000-0000-0000-0000-000000000006",
+            "00000000-0000-0000-0000-000000000018",
+            "expressesContent"
+          ],
+          "payload": {
+            "nodeID": "00000000-0000-0000-0000-000000000006",
+            "senseID": "00000000-0000-0000-0000-000000000002",
+            "id": "00000000-0000-0000-0000-000000000008",
+            "patternID": "00000000-0000-0000-0000-000000000018",
+            "relation": "expressesContent",
+            "conditions": "",
+            "nuance": "",
+            "roleBindings": [],
+            "evidenceIDs": [],
+            "provenance": {
+              "origin": "model",
+              "status": "proposed",
+              "source": "test",
+              "confidence": 0.7
+            }
+          }
+        },
+        {
+          "table": "meaning_nodes",
+          "id": "00000000-0000-0000-0000-000000000006",
+          "parent": null,
+          "position": 0,
+          "extra": [
+            "concept"
+          ],
+          "payload": {
+            "id": "00000000-0000-0000-0000-000000000006",
+            "labels": [],
+            "kind": "concept",
+            "definition": "",
+            "scopeNote": "",
+            "roles": [],
+            "provenance": {
+              "origin": "user",
+              "status": "confirmed",
+              "source": ""
+            },
+            "createdAt": 1.5,
+            "updatedAt": -1.25
+          }
+        },
+        {
+          "table": "meaning_nodes",
+          "id": "00000000-0000-0000-0000-000000000015",
+          "parent": null,
+          "position": 1,
+          "extra": [
+            "concept"
+          ],
+          "payload": {
+            "id": "00000000-0000-0000-0000-000000000015",
+            "labels": [],
+            "kind": "concept",
+            "definition": "",
+            "scopeNote": "",
+            "roles": [],
+            "provenance": {
+              "origin": "user",
+              "status": "confirmed",
+              "source": ""
+            },
+            "createdAt": 2.5,
+            "updatedAt": -2.25
+          }
+        },
+        {
+          "table": "meaning_relations",
+          "id": "00000000-0000-0000-0000-00000000001B",
+          "parent": "00000000-0000-0000-0000-000000000006",
+          "position": 0,
+          "extra": [
+            "00000000-0000-0000-0000-000000000015",
+            "related"
+          ],
+          "payload": {
+            "sourceID": "00000000-0000-0000-0000-000000000006",
+            "targetID": "00000000-0000-0000-0000-000000000015",
+            "id": "00000000-0000-0000-0000-00000000001B",
+            "kind": "related",
+            "note": "",
+            "provenance": {
+              "origin": "user",
+              "status": "confirmed",
+              "source": ""
+            }
+          }
+        },
+        {
+          "table": "meaning_roles",
+          "id": "00000000-0000-0000-0000-000000000014",
+          "parent": "00000000-0000-0000-0000-000000000006",
+          "position": 0,
+          "extra": [
+            "object"
+          ],
+          "payload": {
+            "name": "object",
+            "id": "00000000-0000-0000-0000-000000000014",
+            "description": ""
+          }
+        },
+        {
+          "table": "occurrences",
+          "id": "00000000-0000-0000-0000-000000000004",
+          "parent": "00000000-0000-0000-0000-000000000003",
+          "position": 0,
+          "extra": [],
+          "payload": {
+            "id": "00000000-0000-0000-0000-000000000004",
+            "sourceID": "00000000-0000-0000-0000-000000000003",
+            "ranges": [
+              {
+                "location": 0,
+                "length": 5
+              }
+            ]
+          }
+        },
+        {
+          "table": "pattern_slots",
+          "id": "00000000-0000-0000-0000-000000000017",
+          "parent": "00000000-0000-0000-0000-000000000018",
+          "position": 0,
+          "extra": [
+            "object"
+          ],
+          "payload": {
+            "name": "object",
+            "id": "00000000-0000-0000-0000-000000000017",
+            "constraint": ""
+          }
+        },
+        {
+          "table": "retrieval_cues",
+          "id": "00000000-0000-0000-0000-00000000001A",
+          "parent": null,
+          "position": 0,
+          "extra": [
+            "zh-Hans",
+            "\u95EE\u5019"
+          ],
+          "payload": {
+            "text": "\u95EE\u5019",
+            "id": "00000000-0000-0000-0000-00000000001A",
+            "language": "zh-Hans",
+            "kind": "paraphrase"
+          }
+        },
+        {
+          "table": "reviews",
+          "id": "00000000-0000-0000-0000-000000000002:legacy",
+          "parent": "00000000-0000-0000-0000-000000000002",
+          "position": 0,
+          "extra": [],
+          "payload": {
+            "plan": {
+              "id": "00000000-0000-0000-0000-000000000010",
+              "layout": {
+                "front": [
+                  {
+                    "id": "00000000-0000-0000-0000-00000000000E",
+                    "source": "custom",
+                    "showCaption": false,
+                    "content": [
+                      {
+                        "id": "00000000-0000-0000-0000-00000000000F",
+                        "content": {
+                          "text": {
+                            "_0": {
+                              "text": "card",
+                              "style": "paragraph",
+                              "bold": false,
+                              "italic": false
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "back": []
+              },
+              "exampleID": "00000000-0000-0000-0000-000000000005",
+              "recognition": true,
+              "gap": false,
+              "includeNotes": false,
+              "includeExplanation": false,
+              "fieldOverrides": {
+                "Front": "Note"
+              },
+              "audioKinds": [
+                "expression"
+              ],
+              "audioReceipts": [
+                "expression",
+                {
+                  "fingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                  "textHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "endpoint": "http://localhost:8765",
+                  "profile": "Default",
+                  "filename": "lingrove-cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc.wav"
+                }
+              ]
+            },
+            "bindings": [],
+            "activeBindingID": "00000000-0000-0000-0000-000000000011",
+            "preservedPlans": []
+          }
+        },
+        {
+          "table": "sense_explanations",
+          "id": "00000000-0000-0000-0000-000000000002:00000000-0000-0000-0000-000000000023",
+          "parent": "00000000-0000-0000-0000-000000000002",
+          "position": 0,
+          "extra": [],
+          "payload": {
+            "id": "00000000-0000-0000-0000-000000000023",
+            "input": {
+              "target": "hello",
+              "dictionaryForm": "hello",
+              "kind": "word",
+              "context": "hello",
+              "ranges": [
+                {
+                  "location": 0,
+                  "length": 5
+                }
+              ],
+              "contextKind": "none",
+              "occurrenceIdentity": "sense:00000000-0000-0000-0000-000000000002"
+            },
+            "language": "zh-Hans",
+            "result": {
+              "meaning": "\u4F60\u597D",
+              "explanation": "\u95EE\u5019\u8BED\u3002"
+            },
+            "model": "local",
+            "createdAt": 7.125
+          }
+        },
+        {
+          "table": "senses",
+          "id": "00000000-0000-0000-0000-000000000002",
+          "parent": "00000000-0000-0000-0000-000000000001",
+          "position": 0,
+          "extra": [
+            "greeting"
+          ],
+          "payload": {
+            "id": "00000000-0000-0000-0000-000000000002",
+            "meaning": "greeting",
+            "createdAt": 1E-08,
+            "updatedAt": -123.4567890123,
+            "meaningOrigin": "captured",
+            "note": "",
+            "tags": [],
+            "examples": [],
+            "isSavedWithoutContext": false,
+            "standaloneMeanings": [
+              {
+                "text": "\u4F60\u597D",
+                "language": "zh-Hans"
+              }
+            ],
+            "explanations": [],
+            "alternateMeanings": [
+              {
+                "text": "salut",
+                "language": "fr"
+              }
+            ],
+            "mergedFrom": [],
+            "createdWithoutContext": true
+          }
+        },
+        {
+          "table": "sources",
+          "id": "00000000-0000-0000-0000-000000000003",
+          "parent": null,
+          "position": 0,
+          "extra": [],
+          "payload": {
+            "id": "00000000-0000-0000-0000-000000000003",
+            "text": "hello",
+            "kind": "imported",
+            "appBundleIdentifier": "org.test",
+            "encounteredAt": 1E+100
+          }
+        },
+        {
+          "table": "sources",
+          "id": "00000000-0000-0000-0000-000000000024",
+          "parent": null,
+          "position": 1,
+          "extra": [],
+          "payload": {
+            "id": "00000000-0000-0000-0000-000000000024",
+            "text": "uncollected",
+            "kind": "imported",
+            "encounteredAt": -99999999999999
+          }
+        },
+        {
+          "table": "usage_explanations",
+          "id": "00000000-0000-0000-0000-000000000005:00000000-0000-0000-0000-00000000000C",
+          "parent": "00000000-0000-0000-0000-000000000005",
+          "position": 0,
+          "extra": [],
+          "payload": {
+            "id": "00000000-0000-0000-0000-00000000000C",
+            "input": {
+              "target": "hello",
+              "dictionaryForm": "hello",
+              "kind": "word",
+              "context": "hello",
+              "ranges": [
+                {
+                  "location": 0,
+                  "length": 5
+                }
+              ],
+              "contextKind": "unknown",
+              "occurrenceIdentity": "c4a7706c333e599abcbeb7c0fb75d8fdeb9ccb662ea94ba0fcc814ad1dccbe22"
+            },
+            "language": "zh-Hans",
+            "result": {
+              "meaning": "\u4F60\u597D",
+              "explanation": "\u95EE\u5019\u8BED\u3002"
+            },
+            "model": "local",
+            "createdAt": 8.123456789
+          }
+        },
+        {
+          "table": "usage_patterns",
+          "id": "00000000-0000-0000-0000-000000000018",
+          "parent": "00000000-0000-0000-0000-000000000002",
+          "position": 0,
+          "extra": [
+            "hello [object]"
+          ],
+          "payload": {
+            "senseID": "00000000-0000-0000-0000-000000000002",
+            "template": "hello [object]",
+            "id": "00000000-0000-0000-0000-000000000018",
+            "slots": [],
+            "formality": "unspecified",
+            "medium": "unspecified",
+            "region": "",
+            "note": "",
+            "collocations": [
+              "hello friend"
+            ],
+            "provenance": {
+              "origin": "user",
+              "status": "confirmed",
+              "source": ""
+            }
+          }
+        },
+        {
+          "table": "usages",
+          "id": "00000000-0000-0000-0000-000000000005",
+          "parent": null,
+          "position": 0,
+          "extra": [
+            "00000000-0000-0000-0000-000000000004",
+            "00000000-0000-0000-0000-000000000002",
+            "accepted"
+          ],
+          "payload": {
+            "id": "00000000-0000-0000-0000-000000000005",
+            "occurrenceID": "00000000-0000-0000-0000-000000000004",
+            "createdAt": 7E-08,
+            "senseID": "00000000-0000-0000-0000-000000000002",
+            "status": "accepted",
+            "meaning": "",
+            "meaningOrigin": "captured",
+            "translation": "\u4F60\u597D",
+            "translationLanguage": "zh-Hans",
+            "translationVariants": [
+              {
+                "text": "\u4F60\u597D",
+                "language": "zh-Hans"
+              }
+            ],
+            "completeness": "unknown",
+            "provenance": {
+              "origin": "user",
+              "status": "confirmed",
+              "source": ""
+            },
+            "explanations": []
+          }
+        }
+      ]
+    }
+  ]
+}

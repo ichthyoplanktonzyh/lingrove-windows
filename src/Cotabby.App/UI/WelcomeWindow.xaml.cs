@@ -6,6 +6,7 @@ using System.Windows.Media.Animation;
 using Cotabby.App.Hosting;
 using Cotabby.App.Settings;
 using Cotabby.App.UI.Controls;
+using Cotabby.App.UI.Settings.Panes;
 using Cotabby.Core.Models;
 using Cotabby.Core.Suggestions;
 using Cotabby.Inference;
@@ -26,6 +27,7 @@ public partial class WelcomeWindow : Window
     private readonly List<Border> _capsules = [];
     private int _step;
     private string _templateModelId;
+    private bool _templateChosen, _recommendedRoute = true;
 
     // Background model preparation. The sequence number lets a run that was superseded,
     // because the user went back and picked another starting point, drop its late results.
@@ -36,14 +38,22 @@ public partial class WelcomeWindow : Window
     private string? _modelReadyFor;
     private string? _modelError;
     private int? _modelPercent;
+    private readonly CompletionStatusGate _statusGate = new();
+    private CompletionStatusGate.Token? _modelOperation;
 
     public WelcomeWindow(AppHost host)
     {
         _host = host;
         InitializeComponent();
+        _host.SettingsApplied += HostSettingsApplied;
+        Closed += (_, _) => { _host.SettingsApplied -= HostSettingsApplied; _statusGate.Invalidate(); _modelCts?.Cancel(); };
         WindowTheme.Follow(this);
 
-        _steps = [StepWelcome, StepTemplates, StepProfile, StepKeys, StepDone];
+        _steps = [StepWelcome, StepRecommended, StepTemplates, StepProfile, StepKeys, StepDone];
+        var recommendation = new RecommendedSetupView(host);
+        recommendation.ManualRequested += () => { _recommendedRoute = false; ShowStep(2); };
+        recommendation.Applied += () => _recommendedRoute = true;
+        StepRecommended.Content = recommendation;
         _templates = [(QuickCard, QuickBadge), (EverydayCard, EverydayBadge), (PowerCard, PowerBadge)];
         BuildCapsules();
         BuildShortcutRows();
@@ -105,12 +115,13 @@ public partial class WelcomeWindow : Window
         }
     }
 
-    private void OnBack(object sender, RoutedEventArgs e) => ShowStep(_step - 1);
+    private void OnBack(object sender, RoutedEventArgs e) => ShowStep(_steps[_step] == StepProfile && _recommendedRoute ? 1 : _step - 1);
 
     private void OnContinue(object sender, RoutedEventArgs e)
     {
-        if (_steps[_step] == StepTemplates) CommitTemplate();
+        if (_steps[_step] == StepTemplates && _templateChosen) CommitTemplate();
         if (_steps[_step] == StepDone) Finish();
+        else if (_steps[_step] == StepRecommended) { _recommendedRoute = true; ShowStep(3); }
         else ShowStep(_step + 1);
     }
 
@@ -135,6 +146,7 @@ public partial class WelcomeWindow : Window
     private void OnTemplateClicked(object sender, MouseButtonEventArgs e)
     {
         _templateModelId = TemplateId((Border)sender);
+        _templateChosen = true;
         UpdateTemplateVisuals();
         UpdateTemplateStatus();
     }
@@ -143,7 +155,7 @@ public partial class WelcomeWindow : Window
     {
         foreach (var (card, badge) in _templates)
         {
-            bool selected = TemplateId(card) == _templateModelId;
+            bool selected = _templateChosen && TemplateId(card) == _templateModelId;
             card.SetResourceReference(Border.BorderBrushProperty, selected ? "AccentBrush" : "CardBorder");
             badge.SetResourceReference(Border.BackgroundProperty, selected ? "AccentTint" : "KeycapBg");
         }
@@ -157,7 +169,7 @@ public partial class WelcomeWindow : Window
             return;
         }
         bool ready = ModelDownloader.IsCached(model);
-        TemplateStatusText.Text = ready
+        TemplateStatusText.Text = !_templateChosen ? "Choose a model to configure it, or continue without changes." : ready
             ? "Model ready"
             : $"Will download {model.ApproxSizeBytes / 1_000_000_000.0:0.#} GB on Continue";
         TemplateStatusText.SetResourceReference(TextBlock.ForegroundProperty, ready ? "GreenBrush" : "TextSecondary");
@@ -174,7 +186,8 @@ public partial class WelcomeWindow : Window
 
     private async void StartModelEnsure(string modelId)
     {
-        if (_modelReadyFor == modelId)
+        if (_modelReadyFor == modelId && _modelOperation is { } readyToken
+            && _statusGate.IsCurrent(readyToken, _host.CompletionStatusEpoch))
         {
             UpdateModelStatusUi();
             return;
@@ -182,7 +195,12 @@ public partial class WelcomeWindow : Window
         // Confirming the same starting point again must not restart a running download.
         if (_ensureBusy && _lastEnsureFor == modelId) return;
 
-        if (_host.Runtime.IsReady && _host.Runtime.ActiveModel?.Id == modelId)
+        if (_host.CompletionStatusEpoch is not { } epoch)
+        {
+            _modelReadyFor = null; _modelError = null; _ensureBusy = false; UpdateModelStatusUi(); return;
+        }
+        var status = _statusGate.Begin(epoch); _modelOperation = status;
+        if (_host.AdmittedLocalModel?.Id == modelId)
         {
             _modelReadyFor = modelId;
             _modelError = null;
@@ -192,7 +210,8 @@ public partial class WelcomeWindow : Window
         }
 
         _modelCts?.Cancel();
-        _modelCts = new CancellationTokenSource();
+        using var transfer = new CancellationTokenSource();
+        _modelCts = transfer;
         var seq = ++_ensureSeq;
         _lastEnsureFor = modelId;
         _ensureBusy = true;
@@ -203,7 +222,7 @@ public partial class WelcomeWindow : Window
 
         var progress = new Progress<ModelDownloader.Progress>(p =>
         {
-            if (seq != _ensureSeq) return;
+            if (seq != _ensureSeq || !_statusGate.IsCurrent(status, _host.CompletionStatusEpoch)) return;
             if (p.TotalBytes is long total && total > 0)
             {
                 _modelPercent = (int)(p.BytesDownloaded * 100 / total);
@@ -213,25 +232,36 @@ public partial class WelcomeWindow : Window
 
         try
         {
-            await _host.EnsureModelReadyAsync(progress, _modelCts.Token);
-            if (seq == _ensureSeq)
+            bool ready = await _host.EnsureModelReadyAsync(progress, transfer.Token)
+                && _host.AdmittedLocalModel?.Id == modelId;
+            if (seq == _ensureSeq && _statusGate.IsCurrent(status, _host.CompletionStatusEpoch))
             {
-                _modelReadyFor = modelId;
+                _modelReadyFor = ready ? modelId : null;
+                _modelError = ready ? null : "The selected model is unavailable.";
                 _ensureBusy = false;
             }
         }
         catch (OperationCanceledException)
         {
-            if (seq == _ensureSeq) _ensureBusy = false;
+            if (seq == _ensureSeq && _statusGate.IsCurrent(status, _host.CompletionStatusEpoch)) _ensureBusy = false;
         }
         catch (Exception ex)
         {
-            if (seq == _ensureSeq)
+            if (seq == _ensureSeq && _statusGate.IsCurrent(status, _host.CompletionStatusEpoch))
             {
-                _modelError = ex.Message;
+                _modelError = ModelDisplayText.Safe(ex.Message);
                 _ensureBusy = false;
             }
         }
+        finally { if (ReferenceEquals(_modelCts, transfer)) _modelCts = null; }
+        if (seq == _ensureSeq && _statusGate.IsCurrent(status, _host.CompletionStatusEpoch)) UpdateModelStatusUi();
+    }
+
+    private void HostSettingsApplied()
+    {
+        if (_modelOperation is not { } operation || _statusGate.IsCurrent(operation, _host.CompletionStatusEpoch)) return;
+        _statusGate.Invalidate(); _modelOperation = null; _ensureSeq++;
+        _modelCts?.Cancel(); _ensureBusy = false; _modelReadyFor = null; _modelError = null; _modelPercent = null;
         UpdateModelStatusUi();
     }
 

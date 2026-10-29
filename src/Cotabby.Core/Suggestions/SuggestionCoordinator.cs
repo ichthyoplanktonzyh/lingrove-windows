@@ -89,9 +89,9 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
     private long _keySequence;
 
     /// <summary>What the hook thread may accept right now.</summary>
-    private sealed record Offer(KeyBinding AcceptWord, KeyBinding AcceptAll);
+    private sealed record Offer(KeyBinding AcceptWord, KeyBinding AcceptAll, FocusedField Field);
 
-    private sealed record AcceptKeyOwnership(KeyBinding AcceptWord, long ExpiresAt);
+    private sealed record AcceptKeyOwnership(KeyBinding AcceptWord, long ExpiresAt, FocusedField Field);
 
     private sealed record AcceptedTail(string Text, string PrecedingText);
 
@@ -134,6 +134,10 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
     /// <summary>True while an inline feature such as the emoji picker owns the keyboard.</summary>
     public Func<bool>? InlineCaptureActive { get; set; }
 
+    /// <summary>Optional local-only readiness owner. It may prepare the already selected cached
+    /// model; a request cancels only its wait, while that owner tracks and drains preparation.</summary>
+    public Func<CancellationToken, Task<bool>>? EnsureLocalReady { get; set; }
+
     /// <summary>
     /// True when Cotabby may act in this field. The emoji picker and macros follow the same
     /// rules as suggestions, so turning Cotabby off or excluding an app silences them too.
@@ -159,6 +163,14 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
             UpdateDebounce(value, lastLatencyMs: null);
             Post(() => CancelSession("settings changed"));
         }
+    }
+
+    /// <summary>Withdraw queued edits synchronously and retire visible/in-flight work on the UI owner.</summary>
+    public void InvalidateSession()
+    {
+        _pendingEdits.Invalidate();
+        _work.Cancel();
+        Post(() => { if (!_disposed) CancelSession("model changed"); });
     }
 
     public void Start()
@@ -189,6 +201,7 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
         // Revoke queued accepts at event arrival, before its UI callback can race a previously
         // posted accept. The tracker has already advanced the focus epoch on its producer thread.
         _pendingEdits.Invalidate();
+        _work.Cancel();
         Post(() =>
         {
             if (field is not null
@@ -217,7 +230,7 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
             return;
         }
 
-        if (_offer is { } offer)
+        if (_offer is { } offer && InsertionTargetPolicy.IsSameField(offer.Field, _focus.Current))
         {
             bool word = offer.AcceptWord.Matches(ev);
             bool all = !word && offer.AcceptAll.Matches(ev);
@@ -232,6 +245,7 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
             }
         }
         else if (_ownership is { } ownership
+                 && InsertionTargetPolicy.IsSameField(ownership.Field, _focus.Current)
                  && ownership.AcceptWord.Matches(ev)
                  && _clock.GetTimestamp() < ownership.ExpiresAt)
         {
@@ -378,10 +392,18 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
             if (!settings.SuggestWithinWords && CaretWordContext.UnfinishedWord(preceding) is not null) return;
             // A completion inside a token would duplicate or splice what follows the caret.
             if (CaretTokenPosition.IsInsideToken(preceding, field.TrailingText)) return;
-            if (!_engine.IsReady) return;
-
             var request = SuggestionRequestFactory.Build(
                 field, requestId, settings, settings.ClipboardContext ? _clipboard?.For(field) : null);
+            if (!_engine.IsReady)
+            {
+                if (settings.UsesEndpoint || EnsureLocalReady is not { } ensure || !await ensure(ct).ConfigureAwait(false)) return;
+                if (!_engine.IsReady) return;
+            }
+            if (ct.IsCancellationRequested || !_pendingEdits.IsCurrent(editEpoch)) return;
+            var beforeGeneration = _focus.Refresh();
+            if (!InsertionTargetPolicy.IsCurrentTarget(field, beforeGeneration)
+                || SuggestionAvailability.DisabledReason(_settings, _clock.GetUtcNow(), _batterySaverOn()) is not null
+                || SuggestionAvailability.DisabledReason(_settings, beforeGeneration!) is not null) return;
             var stopwatch = Stopwatch.StartNew();
             string text = await GenerateAsync(request, ct).ConfigureAwait(false);
             int latencyMs = (int)stopwatch.ElapsedMilliseconds;
@@ -758,7 +780,7 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
             // continuation instead of leaking into the host.
             _ownership = new AcceptKeyOwnership(
                 ShortcutResolver.AcceptWord(field.ProcessName, settings.ShortcutOverrides, settings.AcceptWord),
-                now + (long)(PostExhaustionWindow.TotalSeconds * _clock.TimestampFrequency));
+                now + (long)(PostExhaustionWindow.TotalSeconds * _clock.TimestampFrequency), field);
         }
         else
         {
@@ -953,7 +975,7 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
         var process = _sessionField?.ProcessName;
         _offer = new Offer(
             ShortcutResolver.AcceptWord(process, settings.ShortcutOverrides, settings.AcceptWord),
-            ShortcutResolver.AcceptAll(process, settings.ShortcutOverrides, settings.AcceptAll));
+            ShortcutResolver.AcceptAll(process, settings.ShortcutOverrides, settings.AcceptAll), _sessionField!);
     }
 
     private void ClearSession()

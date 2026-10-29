@@ -5,6 +5,8 @@ using Cotabby.App.Hosting;
 using Cotabby.App.Overlay;
 using Cotabby.App.Tray;
 using Cotabby.App.UI;
+using Cotabby.App.UI.Settings.Panes;
+using Cotabby.Core.Suggestions;
 
 namespace Cotabby.App;
 
@@ -62,15 +64,19 @@ public partial class App : Application
 
     private static async Task LoadModelAsync(AppHost host, TrayController tray)
     {
-        tray.SetStatus("Loading model…");
+        if (host.CompletionStatusEpoch is null) return;
+        CompletionStatusGate.Token? status = null;
         try
         {
+            host.ReconcileCompletionSelection();
+            status = tray.BeginCompletionStatus("Loading model…");
+            if (status is not { } current) return;
             bool loaded = await host.TryLoadCachedAsync();
-            tray.SetStatus(loaded ? null : "No model yet. Open Settings to download one.");
+            tray.PublishCompletionStatus(current, loaded ? null : "No model yet. Open Settings to download one.");
         }
         catch (Exception ex)
         {
-            tray.SetStatus("Model load failed: " + ex.Message);
+            if (status is { } current) tray.PublishCompletionStatus(current, "Model load failed: " + ModelDisplayText.Safe(ex.Message));
         }
     }
 

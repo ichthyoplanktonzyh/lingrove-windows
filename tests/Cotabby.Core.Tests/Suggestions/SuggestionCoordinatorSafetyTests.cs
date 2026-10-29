@@ -133,6 +133,7 @@ public sealed class SuggestionCoordinatorSafetyTests : CoordinatorHarness
     [InlineData("dismissal")]
     [InlineData("focus")]
     [InlineData("settings")]
+    [InlineData("model")]
     public async Task PendingAcceptReceivesAndHonorsInvalidationToken(string invalidation)
     {
         Type("hello");
@@ -179,6 +180,9 @@ public sealed class SuggestionCoordinatorSafetyTests : CoordinatorHarness
                 break;
             case "settings":
                 Coordinator.Settings = Coordinator.Settings with { Enabled = false };
+                break;
+            case "model":
+                Coordinator.InvalidateSession();
                 break;
         }
 

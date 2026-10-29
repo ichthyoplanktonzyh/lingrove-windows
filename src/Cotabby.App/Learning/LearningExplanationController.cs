@@ -1,6 +1,7 @@
 using System.IO;
 using Cotabby.App.Settings;
 using Cotabby.Core.LanguageLearning;
+using Cotabby.Core.Models;
 using Cotabby.Core.Suggestions;
 using Cotabby.Core.Support.Runtime;
 using Cotabby.Inference.LanguageLearning.Local;
@@ -26,6 +27,7 @@ internal sealed class LearningExplanationController : IAsyncDisposable
     private readonly HashSet<Task> _releases = [];
     private LearningModelSnapshot _profile;
     private bool _enabled;
+    private bool _modelAdmitted;
     private bool _pauseOnBatterySaver;
     private PauseState? _pause;
     private LocalRuntimeResidency _residency = LocalRuntimeResidency.Released;
@@ -58,12 +60,15 @@ internal sealed class LearningExplanationController : IAsyncDisposable
     {
         ArgumentNullException.ThrowIfNull(settings);
         var next = settings.LearningExplanationSnapshot();
+        bool admitted = settings.IsLocalModelCandidate(next.LocalModel, LocalModelTask.Explanation)
+            && LocalModelTaskPolicy.PermitsTemplate(next.Template, LocalModelTask.Explanation);
         lock (_gate)
         {
             if (_disposal is not null) return;
-            bool allocationChanged = !_profile.UsesSameRuntime(next);
+            bool allocationChanged = !_profile.UsesSameRuntime(next) || _modelAdmitted != admitted;
             if (_profile != next) StopIdleLocked();
             _profile = next;
+            _modelAdmitted = admitted;
             _enabled = settings.Enabled;
             _pause = settings.Pause;
             _pauseOnBatterySaver = settings.PauseOnBatterySaver;
@@ -92,7 +97,7 @@ internal sealed class LearningExplanationController : IAsyncDisposable
 
     private void ReconcileLocked()
     {
-        bool allowed = AllowedLocked();
+        bool allowed = AllowedLocked() && _modelAdmitted;
         _residency = LocalRuntimeResidencyPolicy.Residency(usesLocalModel: true,
             enabled: allowed, paused: !allowed, keepWarm: false);
         if (!allowed)
@@ -108,6 +113,7 @@ internal sealed class LearningExplanationController : IAsyncDisposable
         lock (_gate)
         {
             if (_disposal is not null || !AllowedLocked() || _profile != profile) throw new OperationCanceledException();
+            if (!_modelAdmitted) throw new LearningTranslationException(LearningTranslationFailure.LocalModelNotConfigured);
             string name = profile.LocalModel;
             // This setting denotes an installed filename, never an arbitrary path. Explicitly
             // reject both separators even in cross-platform tests; Windows owns the actual IO.
@@ -127,7 +133,7 @@ internal sealed class LearningExplanationController : IAsyncDisposable
     {
         token.ThrowIfCancellationRequested();
         lock (_gate)
-            if (_disposal is not null || !AllowedLocked() || _profile != profile) throw new OperationCanceledException();
+            if (_disposal is not null || !AllowedLocked() || !_modelAdmitted || _profile != profile) throw new OperationCanceledException();
     }
 
     private void FacadeDrained()

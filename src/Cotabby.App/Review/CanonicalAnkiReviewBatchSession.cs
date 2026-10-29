@@ -141,7 +141,9 @@ internal sealed class CanonicalAnkiReviewBatchSession : INotifyPropertyChanged
             }
             catch (OperationCanceledException) when (token.IsCancellationRequested)
             {
-                for (int remaining = i; remaining < _items.Length; remaining++) Replace(remaining, _items[remaining] with { Status = ReviewBatchStatus.Cancelled, Message = null });
+                for (int remaining = i; remaining < _items.Length; remaining++)
+                    if (_items[remaining].Status is not (ReviewBatchStatus.Synced or ReviewBatchStatus.Skipped))
+                        Replace(remaining, _items[remaining] with { Status = ReviewBatchStatus.Cancelled, Message = null });
                 return;
             }
             catch (Exception error) { Replace(i, _items[i] with { Status = ReviewBatchStatus.Failed, Message = error.Message }); }

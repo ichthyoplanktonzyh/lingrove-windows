@@ -14,7 +14,12 @@ skips acknowledged rows and uses the same controller/client, Store and media tra
 or conflicting item does not stop later items; explicit retry excludes previously synced cards.
 Stop cancels remaining work without rolling back a remote note; the existing pending identity and
 receipt transaction permit safe retry after a lost reply. A verified receipt remains committed even
-when cancellation arrives. Speech remains unavailable and an audio slot blocks the row until the
+when cancellation arrives. When stopping a batch deck application, Windows retains previously
+synced or skipped rows that were not successfully changed by that application; successfully
+acknowledged changes still recalculate the row's real status. This avoids resending an already
+confirmed note. The 3b Mac implementation marks those remaining rows cancelled, so this is an
+explicit Windows technical correction rather than a claim of identical cancellation behavior.
+Speech remains unavailable and an audio slot blocks the row until the
 user removes it in preparation; it is never silently omitted.
 
 The modal window displays the actual local endpoint and loaded profile before explicit Send; it

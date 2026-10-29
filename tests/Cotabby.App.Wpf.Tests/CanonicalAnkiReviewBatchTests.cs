@@ -402,4 +402,28 @@ public sealed class CanonicalAnkiReviewBatchTests(WpfDispatcher dispatcher)
         finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
     });
 
+    [Fact]
+    public Task StoppingApplyDoesNotMakeUnprocessedSyncedCardsSendAgain() => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "review-batch-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            await using var store = FrozenVocabularyStoreFactory.Create(Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName), false);
+            var values = new AppSettings(); var server = new SessionTestServer(); await using var feature = new AnkiReviewFeature(() => values, () => { }, null, server, new AnkiTestCredentials());
+            var first = await Add(store, feature, "first"); var second = await Add(store, feature, "second");
+            var sent = await CanonicalAnkiReviewSession.OpenAsync(feature.Controller, store, second.Selection.EntryId, second.Selection.SenseId, second.Card);
+            Assert.True(await sent.SendAsync()); sent.Dispose(); Assert.Equal(1, server.AddCount);
+            var batch = await CanonicalAnkiReviewBatchSession.OpenAsync(feature, store, [first.Selection, second.Selection]); Assert.Equal(ReviewBatchStatus.Synced, batch.Items[1].Status);
+            var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously); var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            server.AfterMetadataAsync = async () => { entered.TrySetResult(); await release.Task; };
+            batch.StartApply("Other"); await entered.Task; Task stop = batch.StopAsync(); release.SetResult(); await stop; await Finish(batch);
+            Assert.Equal(ReviewBatchStatus.Cancelled, batch.Items[0].Status); Assert.Equal(ReviewBatchStatus.Synced, batch.Items[1].Status);
+            var scope = await feature.Controller.CanonicalScopeAsync(CancellationToken.None); batch.Start(scope); await Finish(batch);
+            Assert.Equal(2, batch.CompleteCount); Assert.Equal(2, server.AddCount);
+            var secondReceipt = (await store.ReadAsync()).Document.CollectedEntries.Single(e => e.Id == second.Selection.EntryId).Senses[0].ReviewCards!.Single().ActiveBinding!;
+            Assert.NotNull(secondReceipt.NoteId); Assert.Equal("Default", secondReceipt.Deck);
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    });
+
 }

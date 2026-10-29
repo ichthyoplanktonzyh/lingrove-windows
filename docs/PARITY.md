@@ -33,6 +33,11 @@ checkpoint with scoped automated/render evidence, not full native desktop parity
 
 ## Status meanings
 
+The [expression assistance library integration](EXPRESSION_ASSIST_INTEGRATION.md) supplies frozen
+request/output rules, shared explanation instruction leases and an isolated WPF session/view.
+It remains unregistered in AppHost; native capture/effects, settings and event activation are
+subsequent work. Its compiled tests do not establish physical editor or IME support.
+
 - **verified** — the behavior has passing automated parity evidence and, where it touches Windows
   UIA, input, display, storage, or inference hardware, has passed the relevant native host check.
 - **implemented-unverified** — Windows source implements the behavior, but evidence is limited to

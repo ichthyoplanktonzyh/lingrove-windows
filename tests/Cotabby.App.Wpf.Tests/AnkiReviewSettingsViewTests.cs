@@ -3,6 +3,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
+using System.Windows.Media.Imaging;
+using System.IO;
 using Cotabby.App.Review;
 using Cotabby.App.Settings;
 using Cotabby.App.UI.Settings.Panes;
@@ -20,6 +22,31 @@ namespace Cotabby.App.Wpf.Tests;
 [Collection("WPF views")]
 public sealed class AnkiReviewSettingsViewTests(WpfDispatcher dispatcher)
 {
+    [Fact]
+    public Task ConnectionOnlyViewShowsUnavailableTemplatesAndKeepsExplicitSettingsWorking() => dispatcher.RunAsync(async () =>
+    {
+        var settings = new AppSettings(); var key = new AnkiTestCredentials(); var client = new AnkiTestClient();
+        await using var feature = AnkiReviewFeature.CreateConnectionSettings(() => settings, () => { }, client, key);
+        var section = new AnkiReviewSettingsSection(feature); var window = Window(section);
+        try
+        {
+            Assert.Equal(0, key.Reads); Assert.Empty(client.Calls);
+            window.Show(); window.UpdateLayout(); Assert.True(section.IsAppeared); Assert.Equal(1, key.Reads);
+            if (Environment.GetEnvironmentVariable("LINGROVE_ANKI_CONNECTION_RENDER") is { Length: > 0 } path)
+            {
+                var image = new RenderTargetBitmap(520, 700, 96, 96, PixelFormats.Pbgra32); image.Render(window);
+                var encoder = new PngBitmapEncoder(); encoder.Frames.Add(BitmapFrame.Create(image));
+                using var output = File.Create(path); encoder.Save(output);
+            }
+            Assert.Contains(Descendants<TextBlock>(section.TemplatesView), text => text.Text == AnkiReviewController.NotebookUnavailableMessage);
+            Assert.Empty(Descendants<Button>(section.TemplatesView));
+            section.KeyBox.Password = "new key"; Click(section.TestButton); await Until(() => feature.Controller.Catalog is not null);
+            Assert.Equal("Connected", section.StatusBox.Text); Assert.All(client.Calls, call => Assert.Equal("new key", call.Key));
+            section.DeckPicker.SelectedItem = "Other"; Assert.Equal("Other", feature.Settings.Deck);
+            Assert.False(feature.Controller.NotebookAvailable); Assert.Null(feature.Controller.StoreOrNull);
+        }
+        finally { section.Close(); window.Close(); }
+    });
     private static Window Window(AnkiReviewSettingsSection section)
     {
         var window = new Window { Width = 520, Height = 700, ShowActivated = false, ShowInTaskbar = false,

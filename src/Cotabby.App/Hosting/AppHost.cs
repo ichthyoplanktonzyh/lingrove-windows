@@ -308,8 +308,8 @@ public sealed class AppHost : IAsyncDisposable
         var power = powerChanged && powerActive ? PowerSourceModel(assignments, onBattery) : null;
         var nextId = CompletionModelSelection.ApplyPower(_lastPowerSelection, powerState, Settings.ActiveModelId, power?.Id, discoveryChanged);
         var desired = power is not null && nextId == power.Id ? power : ResolveMainModel(assignments);
-        // Resolve the effective current profile before invalidating: changing the inactive profile
-        // must not cancel a request or replace a later manual selection.
+        // Resolve the current profile on either profile edit. Only an effective selection or
+        // eligibility change should invalidate in-flight local completion work.
         var transition = _suggestionApplication.Apply(suggestionSettings,
             (endpointSettings, _completionCredentialRevision), new CompletionModelSelection.SelectionIdentity(nextId, desired?.Id));
         bool localEnabled = Settings.Engine == EngineKind.Local && Settings.Enabled;

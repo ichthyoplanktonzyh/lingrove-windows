@@ -47,6 +47,28 @@ public sealed class SuggestionSettingsApplicationTests : CoordinatorHarness
         Assert.False(local.IsReady);
     }
     [Fact]
+    public async Task InactivePowerEditReappliesCurrentProfileAfterManualSelectionAndCancelsWork()
+    {
+        await using var local = new CompletionModelAdmission(Engine);
+        var application = new SuggestionSettingsApplication(Coordinator, local);
+        var settings = Coordinator.Settings with { UsesEndpoint = false, Enabled = true };
+        var ac = new CompletionModelSelection.PowerProfileState(true, false, "BATTERY", "AC");
+        application.Apply(settings, "endpoint", new CompletionModelSelection.SelectionIdentity("manual", "manual"));
+        var ticket = local.Select("manual", true);
+        Assert.True(await local.PrepareAsync(ticket, _ => Task.CompletedTask, () => Task.CompletedTask, () => true, CancellationToken.None));
+        await RunOnUiAsync(() => { });
+        var started = new TaskCompletionSource<CancellationToken>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var finish = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+        Engine.GenerateOverride = (_, ct) => { started.TrySetResult(ct); return finish.Task; };
+        Type("hello"); var token = await started.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        var next = CompletionModelSelection.ApplyPower(ac, ac with { BatteryModelId = "NEW-BATTERY" }, "manual", "AC");
+        Assert.Equal("AC", next);
+        var transition = application.Apply(settings, "endpoint", new CompletionModelSelection.SelectionIdentity(next, next));
+        Assert.True(transition.CoordinatorChanged);
+        await RunOnUiAsync(() => { }); Assert.True(token.IsCancellationRequested); Assert.False(local.IsReady);
+        finish.SetResult(" stale"); await StaysHidden();
+    }
+    [Fact]
     public async Task InactivePowerProfileEditKeepsInFlightWorkAndActiveProfileChangeRetiresIt()
     {
         await using var local = new CompletionModelAdmission(Engine);
@@ -54,8 +76,7 @@ public sealed class SuggestionSettingsApplicationTests : CoordinatorHarness
         var settings = Coordinator.Settings with { UsesEndpoint = false, Enabled = true };
         var ac = new CompletionModelSelection.PowerProfileState(true, false, "BATTERY", "AC");
         var inactiveEdit = ac with { BatteryModelId = "NEW-BATTERY" };
-        var selected = CompletionModelSelection.ApplyPower(ac, inactiveEdit, "manual", "AC");
-        Assert.Equal("manual", selected);
+        var selected = "AC";
         var identity = new CompletionModelSelection.SelectionIdentity(selected, selected);
         application.Apply(settings, "endpoint", identity);
         var ticket = local.Select(selected, true);
@@ -65,7 +86,9 @@ public sealed class SuggestionSettingsApplicationTests : CoordinatorHarness
         var finish = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
         Engine.GenerateOverride = (_, ct) => { started.TrySetResult(ct); return finish.Task; };
         Type("hello"); var token = await started.Task.WaitAsync(TimeSpan.FromSeconds(5));
-        var inactive = application.Apply(settings, "endpoint", new CompletionModelSelection.SelectionIdentity(selected, selected));
+        var resolved = CompletionModelSelection.ApplyPower(ac, inactiveEdit, selected, "AC");
+        Assert.Equal(selected, resolved);
+        var inactive = application.Apply(settings, "endpoint", new CompletionModelSelection.SelectionIdentity(resolved, resolved));
         Assert.False(inactive.CoordinatorChanged); Assert.False(token.IsCancellationRequested); Assert.True(local.IsReady);
         var activeEdit = inactiveEdit with { PluggedInModelId = "NEW-AC" };
         var next = CompletionModelSelection.ApplyPower(inactiveEdit, activeEdit, selected, "NEW-AC");

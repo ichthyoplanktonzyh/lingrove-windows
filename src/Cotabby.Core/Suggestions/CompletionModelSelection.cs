@@ -11,10 +11,11 @@ public static class CompletionModelSelection
     {
         public string ModelId => OnBattery ? BatteryModelId : PluggedInModelId;
     }
-    /// <summary>Inactive profile edits do not select a model or retire current completion work.</summary>
+    /// <summary>Either profile edit triggers resolution of the current power source.</summary>
     public static bool PowerChanged(PowerProfileState? previous, PowerProfileState next) =>
         previous is null || previous.Value.Active != next.Active || next.Active &&
-        (previous.Value.OnBattery != next.OnBattery || previous.Value.ModelId != next.ModelId);
+        (previous.Value.OnBattery != next.OnBattery || previous.Value.BatteryModelId != next.BatteryModelId
+            || previous.Value.PluggedInModelId != next.PluggedInModelId);
 
     /// <summary>The resolved model and retained ID together define local admission identity.</summary>
     public readonly record struct SelectionIdentity(string? SelectedId, string? ResolvedId);

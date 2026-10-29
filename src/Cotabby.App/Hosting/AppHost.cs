@@ -185,6 +185,10 @@ public sealed class AppHost : IAsyncDisposable
             new VocabularyNotebookListPreferences(() => Settings, () => SettingsStore.Save(Settings)),
             NotebookLabelLanguages());
         _notebook.AttachGraphPreferences(new VocabularyGraphPreferences(() => Settings, () => SettingsStore.Save(Settings)));
+        var notebookLexical = _services.GetRequiredService<IcuLearningLexicalText>();
+        _notebook.Window.AttachLearning(LearningExplanation.Service,
+            _services.GetRequiredService<ILearningDictionaryProviding>(), notebookLexical, notebookLexical.WordsUnknown,
+            () => SettingsWindow.ShowLearning(this));
         // Review has its own inert HTTP/key owners. Its settings save only their durable values;
         // editing a deck or connection must not wake/reconfigure the autocomplete runtime.
         Review = AnkiReviewFeature.CreateConnectionSettings(() => Settings, () => SettingsStore.Save(Settings),
@@ -194,7 +198,6 @@ public sealed class AppHost : IAsyncDisposable
         _notebook.Window.AttachReviewFeature(Review, () => SettingsWindow.ShowReview(this));
         Vocabulary.EnrichCapture = capture =>
         {
-            if (capture.Language is null) return capture; // The older explanation projection has no unknown-language value.
             var input = LearningExplanationPolicy.Input(capture);
             try { return capture with { Explanation = LearningExplanation.Service.Cached(input) ?? LearningExplanation.Service.SavedRecord(input) }; }
             // Annotation is optional. A shutdown race must preserve the captured favorite even

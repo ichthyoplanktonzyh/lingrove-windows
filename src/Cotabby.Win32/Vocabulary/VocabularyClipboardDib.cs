@@ -8,7 +8,7 @@ namespace Cotabby.Win32.Vocabulary;
 /// The transfer host wraps a detached packed Windows DIB in a bounded BMP file envelope for the
 /// existing WIC preparation boundary. This owns no clipboard handle, decoded pixels, file IO or decoder.
 /// Header/palette/mask/stride admission happens before allocation; linked/embedded profiles and
-/// compressed/unknown layouts fail closed rather than letting a decoder follow external paths.
+/// unsupported/unknown layouts fail closed rather than letting a decoder follow external paths.
 /// </summary>
 internal static class VocabularyClipboardDib
 {
@@ -25,7 +25,9 @@ internal static class VocabularyClipboardDib
         int bits = BinaryPrimitives.ReadUInt16LittleEndian(dib[14..]); uint compression = U32(dib, 16);
         if (width is <= 0 or > 30000 || height is <= 0 or > 30000 || width * height > 100000000
             || BinaryPrimitives.ReadUInt16LittleEndian(dib[12..]) != 1
-            || bits is not (1 or 4 or 8 or 16 or 24 or 32) || compression is not (0 or 3)
+            || bits is not (1 or 4 or 8 or 16 or 24 or 32) || compression is not (0 or 1 or 2 or 3)
+            || (compression == 1 && bits != 8) || (compression == 2 && bits != 4)
+            || (compression is 1 or 2 && BinaryPrimitives.ReadInt32LittleEndian(dib[8..]) < 0)
             || (compression == 3 && bits is not (16 or 32))) throw Invalid();
 
         // V4/V5 profile-linked color spaces can contain a filename, including a network path.
@@ -54,14 +56,50 @@ internal static class VocabularyClipboardDib
         if (bits <= 8 && colors == 0) colors = 1u << bits;
         if (bits < 32 && colors > (1u << bits)) throw Invalid();
         long offset = header + extraMasks + 4L * colors;
-        long stride = ((width * (long)bits + 31) / 32) * 4, pixels = stride * height;
-        if (offset > dib.Length || pixels > dib.Length - offset) throw Invalid();
         uint declaredPixels = U32(dib, 20);
-        if (declaredPixels != 0 && (declaredPixels < pixels || declaredPixels > dib.Length - offset)) throw Invalid();
+        if (offset > dib.Length) throw Invalid();
+        long stride = ((width * (long)bits + 31) / 32) * 4;
+        long pixels = compression is 1 or 2 ? declaredPixels : stride * height;
+        if (pixels > dib.Length - offset || (compression is 1 or 2 && pixels == 0)) throw Invalid();
+        if (compression is not (1 or 2) && declaredPixels != 0 && (declaredPixels < pixels || declaredPixels > dib.Length - offset)) throw Invalid();
+        if (compression is 1 or 2) ValidateRle(dib.Slice((int)offset, (int)pixels), width, (int)height, bits, colors);
         int extension = header == 108 && alpha != 0 ? 16 : 0;
         long length = 14 + extension + offset + pixels;
         if (length > VocabularyClipboardImageReader.MaximumBytes) throw Invalid();
         return new(header, offset, pixels, extension, (int)length);
+    }
+    // Validate every command before WIC sees the compressed stream. Never allow a run or
+    // delta outside the bitmap or an index outside the admitted palette.
+    private static void ValidateRle(ReadOnlySpan<byte> data, int width, int height, int bits, uint colors)
+    {
+        int position = 0, x = 0, y = 0;
+        while (position + 2 <= data.Length)
+        {
+            int count = data[position++], value = data[position++];
+            if (count != 0)
+            {
+                if (y >= height || count > width - x || (bits == 8 ? value >= colors : (value >> 4) >= colors || (count > 1 && (value & 15) >= colors))) throw Invalid();
+                x += count; continue;
+            }
+            if (value == 0) { if (y >= height) throw Invalid(); x = 0; y++; continue; }
+            if (value == 1) { if (position != data.Length) throw Invalid(); return; }
+            if (value == 2)
+            {
+                if (position + 2 > data.Length || y >= height) throw Invalid();
+                x += data[position++]; y += data[position++];
+                if (x > width || y >= height) throw Invalid();
+                continue;
+            }
+            int bytes = bits == 8 ? value : (value + 1) / 2, padded = (bytes + 1) & ~1;
+            if (y >= height || value > width - x || position + padded > data.Length) throw Invalid();
+            for (int i = 0; i < value; i++)
+            {
+                int index = bits == 8 ? data[position + i] : (i % 2 == 0 ? data[position + i / 2] >> 4 : data[position + i / 2] & 15);
+                if (index >= colors) throw Invalid();
+            }
+            position += padded; x += value;
+        }
+        throw Invalid();
     }
     internal static byte[] Wrap(ReadOnlySpan<byte> dib, bool requiresV5 = false)
     {

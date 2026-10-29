@@ -19,20 +19,39 @@ public sealed class UiaFocusTracker : IFocusTracker
 {
     private readonly ILogger<UiaFocusTracker> _logger;
     private readonly object _gate = new();
-    private readonly UiaTextEditEvidence? _composition;
+    private readonly ICompositionEvidenceOwner? _composition;
+    private readonly Action<AutomationFocusChangedEventHandler> _addHandler;
+    private readonly Action<AutomationFocusChangedEventHandler> _removeHandler;
+    private readonly Func<long, FocusedField?>? _captureForTest;
 
     private AutomationFocusChangedEventHandler? _handler;
     private FocusedField? _current;
     private long _focusChangeSequence;
     private long _captureSequence;
+    private long _startGeneration;
+    private long _compositionNotificationSequence;
+    private int _compositionRefreshQueued;
     private bool _running;
     private bool _disposed;
 
     public UiaFocusTracker(ILogger<UiaFocusTracker> logger)
     {
         _logger = logger;
+        _addHandler = Automation.AddAutomationFocusChangedEventHandler;
+        _removeHandler = Automation.RemoveAutomationFocusChangedEventHandler;
         if (OperatingSystem.IsWindowsVersionAtLeast(8, 1))
             _composition = new UiaTextEditEvidence(OnCompositionChanged);
+    }
+
+    internal UiaFocusTracker(ILogger<UiaFocusTracker> logger, ICompositionEvidenceOwner composition,
+        Action<AutomationFocusChangedEventHandler> addHandler,
+        Action<AutomationFocusChangedEventHandler> removeHandler, Func<long, FocusedField?> capture)
+    {
+        _logger = logger;
+        _composition = composition;
+        _addHandler = addHandler;
+        _removeHandler = removeHandler;
+        _captureForTest = capture;
     }
 
     public FocusedField? Current
@@ -41,7 +60,7 @@ public sealed class UiaFocusTracker : IFocusTracker
         {
             var current = Volatile.Read(ref _current);
             if (current is { CompositionSequence: > 0 }
-                && (!OperatingSystem.IsWindowsVersionAtLeast(8, 1) || _composition?.Version != current.CompositionSequence))
+                && _composition?.Version != current.CompositionSequence)
                 return null;
             return current;
         }
@@ -51,6 +70,8 @@ public sealed class UiaFocusTracker : IFocusTracker
 
     public void Start()
     {
+        AutomationFocusChangedEventHandler handler;
+        long generation;
         lock (_gate)
         {
             ObjectDisposedException.ThrowIf(_disposed, this);
@@ -58,41 +79,46 @@ public sealed class UiaFocusTracker : IFocusTracker
             _running = true;
             Interlocked.Increment(ref _focusChangeSequence);
 
-            _handler = OnFocusChanged;
+            handler = OnFocusChanged;
+            _handler = handler;
+            generation = ++_startGeneration;
         }
-        var handler = _handler;
-        if (handler is null || !OperatingSystem.IsWindowsVersionAtLeast(8, 1) || _composition?.Execute(() =>
+        if (_composition?.Execute(() =>
         {
             bool current;
-            lock (_gate) current = _running && ReferenceEquals(_handler, handler);
-            if (current) Automation.AddAutomationFocusChangedEventHandler(handler);
+            lock (_gate) current = _running && _startGeneration == generation && ReferenceEquals(_handler, handler);
+            if (current) _addHandler(handler);
         }) != true)
         {
-            Stop();
+            Stop(generation);
             return;
         }
+        lock (_gate) { if (!_running || _startGeneration != generation) return; }
         _logger.LogInformation("UIA focus tracker started.");
         Refresh();
     }
 
-    public void Stop()
+    public void Stop() => Stop(null);
+
+    private void Stop(long? expectedGeneration)
     {
         AutomationFocusChangedEventHandler? handler;
         lock (_gate)
         {
-            if (!_running) return;
+            if (!_running || (expectedGeneration.HasValue && expectedGeneration.Value != _startGeneration)) return;
             _running = false;
+            ++_startGeneration;
             Interlocked.Increment(ref _focusChangeSequence);
-            if (OperatingSystem.IsWindowsVersionAtLeast(8, 1)) _composition?.Invalidate();
+            _composition?.Invalidate();
             handler = _handler;
             _handler = null;
             Volatile.Write(ref _current, null);
             _logger.LogInformation("UIA focus tracker stopped.");
         }
-        if (handler is not null && OperatingSystem.IsWindowsVersionAtLeast(8, 1))
+        if (handler is not null)
         {
             _composition?.RetireAsync();
-            _composition?.Execute(() => Automation.RemoveAutomationFocusChangedEventHandler(handler));
+            _composition?.Execute(() => _removeHandler(handler));
         }
     }
 
@@ -105,14 +131,16 @@ public sealed class UiaFocusTracker : IFocusTracker
             capture = Interlocked.Increment(ref _captureSequence);
             sequence = Interlocked.Read(ref _focusChangeSequence);
         }
-        TryCaptureFocused(sequence, out var snap);
+        FocusedField? snap;
+        if (_captureForTest is not null) snap = _captureForTest(sequence);
+        else TryCaptureFocused(sequence, out snap);
         lock (_gate)
         {
             // UIA reads cross processes and can finish after a newer focus event. Publishing
             // that old read would make an unrelated field look current to an insertion task.
             if (!_running || sequence != Interlocked.Read(ref _focusChangeSequence)
                 || capture != Interlocked.Read(ref _captureSequence)) return null;
-            if (snap is { CompositionSequence: > 0 } && (!OperatingSystem.IsWindowsVersionAtLeast(8, 1) || _composition?.Version != snap.CompositionSequence))
+            if (snap is { CompositionSequence: > 0 } && _composition?.Version != snap.CompositionSequence)
                 snap = snap with { Composition = InputCompositionState.Unknown, CompositionSequence = 0 };
             Volatile.Write(ref _current, snap);
             return snap;
@@ -124,22 +152,65 @@ public sealed class UiaFocusTracker : IFocusTracker
         if (_disposed) return;
         _disposed = true;
         Stop();
-        if (OperatingSystem.IsWindowsVersionAtLeast(8, 1)) _composition?.Dispose();
+        _composition?.Dispose();
     }
 
-    private void OnCompositionChanged()
+    internal void OnCompositionChanged()
     {
         lock (_gate)
         {
             if (!_running) return;
+            ++_compositionNotificationSequence;
             Volatile.Write(ref _current, null);
         }
         // Never run consumer code from the COM callback; the receipt was already retired.
-        ThreadPool.QueueUserWorkItem(_ =>
+        QueueCompositionRefresh();
+    }
+
+    private void QueueCompositionRefresh()
+    {
+        if (Interlocked.Exchange(ref _compositionRefreshQueued, 1) != 0) return;
+        ThreadPool.QueueUserWorkItem(_ => RefreshComposition());
+    }
+
+    private void RefreshComposition()
+    {
+        long handledNotification = -1;
+        try
         {
             try { FocusChanged?.Invoke(this, null); }
             catch (Exception) { _logger.LogWarning("Composition change notification failed."); }
-        });
+            while (true)
+            {
+                long notification, focus;
+                lock (_gate)
+                {
+                    if (!_running) return;
+                    notification = _compositionNotificationSequence;
+                    handledNotification = notification;
+                    focus = _focusChangeSequence;
+                }
+                var snap = Refresh();
+                lock (_gate)
+                {
+                    if (!_running || focus != _focusChangeSequence) return;
+                    if (notification != _compositionNotificationSequence) continue;
+                    if (snap is null || !ReferenceEquals(snap, _current)) return;
+                }
+                FocusChanged?.Invoke(this, snap);
+                return;
+            }
+        }
+        catch (Exception) { _logger.LogWarning("Composition refresh failed."); }
+        finally
+        {
+            Interlocked.Exchange(ref _compositionRefreshQueued, 0);
+            // Do not lose an event that arrived between the last read and clearing the queued bit.
+            lock (_gate)
+            {
+                if (_running && _compositionNotificationSequence != handledNotification) QueueCompositionRefresh();
+            }
+        }
     }
 
     private void OnFocusChanged(object? sender, AutomationFocusChangedEventArgs e)
@@ -149,10 +220,10 @@ public sealed class UiaFocusTracker : IFocusTracker
         {
             if (!_running) return;
             eventSequence = Interlocked.Increment(ref _focusChangeSequence);
-            if (OperatingSystem.IsWindowsVersionAtLeast(8, 1)) _composition?.Invalidate();
+            _composition?.Invalidate();
             Volatile.Write(ref _current, null);
         }
-        if (OperatingSystem.IsWindowsVersionAtLeast(8, 1)) _composition?.RetireAsync();
+        _composition?.RetireAsync();
         ThreadPool.QueueUserWorkItem(_ => PublishFocusChange(eventSequence));
     }
 
@@ -256,14 +327,14 @@ public sealed class UiaFocusTracker : IFocusTracker
         // Password-like controls are classified before requesting their text. They still publish
         // an ineligible snapshot so consumers can close an existing capture without reading secrets.
         string fieldId = ReadFieldId(element);
-        var initialComposition = !isSecure && OperatingSystem.IsWindowsVersionAtLeast(8, 1) && _composition is not null
+        var initialComposition = !isSecure && _composition is not null
             ? _composition.Observe(pid, fieldId, sequence) : default;
         var (text, caretOffset, hasSelection, reliableSelection, truncatedWindow) = isSecure
             ? (string.Empty, 0, false, false, true)
             : ReadTextAndCaret(element);
         var caretRect = isSecure ? ScreenRect.Empty : ReadCaretRect(element);
         var fieldRect = ToScreenRect(info.BoundingRectangle);
-        var finalComposition = !isSecure && OperatingSystem.IsWindowsVersionAtLeast(8, 1) && _composition is not null
+        var finalComposition = !isSecure && _composition is not null
             ? _composition.Observe(pid, fieldId, sequence) : default;
         finalComposition = CompositionEvidencePolicy.Reconcile(initialComposition, finalComposition);
 

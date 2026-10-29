@@ -10,10 +10,19 @@ using HRESULT = Windows.Win32.Foundation.HRESULT;
 
 namespace Cotabby.Win32.Focus;
 
+internal interface ICompositionEvidenceOwner : IDisposable
+{
+    long Version { get; }
+    bool Execute(Action action);
+    (InputCompositionState State, long Version) Observe(int pid, string field, long focusEpoch);
+    void Invalidate();
+    void RetireAsync();
+}
+
 // Owns all native TextEdit subscriptions on one MTA. COM retains each callback until its last
 // native reference is released; callbacks carry only an epoch, never inspect the event payload.
 [SupportedOSPlatform("windows8.1")]
-internal sealed unsafe class UiaTextEditEvidence : IDisposable
+internal sealed unsafe class UiaTextEditEvidence : ICompositionEvidenceOwner
 {
     private readonly BlockingCollection<Action> _queue = new();
     private readonly Thread _thread;

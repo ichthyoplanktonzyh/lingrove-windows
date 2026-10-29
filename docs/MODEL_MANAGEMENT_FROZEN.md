@@ -90,9 +90,9 @@ picker, live model, endpoint or user data. No comparable Mac screenshot was avai
 component is not a pixel comparison or physical desktop acceptance.
 
 The completion recommended downloads still live in the existing inline list, not inside the
-manager; completion import and catalog transfer pause/resume, Hugging Face browser, external model
-folders, speech manager and protected deletion remain unimplemented. Delete controls are omitted;
-no deletion safety is claimed. Learning transfer uses its existing Get/cancel implementation and
+manager; catalog transfer pause/resume, Hugging Face browser, external model folders and speech manager
+remain unimplemented. The [local import and deletion slice](MODEL_FILES_FROZEN.md) adds completion
+import and guarded deletion in the app-owned model folder. Learning transfer uses its existing Get/cancel implementation and
 does not pretend to support pause/resume. Native typography/DPI, accessibility, keyboard navigation,
 window activation, actual transfers, power switching, and real host runtime behavior need further
 verification. Existing completion ModelList still scans synchronously on its existing refresh path.

@@ -7,12 +7,50 @@ using Cotabby.App.Learning;
 using Cotabby.App.Settings;
 using Cotabby.App.UI.Settings.Panes;
 using Cotabby.Core.Models;
+using Cotabby.Win32.Models;
 
 namespace Cotabby.App.Wpf.Tests;
 
 [Collection("WPF views")]
 public sealed class ModelManagementViewTests(WpfDispatcher dispatcher)
 {
+    [Fact]
+    public void WindowsUnlinkDeletesOnlyTheVerifiedUnlockedLeaf()
+    {
+        string directory = Path.Combine(Path.GetTempPath(), "lingrove-model-test-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(directory);
+        try
+        {
+            string path = Path.Combine(directory, "model.gguf"); File.WriteAllText(path, "GGUF fixture");
+            Assert.Throws<ArgumentException>(() => WindowsModelFile.Delete(directory, "../model.gguf"));
+            using (var active = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
+                Assert.ThrowsAny<Exception>(() => WindowsModelFile.Delete(directory, "model.gguf"));
+            Assert.True(File.Exists(path)); WindowsModelFile.Delete(directory, "model.gguf"); Assert.False(File.Exists(path));
+        }
+        finally { Directory.Delete(directory, true); }
+    }
+    [Fact]
+    public Task DeleteIsOfferedOnlyForUnprotectedInstalledRows() => dispatcher.Run(() =>
+    {
+        var settings = new AppSettings { LearningLocalModel = "selected.gguf", BatteryModelId = "custom:protected.gguf" };
+        foreach (string name in new[] { "selected.gguf", "protected.gguf", "free.gguf" }) settings.RecordLocalModelTask(name, LocalModelTask.Translation);
+        var models = new[] { new LearningInstalledModel("selected.gguf", "Selected", 1), new LearningInstalledModel("protected.gguf", "Protected", 1), new LearningInstalledModel("free.gguf", "Free", 1) };
+        var view = new ModelManagementView("Translation", new TextBlock(), () => { }, () => { }, null);
+        view.ShowModels(models, settings, LocalModelTask.Translation, "selected.gguf");
+        view.Measure(new Size(720, 640)); view.Arrange(new Rect(0, 0, 720, 640)); view.UpdateLayout();
+        if (Environment.GetEnvironmentVariable("LINGROVE_MODEL_DELETE_SCREENSHOT") is { Length: > 0 } path)
+        {
+            var bitmap = new RenderTargetBitmap(720, 640, 96, 96, PixelFormats.Pbgra32); bitmap.Render(view);
+            var encoder = new PngBitmapEncoder(); encoder.Frames.Add(BitmapFrame.Create(bitmap));
+            using var stream = File.Create(path); encoder.Save(stream);
+        }
+        var rows = view.InstalledRows.Children.Cast<DockPanel>().ToArray();
+        Assert.IsType<TextBlock>(rows[0].Children[0]);
+        var inUse = Assert.IsType<StackPanel>(rows[1].Children[0]); Assert.DoesNotContain(inUse.Children.OfType<Button>(), button => (string)button.Content == "Delete");
+        var free = Assert.IsType<StackPanel>(rows[2].Children[0]); var delete = Assert.Single(free.Children.OfType<Button>(), button => (string)button.Content == "Delete");
+        string? requested = null; view.DeleteRequested += filename => requested = filename;
+        delete.RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); Assert.Equal("free.gguf", requested);
+    });
     [Fact]
     public Task SupersededScanFailuresAndClosedViewsCannotOverwriteCurrentResults() => dispatcher.RunAsync(async () =>
     {

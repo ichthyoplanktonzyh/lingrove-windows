@@ -268,6 +268,15 @@ public sealed class AppHost : IAsyncDisposable
         SettingsStore.Save(Settings);
     }
 
+    /// <summary>Completes an already published model-file operation on the UI owner, including
+    /// during shutdown while the model manager drains accepted work.</summary>
+    internal void AcknowledgeModelMetadata(Action<AppSettings> mutate)
+    {
+        mutate(Settings);
+        if (_shuttingDown) SettingsStore.Save(Settings);
+        else PersistSettings();
+    }
+
     /// <summary>Invalidates only an active learning request after its separate DPAPI key changes.</summary>
     public void LearningCredentialsChanged()
     {

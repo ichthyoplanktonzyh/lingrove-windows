@@ -322,9 +322,9 @@ internal sealed class LearningLocalModels : StackPanel
 
         try
         {
-            await _context.Host.LearningModels.DownloadAsync(model, progress, transfer.Token);
+            await _context.Host.LearningModels.DownloadAsync(model, progress, transfer.Token, () =>
+                Dispatcher.InvokeAsync(() => _context.Host.AcknowledgeModelMetadata(settings => { settings.RecordLocalModelTask(model.Filename, ModelTask); settings.RecordLocalModelSource(model.Filename, model.DownloadUrl); })).Task);
             if (_lifetime.IsCancellationRequested) return;
-            _context.Change(settings => { settings.RecordLocalModelTask(model.Filename, ModelTask); settings.RecordLocalModelSource(model.Filename, model.DownloadUrl); });
             SetTransferStatus(model, "Installed and checksum verified.");
             RefreshInstalledAsync();
             _managerWindow?.Refresh();
@@ -377,9 +377,10 @@ internal sealed class LearningLocalModels : StackPanel
         UpdateControls();
         try
         {
-            var result = await _context.Host.LearningModels.ImportAsync(accepted, transfer.Token);
+            var result = await _context.Host.LearningModels.ImportAsync(accepted, transfer.Token,
+                filename => Dispatcher.InvokeAsync(() => _context.Host.AcknowledgeModelMetadata(settings => settings.ClearLocalModelSource(filename))).Task);
             if (_lifetime.IsCancellationRequested) return;
-            _installedStatus.Text = $"Imported {result.Imported}; skipped {result.Skipped}; failed {result.Failed}; incompatible {files.Length - accepted.Length}.";
+            _installedStatus.Text = $"{(result.Cancelled ? "Import cancelled. " : "")}Imported {result.Imported}; skipped {result.Skipped}; failed {result.Failed}; incompatible {files.Length - accepted.Length}.";
             _managerWindow?.Report(_installedStatus.Text);
             RefreshInstalledAsync();
             _managerWindow?.Refresh();

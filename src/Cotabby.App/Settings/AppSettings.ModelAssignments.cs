@@ -31,6 +31,24 @@ public sealed partial class AppSettings
         LocalModelSourcesValue[filename.ToLowerInvariant()] = source.AbsoluteUri;
     }
 
+    public void ClearLocalModelSource(string filename) => LocalModelSourcesValue?.Remove(filename.ToLowerInvariant());
+
+    /// <summary>Windows protects the resident completion file as well as every retained task
+    /// choice. Speech model and companion are kept even while that provider is inactive.</summary>
+    public IReadOnlySet<string> ProtectedModelFilenames(string? residentCompletion = null)
+    {
+        static string? Leaf(JsonElement? value)
+        {
+            if (value is not { ValueKind: JsonValueKind.String } || value.Value.GetString() is not { Length: > 0 } path) return null;
+            int separator = path.LastIndexOfAny(['/', '\\']);
+            return path[(separator + 1)..];
+        }
+        return new HashSet<string>(ModelUsagePolicy.ProtectedFilenames(CompletionFilenameForId(ActiveModelId),
+            [CompletionFilenameForId(BatteryModelId), CompletionFilenameForId(PluggedInModelId), residentCompletion,
+             Leaf(SpeechLocalModelValue), Leaf(SpeechLocalProjectionValue)],
+            [new[] { LearningLocalModel ?? "", LearningExplanationLocalModel ?? "" }]), StringComparer.OrdinalIgnoreCase);
+    }
+
     /// <summary>Register persisted explicit choices before discovery begins. Invalid cross-task choices stay stored but unavailable.</summary>
     public void NormalizeModelAssignmentsAndRegisterLegacy()
     {

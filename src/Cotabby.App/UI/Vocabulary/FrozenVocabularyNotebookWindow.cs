@@ -16,8 +16,8 @@ using R = Cotabby.Core.Vocabulary.Resources;
 
 namespace Cotabby.App.UI.Vocabulary;
 
-/// <summary>Canonical notebook presentation borrows the app-owned Store and reader.
-/// Only Add/Import are connected. Other commands remain disabled until their shared owners exist.</summary>
+/// <summary>Canonical notebook presentation borrows the app-owned Store and reader. Available
+/// commands use its canonical capability interfaces; remaining operations stay explicitly disabled.</summary>
 internal sealed partial class FrozenVocabularyNotebookWindow : Window
 {
     private sealed class Search : IVocabularyTextSearching
@@ -122,6 +122,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
         else if (_inputWindow is FrozenVocabularyEntryEditorWindow editor) await editor.RetireAsync();
         else if (_inputWindow is FrozenVocabularyDeleteSenseWindow confirmation) confirmation.Close();
         else if (_inputWindow is FrozenVocabularySemanticFormWindow semanticForm) await semanticForm.RetireAsync();
+        else if (_inputWindow is FrozenVocabularyClassificationWindow classificationForm) await classificationForm.RetireAsync();
         else if (_inputWindow is FrozenVocabularySemanticDeleteWindow semanticConfirmation) semanticConfirmation.Close();
         if (_modalDone is { } modal) await modal.Task;
         if (_senseCompletion is { } sense) await sense.Task;

@@ -35,6 +35,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow
         var edit = SenseButton("Edit meaning", "canonicalEditMeaning", CanSemantic); edit.Click += (_, _) => { if (epoch == _actionSelectionEpoch) LastOperation = Track(OpenMeaningAsync(node, null)); }; buttons.Children.Add(edit);
         var delete = SenseButton("Delete meaning", "canonicalDeleteMeaning", CanSemantic); delete.Click += (_, _) => { if (epoch == _actionSelectionEpoch) LastOperation = Track(DeleteMeaningAsync(node.Id)); }; buttons.Children.Add(delete);
         var add = SenseButton("Add from vocabulary", "canonicalAddMapping", CanSemantic && _session.Entries.Count > 0); add.Click += (_, _) => { if (epoch == _actionSelectionEpoch) LastOperation = Track(OpenMappingAsync(node.Id, null, null)); }; buttons.Children.Add(add);
+        var categorize = SenseButton("Categorize", "canonicalCategorizeMeaning", CanSemantic); categorize.Click += (_, _) => { if (epoch == _actionSelectionEpoch) LastOperation = Track(OpenCategoriesAsync(node.Id)); }; buttons.Children.Add(categorize);
         panel.Children.Add(buttons);
         if (_semanticBusy) panel.Children.Add(Caption("Updating vocabulary…"));
     }
@@ -94,6 +95,19 @@ internal sealed partial class FrozenVocabularyNotebookWindow
         if (mapping is not null && !snapshot.Document.Semantics.Mappings.Contains(mapping)) return;
         var form = new FrozenVocabularyMappingEditorWindow(store, snapshot.Document.Semantics, _session.Entries, _session.PreferredLanguages, node, sense, mapping) { Owner = this };
         await OpenSemanticFormAsync(form, null);
+    }
+    private async Task OpenCategoriesAsync(Guid node)
+    {
+        if (!CanSemantic || _store is not ICanonicalVocabularySemanticStore store || _session.Snapshot is not { } snapshot || !snapshot.Document.Semantics.Nodes.Any(n => n.Id == node)) return;
+        var form = new FrozenVocabularyMeaningCategoryWindow(store, _store, snapshot.Document.Classification, node, _session.PreferredLanguages) { Owner = this };
+        var done = _modalDone = new(TaskCreationOptions.RunContinuationsAsynchronously); CloseActionMenus();
+        try
+        {
+            _inputWindow = form; try { form.ShowDialog(); } finally { await form.RetireAsync(); _inputWindow = null; }
+            if (!_retiring && form.Receipt is not null) await _session.LoadAsync();
+            if (!_retiring && _pendingShow is { } pending) { _pendingShow = null; _expanded.Add(pending.EntryId); await _session.RevealSelectionAsync(pending); }
+        }
+        finally { _inputWindow = null; _modalDone = null; if (_hideRequested && !_retiring) { _hideRequested = false; Hide(); } done.TrySetResult(); }
     }
     private async Task OpenSemanticFormAsync(FrozenVocabularySemanticFormWindow form, Guid? revealNode)
     {

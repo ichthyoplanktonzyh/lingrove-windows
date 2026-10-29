@@ -228,7 +228,15 @@ public sealed class WindowsPrivateProfileDirectory : IAsyncDisposable
             uint desired = 0x80000000 | 0x00100000 | (delete ? 0x00010000u : 0);
             uint options = 0x20 | 0x00200000 | (create ? 1u : 0);
             int status = NtCreateFile(out var handle, desired, ref attributes, out _, IntPtr.Zero, 0, share, create ? 2u : 1u, options, IntPtr.Zero, 0);
-            if (status < 0) { handle?.Dispose(); throw new Win32Exception((int)RtlNtStatusToDosError(status)); }
+            if (status < 0)
+            {
+                handle?.Dispose(); int error = (int)RtlNtStatusToDosError(status);
+                var nativeError = new Win32Exception(error);
+                // The browser or another profile user can briefly hold a child without delete
+                // sharing. Only these transient conflicts are eligible for the caller's retry.
+                if (error is 32 or 33) throw new IOException("The private profile is temporarily locked.", nativeError);
+                throw nativeError;
+            }
             return handle;
         }
     }

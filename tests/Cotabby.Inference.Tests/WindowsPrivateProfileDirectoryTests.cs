@@ -58,7 +58,11 @@ public sealed class WindowsPrivateProfileDirectoryTests : IDisposable
         Assert.ThrowsAny<IOException>(() => Directory.Move(_parent, _parent + "-moved"));
         string file = Path.Combine(path, "locked"); File.WriteAllText(file, "x");
         using (new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.None))
-        { await Assert.ThrowsAnyAsync<Exception>(() => profile.DeleteOwnedAsync()); Assert.True(Directory.Exists(path)); }
+        {
+            var error = await Assert.ThrowsAsync<IOException>(() => profile.DeleteOwnedAsync());
+            Assert.Equal(32, Assert.IsType<System.ComponentModel.Win32Exception>(error.InnerException).NativeErrorCode);
+            Assert.True(Directory.Exists(path)); Assert.True(File.Exists(file));
+        }
         await profile.DeleteOwnedAsync(); Assert.False(Directory.Exists(path));
     }
     [Fact]
@@ -132,7 +136,11 @@ public sealed class WindowsPrivateProfileDirectoryTests : IDisposable
         var rule = new System.Security.AccessControl.FileSystemAccessRule(current.User!, System.Security.AccessControl.FileSystemRights.Delete | System.Security.AccessControl.FileSystemRights.ReadData, System.Security.AccessControl.AccessControlType.Deny);
         denied.AddAccessRule(rule);
         info.SetAccessControl(denied);
-        try { await Assert.ThrowsAnyAsync<Exception>(() => profile.DeleteOwnedAsync()); Assert.True(File.Exists(file)); }
+        try
+        {
+            var error = await Assert.ThrowsAsync<System.ComponentModel.Win32Exception>(() => profile.DeleteOwnedAsync());
+            Assert.Equal(5, error.NativeErrorCode); Assert.True(File.Exists(file));
+        }
         finally { denied.RemoveAccessRuleSpecific(rule); info.SetAccessControl(denied); }
         await profile.DeleteOwnedAsync(); Assert.False(Directory.Exists(profile.Path));
     }

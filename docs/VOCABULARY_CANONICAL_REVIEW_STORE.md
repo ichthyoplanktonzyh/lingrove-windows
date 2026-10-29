@@ -31,3 +31,19 @@ There is no review UI, controller, network or production activation in this chec
 dotnet test tests/Cotabby.Inference.Tests/Cotabby.Inference.Tests.csproj -c Release --filter 'FullyQualifiedName~FrozenVocabularyReviewStoreTests'
 dotnet test tests/Cotabby.App.Wpf.Tests/Cotabby.App.Wpf.Tests.csproj -c Release --filter 'FullyQualifiedName~CanonicalWritingFavoriteViewTests'
 ```
+
+The author executed the isolated Store suite (5/5), writing bridge suite (6/6) and Win32 Release
+build (zero warnings). Independent review compared the frozen archive functions and the new
+policy/transaction code, and reran Core draft tests 3/3 and isolated Store tests 5/5.
+After integration with the canonical AppHost composition, `dotnet build Cotabby.sln -c Release
+--no-restore --verbosity quiet` passed with zero warnings/errors. These compiled suites then ran:
+
+```powershell
+dotnet test tests/Cotabby.Core.Tests/Cotabby.Core.Tests.csproj -c Release --no-build --no-restore --filter 'FullyQualifiedName~FrozenVocabularyReviewDraftTests' --verbosity minimal
+dotnet test tests/Cotabby.Inference.Tests/Cotabby.Inference.Tests.csproj -c Release --no-build --no-restore --filter 'FullyQualifiedName~FrozenVocabularyReviewStoreTests|FullyQualifiedName~CanonicalWritingStoreTests|FullyQualifiedName~FrozenVocabularyClassificationStoreTests' --verbosity minimal
+dotnet test tests/Cotabby.App.Wpf.Tests/Cotabby.App.Wpf.Tests.csproj -c Release --no-build --no-restore --filter 'FullyQualifiedName~CanonicalVocabularyCompositionTests|FullyQualifiedName~CanonicalWritingFavoriteViewTests|FullyQualifiedName~AnkiReviewSettingsViewTests' --verbosity minimal
+```
+
+They passed 3/3, 18/18 and 15/15 respectively on Windows x64 with .NET SDK 10.0.403. This does not
+activate canonical review controls or establish physical Anki, media, Swift execution or desktop
+acceptance.

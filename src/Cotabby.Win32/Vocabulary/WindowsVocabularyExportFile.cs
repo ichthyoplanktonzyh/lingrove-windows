@@ -19,15 +19,16 @@ internal sealed class WindowsVocabularyExportFile : IDisposable
 {
     private readonly SafeFileHandle _parent;
     private readonly VocabularyWindowsFile.FileIdentity _parentIdentity;
-    private readonly string _requestedParent, _notebook;
+    private readonly string _requestedParent, _notebook, _protectedMedia;
     private readonly Func<Guid> _stagingIdentity;
+    private readonly bool _protectLegacySibling;
     private readonly Action? _afterFlush;
     internal string Path { get; }
 
-    internal WindowsVocabularyExportFile(string destination, string? notebook, Func<Guid>? stagingIdentity = null, Action? afterFlush = null)
+    internal WindowsVocabularyExportFile(string destination, string? notebook, Func<Guid>? stagingIdentity = null, Action? afterFlush = null, string? protectedMedia = null, bool protectLegacySibling = false)
     {
-        _stagingIdentity = stagingIdentity ?? Guid.NewGuid; _afterFlush = afterFlush;
-        _notebook = notebook is null ? "" : FullPath(notebook);
+        _stagingIdentity = stagingIdentity ?? Guid.NewGuid; _afterFlush = afterFlush; _protectLegacySibling = protectLegacySibling;
+        _notebook = notebook is null ? "" : FullPath(notebook); _protectedMedia = protectedMedia is null ? "" : FullPath(protectedMedia);
         string full = FullPath(destination); _requestedParent = System.IO.Path.GetDirectoryName(full)!;
         _parent = OpenDirectory(_requestedParent);
         try
@@ -94,9 +95,17 @@ internal sealed class WindowsVocabularyExportFile : IDisposable
         using var canonical = OpenDirectory(System.IO.Path.GetDirectoryName(Path)!);
         if (_parent.IsClosed || DirectoryIdentity(_parent) != _parentIdentity || DirectoryIdentity(requested) != _parentIdentity
             || DirectoryIdentity(canonical) != _parentIdentity) throw Invalid();
-        using var target = OpenLeaf(Path);
-        if (_notebook.Length == 0) return;
+        if (_notebook.Length == 0) { using var ignored = OpenLeaf(Path); return; }
         string notebook = CanonicalLeaf(_notebook);
+        if (_protectLegacySibling)
+        {
+            string legacy = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(notebook)!, "vocabulary.sqlite");
+            foreach (string suffix in new[] { "", "-wal", "-shm", "-journal", ".lock" })
+                if (StringComparer.OrdinalIgnoreCase.Equals(Path, legacy + suffix)) throw Invalid();
+            string legacyMedia = legacy + ".media";
+            if (StringComparer.OrdinalIgnoreCase.Equals(Path, legacyMedia) || Path.StartsWith(legacyMedia.TrimEnd('\\') + "\\", StringComparison.OrdinalIgnoreCase)) throw Invalid();
+        }
+        using var target = OpenLeaf(Path);
         foreach (string suffix in new[] { "", "-wal", "-shm", "-journal", ".lock" })
         {
             string protectedPath = notebook + suffix;
@@ -105,7 +114,7 @@ internal sealed class WindowsVocabularyExportFile : IDisposable
             if (target is not null && protectedFile is not null
                 && VocabularyWindowsFile.Identity(target) == VocabularyWindowsFile.Identity(protectedFile)) throw Invalid();
         }
-        string media = notebook + ".media";
+        string media = _protectedMedia.Length == 0 ? notebook + ".media" : _protectedMedia;
         if (Directory.Exists(media)) { using var directory = OpenDirectory(media); media = FinalPath(directory); }
         if (StringComparer.OrdinalIgnoreCase.Equals(Path, media) || Path.StartsWith(media.TrimEnd('\\') + "\\", StringComparison.OrdinalIgnoreCase)) throw Invalid();
     }

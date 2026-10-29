@@ -118,6 +118,7 @@ internal sealed class FrozenVocabularyBrowserSession : IDisposable
         lock (_gate) { _queued = false; value = _retired ? null : _pending; _pending = null; }
         if (Active && value is not null) Accept(value);
     }
+    internal void AcceptAcknowledgement(FrozenVocabularyImportSnapshot value) { Verify(); if (Active) Accept(value); }
     private void Accept(FrozenVocabularyImportSnapshot value)
     {
         if (Snapshot is { } previous && value.Revision < previous.Revision) return;

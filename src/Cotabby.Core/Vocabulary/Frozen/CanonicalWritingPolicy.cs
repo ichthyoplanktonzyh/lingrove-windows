@@ -241,10 +241,17 @@ public static class CanonicalWritingPolicy
     }
     /// <summary>Frozen archive commit preparation: validate raw relationships before joined
     /// projection, invalidate changed semantic evidence, and prune explanations for old inputs.</summary>
-    public static VocabularyDocument PrepareCommit(VocabularyDocument previous, VocabularyDocument next)
+    public static VocabularyDocument PrepareCommit(VocabularyDocument previous, VocabularyDocument next) => PrepareCommitCore(previous, next, false);
+    /// <summary>A validated backup replaces evidence and assertions together. Do not reconcile it
+    /// against today's graph; still prune explanations whose exact restored inputs no longer match.</summary>
+    public static VocabularyDocument PrepareRestore(VocabularyDocument next) => PrepareCommitCore(next, next, true);
+    private static VocabularyDocument PrepareCommitCore(VocabularyDocument previous, VocabularyDocument next, bool restoringBackup)
     {
         VocabularyLifecyclePolicy.Validate(next);
-        var oldEntries = previous.Entries; var entries = next.Entries.ToArray();
+        var entries = next.Entries.ToArray();
+        if (!restoringBackup)
+        {
+        var oldEntries = previous.Entries;
         var oldSenses = oldEntries.SelectMany(x => x.Senses).Select(x => x.Id).ToHashSet();
         var senses = entries.SelectMany(x => x.Senses).ToArray(); var live = senses.Select(x => x.Id).ToHashSet();
         var aliases = new Dictionary<Guid, Guid>();
@@ -271,6 +278,7 @@ public static class CanonicalWritingPolicy
             mappings.Add(mapping);
         }
         next = next with { Semantics = next.Semantics with { Patterns = patterns, Mappings = mappings } };
+        }
         for (int i = 0; i < entries.Length; i++)
         {
             var entry = entries[i]; var entrySenses = entry.Senses.ToArray();

@@ -47,6 +47,8 @@ public sealed class CanonicalAnkiReviewSessionTests(WpfDispatcher dispatcher)
         public Task<F.CanonicalSenseReceipt> MoveExampleAsync(Guid e, Guid u, Guid s, Guid? t, CancellationToken token = default) => inner.MoveExampleAsync(e, u, s, t, token);
         public Task<F.FrozenVocabularyImportSnapshot> UpdateSemanticsAsync(F.VocabularySemanticIndex e, F.VocabularySemanticIndex b, CancellationToken token = default) => inner.UpdateSemanticsAsync(e, b, token);
         public Task<F.FrozenVocabularyImportSnapshot> UpdateClassificationAsync(Cotabby.Core.Vocabulary.Resources.VocabularyClassificationIndex e, Cotabby.Core.Vocabulary.Resources.VocabularyClassificationIndex b, CancellationToken token = default) => inner.UpdateClassificationAsync(e, b, token);
+        public Task BackupAsync(string destination, CancellationToken token = default) => inner.BackupAsync(destination, token);
+        public Task<F.FrozenVocabularyImportSnapshot> RestoreAsync(string source, CancellationToken token = default) => inner.RestoreAsync(source, token);
         public ValueTask DisposeAsync() => ValueTask.CompletedTask;
     }
     private sealed class HeldAnki(IAnkiConnecting inner, string target) : IAnkiConnecting

@@ -64,6 +64,9 @@ public sealed class LazyCompletionReadinessTests : CoordinatorHarness
             Assert.False(Hook.Press(Keys.Tab())); Assert.Empty(Focus.InsertionSnapshot);
         }
         finally { release.TrySetResult(); }
+        // The composition callback was queued while the pump was blocked. Join that queue
+        // before checking presentation; elapsed wall time is not a UI-processing receipt.
+        await RunOnUiAsync(() => { });
         await StaysHidden(); Assert.Empty(Focus.InsertionSnapshot);
     }
     [Fact]

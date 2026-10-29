@@ -1,0 +1,79 @@
+using Cotabby.Core.ExpressionAssist;
+using Cotabby.Core.LanguageLearning;
+
+namespace Cotabby.Core.Tests.ExpressionAssist;
+
+public sealed class ExpressionAssistPolicyTests
+{
+    private static string Lowercase(string value) => value.ToLowerInvariant(); // Test oracle for these fixtures only.
+    [Theory]
+    [InlineData("??", "word？？", "？？")]
+    [InlineData(";;", "文字;;", ";;")]
+    [InlineData("✨✨", "✨✨", "✨✨")]
+    public void MatchesCommittedTriggerAtAnyCaretBoundary(string configured, string before, string expected) =>
+        Assert.Equal(expected, ExpressionAssistPolicy.MatchedTrigger(before, configured));
+
+    [Theory]
+    [InlineData("")][InlineData("?")][InlineData("hello")][InlineData("? ?")][InlineData("/?")][InlineData(":?")][InlineData("?????????")]
+    public void RejectsInvalidOrReservedTriggers(string trigger) => Assert.NotNull(ExpressionAssistPolicy.TriggerError(trigger));
+
+    [Fact]
+    public void CharacterClassificationAndFoundationTrimmingPreserveSourceSemantics()
+    {
+        Assert.Null(ExpressionAssistPolicy.TriggerError("✌️✌️"));
+        Assert.Null(ExpressionAssistPolicy.TriggerError("?\u0301?\u0301"));
+        var request = ExpressionAssistPolicy.Request("\u200B意图\u200B", "a??b", 1, 2, LearningLanguage.English, LearningLanguage.Chinese);
+        Assert.Equal("意图", request.Query);
+        Assert.Throws<ArgumentOutOfRangeException>(() => ExpressionAssistPolicy.Request("x", "e\u0301", 0, 1, LearningLanguage.English, LearningLanguage.Chinese));
+    }
+
+    [Fact]
+    public void CanonicalDuplicateAndFormatControlsFollowFoundation()
+    {
+        var request = ExpressionAssistPolicy.Request("x", "??", 0, 2, LearningLanguage.English, LearningLanguage.Chinese);
+        var result = ExpressionAssistPrompt.Parse("{\"candidates\":[{\"text\":\"é\",\"hint\":\"one\"},{\"text\":\"e\\u0301\",\"hint\":\"two\"}]}", request, Lowercase);
+        Assert.Single(result.Candidates);
+        var expanded = ExpressionAssistPrompt.Parse("{\"candidates\":[{\"text\":\"İ\",\"hint\":\"one\"},{\"text\":\"i\\u0307\",\"hint\":\"two\"}]}", request,
+            value => value == "İ" ? "i\u0307" : value);
+        Assert.Single(expanded.Candidates);
+        Assert.Throws<ArgumentException>(() => ExpressionAssistPrompt.Parse("{\"candidates\":[{\"text\":\"a\\u202Eb\",\"hint\":\"x\"}]}", request, Lowercase));
+    }
+
+    [Fact]
+    public void RequestContainsOnlyNearestParagraphAndWholeBoundedGraphemes()
+    {
+        var value = "PRIVATE\n" + string.Concat(Enumerable.Repeat("😀", 1000)) + "??" + new string('界', 900) + "\nUNRELATED";
+        var start = value.IndexOf("??", StringComparison.Ordinal);
+        var request = ExpressionAssistPolicy.Request(" 排除 ", value, start, 2, LearningLanguage.English, LearningLanguage.Chinese);
+        Assert.Equal("排除", request.Query);
+        Assert.Equal(700, new System.Globalization.StringInfo(request.LeftContext).LengthInTextElements);
+        Assert.Equal(500, new System.Globalization.StringInfo(request.RightContext).LengthInTextElements);
+        var prompt = ExpressionAssistPrompt.Render(request, 8192, 768);
+        Assert.DoesNotContain("PRIVATE", prompt);
+        Assert.DoesNotContain("UNRELATED", prompt);
+        Assert.Throws<LearningTranslationException>(() => ExpressionAssistPrompt.Render(request, 128, 64));
+        Assert.Throws<ArgumentOutOfRangeException>(() => ExpressionAssistPolicy.Request("x", "e\u0301", 1, 0, LearningLanguage.English, LearningLanguage.Chinese));
+    }
+
+    [Fact]
+    public void ParsesExactInsertionDeduplicatesAndAllowsClarification()
+    {
+        var request = ExpressionAssistPolicy.Request("排除", "We can rule??.", 11, 2, LearningLanguage.English, LearningLanguage.Chinese);
+        var result = ExpressionAssistPrompt.Parse("{\"candidates\":[{\"text\":\" out\",\"hint\":\"排除\"},{\"text\":\"out \",\"hint\":\"重复\"}]}", request, Lowercase);
+        Assert.Single(result.Candidates);
+        Assert.Equal(" out", result.Candidates[0].Text);
+        Assert.Equal("We can rule out.", request.LeftContext + result.Candidates[0].Text + request.RightContext);
+        Assert.Empty(ExpressionAssistPrompt.Parse("{\"candidates\":[],\"clarification\":\"哪一种？\"}", request, Lowercase).Candidates);
+    }
+
+    [Theory]
+    [InlineData("{\"candidates\":[]}")]
+    [InlineData("{\"candidates\":[{\"text\":\"unfinished\"}]}")]
+    [InlineData("{\"candidates\":[{\"text\":\"line\\nline\",\"hint\":\"hint\"}]}")]
+    [InlineData("{\"candidates\":[{\"text\":\"We still cannot rule out caching\",\"hint\":\"hint\"}]}")]
+    public void InvalidOrContextEchoingResultsCannotBeInserted(string raw)
+    {
+        var request = ExpressionAssistPolicy.Request("排除", "We still cannot ?? yet.", 16, 2, LearningLanguage.English, LearningLanguage.Chinese);
+        Assert.Throws<ArgumentException>(() => ExpressionAssistPrompt.Parse(raw, request, Lowercase));
+    }
+}

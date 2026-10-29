@@ -2,6 +2,7 @@ using System.Threading.Channels;
 using Cotabby.App.Learning;
 using Cotabby.App.Settings;
 using Cotabby.Core.LanguageLearning;
+using Cotabby.Core.ExpressionAssist;
 using Cotabby.Core.Suggestions;
 using Cotabby.Core.Support.Runtime;
 using Cotabby.Core.Vocabulary;
@@ -17,6 +18,7 @@ public sealed class LearningExplanationControllerTests
     private static readonly LearningExplanationResult Answer = new("Meaning", "Explanation");
     private static LearningExplanationInput Input => new("know", "know", LearningLanguage.English, VocabularyEntryKind.Word,
         "Let me know.", [new(7, 4)]);
+    private static ExpressionAssistRequest Expression => new("排除", "We can ", ".", "", "en", "zh-Hans");
     private static AppSettings Settings()
     {
         var settings = new AppSettings { LearningExplanationLocalModel = "tutor.gguf", LearningExplanationLocalTemplate = LearningChatTemplate.Qwen3 };
@@ -27,6 +29,113 @@ public sealed class LearningExplanationControllerTests
         Func<LearningLocalModelConfiguration, ILearningExplanationEngine>? factory = null, Func<bool>? battery = null) =>
         new(runtime, settings, Path.Combine(Path.GetTempPath(), "lingrove-owner-test"), battery, clock,
             engineFactory: factory ?? (_ => new Engine((_, _, _, _) => Task.FromResult(Answer))));
+
+    [Fact]
+    public async Task ShutdownRetiresExpressionWithoutDeltasAndWaitsForNativeDrain()
+    {
+        var started = new TaskCompletionSource<CancellationToken>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var pending = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var runtime = new FakeRuntime { Generate = ct => { started.SetResult(ct); return pending.Task; } };
+        var owner = Owner(runtime, Settings(), new Clock());
+        var work = owner.GenerateExpressionAsync(Expression, value => value.ToLowerInvariant(), default);
+        try
+        {
+            var token = await started.Task.WaitAsync(TimeoutLimit);
+            var cancelled = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            using var registration = token.Register(() => cancelled.TrySetResult());
+            var shutdown = owner.DisposeAsync().AsTask();
+            await cancelled.Task.WaitAsync(TimeoutLimit);
+            Assert.False(shutdown.IsCompleted); Assert.Equal(0, runtime.Disposals);
+            pending.SetResult("{}");
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => work.WaitAsync(TimeoutLimit));
+            await shutdown.WaitAsync(TimeoutLimit); Assert.Equal(1, runtime.Disposals);
+        }
+        finally { pending.TrySetResult("{}"); await owner.DisposeAsync(); }
+    }
+
+    [Fact]
+    public async Task ShutdownSnapshotsConcurrentCompletedInstructionsUnderAdmissionLock()
+    {
+        for (int pass = 0; pass < 20; pass++)
+        {
+            var runtime = new FakeRuntime { Generate = _ => Task.FromResult("{\"candidates\":[],\"clarification\":\"?\"}") };
+            var owner = Owner(runtime, Settings(), new Clock());
+            var jobs = Enumerable.Range(0, 30).Select(_ => owner.GenerateExpressionAsync(Expression, value => value.ToLowerInvariant(), default)).ToArray();
+            var shutdown = owner.DisposeAsync().AsTask();
+            try { await Task.WhenAll(jobs).WaitAsync(TimeoutLimit); } catch (OperationCanceledException) { }
+            await shutdown.WaitAsync(TimeoutLimit);
+            Assert.Equal(1, runtime.Disposals);
+        }
+    }
+
+    [Fact]
+    public async Task ExpressionAndExplanationRetireEachOtherAndShutdownDrainsRuntime()
+    {
+        var runtime = new FakeRuntime(); var settings = Settings();
+        var firstStarted = new TaskCompletionSource<CancellationToken>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var firstResult = new TaskCompletionSource<LearningExplanationResult>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var expressionStarted = new TaskCompletionSource<CancellationToken>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var expressionResult = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+        runtime.Generate = ct => { expressionStarted.TrySetResult(ct); return expressionResult.Task; };
+        int calls = 0;
+        var owner = Owner(runtime, settings, new Clock(), _ => new Engine((_, _, _, ct) =>
+        { if (Interlocked.Increment(ref calls) == 1) { firstStarted.SetResult(ct); return firstResult.Task; } return Task.FromResult(Answer); }));
+        try
+        {
+            var first = owner.Service.GenerateAsync(Input, "first", refresh: true);
+            var firstToken = await firstStarted.Task.WaitAsync(TimeoutLimit);
+            var expression = owner.GenerateExpressionAsync(Expression, value => value.ToLowerInvariant(), CancellationToken.None);
+            var expressionToken = await expressionStarted.Task.WaitAsync(TimeoutLimit);
+            var expressionRetired = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            using var expressionRegistration = expressionToken.Register(() => expressionRetired.TrySetResult());
+            Assert.True(firstToken.IsCancellationRequested);
+            firstResult.SetResult(Answer);
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => first.WaitAsync(TimeoutLimit));
+            var second = owner.Service.GenerateAsync(Input, "second", refresh: true);
+            await second.WaitAsync(TimeoutLimit);
+            await expressionRetired.Task.WaitAsync(TimeoutLimit);
+            var shutdown = owner.DisposeAsync().AsTask();
+            Assert.False(shutdown.IsCompleted); Assert.Equal(0, runtime.Disposals);
+            expressionResult.SetResult("{\"candidates\":[{\"text\":\"rule out\",\"hint\":\"排除\"}]}");
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => expression.WaitAsync(TimeoutLimit));
+            await shutdown.WaitAsync(TimeoutLimit); Assert.Equal(1, runtime.Disposals);
+        }
+        finally { firstResult.TrySetResult(Answer); expressionResult.TrySetResult("{}"); await owner.DisposeAsync(); }
+    }
+
+    [Fact]
+    public async Task DisablingRetiresExpressionAndRejectsLateResult()
+    {
+        var started = new TaskCompletionSource<CancellationToken>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var pending = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var runtime = new FakeRuntime { Generate = ct => { started.SetResult(ct); return pending.Task; } };
+        var settings = Settings(); await using var owner = Owner(runtime, settings, new Clock());
+        var work = owner.GenerateExpressionAsync(Expression, value => value.ToLowerInvariant(), default);
+        try
+        {
+            var token = await started.Task.WaitAsync(TimeoutLimit);
+            var retired = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            using var registration = token.Register(() => retired.TrySetResult());
+            settings.Enabled = false; owner.ApplySettings(settings);
+            await retired.Task.WaitAsync(TimeoutLimit);
+            pending.SetResult("{\"candidates\":[{\"text\":\"x\",\"hint\":\"y\"}]}");
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => work.WaitAsync(TimeoutLimit));
+        }
+        finally { pending.TrySetResult("{}"); }
+    }
+
+    [Fact]
+    public async Task ExpressionUsesSameLocalOwnerAndDefaultOutputAndLeavesEndpointUnavailable()
+    {
+        var runtime = new FakeRuntime { Generate = _ => Task.FromResult("{\"candidates\":[{\"text\":\"rule out\",\"hint\":\"排除\"}]}") };
+        var settings = Settings(); var clock = new Clock();
+        await using var owner = Owner(runtime, settings, clock);
+        var result = await owner.GenerateExpressionAsync(Expression, value => value.ToLowerInvariant(), CancellationToken.None).WaitAsync(TimeoutLimit);
+        Assert.Equal("rule out", Assert.Single(result.Candidates).Text);
+        Assert.Equal(768, runtime.LastOperation.Output); Assert.True(runtime.Configuration!.RequiresGeneralInstructions);
+        Assert.Equal(1, runtime.LastOperation.Disposals); Assert.Equal(0, runtime.Disposals);
+        Assert.Equal(TimeSpan.FromSeconds(60), (await clock.NextTimer()).Due);
+    }
 
     [Fact]
     public async Task StartupAndUnrelatedTranslationChangesNeverLoadOrReleaseExplanation()
@@ -266,6 +375,7 @@ public sealed class LearningExplanationControllerTests
 
     private sealed class FakeRuntime : ILearningLocalRuntime
     {
+        public Func<CancellationToken, Task<string>>? Generate;
         public int Begins, Unloads, Disposals;
         public LearningLocalModelConfiguration? Configuration;
         public Operation LastOperation { get; private set; } = new();
@@ -273,13 +383,14 @@ public sealed class LearningExplanationControllerTests
         public Task<ILearningLocalOperation> BeginOperationAsync(LearningLocalModelConfiguration configuration, CancellationToken ct, CancellationToken ownerCancellation = default)
         {
             ct.ThrowIfCancellationRequested(); ownerCancellation.ThrowIfCancellationRequested();
-            Configuration = configuration; Interlocked.Increment(ref Begins); LastOperation = new();
+            Configuration = configuration; Interlocked.Increment(ref Begins); LastOperation = new() { Generate = Generate };
             return Task.FromResult<ILearningLocalOperation>(LastOperation);
         }
         public ValueTask DisposeAsync() { Interlocked.Increment(ref Disposals); return ValueTask.CompletedTask; }
     }
     private sealed class Operation : ILearningLocalOperation
     {
+        public Func<CancellationToken, Task<string>>? Generate;
         public int Output, Disposals;
         public LearningGgufMetadata Metadata => new("qwen3");
         public int ContextWindowTokens => 4096;
@@ -288,6 +399,7 @@ public sealed class LearningExplanationControllerTests
         public Task<string> GenerateAsync(IReadOnlyList<LLamaToken> promptTokens, LearningModelSamplingValues sampling, int maxTokens, Action<string>? onDelta, CancellationToken ct)
         {
             ct.ThrowIfCancellationRequested(); Output = maxTokens;
+            if (Generate is not null) return Generate(ct);
             const string raw = "{\"meaning\":\"Meaning\",\"explanation\":\"Explanation\"}"; onDelta?.Invoke(raw); return Task.FromResult(raw);
         }
         public ValueTask DisposeAsync() { Interlocked.Increment(ref Disposals); return ValueTask.CompletedTask; }

@@ -21,6 +21,13 @@ public sealed class IcuLearningLexicalText : ILearningLexicalText
     public IcuLearningLexicalText() : this(NativeIcuLexicalApi.Instance) { }
     internal IcuLearningLexicalText(IIcuLexicalApi api) => _api = api;
 
+    /// <summary>Full Swift-style Unicode lowercase without lexical key's apostrophe or whitespace projection.</summary>
+    public string Lowercase(string value)
+    {
+        Validate(value);
+        return value.Length == 0 ? string.Empty : Run(() => _api.ChangeCase(value, upper: false));
+    }
+
     public string Key(string value)
     {
         Validate(value);

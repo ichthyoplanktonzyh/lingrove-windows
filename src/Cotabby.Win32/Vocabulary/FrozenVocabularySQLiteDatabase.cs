@@ -186,6 +186,9 @@ internal sealed class FrozenVocabularySQLiteDatabase : IDisposable
             foreach (var table in Enum.GetValues<VocabularyDatabaseTable>().Reverse())
                 foreach (var row in removed.Where(row => row.Table == table))
                 { cancellationToken.ThrowIfCancellationRequested(); _connection.Execute("DELETE FROM " + table.Name() + " WHERE id=?", new Value.Text(row.Id)); }
+            // Unchanged native rows may retain larger JSON bytes than re-encoding the same
+            // value. Check the actual transaction contents as well before acknowledgement.
+            CheckStoredReadBudget(VocabularyDocumentCodec.MaximumDocumentBytes, cancellationToken);
             ulong result = expectedRevision + 1;
             if (receipt is not null) _connection.Execute("INSERT INTO cli_receipts (key,fingerprint,result) VALUES (?,?,?)",
                 new Value.Text(receipt.Key), new Value.Text(receipt.Fingerprint), new Value.Blob(receipt.Result));
@@ -217,6 +220,27 @@ internal sealed class FrozenVocabularySQLiteDatabase : IDisposable
             if (row.ParentId is { } parent) Account(System.Text.Encoding.UTF8.GetByteCount(parent));
             foreach (var extra in row.Extra) if (extra is not null) Account(System.Text.Encoding.UTF8.GetByteCount(extra));
             Account(VocabularyDatabasePayloadCodec.Encode(row).Length);
+        }
+    }
+    internal void CheckStoredReadBudget(long maximumBytes, CancellationToken cancellationToken = default)
+    {
+        long remaining = Math.Min(maximumBytes, VocabularyDocumentCodec.MaximumDocumentBytes);
+        void Account(long amount)
+        {
+            if (amount < 0 || amount > remaining) throw new VocabularyException(VocabularyFailure.OversizedArchive);
+            remaining -= amount;
+        }
+        foreach (var table in Enum.GetValues<VocabularyDatabaseTable>())
+        {
+            string[] columns = ["id", "parent_id", "payload", .. table.ExtraColumns()];
+            string sql = "SELECT " + string.Join(',', columns.Select(x => "length(CAST(" + x + " AS BLOB))")) + " FROM " + table.Name();
+            _connection.VisitRows(sql, [], cancellationToken, null, values =>
+            {
+                Account(256 + (4 + table.ExtraColumns().Count) * 16);
+                foreach (var value in values)
+                    if (value is Value.Integer count) Account(count.Data);
+                    else if (value is not Value.Null) throw Invalid();
+            });
         }
     }
     private void Upsert(VocabularyDatabaseRecord row)

@@ -24,8 +24,9 @@ source-shaped leaf serializer and `SourceDate` Double representation, never the 
 or v7 resource codec. The SQLite value limit remains 64 MiB. Windows additionally caps aggregate SQL value bytes plus
 per-row accounting at 192 MiB, derived from the standalone document transport bound. It streams
 rows, charges before copying columns, and checks cancellation before each SQLite step. Writes
-also check the projected snapshot against the same accounting before starting a transaction, so a
-successful write cannot publish a snapshot that this adapter subsequently refuses for size. The limit
+check both the projected snapshot and the actual transaction contents against the same accounting
+before commit. The latter includes unchanged native payload bytes that may be larger than a fresh
+encoding, so a successful write cannot publish a snapshot that this adapter refuses for size. The limit
 is a Windows admission restriction, not a frozen Mac notebook-size rule: oversized notebooks are
 rejected without modification. Object and serializer overhead can exceed the accounting budget,
 and a single SQLite call or row decode cannot be interrupted. Production activation remains gated

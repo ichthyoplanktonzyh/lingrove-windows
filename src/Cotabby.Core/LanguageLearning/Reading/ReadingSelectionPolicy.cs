@@ -21,8 +21,13 @@ public static class ReadingSelectionPolicy
     public static void ValidateReceipt(ReadingSelection selection)
     {
         ArgumentNullException.ThrowIfNull(selection);
+        bool absolute = selection.SelectionStart is int start && start >= 0
+            && selection.SelectionLength > 0 && start <= int.MaxValue - selection.SelectionLength;
+        bool opaque = selection.SelectionAnchorId is Guid id && id != Guid.Empty;
         if (selection.Id == Guid.Empty || selection.ProcessId <= 0 || string.IsNullOrWhiteSpace(selection.FieldId)
-            || selection.FocusEpoch <= 0 || selection.SelectionStart < 0 || selection.SelectionLength <= 0
+            || selection.FocusEpoch <= 0 || absolute == opaque || (selection.SelectionStart.HasValue && !absolute)
+            || (selection.SelectionAnchorId.HasValue && !opaque) || selection.Text is null
+            || selection.SelectionLength <= 0 || selection.SelectionLength != selection.Text.Length
             || selection.IsSecure || !selection.IsComplete || selection.Composition != Cotabby.Core.Focus.InputCompositionState.Clear
             || selection.CompositionSequence <= 0) throw new ArgumentException("The selected occurrence could not be verified.");
         Validate(selection.Text);

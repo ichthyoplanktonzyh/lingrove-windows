@@ -6,6 +6,20 @@ namespace Cotabby.Core.Tests.LanguageLearning;
 
 public sealed class ReadingSelectionPolicyTests
 {
+    [Fact]
+    public void OccurrenceRequiresExactlyOneValidAbsoluteOrOpaqueAnchor()
+    {
+        var selection = Selection("a😀");
+        ReadingSelectionPolicy.ValidateReceipt(selection);
+        var opaque = selection with { SelectionStart = null, SelectionAnchorId = Guid.NewGuid() };
+        ReadingSelectionPolicy.ValidateReceipt(opaque);
+        Assert.Throws<ArgumentException>(() => ReadingSelectionPolicy.ValidateReceipt(opaque with { SelectionAnchorId = null }));
+        Assert.Throws<ArgumentException>(() => ReadingSelectionPolicy.ValidateReceipt(selection with { SelectionAnchorId = Guid.NewGuid() }));
+        Assert.Throws<ArgumentException>(() => ReadingSelectionPolicy.ValidateReceipt(opaque with { SelectionAnchorId = Guid.Empty }));
+        Assert.Throws<ArgumentException>(() => ReadingSelectionPolicy.ValidateReceipt(selection with { SelectionStart = int.MaxValue }));
+        Assert.Throws<ArgumentException>(() => ReadingSelectionPolicy.ValidateReceipt(selection with { SelectionLength = 2 }));
+    }
+
     private static ReadingSelection Selection(string text, ReadingContext? context = null) =>
         new(Guid.NewGuid(), text, 1, "field", 1, 0, text.Length, false, true, InputCompositionState.Clear, 1, ScreenRect.Empty, context);
 

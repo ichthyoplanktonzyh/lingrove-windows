@@ -36,6 +36,8 @@ public static class CliShapeContract
             if (field.Kind == "bool" && scalar.TryGetValue<bool>(out _)) return scalar.DeepClone();
             // JsonNode parsed by System.Text.Json retains a JsonElement; numeric probes use its
             // token kind so decimal/exponent syntax cannot silently become an integer value.
+            if (field.Kind == "integer" && ((scalar.TryGetValue<long>(out var integer) && integer >= 0) || (scalar.TryGetValue<int>(out var small) && small >= 0))) return scalar.DeepClone();
+            if (field.Kind is "date" or "confidence" && scalar.TryGetValue<double>(out var numberValue) && double.IsFinite(numberValue) && (field.Kind != "confidence" || numberValue is >= 0 and <= 1)) return scalar.DeepClone();
             if (scalar.TryGetValue<JsonElement>(out var element) && element.ValueKind == JsonValueKind.Number)
             {
                 if (field.Kind == "integer" && element.TryGetInt64(out var i) && i >= 0 && element.GetRawText().IndexOfAny(['.', 'e', 'E']) < 0) return scalar.DeepClone();

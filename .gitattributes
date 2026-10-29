@@ -11,5 +11,8 @@
 /scripts/capture-editor-foundation-data.swift text eol=lf
 /src/Cotabby.Core/Resources/Foundation/CFUniChar.reference.h text eol=lf whitespace=-blank-at-eol,-blank-at-eof
 
+# The frozen bundled classification catalog keeps its exact source bytes on Windows too.
+/src/Cotabby.Core/Vocabulary/Resources/VocabularyClassificationCatalog.json text eol=lf
+
 # Preserve the dependency's exact CRLF license bytes, including its final blank line.
 /src/Cotabby.Win32/Speech/Notices/LICENSE.NAudio.txt -text whitespace=cr-at-eol,-blank-at-eof

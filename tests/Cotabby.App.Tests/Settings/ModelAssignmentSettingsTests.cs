@@ -6,6 +6,21 @@ namespace Cotabby.App.Tests.Settings;
 public sealed class ModelAssignmentSettingsTests
 {
     [Fact]
+    public void ProtectionIncludesRetainedProfilesSpeechAndResidentCompletionWithoutErasingAssignments()
+    {
+        var settings = SettingsStore.Parse("""
+            {"ActiveModelId":"custom:write.gguf","BatteryModelId":"custom:battery.gguf", "PluggedInModelId":"custom:ac.gguf",
+             "LearningLocalModel":"translate.gguf", "LearningExplanationLocalModel":"explain.gguf",
+             "learningSpeech.localModel":"C:\\Models\\voice.gguf", "learningSpeech.localProjection":"C:\\Models\\decoder.gguf"}
+            """);
+        var protectedNames = settings.ProtectedModelFilenames("resident.gguf");
+        foreach (var name in new[] { "WRITE.gguf", "battery.gguf", "ac.gguf", "translate.gguf", "explain.gguf", "voice.gguf", "decoder.gguf", "resident.gguf" })
+            Assert.Contains(name, protectedNames);
+        settings.RecordLocalModelSource("write.gguf", new Uri("https://example.test/model"));
+        settings.ClearLocalModelSource("WRITE.gguf");
+        Assert.Empty(settings.LocalModelSourcesValue); Assert.True(settings.IsLocalModelCandidate("write.gguf", LocalModelTask.Completion));
+    }
+    [Fact]
     public void LegacyExplicitSelectionsRegisterPerTaskBeforeDiscoveryAndRoundTrip()
     {
         var settings = SettingsStore.Parse("""

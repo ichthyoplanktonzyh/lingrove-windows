@@ -7,6 +7,9 @@ using Cotabby.App.Settings;
 using Cotabby.App.UI.Controls;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Models;
+using Microsoft.Win32;
+using System.IO;
+using Cotabby.Win32.Models;
 
 namespace Cotabby.App.UI.Settings.Panes;
 
@@ -18,6 +21,7 @@ internal sealed class ModelManagementView : DockPanel
     private readonly Expander _customDisclosure;
     internal event Action<string>? SelectRequested;
     internal event Action<string>? AssignRequested;
+    internal event Action<string>? DeleteRequested;
     internal TextBlock Status { get; } = new() { TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 6, 0, 6) };
     internal Panel InstalledRows => _installed;
     internal Panel CustomRows => _custom;
@@ -51,12 +55,10 @@ internal sealed class ModelManagementView : DockPanel
         Children.Add(new ScrollViewer { Content = body, VerticalScrollBarVisibility = ScrollBarVisibility.Auto, HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled });
     }
 
-    internal void ShowModels(IReadOnlyList<LearningInstalledModel> models, AppSettings settings, LocalModelTask task, string? selected, string? directory = null)
+    internal void ShowModels(IReadOnlyList<LearningInstalledModel> models, AppSettings settings, LocalModelTask task, string? selected, string? directory = null, string? residentCompletion = null)
     {
         _installed.Children.Clear(); _custom.Children.Clear();
-        var protectedNames = ModelUsagePolicy.ProtectedFilenames(AppSettings.CompletionFilenameForId(settings.ActiveModelId),
-            [AppSettings.CompletionFilenameForId(settings.BatteryModelId), AppSettings.CompletionFilenameForId(settings.PluggedInModelId)],
-            [new[] { settings.LearningLocalModel ?? "", settings.LearningExplanationLocalModel ?? "" }]).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var protectedNames = settings.ProtectedModelFilenames(residentCompletion);
         foreach (var model in models)
         {
             var filename = model.Filename;
@@ -64,11 +66,9 @@ internal sealed class ModelManagementView : DockPanel
             bool unassigned = LocalModelCatalog.Descriptor(filename) is null && LocalModelTaskPolicy.Supports(filename, task) && !candidate;
             string? source = null;
             settings.LocalModelSourcesValue?.TryGetValue(filename.ToLowerInvariant(), out source);
-            source ??= ModelCatalog.All.FirstOrDefault(value => string.Equals(value.FileName, filename, StringComparison.OrdinalIgnoreCase))?.DownloadUrl
-                ?? LearningRuntimeCatalog.TranslationModels.Concat(LearningRuntimeCatalog.ExplanationModels)
-                    .FirstOrDefault(value => string.Equals(value.Filename, filename, StringComparison.OrdinalIgnoreCase))?.DownloadUrl.AbsoluteUri;
             if (candidate) _installed.Children.Add(ModelRow(model, string.Equals(filename, selected, StringComparison.OrdinalIgnoreCase),
-                protectedNames.Contains(filename), () => SelectRequested?.Invoke(filename), directory: directory, source: source));
+                protectedNames.Contains(filename), () => SelectRequested?.Invoke(filename), directory: directory, source: source,
+                delete: () => DeleteRequested?.Invoke(filename)));
             else if (unassigned) _custom.Children.Add(ModelRow(model, false, false, () => AssignRequested?.Invoke(filename), "Use for this task", directory, source));
         }
         if (!string.IsNullOrEmpty(selected) && !models.Any(model => string.Equals(model.Filename, selected, StringComparison.OrdinalIgnoreCase)
@@ -79,7 +79,7 @@ internal sealed class ModelManagementView : DockPanel
         if (_installed.Children.Count == 0) _installed.Children.Add(new TextBlock { Text = "No models available for this task.", Foreground = SystemColors.GrayTextBrush, Margin = new Thickness(0, 6, 0, 6) });
     }
 
-    private static FrameworkElement ModelRow(LearningInstalledModel model, bool selected, bool inUse, Action action, string actionLabel = "Select", string? directory = null, string? source = null)
+    private static FrameworkElement ModelRow(LearningInstalledModel model, bool selected, bool inUse, Action action, string actionLabel = "Select", string? directory = null, string? source = null, Action? delete = null)
     {
         var title = ModelDisplayText.Name(model.Filename);
         var details = new StackPanel();
@@ -96,8 +96,13 @@ internal sealed class ModelManagementView : DockPanel
         FrameworkElement trailing = selected ? new TextBlock { Text = "✓", FontSize = 16, Foreground = SystemColors.HighlightBrush, VerticalAlignment = VerticalAlignment.Center }
             : inUse ? new TextBlock { Text = "In Use", Foreground = SystemColors.GrayTextBrush, VerticalAlignment = VerticalAlignment.Center }
             : ActionButton(actionLabel, action);
-        // In-use rows remain selectable, but deletion is deliberately absent from this checkpoint.
         if (!selected && inUse && actionLabel == "Select") trailing = new StackPanel { Orientation = Orientation.Horizontal, Children = { trailing, ActionButton(actionLabel, action) } };
+        if (!selected && !inUse && delete is not null)
+        {
+            var remove = ActionButton("Delete", delete);
+            AutomationProperties.SetName(remove, "Delete " + ModelDisplayText.Safe(model.Filename));
+            trailing = new StackPanel { Orientation = Orientation.Horizontal, Children = { trailing, remove } };
+        }
         AutomationProperties.SetName(trailing, selected ? "Selected" : inUse ? "In Use" : actionLabel + " " + ModelDisplayText.Safe(model.Filename));
         DockPanel.SetDock(trailing, Dock.Right); row.Children.Add(trailing); row.Children.Add(details);
         return row;
@@ -119,6 +124,9 @@ internal sealed class ModelManagementWindow : Window
     private readonly ModelManagementView _view;
     private readonly ModelScanLifetime _scan = new();
     private string _notice = "";
+    private int _operationVersion;
+    private bool _importing;
+    private CancellationTokenSource? _completionImport;
 
     internal ModelManagementWindow(SettingsContext context, LocalModelTask task, FrameworkElement recommendations, Action? import, Action parentRefresh, Action? cancelTransfer = null)
     {
@@ -126,10 +134,12 @@ internal sealed class ModelManagementWindow : Window
         Title = "Manage models"; MinWidth = 620; Width = 720; MinHeight = 480; Height = 640;
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
         _view = new ModelManagementView(task switch { LocalModelTask.Completion => "Autocomplete", LocalModelTask.Translation => "Translation", LocalModelTask.Explanation => "AI explanation", _ => "Speech" },
-            recommendations, Refresh, OpenFolder, import, cancelTransfer);
+            recommendations, Refresh, OpenFolder, import ?? (task == LocalModelTask.Completion ? ImportCompletion : null),
+            cancelTransfer ?? (task == LocalModelTask.Completion ? CancelCompletionImport : null));
         _view.Done.Click += (_, _) => Close();
         _view.SelectRequested += Select;
         _view.AssignRequested += Assign;
+        _view.DeleteRequested += Delete;
         Content = _view;
         Loaded += (_, _) => Refresh();
         Closed += (_, _) => { _scan.Close(); _lifetime.Cancel(); _lifetime.Dispose(); _parentRefresh(); };
@@ -148,11 +158,13 @@ internal sealed class ModelManagementWindow : Window
         await _scan.RunAsync(() => _context.Host.LearningModels.GetInstalledModelsAsync(_lifetime.Token), models =>
         {
             _context.Host.ReconcileCompletionSelection(models);
-            _view.ShowModels(models, _context.Settings, _task, Selected(), _context.Host.LearningModels.ModelsDirectory);
+            _view.ShowModels(models, _context.Settings, _task, Selected(), _context.Host.LearningModels.ModelsDirectory, _context.Host.Runtime.ActiveModel?.FileName);
             _view.Status.Text = _notice;
         }, () => _view.Status.Text = "Models could not be listed. Refresh to try again.", _lifetime.Token);
     }
-    internal void Report(string text) { _notice = text; _view.Status.Text = text; }
+    internal void Report(string text) { _operationVersion++; SetNotice(text); }
+    private void SetNotice(string text) { _notice = text; _view.Status.Text = text; }
+    private void ReportCurrent(int version, string text) { if (version == _operationVersion && !_lifetime.IsCancellationRequested) SetNotice(text); }
     internal void SetTransferBusy(bool busy) { if (_view.CancelTransfer is { } cancel) cancel.IsEnabled = busy; }
     private void Select(string filename)
     {
@@ -171,6 +183,48 @@ internal sealed class ModelManagementWindow : Window
         if (!LocalModelTaskPolicy.Supports(filename, _task)) return;
         _context.Change(settings => settings.RecordLocalModelTask(filename, _task));
         Refresh(); _parentRefresh();
+    }
+    private async void ImportCompletion()
+    {
+        if (_importing) return;
+        var dialog = new OpenFileDialog { Title = "Add GGUF Models", Filter = "GGUF models (*.gguf)|*.gguf", Multiselect = true, CheckFileExists = true };
+        if (dialog.ShowDialog(this) != true) return;
+        var accepted = dialog.FileNames.Where(path => LocalModelTaskPolicy.Supports(Path.GetFileName(path), _task)).ToArray();
+        if (accepted.Length == 0) { Report("This model is not compatible with this task. Choose another model."); return; }
+        _context.Change(settings => { foreach (var path in accepted) settings.RecordLocalModelTask(Path.GetFileName(path), _task); });
+        using var transfer = CancellationTokenSource.CreateLinkedTokenSource(_lifetime.Token);
+        _completionImport = transfer; _importing = true; SetTransferBusy(true); int version = ++_operationVersion; SetNotice("Importing selected GGUF files…");
+        try
+        {
+            var result = await _context.Host.LearningModels.ImportAsync(accepted, transfer.Token,
+                filename => Dispatcher.InvokeAsync(() => _context.Host.AcknowledgeModelMetadata(settings => settings.ClearLocalModelSource(filename))).Task);
+            if (!_lifetime.IsCancellationRequested) { ReportCurrent(version, $"{(result.Cancelled ? "Import cancelled. " : "")}Imported {result.Imported}; skipped {result.Skipped}; failed {result.Failed}; incompatible {dialog.FileNames.Length - accepted.Length}."); Refresh(); _parentRefresh(); }
+        }
+        catch (OperationCanceledException) { ReportCurrent(version, "Import cancelled."); }
+        catch (Exception) { ReportCurrent(version, "The selected model files could not be imported."); }
+        finally { _completionImport = null; _importing = false; if (!_lifetime.IsCancellationRequested) SetTransferBusy(false); }
+    }
+    private void CancelCompletionImport() => _completionImport?.Cancel();
+
+    private async void Delete(string filename)
+    {
+        if (MessageBox.Show(this, $"Remove {ModelDisplayText.Name(filename)} from the local models folder?", "Delete model?",
+            MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes) return;
+        int version = ++_operationVersion; SetNotice("Deleting model…");
+        try
+        {
+            bool deleted = await _context.Host.LearningModels.DeleteAsync(filename, path => Dispatcher.InvokeAsync(() =>
+            {
+                if (_lifetime.IsCancellationRequested || _context.Settings.ProtectedModelFilenames(_context.Host.Runtime.ActiveModel?.FileName).Contains(filename)) return false;
+                if (!File.Exists(path)) return false;
+                WindowsModelFile.Delete(_context.Host.LearningModels.ModelsDirectory, filename);
+                _context.Host.AcknowledgeModelMetadata(settings => settings.ClearLocalModelSource(filename));
+                return true;
+            }).Task, _lifetime.Token);
+            if (!_lifetime.IsCancellationRequested) { ReportCurrent(version, deleted ? "Model deleted." : "This model is unavailable or in use."); Refresh(); _parentRefresh(); }
+        }
+        catch (OperationCanceledException) { }
+        catch (Exception) { ReportCurrent(version, "The model could not be deleted."); }
     }
     private async void OpenFolder()
     {

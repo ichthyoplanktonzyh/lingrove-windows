@@ -268,6 +268,15 @@ public sealed class AppHost : IAsyncDisposable
         SettingsStore.Save(Settings);
     }
 
+    /// <summary>Completes an already published model-file operation on the UI owner, including
+    /// during shutdown while the model manager drains accepted work.</summary>
+    internal void AcknowledgeModelMetadata(Action<AppSettings> mutate)
+    {
+        mutate(Settings);
+        if (_shuttingDown) SettingsStore.Save(Settings);
+        else PersistSettings();
+    }
+
     /// <summary>Invalidates only an active learning request after its separate DPAPI key changes.</summary>
     public void LearningCredentialsChanged()
     {
@@ -394,7 +403,7 @@ public sealed class AppHost : IAsyncDisposable
         {
             if (ModelDownloader.IsCached(model)) return;
             if (!allowDownload) throw new System.IO.FileNotFoundException("The selected model is unavailable.");
-            await Downloader.DownloadAsync(model, progress, token).ConfigureAwait(false);
+            await Downloader.DownloadAsync(model, progress, token, () => AcknowledgeCompletionDownloadAsync(model)).ConfigureAwait(false);
         }, () => Runtime.LoadAsync(model, ModelDownloader.LocalPath(model), CancellationToken.None),
             () => Runtime.ActiveModel is { } active && ModelCatalog.MatchesId(model.Id, active.Id), ct).ConfigureAwait(false);
         _ui.Post(_ =>
@@ -403,6 +412,25 @@ public sealed class AppHost : IAsyncDisposable
             if (!_shuttingDown && _completion.IsCurrent(ticket) && _completion.IsReady) SettingsApplied?.Invoke();
         }, null);
         return ready;
+    }
+
+    private Task AcknowledgeCompletionDownloadAsync(CotabbyModel model)
+    {
+        var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        _ui.Post(_ =>
+        {
+            try
+            {
+                AcknowledgeModelMetadata(settings =>
+                {
+                    settings.RecordLocalModelTask(model.FileName, LocalModelTask.Completion);
+                    settings.RecordLocalModelSource(model.FileName, new Uri(model.DownloadUrl));
+                });
+                completion.TrySetResult();
+            }
+            catch (Exception error) { completion.TrySetException(error); }
+        }, null);
+        return completion.Task;
     }
 
     private CotabbyModel? ResolveActiveModel()

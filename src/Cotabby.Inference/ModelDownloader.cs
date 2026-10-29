@@ -33,9 +33,11 @@ public sealed class ModelDownloader
     /// </summary>
     public static bool IsCached(CotabbyModel model) => IsGguf(LocalPath(model));
 
-    public async Task DownloadAsync(CotabbyModel model, IProgress<Progress>? progress, CancellationToken ct)
+    public async Task DownloadAsync(CotabbyModel model, IProgress<Progress>? progress, CancellationToken ct,
+        Func<Task>? acknowledgeInstall = null)
     {
         var finalPath = LocalPath(model);
+        using var fileLease = await ModelFileOperations.AcquireAsync(finalPath, ct).ConfigureAwait(false);
         if (IsGguf(finalPath)) return;
         if (model.IsCustom) throw new FileNotFoundException("The model file is no longer in the models folder.", finalPath);
 
@@ -70,7 +72,11 @@ public sealed class ModelDownloader
             File.Delete(partPath);
             throw new InvalidDataException("The downloaded file is not a GGUF model.");
         }
-        File.Move(partPath, finalPath, overwrite: true);
+        ct.ThrowIfCancellationRequested();
+        File.Move(partPath, finalPath, overwrite: false);
+        // Once published, metadata belongs to this file even if its selection was superseded.
+        // Await acknowledgement without the request token while the destination lease is held.
+        if (acknowledgeInstall is not null) await acknowledgeInstall().ConfigureAwait(false);
         _logger.LogInformation("Model {Model} downloaded to {Path}.", model.Id, finalPath);
     }
 

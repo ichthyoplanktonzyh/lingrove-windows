@@ -88,7 +88,9 @@ internal sealed class RecommendedSetupController : IAsyncDisposable
         if (RecommendedSetupPolicy.NeedsLearningSelection(true, s.LearningExplanationLocalModel, false))
         { s.LearningExplanationLocalModel = Plan.Explanation.Filename; s.LearningExplanationLocalTemplate = LearningChatTemplate.Automatic; }
         s.Enabled = true; s.Pause = null; s.LearningTranslationEnabled = true; s.RecommendedSetupApplied = true;
-        _host.PersistSettings();
+        // Re-enabling an already-started cached selection must not load weights as a side effect
+        // of applying the recommendation; the first eligible local request owns that preparation.
+        _host.PersistSelectionWithoutLoading();
         StartDownloads();
     }
     internal void Retry() { if (!Busy && !_disposed) StartDownloads(); }

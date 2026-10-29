@@ -54,3 +54,5 @@ WPF dispatcher. These tests do not establish native IME or physical desktop beha
 After merging the composition checkpoint, the full Core and portable App suites passed 4,752/4,752
 and 1,228/1,228. The focused Inference composition/model/insertion filter passed 36/36 and the WPF
 setup/composition filter passed 8/8. These checks do not establish physical IME or native model behavior.
+The later Apply persistence repair passed `RecommendedSetupTests` 7/7 and the Release solution
+build with zero warnings/errors. The composition producer remains subject to independent review.

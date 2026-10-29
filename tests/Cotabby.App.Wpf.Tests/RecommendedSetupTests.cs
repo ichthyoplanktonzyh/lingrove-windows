@@ -22,12 +22,31 @@ public sealed class RecommendedSetupTests(WpfDispatcher dispatcher)
         public TaskCompletionSource Release { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
         public TaskCompletionSource? CompletionRelease;
         public bool Installed;
-        public void PersistSettings() => SettingsApplied?.Invoke();
+        public bool CompletionPreviouslyStarted;
+        public int AutomaticLoads;
+        public void PersistSettings()
+        {
+            if (CompletionPreviouslyStarted && Installed && Settings.Enabled && Settings.Engine == EngineKind.Local
+                && !string.IsNullOrEmpty(Settings.ActiveModelId)) AutomaticLoads++;
+            SettingsApplied?.Invoke();
+        }
         public void PersistSelectionWithoutLoading() => SettingsApplied?.Invoke();
         public bool IsCached(CotabbyModel model) => Installed;
         public Task DownloadCompletion(CotabbyModel model, IProgress<(long Bytes, long? Total)> progress, CancellationToken token) { Requests.Add(LocalModelTask.Completion); return (CompletionRelease ?? Release).Task.WaitAsync(token); }
         public Task DownloadLearning(LearningDownloadableModel model, LocalModelTask role, IProgress<(long Bytes, long? Total)> progress, CancellationToken token) { Requests.Add(role); return Release.Task.WaitAsync(token); }
     }
+    [Fact]
+    public Task ApplyingSetupDoesNotLoadPreviouslyStartedCachedSelection() => dispatcher.RunAsync(async () =>
+    {
+        var host = new Host { Installed = true, CompletionPreviouslyStarted = true };
+        host.Settings.ActiveModelId = "tabby-2-base"; host.Settings.Enabled = false;
+        await using var setup = new RecommendedSetupController(host, 16UL * 1_073_741_824);
+        setup.Apply(); Assert.True(host.Settings.Enabled); Assert.Equal(0, host.AutomaticLoads);
+        Assert.Equal("tabby-2-base", host.Settings.ActiveModelId);
+        host.Release.SetResult(); await setup.CurrentWork;
+        setup.Retry(); await setup.CurrentWork; Assert.Equal(0, host.AutomaticLoads);
+        host.PersistSettings(); Assert.Equal(1, host.AutomaticLoads); // Ordinary persistence retains its original behavior.
+    });
     [Fact]
     public Task CardRendersWithoutStartingWorkAndExposesExplicitActions() => dispatcher.RunAsync(async () =>
     {

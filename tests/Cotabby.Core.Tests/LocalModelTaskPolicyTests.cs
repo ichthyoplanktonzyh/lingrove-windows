@@ -82,6 +82,17 @@ public class LocalModelTaskPolicyTests
     }
 
     [Fact]
+    public void CompletionCatalogAdmitsOnlyExplicitUnknownsAndCompatibleBuiltIns()
+    {
+        CotabbyModel Make(string file) => new() { Id = file, DisplayName = file, DownloadUrl = "", FileName = file, ApproxSizeBytes = 1, ContextLength = 4096 };
+        var models = new[] { Make("custom.gguf"), Make("TranslateGemma-custom.gguf"), Make("Hy-MT2-1.8B-Q4_K_M.gguf"), ModelCatalog.All[0] };
+        var map = new Dictionary<string, string[]> { ["custom.gguf"] = ["completion"], ["translategemma-custom.gguf"] = ["completion"] };
+        var candidates = ModelCatalog.CandidatesFrom(models, map);
+        Assert.Equal(new[] { "custom.gguf", ModelCatalog.All[0].FileName }, candidates.Select(model => model.FileName));
+        map.Clear(); Assert.Equal(new[] { ModelCatalog.All[0].FileName }, ModelCatalog.CandidatesFrom(models, map).Select(model => model.FileName));
+    }
+
+    [Fact]
     public void UsageProtectsCurrentAndFutureSelectionsAcrossTasks()
     {
         var names = ModelUsagePolicy.ProtectedFilenames("current.gguf", ["battery.gguf", "", null],

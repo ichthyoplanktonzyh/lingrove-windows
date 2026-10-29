@@ -121,7 +121,7 @@ public sealed class TrayController : IDisposable
         _resumeItem.Visibility = settings.Enabled && paused ? Visibility.Visible : Visibility.Collapsed;
         // Rebuilt each time so a model dropped into the folder shows up without a restart.
         _modelMenu.Items.Clear();
-        foreach (var model in ModelCatalog.Available())
+        foreach (var model in ModelCatalog.Available(settings.ModelAssignmentSnapshot()))
         {
             var item = new MenuItem { Header = model.DisplayName, ToolTip = model.Subtitle, Tag = model.Id };
             item.Click += (_, _) => _ = SwitchModelAsync(model.Id);
@@ -138,8 +138,9 @@ public sealed class TrayController : IDisposable
 
     private async Task SwitchModelAsync(string id)
     {
+        if (ModelCatalog.FindById(id, _host.Settings.ModelAssignmentSnapshot()) is not { } selected) return;
         Update(s => s.ActiveModelId = id);
-        if (ModelCatalog.FindById(id) is { } model && !ModelDownloader.IsCached(model))
+        if (!ModelDownloader.IsCached(selected))
         {
             // Downloads are several GB, so they start from Settings where progress is visible.
             SettingsWindow.ShowOrFocus(_host);

@@ -17,7 +17,12 @@ public sealed class LearningExplanationControllerTests
     private static readonly LearningExplanationResult Answer = new("Meaning", "Explanation");
     private static LearningExplanationInput Input => new("know", "know", LearningLanguage.English, VocabularyEntryKind.Word,
         "Let me know.", [new(7, 4)]);
-    private static AppSettings Settings() => new() { LearningExplanationLocalModel = "tutor.gguf", LearningExplanationLocalTemplate = LearningChatTemplate.Qwen3 };
+    private static AppSettings Settings()
+    {
+        var settings = new AppSettings { LearningExplanationLocalModel = "tutor.gguf", LearningExplanationLocalTemplate = LearningChatTemplate.Qwen3 };
+        settings.NormalizeModelAssignmentsAndRegisterLegacy();
+        return settings;
+    }
     private static LearningExplanationController Owner(FakeRuntime runtime, AppSettings settings, Clock clock,
         Func<LearningLocalModelConfiguration, ILearningExplanationEngine>? factory = null, Func<bool>? battery = null) =>
         new(runtime, settings, Path.Combine(Path.GetTempPath(), "lingrove-owner-test"), battery, clock,
@@ -100,7 +105,7 @@ public sealed class LearningExplanationControllerTests
         await using var independent = Owner(other, Settings(), new Clock());
         await owner.Service.GenerateAsync(Input, "req_first").WaitAsync(TimeoutLimit);
         var old = await clock.NextTimer();
-        if (change == "model") settings.LearningExplanationLocalModel = "second.gguf";
+        if (change == "model") { settings.LearningExplanationLocalModel = "second.gguf"; settings.RecordLocalModelTask("second.gguf", Cotabby.Core.Models.LocalModelTask.Explanation); }
         else if (change == "context") settings.LearningExplanationLocalContextTokensByModel["tutor.gguf"] = 16384;
         else settings.LearningExplanationLocalTemplate = LearningChatTemplate.ChatMl;
         owner.ApplySettings(settings);
@@ -194,6 +199,22 @@ public sealed class LearningExplanationControllerTests
         await using var owner = Owner(runtime, settings, clock, _ => { calls++; throw new InvalidOperationException(); });
         var failure = await Assert.ThrowsAsync<LearningTranslationException>(() => owner.Service.GenerateAsync(Input, "req_path").WaitAsync(TimeoutLimit));
         Assert.Equal(LearningTranslationFailure.LocalModelNotConfigured, failure.Failure); Assert.Equal(0, calls);
+    }
+
+    [Fact]
+    public async Task UnassignedOrIncompatibleSelectionCannotOpenTheExplanationRuntime()
+    {
+        var runtime = new FakeRuntime(); var settings = Settings(); settings.LearningExplanationLocalModel = "other.gguf";
+        int calls = 0;
+        await using var owner = Owner(runtime, settings, new Clock(), _ => { calls++; return new Engine((_, _, _, _) => Task.FromResult(Answer)); });
+        await Assert.ThrowsAsync<LearningTranslationException>(() => owner.Service.GenerateAsync(Input, "req_unassigned", refresh: true).WaitAsync(TimeoutLimit));
+        Assert.Equal(0, calls);
+        settings.RecordLocalModelTask("other.gguf", Cotabby.Core.Models.LocalModelTask.Explanation); owner.ApplySettings(settings);
+        Assert.Equal(Answer, (await owner.Service.GenerateAsync(Input, "req_assigned", refresh: true).WaitAsync(TimeoutLimit)).Result);
+        Assert.Equal(1, calls);
+        settings.LearningExplanationLocalModel = "Hy-MT2-1.8B-Q4_K_M.gguf"; owner.ApplySettings(settings);
+        await Assert.ThrowsAsync<LearningExplanationException>(() => owner.Service.GenerateAsync(Input, "req_incompatible", refresh: true).WaitAsync(TimeoutLimit));
+        Assert.Equal(1, calls);
     }
 
     [Fact]

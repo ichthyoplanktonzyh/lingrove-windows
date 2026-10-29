@@ -39,7 +39,7 @@ internal sealed class ModelList : StackPanel
         _progressBar = null;
 
         var selectedId = _context.Settings.ActiveModelId ?? ModelCatalog.All[0].Id;
-        foreach (var model in ModelCatalog.Available())
+        foreach (var model in ModelCatalog.Available(_context.Settings.ModelAssignmentSnapshot()))
         {
             if (Children.Count > 0) Children.Add(Ui.Separator());
             Children.Add(Row(model, model.Id == selectedId));

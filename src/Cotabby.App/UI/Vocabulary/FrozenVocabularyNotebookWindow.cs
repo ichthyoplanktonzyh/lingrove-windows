@@ -18,7 +18,7 @@ namespace Cotabby.App.UI.Vocabulary;
 
 /// <summary>Canonical notebook presentation borrows the app-owned Store and reader.
 /// Only Add/Import are connected. Other commands remain disabled until their shared owners exist.</summary>
-internal sealed class FrozenVocabularyNotebookWindow : Window
+internal sealed partial class FrozenVocabularyNotebookWindow : Window
 {
     private sealed class Search : IVocabularyTextSearching
     { public bool Contains(string field, string term) => CultureInfo.CurrentCulture.CompareInfo.IndexOf(field, term, CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace) >= 0; }
@@ -77,11 +77,11 @@ internal sealed class FrozenVocabularyNotebookWindow : Window
         _meanings = new("Other expressions", "Suggested grouping", SenseTitle, LanguageLabel);
         _categories = new(new("Categories", "Search categories", "All meanings", "Uncategorized meanings", "Content meanings", "Communicative functions", "New category", "Manage categories", "Edit category"), search) { AllowEditing = false };
         _meanings.UseNotebookTheme(); _categories.UseNotebookTheme();
-        _meanings.DestinationChanged += destination => { _session.Destination = destination; if (destination.SenseId is { } id) SelectSense(id, destination.NodeId); else _session.Refresh(); };
-        _categories.SelectionChanged += value => { if (_updating) return; _session.Category = value; if (_session.Destination?.NodeId is { } id && !_session.MeaningItems.Any(x => x.Id == id)) _session.Destination = null; _session.Refresh(); };
-        _query.TextChanged += (_, _) => { if (!_updating) { _session.Query = _query.Text; foreach (var e in _session.Visible) _expanded.Add(e.Id); _session.Refresh(); } };
-        _language.SelectionChanged += (_, _) => { if (!_updating) { _session.Language = (_language.SelectedItem as LanguageChoice)?.Value; _session.Refresh(); } };
-        _tag.SelectionChanged += (_, _) => { if (!_updating) { _session.Tag = (_tag.SelectedItem as TagChoice)?.Value ?? ""; _session.Refresh(); } };
+        _meanings.DestinationChanged += destination => { ++_actionSelectionEpoch; _actionError = null; _session.Destination = destination; if (destination.SenseId is { } id) SelectSense(id, destination.NodeId); else _session.Refresh(); };
+        _categories.SelectionChanged += value => { if (_updating) return; ++_actionSelectionEpoch; _session.Category = value; if (_session.Destination?.NodeId is { } id && !_session.MeaningItems.Any(x => x.Id == id)) _session.Destination = null; _session.Refresh(); };
+        _query.TextChanged += (_, _) => { if (!_updating) { ++_actionSelectionEpoch; _session.Query = _query.Text; foreach (var e in _session.Visible) _expanded.Add(e.Id); _session.Refresh(); } };
+        _language.SelectionChanged += (_, _) => { if (!_updating) { ++_actionSelectionEpoch; _session.Language = (_language.SelectedItem as LanguageChoice)?.Value; _session.Refresh(); } };
+        _tag.SelectionChanged += (_, _) => { if (!_updating) { ++_actionSelectionEpoch; _session.Tag = (_tag.SelectedItem as TagChoice)?.Value ?? ""; _session.Refresh(); } };
         _sort.SelectionChanged += (_, _) => { if (!_updating) { _session.NewestFirst = _sort.SelectedIndex == 0; _session.Refresh(); } };
         _density.SelectionChanged += (_, _) => { if (!_updating) { _session.Detailed = _density.SelectedIndex == 1; if (_listPreferences is not null) _listPreferences.Density = _session.Detailed ? "detailed" : "compact"; _session.Refresh(); } };
         _organization.SelectionChanged += (_, _) => { if (!_updating) { ChangeOrganization(_organization.SelectedIndex == 1); } };
@@ -97,6 +97,7 @@ internal sealed class FrozenVocabularyNotebookWindow : Window
     internal void Reveal(VocabularySelection? selection)
     {
         Dispatcher.VerifyAccess(); if (_retiring || selection is null) return;
+        ++_actionSelectionEpoch;
         if (_modalDone is not null) { _pendingShow = selection; return; }
         _expanded.Add(selection.Value.EntryId); LastOperation = Track(_session.RevealSelectionAsync(selection));
     }
@@ -112,11 +113,14 @@ internal sealed class FrozenVocabularyNotebookWindow : Window
     internal async Task RetireAsync()
     {
         Dispatcher.VerifyAccess(); if (_retiring) return; _retiring = true;
+        CloseActionMenus();
         _add.IsEnabled = _import.IsEnabled = false;
         if (_inputWindow is VocabularyEntryCreationWindow creation) await creation.RetireAsync();
         else if (_inputWindow is VocabularyWordListImportWindow import) await import.RetireAsync();
         else if (_inputWindow is FrozenVocabularyEntryEditorWindow editor) await editor.RetireAsync();
+        else if (_inputWindow is FrozenVocabularyDeleteSenseWindow confirmation) confirmation.Close();
         if (_modalDone is { } modal) await modal.Task;
+        if (_senseCompletion is { } sense) await sense.Task;
         await _session.RetireAsync();
         while (_operations.Count != 0) { var operations = _operations.ToArray(); await Task.WhenAll(operations); _operations.RemoveWhere(t => t.IsCompleted); }
         _allowClose = true; Close();
@@ -169,6 +173,7 @@ internal sealed class FrozenVocabularyNotebookWindow : Window
     }
     private void ChangeOrganization(bool meaning)
     {
+        ++_actionSelectionEpoch;
         if (meaning && _session.Destination is null && _session.Selection is { } selected && _session.Snapshot is { } snapshot)
         {
             var nodes = snapshot.Document.Semantics.Mappings.Where(m => m.SenseId == selected.SenseId).Select(m => m.NodeId).Distinct().ToArray();
@@ -180,13 +185,14 @@ internal sealed class FrozenVocabularyNotebookWindow : Window
     private void SelectSense(Guid id, Guid? node, bool notify = true)
     {
         var entry = _session.Entries.FirstOrDefault(e => e.Senses.Any(s => s.Id == id)); if (entry is null) return;
+        ++_actionSelectionEpoch; _actionError = null;
         _session.Selection = new(entry.Id, id); _expanded.Add(entry.Id);
         if (_session.MeaningMode) _session.Destination = new(VocabularyMeaningDestinationKind.Sense, node, id);
         if (notify) _session.Refresh();
     }
     private void Present()
     {
-        if (!_session.Active) return; _restoreEntryFocus = _entries.IsKeyboardFocusWithin; _updating = true;
+        if (!_session.Active || _retiring) return; CloseActionMenus(); _restoreEntryFocus = _entries.IsKeyboardFocusWithin; _updating = true;
         try
         {
             _query.Text = _session.Query; _organization.SelectedIndex = _session.MeaningMode ? 1 : 0; _sort.SelectedIndex = _session.NewestFirst ? 0 : 1; _density.SelectedIndex = _session.Detailed ? 1 : 0;
@@ -242,6 +248,7 @@ internal sealed class FrozenVocabularyNotebookWindow : Window
     }
     private void ActivateHeadword(F.VocabularyEntry entry)
     {
+        ++_actionSelectionEpoch; _actionError = null;
         bool selected = _session.Selection?.EntryId == entry.Id;
         if (selected && _expanded.Contains(entry.Id)) _expanded.Remove(entry.Id);
         else { _expanded.Add(entry.Id); if (!selected) _session.Selection = new(entry.Id, entry.Senses[0].Id); }
@@ -284,7 +291,7 @@ internal sealed class FrozenVocabularyNotebookWindow : Window
         else if (_session.MeaningMode)
         {
             Heading(panel, "Browse by meaning"); panel.Children.Add(Disabled("New meaning", "Meaning editing is not available in this notebook yet."));
-            if (_session.Unclassified.Count > 0) { var button = new Button { Content = $"Other expressions ({_session.Unclassified.Count})", HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 10, 0, 0) }; VocabularyNotebookTheme.Button(button); button.Click += (_, _) => { _session.Destination = new(VocabularyMeaningDestinationKind.Unclassified); _session.Refresh(); }; panel.Children.Add(button); }
+            if (_session.Unclassified.Count > 0) { var button = new Button { Content = $"Other expressions ({_session.Unclassified.Count})", HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 10, 0, 0) }; VocabularyNotebookTheme.Button(button); button.Click += (_, _) => { ++_actionSelectionEpoch; _session.Destination = new(VocabularyMeaningDestinationKind.Unclassified); _session.Refresh(); }; panel.Children.Add(button); }
         }
         else panel.Children.Add(State("Select an expression"));
         return VocabularyNotebookTheme.Brush(new ScrollViewer { Name = "frozenNotebookDetail", VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Content = panel }, Control.BackgroundProperty, "CardBg");
@@ -294,7 +301,7 @@ internal sealed class FrozenVocabularyNotebookWindow : Window
         Guid? nodeId = _session.Destination?.NodeId; var node = _session.Snapshot!.Document.Semantics.Nodes.FirstOrDefault(n => n.Id == nodeId);
         var bar = new WrapPanel { Margin = new Thickness(0, 0, 0, 14) };
         var back = new Button { Name = "frozenMeaningBack", Content = "‹  " + (node is null ? "Other expressions" : VocabularyMeaningLabelPolicy.Title(node, _session.PreferredLanguages)), Padding = new Thickness(8, 4, 8, 4) };
-        VocabularyNotebookTheme.Button(back); back.Click += (_, _) => { _session.Destination = node is null ? new(VocabularyMeaningDestinationKind.Unclassified) : new(VocabularyMeaningDestinationKind.Node, node.Id); _session.Refresh(); }; bar.Children.Add(back);
+        VocabularyNotebookTheme.Button(back); back.Click += (_, _) => { ++_actionSelectionEpoch; _session.Destination = node is null ? new(VocabularyMeaningDestinationKind.Unclassified) : new(VocabularyMeaningDestinationKind.Node, node.Id); _session.Refresh(); }; bar.Children.Add(back);
         if (node is not null)
         {
             var ids = _session.Snapshot.Document.Semantics.Mappings.Where(m => m.NodeId == node.Id).Select(m => m.SenseId).ToHashSet();
@@ -321,11 +328,14 @@ internal sealed class FrozenVocabularyNotebookWindow : Window
         }
         if (sense.Note.Length > 0) { Section(panel, "Notes"); panel.Children.Add(Paragraph(sense.Note)); }
         if (sense.Tags.Count > 0) panel.Children.Add(Caption(string.Join("  ·  ", sense.Tags)));
-        if (sense.Examples.Count > 0) { Section(panel, "Examples"); foreach (var example in sense.Examples) { panel.Children.Add(Paragraph(example.Text)); if (example.Translation.Length > 0) panel.Children.Add(Caption(example.Translation)); foreach (var translation in example.TranslationVariants) panel.Children.Add(Caption(translation.Text)); } }
-        var actions = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 18, 0, 0) };
-        var edit = new Button { Name = "frozenNotebookEdit", Content = "Edit", IsEnabled = _store is ICanonicalVocabularyEditorStore && _store is ICanonicalVocabularyMediaStore, Margin = new Thickness(0, 0, 8, 0) };
+        if (sense.Examples.Count > 0) { Section(panel, "Examples"); foreach (var example in sense.Examples) { panel.Children.Add(Paragraph(example.Text)); if (example.Translation.Length > 0) panel.Children.Add(Caption(example.Translation)); foreach (var translation in example.TranslationVariants) panel.Children.Add(Caption(translation.Text)); panel.Children.Add(MoveUsageButton(entry, sense, example)); } }
+        if (_senseMutating) panel.Children.Add(Caption("Updating vocabulary…"));
+        if (_actionError is { } error) panel.Children.Add(VocabularyNotebookTheme.Brush(new TextBlock { Name = "frozenSenseActionError", Text = error, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 12, 0, 0) }, TextBlock.ForegroundProperty, "OrangeBrush"));
+        var actions = new WrapPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 18, 0, 0) };
+        var edit = new Button { Name = "frozenNotebookEdit", Content = "Edit", IsEnabled = !_senseMutating && _store is ICanonicalVocabularyEditorStore && _store is ICanonicalVocabularyMediaStore, Margin = new Thickness(0, 0, 8, 0) };
         VocabularyNotebookTheme.Button(edit); edit.Click += (_, _) => LastOperation = EditAsync(new(entry.Id, sense.Id)); actions.Children.Add(edit);
-        foreach (string text in new[] { "Delete", "Review", "Export" }) { var button = Disabled(text, "This action is not available in this notebook yet."); button.Margin = new Thickness(0, 0, 8, 0); actions.Children.Add(button); } panel.Children.Add(actions);
+        AddSenseActions(actions, entry, sense);
+        foreach (string text in new[] { "Review", "Export" }) { var button = Disabled(text, "This action is not available in this notebook yet."); button.Margin = new Thickness(0, 0, 8, 0); actions.Children.Add(button); } panel.Children.Add(actions);
     }
     private void MeaningDetail(StackPanel panel, F.VocabularyMeaningNode node)
     {
@@ -340,7 +350,7 @@ internal sealed class FrozenVocabularyNotebookWindow : Window
         var matches = _session.Scoped.SelectMany(e => e.Senses.Where(s => ids.Contains(s.Id)).Select(s => new VocabularySelection(e.Id, s.Id))).ToArray();
         if (matches.Length == 0) panel.Children.Add(Caption("No matching expressions")); else foreach (var selection in matches) AddSenseCard(panel, selection);
         var relations = VocabularyMeaningBrowserProjection.ConfirmedRelations(doc.Semantics).Where(r => r.SourceId == node.Id || r.TargetId == node.Id).ToArray();
-        if (relations.Length > 0) { Section(panel, "Related meanings"); foreach (var relation in relations) { var target = doc.Semantics.Nodes.FirstOrDefault(n => n.Id == (relation.SourceId == node.Id ? relation.TargetId : relation.SourceId)); if (target is null) continue; var button = new Button { Content = relation.Kind + "  ·  " + VocabularyMeaningLabelPolicy.Title(target, _session.PreferredLanguages), HorizontalContentAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 3, 0, 3), Padding = new Thickness(10) }; VocabularyNotebookTheme.CardButton(button); button.Click += (_, _) => { _session.Category = "all"; _session.Destination = new(VocabularyMeaningDestinationKind.Node, target.Id); _session.Refresh(); }; panel.Children.Add(button); } }
+        if (relations.Length > 0) { Section(panel, "Related meanings"); foreach (var relation in relations) { var target = doc.Semantics.Nodes.FirstOrDefault(n => n.Id == (relation.SourceId == node.Id ? relation.TargetId : relation.SourceId)); if (target is null) continue; var button = new Button { Content = relation.Kind + "  ·  " + VocabularyMeaningLabelPolicy.Title(target, _session.PreferredLanguages), HorizontalContentAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 3, 0, 3), Padding = new Thickness(10) }; VocabularyNotebookTheme.CardButton(button); button.Click += (_, _) => { ++_actionSelectionEpoch; _session.Category = "all"; _session.Destination = new(VocabularyMeaningDestinationKind.Node, target.Id); _session.Refresh(); }; panel.Children.Add(button); } }
         var cueIds = doc.Semantics.CueTargets.Where(x => x.NodeId == node.Id && x.Provenance.Status == R.VocabularySemanticStatus.Confirmed).Select(x => x.CueId).ToHashSet();
         var cues = doc.Semantics.Cues.Where(x => cueIds.Contains(x.Id)).Select(x => x.Text).ToArray();
         if (node.Provenance.Source.Length > 0 || node.Roles.Count > 0 || cues.Length > 0) { Section(panel, "Details"); if (cues.Length > 0) panel.Children.Add(Caption(string.Join(" · ", cues))); foreach (var role in node.Roles) panel.Children.Add(Caption(role.Name + "  " + role.Description)); if (node.Provenance.Source.Length > 0) panel.Children.Add(Caption(node.Provenance.Source)); }

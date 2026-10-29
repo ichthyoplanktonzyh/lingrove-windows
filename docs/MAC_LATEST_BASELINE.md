@@ -60,6 +60,8 @@ committed contracts and tests; the older v7 Windows value boundary does not yet 
 
 Functional and UI/design scope, team ownership, shared-file coordination and rendered/native
 acceptance are defined in [WINDOWS_ALIGNMENT.md](WINDOWS_ALIGNMENT.md).
+The maintainer's 2026-10-29 clarification preserves behavior, IA, content hierarchy and state
+expression while allowing attractive Windows/WPF visual design; Mac pixel identity is not required.
 
 ## Next implementation order
 
@@ -78,7 +80,7 @@ acceptance are defined in [WINDOWS_ALIGNMENT.md](WINDOWS_ALIGNMENT.md).
 
 This order follows frozen Mac ownership and dependencies. It does not authorize a replacement
 product design, new hosted transmission or automatic classification. The primary agent coordinates
-module implementation delegates using GPT-6.1 Terra xhigh, shared contracts and independent review.
+module implementation delegates using GPT-6.1 Terra high, shared contracts and independent review.
 Merge reviewed final-head green checkpoints to `main`.
 Ordinary rounds create no installer, downloadable package, release, model download or VM. Windows
 UIA/IME/insertion, ghost pixels, actual Anki, installed voices/audio and hardware/model quality still

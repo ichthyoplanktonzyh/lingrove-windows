@@ -1,0 +1,345 @@
+{
+  "version": 1,
+  "tasks": [
+    {
+      "name": "Verify the same corpus against committed Swift policies",
+      "script": "scripts/verify-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify learning corpus against committed Mac contracts",
+      "script": "scripts/verify-learning-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify local learning templates against committed Mac policies",
+      "script": "scripts/verify-learning-local-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify lexical recognition against committed Mac policies",
+      "script": "scripts/verify-learning-lexical-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify explanation input, prompt and parsing against committed Mac policies",
+      "script": "scripts/verify-learning-explanation-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify writing capture to explanation input against committed Mac composition",
+      "script": "scripts/verify-learning-capture-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify sense content values and HTML against committed Mac policies",
+      "script": "scripts/verify-vocabulary-content-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify vocabulary capture identity and validation against committed Mac policies",
+      "script": "scripts/verify-vocabulary-capture-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify notebook and review models against committed Mac values",
+      "script": "scripts/verify-vocabulary-models-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify vocabulary save and sense mutations against committed Mac policies",
+      "script": "scripts/verify-vocabulary-sense-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify notebook graph admission against committed Mac archive methods",
+      "script": "scripts/verify-vocabulary-validation-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify concurrent sense editing and commit pruning against original Mac helpers",
+      "script": "scripts/verify-vocabulary-edit-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify typed relational projection against committed Mac methods",
+      "script": "scripts/verify-vocabulary-projection-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify row JSON against actual committed Mac Codable methods",
+      "script": "scripts/verify-vocabulary-codec-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify transactions against original Mac SQLite classes",
+      "script": "scripts/verify-vocabulary-sqlite-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify archive ownership against the complete original Mac actor",
+      "script": "scripts/verify-vocabulary-archive-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify UI store publication against original Mac methods",
+      "script": "scripts/verify-vocabulary-store-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify full writing captures against original Mac factory",
+      "script": "scripts/verify-vocabulary-card-capture-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify notebook browser against original Mac view and policies",
+      "script": "scripts/verify-vocabulary-notebook-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify editor draft rules against original Mac view closures",
+      "script": "scripts/verify-vocabulary-editor-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify versioned editor annotation and composed-range behavior",
+      "script": "scripts/verify-vocabulary-editor-current-macos-parity.py",
+      "mac_repo": ".mac-current-editor"
+    },
+    {
+      "name": "Verify notebook and child sessions against the complete original Mac classes",
+      "script": "scripts/verify-vocabulary-notebook-session-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify image preparation against original Mac ImageIO and validation",
+      "script": "scripts/verify-vocabulary-image-preparation-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify media reuse and repair against the original Mac image storage",
+      "script": "scripts/verify-vocabulary-image-storage-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify media transactions against the complete original Mac archive",
+      "script": "scripts/verify-vocabulary-media-transactions-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify export scope and portable material projection against actual Mac methods",
+      "script": "scripts/verify-vocabulary-export-projection-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify CSV cell and UTF-8 preview against actual Mac formatter methods",
+      "script": "scripts/verify-vocabulary-export-text-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify complete TXT and CSV rendering against actual Mac formatter",
+      "script": "scripts/verify-vocabulary-export-notes-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify portable JSON export bytes against actual Mac encoder",
+      "script": "scripts/verify-vocabulary-export-json-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify prepared export payloads against actual Mac package factory",
+      "script": "scripts/verify-vocabulary-export-package-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify archive export snapshots against complete original Mac ownership",
+      "script": "scripts/verify-vocabulary-export-snapshot-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify stored ZIP bytes and bounds against complete original Mac encoder",
+      "script": "scripts/verify-vocabulary-export-zip-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify export save and destination protection against original Mac effects",
+      "script": "scripts/verify-vocabulary-export-save-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify export session scope and stale preparation against original Mac owner",
+      "script": "scripts/verify-vocabulary-export-session-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify frozen notebook export offers against original Mac view methods",
+      "script": "scripts/verify-vocabulary-export-offer-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify full notebook and backup Codable against original Mac declarations",
+      "script": "scripts/verify-vocabulary-backup-codec-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify full backup snapshot and file effects against original Mac archive",
+      "script": "scripts/verify-vocabulary-backup-archive-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify complete restore admission and transaction against original Mac archive",
+      "script": "scripts/verify-vocabulary-restore-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify Store backup and restored media publication against original Mac owner",
+      "script": "scripts/verify-vocabulary-backup-store-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify graph projection settings and camera against original Mac values",
+      "script": "scripts/verify-vocabulary-graph-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify graph particle forces against complete original GraphSimulation and Grape",
+      "script": "scripts/verify-vocabulary-graph-layout-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify graph epoch/cache worker against complete original actor and Grape",
+      "script": "scripts/verify-vocabulary-graph-worker-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify graph preferences and window state against complete original presentation",
+      "script": "scripts/verify-vocabulary-graph-presentation-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify review card content layouts templates and JSON against original Mac policies",
+      "script": "scripts/verify-review-card-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify local Anki protocol against complete original client without network",
+      "script": "scripts/verify-anki-connect-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify Anki field mapping conflicts and receipts against original Mac methods",
+      "script": "scripts/verify-anki-fields-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify spoken text and receipt freshness against original Mac rules",
+      "script": "scripts/verify-speech-text-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify audio export bytes and filenames against complete original Mac policy",
+      "script": "scripts/verify-speech-export-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify review preferences against complete original Mac settings without Keychain",
+      "script": "scripts/verify-anki-settings-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify complete review controller and navigation against original Mac with scripted effects",
+      "script": "scripts/verify-anki-controller-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify review and template transactions against original Mac Store and complete archive",
+      "script": "scripts/verify-vocabulary-review-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify original review settings key methods with synthetic effects",
+      "script": "scripts/verify-anki-settings-interaction-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify original PCM block admission and playback queue accounting",
+      "script": "scripts/verify-speech-pcm-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify complete original speech pipe frame decoder with synthetic byte streams",
+      "script": "scripts/verify-speech-frame-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify complete original speech export actor with in-memory audio",
+      "script": "scripts/verify-speech-buffer-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify original speech companion metadata and voice-language compatibility",
+      "script": "scripts/verify-speech-metadata-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify complete original speech language resolver with scripted unrestricted scores",
+      "script": "scripts/verify-speech-language-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify complete original voice ranking with explicit source locale comparison",
+      "script": "scripts/verify-speech-voices-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify complete original recording preparation with held in-memory speech effects",
+      "script": "scripts/verify-review-audio-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify complete original review sessions over isolated archive SQLite and media",
+      "script": "scripts/verify-anki-session-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify complete original serial review batches and durable per-item transactions",
+      "script": "scripts/verify-anki-batch-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify complete original speech preferences profiles and destination identity",
+      "script": "scripts/verify-speech-settings-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify complete original speech telemetry and bounded request history",
+      "script": "scripts/verify-speech-telemetry-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify complete original PCM player with original gated renderer",
+      "script": "scripts/verify-speech-player-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify complete original speech controller playback and export ownership",
+      "script": "scripts/verify-speech-controller-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify original speech HTTP adapter and real loopback compression",
+      "script": "scripts/verify-speech-endpoint-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify complete original local speech runtime with real protocol children",
+      "script": "scripts/verify-speech-runtime-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    },
+    {
+      "name": "Verify complete native speech helper adaptation and exact upstream overlay",
+      "script": "scripts/verify-native-speech-macos-parity.py",
+      "mac_repo": ".mac-baseline"
+    }
+  ]
+}

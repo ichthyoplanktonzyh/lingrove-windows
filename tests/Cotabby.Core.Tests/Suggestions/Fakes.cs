@@ -132,6 +132,13 @@ internal sealed class FakeFocus : IFocusTracker, ITextInserter
         lock (_gate) _field = field;
     }
 
+    public void PublishComposition(InputCompositionState state, long sequence)
+    {
+        FocusedField field;
+        lock (_gate) { field = _field! with { Composition = state, CompositionSequence = sequence }; _field = field; }
+        FocusChanged?.Invoke(this, field);
+    }
+
     public void Move(ScreenRect caret)
     {
         lock (_gate) _field = _field! with { CaretRect = caret };

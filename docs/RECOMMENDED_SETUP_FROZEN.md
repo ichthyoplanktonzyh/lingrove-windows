@@ -35,10 +35,12 @@ without loading weights, as on Mac. An eligible local writing request can then j
 preparation per selection epoch; individual requests cancel their waits without cancelling shared
 preparation. The admission owner retires stale selections and drains native work at shutdown. Field
 and caret freshness are checked again before generation; endpoint requests do not invoke local
-readiness. Input never starts a download. The inherited focus/input pipeline exposes no positive
-IME-composition signal. A composition-evidence adapter and fail-closed integration are required
-before production acceptance; native preedit behavior also requires physical verification. Do not
-present selection, download or compile as native model readiness.
+readiness. Input never starts a download. The coordinator requires a positively clear composition
+receipt with a stable sequence before preparation, generation, presentation and acceptance; a
+composition notification withdraws work and prevents the cached accept key from being consumed.
+The separate Windows evidence producer and learning adapter must be integrated and independently
+reviewed before production acceptance, and native preedit behavior requires physical verification.
+Do not present selection, download or compile as native model readiness.
 
 The 500 × 500 offscreen WPF render was inspected for task hierarchy, actions and unavailable state;
 no matching Mac screenshot was available. Native focus, keyboard, localization, high contrast,
@@ -49,3 +51,8 @@ Windows SDK 10.0.402 validation: `dotnet build Cotabby.sln --configuration Relea
 zero warnings/errors. The focused Core filter `RecommendedSetupPolicyTests|LazyCompletionReadinessTests|CompletionModelAdmissionTests`
 passed 22/22; `ModelAssignmentSettingsTests` passed 5/5; `RecommendedSetupTests` passed 6/6 on the
 WPF dispatcher. These tests do not establish native IME or physical desktop behavior.
+After importing the composition value/insertion contract, the focused Core filter
+`LazyCompletionReadinessTests|CompletionModelAdmissionTests|SuggestionCoordinator` passed 85/85.
+The full Core run against that partial contract failed 16 and passed 4,678 of 4,694 because the
+separately owned composition checkpoint's Emoji fixture updates were not yet imported. Full
+combined validation remains an integration gate.

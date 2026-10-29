@@ -1,6 +1,8 @@
+using System.Buffers;
 using System.Reflection;
 using System.Collections;
 using System.Globalization;
+using System.Numerics;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -9,6 +11,7 @@ using System.Text.Json.Serialization.Metadata;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Review;
 using Cotabby.Core.Text;
+using R = Cotabby.Core.Vocabulary.Resources;
 
 namespace Cotabby.Core.Vocabulary;
 
@@ -22,6 +25,7 @@ public static class VocabularyPayloadCodec
 {
     private static readonly UTF8Encoding StrictUtf8 = new(false, true);
     private static readonly JsonSerializerOptions Options = CreateOptions();
+    private static readonly JsonSerializerOptions StrictDateOptions = CreateOptions(strictDates: true);
 
     public static byte[] Encode(VocabularyDatabasePayload payload)
     {
@@ -70,13 +74,14 @@ public static class VocabularyPayloadCodec
         ValidateShape(document.RootElement, typeof(T));
         return bytes;
     }
-    private static T Deserialize<T>(ReadOnlyMemory<byte> bytes)
+    private static T Deserialize<T>(ReadOnlyMemory<byte> bytes, JsonSerializerOptions? serializerOptions = null)
     {
+        serializerOptions ??= Options;
         using var document = JsonDocument.Parse(bytes, new JsonDocumentOptions { MaxDepth = 512 });
         if (!HasDuplicateKeys(document.RootElement))
         {
             ValidateShape(document.RootElement, typeof(T));
-            return document.RootElement.Deserialize<T>(Options) ?? throw Invalid();
+            return document.RootElement.Deserialize<T>(serializerOptions) ?? throw Invalid();
         }
         // Foundation's keyed containers use the first occurrence. .NET takes the last; preserve
         // the first recursively before materializing a model. Enum dictionaries are unkeyed
@@ -86,7 +91,7 @@ public static class VocabularyPayloadCodec
             WriteFirst(document.RootElement, writer);
         using var normalized = JsonDocument.Parse(buffer.ToArray(), new JsonDocumentOptions { MaxDepth = 512 });
         ValidateShape(normalized.RootElement, typeof(T));
-        return normalized.RootElement.Deserialize<T>(Options) ?? throw Invalid();
+        return normalized.RootElement.Deserialize<T>(serializerOptions) ?? throw Invalid();
     }
     /// <summary>The whole-notebook codec shares the same Codable leaf rules without projecting
     /// through relational rows (which intentionally strip child ownership). These internal calls
@@ -97,9 +102,68 @@ public static class VocabularyPayloadCodec
         catch (Exception error) when (error is JsonException or NotSupportedException or ArgumentException or InvalidOperationException or OverflowException or FormatException or KeyNotFoundException)
         { throw Invalid(); }
     }
-    internal static T DecodePortableValue<T>(ReadOnlyMemory<byte> bytes)
+    // The v8 document codec supplies its transport limit before writing. The stream refuses
+    // additional output before its backing buffer grows beyond the accepted document bound.
+    internal static byte[] EncodePortableValue<T>(T value, int maximumBytes)
     {
-        try { return Deserialize<T>(FoundationJsonInput.Utf8Input(bytes)); }
+        try
+        {
+            if (value is null) throw Invalid();
+            ValidateValue(value, typeof(T), new TextBudget(maximumBytes));
+            using var output = new LimitedOutputStream(maximumBytes);
+            using (var writer = new Utf8JsonWriter(output, new JsonWriterOptions { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping, MaxDepth = 512 }))
+            {
+                JsonSerializer.Serialize(writer, value, StrictDateOptions);
+                writer.Flush();
+            }
+            var bytes = output.ToArray();
+            using var document = JsonDocument.Parse(bytes, new JsonDocumentOptions { MaxDepth = 512 });
+            ValidateShape(document.RootElement, typeof(T));
+            return bytes;
+        }
+        catch (Exception error) when (error is JsonException or NotSupportedException or ArgumentException or InvalidOperationException or OverflowException or FormatException or KeyNotFoundException)
+        { throw Invalid(); }
+    }
+    private sealed class LimitedOutputStream(int maximumBytes) : Stream
+    {
+        private const int ChunkSize = 64 * 1024;
+        private readonly List<byte[]> _chunks = [];
+        private int _length;
+        public byte[] ToArray()
+        {
+            var result = new byte[_length]; int offset = 0;
+            foreach (var chunk in _chunks)
+            {
+                int count = Math.Min(chunk.Length, _length - offset);
+                chunk.AsSpan(0, count).CopyTo(result.AsSpan(offset)); offset += count;
+            }
+            return result;
+        }
+        public override bool CanRead => false;
+        public override bool CanSeek => false;
+        public override bool CanWrite => true;
+        public override long Length => _length;
+        public override long Position { get => _length; set => throw new NotSupportedException(); }
+        public override void Flush() { }
+        public override void Write(byte[] buffer, int offset, int count) => Write(buffer.AsSpan(offset, count));
+        public override void Write(ReadOnlySpan<byte> buffer)
+        {
+            if (buffer.Length > maximumBytes - _length) throw new VocabularyException(VocabularyFailure.OversizedArchive);
+            while (!buffer.IsEmpty)
+            {
+                int index = _length / ChunkSize, offset = _length % ChunkSize;
+                if (index == _chunks.Count) _chunks.Add(new byte[Math.Min(ChunkSize, maximumBytes - _length)]);
+                int count = Math.Min(buffer.Length, _chunks[index].Length - offset);
+                buffer[..count].CopyTo(_chunks[index].AsSpan(offset)); _length += count; buffer = buffer[count..];
+            }
+        }
+        public override int Read(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+        public override void SetLength(long value) => throw new NotSupportedException();
+    }
+    internal static T DecodePortableValue<T>(ReadOnlyMemory<byte> bytes, bool strictDates = false)
+    {
+        try { return Deserialize<T>(FoundationJsonInput.Utf8Input(bytes), strictDates ? StrictDateOptions : Options); }
         catch (Exception error) when (error is JsonException or NotSupportedException or ArgumentException or InvalidOperationException or OverflowException or FormatException or KeyNotFoundException)
         { throw Invalid(); }
     }
@@ -123,7 +187,7 @@ public static class VocabularyPayloadCodec
         { writer.WriteStartArray(); foreach (var item in value.EnumerateArray()) WriteFirst(item, writer); writer.WriteEndArray(); }
         else value.WriteTo(writer);
     }
-    private static JsonSerializerOptions CreateOptions()
+    private static JsonSerializerOptions CreateOptions(bool strictDates = false)
     {
         var resolver = new DefaultJsonTypeInfoResolver(); resolver.Modifiers.Add(Configure);
         var result = new JsonSerializerOptions
@@ -131,13 +195,14 @@ public static class VocabularyPayloadCodec
             TypeInfoResolver = resolver, PropertyNamingPolicy = new SourceNames(), DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
             RespectNullableAnnotations = true, MaxDepth = 512, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
         };
-        result.Converters.Add(new ContentConverter()); result.Converters.Add(new EpochDateConverter()); result.Converters.Add(new UpperUuidConverter());
+        result.Converters.Add(new ContentConverter()); result.Converters.Add(new EpochDateConverter(strictDates)); result.Converters.Add(new UpperUuidConverter());
         result.Converters.Add(new FoundationDataConverter());
         result.Converters.Add(new FoundationInt64Converter());
         result.Converters.Add(new EnumDictionaryConverterFactory()); result.Converters.Add(new AudioSetConverter());
         // A broad enum factory would override LearningLanguage's existing code converter (en,
-        // zh-Hans, ...). Only the content style needs a new camel-case adapter here.
+        // zh-Hans, ...). Content style and the frozen category axis use scoped adapters.
         result.Converters.Add(new JsonStringEnumConverter<VocabularyTextStyle>(JsonNamingPolicy.CamelCase, allowIntegerValues: false));
+        result.Converters.Add(new JsonStringEnumConverter<R.VocabularyCategoryAxis>(JsonNamingPolicy.CamelCase, allowIntegerValues: false));
         return result;
     }
     private static void Configure(JsonTypeInfo info)
@@ -149,6 +214,8 @@ public static class VocabularyPayloadCodec
             var property = info.Properties[index];
             if (property.AttributeProvider is not PropertyInfo member) continue;
             if (Computed(info.Type, member.Name)) { info.Properties.RemoveAt(index); continue; }
+            if (info.Type == typeof(R.VocabularyCollectionItem) && member.Name == nameof(R.VocabularyCollectionItem.InterpretationIds)) property.Name = "interpretationIDs";
+            if (info.Type == typeof(R.VocabularyMeaningMapping) && member.Name == nameof(R.VocabularyMeaningMapping.EvidenceIds)) property.Name = "evidenceIDs";
             // Swift synthesized Codable requires nonoptional fields even when Swift/C# declares
             // a default. Optional constructor parameters cannot silently reset a truncated row.
             // System.Text.Json cannot mark getter-only constructor-bound members required.
@@ -204,17 +271,17 @@ public static class VocabularyPayloadCodec
         return value.GetType().GetField(name)!.GetCustomAttribute<JsonStringEnumMemberNameAttribute>()?.Name
             ?? JsonNamingPolicy.CamelCase.ConvertName(name);
     }
-    private static void ValidateValue(object value, Type type)
+    private static void ValidateValue(object value, Type type, TextBudget? budget = null)
     {
         type = Nullable.GetUnderlyingType(type) ?? type;
-        if (value is string text) { _ = StrictUtf8.GetByteCount(text); return; }
+        if (value is string text) { int length = StrictUtf8.GetByteCount(text); budget?.Add(length); return; }
         if (value is Enum member) { if (!Enum.IsDefined(type, member)) throw new JsonException(); return; }
         if (value is VocabularyBlockContent.Text block)
-        { ValidateValue(block.Value ?? throw new JsonException(), typeof(VocabularyTextContent)); return; }
+        { ValidateValue(block.Value ?? throw new JsonException(), typeof(VocabularyTextContent), budget); return; }
         if (value is VocabularyBlockContent.Image image)
         {
-            ValidateValue(image.Reference ?? throw new JsonException(), typeof(VocabularyImageReference));
-            ValidateValue(image.Caption ?? throw new JsonException(), typeof(string)); return;
+            ValidateValue(image.Reference ?? throw new JsonException(), typeof(VocabularyImageReference), budget);
+            ValidateValue(image.Caption ?? throw new JsonException(), typeof(string), budget); return;
         }
         bool dictionary = type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IReadOnlyDictionary<,>);
         var info = Options.GetTypeInfo(type);
@@ -224,15 +291,15 @@ public static class VocabularyPayloadCodec
             foreach (object pair in (IEnumerable)value)
             {
                 var pairType = pair.GetType();
-                ValidateValue(pairType.GetProperty("Key")!.GetValue(pair) ?? throw new JsonException(), arguments[0]);
-                ValidateValue(pairType.GetProperty("Value")!.GetValue(pair) ?? throw new JsonException(), arguments[1]);
+                ValidateValue(pairType.GetProperty("Key")!.GetValue(pair) ?? throw new JsonException(), arguments[0], budget);
+                ValidateValue(pairType.GetProperty("Value")!.GetValue(pair) ?? throw new JsonException(), arguments[1], budget);
             }
         }
         else if (info.Kind == JsonTypeInfoKind.Enumerable || value is IReadOnlySet<ReviewAudioKind>)
         {
             Type element = type.IsArray ? type.GetElementType()! : type.GetInterfaces().Append(type)
                 .First(candidate => candidate.IsGenericType && candidate.GetGenericTypeDefinition() == typeof(IEnumerable<>)).GetGenericArguments()[0];
-            foreach (object? item in (IEnumerable)value) ValidateValue(item ?? throw new JsonException(), element);
+            foreach (object? item in (IEnumerable)value) ValidateValue(item ?? throw new JsonException(), element, budget);
         }
         else if (info.Kind == JsonTypeInfoKind.Object)
         {
@@ -242,12 +309,25 @@ public static class VocabularyPayloadCodec
                 var item = property.Get!(value);
                 if (item is null)
                 { if (property.AttributeProvider is PropertyInfo required && Required(required, nullability)) throw new JsonException(); continue; }
-                ValidateValue(item, property.PropertyType);
+                ValidateValue(item, property.PropertyType, budget);
             }
         }
     }
+    private sealed class TextBudget(int maximumBytes)
+    {
+        private int _used;
+        public void Add(int bytes)
+        {
+            if (bytes > maximumBytes - _used) throw new VocabularyException(VocabularyFailure.OversizedArchive);
+            _used += bytes;
+        }
+    }
     private static bool Computed(Type type, string name) =>
-        type == typeof(VocabularyEntry) && name is nameof(VocabularyEntry.Examples) or nameof(VocabularyEntry.Explanations)
+        type == typeof(R.VocabularyEntry) && name is nameof(R.VocabularyEntry.Examples) or nameof(R.VocabularyEntry.Explanations)
+        || type == typeof(R.VocabularySense) && name == nameof(R.VocabularySense.SupportsGeneralExplanation)
+        || type == typeof(R.VocabularyMeaningNode) && name == nameof(R.VocabularyMeaningNode.Title)
+        || type == typeof(R.VocabularyCategoryOverride) && name == nameof(R.VocabularyCategoryOverride.Id)
+        || type == typeof(VocabularyEntry) && name is nameof(VocabularyEntry.Examples) or nameof(VocabularyEntry.Explanations)
         || type == typeof(VocabularySense) && name == nameof(VocabularySense.ReviewLayouts)
         || type == typeof(VocabularyMeaning) && name == nameof(VocabularyMeaning.Id)
         || type == typeof(VocabularyImageReference) && name == nameof(VocabularyImageReference.Filename)
@@ -317,18 +397,72 @@ public static class VocabularyPayloadCodec
         }
         public override void Write(Utf8JsonWriter writer, long value, JsonSerializerOptions options) => writer.WriteNumberValue(value);
     }
-    private sealed class EpochDateConverter : JsonConverter<DateTimeOffset>
+    private sealed class EpochDateConverter(bool strict) : JsonConverter<DateTimeOffset>
     {
         private static readonly long Epoch = new DateTimeOffset(2001, 1, 1, 0, 0, 0, TimeSpan.Zero).UtcTicks;
         public override DateTimeOffset Read(ref Utf8JsonReader reader, Type type, JsonSerializerOptions options)
         {
-            decimal ticks = decimal.Round(reader.GetDecimal() * TimeSpan.TicksPerSecond, 0, MidpointRounding.ToEven);
+            decimal ticks = strict ? ExactTicks(ref reader) : decimal.Round(reader.GetDecimal() * TimeSpan.TicksPerSecond, 0, MidpointRounding.ToEven);
+            if (strict && !ReproducesTicks(ticks)) throw new JsonException();
             return new DateTimeOffset(checked(Epoch + (long)ticks), TimeSpan.Zero);
+        }
+        private static decimal ExactTicks(ref Utf8JsonReader reader)
+        {
+            if (reader.TokenType != JsonTokenType.Number) throw new JsonException();
+            string raw = Encoding.UTF8.GetString(reader.HasValueSequence ? reader.ValueSequence.ToArray() : reader.ValueSpan);
+            int exponentAt = raw.IndexOfAny(['e', 'E']);
+            string mantissa = exponentAt < 0 ? raw : raw[..exponentAt];
+            int exponent = 0;
+            if (exponentAt >= 0 && !int.TryParse(raw.AsSpan(exponentAt + 1), NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out exponent)) throw new JsonException();
+            int dot = mantissa.IndexOf('.'); long scale = (long)exponent - (dot < 0 ? 0 : mantissa.Length - dot - 1) + 7;
+            bool negative = mantissa.StartsWith('-');
+            string digits = mantissa.Replace(".", "", StringComparison.Ordinal).TrimStart('-').TrimStart('0');
+            if (digits.Length == 0) return 0;
+            if (scale < 0)
+            {
+                if (-scale >= digits.Length) throw new JsonException();
+                int keep = digits.Length - (int)-scale;
+                if (digits.AsSpan(keep).IndexOfAnyExcept('0') >= 0) throw new JsonException();
+                digits = digits[..keep]; scale = 0;
+            }
+            if (scale > 19 || digits.Length + scale > 19) throw new JsonException();
+            decimal ticks = decimal.Parse(digits, CultureInfo.InvariantCulture);
+            for (int i = 0; i < scale; i++) ticks *= 10;
+            return negative ? -ticks : ticks;
         }
         // Decimal JSON retains all .NET ticks locally while remaining a numeric Foundation Date.
         // Mac decodes these numbers as Double; its sub-tick precision is a separate format limit.
-        public override void Write(Utf8JsonWriter writer, DateTimeOffset value, JsonSerializerOptions options) =>
-            writer.WriteNumberValue((value.UtcTicks - Epoch) / (decimal)TimeSpan.TicksPerSecond);
+        private static bool ReproducesTicks(decimal ticks)
+        {
+            // Reconstruct the exact IEEE-754 rational used by Swift Date, then round to the
+            // nearest .NET tick. A shortest decimal rendering can straddle a tick midpoint.
+            double seconds = (double)(ticks / TimeSpan.TicksPerSecond);
+            long bits = BitConverter.DoubleToInt64Bits(seconds);
+            bool negative = bits < 0;
+            int exponentBits = (int)((bits >> 52) & 0x7ff);
+            long fraction = bits & 0x000f_ffff_ffff_ffffL;
+            BigInteger numerator = exponentBits == 0 ? fraction : fraction | (1L << 52);
+            numerator *= TimeSpan.TicksPerSecond;
+            int exponent = exponentBits == 0 ? -1074 : exponentBits - 1023 - 52;
+            if (exponent >= 0) numerator <<= exponent;
+            else
+            {
+                var denominator = BigInteger.One << -exponent;
+                var rounded = BigInteger.DivRem(numerator, denominator, out var remainder);
+                int order = (remainder * 2).CompareTo(denominator);
+                if (order > 0 || order == 0 && !rounded.IsEven) rounded++;
+                numerator = rounded;
+            }
+            if (negative) numerator = -numerator;
+            return numerator == (BigInteger)ticks;
+        }
+        public override void Write(Utf8JsonWriter writer, DateTimeOffset value, JsonSerializerOptions options)
+        {
+            long ticks = value.UtcTicks - Epoch;
+            decimal seconds = ticks / (decimal)TimeSpan.TicksPerSecond;
+            if (strict && !ReproducesTicks(ticks)) throw new JsonException();
+            writer.WriteNumberValue(seconds);
+        }
     }
     private sealed class ContentConverter : JsonConverter<VocabularyBlockContent>
     {

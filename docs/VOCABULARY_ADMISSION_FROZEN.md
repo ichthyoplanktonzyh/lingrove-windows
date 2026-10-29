@@ -36,7 +36,4 @@ example references are resolved at use rather than newly rejected by this gate.
 The Core tests cover uncollected evidence, null language, unknown-context/general receipts,
 identity/alias collisions, lifecycle ranges and accepted ownership, semantic/classification
 references, image metadata, review and template scopes, and malformed CLR values. They do not
-execute the Swift suite or establish platform Unicode equivalence. No serialized input is decoded
-here: a future codec still needs bounded byte parsing, explicit v7-to-v8 upgrade, strict wire type
-admission, row projection/SQL relationships, atomic migration and rollback verification before
-Store activation. A successful pure gate is not an archive save or native desktop acceptance.
+execute the Swift suite or establish platform Unicode equivalence. The [frozen document codec](VOCABULARY_DOCUMENT_CODEC_FROZEN.md) now adds bounded portable v7/v8 decoding and encoding with the gate. Row projection/SQL relationships, atomic migration and rollback verification remain required before Store activation. A successful pure gate is not an archive save or native desktop acceptance.

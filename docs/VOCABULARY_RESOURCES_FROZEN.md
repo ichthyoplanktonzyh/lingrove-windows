@@ -26,7 +26,7 @@ byte order and the original UUID version and variant bits.
 
 The [frozen resource admission gate](VOCABULARY_ADMISSION_FROZEN.md) now composes lifecycle,
 semantic, classification, lexical identity and review/content validation after a CLR
-representability pass. Byte codecs, SQL relationships, transactions, v7/v8 durable migration and
+representability pass. The [portable document codec](VOCABULARY_DOCUMENT_CODEC_FROZEN.md) adds bounded v7/v8 wire values. SQL relationships, transactions, durable migration and
 rollback remain required before notebook activation. Semantic edit/merge/reconciliation/selection rules and
 classification sidebar projection remain separate work; the current validator does not implement
 those operations. Loading the embedded catalog does not activate it in the application.

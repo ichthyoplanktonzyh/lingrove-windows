@@ -49,13 +49,14 @@ Python 版本。上面的 `-ExecutionPolicy RemoteSigned` 只作用于该次子�
 ```powershell
 Set-Location C:\Dev
 git clone --filter=blob:none --no-checkout https://github.com/ichthyoplanktonzyh/lingrove.git lingrove-mac-reference
-git -C .\lingrove-mac-reference fetch --depth 1 origin 35b7fbe5c788c5524936ade1dfb7c89a3a285b04
+git -C .\lingrove-mac-reference fetch --depth 1 origin 3b53402f2cbc196b0398d133177fd80006d165b2
 git -C .\lingrove-mac-reference rev-parse FETCH_HEAD
 Set-Location .\lingrove-windows
 ```
 
 读取 [AGENTS.md](../AGENTS.md)、[固定 Mac 基准](MAC_LATEST_BASELINE.md) 和 [对齐与 UI 验收约定](WINDOWS_ALIGNMENT.md)。
-本轮固定使用 `35b7fbe5c788c5524936ade1dfb7c89a3a285b04`，不再每轮追踪 Mac 新提交。
+维护者已允许对齐最新 Mac 功能，当前记录的提交为 `3b53402f2cbc196b0398d133177fd80006d165b2`。
+采纳后续提交前先检查并记录差异，现有模块和历史 fixture 的参考不静默改动。
 使用 `git show SHA:路径` 阅读该快照的源码和设计依据。保留旧测试的版本证据；在 Windows 不运行需要 Xcode 的 Swift verifier，
 这部分继续由 Mac CI 完成。不要把 Windows 的新 UI 建在旧数据语义上，也不要自行设计另一套产品。
 

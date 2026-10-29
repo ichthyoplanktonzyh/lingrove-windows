@@ -1,6 +1,7 @@
 using System.IO;
 using Cotabby.App.Settings;
 using Cotabby.Core.LanguageLearning;
+using Cotabby.Core.ExpressionAssist;
 using Cotabby.Core.Models;
 using Cotabby.Core.Suggestions;
 using Cotabby.Core.Support.Runtime;
@@ -25,6 +26,10 @@ internal sealed class LearningExplanationController : IAsyncDisposable
     private readonly TimeProvider _clock;
     private readonly TimeSpan _idleDelay;
     private readonly HashSet<Task> _releases = [];
+    private readonly HashSet<Task> _instructionWork = [];
+    private readonly Dictionary<CancellationTokenSource, Task> _instructionLeases = [];
+    private readonly HashSet<Task> _leaseCleanup = [];
+    private CancellationTokenSource? _currentInstruction;
     private LearningModelSnapshot _profile;
     private bool _enabled;
     private bool _modelAdmitted;
@@ -67,6 +72,7 @@ internal sealed class LearningExplanationController : IAsyncDisposable
             if (_disposal is not null) return;
             bool allocationChanged = !_profile.UsesSameRuntime(next) || _modelAdmitted != admitted;
             if (_profile != next) StopIdleLocked();
+            if (_profile != next) RetireInstructionLocked();
             _profile = next;
             _modelAdmitted = admitted;
             _enabled = settings.Enabled;
@@ -102,6 +108,7 @@ internal sealed class LearningExplanationController : IAsyncDisposable
             enabled: allowed, paused: !allowed, keepWarm: false);
         if (!allowed)
         {
+            RetireInstructionLocked();
             StopIdleLocked(); Service.CancelPending();
             if (_nativeMayBeResident) ReleaseLocked();
         }
@@ -125,8 +132,90 @@ internal sealed class LearningExplanationController : IAsyncDisposable
                 profile.ContextWindowTokens, profile.SamplingOverrides, requiresGeneralInstructions: true);
             var inner = _engineFactory(configuration);
             StopIdleLocked(); _activeFacades++; _nativeMayBeResident = true;
-            return new OwnedFacade(this, inner, profile);
+            return new OwnedFacade(this, inner, profile, ReserveInstructionLocked());
         }
+    }
+
+    // Reserve before native admission, so newer instruction requests cancel an older operation
+    // even while it is queued or producing no deltas. Cancellation callbacks drain off-thread.
+    private CancellationTokenSource ReserveInstructionLocked()
+    {
+        RetireInstructionLocked();
+        var lease = new CancellationTokenSource();
+        _instructionLeases.Add(lease, Task.CompletedTask); _currentInstruction = lease;
+        return lease;
+    }
+    private void RetireInstructionLocked()
+    {
+        var old = _currentInstruction; _currentInstruction = null;
+        if (old is null) return;
+        try { _instructionLeases[old] = old.CancelAsync(); } catch { }
+    }
+    private void RetireInstruction(CancellationTokenSource lease)
+    {
+        lock (_gate)
+        {
+            if (!_instructionLeases.ContainsKey(lease) || lease.IsCancellationRequested) return;
+            if (ReferenceEquals(_currentInstruction, lease)) _currentInstruction = null;
+            try { _instructionLeases[lease] = lease.CancelAsync(); } catch { }
+        }
+    }
+
+    private void ReleaseInstruction(CancellationTokenSource lease)
+    {
+        lock (_gate)
+        {
+            if (ReferenceEquals(_currentInstruction, lease)) _currentInstruction = null;
+            if (!_instructionLeases.Remove(lease, out var cancellation)) return;
+            var cleanup = Task.Run(async () => { try { await cancellation.ConfigureAwait(false); } catch { } lease.Dispose(); });
+            _leaseCleanup.Add(cleanup);
+            _ = cleanup.ContinueWith(t => { lock (_gate) _leaseCleanup.Remove(t); }, CancellationToken.None,
+                TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+        }
+    }
+
+    internal Task<ExpressionAssistResult> GenerateExpressionAsync(ExpressionAssistRequest request, Func<string, string> lowercase, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentNullException.ThrowIfNull(lowercase);
+        token.ThrowIfCancellationRequested();
+        lock (_gate)
+        {
+            token.ThrowIfCancellationRequested();
+            if (_disposal is not null || !AllowedLocked() || !_modelAdmitted || _profile.Backend != LearningModelBackend.Local)
+                throw new OperationCanceledException();
+            var profile = _profile;
+            var lease = ReserveInstructionLocked();
+            StopIdleLocked(); _activeFacades++; _nativeMayBeResident = true;
+            var task = Task.Run(() => GenerateExpressionCoreAsync(request, lowercase, profile, lease, token));
+            _instructionWork.Add(task);
+            _ = task.ContinueWith(t => { lock (_gate) _instructionWork.Remove(t); }, CancellationToken.None,
+                TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+            return task;
+        }
+    }
+
+    private async Task<ExpressionAssistResult> GenerateExpressionCoreAsync(ExpressionAssistRequest request, Func<string, string> lowercase,
+        LearningModelSnapshot profile, CancellationTokenSource lease, CancellationToken caller)
+    {
+        using var registration = caller.Register(() => RetireInstruction(lease));
+        try
+        {
+            caller.ThrowIfCancellationRequested(); CheckCurrent(profile, lease.Token);
+            string name = profile.LocalModel;
+            if (string.IsNullOrWhiteSpace(name) || name.IndexOfAny(['/', '\\', ':']) >= 0 || name.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0
+                || !string.Equals(Path.GetExtension(name), ".gguf", StringComparison.OrdinalIgnoreCase))
+                throw new LearningTranslationException(LearningTranslationFailure.LocalModelNotConfigured);
+            var config = new LearningLocalModelConfiguration(Path.Combine(_modelDirectory, name), profile.Template,
+                profile.ContextWindowTokens, profile.SamplingOverrides, requiresGeneralInstructions: true);
+            int output = Math.Min(profile.MaximumOutputTokens ?? 768, 1536);
+            string prompt = ExpressionAssistPrompt.Render(request, profile.ContextWindowTokens, output);
+            await using var engine = new LearningLocalInstructionEngine(config, _runtime);
+            var raw = await engine.GenerateAsync(prompt, output, 12_000, lease.Token).ConfigureAwait(false);
+            caller.ThrowIfCancellationRequested(); CheckCurrent(profile, lease.Token);
+            return ExpressionAssistPrompt.Parse(raw, request, lowercase);
+        }
+        finally { ReleaseInstruction(lease); FacadeDrained(); }
     }
 
     private void CheckCurrent(LearningModelSnapshot profile, CancellationToken token)
@@ -160,6 +249,7 @@ internal sealed class LearningExplanationController : IAsyncDisposable
             // to match, or an old timeout could unload a newly admitted explanation.
             if (_disposal is not null || revision != _idleRevision || _activeFacades != 0) return;
             StopIdleLocked();
+            RetireInstructionLocked();
             if (_nativeMayBeResident) ReleaseLocked();
         }
     }
@@ -189,14 +279,17 @@ internal sealed class LearningExplanationController : IAsyncDisposable
             // Close service admission now, including cache and saved lookups. Deferring this
             // call to our cleanup worker would leave a window for new non-native requests.
             var serviceDrain = Service.DisposeAsync().AsTask();
-            return new(_disposal = Task.Run(() => DisposeCoreAsync(serviceDrain)));
+            return new(_disposal = Task.Run(() => DisposeCoreAsync(serviceDrain, _instructionWork.ToArray())));
         }
     }
-    private async Task DisposeCoreAsync(Task serviceDrain)
+    private async Task DisposeCoreAsync(Task serviceDrain, Task[] instructions)
     {
         try
         {
             await serviceDrain.ConfigureAwait(false);
+            try { await Task.WhenAll(instructions).ConfigureAwait(false); } catch { }
+            Task[] cleanup; lock (_gate) cleanup = _leaseCleanup.ToArray();
+            try { await Task.WhenAll(cleanup).ConfigureAwait(false); } catch { }
             Task[] releases; lock (_gate) releases = _releases.ToArray();
             try { await Task.WhenAll(releases).ConfigureAwait(false); } catch { }
         }
@@ -205,16 +298,17 @@ internal sealed class LearningExplanationController : IAsyncDisposable
 
     /// <summary>One service request owns this wrapper until its native lease has drained.</summary>
     private sealed class OwnedFacade(LearningExplanationController owner, ILearningExplanationEngine inner,
-        LearningModelSnapshot profile) : ILearningExplanationEngine
+        LearningModelSnapshot profile, CancellationTokenSource lease) : ILearningExplanationEngine
     {
         private readonly object _gate = new();
         private Task? _disposal;
         public async Task<LearningExplanationResult> GenerateAsync(LearningExplanationInput input, LearningLanguage responseLanguage,
             int maximumOutputTokens, CancellationToken ct)
         {
-            owner.CheckCurrent(profile, ct);
-            var result = await inner.GenerateAsync(input, responseLanguage, maximumOutputTokens, ct).ConfigureAwait(false);
-            owner.CheckCurrent(profile, ct);
+            using var registration = ct.Register(() => owner.RetireInstruction(lease));
+            ct.ThrowIfCancellationRequested(); owner.CheckCurrent(profile, lease.Token);
+            var result = await inner.GenerateAsync(input, responseLanguage, maximumOutputTokens, lease.Token).ConfigureAwait(false);
+            ct.ThrowIfCancellationRequested(); owner.CheckCurrent(profile, lease.Token);
             return result;
         }
         public ValueTask DisposeAsync()
@@ -224,7 +318,7 @@ internal sealed class LearningExplanationController : IAsyncDisposable
         private async Task DrainAsync()
         {
             try { await inner.DisposeAsync().ConfigureAwait(false); }
-            finally { owner.FacadeDrained(); }
+            finally { owner.ReleaseInstruction(lease); owner.FacadeDrained(); }
         }
     }
 }

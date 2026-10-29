@@ -27,6 +27,7 @@ internal sealed class NativeExpressionAssistEditor(Win32ExpressionEditor owner) 
         }
         public ExpressionEditorReceipt Receipt => _native.Receipt;
         public bool CanPresentPanel => !_invalidation.IsRetired && _native.CanPresentPanel;
+        public bool CanTransmitRequest => !_invalidation.IsRetired && _native.CanTransmitRequest;
         public bool IsHostForeground => _native.IsHostForeground;
         public event Action? Invalidated { add { if (value is not null) _invalidation.Invalidated += value; } remove { if (value is not null) _invalidation.Invalidated -= value; } }
         private void OnInvalidated(object? sender, EventArgs args) => _invalidation.Retire();

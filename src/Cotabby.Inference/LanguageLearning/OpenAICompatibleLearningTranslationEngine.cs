@@ -65,6 +65,7 @@ public sealed class OpenAICompatibleLearningTranslationEngine :
     public static HttpClient CreateHttpClient() => new(new SocketsHttpHandler
     {
         AllowAutoRedirect = false,
+        UseCookies = false,
     })
     {
         Timeout = Timeout.InfiniteTimeSpan,

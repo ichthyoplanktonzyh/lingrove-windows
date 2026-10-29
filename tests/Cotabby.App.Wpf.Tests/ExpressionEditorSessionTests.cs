@@ -14,6 +14,32 @@ namespace Cotabby.App.Wpf.Tests;
 public sealed class ExpressionEditorSessionTests
 {
     [Fact]
+    public async Task InstructionPermitUsesDirectRetainedEvidenceBeforeNotification()
+    {
+        await using var fixture = new Fixture();
+        Assert.False(fixture.Session.CanTransmitRequest);
+        Assert.True(fixture.Session.EnterPanel()); Assert.True(fixture.Session.CanTransmitRequest);
+        fixture.Retained.Retire(1); // No session notification is delivered.
+        Assert.False(fixture.Session.CanTransmitRequest);
+    }
+
+    [Theory]
+    [InlineData(0)] [InlineData(1)] [InlineData(2)] [InlineData(3)]
+    public async Task InstructionPermitRejectsForegroundProcessAndReturnChanges(int change)
+    {
+        await using var fixture = new Fixture();
+        Assert.True(fixture.Session.EnterPanel()); Assert.True(fixture.Session.CanTransmitRequest);
+        switch (change)
+        {
+            case 0: fixture.Effects.Foreground = 30; break;
+            case 1: fixture.HostPid++; break;
+            case 2: fixture.PanelPid++; break;
+            default: Assert.True(fixture.Session.BeginReturn()); break;
+        }
+        Assert.False(fixture.Session.CanTransmitRequest);
+    }
+
+    [Fact]
     public async Task PanelPreflightRequiresLiveCapturedSessionAndOriginalForeground()
     {
         if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;
@@ -370,6 +396,7 @@ public sealed class ExpressionEditorSessionTests
         public readonly UiaFocusTracker Focus;
         public readonly ExpressionEditorSession Session;
         public int FocusReads;
+        public int HostPid = 42, PanelPid = Environment.ProcessId;
         public Action? BeforeFocusRead;
         public Fixture(string value = "abc??", ExpressionEditorRange? selection = null, string? trigger = "??")
         {
@@ -379,7 +406,8 @@ public sealed class ExpressionEditorSessionTests
             Focus.Start();
             var initial = new ExpressionEditorObservation(42, "field", 1, 1, value, Effects.Selection, false, true, InputCompositionState.Clear, 1);
             var receipt = ExpressionEditorReceiptPolicy.Capture(initial, trigger)!;
-            Session = new ExpressionEditorSession(Focus, Keyboard, Retained, Gate, Effects, 20, () => true, null);
+            Session = new ExpressionEditorSession(Focus, Keyboard, Retained, Gate, Effects, 20, () => true, null)
+            { WindowProcessForTest = window => window == 10 ? HostPid : window == 20 ? PanelPid : 0 };
             Session.SetCapturedForTest(receipt, 10, 1);
         }
         public async ValueTask DisposeAsync() { await Session.DisposeAsync(); Focus.Dispose(); }

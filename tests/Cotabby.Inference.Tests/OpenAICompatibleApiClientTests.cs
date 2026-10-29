@@ -87,6 +87,29 @@ public class OpenAICompatibleApiClientTests : IDisposable
     }
 
     [Fact]
+    public async Task ModelCatalogRejectsExcessiveBytesRowsAndControlIdentifiers()
+    {
+        foreach (string body in new[] { new string('x', 1024 * 1024 + 1),
+            System.Text.Json.JsonSerializer.Serialize(new { data = Enumerable.Range(0, 513).Select(i => new { id = "model-" + i }) }),
+            "{\"data\":[{\"id\":\"unsafe\\nname\"}]}" })
+        {
+            _server.Respond(_ => StubHttpMessageHandler.Json(body));
+            await Assert.ThrowsAsync<OpenAICompatibleClientException>(() => _client.FetchModelsAsync(Configuration(), null));
+        }
+    }
+
+    [Fact]
+    public async Task BorrowedTaskPoolRemainsUsableAfterMetadataFacadeRetires()
+    {
+        using var http = new HttpClient(_server, false);
+        _server.Respond(_ => StubHttpMessageHandler.Json("{\"data\":[]}"));
+        using var facade = OpenAICompatibleApiClient.Borrowing(http);
+        facade.Dispose();
+        using var response = await http.GetAsync("https://owned.invalid/models");
+        Assert.True(response.IsSuccessStatusCode);
+    }
+
+    [Fact]
     public async Task FetchModels_UsesModelsRouteAndBearerAuthorization()
     {
         _server.Respond(_ => StubHttpMessageHandler.Json(

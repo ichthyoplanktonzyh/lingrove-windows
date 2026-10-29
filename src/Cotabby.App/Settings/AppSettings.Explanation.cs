@@ -47,6 +47,7 @@ public sealed partial class AppSettings
 
     public LearningModelSnapshot LearningExplanationSnapshot()
     {
+        if (LearningExplanationBackend == LearningModelBackend.Endpoint) return LearningExplanationEndpointSnapshot();
         var model = LearningExplanationLocalModel ?? "";
         var generation = EffectiveLearningExplanationGenerationProfile(model);
         return new LearningModelSnapshot

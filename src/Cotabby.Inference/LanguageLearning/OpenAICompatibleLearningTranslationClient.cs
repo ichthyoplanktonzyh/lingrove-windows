@@ -8,6 +8,11 @@ using Cotabby.Inference.OpenAICompatible;
 
 namespace Cotabby.Inference.LanguageLearning;
 
+/// <summary>Already planned instruction-only wire values. A task owner supplies its own HTTP
+/// pool, destination, credentials, direct admission and raw-text cap; this value reads no UI.</summary>
+internal sealed record LearningInstructionEndpointRequest(string Prompt, bool UserOnly,
+    LearningInstructionSampling Sampling, int MaxOutputTokens, int MaximumOutputBytes, Func<bool>? Admission = null);
+
 /// <summary>
 /// Owns the translation endpoint's wire protocol. It receives a frozen prompt and settings
 /// snapshot, streams one bounded answer, and accepts only an explicit successful finish reason.
@@ -27,15 +32,23 @@ internal sealed class OpenAICompatibleLearningTranslationClient(HttpClient httpC
     private const int MaximumSseLineBytes = 256 * 1024;
     private const int MaximumTranslationBytes = LearningExpressionOutputPolicy.MaximumOutputBytes;
 
-    public async Task<string> TranslateAsync(
+    public Task<string> TranslateAsync(
         OpenAICompatibleEndpointConfiguration configuration,
         LearningTranslationRequest translation,
         string? apiKey,
         Action<string>? onDelta,
         CancellationToken cancellationToken)
+        => GenerateAsync(configuration, new(translation.Prompt.Prompt, translation.Prompt.UserOnly,
+            translation.Prompt.Sampling, translation.MaxOutputTokens, MaximumTranslationBytes, translation.Admission), apiKey, onDelta, cancellationToken);
+
+    internal async Task<string> GenerateAsync(OpenAICompatibleEndpointConfiguration configuration,
+        LearningInstructionEndpointRequest instruction, string? apiKey, Action<string>? onDelta,
+        CancellationToken cancellationToken)
     {
+        if (instruction.MaximumOutputBytes is <= 0 or > 24_000)
+            throw new LearningTranslationEndpointException(LearningTranslationEndpointFailure.InvalidRequest);
         var streaming = onDelta is not null;
-        var requestBody = SerializeBoundedRequest(configuration, translation, streaming);
+        var requestBody = SerializeBoundedRequest(configuration, instruction, streaming);
         var url = configuration.ApiUrl("chat/completions");
         using var request = new HttpRequestMessage(HttpMethod.Post, url)
         {
@@ -63,7 +76,7 @@ internal sealed class OpenAICompatibleLearningTranslationClient(HttpClient httpC
 
         using var timeout = new CancellationTokenSource(GenerationTimeout);
         using var linked = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeout.Token);
-        if (translation.Admission?.Invoke() == false) throw new OperationCanceledException();
+        if (instruction.Admission?.Invoke() == false) throw new OperationCanceledException();
         try
         {
             using var response = await httpClient.SendAsync(
@@ -92,9 +105,9 @@ internal sealed class OpenAICompatibleLearningTranslationClient(HttpClient httpC
             }
 
             var result = streaming
-                ? await ReadInstructionStreamAsync(response.Content, timeout, linked.Token, onDelta!)
+                ? await ReadInstructionStreamAsync(response.Content, timeout, linked.Token, onDelta!, instruction.MaximumOutputBytes)
                     .ConfigureAwait(false)
-                : await ReadInstructionResponseAsync(response.Content, timeout, linked.Token)
+                : await ReadInstructionResponseAsync(response.Content, timeout, linked.Token, instruction.MaximumOutputBytes)
                     .ConfigureAwait(false);
             cancellationToken.ThrowIfCancellationRequested();
             return result;
@@ -129,7 +142,7 @@ internal sealed class OpenAICompatibleLearningTranslationClient(HttpClient httpC
     private static async Task<string> ReadInstructionResponseAsync(
         HttpContent content,
         CancellationTokenSource timeout,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken, int maximumOutputBytes)
     {
         var bytes = await ReadBoundedResponseAsync(content, timeout, cancellationToken).ConfigureAwait(false);
         LearningInstructionResponse? response;
@@ -155,7 +168,7 @@ internal sealed class OpenAICompatibleLearningTranslationClient(HttpClient httpC
             throw new LearningTranslationEndpointException(LearningTranslationEndpointFailure.IncompleteResponse);
         }
 
-        if (Encoding.UTF8.GetByteCount(translation) > MaximumTranslationBytes)
+        if (Encoding.UTF8.GetByteCount(translation) > maximumOutputBytes)
         {
             throw new LearningTranslationEndpointException(LearningTranslationEndpointFailure.ResponseTooLarge);
         }
@@ -167,10 +180,10 @@ internal sealed class OpenAICompatibleLearningTranslationClient(HttpClient httpC
         HttpContent content,
         CancellationTokenSource timeout,
         CancellationToken cancellationToken,
-        Action<string> onDelta)
+        Action<string> onDelta, int maximumOutputBytes)
     {
         var stream = await content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
-        var reader = new InstructionStreamReader(onDelta);
+        var reader = new InstructionStreamReader(onDelta, maximumOutputBytes);
         var buffer = new byte[8 * 1024];
         var line = new byte[MaximumSseLineBytes];
         var lineLength = 0;
@@ -253,10 +266,10 @@ internal sealed class OpenAICompatibleLearningTranslationClient(HttpClient httpC
 
     private static byte[] SerializeBoundedRequest(
         OpenAICompatibleEndpointConfiguration configuration,
-        LearningTranslationRequest translation,
+        LearningInstructionEndpointRequest instruction,
         bool streaming)
     {
-        var prompt = translation.Prompt.Prompt;
+        var prompt = instruction.Prompt;
         if (prompt.Length > MaximumPromptCodeUnits
             || configuration.ModelName.Length > 1_024
             || (long)prompt.Length * 6 + (long)configuration.ModelName.Length * 6 + 256 > MaximumRequestBytes)
@@ -264,7 +277,7 @@ internal sealed class OpenAICompatibleLearningTranslationClient(HttpClient httpC
             throw new LearningTranslationEndpointException(LearningTranslationEndpointFailure.InvalidRequest);
         }
 
-        var payload = MakeChatRequest(configuration, translation, streaming);
+        var payload = MakeChatRequest(configuration, instruction, streaming);
 
         try
         {
@@ -285,23 +298,23 @@ internal sealed class OpenAICompatibleLearningTranslationClient(HttpClient httpC
 
     private static LearningChatRequest MakeChatRequest(
         OpenAICompatibleEndpointConfiguration configuration,
-        LearningTranslationRequest translation,
+        LearningInstructionEndpointRequest instruction,
         bool streaming)
     {
-        LearningChatMessage[] messages = translation.Prompt.UserOnly
-            ? [new LearningChatMessage("user", translation.Prompt.Prompt)]
+        LearningChatMessage[] messages = instruction.UserOnly
+            ? [new LearningChatMessage("user", instruction.Prompt)]
             : [
                 new LearningChatMessage("system", InstructionTaskSystemMessage),
-                new LearningChatMessage("user", translation.Prompt.Prompt),
+                new LearningChatMessage("user", instruction.Prompt),
             ];
 
         return new LearningChatRequest(
             configuration.ModelName,
             messages,
             streaming,
-            translation.MaxOutputTokens,
-            translation.Prompt.Sampling.Temperature,
-            translation.Prompt.Sampling.TopP,
+            instruction.MaxOutputTokens,
+            instruction.Sampling.Temperature,
+            instruction.Sampling.TopP,
             "none");
     }
 
@@ -317,10 +330,11 @@ internal sealed class OpenAICompatibleLearningTranslationClient(HttpClient httpC
     private sealed class InstructionStreamReader
     {
         private readonly Action<string> _onDelta;
+        private readonly int _maximumBytes;
         private readonly StringBuilder _translation = new();
         private int _translationBytes;
 
-        public InstructionStreamReader(Action<string> onDelta) => _onDelta = onDelta;
+        public InstructionStreamReader(Action<string> onDelta, int maximumBytes) { _onDelta = onDelta; _maximumBytes = maximumBytes; }
 
         public string? FinishReason { get; private set; }
         public bool IsDone { get; private set; }
@@ -384,7 +398,7 @@ internal sealed class OpenAICompatibleLearningTranslationClient(HttpClient httpC
             if (string.IsNullOrEmpty(text)) return;
 
             var addedBytes = Encoding.UTF8.GetByteCount(text);
-            if ((long)_translationBytes + addedBytes > MaximumTranslationBytes)
+            if ((long)_translationBytes + addedBytes > _maximumBytes)
             {
                 throw new LearningTranslationEndpointException(LearningTranslationEndpointFailure.ResponseTooLarge);
             }

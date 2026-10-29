@@ -101,6 +101,68 @@ public sealed class ReadingSessionTests(WpfDispatcher dispatcher)
         Assert.Equal(2, reader.Captures); Assert.False(panel.Shown); Assert.False(session.IsActive);
     });
 
+    [Fact]
+    public Task LatePartialsAndQueuedWorkAreRetiredAndDrained() => dispatcher.RunAsync(async () =>
+    {
+        var reader = new Reader(); var panel = new Panel(); Action<string>? partial = null;
+        var pending = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var session = new ReadingSession(Dispatcher.CurrentDispatcher, reader, panel,
+            _ => new(null, ReadingLanguageEvidence.Unavailable), (_, _) => 2,
+            (_, _, _, callback, _) => { partial = callback; return pending.Task; }, (_, _, _, _, _) => Task.CompletedTask);
+        session.Begin(Settings); await Until(() => partial is not null);
+        Task.Run(() => partial!("queued")).GetAwaiter().GetResult();
+        var oldInvalidation = reader.Lease.SnapshotInvalidation();
+        var disposal = session.DisposeAsync().AsTask(); Assert.False(disposal.IsCompleted);
+        pending.SetResult("late"); await disposal;
+        var before = panel.Updates;
+        await Task.Run(() => { partial!("after disposal"); oldInvalidation?.Invoke(); });
+        await Task.Delay(30); Assert.Equal(before, panel.Updates); Assert.NotEqual("queued", panel.Last?.Text);
+    });
+
+    [Fact]
+    public Task CompletionRetiresRetainedPartialCallback() => dispatcher.RunAsync(async () =>
+    {
+        var reader = new Reader(); var panel = new Panel(); Action<string>? partial = null;
+        await using var session = new ReadingSession(Dispatcher.CurrentDispatcher, reader, panel,
+            _ => new(null, ReadingLanguageEvidence.Unavailable), (_, _) => 2,
+            (_, _, _, callback, _) => { partial = callback; return Task.FromResult("finished"); }, (_, _, _, _, _) => Task.CompletedTask);
+        session.Begin(Settings); await Until(() => panel.Last?.Status == ReadingStatus.Ready);
+        var before = panel.Updates; await Task.Run(() => partial!("late")); await Task.Delay(30);
+        Assert.Equal(before, panel.Updates); Assert.Equal("finished", panel.Last!.Text);
+    });
+
+    [Fact]
+    public async Task RetainedCallbacksAreHarmlessAfterDispatcherShutdown()
+    {
+        Action<string>? partial = null; Action? invalidation = null;
+        var finished = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var thread = new Thread(() =>
+        {
+            var current = Dispatcher.CurrentDispatcher;
+            SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext(current));
+            current.InvokeAsync(async () =>
+            {
+                try
+                {
+                    var reader = new Reader(); var panel = new Panel();
+                    var session = new ReadingSession(current, reader, panel,
+                        _ => new(null, ReadingLanguageEvidence.Unavailable), (_, _) => 2,
+                        (_, _, _, callback, _) => { partial = callback; return Task.FromResult("done"); }, (_, _, _, _, _) => Task.CompletedTask);
+                    session.Begin(Settings); await Until(() => panel.Last?.Status == ReadingStatus.Ready);
+                    // Leave the session active to exercise dispatcher-shutdown admission itself;
+                    // the fake owns no external resources.
+                    invalidation = reader.Lease.SnapshotInvalidation();
+                }
+                catch (Exception error) { finished.TrySetException(error); }
+                finally { current.BeginInvokeShutdown(DispatcherPriority.Background); }
+            });
+            Dispatcher.Run(); finished.TrySetResult();
+        });
+        thread.SetApartmentState(ApartmentState.STA); thread.Start();
+        await finished.Task; thread.Join();
+        await Task.Run(() => { partial!("after shutdown"); invalidation?.Invoke(); });
+    }
+
     private sealed class Reader : IReadingSelectionReader
     {
         public int Captures; public Lease Lease { get; private set; } = new();
@@ -113,15 +175,16 @@ public sealed class ReadingSessionTests(WpfDispatcher dispatcher)
         public ReadingSelection Selection => Value; public bool Retired;
         public event Action? Invalidated;
         public void Invalidate() => Invalidated?.Invoke();
+        public Action? SnapshotInvalidation() => Invalidated;
         public Task<bool> IsCurrentAsync(CancellationToken token) => Task.FromResult(!Retired);
         public void Retire() => Retired = true;
         public ValueTask DisposeAsync() => ValueTask.CompletedTask;
     }
     private sealed class Panel : IReadingPresentation
     {
-        public bool Shown; public ReadingState? Last;
+        public bool Shown; public ReadingState? Last; public int Updates;
         public Task ShowAsync(ReadingState state) { Shown = true; Last = state; return Task.CompletedTask; }
-        public void Update(ReadingState state) => Last = state;
+        public void Update(ReadingState state) { Updates++; Last = state; }
         public void ShowCaptureError(string message) { }
         public void Hide() => Shown = false;
     }

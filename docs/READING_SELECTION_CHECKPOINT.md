@@ -13,6 +13,8 @@ unknown language, and the distinction between whole-sentence translation and con
 standalone lookup. Language hypotheses, script compatibility and word segmentation are explicit
 platform inputs. Source-derived C# examples are not direct Swift executions. Context must retain
 an admitted exact occurrence; a selected string is never found again by searching the document.
+Resolved contexts require exact UTF-16 equality at that occurrence. Acquisition-window alignment,
+including canonical/whitespace equivalence, replacement and range recalculation, is not yet ported.
 Reading can carry unknown source through the existing translation options, budget and prompt family:
 generic omits a source name, Hy-MT retains its target-only prompt and TranslateGemma asks the model
 to infer the language. Existing known-source prompt bytes and writing defaults remain unchanged.

@@ -54,6 +54,8 @@ internal sealed class ReadingSession : IAsyncDisposable
     private readonly Func<ReadingSelection, LearningLanguage?, LearningLanguage, Action<string>, CancellationToken, Task<string>> _translate;
     private readonly Func<ReadingSelection, ReadingRoute, LearningLanguage?, LearningLanguage, CancellationToken, Task> _lookup;
     private readonly HashSet<Task> _work = [];
+    // Callback admission and registration are atomic with retirement and disposal.
+    private readonly object _workGate = new();
     private CancellationTokenSource? _cancel;
     private IReadingSelectionLease? _lease;
     private Action? _invalidated;
@@ -95,7 +97,7 @@ internal sealed class ReadingSession : IAsyncDisposable
             _invalidated = () =>
             {
                 void Retire() { if (ReferenceEquals(_lease, capture)) Dismiss(); }
-                if (_dispatcher.CheckAccess()) Retire(); else _dispatcher.BeginInvoke(Retire);
+                if (_dispatcher.CheckAccess()) Retire(); else Post(() => !token.IsCancellationRequested, Retire);
             };
             capture.Invalidated += _invalidated;
             var selection = capture.Selection;
@@ -141,7 +143,7 @@ internal sealed class ReadingSession : IAsyncDisposable
                 try { safe = SafeOutput(text); }
                 catch { Interlocked.Exchange(ref invalidPartial, 1); return; }
                 if (safe.Length == 0 || Volatile.Read(ref invalidPartial) != 0) return;
-                _dispatcher.BeginInvoke(() =>
+                Post(() => generationComplete == 0 && !token.IsCancellationRequested, () =>
                 {
                     var sequence = Interlocked.Increment(ref partialSequence);
                     Track(PresentPartialAsync(safe, sequence));
@@ -159,7 +161,7 @@ internal sealed class ReadingSession : IAsyncDisposable
             {
                 result = await _translate(selection, resolution.Language, settings.Target, Partial, token);
             }
-            finally { Interlocked.Exchange(ref generationComplete, 1); }
+            finally { lock (_workGate) generationComplete = 1; }
             if (Volatile.Read(ref invalidPartial) != 0) throw new LearningTranslationException(LearningTranslationFailure.InvalidOutput);
             result = SafeOutput(result);
             if (result.Length == 0) throw new LearningTranslationException(LearningTranslationFailure.InvalidOutput);
@@ -215,24 +217,36 @@ internal sealed class ReadingSession : IAsyncDisposable
     }
     private static async Task DisposeCancellationAsync(CancellationTokenSource source, Task cancellation)
     { try { await cancellation.ConfigureAwait(false); } finally { source.Dispose(); } }
-    private void Track(Task task)
+    private void Post(Func<bool> allowed, Action action)
+    {
+        lock (_workGate)
+        {
+            if (_disposed || !allowed() || _dispatcher.HasShutdownStarted || _dispatcher.HasShutdownFinished) return;
+            try { TrackLocked(_dispatcher.InvokeAsync(action).Task); }
+            catch (InvalidOperationException) when (_dispatcher.HasShutdownStarted || _dispatcher.HasShutdownFinished) { }
+        }
+    }
+    private void Track(Task task) { lock (_workGate) TrackLocked(task); }
+    private void TrackLocked(Task task)
     {
         _work.Add(task);
-        _ = task.ContinueWith(t => { _ = t.Exception; _dispatcher.BeginInvoke(() => _work.Remove(t)); },
+        _ = task.ContinueWith(t => { _ = t.Exception; lock (_workGate) _work.Remove(t); },
             CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
     }
     public ValueTask DisposeAsync()
     {
         _dispatcher.VerifyAccess();
         if (_disposal is not null) return new(_disposal);
-        _disposed = true; Dismiss(); return new(_disposal = DrainAsync());
+        lock (_workGate) _disposed = true;
+        Dismiss(); return new(_disposal = DrainAsync());
     }
     private async Task DrainAsync()
     {
-        while (_work.Count != 0)
+        while (true)
         {
-            var tasks = _work.ToArray(); try { await Task.WhenAll(tasks); } catch { }
-            foreach (var task in tasks) _work.Remove(task);
+            Task[] tasks;
+            lock (_workGate) { if (_work.Count == 0) return; tasks = _work.ToArray(); }
+            try { await Task.WhenAll(tasks); } catch { }
         }
     }
 }

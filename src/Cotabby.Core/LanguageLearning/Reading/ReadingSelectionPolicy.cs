@@ -64,7 +64,8 @@ public static class ReadingSelectionPolicy
             context.TargetStart > context.Text.Length || context.TargetLength > context.Text.Length - context.TargetStart ||
             context.Text.Length - context.TargetLength > 1_024 || context.TargetLength > 3_072 ||
             !EditorTextRangePolicy.IsValid(context.Text, context.TargetStart, context.TargetLength)) return false;
-        return Equivalent(context.Text.Substring(context.TargetStart, context.TargetLength), expected);
+        return expected is not null && context.TargetLength == expected.Length
+            && context.Text.AsSpan(context.TargetStart, context.TargetLength).SequenceEqual(expected.AsSpan());
     }
 
     public static bool CoversContext(ReadingContext context)
@@ -77,23 +78,6 @@ public static class ReadingSelectionPolicy
         return after.Length == 0 || Decorations.IsMatch(after);
     }
 
-    private static bool Equivalent(string actual, string expected)
-    {
-        if (actual.Length > 3_072 || expected.Length > 3_072) return false;
-        string Key(string input)
-        {
-            var words = new List<string>(); var word = new System.Text.StringBuilder();
-            foreach (var g in new GraphemeString(input))
-            {
-                if (g.IsWhitespace) { if (word.Length > 0) { words.Add(word.ToString()); word.Clear(); } }
-                else word.Append(g.ToString());
-            }
-            if (word.Length > 0) words.Add(word.ToString());
-            return string.Join(" ", words);
-        }
-        var left = Key(actual); var right = Key(expected);
-        return left.Length > 0 && CanonicalStringComparer.Instance.Equals(left, right);
-    }
     private static bool Complete(ReadingBoundary boundary) => boundary is ReadingBoundary.Container or ReadingBoundary.Sentence;
     private static bool Hint(string text, int words)
     {

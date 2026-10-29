@@ -25,7 +25,7 @@ internal sealed class ReadingWindow : Window, IReadingPresentation
     internal ReadingWindow()
     {
         Width = 400; SizeToContent = SizeToContent.Height; MaxHeight = 520;
-        ShowInTaskbar = false; WindowStyle = WindowStyle.None; ResizeMode = ResizeMode.NoResize;
+        ShowActivated = false; ShowInTaskbar = false; WindowStyle = WindowStyle.None; ResizeMode = ResizeMode.NoResize;
         Background = Brushes.Transparent; AllowsTransparency = true; Topmost = true;
         var stack = new StackPanel();
         stack.Children.Add(_heading); stack.Children.Add(_destination); stack.Children.Add(_source);

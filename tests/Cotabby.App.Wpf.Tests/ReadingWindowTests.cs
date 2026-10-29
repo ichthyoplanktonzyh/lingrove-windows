@@ -23,6 +23,7 @@ public sealed class ReadingWindowTests(WpfDispatcher dispatcher)
         var window = new ReadingWindow();
         try
         {
+            Assert.False(window.ShowActivated);
             await window.ShowAsync(state); window.UpdateLayout();
             var labels = Descendants<TextBlock>(window).Select(block => block.Text).ToArray();
             Assert.Contains("Selected text translation", labels); Assert.Contains("Local model", labels);

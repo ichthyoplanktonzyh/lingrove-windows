@@ -43,11 +43,19 @@ public sealed class ReadingSelectionPolicyTests
     }
 
     [Fact]
-    public void CompleteBlockAndCanonicalOccurrenceHaveSourceDerivedSemantics()
+    public void ResolvedContextRequiresExactUtf16AtTheGivenOccurrence()
     {
         var block = new ReadingContext("Cafe\u0301 noir", 0, 10, ReadingBoundary.LayoutBlock, ReadingBoundary.LayoutBlock, ReadingContextMethod.Block);
-        Assert.Equal(ReadingRouteReason.WholeBlock, ReadingSelectionPolicy.Route(Selection("Café noir", block), 2).Reason);
+        Assert.Equal(ReadingRouteReason.WholeBlock, ReadingSelectionPolicy.Route(Selection("Cafe\u0301 noir", block), 2).Reason);
+        Assert.Throws<ArgumentException>(() => ReadingSelectionPolicy.Route(Selection("Café noir", block), 2));
         Assert.Throws<ArgumentException>(() => ReadingSelectionPolicy.Route(Selection("other", block), 2));
+        var repeated = new ReadingContext("bank bank", 5, 4, ReadingBoundary.Container, ReadingBoundary.Container, ReadingContextMethod.Characters);
+        Assert.True(ReadingSelectionPolicy.ValidContext(repeated, "bank"));
+        Assert.False(ReadingSelectionPolicy.ValidContext(repeated with { TargetStart = 0, TargetLength = 9 }, "bank"));
+        var whitespace = new ReadingContext("a\r\nb", 0, 4, ReadingBoundary.Container, ReadingBoundary.Container, ReadingContextMethod.Characters);
+        Assert.True(ReadingSelectionPolicy.ValidContext(whitespace, "a\r\nb"));
+        Assert.False(ReadingSelectionPolicy.ValidContext(whitespace, "a\nb"));
+        Assert.False(ReadingSelectionPolicy.ValidContext(whitespace, "a  b"));
     }
 
     [Fact]

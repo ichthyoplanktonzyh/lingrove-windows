@@ -26,16 +26,41 @@ public partial class LearningPreviewWindow : Window
 {
     private LearningPreviewState? _displayedPreview;
     private LearningExplanationState? _displayedExplanation;
+    private readonly bool _embeddedExample;
+    private bool _expanded = true, _canReplace, _isCommitting;
+    private string? _previousTranslation;
 
-    public LearningPreviewWindow()
+    public LearningPreviewWindow() : this(false) { }
+
+    internal LearningPreviewWindow(bool embeddedExample)
     {
+        _embeddedExample = embeddedExample;
         InitializeComponent();
         InterfaceText.TranslateInitialTree(this);
         FavoriteButton.FailureChanged += message =>
         { VocabularyStatus.Text = message ?? ""; VocabularyStatus.Visibility = message is null ? Visibility.Collapsed : Visibility.Visible; };
         InstallSelection();
-        WindowTheme.Follow(this);
-        SourceInitialized += (_, _) => LearningPanelPlacement.Install(this);
+        if (!embeddedExample)
+        {
+            WindowTheme.Follow(this);
+            SourceInitialized += (_, _) => LearningPanelPlacement.Install(this);
+        }
+    }
+
+    /// <summary>Detach the real card into an isolated demo host; never creates or shows an HWND.</summary>
+    internal FrameworkElement TakeExampleCard()
+    {
+        if (!_embeddedExample || !ReferenceEquals(Content, Card)) throw new InvalidOperationException();
+        Content = null; Card.Width = double.NaN; Card.MaxWidth = 430;
+        foreach (var button in new[] { CloseButton, ExplanationButton, RetryButton, CancelButton, ExpandButton, ReplaceButton }) button.Focusable = true;
+        return Card;
+    }
+
+    internal void RetireExample()
+    {
+        if (!_embeddedExample) throw new InvalidOperationException();
+        FavoriteButton.Clear(); _displayedPreview = null; ClearExplanation(); ClearCopyActions();
+        SourceText.Text = DirectionText.Text = ErrorText.Text = string.Empty; ResultText.Inlines.Clear();
     }
 
     public event Action? RetryRequested;
@@ -43,17 +68,63 @@ public partial class LearningPreviewWindow : Window
     public event Action? DismissRequested;
     public event Action<LearningUnit, string, ScreenRect>? LookupRequested;
     public event Action<string, LearningExplanationState>? ExplanationRequested;
+    internal event Action<string>? ExpandRequested;
+    internal event Action<string>? ReplaceRequested;
+
+    internal void ShowExpanded(bool expanded)
+    {
+        Dispatcher.VerifyAccess(); _expanded = expanded; ApplyPresentation(); RepositionIfVisible();
+    }
+    internal void ShowPreviousTranslation(string? previous)
+    {
+        Dispatcher.VerifyAccess(); _previousTranslation = previous; ApplyPresentation(); RepositionIfVisible();
+    }
+    internal void ShowReplacementState(bool canReplace, bool isCommitting, string? unavailableReason)
+    {
+        Dispatcher.VerifyAccess(); _canReplace = canReplace; _isCommitting = isCommitting;
+        ReplacementReason.Text = unavailableReason ?? ""; ApplyPresentation(); RepositionIfVisible();
+    }
+    private void ApplyPresentation()
+    {
+        bool error = _displayedPreview is null || _displayedPreview.Status is LearningPreviewStatus.Failed or LearningPreviewStatus.Cancelled;
+        bool ready = _displayedPreview is { Status: LearningPreviewStatus.Ready, Result: not null };
+        SourceSection.Visibility = !error && _expanded ? Visibility.Visible : Visibility.Collapsed;
+        DirectionText.Visibility = !error && _expanded && DirectionText.Text.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
+        PreviousTranslation.Text = _previousTranslation ?? "";
+        PreviousTranslation.Visibility = !error && !_expanded && !string.IsNullOrEmpty(_previousTranslation) ? Visibility.Visible : Visibility.Collapsed;
+        ExpandButton.Visibility = ReplaceButton.Visibility = error ? Visibility.Collapsed : Visibility.Visible;
+        ExpandButton.Content = _expanded ? "⌃" : "⌄"; ExpandButton.ToolTip = _expanded ? "Collapse" : "Expand";
+        System.Windows.Automation.AutomationProperties.SetName(ExpandButton, _expanded ? "Collapse" : "Expand");
+        ReplaceButton.Content = _isCommitting ? "…" : "⇄";
+        ReplaceButton.IsEnabled = ready && _canReplace && !_isCommitting;
+        System.Windows.Automation.AutomationProperties.SetName(ReplaceButton, _isCommitting ? "Replacing" : "Replace");
+        ReplacementReason.Visibility = !error && ReplacementReason.Text.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
+        CopyActions.Visibility = !_embeddedExample && _expanded && CopyActions.Children.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+        if (!_expanded) { ExplanationSection.Visibility = Visibility.Collapsed; ExplanationDestinationSection.Visibility = Visibility.Collapsed; }
+        else if (_displayedExplanation is { } explanation)
+        {
+            ExplanationSection.Visibility = explanation.Record is not null || explanation.IsGenerating || explanation.ErrorMessage is not null ? Visibility.Visible : Visibility.Collapsed;
+            ExplanationDestinationSection.Visibility = ExplanationButton.Visibility;
+        }
+        if (!_embeddedExample) Card.Width = _expanded ? 430 : 320;
+    }
+    private void OnExpandClick(object sender, RoutedEventArgs e)
+    { if (_displayedPreview is { } state && state.Status is not (LearningPreviewStatus.Failed or LearningPreviewStatus.Cancelled)) ExpandRequested?.Invoke(state.RequestId); }
+    private void OnReplaceClick(object sender, RoutedEventArgs e)
+    { if (ReplaceButton.IsEnabled && _displayedPreview is { Status: LearningPreviewStatus.Ready } state) ReplaceRequested?.Invoke(state.RequestId); }
+    private void RepositionIfVisible() { if (!_embeddedExample && IsVisible) PresentAt(_copyAnchor); }
 
     /// <summary>Shows a coordinator snapshot while leaving the host application active.</summary>
     public void ShowState(LearningPreviewState state, ScreenRect anchor, bool canRetry)
     {
         Dispatcher.VerifyAccess();
-        if (!LearningExplanationCardPolicy.SameDocument(_displayedPreview, state)) { StopSpeech(); ClearExplanation(); FavoriteButton.Clear(); }
+        if (!LearningExplanationCardPolicy.SameDocument(_displayedPreview, state))
+        { StopSpeech(); ClearExplanation(); FavoriteButton.Clear(); _canReplace = false; _isCommitting = false; ReplacementReason.Text = ""; }
         else if (_displayedPreview is { } old) ReconcileSpeech(old, state);
         if (state.Status != LearningPreviewStatus.Ready) FavoriteButton.Clear();
         _displayedPreview = state;
         UpdateSpeech();
-        PresentCopyActions(state, anchor);
+        if (!_embeddedExample) PresentCopyActions(state, anchor);
         // Mac's error branch replaces the details body. Keep the captured source out of that
         // presentation as well as its Copy footer; retry still belongs to the controller capture.
         SourceSection.Visibility = state.Status == LearningPreviewStatus.Failed ? Visibility.Collapsed : Visibility.Visible;
@@ -79,6 +150,8 @@ public partial class LearningPreviewWindow : Window
         ErrorText.Visibility = ErrorText.Text.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
         RetryButton.Visibility = !loading && !ready && canRetry ? Visibility.Visible : Visibility.Collapsed;
         CancelButton.Content = loading ? "Cancel" : "Close";
+
+        ApplyPresentation();
 
         PresentAt(anchor);
     }
@@ -147,6 +220,7 @@ public partial class LearningPreviewWindow : Window
         TitleText.Text = "Sentence preview unavailable";
         StatusText.Text = "No text was sent.";
         CancelButton.Content = InterfaceText.Get("Close");
+        ApplyPresentation();
         PresentAt(anchor);
     }
 
@@ -171,6 +245,7 @@ public partial class LearningPreviewWindow : Window
         ResultText.Inlines.Clear();
         ResultText.ToolTip = null;
         ClearExplanation();
+        ApplyPresentation();
     }
 
     /// <summary>
@@ -181,7 +256,7 @@ public partial class LearningPreviewWindow : Window
     internal void ShowExplanationState(string documentId, LearningExplanationState state, bool configured, ScreenRect anchor, LearningModelSnapshot? profile = null)
     {
         Dispatcher.VerifyAccess();
-        if (!IsVisible || _displayedPreview?.RequestId != documentId
+        if ((!IsVisible && !_embeddedExample) || _displayedPreview?.RequestId != documentId
             || _displayedPreview.Status != LearningPreviewStatus.Ready) return;
         _displayedExplanation = state;
         var action = LearningExplanationCardPolicy.Action(state, configured);
@@ -204,6 +279,7 @@ public partial class LearningPreviewWindow : Window
         ExplanationProgress.Visibility = state.IsGenerating ? Visibility.Visible : Visibility.Collapsed;
         ExplanationStatus.Text = state.IsGenerating ? "Explaining…" : state.ErrorMessage ?? string.Empty;
         ExplanationStatus.Visibility = ExplanationStatus.Text.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
+        ApplyPresentation();
         PresentAt(anchor);
     }
 
@@ -224,8 +300,8 @@ public partial class LearningPreviewWindow : Window
     internal void BindVocabulary(IWritingVocabularyStore store, VocabularyCapture capture, string documentId, Func<bool> canAct)
     {
         Dispatcher.VerifyAccess();
-        if (!IsVisible || _displayedPreview is not { Status: LearningPreviewStatus.Ready } state || state.RequestId != documentId) return;
-        FavoriteButton.Bind(store, capture, () => IsVisible && _displayedPreview?.RequestId == documentId
+        if ((!IsVisible && !_embeddedExample) || _displayedPreview is not { Status: LearningPreviewStatus.Ready } state || state.RequestId != documentId) return;
+        FavoriteButton.Bind(store, capture, () => (_embeddedExample || IsVisible) && _displayedPreview?.RequestId == documentId
             && _displayedPreview.Status == LearningPreviewStatus.Ready && canAct());
     }
 
@@ -237,6 +313,7 @@ public partial class LearningPreviewWindow : Window
 
     private void PresentAt(ScreenRect anchor)
     {
+        if (_embeddedExample) return;
         if (!IsVisible) Show();
         Visibility = Visibility.Visible;
         UpdateLayout();

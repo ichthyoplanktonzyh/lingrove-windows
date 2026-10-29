@@ -108,6 +108,7 @@ public sealed class ExpressionEditorSession : IAsyncDisposable
     private bool _initialKeyUpAvailable = true;
     private bool _returnFocusEvent;
     private bool _panelFocusEvent;
+    private int _retiredFlag;
     private nint _host;
     private AutomationElement? _element;
     private long _retainedToken;
@@ -115,6 +116,8 @@ public sealed class ExpressionEditorSession : IAsyncDisposable
     private ExpressionEditorReceipt? _receipt;
     private ExpressionEditorRoundTrip? _roundTrip;
     private readonly HashSet<Task> _work = [];
+    private Task? _notificationTask;
+    [ThreadStatic] private static ExpressionEditorSession? _notificationOwner;
 
     internal ExpressionEditorSession(UiaFocusTracker focus, IKeyboardHook keyboard, UiaTextEditEvidence composition,
         InsertionTransactionGate gate, ClipboardTextReader? clipboard, nint panel, Func<bool> panelOwnsKeyboard, int? initiatingKey)
@@ -153,12 +156,19 @@ public sealed class ExpressionEditorSession : IAsyncDisposable
         try
         {
             ct.ThrowIfCancellationRequested();
+            if (!IsLive()) return false;
             nint host = _effects.Foreground;
-            var first = _focus.Refresh();
+            bool RequestAllowed() => !ct.IsCancellationRequested && IsLive() && _effects.Foreground == host;
+            var first = _focus.RefreshGuarded(RequestAllowed);
+            if (ct.IsCancellationRequested || !IsLive()) return false;
             if (!EligibleFocus(first) || host == 0 || host == _panel || first!.ProcessId == Environment.ProcessId) return false;
-            if (NativeMethods.GetWindowThreadProcessId(host, out uint pid) == 0 || pid != (uint)first.ProcessId) return false;
+            if (_effects.Foreground != host || NativeMethods.GetWindowThreadProcessId(host, out uint pid) == 0 || pid != (uint)first.ProcessId) return false;
+            if (!RequestAllowed()) return false;
             var element = AutomationElement.FocusedElement;
-            if (element is null || UiaFocusTracker.ReadFieldId(element) != first.FieldId || element.Current.ProcessId != first.ProcessId) return false;
+            if (ct.IsCancellationRequested || !IsLive() || _effects.Foreground != host || element is null) return false;
+            if (UiaFocusTracker.ReadFieldId(element) != first.FieldId || ct.IsCancellationRequested || !IsLive() || _effects.Foreground != host
+                || element.Current.ProcessId != first.ProcessId) return false;
+            if (ct.IsCancellationRequested || !IsLive() || _effects.Foreground != host) return false;
             long? token = _composition.Register(first.ProcessId, first.FieldId, host, _panel, Retire, ct);
             if (token is null) return false;
             lock (_sync)
@@ -166,14 +176,17 @@ public sealed class ExpressionEditorSession : IAsyncDisposable
                 if (_phase != Phase.Capturing) { _composition.Retire(token.Value); return false; }
                 _host = host; _element = element; _retainedToken = token.Value;
             }
-            var before = _composition.Observe(token.Value, false, ct);
+            var before = _composition.Observe(token.Value, () => false, ct);
             if (before.State != InputCompositionState.Clear) return false;
             bool Allowed() => !ct.IsCancellationRequested && _effects.Foreground == host
                 && _composition.IsCurrent(token.Value, before.Version) && IsLive();
             var one = _effects.Read(element, Allowed);
+            if (!Allowed()) return false;
             var two = _effects.Read(element, Allowed);
-            var after = _composition.Observe(token.Value, false, ct);
-            var last = _focus.Refresh();
+            if (!Allowed()) return false;
+            var after = _composition.Observe(token.Value, () => false, ct);
+            if (ct.IsCancellationRequested || !IsLive()) return false;
+            var last = _focus.RefreshGuarded(RequestAllowed);
             if (ct.IsCancellationRequested || one is null || one != two || before != after || !SameFocus(first, last)
                 || _effects.Foreground != host || first.HasSelection != (one.Value.Selection.Length > 0)
                 || first.CaretOffset != one.Value.Selection.Start) return false;
@@ -334,7 +347,7 @@ public sealed class ExpressionEditorSession : IAsyncDisposable
             for (int attempt = 0; attempt < 5; attempt++)
             {
                 await Task.Delay(60, ct).ConfigureAwait(false);
-                var verification = Task.Run(() => IsExpectedValue(current.Value.Observation, plan.ExpectedValue), CancellationToken.None);
+                var verification = Task.Run(() => IsExpectedValue(current.Value.Observation, plan.ExpectedValue, ct), CancellationToken.None);
                 Track(verification);
                 bool verified = await verification.WaitAsync(TimeSpan.FromSeconds(2), ct).ConfigureAwait(false);
                 if (verified) return ExpressionEditOutcome.Verified;
@@ -360,11 +373,14 @@ public sealed class ExpressionEditorSession : IAsyncDisposable
 
     private (ExpressionEditorObservation Observation, FocusedField Field)? ReadReturned(CancellationToken ct)
     {
-        if (ct.IsCancellationRequested || _effects.Foreground != _host) return null;
-        var first = _focus.Refresh();
+        if (ct.IsCancellationRequested || !IsLive() || _effects.Foreground != _host) return null;
+        bool Allowed() => !ct.IsCancellationRequested && IsLive() && _effects.Foreground == _host;
+        var first = _focus.RefreshGuarded(Allowed);
+        if (ct.IsCancellationRequested || !IsLive()) return null;
         if (!EligibleFocus(first) || first!.ProcessId != Receipt.Original.ProcessId || first.FieldId != Receipt.Original.FieldId) return null;
         var observation = ReadRetained(false, ct);
-        var last = _focus.Refresh();
+        if (ct.IsCancellationRequested || !IsLive()) return null;
+        var last = _focus.RefreshGuarded(Allowed);
         if (observation is null || !SameFocus(first, last) || observation.FocusEpoch != first.FocusChangeSequence
             || first.CaretOffset != observation.Selection.Start || first.HasSelection != (observation.Selection.Length > 0)
             || _effects.Foreground != _host || !ExpressionEditorReceiptPolicy.MatchesOriginal(Receipt, observation)) return null;
@@ -378,18 +394,22 @@ public sealed class ExpressionEditorSession : IAsyncDisposable
         return await task.WaitAsync(TimeSpan.FromSeconds(2), ct).ConfigureAwait(false);
     }
 
-    private bool IsExpectedValue(ExpressionEditorObservation captured, string expected)
+    private bool IsExpectedValue(ExpressionEditorObservation captured, string expected, CancellationToken ct)
     {
         try
         {
-            if (_effects.Foreground != _host) return false;
-            var first = _focus.Refresh();
+            bool Allowed() => !ct.IsCancellationRequested && IsLive() && _effects.Foreground == _host;
+            if (!Allowed()) return false;
+            var first = _focus.RefreshGuarded(Allowed);
+            if (!IsLive()) return false;
             if (!EligibleFocus(first) || first!.ProcessId != captured.ProcessId || first.FieldId != captured.FieldId
                 || first.FocusChangeSequence != captured.FocusEpoch) return false;
-            var value = _effects.Read(_element, () => _effects.Foreground == _host
+            var value = _effects.Read(_element, () => !ct.IsCancellationRequested && _effects.Foreground == _host
+                && IsLive()
                 && _focus.Current is { } latest && latest.ProcessId == captured.ProcessId && latest.FieldId == captured.FieldId
                 && latest.FocusChangeSequence == captured.FocusEpoch);
-            var second = _focus.Refresh();
+            if (!IsLive()) return false;
+            var second = _focus.RefreshGuarded(Allowed);
             return value is not null && string.Equals(value.Value.Value, expected, StringComparison.Ordinal)
                 && SameFocus(first, second) && _effects.Foreground == _host;
         }
@@ -398,15 +418,16 @@ public sealed class ExpressionEditorSession : IAsyncDisposable
 
     private ExpressionEditorObservation? ReadRetained(bool panel, CancellationToken ct)
     {
-        if (_retainedToken <= 0 || ct.IsCancellationRequested) return null;
+        if (_retainedToken <= 0 || ct.IsCancellationRequested || !IsLive()) return null;
         if (panel && !PanelOwnsInput()) return null;
-        var before = _composition.Observe(_retainedToken, panel && PanelOwnsInput(), ct);
+        var before = _composition.Observe(_retainedToken, () => panel && PanelOwnsInput(), ct);
         if (before.State != InputCompositionState.Clear) return null;
         bool Allowed() => !ct.IsCancellationRequested && IsLive()
             && _composition.IsCurrent(_retainedToken, before.Version)
             && (panel ? PanelOwnsInput() : _effects.Foreground == _host);
         var read = _effects.Read(_element, Allowed);
-        var after = _composition.Observe(_retainedToken, panel && PanelOwnsInput(), ct);
+        if (ct.IsCancellationRequested || !IsLive()) return null;
+        var after = _composition.Observe(_retainedToken, () => panel && PanelOwnsInput(), ct);
         if (read is null || before != after || ct.IsCancellationRequested || (panel && !PanelOwnsInput())) return null;
         var original = Receipt.Original;
         long focusEpoch = panel ? original.FocusEpoch : _focus.Current?.FocusChangeSequence ?? 0;
@@ -429,7 +450,7 @@ public sealed class ExpressionEditorSession : IAsyncDisposable
         catch (Exception) { return false; }
     }
 
-    private bool IsLive() { lock (_sync) return _phase != Phase.Retired; }
+    private bool IsLive() => Volatile.Read(ref _retiredFlag) == 0;
 
     private void OnKey(object? sender, KeyEventArgs e)
     {
@@ -467,17 +488,28 @@ public sealed class ExpressionEditorSession : IAsyncDisposable
 
     public void Retire()
     {
+        Interlocked.Exchange(ref _retiredFlag, 1);
         bool notify;
         lock (_sync)
         {
             notify = _phase != Phase.Retired;
             _phase = Phase.Retired; _roundTrip?.Retire();
             if (_retainedToken > 0) _composition.Retire(_retainedToken);
+            if (notify)
+            {
+                _notificationTask = Task.Run(() =>
+                {
+                    _notificationOwner = this;
+                    try { Invalidated?.Invoke(this, EventArgs.Empty); }
+                    catch (Exception) { }
+                    finally { _notificationOwner = null; }
+                });
+                Track(_notificationTask);
+            }
         }
         if (!notify) return;
         _focus.FocusTransition -= OnFocusTransition;
         _keyboard.KeyEvent -= OnKey;
-        ThreadPool.QueueUserWorkItem(_ => { try { Invalidated?.Invoke(this, EventArgs.Empty); } catch (Exception) { } });
     }
 
     internal void Track(Task task)
@@ -490,10 +522,11 @@ public sealed class ExpressionEditorSession : IAsyncDisposable
     public async ValueTask DisposeAsync()
     {
         Retire();
+        bool calledFromNotification = ReferenceEquals(_notificationOwner, this);
         while (true)
         {
             Task[] pending;
-            lock (_sync) pending = _work.ToArray();
+            lock (_sync) pending = _work.Where(task => !calledFromNotification || !ReferenceEquals(task, _notificationTask)).ToArray();
             if (pending.Length == 0)
             {
                 await _composition.DrainAsync().ConfigureAwait(false);

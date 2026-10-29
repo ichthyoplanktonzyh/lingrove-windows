@@ -14,6 +14,118 @@ namespace Cotabby.App.Wpf.Tests;
 public sealed class ExpressionEditorSessionTests
 {
     [Fact]
+    public async Task RetiredCaptureDoesNotQueryFocusedElementAfterHeldFocusReadReturns()
+    {
+        if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;
+        await using var fixture = new Fixture();
+        using var entered = new ManualResetEventSlim();
+        using var release = new ManualResetEventSlim();
+        fixture.Effects.Foreground = 10;
+        fixture.BeforeFocusRead = () => { entered.Set(); release.Wait(); };
+        await using var capture = new ExpressionEditorSession(fixture.Focus, fixture.Keyboard, fixture.Retained,
+            fixture.Gate, fixture.Effects, 20, () => true, null);
+        Task<bool> work = Task.Run(() => capture.Capture("??", CancellationToken.None));
+        capture.Track(work);
+        try
+        {
+            Assert.True(entered.Wait(TimeSpan.FromSeconds(5)));
+            capture.Retire();
+            fixture.Effects.Foreground = 30;
+            release.Set();
+            Assert.False(await work.WaitAsync(TimeSpan.FromSeconds(5)));
+            Assert.Equal(2, fixture.FocusReads);
+        }
+        finally { release.Set(); }
+    }
+
+    [Fact]
+    public async Task TimedOutPostDispatchVerificationDoesNotRefreshAfterRetirement()
+    {
+        if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;
+        await using var fixture = new Fixture();
+        using var entered = new ManualResetEventSlim();
+        using var release = new ManualResetEventSlim();
+        int reads = 0;
+        Assert.True(fixture.Session.EnterPanel());
+        Assert.True(fixture.Session.BeginReturn());
+        fixture.Effects.BeforeRead = () => { if (Interlocked.Increment(ref reads) == 4) { entered.Set(); release.Wait(); } };
+        try
+        {
+            Task<ExpressionEditOutcome> pending = fixture.Session.ResumeAndReplaceAsync("X", CancellationToken.None);
+            Assert.True(entered.Wait(TimeSpan.FromSeconds(5)));
+            Assert.Equal(ExpressionEditOutcome.Unverified, await pending.WaitAsync(TimeSpan.FromSeconds(5)));
+            int prior = fixture.FocusReads;
+            fixture.Effects.Foreground = 30;
+            release.Set();
+            await fixture.Session.DisposeAsync();
+            Assert.Equal(prior, fixture.FocusReads);
+            Assert.Equal(1, fixture.Effects.Dispatched);
+        }
+        finally { release.Set(); }
+    }
+
+    [Fact]
+    public async Task TimedOutReadDoesNotRefreshAnotherFieldAfterUnblocking()
+    {
+        if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;
+        await using var fixture = new Fixture();
+        using var entered = new ManualResetEventSlim();
+        using var release = new ManualResetEventSlim();
+        Assert.True(fixture.Session.EnterPanel());
+        Assert.True(fixture.Session.BeginReturn());
+        fixture.Effects.BeforeRead = () => { entered.Set(); release.Wait(); };
+        try
+        {
+            Task<ExpressionEditOutcome> pending = fixture.Session.ResumeAndReplaceAsync("X", CancellationToken.None);
+            Assert.True(entered.Wait(TimeSpan.FromSeconds(5)));
+            Assert.Equal(ExpressionEditOutcome.Rejected, await pending.WaitAsync(TimeSpan.FromSeconds(5)));
+            fixture.Effects.Foreground = 30;
+            release.Set();
+            await fixture.Session.DisposeAsync();
+            Assert.Equal(2, fixture.FocusReads); // initial seed and the first returned-host read only
+            Assert.Equal(0, fixture.Effects.Dispatched);
+        }
+        finally { release.Set(); }
+    }
+
+    [Fact]
+    public async Task DisposeDrainsHeldInvalidationNotification()
+    {
+        if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;
+        await using var fixture = new Fixture();
+        using var entered = new ManualResetEventSlim();
+        using var release = new ManualResetEventSlim();
+        int callbacks = 0;
+        fixture.Session.Invalidated += (_, _) => { entered.Set(); release.Wait(); Interlocked.Increment(ref callbacks); };
+        fixture.Session.Retire();
+        Assert.True(entered.Wait(TimeSpan.FromSeconds(5)));
+        Task disposing = fixture.Session.DisposeAsync().AsTask();
+        try
+        {
+            Assert.False(disposing.IsCompleted);
+            release.Set();
+            await disposing.WaitAsync(TimeSpan.FromSeconds(5));
+            Assert.Equal(1, callbacks);
+        }
+        finally { release.Set(); }
+    }
+
+    [Fact]
+    public async Task InvalidationHandlerMaySynchronouslyDisposeWithoutSelfDeadlock()
+    {
+        if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;
+        await using var fixture = new Fixture();
+        var done = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        fixture.Session.Invalidated += (_, _) =>
+        {
+            fixture.Session.DisposeAsync().AsTask().GetAwaiter().GetResult();
+            done.TrySetResult();
+        };
+        fixture.Session.Retire();
+        await done.Task.WaitAsync(TimeSpan.FromSeconds(5));
+    }
+
+    [Fact]
     public async Task TriggerCancelDeletesOnlyExactMarkerOnce()
     {
         if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;
@@ -161,11 +273,13 @@ public sealed class ExpressionEditorSessionTests
         public readonly InsertionTransactionGate Gate = new();
         public readonly UiaFocusTracker Focus;
         public readonly ExpressionEditorSession Session;
+        public int FocusReads;
+        public Action? BeforeFocusRead;
         public Fixture(string value = "abc??", ExpressionEditorRange? selection = null, string? trigger = "??")
         {
             Effects.Value = value; Effects.Selection = selection ?? new(value.Length, 0);
             Focus = new UiaFocusTracker(NullLogger<UiaFocusTracker>.Instance, new FakeFocusOwner(), _ => { }, _ => { },
-                _ => Field(Effects.Value, Effects.Selection, 2));
+                _ => { Interlocked.Increment(ref FocusReads); BeforeFocusRead?.Invoke(); return Field(Effects.Value, Effects.Selection, 2); });
             Focus.Start();
             var initial = new ExpressionEditorObservation(42, "field", 1, 1, value, Effects.Selection, false, true, InputCompositionState.Clear, 1);
             var receipt = ExpressionEditorReceiptPolicy.Capture(initial, trigger)!;
@@ -191,10 +305,14 @@ public sealed class ExpressionEditorSessionTests
         public int LastBackspaces;
         public bool Partial;
         public Action? BeforeSend;
+        public Action? BeforeRead;
         public readonly FakeLease Lease = new();
         public bool Activate(nint host) { Foreground = host; return true; }
-        public UiaExpressionSelectionReader.ValueSelection? Read(AutomationElement? element, Func<bool> allowed) =>
-            allowed() ? new(Value, Selection) : null;
+        public UiaExpressionSelectionReader.ValueSelection? Read(AutomationElement? element, Func<bool> allowed)
+        {
+            BeforeRead?.Invoke();
+            return allowed() ? new(Value, Selection) : null;
+        }
         public Task<IClipboardPasteLease?> PreparePasteAsync(string text, CancellationToken ct) => Task.FromResult<IClipboardPasteLease?>(Lease);
         public bool SendUnicode(FocusedField field, int backspaces, string text, Func<bool> authorized)
         {
@@ -221,7 +339,7 @@ public sealed class ExpressionEditorSessionTests
     {
         private bool _active = true;
         public long? Register(int processId, string fieldId, nint hostWindow, nint panelWindow, Action changed, CancellationToken ct) => 1;
-        public (InputCompositionState State, long Version) Observe(long token, bool panelOwnsKeyboard, CancellationToken ct) =>
+        public (InputCompositionState State, long Version) Observe(long token, Func<bool> panelOwnsKeyboard, CancellationToken ct) =>
             _active ? (InputCompositionState.Clear, 1) : default;
         public bool IsCurrent(long token, long version) => _active && token == 1 && version == 1;
         public void Retire(long token) => _active = false;
@@ -231,7 +349,7 @@ public sealed class ExpressionEditorSessionTests
     {
         public long Version => 1;
         public bool Execute(Action action) { action(); return true; }
-        public (InputCompositionState State, long Version) Observe(int pid, string field, long focusEpoch) => default;
+        public (InputCompositionState State, long Version) Observe(int pid, string field, long focusEpoch, Func<bool>? allowed = null) => default;
         public long Invalidate() => 1;
         public void RetireAsync(long expectedEpoch) { }
         public void Dispose() { }

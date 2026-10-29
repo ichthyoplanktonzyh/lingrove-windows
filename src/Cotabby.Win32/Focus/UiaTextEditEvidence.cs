@@ -14,7 +14,7 @@ internal interface ICompositionEvidenceOwner : IDisposable
 {
     long Version { get; }
     bool Execute(Action action);
-    (InputCompositionState State, long Version) Observe(int pid, string field, long focusEpoch);
+    (InputCompositionState State, long Version) Observe(int pid, string field, long focusEpoch, Func<bool>? allowed = null);
     long Invalidate();
     void RetireAsync(long expectedEpoch);
 }
@@ -22,7 +22,7 @@ internal interface ICompositionEvidenceOwner : IDisposable
 internal interface IExpressionRetainedEvidence
 {
     long? Register(int processId, string fieldId, nint hostWindow, nint panelWindow, Action changed, CancellationToken ct);
-    (InputCompositionState State, long Version) Observe(long token, bool panelOwnsKeyboard, CancellationToken ct);
+    (InputCompositionState State, long Version) Observe(long token, Func<bool> panelOwnsKeyboard, CancellationToken ct);
     bool IsCurrent(long token, long version);
     void Retire(long token);
     Task DrainAsync();
@@ -136,10 +136,12 @@ internal sealed unsafe class UiaTextEditEvidence : ICompositionEvidenceOwner, IE
         if (Cotabby.Win32.Interop.NativeMethods.GetForegroundWindow() != host
             || Cotabby.Win32.Interop.NativeMethods.GetWindowThreadProcessId(host, out uint hostPid) == 0 || hostPid != (uint)pid
             || Cotabby.Win32.Interop.NativeMethods.GetWindowThreadProcessId(panel, out uint panelPid) == 0 || panelPid != (uint)Environment.ProcessId) return null;
+        if (token != Interlocked.Read(ref _retainedGeneration) || Cotabby.Win32.Interop.NativeMethods.GetForegroundWindow() != host) return null;
         IUIAutomationElement* element = null;
         try
         {
             if (_automation->GetFocusedElement(&element).Failed || element is null) return null;
+            if (token != Interlocked.Read(ref _retainedGeneration) || Cotabby.Win32.Interop.NativeMethods.GetForegroundWindow() != host) return null;
             return BindRetainedElement(token, pid, field, host, panel, changed, element, requireForeground: true);
         }
         finally { if (element is not null) element->Release(); }
@@ -157,30 +159,39 @@ internal sealed unsafe class UiaTextEditEvidence : ICompositionEvidenceOwner, IE
         bool first = false, second = false, textAdded = false, selectionAdded = false;
         try
         {
+            bool Allowed() => token == Interlocked.Read(ref _retainedGeneration)
+                && (!requireForeground || Cotabby.Win32.Interop.NativeMethods.GetForegroundWindow() == host);
+            if (!Allowed()) return null;
             int actualPid = 0;
             Windows.Win32.Foundation.BOOL password = default;
-            if (element->get_CurrentProcessId(&actualPid).Failed || actualPid != pid || RuntimeId(element) != field
-                || element->get_CurrentIsPassword(&password).Failed || password) return null;
+            if (element->get_CurrentProcessId(&actualPid).Failed || actualPid != pid || !Allowed()) return null;
+            if (RuntimeId(element) != field || !Allowed()) return null;
+            if (element->get_CurrentIsPassword(&password).Failed || password || !Allowed()) return null;
             if (element->GetCurrentPattern(UIA_PATTERN_ID.UIA_TextEditPatternId, &raw).Failed || raw is null) return null;
+            if (!Allowed()) return null;
             Guid iid = IUIAutomationTextEditPattern.IID_Guid;
             if (raw->QueryInterface(&iid, (void**)&pattern).Failed || pattern is null) return null;
+            if (!Allowed()) return null;
             composition = Callback.CreateRetained(this, token);
             finalized = Callback.CreateRetained(this, token);
             if (_automation->AddTextEditTextChangedEventHandler(element, TreeScope.TreeScope_Element,
                 TextEditChangeType.TextEditChangeType_Composition, null, composition).Failed) return null;
             first = true;
+            if (!Allowed()) return null;
             if (_automation->AddTextEditTextChangedEventHandler(element, TreeScope.TreeScope_Element,
                 TextEditChangeType.TextEditChangeType_CompositionFinalized, null, finalized).Failed) return null;
             second = true;
+            if (!Allowed()) return null;
             textChanged = RetainedEventCallback.Create(this, token);
             selectionChanged = RetainedEventCallback.Create(this, token);
             if (_automation->AddAutomationEventHandler(UIA_EVENT_ID.UIA_Text_TextChangedEventId, element,
                 TreeScope.TreeScope_Element, null, textChanged).Failed) return null;
             textAdded = true;
+            if (!Allowed()) return null;
             if (_automation->AddAutomationEventHandler(UIA_EVENT_ID.UIA_Text_TextSelectionChangedEventId, element,
                 TreeScope.TreeScope_Element, null, selectionChanged).Failed) return null;
             selectionAdded = true;
-            if (token != Interlocked.Read(ref _retainedGeneration) || (requireForeground && Cotabby.Win32.Interop.NativeMethods.GetForegroundWindow() != host)) return null;
+            if (!Allowed()) return null;
             var retained = new RetainedHost { Token = token, ProcessId = pid, FieldId = field, HostWindow = host,
                 PanelWindow = panel, Changed = changed, Element = element, Pattern = pattern, Composition = composition, Finalized = finalized,
                 TextChanged = textChanged, SelectionChanged = selectionChanged };
@@ -205,7 +216,7 @@ internal sealed unsafe class UiaTextEditEvidence : ICompositionEvidenceOwner, IE
     }
 
     internal (InputCompositionState State, long Version) ObserveRetainedHost(long token,
-        bool panelOwnsKeyboard, CancellationToken ct)
+        Func<bool> panelOwnsKeyboard, CancellationToken ct)
     {
         if (_disposed || token != Interlocked.Read(ref _retainedGeneration)) return default;
         if (Interlocked.CompareExchange(ref _retainedPending, 1, 0) != 0) { RetireRetainedHost(token); return default; }
@@ -240,18 +251,21 @@ internal sealed unsafe class UiaTextEditEvidence : ICompositionEvidenceOwner, IE
         finally { if (!queued) Interlocked.Exchange(ref _retainedPending, 0); }
     }
 
-    private (InputCompositionState, long) ObserveRetainedCore(long token, bool panelOwnsKeyboard)
+    private (InputCompositionState, long) ObserveRetainedCore(long token, Func<bool> panelOwnsKeyboard)
     {
         var saved = _retainedHost;
         if (saved is null || saved.Token != token || token != Interlocked.Read(ref _retainedGeneration)) return default;
         nint foreground = Cotabby.Win32.Interop.NativeMethods.GetForegroundWindow();
-        if (foreground != saved.HostWindow && !(foreground == saved.PanelWindow && panelOwnsKeyboard)) return default;
+        bool Allowed() => token == Interlocked.Read(ref _retainedGeneration)
+            && Cotabby.Win32.Interop.NativeMethods.GetForegroundWindow() == foreground
+            && (foreground == saved.HostWindow || (foreground == saved.PanelWindow && panelOwnsKeyboard()));
+        if (!Allowed()) return default;
         int actualPid = 0;
         Windows.Win32.Foundation.BOOL password = default;
-        if (saved.Element->get_CurrentProcessId(&actualPid).Failed || actualPid != saved.ProcessId
-            || saved.Element->get_CurrentIsPassword(&password).Failed || password
-            || RuntimeId(saved.Element) != saved.FieldId
-            || Cotabby.Win32.Interop.NativeMethods.GetWindowThreadProcessId(saved.HostWindow, out uint hostPid) == 0 || hostPid != (uint)saved.ProcessId
+        if (saved.Element->get_CurrentProcessId(&actualPid).Failed || actualPid != saved.ProcessId || !Allowed()) return default;
+        if (saved.Element->get_CurrentIsPassword(&password).Failed || password || !Allowed()) return default;
+        if (RuntimeId(saved.Element) != saved.FieldId || !Allowed()) return default;
+        if (Cotabby.Win32.Interop.NativeMethods.GetWindowThreadProcessId(saved.HostWindow, out uint hostPid) == 0 || hostPid != (uint)saved.ProcessId
             || Cotabby.Win32.Interop.NativeMethods.GetWindowThreadProcessId(saved.PanelWindow, out uint panelPid) == 0 || panelPid != (uint)Environment.ProcessId) return default;
         if (Cotabby.Win32.Interop.NativeMethods.GetWindowThreadProcessId(foreground, out uint foregroundPid) == 0
             || foregroundPid != (uint)(foreground == saved.HostWindow ? saved.ProcessId : Environment.ProcessId)) return default;
@@ -261,19 +275,19 @@ internal sealed unsafe class UiaTextEditEvidence : ICompositionEvidenceOwner, IE
             try
             {
                 Windows.Win32.Foundation.BOOL same = default;
-                if (_automation->GetFocusedElement(&focused).Failed || focused is null
+                if (!Allowed() || _automation->GetFocusedElement(&focused).Failed || focused is null || !Allowed()
                     || _automation->CompareElements(saved.Element, focused, &same).Failed || !same) return default;
             }
             finally { if (focused is not null) focused->Release(); }
         }
         long before = Interlocked.Read(ref saved.Version);
+        if (!Allowed()) return default;
         IUIAutomationTextRange* range = null;
         HRESULT hr = saved.Pattern->GetActiveComposition(&range);
         bool composing = range is not null;
         if (range is not null) range->Release();
         long after = Interlocked.Read(ref saved.Version);
-        if (hr.Failed || before != after || token != Interlocked.Read(ref _retainedGeneration)
-            || foreground != Cotabby.Win32.Interop.NativeMethods.GetForegroundWindow()) return default;
+        if (hr.Failed || before != after || !Allowed()) return default;
         return (composing ? InputCompositionState.Composing : InputCompositionState.Clear, after);
     }
 
@@ -379,7 +393,7 @@ internal sealed unsafe class UiaTextEditEvidence : ICompositionEvidenceOwner, IE
 
     long? IExpressionRetainedEvidence.Register(int pid, string field, nint host, nint panel, Action changed, CancellationToken ct) =>
         RegisterRetainedHost(pid, field, host, panel, changed, ct);
-    (InputCompositionState State, long Version) IExpressionRetainedEvidence.Observe(long token, bool panel, CancellationToken ct) =>
+    (InputCompositionState State, long Version) IExpressionRetainedEvidence.Observe(long token, Func<bool> panel, CancellationToken ct) =>
         ObserveRetainedHost(token, panel, ct);
     bool IExpressionRetainedEvidence.IsCurrent(long token, long version) => IsRetainedReceiptCurrent(token, version);
     void IExpressionRetainedEvidence.Retire(long token) => RetireRetainedHost(token);
@@ -543,7 +557,7 @@ internal sealed unsafe class UiaTextEditEvidence : ICompositionEvidenceOwner, IE
         catch (InvalidOperationException) { return false; }
     }
 
-    public (InputCompositionState State, long Version) Observe(int pid, string field, long focusEpoch)
+    public (InputCompositionState State, long Version) Observe(int pid, string field, long focusEpoch, Func<bool>? allowed = null)
     {
         if (_disposed || string.IsNullOrEmpty(field)) return default;
         if (Interlocked.Increment(ref _pendingObservations) > 16)
@@ -560,7 +574,7 @@ internal sealed unsafe class UiaTextEditEvidence : ICompositionEvidenceOwner, IE
         {
             _queue.Add(() =>
             {
-                try { completion.TrySetResult(requestedEpoch == Interlocked.Read(ref _epoch) ? ObserveCore(pid, field, focusEpoch) : default); }
+                try { completion.TrySetResult(requestedEpoch == Interlocked.Read(ref _epoch) && (allowed?.Invoke() ?? true) ? ObserveCore(pid, field, focusEpoch, allowed) : default); }
                 catch { completion.TrySetResult(default); }
                 finally { Interlocked.Decrement(ref _pendingObservations); }
             });
@@ -596,33 +610,33 @@ internal sealed unsafe class UiaTextEditEvidence : ICompositionEvidenceOwner, IE
         catch (InvalidOperationException) { Interlocked.Exchange(ref _retirementQueued, 0); }
     }
 
-    private (InputCompositionState, long) ObserveCore(int pid, string field, long focusEpoch)
+    private (InputCompositionState, long) ObserveCore(int pid, string field, long focusEpoch, Func<bool>? allowed)
     {
         if (_automation is null) return default;
         if (_element is null || _pid != pid || _field != field || _focusEpoch != focusEpoch || _subscriptionEpoch != Interlocked.Read(ref _epoch))
         {
             Retire();
-            if (!Open(pid, field, focusEpoch)) return default;
+            if (!Open(pid, field, focusEpoch, allowed)) return default;
         }
         IUIAutomationElement* current = null;
         try
         {
-            if (_automation->GetFocusedElement(&current).Failed || current is null) return default;
+            if (!(allowed?.Invoke() ?? true) || _automation->GetFocusedElement(&current).Failed || current is null || !(allowed?.Invoke() ?? true)) return default;
             Windows.Win32.Foundation.BOOL same = default;
-            if (_automation->CompareElements(_element, current, &same).Failed || !same) return default;
+            if (_automation->CompareElements(_element, current, &same).Failed || !same || !(allowed?.Invoke() ?? true)) return default;
             long before = Version;
             IUIAutomationTextRange* range = null;
             HRESULT hr = _pattern->GetActiveComposition(&range);
             bool composing = range is not null;
             if (range is not null) range->Release();
             long after = Version;
-            if (hr.Failed || before != after || _subscriptionEpoch != Interlocked.Read(ref _epoch)) return default;
+            if (hr.Failed || before != after || _subscriptionEpoch != Interlocked.Read(ref _epoch) || !(allowed?.Invoke() ?? true)) return default;
             return (composing ? InputCompositionState.Composing : InputCompositionState.Clear, after);
         }
         finally { if (current is not null) current->Release(); }
     }
 
-    private bool Open(int pid, string field, long focusEpoch)
+    private bool Open(int pid, string field, long focusEpoch, Func<bool>? allowed)
     {
         IUIAutomationElement* element = null;
         IUnknown* raw = null;
@@ -633,20 +647,27 @@ internal sealed unsafe class UiaTextEditEvidence : ICompositionEvidenceOwner, IE
         long epoch = Interlocked.Increment(ref _epoch);
         try
         {
+            bool Allowed() => epoch == Interlocked.Read(ref _epoch) && (allowed?.Invoke() ?? true);
+            if (!Allowed()) return false;
             if (_automation->GetFocusedElement(&element).Failed || element is null) return false;
+            if (!Allowed()) return false;
             int actualPid = 0;
-            if (element->get_CurrentProcessId(&actualPid).Failed || actualPid != pid || RuntimeId(element) != field) return false;
+            if (element->get_CurrentProcessId(&actualPid).Failed || actualPid != pid || !Allowed() || RuntimeId(element) != field || !Allowed()) return false;
             if (element->GetCurrentPattern(UIA_PATTERN_ID.UIA_TextEditPatternId, &raw).Failed || raw is null) return false;
+            if (!Allowed()) return false;
             Guid iid = IUIAutomationTextEditPattern.IID_Guid;
             if (raw->QueryInterface(&iid, (void**)&pattern).Failed || pattern is null) return false;
+            if (!Allowed()) return false;
             composition = Callback.Create(this, epoch);
             finalized = Callback.Create(this, epoch);
             if (_automation->AddTextEditTextChangedEventHandler(element, TreeScope.TreeScope_Element,
                 TextEditChangeType.TextEditChangeType_Composition, null, composition).Failed) return false;
             firstAdded = true;
+            if (!Allowed()) return false;
             if (_automation->AddTextEditTextChangedEventHandler(element, TreeScope.TreeScope_Element,
                 TextEditChangeType.TextEditChangeType_CompositionFinalized, null, finalized).Failed) return false;
             secondAdded = true;
+            if (!Allowed()) return false;
             _element = element; element = null;
             _pattern = pattern; pattern = null;
             _composition = composition; composition = null;

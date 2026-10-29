@@ -21,22 +21,35 @@ internal static class UiaExpressionSelectionReader
             bool Allowed() => stillAllowed?.Invoke() ?? true;
             if (!Allowed()) return null;
             var info = element.Current;
+            if (!Allowed()) return null;
             // Reject secure and read-only controls before requesting any text or selection.
-            if (!info.IsEnabled || info.IsPassword || SecureFieldDetector.IsSecure(info.Name, info.HelpText, info.LocalizedControlType)) return null;
-            if (element.TryGetCurrentPattern(ValuePattern.Pattern, out var valueRaw)
-                && valueRaw is ValuePattern valuePattern && valuePattern.Current.IsReadOnly) return null;
+            if (!info.IsEnabled || !Allowed() || info.IsPassword || !Allowed()) return null;
+            string name = info.Name;
+            if (!Allowed()) return null;
+            string help = info.HelpText;
+            if (!Allowed()) return null;
+            string type = info.LocalizedControlType;
+            if (!Allowed() || SecureFieldDetector.IsSecure(name, help, type)) return null;
+            bool hasValue = element.TryGetCurrentPattern(ValuePattern.Pattern, out var valueRaw);
+            if (!Allowed()) return null;
+            if (hasValue && valueRaw is ValuePattern valuePattern && valuePattern.Current.IsReadOnly) return null;
             if (!Allowed()) return null;
             if (!element.TryGetCurrentPattern(TextPattern.Pattern, out var raw) || raw is not TextPattern pattern) return null;
+            if (!Allowed()) return null;
             var selections = pattern.GetSelection();
-            if (selections is not { Length: 1 }) return null;
+            if (!Allowed() || selections is not { Length: 1 }) return null;
             var selection = selections[0];
             var document = pattern.DocumentRange;
             // GetText flattens embedded object boundaries. Without a native object/range anchor,
             // an equal text concatenation cannot prove a safe selection replacement.
             if (!Allowed() || document.GetChildren().Length != 0) return null;
+            if (!Allowed()) return null;
             var before = document.Clone();
+            if (!Allowed()) return null;
             before.MoveEndpointByRange(TextPatternRangeEndpoint.End, selection, TextPatternRangeEndpoint.Start);
+            if (!Allowed()) return null;
             var after = document.Clone();
+            if (!Allowed()) return null;
             after.MoveEndpointByRange(TextPatternRangeEndpoint.Start, selection, TextPatternRangeEndpoint.End);
             const int limit = ExpressionEditorReceiptPolicy.MaximumValueUtf16Units;
             if (!Allowed()) return null;
@@ -53,7 +66,7 @@ internal static class UiaExpressionSelectionReader
                 || left.Length + selected.Length + right.Length != full.Length
                 || !string.Equals(full, string.Concat(left, selected, right), StringComparison.Ordinal)) return null;
             bool nonEmptyRange = selection.CompareEndpoints(TextPatternRangeEndpoint.Start, selection, TextPatternRangeEndpoint.End) != 0;
-            if (nonEmptyRange != (selected.Length > 0)) return null;
+            if (!Allowed() || nonEmptyRange != (selected.Length > 0)) return null;
             return new(full, new(left.Length, selected.Length));
         }
         catch (Exception) { return null; }

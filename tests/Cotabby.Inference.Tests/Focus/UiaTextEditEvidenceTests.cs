@@ -9,6 +9,24 @@ namespace Cotabby.Inference.Tests.Focus;
 public sealed class UiaTextEditEvidenceTests(ITestOutputHelper output)
 {
     [Fact]
+    public async Task RevokedQueuedCompositionReadDoesNotQueryNativeFocus()
+    {
+        if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;
+        using var owner = new UiaTextEditEvidence(() => { });
+        using var release = new ManualResetEventSlim();
+        bool allowed = true;
+        Assert.False(owner.Execute(() => release.Wait()));
+        try
+        {
+            var read = Task.Run(() => owner.Observe(123, "test-only", 1, () => Volatile.Read(ref allowed)));
+            Volatile.Write(ref allowed, false);
+            release.Set();
+            Assert.Equal(default, await read.WaitAsync(TimeSpan.FromSeconds(5)));
+        }
+        finally { release.Set(); }
+    }
+
+    [Fact]
     public async Task TimedOutRetainedRegistrationIsRetiredBeforeNativeFocusQuery()
     {
         if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;

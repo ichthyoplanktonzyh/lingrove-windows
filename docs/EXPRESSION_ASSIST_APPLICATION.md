@@ -30,6 +30,9 @@ sentence preview and completion, and other inline captures yield while it is act
 focus changes revoke queued probes; their native permit is atomic and nonblocking. Shutdown drains
 the expression feature, native editor and sentence preview before releasing explanation/native
 services. An already-started COM call cannot be interrupted or given a bounded shutdown guarantee.
+The tray sentence-preview command also retires its intent while expression input is active before
+reading a field or presenting a window. Queued sentence captures recheck that exclusion before
+their focus read and before publishing; already-started native reads cannot be interrupted.
 
 This activates a limited implementation, not completed physical parity. TextEdit composition must
 be positively clear; unsupported providers fail closed. Non-ASCII triggers are explicitly unsupported

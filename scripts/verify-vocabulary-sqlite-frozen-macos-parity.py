@@ -47,7 +47,7 @@ def main():
 import Foundation
 let db = try VocabularySQLiteConnection(url: nil)
 try SchemaProbe.createSchema(db)
-func schema() throws -> [String: String] {
+func schema(_ db: VocabularySQLiteConnection) throws -> [String: String] {
     var result: [String: String] = [:]
     for row in try db.rows("SELECT type,name,sql FROM sqlite_master WHERE type IN ('table','index','trigger','view') AND substr(name,1,7) <> 'sqlite_'") {
         guard let type = row[0].string, let name = row[1].string, let sql = row[2].string else { fatalError("unexpected schema") }
@@ -55,12 +55,12 @@ func schema() throws -> [String: String] {
     }
     return result
 }
-let five = try schema()
+let five = try schema(db)
 for table in VocabularySQLiteClassificationSchema.tables.reversed() { try db.execute("DROP TABLE " + table.rawValue) }
 try db.execute("PRAGMA user_version=4")
-let four = try schema()
+let four = try schema(db)
 try VocabularySQLiteClassificationSchema.migrate(db)
-let migrated = try schema()
+let migrated = try schema(db)
 guard migrated == five, try db.rows("PRAGMA user_version") == [[.integer(5)]] else { fatalError("migration mismatch") }
 FileHandle.standardOutput.write(try JSONSerialization.data(withJSONObject: ["schema4": four, "schema5": five], options: [.sortedKeys]))
 '''

@@ -26,6 +26,9 @@ Store for writing favorites, saved explanations and the notebook's browsing/crea
 flow. The [canonical entry editor](docs/VOCABULARY_CANONICAL_ENTRY_EDITOR_UI.md) adds selected-sense
 draft edits and file-image import through that same owner. Older review/export libraries do not
 establish those operations in the new browser. Preserve unsupported states until each module is ported.
+The [canonical sense commands](docs/VOCABULARY_CANONICAL_SENSE_UI.md) connect acknowledged
+New/Merge/Delete/Move, and the [meaning editors](docs/VOCABULARY_CANONICAL_MEANING_UI.md) connect
+meaning-node and mapping edits. Category management and usage-pattern editing remain separate work.
 
 ## Migration principle: adapt the frozen macOS product
 

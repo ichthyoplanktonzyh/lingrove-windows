@@ -27,8 +27,12 @@ notebook UI; those remain explicit gaps beyond the older matrix rows.
 
 The [canonical application composition](VOCABULARY_CANONICAL_APP.md) now selects the current-format
 Store for the notebook and writing cards, using a fresh versioned file under the Cotabby data root.
-Its scoped browser/create/import/favorite behavior supersedes the old production notebook wiring;
-advanced canonical editing, media, review and export remain incomplete. This is an implementation
+Its browser/create/import/favorite behavior supersedes the old production notebook wiring.
+Scoped [entry editing and file images](VOCABULARY_CANONICAL_ENTRY_EDITOR_UI.md),
+[sense/usage commands](VOCABULARY_CANONICAL_SENSE_UI.md) and
+[meaning-node/mapping editing](VOCABULARY_CANONICAL_MEANING_UI.md) now use the same owner.
+Category management, usage-pattern editing, the remaining media workflows, review and export
+remain incomplete. This is an implementation
 checkpoint with scoped automated/render evidence, not full native desktop parity.
 
 ## Status meanings

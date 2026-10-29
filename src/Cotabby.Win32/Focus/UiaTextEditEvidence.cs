@@ -22,7 +22,7 @@ internal interface ICompositionEvidenceOwner : IDisposable
 internal readonly record struct UiaBootstrapResult(int InitializeHResult, int? FactoryHResult, bool HasAutomation);
 internal readonly record struct UiaOwnedElementResult(int ElementHResult, string? RuntimeId, int? PatternHResult,
     bool HasTextEditPattern, int? CompositionRegistrationHResult, int? FinalizedRegistrationHResult,
-    int? CompositionRemovalHResult, int? FinalizedRemovalHResult);
+    int? CompositionRemovalHResult, int? FinalizedRemovalHResult, int? ActiveCompositionHResult, bool? HasActiveComposition);
 
 // Owns all native TextEdit subscriptions on one MTA. COM retains each callback until its last
 // native reference is released; callbacks carry only an epoch, never inspect the event payload.
@@ -85,19 +85,102 @@ internal sealed unsafe class UiaTextEditEvidence : ICompositionEvidenceOwner
         return result.Task;
     }
 
+    internal Task<UiaOwnedElementResult?> ProbeOwnedDescendantForTest(nint handle, string runtimeId)
+    {
+        var result = new TaskCompletionSource<UiaOwnedElementResult?>(TaskCreationOptions.RunContinuationsAsynchronously);
+        if (handle == 0 || Cotabby.Win32.Interop.NativeMethods.GetWindowThreadProcessId(handle, out uint pid) == 0 || pid != (uint)Environment.ProcessId || string.IsNullOrWhiteSpace(runtimeId))
+        {
+            result.SetException(new ArgumentException("An owned handle and descendant ID are required."));
+            return result.Task;
+        }
+        try
+        {
+            _queue.Add(() =>
+            {
+                try { result.TrySetResult(ProbeOwnedDescendantCore(handle, runtimeId)); }
+                catch (Exception ex) { result.TrySetException(ex); }
+            });
+        }
+        catch (InvalidOperationException ex) { result.TrySetException(ex); }
+        return result.Task;
+    }
+
+    private UiaOwnedElementResult? ProbeOwnedDescendantCore(nint handle, string runtimeId)
+    {
+        if (_automation is null) return null;
+        IUIAutomationElement* root = null;
+        IUIAutomationTreeWalker* walker = null;
+        var pending = new Stack<nint>();
+        try
+        {
+            if (_automation->ElementFromHandle(new Windows.Win32.Foundation.HWND(handle), &root).Failed || root is null ||
+                _automation->get_RawViewWalker(&walker).Failed || walker is null) return null;
+            IUIAutomationElement* child = null;
+            if (walker->GetFirstChildElement(root, &child).Failed) return null;
+            if (child is not null) pending.Push((nint)child);
+            int remaining = 64;
+            while (pending.Count > 0 && remaining-- > 0)
+            {
+                var element = (IUIAutomationElement*)pending.Pop();
+                try
+                {
+                    if (RuntimeId(element) == runtimeId) return ProbeOwnedElementCore(element, 0);
+                    IUIAutomationElement* next = null;
+                    if (walker->GetNextSiblingElement(element, &next).Succeeded && next is not null) pending.Push((nint)next);
+                    IUIAutomationElement* first = null;
+                    if (walker->GetFirstChildElement(element, &first).Succeeded && first is not null) pending.Push((nint)first);
+                }
+                finally { element->Release(); }
+            }
+            return null;
+        }
+        finally
+        {
+            while (pending.Count > 0) ((IUIAutomationElement*)pending.Pop())->Release();
+            if (walker is not null) walker->Release();
+            if (root is not null) root->Release();
+        }
+    }
+
     private UiaOwnedElementResult ProbeOwnedHandleCore(nint handle)
     {
-        if (_automation is null) return new(unchecked((int)0x80004005), null, null, false, null, null, null, null);
+        if (_automation is null) return new(unchecked((int)0x80004005), null, null, false, null, null, null, null, null, null);
         IUIAutomationElement* element = null;
+        try
+        {
+            HRESULT hr = _automation->ElementFromHandle(new Windows.Win32.Foundation.HWND(handle), &element);
+            if (hr.Failed || element is null) return new((int)hr, null, null, false, null, null, null, null, null, null);
+            return ProbeOwnedElementCore(element, (int)hr);
+        }
+        finally { if (element is not null) element->Release(); }
+    }
+
+    private UiaOwnedElementResult ProbeOwnedElementCore(IUIAutomationElement* element, int elementHResult)
+    {
         IUnknown* pattern = null;
+        IUIAutomationTextEditPattern* editPattern = null;
         IUIAutomationTextEditTextChangedEventHandler* composition = null;
         IUIAutomationTextEditTextChangedEventHandler* finalized = null;
         try
         {
-            HRESULT hr = _automation->ElementFromHandle(new Windows.Win32.Foundation.HWND(handle), &element);
-            if (hr.Failed || element is null) return new((int)hr, null, null, false, null, null, null, null);
             string? runtimeId = RuntimeId(element);
             HRESULT patternHr = element->GetCurrentPattern(UIA_PATTERN_ID.UIA_TextEditPatternId, &pattern);
+            int? activeHr = null;
+            bool? active = null;
+            if (patternHr.Succeeded && pattern is not null)
+            {
+                Guid iid = IUIAutomationTextEditPattern.IID_Guid;
+                HRESULT query = pattern->QueryInterface(&iid, (void**)&editPattern);
+                if (query.Succeeded && editPattern is not null)
+                {
+                    IUIAutomationTextRange* range = null;
+                    HRESULT activeResult = editPattern->GetActiveComposition(&range);
+                    activeHr = (int)activeResult;
+                    if (activeResult.Succeeded) active = range is not null;
+                    if (range is not null) range->Release();
+                }
+                else activeHr = (int)query;
+            }
             composition = Callback.Create(this, long.MinValue);
             finalized = Callback.Create(this, long.MinValue);
             HRESULT addComposition = _automation->AddTextEditTextChangedEventHandler(element, TreeScope.TreeScope_Element,
@@ -106,15 +189,15 @@ internal sealed unsafe class UiaTextEditEvidence : ICompositionEvidenceOwner
                 TextEditChangeType.TextEditChangeType_CompositionFinalized, null, finalized);
             int? removeComposition = addComposition.Succeeded ? (int)_automation->RemoveTextEditTextChangedEventHandler(element, composition) : null;
             int? removeFinalized = addFinalized.Succeeded ? (int)_automation->RemoveTextEditTextChangedEventHandler(element, finalized) : null;
-            return new((int)hr, runtimeId, (int)patternHr, pattern is not null,
-                (int)addComposition, (int)addFinalized, removeComposition, removeFinalized);
+            return new(elementHResult, runtimeId, (int)patternHr, pattern is not null,
+                (int)addComposition, (int)addFinalized, removeComposition, removeFinalized, activeHr, active);
         }
         finally
         {
             if (pattern is not null) pattern->Release();
+            if (editPattern is not null) editPattern->Release();
             if (composition is not null) composition->Release();
             if (finalized is not null) finalized->Release();
-            if (element is not null) element->Release();
         }
     }
 

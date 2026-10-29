@@ -16,13 +16,16 @@ internal sealed class ExpressionAssistWindow : Window, IExpressionAssistPanel
     private readonly ExpressionAssistView _view = new();
     private readonly nint _handle;
     private readonly ScreenRect _anchor;
+    private readonly Action<string, string> _showFailure;
+    private readonly Action<string> _showUnavailable;
     private int _ownsKeyboard;
     private bool _closing, _hiding;
     private ExpressionAssistSession? _session;
 
-    internal ExpressionAssistWindow(ScreenRect caret)
+    internal ExpressionAssistWindow(ScreenRect caret, Action<string, string> showFailure, Action<string> showUnavailable)
     {
         _anchor = caret;
+        _showFailure = showFailure; _showUnavailable = showUnavailable;
         WindowStyle = WindowStyle.None; ResizeMode = ResizeMode.NoResize; ShowInTaskbar = false;
         SizeToContent = SizeToContent.WidthAndHeight; Background = Brushes.Transparent; AllowsTransparency = true;
         Topmost = true; WindowStartupLocation = WindowStartupLocation.Manual;
@@ -68,24 +71,8 @@ internal sealed class ExpressionAssistWindow : Window, IExpressionAssistPanel
         finally { _hiding = false; }
     }
     void IExpressionAssistPanel.ShowFailure(string candidate, string message)
-    {
-        var text = new TextBox { Text = candidate, IsReadOnly = true, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 8) };
-        var body = new StackPanel { Margin = new Thickness(16) };
-        body.Children.Add(new TextBlock { Text = message, TextWrapping = TextWrapping.Wrap });
-        body.Children.Add(text);
-        var copy = new Button { Content = "Copy candidate", HorizontalAlignment = HorizontalAlignment.Right, Padding = new Thickness(12, 5, 12, 5) };
-        copy.Click += (_, _) => { try { Clipboard.SetText(candidate); } catch (System.Runtime.InteropServices.ExternalException) { } };
-        body.Children.Add(copy);
-        var window = new Window { Title = "Expression assistance", Width = 400, SizeToContent = SizeToContent.Height,
-            WindowStartupLocation = WindowStartupLocation.CenterScreen, Content = body, ShowInTaskbar = false };
-        window.Show();
-    }
+        => _showFailure(candidate, message);
     void IExpressionAssistPanel.ShowUnavailable(string message)
-    {
-        var window = new Window { Title = "Expression assistance", Width = 400, SizeToContent = SizeToContent.Height,
-            WindowStartupLocation = WindowStartupLocation.CenterScreen, ShowInTaskbar = false,
-            Content = new TextBlock { Text = message, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(18) } };
-        window.Show();
-    }
+        => _showUnavailable(message);
     private void RefreshOwnership() => Volatile.Write(ref _ownsKeyboard, IsActive && _view.QueryBox.IsKeyboardFocusWithin ? 1 : 0);
 }

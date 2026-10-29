@@ -23,10 +23,20 @@ public sealed class ExpressionAssistNoticeWindowTests(WpfDispatcher dispatcher)
         var copied = new List<string>(); var window = new ExpressionAssistNoticeWindow("The insertion could not be confirmed.", "A candidate expression", copied.Add);
         window.ShowAt(new ScreenRect(300, 300, 1, 20)); Assert.False(window.ShowActivated); Assert.False(window.IsActive); Assert.NotEqual(0, GetWindowLong(new WindowInteropHelper(window).Handle, -20) & 0x08000000); Assert.Empty(copied);
         var text = Find<NonactivatingSelectableText>(window, "expressionNoticeCandidate"); Assert.Equal("A candidate expression", text.Text); Assert.False(text.Focusable);
-        Capture(window, "expression-notice-failure"); var copy = Find<Button>(window, "expressionNoticeCopy"); copy.RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); Assert.Equal(new[] { "A candidate expression" }, copied); Assert.False(copy.IsEnabled); Assert.Equal("Copied ✓", copy.Content);
-        await Task.Delay(1000); Assert.True(copy.IsEnabled); Assert.Equal("Copy", copy.Content);
-        text.Select(0, 1); Assert.NotNull(text.RequestCopy()); Assert.Equal(new[] { "A candidate expression", "A" }, copied);
-        Find<Button>(window, "expressionNoticeClose").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); Assert.False(window.IsVisible);
+        text.Select(0, 1); Assert.NotNull(text.RequestCopy()); Assert.Equal(new[] { "A" }, copied);
+        Capture(window, "expression-notice-failure"); var copy = Find<Button>(window, "expressionNoticeCopy"); copy.RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); Assert.Equal(new[] { "A", "A candidate expression" }, copied); Assert.False(copy.IsEnabled); Assert.Equal("Copied ✓", copy.Content);
+        await Task.Delay(1100); Assert.False(window.IsVisible);
+    });
+    [Fact]
+    public Task ClosedCopiedNoticeCannotCloseItsReplacement() => dispatcher.RunAsync(async () =>
+    {
+        var prior = new ExpressionAssistNoticeWindow("First", "first", _ => { });
+        prior.ShowAt(ScreenRect.Empty);
+        Find<Button>(prior, "expressionNoticeCopy").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        prior.Close();
+        var replacement = new ExpressionAssistNoticeWindow("Second", null, _ => { });
+        try { replacement.ShowAt(ScreenRect.Empty); await Task.Delay(1100); Assert.True(replacement.IsVisible); }
+        finally { replacement.Close(); }
     });
     [Fact]
     public Task UnavailableAndCopyFailureRemainVisibleAndNeverAutomaticallyCopy() => dispatcher.Run(() =>

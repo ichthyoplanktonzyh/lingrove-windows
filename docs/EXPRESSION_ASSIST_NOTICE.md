@@ -9,3 +9,9 @@ STA control tests use an injected clipboard action and exercise no real clipboar
 ```powershell
 dotnet test tests/Cotabby.App.Wpf.Tests/Cotabby.App.Wpf.Tests.csproj -c Release --filter 'FullyQualifiedName~ExpressionAssistNoticeWindowTests|FullyQualifiedName~ExpressionAssistViewTests'
 ```
+
+The application composition now owns notice replacement and closure on a new session, relevant
+settings or shutdown. Independent source review caught the initial success-timer behavior: full
+Copy must close the same notice after 900 ms, matching `copyFailure`. That repair stops the old
+window's timer on Close; it cannot close a replacement. Clipboard failures stay visible and
+retryable. An application-owner regression covers replacement, settings withdrawal and shutdown.

@@ -18,7 +18,7 @@ public sealed class ExpressionAssistViewTests(WpfDispatcher dispatcher)
     [Fact]
     public Task RetiredCompositionCannotBlockOrClearTheNextInputSession() => dispatcher.RunAsync(async () =>
     {
-        var window = new ExpressionAssistWindow(new ScreenRect(50, 50, 1, 18));
+        var window = new ExpressionAssistWindow(new ScreenRect(50, 50, 1, 18), (_, _) => { }, _ => { });
         var panel = (IExpressionAssistPanel)window;
         var observation = new ExpressionEditorObservation(1, "field", 1, 1, "", new(0, 0), false, true, InputCompositionState.Clear, 1);
         var receipt = ExpressionEditorReceiptPolicy.Capture(observation, null)!;

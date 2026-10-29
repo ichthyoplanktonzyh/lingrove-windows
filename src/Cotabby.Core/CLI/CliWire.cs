@@ -39,7 +39,14 @@ public sealed record CliReplyError([property: JsonPropertyName("code")] string C
 
 public static class CliWire
 {
-    private static readonly JsonSerializerOptions Options = new() { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, MaxDepth = 128, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
+    private static readonly JsonSerializerOptions Options = new() { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, MaxDepth = 128,
+        Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping, Converters = { new SourceGuidConverter() } };
+    private sealed class SourceGuidConverter : JsonConverter<Guid>
+    {
+        public override Guid Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            => reader.TokenType == JsonTokenType.String && Guid.TryParseExact(reader.GetString(), "D", out var id) ? id : throw new JsonException();
+        public override void Write(Utf8JsonWriter writer, Guid value, JsonSerializerOptions options) => writer.WriteStringValue(value.ToString("D").ToUpperInvariant());
+    }
     public static double Now() => (DateTimeOffset.UtcNow - new DateTimeOffset(2001, 1, 1, 0, 0, 0, TimeSpan.Zero)).TotalSeconds;
     public static byte[] Encode<T>(T value)
     {

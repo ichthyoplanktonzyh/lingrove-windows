@@ -34,9 +34,16 @@ public static class CliCommandInstallation
             var payload = new List<byte[]>();
             foreach (var handle in handles.Skip(cliFiles.Length))
             {
-                // Duplicate the read position only through the held file: each handle is used once.
-                using var stream = new FileStream(handle, FileAccess.Read); if (stream.Length > 8 * 1024 * 1024) throw Unavailable();
-                using var bytes = new MemoryStream(); stream.CopyTo(bytes); payload.Add(bytes.ToArray());
+                // Retain the no-write/no-delete handle through publication. A source sidecar
+                // cannot be swapped after the bytes for its version were captured.
+                long length = RandomAccess.GetLength(handle); if (length < 0 || length > 8 * 1024 * 1024) throw Unavailable();
+                var bytes = new byte[(int)length]; int offset = 0;
+                while (offset < bytes.Length)
+                {
+                    int count = RandomAccess.Read(handle, bytes.AsSpan(offset), offset);
+                    if (count == 0) throw Unavailable(); offset += count;
+                }
+                payload.Add(bytes);
             }
             using var digest = IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
             foreach (var bytes in payload) { digest.AppendData(BitConverter.GetBytes(bytes.Length)); digest.AppendData(bytes); }

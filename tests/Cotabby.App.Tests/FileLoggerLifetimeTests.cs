@@ -6,6 +6,26 @@ namespace Cotabby.App.Tests;
 public sealed class FileLoggerLifetimeTests
 {
     [Fact]
+    public void FailedWriterDisposalStillWithdrawsEveryLogger()
+    {
+        using var provider = new FileLoggerProvider(new ThrowingWriter());
+        var logger = provider.CreateLogger("lifetime");
+        Assert.Throws<IOException>(provider.Dispose);
+        Assert.False(logger.IsEnabled(LogLevel.Error));
+        logger.LogError("Late synthetic shutdown failure.");
+        provider.Dispose();
+    }
+
+    private sealed class ThrowingWriter() : StreamWriter(new MemoryStream())
+    {
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            if (disposing) throw new IOException("Synthetic flush failure.");
+        }
+    }
+
+    [Fact]
     public void RestartFailureCanBeReportedAfterProviderRetirement()
     {
         string directory = Path.Combine(Path.GetTempPath(), "lingrove-log-test-" + Guid.NewGuid().ToString("N"));

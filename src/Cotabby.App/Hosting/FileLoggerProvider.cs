@@ -15,6 +15,8 @@ public sealed class FileLoggerProvider : ILoggerProvider
     private readonly object _gate = new();
     private StreamWriter? _writer;
 
+    internal FileLoggerProvider(StreamWriter writer) => _writer = writer;
+
     public FileLoggerProvider(string path)
     {
         var dir = Path.GetDirectoryName(path);
@@ -32,8 +34,9 @@ public sealed class FileLoggerProvider : ILoggerProvider
     {
         lock (_gate)
         {
-            _writer?.Dispose();
+            var writer = _writer;
             _writer = null;
+            writer?.Dispose();
         }
     }
 

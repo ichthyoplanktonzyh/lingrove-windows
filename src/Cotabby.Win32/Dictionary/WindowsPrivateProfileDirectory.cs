@@ -16,20 +16,23 @@ public sealed class WindowsPrivateProfileDirectory : IAsyncDisposable
 {
     private readonly object _gate = new();
     private readonly List<SafeFileHandle> _parents;
-    private readonly SafeFileHandle _root;
+    private SafeFileHandle? _rootPin, _rootDelete;
+    private readonly SafeFileHandle _identity;
+    private readonly string _leaf;
     private Task? _deletion;
     private bool _deleted, _disposed;
     private readonly Dictionary<string, (ulong Low, ulong High)> _observed = new(StringComparer.OrdinalIgnoreCase);
     private long _observedNameBytes;
     internal Action<string>? AfterEnumeration { get; set; }
+    internal Action? AfterPinReleased { get; set; }
     public string Path { get; }
-    private WindowsPrivateProfileDirectory(List<SafeFileHandle> parents, SafeFileHandle root, string path)
-    { _parents = parents; _root = root; Path = path; }
+    private WindowsPrivateProfileDirectory(List<SafeFileHandle> parents, SafeFileHandle root, SafeFileHandle identity, string leaf, string path)
+    { _parents = parents; _rootPin = root; _identity = identity; _leaf = leaf; Path = path; }
 
     /// <summary>The parent must already exist and be private. Creation does not adopt an existing leaf.</summary>
     public static WindowsPrivateProfileDirectory Create(string parent)
     {
-        string full = System.IO.Path.GetFullPath(parent); var pins = new List<SafeFileHandle>(); SafeFileHandle? root = null;
+        string full = System.IO.Path.GetFullPath(parent); var pins = new List<SafeFileHandle>(); SafeFileHandle? root = null, identityHandle = null; bool creationHandle = false; string? createdLeaf = null;
         try
         {
             using var resolved = VocabularyWindowsFile.Native.CreateFileW(VocabularyWindowsFile.Extended(full), 0x80000000, 3,
@@ -53,10 +56,39 @@ public sealed class WindowsPrivateProfileDirectory : IAsyncDisposable
             security.AddAccessRule(new FileSystemAccessRule(user, FileSystemRights.FullControl, InheritanceFlags.ContainerInherit | InheritanceFlags.ObjectInherit, PropagationFlags.None, AccessControlType.Allow));
             string leaf = "profile-" + Guid.NewGuid().ToString("N");
             root = OpenRelative(pins[^1], leaf, create: true, delete: true, security.GetSecurityDescriptorBinaryForm());
+            creationHandle = true; createdLeaf = leaf;
             Validate(root, true, false); ValidatePrivateAcl(root, user);
-            return new(pins, root, System.IO.Path.Combine(canonical[4..], leaf));
+            identityHandle = OpenRelative(pins[^1], leaf, create: false, delete: false, descriptor: null, share: 7);
+            Validate(identityHandle, true, false); if (Identity(identityHandle) != Identity(root)) throw Invalid();
+            // Release create-time DELETE before WebView use. The share-delete identity handle
+            // prevents ID reuse while the read-only deny-delete pin is installed and verified.
+            root.Dispose(); root = null; creationHandle = false;
+            root = OpenRelative(pins[^1], leaf, create: false, delete: false, descriptor: null);
+            Validate(root, true, false); if (Identity(identityHandle) != Identity(root)) throw Invalid();
+            return new(pins, root, identityHandle, leaf, System.IO.Path.Combine(canonical[4..], leaf));
         }
-        catch { if (root is not null) { try { DeleteHandle(root); } catch { } root.Dispose(); } foreach (var pin in pins) pin.Dispose(); throw; }
+        catch
+        {
+            try
+            {
+                if (creationHandle && root is not null) DeleteHandle(root);
+                else if (identityHandle is not null && createdLeaf is not null)
+                {
+                    root?.Dispose(); root = null;
+                    using var candidate = OpenRelative(pins[^1], createdLeaf, create: false, delete: true, descriptor: null);
+                    if (Identity(candidate) == Identity(identityHandle)) DeleteHandle(candidate);
+                }
+            }
+            catch { /* Preserve an unverifiable or locked leaf; never delete a replacement. */ }
+            identityHandle?.Dispose(); root?.Dispose(); foreach (var pin in pins) pin.Dispose(); throw;
+        }
+    }
+    /// <summary>Create a missing private parent without changing an existing parent's ACL, then
+    /// validate it through the same admission path as <see cref="Create"/>.</summary>
+    public static WindowsPrivateProfileDirectory CreateWithPrivateParent(string parent)
+    {
+        VocabularyWindowsFile.CreateParentDirectory(System.IO.Path.GetFullPath(parent));
+        return Create(parent);
     }
 
     /// <summary>Call only after WebView and all profile users have stopped. Failure retains the root
@@ -72,8 +104,19 @@ public sealed class WindowsPrivateProfileDirectory : IAsyncDisposable
     }
     private void DeleteCore(CancellationToken token)
     {
-        token.ThrowIfCancellationRequested(); int budget = 100000; DeleteChildren(_parents[^1], System.IO.Path.GetFileName(Path), _root, token, 0, "", ref budget);
-        token.ThrowIfCancellationRequested(); DeleteHandle(_root); _root.Dispose();
+        token.ThrowIfCancellationRequested();
+        if (_rootDelete is null)
+        {
+            // Keep the share-delete identity handle alive across the only unlock/reopen gap.
+            // The old file ID cannot be recycled while that handle exists; a changed name is
+            // rejected before any mutation. A successful DELETE handle pins the matched leaf.
+            _rootPin?.Dispose(); _rootPin = null; AfterPinReleased?.Invoke();
+            var candidate = OpenRelative(_parents[^1], _leaf, create: false, delete: true, descriptor: null);
+            try { Validate(candidate, true, false); if (Identity(candidate) != Identity(_identity)) throw Invalid(); _rootDelete = candidate; }
+            catch { candidate.Dispose(); throw; }
+        }
+        int budget = 100000; DeleteChildren(_parents[^1], _leaf, _rootDelete, token, 0, "", ref budget);
+        token.ThrowIfCancellationRequested(); DeleteHandle(_rootDelete); _rootDelete.Dispose();
         lock (_gate) _deleted = true;
     }
     private void DeleteChildren(SafeFileHandle parent, string directoryName, SafeFileHandle directory, CancellationToken token, int depth, string prefix, ref int budget)
@@ -187,7 +230,7 @@ public sealed class WindowsPrivateProfileDirectory : IAsyncDisposable
     {
         Task? running; lock (_gate) { if (_disposed) return; _disposed = true; running = _deletion; }
         try { if (running is not null) await running.ConfigureAwait(false); }
-        finally { _root.Dispose(); foreach (var pin in _parents) pin.Dispose(); }
+        finally { _rootDelete?.Dispose(); _rootPin?.Dispose(); _identity.Dispose(); foreach (var pin in _parents) pin.Dispose(); }
     }
     private static IOException Invalid() => new("The private profile directory could not be verified or removed.");
     [StructLayout(LayoutKind.Sequential)] private struct UnicodeString { internal ushort Length, MaximumLength; internal IntPtr Buffer; }

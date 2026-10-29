@@ -65,12 +65,31 @@ public sealed class WindowsPrivateProfileDirectoryTests : IDisposable
         Assert.True(Directory.Exists(path)); await profile.DeleteOwnedAsync(); Assert.False(Directory.Exists(path));
     }
     [Fact]
-    public async Task ProfileDirectoryUsersMustShareDeleteWhileOwnerHoldsDeleteAccess()
+    public async Task MissingParentIsCreatedPrivatelyWithoutChangingAnExistingParent()
+    {
+        string directory = Path.Combine(_parent, "private-parent");
+        await using (var first = WindowsPrivateProfileDirectory.CreateWithPrivateParent(directory)) { Assert.True(Directory.Exists(first.Path)); await first.DeleteOwnedAsync(); }
+        var before = new DirectoryInfo(directory).GetAccessControl().GetSecurityDescriptorBinaryForm();
+        await using (var second = WindowsPrivateProfileDirectory.CreateWithPrivateParent(directory)) await second.DeleteOwnedAsync();
+        Assert.Equal(before, new DirectoryInfo(directory).GetAccessControl().GetSecurityDescriptorBinaryForm());
+    }
+    [Fact]
+    public async Task ProfileCanBeOpenedWithoutDeleteSharingAndItsChildrenCanBeRenamed()
     {
         await using var profile = WindowsPrivateProfileDirectory.Create(_parent);
-        using (var incompatible = VocabularyWindowsFile.Native.CreateFileW(VocabularyWindowsFile.Extended(profile.Path), 0x80000000, 3, IntPtr.Zero, 3, 0x02000000, IntPtr.Zero)) Assert.True(incompatible.IsInvalid);
+        using (var compatible = VocabularyWindowsFile.Native.CreateFileW(VocabularyWindowsFile.Extended(profile.Path), 0x80000000, 3, IntPtr.Zero, 3, 0x02000000, IntPtr.Zero)) Assert.False(compatible.IsInvalid);
         using (var compatible = VocabularyWindowsFile.Native.CreateFileW(VocabularyWindowsFile.Extended(profile.Path), 0x80000000, 7, IntPtr.Zero, 3, 0x02000000, IntPtr.Zero)) Assert.False(compatible.IsInvalid);
+        string first = Path.Combine(profile.Path, "first"), second = Path.Combine(profile.Path, "second"); File.WriteAllText(first, "data"); File.Move(first, second);
         await profile.DeleteOwnedAsync();
+    }
+    [Fact]
+    public async Task RootReplacementDuringPinUpgradeIsNeverDeleted()
+    {
+        await using var profile = WindowsPrivateProfileDirectory.Create(_parent); string path = profile.Path, moved = path + "-original";
+        profile.AfterPinReleased = () => { profile.AfterPinReleased = null; Directory.Move(path, moved); Directory.CreateDirectory(path); File.WriteAllText(Path.Combine(path, "keep"), "sentinel"); };
+        await Assert.ThrowsAnyAsync<Exception>(() => profile.DeleteOwnedAsync());
+        Assert.Equal("sentinel", File.ReadAllText(Path.Combine(path, "keep"))); Assert.True(Directory.Exists(moved));
+        Directory.Delete(path, true); Directory.Move(moved, path); await profile.DeleteOwnedAsync(); Assert.False(Directory.Exists(path));
     }
     [Fact]
     public async Task DeniedDeleteKeepsOwnerAndCanBeRetriedAfterAccessIsRestored()

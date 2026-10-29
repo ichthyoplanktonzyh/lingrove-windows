@@ -47,7 +47,8 @@ public class SuggestionTextNormalizerTests
     }
 
     [Theory]
-    [InlineData("\n\nnext words only\nsecond paragraph should be dropped", "next words only")]
+    // Latest Mac keeps the word boundary supplied by the removed leading newlines.
+    [InlineData("\n\nnext words only\nsecond paragraph should be dropped", " next words only")]
     [InlineData("next\r\nsecond", "next")]
     public void SingleLineKeepsOnlyTheFirstContentLine(string raw, string expected)
     {
@@ -122,7 +123,7 @@ public class SuggestionTextNormalizerTests
 
     [Theory]
     [InlineData("<think>the user is mid-sentence</think>next words", "next words")]
-    [InlineData("<think>line one\nline two</think>\nnext words", "next words")]
+    [InlineData("<think>line one\nline two</think>\nnext words", " next words")]
     [InlineData("<think>first</think>real<think>second never closes", "real")]
     public void StripsThinkBlocks(string raw, string expected)
     {

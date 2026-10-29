@@ -67,7 +67,7 @@ public static class GhostSpaceBoundary
     }
 
     /// <summary>Whether one space belongs between <paramref name="precedingText"/> and a new word that has none.</summary>
-    private static bool NeedsLeadingSpace(string completion, string precedingText)
+    internal static bool NeedsLeadingSpace(string completion, string precedingText)
     {
         var preceding = new GraphemeString(precedingText);
         if (GraphemeString.FirstOf(completion) is not { } first || preceding.Last is not { } last) return false;

@@ -15,6 +15,10 @@ Existing corpus revisions remain fixed; [current editor annotations](VOCABULARY_
 are an explicit module upgrade with 182 fresh source observations. Historical baseline statuses
 below must not be read as a declaration of full current product parity.
 
+The [latest autocomplete output adaptation](AUTOCOMPLETE_OUTPUT_CURRENT.md) is an explicit module
+upgrade for newline boundaries, echo cleanup and preface truncation. Its four grouped regression
+tests supplement the unchanged historical corpus; its final-head/native limits remain separate.
+
 ## Status meanings
 
 - **verified** — the behavior has passing automated parity evidence and, where it touches Windows

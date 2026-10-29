@@ -85,11 +85,12 @@ internal sealed class ReadingSession : IAsyncDisposable
         Dismiss(); _settings = settings; var cancellation = new CancellationTokenSource();
         lock (_workGate) { _cancel = cancellation; _withdrawal = null; }
         long revision = ++_revision;
-        Track(RunAsync(settings, revision, cancellation.Token, initiatingVirtualKey));
+        Track(RunAsync(settings, revision, cancellation, initiatingVirtualKey));
     }
 
-    private async Task RunAsync(ReadingSettings settings, long revision, CancellationToken token, int? initiatingVirtualKey)
+    private async Task RunAsync(ReadingSettings settings, long revision, CancellationTokenSource owner, int? initiatingVirtualKey)
     {
+        var token = owner.Token;
         IReadingSelectionLease? capture = null; bool transferred = false; ReadingState? displayed = null;
         try
         {
@@ -99,10 +100,14 @@ internal sealed class ReadingSession : IAsyncDisposable
             _lease = capture; transferred = true;
             _invalidated = () =>
             {
+                // Invalidation may arrive while the dispatcher is blocked. Withdraw provider
+                // admission synchronously, but never cancel a newer request's token.
+                Withdraw(owner);
                 void Retire() { if (ReferenceEquals(_lease, capture)) Dismiss(); }
-                if (_dispatcher.CheckAccess()) Retire(); else Post(() => !token.IsCancellationRequested, Retire);
+                if (_dispatcher.CheckAccess()) Retire(); else Post(() => true, Retire);
             };
             capture.Invalidated += _invalidated;
+            if (!Current(revision, token)) return;
             var selection = capture.Selection;
             ReadingSelectionPolicy.ValidateReceipt(selection);
             if (!await capture.IsCurrentAsync(token) || !Current(revision, token)) { if (Current(revision, token)) Dismiss(); return; }
@@ -223,10 +228,11 @@ internal sealed class ReadingSession : IAsyncDisposable
         _settings = settings;
     }
     /// <summary>Synchronously withdraws eligibility from any thread; UI retirement joins callbacks.</summary>
-    internal void Withdraw()
+    internal void Withdraw() => Withdraw(null);
+    private void Withdraw(CancellationTokenSource? expected)
     {
         lock (_workGate)
-            if (_cancel is { } cancellation && _withdrawal is null)
+            if (_cancel is { } cancellation && (expected is null || ReferenceEquals(expected, cancellation)) && _withdrawal is null)
             { _withdrawal = cancellation.CancelAsync(); TrackLocked(_withdrawal); }
     }
     private bool Current(long revision, CancellationToken token) => !_disposed && !token.IsCancellationRequested && _revision == revision;

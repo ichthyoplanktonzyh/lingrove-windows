@@ -9,6 +9,40 @@ namespace Cotabby.App.Wpf.Tests;
 [Collection("WPF views")]
 public sealed class ReadingSessionTests(WpfDispatcher dispatcher)
 {
+    [Fact]
+    public Task BackgroundInvalidationCancelsBeforeBlockedDispatcherCanStartSend() => dispatcher.RunAsync(async () =>
+    {
+        var reader = new Reader(); var panel = new Panel(); int sends = 0;
+        var entered = new TaskCompletionSource<CancellationToken>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        await using var session = new ReadingSession(Dispatcher.CurrentDispatcher, reader, panel,
+            _ => new(null, ReadingLanguageEvidence.Unavailable), (_, _) => 2,
+            async (_, _, _, _, token) => { entered.SetResult(token); await release.Task.ConfigureAwait(false);
+                token.ThrowIfCancellationRequested(); Interlocked.Increment(ref sends); return "sent"; },
+            (_, _, _, _, _, _) => Task.CompletedTask);
+        session.Begin(Settings); var token = await entered.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        Task.Run(() => reader.Lease.Invalidate()).GetAwaiter().GetResult();
+        Assert.True(token.IsCancellationRequested); release.SetResult();
+        await Until(() => !session.IsActive); Assert.Equal(0, sends);
+    });
+
+    [Fact]
+    public Task LateOldInvalidationDoesNotCancelNewSelection() => dispatcher.RunAsync(async () =>
+    {
+        var reader = new Reader(); var panel = new Panel();
+        var tokens = new List<CancellationToken>(); var pending = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+        await using var session = new ReadingSession(Dispatcher.CurrentDispatcher, reader, panel,
+            _ => new(null, ReadingLanguageEvidence.Unavailable), (_, _) => 2,
+            (_, _, _, _, token) => { tokens.Add(token); return pending.Task; }, (_, _, _, _, _, _) => Task.CompletedTask);
+        try
+        {
+            session.Begin(Settings); await Until(() => tokens.Count == 1);
+            var old = reader.Lease.SnapshotInvalidation(); session.Begin(Settings); await Until(() => tokens.Count == 2);
+            await Task.Run(() => old!()); Assert.False(tokens[1].IsCancellationRequested);
+            pending.SetResult("done"); await Until(() => panel.Last?.Status == ReadingStatus.Ready);
+        }
+        finally { pending.TrySetResult("done"); }
+    });
     private static readonly ReadingSelection Selection = new(Guid.NewGuid(), "Hello world!", 123, "field", 1, 0, 12, false, true, InputCompositionState.Clear, 1, ScreenRect.Empty);
     private static readonly ReadingSettings Settings = new(true, true, true, LearningLanguage.Chinese,
         new("unused label", true, true, "https://example.test/v1"), new("Local lookup", false, true), 1);

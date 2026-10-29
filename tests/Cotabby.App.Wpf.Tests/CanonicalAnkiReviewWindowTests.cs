@@ -17,6 +17,19 @@ namespace Cotabby.App.Wpf.Tests;
 [Collection("WPF views")]
 public sealed class CanonicalAnkiReviewWindowTests(WpfDispatcher dispatcher)
 {
+    private sealed class ThrowingCancellationAnki(IAnkiConnecting inner) : IAnkiConnecting
+    {
+        internal readonly TaskCompletionSource Entered = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        internal readonly TaskCompletionSource Release = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        internal Action? OnCancellation;
+        public async Task<AnkiValue> PerformAsync(string action, IReadOnlyDictionary<string, AnkiValue> parameters, AnkiConnection connection, CancellationToken token = default)
+        {
+            if (action != "addNote") return await inner.PerformAsync(action, parameters, connection, token);
+            using var registration = token.Register(() => { OnCancellation?.Invoke(); throw new InvalidOperationException("cancel callback failure"); });
+            Entered.TrySetResult(); await Release.Task;
+            return await inner.PerformAsync(action, parameters, connection, token);
+        }
+    }
     private static AnkiReviewSettings Settings() { var values = new AppSettings(); return new(() => values, () => { }, new AnkiTestCredentials()); }
     private static void Click(Button button) => button.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
     private static async Task Ready(CanonicalAnkiReviewWindow window) { if (window.LastOperation is { } op) await op; await window.PreviewOperation; }
@@ -143,6 +156,30 @@ public sealed class CanonicalAnkiReviewWindowTests(WpfDispatcher dispatcher)
             var window = new CanonicalAnkiReviewWindow(session, action => action(CancellationToken.None), () => { }); window.Show(); await Ready(window);
             Assert.True(window.SendButton.IsEnabled); settings.Address = "http://127.0.0.1:8766"; Assert.False(window.SendButton.IsEnabled);
             Assert.Equal(0, server.AddCount); await window.RetireAsync();
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    });
+
+    [Fact]
+    public Task ThrowingAndReentrantCancellationStillDrainsAndRetiresOnce() => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "review-window-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            await using var store = FrozenVocabularyStoreFactory.Create(Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName), false);
+            await store.AddEntriesAsync([new VocabularyEntryInput(Expression: "bank", Meaning: "money")]);
+            var entry = (await store.ReadAsync()).Document.CollectedEntries[0]; var client = new ThrowingCancellationAnki(new SessionTestServer());
+            var session = await CanonicalAnkiReviewSession.OpenAsync(new AnkiReviewController(Settings(), null, client), store, entry.Id, entry.Senses[0].Id);
+            var window = new CanonicalAnkiReviewWindow(session, action => action(CancellationToken.None), () => { }); window.Show(); await Ready(window);
+            int changed = 0, callbacks = 0; session.PropertyChanged += (_, _) => changed++;
+            Task? reentered = null; client.OnCancellation = () => { callbacks++; reentered = window.RetireAsync(); };
+            Click(window.SendButton); await client.Entered.Task;
+            Task retirement = window.RetireAsync(); Assert.Same(retirement, reentered); Assert.Same(retirement, window.RetireAsync());
+            Assert.Equal(1, callbacks); Assert.False(retirement.IsCompleted); Assert.True(window.IsVisible);
+            int before = changed; session.Plan = session.Plan with { Answer = "still observed" }; Assert.True(changed > before);
+            client.Release.SetResult(); var error = await Assert.ThrowsAnyAsync<Exception>(async () => await retirement);
+            Assert.Contains("cancel callback failure", error.ToString()); Assert.False(window.IsVisible);
+            before = changed; session.Plan = session.Plan with { Answer = "retired" }; Assert.Equal(before, changed);
         }
         finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
     });

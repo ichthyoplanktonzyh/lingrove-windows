@@ -49,7 +49,7 @@ internal sealed class CanonicalAnkiReviewWindow : Window
     private Task? _operation, _retirement;
     private Task _previewTask = Task.CompletedTask;
     private bool _closeWhenDone, _configureWhenDone;
-    private bool _updating, _closing, _allowClose, _started;
+    private bool _updating, _closing, _allowClose, _started, _retired;
     private long _previewVersion;
         private ulong _seenRevision;
     private string? _loadedAddress, _windowError;
@@ -100,7 +100,7 @@ internal sealed class CanonicalAnkiReviewWindow : Window
         _send.Click += (_, _) => Start(async token => { if (await _session.SendAsync(_session.MissingNote, cancellationToken: token)) CloseAfterOperation(); else await PresentAsync(token); });
         _cancel.Click += (_, _) => Close();
         Loaded += (_, _) => { if (!_started) { _started = true; Start(LoadAsync); } };
-        Closing += OnClosing; _seenRevision = session.Snapshot.Revision; session.PropertyChanged += SessionChanged; session.Controller.Settings.PropertyChanged += SettingsChanged; Closed += (_, _) => { _session.PropertyChanged -= SessionChanged; _session.Controller.Settings.PropertyChanged -= SettingsChanged; _session.Dispose(); _lifetime.Dispose(); };
+        Closing += OnClosing; _seenRevision = session.Snapshot.Revision; session.PropertyChanged += SessionChanged; session.Controller.Settings.PropertyChanged += SettingsChanged; Closed += (_, _) => RetirePresentation();
         Fill();
     }
     private void SettingsChanged(object? sender, PropertyChangedEventArgs e)
@@ -239,9 +239,33 @@ internal sealed class CanonicalAnkiReviewWindow : Window
         if (_allowClose) return;
         e.Cancel = true; if (!_closing) _ = RetireAsync();
     }
-    internal Task RetireAsync() => _retirement ??= RetireCoreAsync();
-    private async Task RetireCoreAsync()
+    internal Task RetireAsync()
     {
-        _closing = true; _lifetime.Cancel(); UpdateEnabled(); if (_operation is { } operation) await operation; await _previewTask; _allowClose = true; Close(); if (_configureWhenDone) _configure();
+        Dispatcher.VerifyAccess();
+        if (_retirement is not null) return _retirement;
+        var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        _retirement = completion.Task;
+        _ = RetireCoreAsync(completion);
+        return completion.Task;
+    }
+    private async Task RetireCoreAsync(TaskCompletionSource completion)
+    {
+        var errors = new List<Exception>();
+        _closing = true;
+        try { _lifetime.Cancel(); } catch (Exception error) { errors.Add(error); }
+        try { UpdateEnabled(); } catch (Exception error) { errors.Add(error); }
+        try { if (_operation is { } operation) await operation; } catch (Exception error) { errors.Add(error); }
+        try { await _previewTask; } catch (Exception error) { errors.Add(error); }
+        bool closed = false;
+        try { _allowClose = true; Close(); closed = true; } catch (Exception error) { errors.Add(error); }
+        try { RetirePresentation(); } catch (Exception error) { errors.Add(error); }
+        try { if (closed && _configureWhenDone) _configure(); } catch (Exception error) { errors.Add(error); }
+        if (errors.Count == 0) completion.TrySetResult(); else completion.TrySetException(errors);
+    }
+    private void RetirePresentation()
+    {
+        if (_retired) return; _retired = true;
+        _session.PropertyChanged -= SessionChanged; _session.Controller.Settings.PropertyChanged -= SettingsChanged;
+        _session.Dispose(); _lifetime.Dispose();
     }
 }

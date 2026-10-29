@@ -143,6 +143,7 @@ internal sealed partial class VocabularyGraphCanvas
             case VocabularyGraphCommand.ZoomOut: _presentation.Camera = _presentation.Camera.Zoom(1 / 1.2, center, Viewport); break;
             case VocabularyGraphCommand.Fit: _presentation.Camera = _presentation.Camera.Fit(_positions.Values.ToArray(), Viewport); break;
             case VocabularyGraphCommand.Locate:
+                if (!_canonicalLocate) { if (_presentation.FocusedEntryId is { } legacy && _positions.TryGetValue(VocabularyGraphNodeId.Headword(legacy), out var head)) Center(head); break; }
                 var targets = new List<VocabularyGraphNodeId>(); if (_selection is { } selected) targets.Add(VocabularyGraphNodeId.Sense(selected)); if (_meaningSelection is { } meaning) targets.Add(VocabularyGraphNodeId.Meaning(meaning)); if (_categorySelection is { } category) targets.Add(VocabularyGraphNodeId.Category(category)); if (_presentation.FocusedEntryId is { } id) targets.AddRange(_snapshot.Nodes.Where(n => n.Id.EntryId == id).OrderBy(n => n.Id.Kind == VocabularyGraphNodeKind.Meaning ? 0 : n.Id.Kind == VocabularyGraphNodeKind.Category ? 1 : 2).Select(n => n.Id));
                 foreach (var target in targets) if (_positions.TryGetValue(target, out var point)) { Center(point); break; } break;
         }

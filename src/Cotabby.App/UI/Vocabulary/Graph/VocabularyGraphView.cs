@@ -104,7 +104,7 @@ internal sealed class VocabularyGraphView : Grid
         _empty.Text = graph.IsMeaningGraph && graph.SearchQuery.Length == 0 ? "Browse by meaning\nSelect or create a meaning to compare expressions." : "No matching expressions"; _empty.Visibility = graph.Nodes.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
         _legend.Children.Clear(); var names = graph.IsMeaningGraph ? new[] { "Categories", "Meaning groups", "Expressions" } : new[] { "Headwords", "Senses" }; for (int i = 0; i < names.Length; i++) { Shape mark = graph.IsMeaningGraph && i == 0 ? new Rectangle { RadiusX = 2, RadiusY = 2 } : new Ellipse(); mark.Width = mark.Height = 8; mark.Margin = new(8, 0, 5, 0); mark.SetResourceReference(i == names.Length - 1 ? Shape.StrokeProperty : Shape.FillProperty, i == 0 ? "TextSecondary" : "AccentBrush"); mark.StrokeThickness = 1.3; _legend.Children.Add(mark); _legend.Children.Add(Label(names[i])); }
         if (graph.IsMeaningGraph && _showsUnexplored) { var mark = new Ellipse { Width = 8, Height = 8, Margin = new(8, 0, 5, 0), StrokeDashArray = new DoubleCollection([2, 2]), StrokeThickness = 1 }; mark.SetResourceReference(Shape.StrokeProperty, "TextSecondary"); _legend.Children.Add(mark); _legend.Children.Add(Label("Unexplored")); }
-        Canvas.Update(graph, _selection, _select, _meaningSelection, _categorySelection, _selectMeaning, _selectCategory);
+        Canvas.Update(graph, _selection, _select, _meaningSelection, _categorySelection, _selectMeaning, _selectCategory, canonicalLocate: _canonicalProjection is not null);
     }
     internal Task RetireAsync()
     {

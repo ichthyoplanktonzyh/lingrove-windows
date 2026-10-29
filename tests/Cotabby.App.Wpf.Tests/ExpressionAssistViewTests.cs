@@ -54,6 +54,49 @@ public sealed class ExpressionAssistViewTests(WpfDispatcher dispatcher)
         finally { window.Close(); }
     });
 
+    [Fact]
+    public Task ThemedDestinationAndCandidatesStayBounded() => dispatcher.RunAsync(() =>
+    {
+        var window = new ExpressionAssistWindow(new ScreenRect(50, 50, 1, 18), (_, _) => { }, _ => { });
+        try
+        {
+            var view = window.View;
+            view.SetDestination("AI explanation endpoint: https://example.invalid/" + new string('p', 300) + " · model\nThe selected text and its context are sent to this destination.");
+            view.SetQuery("Describe a careful alternative");
+            view.Update(new ExpressionAssistResult([new("rule out caching", "exclude this possible cause", "rule out"),
+                new("eliminate the possibility", "a second expression", null), new("consider another explanation", "another option", null)], null), null, false);
+            window.Show(); window.UpdateLayout();
+            var scrolls = Descendants<ScrollViewer>(view).ToArray();
+            Assert.Contains(scrolls, scroll => scroll.MaxHeight == 72 && scroll.ExtentHeight > scroll.ViewportHeight);
+            Assert.Contains(scrolls, scroll => scroll.MaxHeight == 210);
+            Assert.Equal(3, Descendants<Button>(view).Count());
+            if (Environment.GetEnvironmentVariable("LINGROVE_TEST_RENDER_DIR") is { Length: > 0 } dir)
+            {
+                Directory.CreateDirectory(dir);
+                foreach (var (name, dark, scale, height) in new[] { ("light", false, 1d, 600), ("dark", true, 1d, 600), ("highcontrast-simulated", true, 1d, 600), ("short", false, 1d, 310), ("large-text", false, 1.5d, 600) })
+                {
+                    Cotabby.App.UI.WindowTheme.ApplyPalette(window.Resources, dark);
+                    window.Resources["ExpressionSelected"] = window.Resources["KeycapBg"];
+                    window.Resources["ExpressionSelectedBorder"] = window.FindResource("AccentBrush");
+                    if (name == "highcontrast-simulated")
+                    {
+                        foreach (string key in new[] { "CardBg", "InputBg", "KeycapBg", "ExpressionSelected" }) window.Resources[key] = Brushes.Black;
+                        foreach (string key in new[] { "TextPrimary", "TextSecondary", "CardBorder" }) window.Resources[key] = Brushes.White;
+                        window.Resources["ExpressionSelectedBorder"] = Brushes.Yellow;
+                    }
+                    view.LayoutTransform = new ScaleTransform(scale, scale);
+                    view.Measure(new Size(570, height)); view.Arrange(new Rect(0, 0, 570, height)); view.UpdateLayout();
+                    var image = new RenderTargetBitmap(570, height, 96, 96, PixelFormats.Pbgra32); image.Render(view);
+                    var encoder = new PngBitmapEncoder(); encoder.Frames.Add(BitmapFrame.Create(image));
+                    using var output = File.Create(Path.Combine(dir, "expression-theme-" + name + ".png")); encoder.Save(output);
+                }
+                view.LayoutTransform = Transform.Identity;
+            }
+        }
+        finally { window.Close(); }
+        return Task.CompletedTask;
+    });
+
     private static void RaiseComposition(TextBox target, RoutedEvent routedEvent)
     {
         var composition = new TextComposition(InputManager.Current, target, "");

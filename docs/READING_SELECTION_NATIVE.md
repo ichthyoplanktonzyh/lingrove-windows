@@ -34,7 +34,9 @@ pointer/icon, OCR and screen-region reading remain separate work. Read-only cont
 TextEdit evidence (including many static or browser hosts) remain unavailable; read-only alone is
 not evidence that composition is clear. Hidden owned RichEdit tests establish only that fixture's
 current UIA transport and do not establish physical IME, browser, user-host or visual acceptance.
-On the development host, targeted WPF checks passed 7/7: three native owned-control cases and
-four fake lease/lifetime cases. The native cases include read-only RichEdit, selection at a second
+On the development host, targeted WPF checks passed 11/11: three native owned-control cases and
+eight fake lease/lifetime cases. The native cases include read-only RichEdit, selection at a second
 identical occurrence, oversize UTF-8 rejection and a revoked queued capture. The fake cases cover
-held validation, focus/foreground revocation and reentrant owner disposal.
+held validation, focus/foreground revocation, terminal notification replay, retirement/disposal
+ordering and reentrant owner disposal. Subscribers added after retirement receive a replay until
+disposal begins; disposal joins registered cleanup and callbacks, including late subscriptions.

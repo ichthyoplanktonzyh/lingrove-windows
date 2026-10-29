@@ -105,7 +105,11 @@ public sealed class Win32ReadingSelectionLease : IAsyncDisposable
     private UiaTextEditEvidence.ReadingLease? _native;
     private ReadingSelection? _selection;
     private int _retired, _capturing = 1, _initialKeyUp = 1;
-    private Task? _notification;
+    private Action? _invalidated;
+    private bool _disposing;
+    private Task? _disposal;
+    internal Func<Task>? BeforeValidationPublicationForTest;
+    internal Action? RetireCommittedForTest;
     [ThreadStatic] private static Win32ReadingSelectionLease? _notifying;
     internal object? NotificationGroup;
     internal static bool InNotificationFor(object group) => ReferenceEquals(_notifying?.NotificationGroup, group);
@@ -124,7 +128,21 @@ public sealed class Win32ReadingSelectionLease : IAsyncDisposable
     }
 
     public ReadingSelection Selection => _selection ?? throw new InvalidOperationException("Selection is unavailable.");
-    public event Action? Invalidated;
+    /// <summary>Late subscriptions replay the terminal invalidation until disposal begins.</summary>
+    public event Action? Invalidated
+    {
+        add
+        {
+            if (value is null) return;
+            lock (_gate)
+            {
+                if (_disposing) return;
+                if (_retired == 0) _invalidated += value;
+                else QueueNotification(value);
+            }
+        }
+        remove { lock (_gate) _invalidated -= value; }
+    }
 
     private bool Allowed(CancellationToken ct) => !ct.IsCancellationRequested && IsLive
         && _currentEpoch() == _epoch && _foreground() == _host && _windowProcess(_host) == _pid;
@@ -162,6 +180,8 @@ public sealed class Win32ReadingSelectionLease : IAsyncDisposable
         try
         {
             bool valid = await task.WaitAsync(TimeSpan.FromSeconds(2), ct).ConfigureAwait(false);
+            if (BeforeValidationPublicationForTest is { } barrier) await barrier().ConfigureAwait(false);
+            valid = valid && Allowed(ct);
             if (!valid) Retire();
             return valid;
         }
@@ -178,20 +198,35 @@ public sealed class Win32ReadingSelectionLease : IAsyncDisposable
 
     public void Retire()
     {
-        if (Interlocked.Exchange(ref _retired, 1) != 0) return;
-        _focus.FocusTransition -= OnFocus;
-        _keyboard.KeyEvent -= OnKey;
         lock (_gate)
         {
-            if (_native is { } native) _owner.RetireReading(native);
-            _notification = Task.Run(() =>
+            if (_retired != 0) return;
+            Volatile.Write(ref _retired, 1);
+            RetireCommittedForTest?.Invoke();
+            var native = _native;
+            var handlers = _invalidated;
+            _invalidated = null;
+            Task cleanup = Task.Run(() =>
             {
-                _notifying = this;
-                try { Invalidated?.Invoke(); } catch { }
-                finally { _notifying = null; }
+                _focus.FocusTransition -= OnFocus;
+                _keyboard.KeyEvent -= OnKey;
+                if (native is not null) _owner.RetireReading(native);
             });
-            Track(_notification);
+            Track(cleanup);
+            if (handlers is not null) QueueNotification(handlers);
         }
+    }
+
+    // Caller holds _gate, so registration and disposal observe the same tracked work.
+    private void QueueNotification(Action handlers)
+    {
+        Task notification = Task.Run(() =>
+        {
+            _notifying = this;
+            try { foreach (Action handler in handlers.GetInvocationList()) { try { handler(); } catch { } } }
+            finally { _notifying = null; }
+        });
+        Track(notification);
     }
 
     internal void Track(Task task)
@@ -201,14 +236,23 @@ public sealed class Win32ReadingSelectionLease : IAsyncDisposable
             TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
     }
 
-    public async ValueTask DisposeAsync()
+    public ValueTask DisposeAsync()
     {
         Retire();
-        bool self = ReferenceEquals(_notifying, this);
+        lock (_gate)
+        {
+            _disposing = true;
+            _disposal ??= Task.Run(DrainAsync);
+            return ReferenceEquals(_notifying, this) ? ValueTask.CompletedTask : new(_disposal);
+        }
+    }
+
+    private async Task DrainAsync()
+    {
         while (true)
         {
             Task[] pending;
-            lock (_gate) pending = _work.Where(t => !self || !ReferenceEquals(t, _notification)).ToArray();
+            lock (_gate) pending = _work.ToArray();
             if (pending.Length == 0) break;
             try { await Task.WhenAll(pending).ConfigureAwait(false); } catch { }
         }

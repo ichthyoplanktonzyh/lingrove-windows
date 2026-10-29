@@ -13,6 +13,10 @@ whitespace/control rules. The target and explanation languages use the existing 
 catalog and the prompt uses the existing context budget. Result parsing requires an injected full
 Unicode lowercase function; Windows supplies the existing system ICU adapter, without lexical-key
 whitespace or apostrophe normalization. Unicode-version differences remain a platform verification gap.
+The Swift standard library's `CharacterProperties.swift` describes symbol and punctuation
+classification by the first scalar's general category; this explains the character adapter and
+does not change the frozen product reference. The regression fixtures are source-derived, not
+direct Swift executions on this host.
 The caller must clear selected text for a symbol-trigger request as in the source coordinator.
 
 This is a library checkpoint, not an activated feature. The source's disabled-by-default settings,

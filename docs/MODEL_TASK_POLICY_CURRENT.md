@@ -25,6 +25,13 @@ The current unfiltered picker and runtime paths do not use this opt-in API yet. 
 `ModelCatalog.Available` retains the earlier behavior until that wiring and legacy migration exist.
 Deletion protection is also a pure projection, not an active deletion guard.
 
+Family filtering and base-token splitting operate on the existing Windows `GraphemeString`
+adapter: each admitted extended grapheme retains its original combining marks, and ASCII family
+matches cannot end inside a grapheme. Invalid .NET task enum values fail closed, since Swift's
+task enum cannot represent them. .NET's Unicode segmentation, classification and invariant
+lowercasing can differ from the frozen Mac's Swift/Foundation versions; the focused decomposed
+letter regressions do not establish exhaustive cross-platform Unicode equivalence.
+
 ## UI audit and pending work
 
 `UI/Settings/Components/Structure/SettingsModelManagementSheet.swift` defines a task-labelled
@@ -39,6 +46,7 @@ source and location and distinguishes incompatible from unavailable retained sel
 connection state; `ModelsFolderSection.swift` owns folder and optional LM Studio source controls.
 Windows `EnginePane`, `ModelList`, and `LearningLocalModels` currently retain earlier inline designs
 and are not visual or interaction parity. No matching Mac screenshot was available for comparison.
+No Windows view was rendered or changed in this policy checkpoint.
 
 The catalog labels here are frozen metadata, not a change to existing Cotabby runtime identifiers or
 persisted names. Platform differences in case matching and Windows file discovery need integration

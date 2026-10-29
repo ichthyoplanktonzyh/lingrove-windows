@@ -38,6 +38,30 @@ public class LocalModelTaskPolicyTests
     }
 
     [Fact]
+    public void FamilyFilteringAndBaseSplittingPreserveCombiningGraphemes()
+    {
+        // Filtering a letter retains its combining mark; it cannot manufacture an ASCII family.
+        Assert.True(LocalModelTaskPolicy.Supports("q\u0301wen3tts.gguf", LocalModelTask.Translation));
+        Assert.True(LocalModelTaskPolicy.Supports("qwen3tts\u0301.gguf", LocalModelTask.Translation));
+        Assert.True(LocalModelTaskPolicy.Supports("base\u0301-model.gguf", LocalModelTask.Translation));
+        Assert.False(LocalModelTaskPolicy.Supports("base-model.gguf", LocalModelTask.Translation));
+        Assert.True(LocalModelTaskPolicy.Supports("mmproj\u0301-custom.gguf", LocalModelTask.Translation));
+        Assert.False(LocalModelTaskPolicy.Supports("mmproj-custom.gguf", LocalModelTask.Translation));
+    }
+
+    [Fact]
+    public void InvalidTaskFailsClosedBeforeAssignmentOrTemplateAdmission()
+    {
+        var invalid = (LocalModelTask)999;
+        var assignments = new Dictionary<string, string[]>();
+        Assert.False(LocalModelTaskPolicy.Supports("custom.gguf", invalid));
+        Assert.False(LocalModelTaskPolicy.IsCandidate("custom.gguf", invalid, new HashSet<LocalModelTask> { invalid }));
+        Assert.False(LocalModelTaskPolicy.PermitsTemplate(LearningChatTemplate.Automatic, invalid));
+        Assert.False(LocalModelTaskAssignments.TryRecord("custom.gguf", invalid, assignments));
+        Assert.Empty(assignments);
+    }
+
+    [Fact]
     public void ExplicitAssignmentsUseLowercaseKeysSortedTaskValuesAndKeepCatalogOwnership()
     {
         var map = new Dictionary<string, string[]>();

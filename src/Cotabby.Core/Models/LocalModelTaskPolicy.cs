@@ -1,6 +1,5 @@
-using System.Text;
-using System.Globalization;
 using Cotabby.Core.LanguageLearning;
+using Cotabby.Core.Text;
 
 namespace Cotabby.Core.Models;
 
@@ -39,14 +38,15 @@ public static class LocalModelTaskPolicy
     public static bool Supports(string filename, LocalModelTask task)
     {
         ArgumentNullException.ThrowIfNull(filename);
-        if (filename.Length == 0) return false;
+        if (filename.Length == 0 || !Enum.IsDefined(task)) return false;
         if (LocalModelCatalog.Descriptor(filename) is { } entry) return entry.Task == task && !entry.IsResource;
         var lower = filename.ToLowerInvariant();
-        var name = string.Concat(lower.EnumerateRunes().Where(IsLetterOrNumber).Select(rune => rune.ToString()));
-        if (lower.StartsWith("mmproj-", StringComparison.Ordinal) || name.Contains("mmproj", StringComparison.Ordinal)) return false;
-        if (name.Contains("qwen3tts", StringComparison.Ordinal)) return task == LocalModelTask.Speech;
-        if (name.Contains("translategemma", StringComparison.Ordinal) || name.Contains("hymt", StringComparison.Ordinal)
-            || name.Contains("hunyuanmt", StringComparison.Ordinal)) return task == LocalModelTask.Translation;
+        var lowerCharacters = new GraphemeString(lower);
+        var name = string.Concat(lowerCharacters.Where(character => character.IsLetterOrNumber).Select(character => character.ToString()));
+        if (lowerCharacters.StartsWith("mmproj-") || ContainsCharacters(name, "mmproj")) return false;
+        if (ContainsCharacters(name, "qwen3tts")) return task == LocalModelTask.Speech;
+        if (ContainsCharacters(name, "translategemma") || ContainsCharacters(name, "hymt")
+            || ContainsCharacters(name, "hunyuanmt")) return task == LocalModelTask.Translation;
         if (IsKnownBaseModel(lower)) return task == LocalModelTask.Completion;
         return true;
     }
@@ -55,22 +55,29 @@ public static class LocalModelTaskPolicy
         Supports(filename, task) && (LocalModelCatalog.Descriptor(filename) is not null || assignedTasks.Contains(task));
 
     public static bool PermitsTemplate(LearningChatTemplate template, LocalModelTask task) =>
-        task != LocalModelTask.Explanation || template is not (LearningChatTemplate.HyMt or LearningChatTemplate.HyMt7 or LearningChatTemplate.TranslateGemma);
+        Enum.IsDefined(task) && (task != LocalModelTask.Explanation || template is not (LearningChatTemplate.HyMt or LearningChatTemplate.HyMt7 or LearningChatTemplate.TranslateGemma));
 
     private static bool IsKnownBaseModel(string lower)
     {
         if (lower is "gemma-4-e2b.i1-q6_k.gguf" or "gemma-4-e4b.i1-q4_k_m.gguf") return true;
-        var part = new StringBuilder();
-        foreach (var rune in lower.EnumerateRunes())
-        {
-            if (IsLetterOrNumber(rune)) part.Append(rune.ToString());
-            else { if (part.ToString() == "base") return true; part.Clear(); }
-        }
-        return part.ToString() == "base";
+        var characters = new GraphemeString(lower);
+        return characters.Split(character => !character.IsLetterOrNumber)
+            .Any(range => lower[range] == "base");
     }
 
-    private static bool IsLetterOrNumber(Rune rune) => Rune.IsLetter(rune) || Rune.GetUnicodeCategory(rune) is
-        UnicodeCategory.DecimalDigitNumber or UnicodeCategory.LetterNumber or UnicodeCategory.OtherNumber;
+    // Swift matches these ASCII family literals as Character sequences, not substrings inside
+    // a combining cluster. Keep each retained grapheme intact when checking the literal.
+    internal static bool ContainsCharacters(string text, string literal)
+    {
+        var characters = new GraphemeString(text);
+        for (int start = 0; start <= characters.Count - literal.Length; start++)
+        {
+            int index = 0;
+            while (index < literal.Length && characters[start + index].Is(literal[index])) index++;
+            if (index == literal.Length) return true;
+        }
+        return false;
+    }
 }
 
 /// <summary>Pure adapter over the shared settings map; its caller owns persistence and serialization.</summary>
@@ -91,8 +98,9 @@ public static class LocalModelTaskAssignments
     {
         ArgumentNullException.ThrowIfNull(filename);
         ArgumentNullException.ThrowIfNull(values);
+        if (!Enum.IsDefined(task)) return false;
         if (LocalModelCatalog.Descriptor(filename) is { } entry) return entry.Task == task;
-        if (task == LocalModelTask.Speech && filename.Contains("mmproj", StringComparison.OrdinalIgnoreCase)) return true;
+        if (task == LocalModelTask.Speech && LocalModelTaskPolicy.ContainsCharacters(filename.ToLowerInvariant(), "mmproj")) return true;
         if (!LocalModelTaskPolicy.Supports(filename, task)) return false;
         var key = filename.ToLowerInvariant();
         var tasks = new HashSet<LocalModelTask>();

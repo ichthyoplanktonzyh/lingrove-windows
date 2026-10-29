@@ -1,11 +1,14 @@
 using Cotabby.App.Settings;
 using Cotabby.App.UI.Controls;
 using Cotabby.Core.Input;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace Cotabby.App.Wpf.Tests;
 
 /// <summary>Compiled settings adapters only: no recorder focus, hook or desktop input.</summary>
-public sealed class ExpressionAssistShortcutTests
+[Collection("WPF views")]
+public sealed class ExpressionAssistShortcutTests(WpfDispatcher dispatcher)
 {
     private static readonly KeyBinding Chord = new(0x45, KeyModifiers.Control | KeyModifiers.Alt, "Ctrl+Alt+E");
 
@@ -33,4 +36,20 @@ public sealed class ExpressionAssistShortcutTests
         GlobalShortcut.ExpressionAssist.Set(settings, GlobalShortcut.ExpressionAssist.Default);
         Assert.Equal("Not set", GlobalShortcut.ExpressionAssist.Label(settings));
     }
+
+    [Fact]
+    public Task SavedShortcutExplainsConflictsIntroducedAfterRecording() => dispatcher.RunAsync(() =>
+    {
+        var settings = new AppSettings { ExpressionAssistShortcut = Chord, LearningTranslationShortcut = Chord };
+        var editor = new ShortcutEditor(GlobalShortcut.ExpressionAssist, () => settings, mutate => mutate(settings));
+        var message = Assert.Single(editor.Children.OfType<TextBlock>());
+        editor.Refresh(); Assert.Equal(Visibility.Collapsed, message.Visibility);
+        settings.LearningTranslationEnabled = true;
+        editor.Refresh();
+        Assert.Equal(Visibility.Visible, message.Visibility);
+        Assert.Contains("Translation", message.Text);
+        settings.LearningTranslationEnabled = false;
+        editor.Refresh(); Assert.Equal(Visibility.Collapsed, message.Visibility);
+        return Task.CompletedTask;
+    });
 }

@@ -27,12 +27,17 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
+        // The local CLI launches a tray-only background instance. It must not raise a modal
+        // duplicate-instance or welcome window while an automation request is pending.
+        bool cliStartup = e.Args.Length == 1 && string.Equals(e.Args[0], "-lingrove-cli", StringComparison.Ordinal);
+
         _singleInstance = new Mutex(initiallyOwned: true, SingleInstanceMutexName, out bool createdNew);
         if (!createdNew)
         {
             _singleInstance = null;
-            MessageBox.Show("Cotabby is already running. Check the system tray.",
-                "Cotabby", MessageBoxButton.OK, MessageBoxImage.Information);
+            if (!cliStartup)
+                MessageBox.Show("Cotabby is already running. Check the system tray.",
+                    "Cotabby", MessageBoxButton.OK, MessageBoxImage.Information);
             Shutdown();
             return;
         }
@@ -49,7 +54,7 @@ public partial class App : Application
         _host.Coordinator.Start();
         _ = LoadModelAsync(_host, _tray);
 
-        if (_host.Settings.ShowFirstRunWelcome)
+        if (!cliStartup && _host.Settings.ShowFirstRunWelcome)
         {
             Dispatcher.BeginInvoke(() => WelcomeWindow.ShowFor(_host), DispatcherPriority.Background);
         }

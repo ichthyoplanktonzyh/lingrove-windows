@@ -68,6 +68,8 @@ jobs:
         run: dotnet test tests/Cotabby.Core.Tests/Cotabby.Core.Tests.csproj --configuration Release
       - name: Test portable app settings and task ownership
         run: dotnet test tests/Cotabby.App.Tests/Cotabby.App.Tests.csproj --configuration Release
+      - name: Compile Windows solution with targeting enabled on macOS
+        run: dotnet build Cotabby.sln --configuration Release -p:EnableWindowsTargeting=true
       - name: Read the pinned macOS reference
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
@@ -351,6 +353,20 @@ jobs:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           persist-credentials: false
+      - name: Read the latest committed CLI reference
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          repository: ichthyoplanktonzyh/lingrove
+          ref: 3b53402f2cbc196b0398d133177fd80006d165b2
+          path: .mac-cli-3b
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            Lingrove/Models/CLI/CLIProtocol.swift
+            Lingrove/Models/CLI/CLICaptureModels.swift
+            Lingrove/Support/Vocabulary/VocabularyCLIPlan.swift
+      - name: Compare CLI fingerprint, stable IDs and ranges with 3b Swift
+        run: python3 scripts/verify-cli-3b-macos-parity.py --mac-repo .mac-cli-3b
       - name: Read the frozen vocabulary reference independently of historical fixtures
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:

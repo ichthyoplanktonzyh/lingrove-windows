@@ -1,0 +1,224 @@
+{
+  "macReference": "3b53402f2cbc196b0398d133177fd80006d165b2",
+  "provenance": "Observed from 3b Swift in macOS CI runs 40944180841, 40945194927 and 40946597100.",
+  "batches": [
+    {
+      "name": "typed-nil",
+      "batch": {
+        "version": 1,
+        "idempotencyKey": "nil",
+        "expectedRevision": null,
+        "operations": [
+          {
+            "add": {
+              "expression": "bank",
+              "language": "en",
+              "kind": "word",
+              "meaning": "money",
+              "note": null,
+              "examples": null
+            }
+          }
+        ]
+      },
+      "expectedFingerprint": "2752bc07feb113ad39cc3fcec7b8b10e0c7e5895e79b5f888f6477977184d73d",
+      "expectedId": "B71E5F27-58D8-54E3-B7B9-7D5D12D7EA56"
+    },
+    {
+      "name": "typed-uuid",
+      "batch": {
+        "version": 1,
+        "idempotencyKey": "uuid",
+        "operations": [
+          {
+            "append": {
+              "entryID": "abcdefab-cdef-abcd-efab-cdefabcdefab",
+              "senseID": "abcdefab-cdef-abcd-efab-cdefabcdefac",
+              "tags": [
+                "x"
+              ]
+            }
+          }
+        ]
+      },
+      "expectedFingerprint": "e71108aeb8cdb33c59b5c5bdfc8dc98dba08d9a05a7b7831c846edb166169d90",
+      "expectedId": "8A949D86-1D93-54A0-80FC-4CDE6D0FFB56"
+    },
+    {
+      "name": "resource-null-numbers",
+      "batch": {
+        "version": 2,
+        "idempotencyKey": "raw",
+        "expectedRevision": 0,
+        "operations": [
+          {
+            "put": {
+              "resource": "senses",
+              "value": {
+                "id": "abcdefab-cdef-abcd-efab-cdefabcdefab",
+                "meaningLanguage": null,
+                "createdAt": 1.25,
+                "updatedAt": 1.0
+              }
+            }
+          }
+        ]
+      },
+      "expectedFingerprint": "7006daab82be2b4309d4bc9041b9ebb7936481d288c7c8476f85c056741cf5e0",
+      "expectedId": "D95D7299-BA3B-5595-9A12-BF4BBAEBA678"
+    },
+    {
+      "name": "capture-uuid",
+      "batch": {
+        "version": 2,
+        "idempotencyKey": "capture",
+        "operations": [
+          {
+            "capture": {
+              "meanings": [
+                {
+                  "ref": "a",
+                  "id": "abcdefab-cdef-abcd-efab-cdefabcdefab"
+                }
+              ],
+              "entries": [
+                {
+                  "expression": "x",
+                  "senses": [
+                    {
+                      "id": "abcdefab-cdef-abcd-efab-cdefabcdefac"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "expectedFingerprint": "86b58c09c8d5cad9467a815078f6800d6e83719d3da9966c67ef9f9b061b9942",
+      "expectedId": "9708B4EF-0477-5DCC-A638-F59BFE5C5AA1"
+    },
+    {
+      "name": "unicode-and-slash",
+      "batch": {
+        "version": 1,
+        "idempotencyKey": "unicode/\u5B57",
+        "operations": [
+          {
+            "add": {
+              "expression": "caf\u00E9",
+              "language": "en",
+              "kind": "word",
+              "meaning": "a/b"
+            }
+          }
+        ]
+      },
+      "expectedFingerprint": "c1de977adc6203d495fdb3376aef086b5bd2b4e708a3ddcd8748efe33d44c3be",
+      "expectedId": "0776290B-A251-5A82-8914-E533B7DBAF67"
+    },
+    {
+      "name": "floating-exponents",
+      "batch": {
+        "version": 2,
+        "idempotencyKey": "float",
+        "expectedRevision": 0,
+        "operations": [
+          {
+            "put": {
+              "resource": "senses",
+              "value": {
+                "id": "abcdefab-cdef-abcd-efab-cdefabcdefab",
+                "createdAt": 1e-7,
+                "updatedAt": 1e21
+              }
+            }
+          }
+        ]
+      },
+      "expectedFingerprint": "ee24196e94fed194441ccd7597352d7c6545c3177f4a3d14f72a5b5c04b50819",
+      "expectedId": "C3BF25EC-1D28-5E0D-A8B6-DDBC707F2F01"
+    },
+    {
+      "name": "typed-integers",
+      "batch": {
+        "version": 1.0,
+        "idempotencyKey": "typed-integers",
+        "expectedRevision": 1e0,
+        "operations": [
+          {
+            "add": {
+              "expression": "x",
+              "language": "en",
+              "kind": "word",
+              "meaning": "m",
+              "examples": [
+                {
+                  "text": "x",
+                  "ranges": [
+                    {
+                      "location": 0.0,
+                      "length": 1e0
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "expectedFingerprint": "82136ed53fbfe05b51f5e1da211202a14115b7f6413157041294798469677ea7",
+      "expectedId": "3E6467AF-366C-5FFE-8172-8E4EAD73855B"
+    }
+  ],
+  "ranges": [
+    {
+      "name": "single",
+      "text": "the bank opens",
+      "expression": "bank",
+      "expected": "4:4"
+    },
+    {
+      "name": "overlap",
+      "text": "banana",
+      "expression": "ana",
+      "expected": "ambiguous"
+    },
+    {
+      "name": "missing",
+      "text": "nothing",
+      "expression": "bank",
+      "expected": "missing"
+    },
+    {
+      "name": "canonical-equivalent",
+      "text": "cafe\u0301",
+      "expression": "\u00E9",
+      "expected": "3:2"
+    },
+    {
+      "name": "case-sensitive",
+      "text": "Bank",
+      "expression": "bank",
+      "expected": "missing"
+    },
+    {
+      "name": "ligature",
+      "text": "\uFB01",
+      "expression": "fi",
+      "expected": "missing"
+    },
+    {
+      "name": "punctuation",
+      "text": "a-b",
+      "expression": "ab",
+      "expected": "missing"
+    },
+    {
+      "name": "astral-overlap",
+      "text": "\uD83D\uDE00\uD83D\uDE00",
+      "expression": "\uD83D\uDE00",
+      "expected": "ambiguous"
+    }
+  ]
+}

@@ -1,36 +1,41 @@
-# Selected-text reading: isolated checkpoint
+# Selected-text reading
 
-Reference: macOS `35b7fbe5c788c5524936ade1dfb7c89a3a285b04`, including
+Reference: macOS `3b53402f2cbc196b0398d133177fd80006d165b2`, including
 `App/Coordinators/InlineFeatures/LearningReadingCoordinator.swift`,
 `Models/LanguageLearning/LearningReadingSelection.swift`,
 `Services/LanguageLearning/LearningReadingSelectionReader.swift`,
 `Support/LanguageLearning/LearningReadingPolicy.swift`, `LearningReadingLookupPolicy.swift`,
 `LearningReadingLanguageResolver.swift`, `LearningReadingContextPolicy.swift`,
-`LearningTranslationPrompt.swift` and their corresponding coordinator/policy tests.
+`LearningTranslationPrompt.swift`, `LearningLookupPolicy.swift`, `LearningLookupModels.swift`,
+`LearningOutputGrammar.swift`, `LearningExplanationService.swift` and their tests. Git comparison
+against `35b7fbe5c788c5524936ade1dfb7c89a3a285b04` found no changes in the reading coordinator,
+language-learning models/services/support, learning settings or corresponding tests. Existing older
+fixtures retain their own pins. Source-derived
+C# cases are not direct Swift executions.
 
-The pure library preserves bounded complete selected text, source/context/hint language evidence,
-unknown language, and the distinction between whole-sentence translation and contextual or
-standalone lookup. Language hypotheses, script compatibility and word segmentation are explicit
-platform inputs. Source-derived C# examples are not direct Swift executions. Context must retain
-an admitted exact occurrence; a selected string is never found again by searching the document.
-Resolved contexts require exact UTF-16 equality at that occurrence. Acquisition-window alignment,
-including canonical/whitespace equivalence, replacement and range recalculation, is not yet ported.
-Reading can carry unknown source through the existing translation options, budget and prompt family:
-generic omits a source name, Hy-MT retains its target-only prompt and TranslateGemma asks the model
-to infer the language. Existing known-source prompt bytes and writing defaults remain unchanged.
+The manual shortcut (default Alt+Shift+T) is disabled by default and has an independent target
+language. AppHost borrows the existing keyboard and focus owners, the native read-only selection
+lease, the translation runtime and shared explanation instruction runtime. It verifies the original
+process/field/epoch and receipt before presentation and after model work, and tracks cancellation
+and shutdown. Endpoint translation requires explicit consent and displays its actual sanitized
+HTTP(S) destination before provider work. It never borrows the autocomplete endpoint or runtime.
+Resolved contexts require exact UTF-16 equality at the specified occurrence. Acquisition-window
+alignment, including canonical/whitespace equivalence, replacement and range recalculation, is not
+ported; a selected string is never found again by searching the document.
 
-The isolated dispatcher session borrows a read-only capture lease, translation provider and rich
-lookup owner. It verifies the receipt before presentation and after model work, tracks cancellation
-and shutdown, and carries separate translation and lookup destinations. Endpoint destinations
-require explicit authorization and display the actual sanitized HTTP(S) URL before provider work;
-no transport or credential owner is constructed here. A small WPF reading card shows source,
-destination, loading, result and error hierarchy; its nonactivating placement uses the existing
-learning-panel adapter. A 96-DPI test rendering was inspected; physical DPI, accessibility and
-host focus behavior remain unverified.
+The selected word/phrase card requests a bounded basic pair from the local explanation model using
+the shared instruction lease and fixed source grammar; details are a separate request bound to the
+accepted pair. The bundled dictionary searches all resource languages when language is unknown.
+The Windows translation endpoint handles translation only; lookup never silently borrows it. If the
+explanation model is unconfigured, the card offers its settings and bundled dictionary. Saving
+reading lookups to the notebook remains unconnected.
 
-This is not an activated product feature. The native readonly selection adapter, platform language
-and script detector, source-faithful word segmentation, selection icon/shortcut, real translation
-and dictionary-card integration, context extraction, detail actions and AppHost/settings composition
-remain work. In particular, existing dictionary state assumes a known language; unknown-language
-lookup must not be silently labeled English. Pointer, screenshot/OCR and clipboard sources are not
-implemented here. No model, external endpoint, user editor or clipboard is exercised by tests.
+This is the manual selected-text subset, not complete reading parity. No language recognition or
+surrounding context is acquired in the current native adapter: source remains unknown and a lookup
+is presented as standalone. ICU root-locale word segmentation is the Windows adaptation when the
+language is unknown; Darwin tokenizer and ICU Unicode/version differences remain unverified. The
+current shortcut requires a matching focused editable-field receipt and may reject otherwise
+readable controls or ancestor selection providers. Selection icon, pointer, screenshot/OCR and
+clipboard sources are not implemented. No model, external endpoint, user editor or clipboard is
+exercised by tests; real host UIA, physical IME, accessibility, DPI and model-backed behavior remain
+acceptance gates.

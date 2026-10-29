@@ -1,6 +1,7 @@
 using System.IO;
 using Cotabby.App.Settings;
 using Cotabby.Core.LanguageLearning;
+using Cotabby.Core.LanguageLearning.Reading;
 using Cotabby.Core.ExpressionAssist;
 using Cotabby.Core.Models;
 using Cotabby.Core.Suggestions;
@@ -31,6 +32,7 @@ internal sealed class LearningExplanationController : IAsyncDisposable
     private readonly HashSet<Task> _leaseCleanup = [];
     private CancellationTokenSource? _currentInstruction;
     private LearningModelSnapshot _profile;
+    private LearningLanguage _instructionLanguage;
     private bool _enabled;
     private bool _modelAdmitted;
     private bool _pauseOnBatterySaver;
@@ -54,6 +56,7 @@ internal sealed class LearningExplanationController : IAsyncDisposable
         if (_idleDelay <= TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(idleDelay));
         _engineFactory = engineFactory ?? (configuration => new LearningLocalExplanationEngine(configuration, _runtime));
         _profile = settings.LearningExplanationSnapshot();
+        _instructionLanguage = settings.ResolvedLearningExplanationLanguage;
         Service = new(_profile, settings.ResolvedLearningExplanationLanguage, CreateEngine, _clock);
         ApplySettings(settings);
     }
@@ -72,8 +75,9 @@ internal sealed class LearningExplanationController : IAsyncDisposable
             if (_disposal is not null) return;
             bool allocationChanged = !_profile.UsesSameRuntime(next) || _modelAdmitted != admitted;
             if (_profile != next) StopIdleLocked();
-            if (_profile != next) RetireInstructionLocked();
+            if (_profile != next || _instructionLanguage != settings.ResolvedLearningExplanationLanguage) RetireInstructionLocked();
             _profile = next;
+            _instructionLanguage = settings.ResolvedLearningExplanationLanguage;
             _modelAdmitted = admitted;
             _enabled = settings.Enabled;
             _pause = settings.Pause;
@@ -194,6 +198,55 @@ internal sealed class LearningExplanationController : IAsyncDisposable
                 TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
             return task;
         }
+    }
+
+    /// <summary>Reading lookup shares the same instruction lease and local runtime as explanation
+    /// and expression, but its nullable source and accepted basic pair remain request-owned.</summary>
+    internal Task<T> GenerateReadingLookupAsync<T>(ReadingLookupInput input, ReadingLookupResult? basic,
+        Func<string, T> parse, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(input); ArgumentNullException.ThrowIfNull(parse);
+        token.ThrowIfCancellationRequested();
+        lock (_gate)
+        {
+            token.ThrowIfCancellationRequested();
+            if (_disposal is not null || !AllowedLocked() || _profile.Backend != LearningModelBackend.Local)
+                throw new OperationCanceledException();
+            if (!_modelAdmitted) throw new LearningTranslationException(LearningTranslationFailure.LocalModelNotConfigured);
+            var profile = _profile; var language = _instructionLanguage;
+            var lease = ReserveInstructionLocked(); StopIdleLocked(); _activeFacades++; _nativeMayBeResident = true;
+            var task = Task.Run(() => GenerateReadingLookupCoreAsync(input, basic, parse, profile, language, lease, token));
+            _instructionWork.Add(task);
+            _ = task.ContinueWith(t => { lock (_gate) _instructionWork.Remove(t); }, CancellationToken.None,
+                TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+            return task;
+        }
+    }
+
+    private async Task<T> GenerateReadingLookupCoreAsync<T>(ReadingLookupInput input, ReadingLookupResult? basic,
+        Func<string, T> parse, LearningModelSnapshot profile, LearningLanguage language, CancellationTokenSource lease, CancellationToken caller)
+    {
+        using var registration = caller.Register(() => RetireInstruction(lease));
+        try
+        {
+            caller.ThrowIfCancellationRequested(); CheckCurrent(profile, lease.Token);
+            string name = profile.LocalModel;
+            if (string.IsNullOrWhiteSpace(name) || name.IndexOfAny(['/', '\\', ':']) >= 0 || name.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0
+                || !string.Equals(Path.GetExtension(name), ".gguf", StringComparison.OrdinalIgnoreCase))
+                throw new LearningTranslationException(LearningTranslationFailure.LocalModelNotConfigured);
+            var config = new LearningLocalModelConfiguration(Path.Combine(_modelDirectory, name), profile.Template,
+                profile.ContextWindowTokens, profile.SamplingOverrides, requiresGeneralInstructions: true);
+            int output = Math.Min(profile.MaximumOutputTokens ?? 1024, basic is null ? 512 : 1024);
+            string prompt = ReadingLookupPolicy.Prompt(input, language, profile.ContextWindowTokens, output, basic);
+            await using var engine = new LearningLocalInstructionEngine(config, _runtime);
+            string raw = basic is null
+                ? await engine.GenerateLookupAsync(prompt, output, 24_000, input.Context is not null, lease.Token).ConfigureAwait(false)
+                : await engine.GenerateAsync(prompt, output, 24_000, lease.Token).ConfigureAwait(false);
+            caller.ThrowIfCancellationRequested(); CheckCurrent(profile, lease.Token);
+            lock (_gate) if (_instructionLanguage != language) throw new OperationCanceledException();
+            return parse(raw);
+        }
+        finally { ReleaseInstruction(lease); FacadeDrained(); }
     }
 
     private async Task<ExpressionAssistResult> GenerateExpressionCoreAsync(ExpressionAssistRequest request, Func<string, string> lowercase,

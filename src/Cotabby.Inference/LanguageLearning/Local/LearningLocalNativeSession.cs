@@ -29,6 +29,8 @@ internal interface ILearningLocalNativeSession : IDisposable
     bool IsEndOfGeneration(LLamaToken token);
     byte[] TokenToBytes(LLamaToken token);
     ILearningLocalSampler CreateSampler(LearningModelSamplingValues values);
+    ILearningLocalSampler CreateLookupSampler(LearningModelSamplingValues values, bool hasContext) =>
+        throw new NotSupportedException("Constrained lookup is unavailable.");
 }
 
 internal interface ILearningLocalSampler : IDisposable

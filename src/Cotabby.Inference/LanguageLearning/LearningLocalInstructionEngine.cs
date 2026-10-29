@@ -26,6 +26,12 @@ public sealed class LearningLocalInstructionEngine : IAsyncDisposable
     }
 
     public Task<string> GenerateAsync(string prompt, int output, int maximumBytes, CancellationToken token)
+        => GenerateInternal(prompt, output, maximumBytes, null, token);
+
+    public Task<string> GenerateLookupAsync(string prompt, int output, int maximumBytes, bool hasContext, CancellationToken token)
+        => GenerateInternal(prompt, output, maximumBytes, hasContext, token);
+
+    private Task<string> GenerateInternal(string prompt, int output, int maximumBytes, bool? lookupContext, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(prompt);
         if (output <= 0 || maximumBytes <= 0) throw new ArgumentOutOfRangeException(nameof(output));
@@ -34,11 +40,11 @@ public sealed class LearningLocalInstructionEngine : IAsyncDisposable
         {
             if (_disposal is not null) throw new OperationCanceledException();
             if (_work is not null) throw new InvalidOperationException("An instruction facade owns one request.");
-            return _work = Task.Run(() => GenerateCoreAsync(prompt, output, maximumBytes, token));
+            return _work = Task.Run(() => GenerateCoreAsync(prompt, output, maximumBytes, lookupContext, token));
         }
     }
 
-    private async Task<string> GenerateCoreAsync(string prompt, int output, int maximumBytes, CancellationToken token)
+    private async Task<string> GenerateCoreAsync(string prompt, int output, int maximumBytes, bool? lookupContext, CancellationToken token)
     {
         using var linked = CancellationTokenSource.CreateLinkedTokenSource(token, _lifetime.Token);
         void Check() { token.ThrowIfCancellationRequested(); _lifetime.Token.ThrowIfCancellationRequested(); linked.Token.ThrowIfCancellationRequested(); }
@@ -80,7 +86,9 @@ public sealed class LearningLocalInstructionEngine : IAsyncDisposable
                 }
                 catch (Exception error) { Interlocked.CompareExchange(ref callbackFailure, ExceptionDispatchInfo.Capture(error), null); throw; }
             }
-            var raw = await operation.GenerateAsync(tokens, profile.Sampling, output, CheckDelta, linked.Token).ConfigureAwait(false);
+            var raw = lookupContext is { } context
+                ? await operation.GenerateLookupAsync(tokens, profile.Sampling, output, CheckDelta, context, linked.Token).ConfigureAwait(false)
+                : await operation.GenerateAsync(tokens, profile.Sampling, output, CheckDelta, linked.Token).ConfigureAwait(false);
             callbackFailure?.Throw(); Check();
             if (StrictUtf8.GetByteCount(raw) > maximumBytes) throw new LearningExplanationException(LearningExplanationFailure.InvalidContent);
             return raw;

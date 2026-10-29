@@ -33,7 +33,7 @@ public sealed partial class LearningDictionarySession : IAsyncDisposable
     public event Action<LearningDictionaryState>? StateChanged;
     public LearningDictionaryState State { get { lock (_gate) return _state; } }
 
-    public Task OpenAsync(LearningUnit unit, string documentId, LearningLanguage language, string? speechContext = null,
+    public Task OpenAsync(LearningUnit unit, string documentId, LearningLanguage? language, string? speechContext = null,
         LearningExplanationInput? explanationInput = null)
     {
         ArgumentNullException.ThrowIfNull(unit);
@@ -45,8 +45,8 @@ public sealed partial class LearningDictionarySession : IAsyncDisposable
             _cache.Clear(); _cacheOrder.Clear();
             _state = new LearningDictionaryState { Unit = unit, DocumentId = documentId, Language = language,
                 SpeechContext = speechContext };
-            _unitExplanationInput = ValidUnitInput(unit, language, explanationInput
-                ?? LearningExplanationInputFactory.FromUnscopedUnit(unit, language));
+            _unitExplanationInput = language is { } known ? ValidUnitInput(unit, known, explanationInput
+                ?? LearningExplanationInputFactory.FromUnscopedUnit(unit, known)) : null;
             transition = BeginTargetLocked(resetExplanation: true);
         }
         return ActivateTarget(transition);
@@ -147,7 +147,11 @@ public sealed partial class LearningDictionarySession : IAsyncDisposable
             }
             if (result is null)
             {
-                result = await _provider.LookupAsync(snapshot.Query, snapshot.Language, snapshot.IsExpression, lifetime.Token).ConfigureAwait(false);
+                result = snapshot.Language is { } language
+                    ? await _provider.LookupAsync(snapshot.Query, language, snapshot.IsExpression, lifetime.Token).ConfigureAwait(false)
+                    : _provider is ILearningUnknownDictionaryProviding unknown
+                        ? await unknown.LookupUnknownAsync(snapshot.Query, snapshot.IsExpression, lifetime.Token).ConfigureAwait(false)
+                        : throw new LearningLexicalException(LearningLexicalFailure.TextProviderUnavailable);
                 if (result is null) throw new InvalidOperationException();
                 lock (_gate)
                 {
@@ -226,6 +230,6 @@ public sealed partial class LearningDictionarySession : IAsyncDisposable
                 try { handler(next.State); } catch { /* Presentation callbacks do not own session state. */ }
         }
     }
-    private readonly record struct CacheKey(LearningLanguage Language, bool Expression, string Text);
+    private readonly record struct CacheKey(LearningLanguage? Language, bool Expression, string Text);
     private sealed record Notification(LearningDictionaryState State, Action<LearningDictionaryState>? Handlers);
 }

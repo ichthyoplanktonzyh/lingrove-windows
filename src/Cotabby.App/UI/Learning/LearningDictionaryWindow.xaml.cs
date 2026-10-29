@@ -34,6 +34,9 @@ public partial class LearningDictionaryWindow : Window
     public event Action<Guid>? CloseRequested;
     public event Action<LearningDictionaryPage, Guid>? PageRequested;
     public event Action<Guid, LearningExplanationState>? ExplanationRequested;
+    internal event Action? ReadingMeaningRequested;
+    internal void EnableReadingMeaning() => ReadingMeaningButton.Visibility = Visibility.Visible;
+    private void OnReadingMeaning(object sender, RoutedEventArgs args) => ReadingMeaningRequested?.Invoke();
 
     internal void ShowState(LearningDictionaryState state, ScreenRect anchor, LearningContextExampleTranslation? exampleTranslation = null)
     {

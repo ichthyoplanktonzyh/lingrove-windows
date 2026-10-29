@@ -153,6 +153,55 @@ public sealed class FrozenVocabularyWindowControllerTests(WpfDispatcher dispatch
         }
         finally { tracked.PreviewGate!.TrySetResult(); File.Delete(path); }
     });
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public Task NormalImportCancelStillDrainsLateReaderOrPreviewBeforeShutdown(bool holdPreview) => dispatcher.RunAsync(async () =>
+    {
+        await using var store = new FrozenVocabularyImportStore(FrozenVocabularySQLiteDatabase.CreateMemory());
+        var tracked = new TrackingStore(store) { PreviewGate = holdPreview ? new(TaskCreationOptions.RunContinuationsAsynchronously) : null };
+        var lateReader = new DelayedReader(); string path = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".csv");
+        await File.WriteAllTextAsync(path, "expression,meaning\nbank,shore\n");
+        IVocabularyWordListReader reader = holdPreview ? new WindowsVocabularyWordListReader() : lateReader;
+        var window = new FrozenVocabularyNotebookWindow(tracked, reader, pickFile: () => path, hideOnClose: true); window.Show(); await window.LastOperation!;
+        var done = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        _ = window.Dispatcher.BeginInvoke(async () =>
+        {
+            try
+            {
+                var child = Application.Current.Windows.OfType<VocabularyWordListImportWindow>().Single();
+                await (holdPreview ? tracked.PreviewStarted.Task : lateReader.Started.Task).WaitAsync(TimeSpan.FromSeconds(10));
+                child.Close(); Assert.False(child.IsVisible);
+                // The import modal has returned normally; let its parent resume before shutdown.
+                _ = window.Dispatcher.BeginInvoke(async () =>
+                {
+                    try
+                    {
+                        var retirement = window.RetireAsync(); Assert.False(retirement.IsCompleted); Assert.Equal(2, tracked.Subscriptions); Assert.Equal(1, tracked.Disposals);
+                        if (holdPreview) { Assert.True(tracked.LastPreviewToken.IsCancellationRequested); tracked.PreviewGate!.SetResult(); }
+                        else { Assert.True(lateReader.Token.IsCancellationRequested); lateReader.Gate.SetResult(); }
+                        await retirement.WaitAsync(TimeSpan.FromSeconds(10)); Assert.False(window.Session.Active); Assert.False(child.Session.Active); Assert.Null(child.Session.Preview); Assert.Equal(2, tracked.Disposals); done.SetResult();
+                    }
+                    catch (Exception error) { done.SetException(error); }
+                });
+            }
+            catch (Exception error) { done.SetException(error); }
+        });
+        try
+        {
+            Find<Button>(window, "frozenNotebookImport").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            await done.Task.WaitAsync(TimeSpan.FromSeconds(10)); Assert.Equal(0ul, (await store.ReadAsync()).Revision);
+            if (window.LastOperation is { } operation) await operation;
+        }
+        finally { lateReader.Gate.TrySetResult(); tracked.PreviewGate?.TrySetResult(); File.Delete(path); }
+    });
+    private sealed class DelayedReader : IVocabularyWordListReader
+    {
+        internal readonly TaskCompletionSource Started = new(TaskCreationOptions.RunContinuationsAsynchronously), Gate = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        internal CancellationToken Token;
+        public async Task<VocabularyWordList> ReadAsync(string path, CancellationToken token)
+        { Token = token; Started.TrySetResult(); await Gate.Task; return new(VocabularyWordListFormat.Text, [new(1, ["bank"])]); }
+    }
     private static async Task Until(Func<bool> predicate)
     { var deadline = DateTime.UtcNow.AddSeconds(10); while (!predicate()) { if (DateTime.UtcNow >= deadline) throw new TimeoutException(); await Task.Delay(10); } }
     private sealed class TrackingStore(IVocabularyEntryImportStore inner) : IVocabularyEntryImportStore

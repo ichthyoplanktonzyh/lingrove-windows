@@ -22,6 +22,7 @@ internal sealed class VocabularyWordListImportWindow : Window
     private readonly Button _import = new() { Name = "vocabularyConfirmImport", Content = "Import", IsDefault = true, MinWidth = 90 }, _cancel = new() { Content = "Cancel", IsCancel = true, MinWidth = 90 };
     private VocabularyWordList? _renderedTable;
     private bool _retiring;
+    private TaskCompletionSource? _retirement;
     internal VocabularyInputResult? Result { get; private set; }
     internal Task? LastOperation { get; private set; }
     internal VocabularyEntryImportSession Session => _session;
@@ -42,13 +43,26 @@ internal sealed class VocabularyWordListImportWindow : Window
     }
     private void OnClosing(object? sender, CancelEventArgs e)
     { if (_session.Saving) { e.Cancel = true; return; } _session.Cancel(); }
-    internal async Task RetireAsync()
+    internal Task RetireAsync()
     {
-        Dispatcher.VerifyAccess(); _retiring = true; Refresh();
-        if (_session.Saving && LastOperation is { } operation) await operation;
-        if (IsVisible) Close();
-        await _session.DrainAsync();
-        if (LastOperation is { } pending) await pending;
+        Dispatcher.VerifyAccess(); if (_retirement is not null) return _retirement.Task;
+        var completion = _retirement = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        _ = CompleteRetirementAsync(completion); return completion.Task;
+    }
+    private async Task CompleteRetirementAsync(TaskCompletionSource completion)
+    {
+        Exception? failure = null;
+        _retiring = true;
+        try { Refresh(); } catch (Exception error) { failure = error; }
+        try { if (_session.Saving && LastOperation is { } operation) await operation; }
+        catch (Exception error) { failure ??= error; }
+        try { if (IsVisible) Close(); }
+        catch (Exception error) { failure ??= error; }
+        try { await _session.DrainAsync(); }
+        catch (Exception error) { failure ??= error; }
+        try { if (LastOperation is { } pending) await pending; }
+        catch (Exception error) { failure ??= error; }
+        if (failure is null) completion.TrySetResult(); else completion.TrySetException(failure);
     }
     private async Task CommitAsync()
     {

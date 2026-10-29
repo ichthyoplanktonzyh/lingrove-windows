@@ -19,6 +19,7 @@ internal sealed class VocabularyEntryCreationWindow : Window
     private readonly Button _save = new() { Name = "vocabularyCreateEntry", Content = "Save", IsDefault = true, MinWidth = 90 }, _cancel = new() { Content = "Cancel", IsCancel = true, MinWidth = 90 };
     private readonly TextBlock _failure = new() { Foreground = Brushes.Firebrick, TextWrapping = TextWrapping.Wrap };
     private bool _saving, _retiring;
+    private TaskCompletionSource? _retirement;
     internal VocabularyInputResult? Result { get; private set; }
     internal Task? LastOperation { get; private set; }
     internal VocabularyEntryCreationWindow(IVocabularyEntryInputOwner owner, LearningLanguage language = LearningLanguage.English)
@@ -42,11 +43,22 @@ internal sealed class VocabularyEntryCreationWindow : Window
     }
     private void Update() { _fields.IsEnabled = !_saving && !_retiring; _cancel.IsEnabled = !_saving && !_retiring; _save.IsEnabled = !_saving && !_retiring && !string.IsNullOrWhiteSpace(_expression.Text); }
     private void OnClosing(object? sender, CancelEventArgs e) { if (_saving) e.Cancel = true; }
-    internal async Task RetireAsync()
+    internal Task RetireAsync()
     {
-        Dispatcher.VerifyAccess(); _retiring = true; Update();
-        if (LastOperation is { } operation) await operation;
-        if (IsVisible) Close();
+        Dispatcher.VerifyAccess(); if (_retirement is not null) return _retirement.Task;
+        var completion = _retirement = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        _ = CompleteRetirementAsync(completion); return completion.Task;
+    }
+    private async Task CompleteRetirementAsync(TaskCompletionSource completion)
+    {
+        Exception? failure = null;
+        _retiring = true;
+        try { Update(); } catch (Exception error) { failure = error; }
+        try { if (LastOperation is { } operation) await operation; }
+        catch (Exception error) { failure ??= error; }
+        try { if (IsVisible) Close(); }
+        catch (Exception error) { failure ??= error; }
+        if (failure is null) completion.TrySetResult(); else completion.TrySetException(failure);
     }
     private async Task SaveAsync()
     {

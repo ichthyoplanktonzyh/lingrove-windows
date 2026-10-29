@@ -127,7 +127,7 @@ internal sealed class FrozenVocabularyNotebookWindow : Window
         try
         {
             var window = new VocabularyEntryCreationWindow(_owner, _session.Language ?? LearningLanguage.English) { Owner = this }; _inputWindow = window;
-            window.ShowDialog(); _inputWindow = null;
+            try { window.ShowDialog(); } finally { await window.RetireAsync(); _inputWindow = null; }
             if (!_retiring && window.Result is { } result) { _expanded.Add(result.Selection?.EntryId ?? Guid.Empty); await _session.RevealAsync(result); }
             if (!_retiring && _pendingShow is { } selection) { _pendingShow = null; _expanded.Add(selection.EntryId); await _session.RevealSelectionAsync(selection); }
         }
@@ -143,7 +143,7 @@ internal sealed class FrozenVocabularyNotebookWindow : Window
             if (!_retiring && path is not null)
             {
                 var window = new VocabularyWordListImportWindow(_owner, _reader, path, _session.Language ?? LearningLanguage.English) { Owner = this }; _inputWindow = window;
-                window.ShowDialog(); _inputWindow = null;
+                try { window.ShowDialog(); } finally { await window.RetireAsync(); _inputWindow = null; }
                 if (!_retiring && window.Result is { } result) { _expanded.Add(result.Selection?.EntryId ?? Guid.Empty); await _session.RevealAsync(result); }
             }
             if (!_retiring && _pendingShow is { } selection) { _pendingShow = null; _expanded.Add(selection.EntryId); await _session.RevealSelectionAsync(selection); }

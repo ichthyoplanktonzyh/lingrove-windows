@@ -41,10 +41,11 @@ and retains its slot; it is not reported in the UI. Permanently pending SDK work
 its slot and profile. This bound is a Windows adapter constraint, not a Mac product rule.
 
 On the Windows development host, the focused Core suite passed 31 tests, including adversarial HTML
-and cancellation. The serialized WPF wrapper passed 23 focused tests, including synthetic MDX/MDD
+and cancellation. The serialized WPF wrapper passed 28 focused tests, including synthetic MDX/MDD
 import, local reparse refusal, cancellation and drain, settings, existing cards, WebView2 resource
 ownership and delayed environment/controller retirement. The held initialization tests inject barriers
-before SDK calls; they do not reproduce an SDK call that itself hangs. These are component checks, not
+before SDK calls; they do not reproduce an SDK call that itself hangs. Injected cleanup effects cover
+denied access, I/O failure, path replacement and confirmed absence. These are component checks, not
 user acceptance.
 
 At the 3b reference, `LanguageLearningSettings.resetToDefaults()` calls `LearningDictionarySettings.reset()`,

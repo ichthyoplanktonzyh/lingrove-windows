@@ -1,3 +1,4 @@
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using Cotabby.App.UI.Learning;
@@ -9,6 +10,48 @@ namespace Cotabby.App.Wpf.Tests;
 [Collection("WPF views")]
 public sealed class DictionaryArticleNativeTests(WpfDispatcher dispatcher)
 {
+    [Fact]
+    public Task SanitizerFailureAndRetryDoNotLeakAdmission() => dispatcher.RunAsync(async () =>
+    {
+        var slots = new DictionaryArticleAdmission(); int attempts = 0;
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var view = new DictionaryArticleView(environmentBarrier: () => release.Task,
+            sanitize: value => { if (++attempts == 1) throw new InvalidDataException(); return value; }, slots: slots);
+        var article = new LearningDictionaryResult.Article("fixture", "", "Fixture", Guid.NewGuid());
+        try
+        {
+            await view.ShowAsync(article, (_, _) => Task.FromResult<DictionaryResource?>(null), () => true, CancellationToken.None);
+            Task retry = view.ShowAsync(article, (_, _) => Task.FromResult<DictionaryResource?>(null), () => true, CancellationToken.None);
+            Assert.Equal(2, attempts); await view.DisposeAsync(); await retry; release.SetResult(); await view.ProfileCleanup;
+            using var one = slots.TryAcquire(); using var two = slots.TryAcquire(); Assert.NotNull(one); Assert.NotNull(two);
+        }
+        finally { release.TrySetResult(); await view.DisposeAsync(); }
+    });
+
+    [Theory]
+    [InlineData("denied")]
+    [InlineData("io")]
+    [InlineData("replacement")]
+    [InlineData("missing")]
+    public Task CleanupRequiresConfirmedAbsence(string mode) => dispatcher.RunAsync(async () =>
+    {
+        var slots = new DictionaryArticleAdmission();
+        var effects = new DictionaryProfileEffects(
+            _ => { if (mode == "denied") throw new UnauthorizedAccessException(); if (mode == "io") throw new IOException(); throw new DirectoryNotFoundException(); },
+            _ => mode == "replacement" ? FileAttributes.Normal : throw new FileNotFoundException(), () => Task.CompletedTask);
+        var view = new DictionaryArticleView(sanitize: _ => throw new InvalidDataException(), slots: slots, profileEffects: effects);
+        try
+        {
+            await view.ShowAsync(new("fixture", "", "Fixture", Guid.NewGuid()), (_, _) => Task.FromResult<DictionaryResource?>(null), () => true, CancellationToken.None);
+            await view.DisposeAsync();
+            if (mode == "missing") await view.ProfileCleanup;
+            else await Assert.ThrowsAnyAsync<Exception>(() => view.ProfileCleanup);
+            using var one = slots.TryAcquire(); using var two = slots.TryAcquire();
+            Assert.NotNull(one); if (mode == "missing") Assert.NotNull(two); else Assert.Null(two);
+        }
+        finally { await view.DisposeAsync(); }
+    });
+
     [Fact]
     public Task HungInitializationsLimitNewProfilesUntilLateCleanupAndRetry() => dispatcher.RunAsync(async () =>
     {
@@ -26,7 +69,7 @@ public sealed class DictionaryArticleNativeTests(WpfDispatcher dispatcher)
             Assert.Equal(Visibility.Visible, retry.Visibility); Assert.False(System.IO.Directory.Exists(views[2].ProfilePath));
             Assert.DoesNotContain("private synthetic", Assert.Single(views[2].Children.OfType<TextBlock>()).Text);
             await views[0].DisposeAsync(); await one; Assert.False(views[0].ProfileCleanup.IsCompleted);
-            Assert.Null(DictionaryArticleAdmission.TryAcquire());
+            Assert.Null(DictionaryArticleAdmission.Shared.TryAcquire());
             first.SetResult(); await views[0].ProfileCleanup.WaitAsync(TimeSpan.FromSeconds(15));
             retry.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             Assert.True(System.IO.Directory.Exists(views[2].ProfilePath));

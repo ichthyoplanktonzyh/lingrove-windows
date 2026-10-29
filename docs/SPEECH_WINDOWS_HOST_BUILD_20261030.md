@@ -11,14 +11,16 @@ The independent source at `D:\LingroveNativeBuild\llama.cpp` is pinned to
 The helper/platform source is unchanged between the original 43b reference and current Mac
 `3b53402f2cbc196b0398d133177fd80006d165b2`; historical correspondence guards retain their pin.
 
-Executed with the full paths of the installed CMake and bundled Python:
+Executed with the installed CMake and bundled Python:
 
 ```powershell
-python scripts/prepare-speech-runtime.py --source-dir D:\LingroveNativeBuild\llama.cpp
-cmake -S native/tts -B D:\LingroveNativeBuild\cmake -G "Visual Studio 17 2022" -A x64 -DLLAMA_SOURCE_DIR=D:/LingroveNativeBuild/llama.cpp -DPython3_EXECUTABLE=<bundled-python>
-python scripts/check-speech-vs-project.py --build-dir D:\LingroveNativeBuild\cmake --source-dir D:\LingroveNativeBuild\llama.cpp
-cmake --build D:\LingroveNativeBuild\cmake --config Release --target lingrove-tts-helper lingrove-tts-platform-check --parallel 2 -- /warnAsError:MSB8027
-python scripts/smoke-native-speech.py --helper D:\LingroveNativeBuild\cmake\Release\lingrove-tts-helper.exe --platform D:\LingroveNativeBuild\cmake\Release\lingrove-tts-platform-check.exe
+$nativePython = 'C:\Users\Administrator\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe'
+$nativeCmake = 'C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe'
+& $nativePython scripts/prepare-speech-runtime.py --source-dir D:\LingroveNativeBuild\llama.cpp
+& $nativeCmake -S native/tts -B D:\LingroveNativeBuild\cmake -G 'Visual Studio 17 2022' -A x64 -DLLAMA_SOURCE_DIR=D:/LingroveNativeBuild/llama.cpp "-DPython3_EXECUTABLE=$nativePython"
+& $nativePython scripts/check-speech-vs-project.py --build-dir D:\LingroveNativeBuild\cmake --source-dir D:\LingroveNativeBuild\llama.cpp
+& $nativeCmake --build D:\LingroveNativeBuild\cmake --config Release --target lingrove-tts-helper lingrove-tts-platform-check --parallel 2 -- /warnAsError:MSB8027
+& $nativePython scripts/smoke-native-speech.py --helper D:\LingroveNativeBuild\cmake\Release\lingrove-tts-helper.exe --platform D:\LingroveNativeBuild\cmake\Release\lingrove-tts-platform-check.exe
 ```
 
 Preparation and the Visual Studio source-ownership checker passed. Both real CPU targets built;

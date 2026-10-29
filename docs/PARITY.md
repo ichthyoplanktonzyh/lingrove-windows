@@ -40,7 +40,11 @@ The [3b meaning/classification upgrade](VOCABULARY_MEANING_CLASSIFICATION_3B.md)
 The [canonical graph](VOCABULARY_CANONICAL_GRAPH_3B.md) connects entry/sense and meaning/category
 navigation to that same window and Store. [Canonical image operations](VOCABULARY_CANONICAL_ENTRY_EDITOR_UI.md)
 and [full backup/restore](VOCABULARY_CANONICAL_BACKUP.md) now use its media and transaction owner.
-Learning-material export, remaining media variants and speech activation remain incomplete.
+The [current export flow](VOCABULARY_CANONICAL_EXPORT.md),
+[notebook learning rows](CANONICAL_NOTEBOOK_LEARNING.md),
+[shared speech composition](SPEECH_PRODUCTION_3B.md) and
+[review audio](ANKI_CANONICAL_REVIEW_AUDIO.md) have their own scoped integration records.
+Remaining media variants, broader reading sources and physical acceptance stay incomplete.
 This is an implementation
 checkpoint with scoped automated/render evidence, not full native desktop parity.
 

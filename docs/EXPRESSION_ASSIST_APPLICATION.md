@@ -53,3 +53,14 @@ The recovery notice is owned by this application adapter, remains nonactivating,
 or closed on new sessions, relevant settings and shutdown. Full Copy reports success then closes
 its own notice after 900 ms. As in the frozen environment's `learningAvailability` closure,
 integrated terminals remain excluded even when autocomplete is allowed there.
+
+Independent reviews accepted the instruction/event/native owners and the final application,
+notification and recovery-notice repairs. On Windows x64 10.0.19045, .NET SDK 10.0.403, scoped
+application source `4d7a18f` executed `dotnet build Cotabby.sln -c Release --no-restore --verbosity quiet`
+with zero warnings/errors. Compiled WPF filter
+`ExpressionAssist|ExpressionEditor|LearningPreviewInlineExclusionTests` passed 61/61 using
+Release, `--no-build --no-restore`, telemetry and clipboard reads disabled. The combined integration
+tree also passed full Core 4814/4814, portable App 1242/1242 and noninteractive Inference 641/641;
+that broader tree includes the separately scoped canonical entry editor. A process-test-only marker
+publication race was repaired and its five Windows process checks rerun before the full Inference
+pass. These checks and independent source review do not establish the native acceptance above.

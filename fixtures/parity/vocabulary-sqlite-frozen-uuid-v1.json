@@ -1,0 +1,7 @@
+{
+  "macReference": "35b7fbe5c788c5524936ade1dfb7c89a3a285b04",
+  "cases": [
+    { "id": "collection-uuid", "table": "collection_interpretations", "input": "\"00000000-0000-0000-0000-0000000000ab\"", "expected": "00000000-0000-0000-0000-0000000000AB" },
+    { "id": "evidence-uuid", "table": "mapping_evidence", "input": "\"12345678-ABCD-4321-9abc-001122334455\"", "expected": "12345678-ABCD-4321-9ABC-001122334455" }
+  ]
+}

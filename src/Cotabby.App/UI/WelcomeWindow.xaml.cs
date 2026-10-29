@@ -4,6 +4,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using Cotabby.App.Hosting;
+using Cotabby.App.Localization;
 using Cotabby.App.Settings;
 using Cotabby.App.UI.Controls;
 using Cotabby.App.UI.Settings.Panes;
@@ -28,6 +29,7 @@ public partial class WelcomeWindow : Window
     private int _step;
     private string _templateModelId;
     private bool _templateChosen, _recommendedRoute = true;
+    private readonly bool _resumeFirstRun;
 
     // Background model preparation. The sequence number lets a run that was superseded,
     // because the user went back and picked another starting point, drop its late results.
@@ -41,17 +43,29 @@ public partial class WelcomeWindow : Window
     private readonly CompletionStatusGate _statusGate = new();
     private CompletionStatusGate.Token? _modelOperation;
 
-    public WelcomeWindow(AppHost host)
+    public WelcomeWindow(AppHost host, bool resumeFirstRun = false)
     {
-        _host = host;
+        _host = host; _resumeFirstRun = resumeFirstRun;
         InitializeComponent();
+        InterfaceText.ApplyDirection(this);
+        InterfaceText.TranslateInitialTree(this);
+        var showcase = new TabControl { Width = 360, Margin = new Thickness(0, 20, 0, 0) };
+        showcase.Items.Add(new TabItem { Header = InterfaceText.Get("Autocomplete"), Content = new WelcomeCompletionDemo() });
+        showcase.Items.Add(new TabItem { Header = InterfaceText.Get("Language Learning"), Content = new TextBlock
+        { Text = "请随时告诉我项目的最新进展。\nPlease keep me posted on the project's progress.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(12) } });
+        StepWelcome.Children.Add(showcase);
         _host.SettingsApplied += HostSettingsApplied;
         Closed += (_, _) => { _host.SettingsApplied -= HostSettingsApplied; _statusGate.Invalidate(); _modelCts?.Cancel(); };
         WindowTheme.Follow(this);
 
-        _steps = [StepWelcome, StepRecommended, StepTemplates, StepProfile, StepKeys, StepDone];
+        var permissions = new StackPanel { VerticalAlignment = VerticalAlignment.Center, Visibility = Visibility.Collapsed };
+        permissions.Children.Add(new TextBlock { Text = InterfaceText.Get("Permissions"), FontSize = 20, FontWeight = FontWeights.SemiBold });
+        permissions.Children.Add(new TextBlock { Text = "Use Lingrove in a compatible editor. If that editor runs as an administrator, Lingrove may need the same privilege level.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 12, 0, 0) });
+        permissions.Children.Add(new TextBlock { Text = "Text stays local unless you explicitly configure and use an endpoint.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 12, 0, 0) });
+        ((Panel)StepWelcome.Parent).Children.Add(permissions);
+        _steps = [StepWelcome, permissions, StepRecommended, StepTemplates, StepProfile, StepKeys, StepDone];
         var recommendation = new RecommendedSetupView(host);
-        recommendation.ManualRequested += () => { _recommendedRoute = false; ShowStep(2); };
+        recommendation.ManualRequested += () => { _recommendedRoute = false; ShowStep(3); };
         recommendation.Applied += () => _recommendedRoute = true;
         StepRecommended.Content = recommendation;
         _templates = [(QuickCard, QuickBadge), (EverydayCard, EverydayBadge), (PowerCard, PowerBadge)];
@@ -62,6 +76,12 @@ public partial class WelcomeWindow : Window
         // Seeding from the current settings makes a second run from the tray non-destructive.
         var settings = _host.Settings;
         NameBox.Text = settings.UserName;
+        NameBox.LostKeyboardFocus += (_, _) =>
+        {
+            if (!_resumeFirstRun || _host.Settings.UserName == NameBox.Text.Trim()) return;
+            _host.Settings.UserName = NameBox.Text.Trim();
+            _host.SettingsStore.Save(_host.Settings);
+        };
         LanguagesHost.Content = new LanguageEditor(host);
         ModeWord.IsChecked = settings.AcceptanceMode == AcceptanceGranularity.Word;
         ModePhrase.IsChecked = settings.AcceptanceMode == AcceptanceGranularity.Phrase;
@@ -70,16 +90,18 @@ public partial class WelcomeWindow : Window
             : TemplateId(EverydayCard);
         UpdateTemplateVisuals();
 
-        ShowStep(0);
+        var progress = settings.OnboardingProgress;
+        if (_resumeFirstRun) _recommendedRoute = !progress.Manual;
+        ShowStep(_resumeFirstRun ? progress.Step : 0);
     }
 
-    public static void ShowFor(AppHost host) => new WelcomeWindow(host).Show();
+    public static void ShowFor(AppHost host, bool resumeFirstRun = false) => new WelcomeWindow(host, resumeFirstRun).Show();
 
     // ---------- Step navigation ----------
 
     private void BuildCapsules()
     {
-        foreach (var _ in _steps)
+        for (int i = 0; i < 4; i++)
         {
             var capsule = new Border { Height = 6, CornerRadius = new CornerRadius(3), Margin = new Thickness(3, 0, 3, 0) };
             _capsules.Add(capsule);
@@ -89,20 +111,34 @@ public partial class WelcomeWindow : Window
 
     private void ShowStep(int index)
     {
-        _step = Math.Clamp(index, 0, _steps.Length - 1);
-        for (int i = 0; i < _steps.Length; i++)
+        if (_resumeFirstRun && _steps[_step] == StepProfile && index != _step)
         {
-            _steps[i].Visibility = i == _step ? Visibility.Visible : Visibility.Collapsed;
-            _capsules[i].Width = i == _step ? 28 : 18;
-            _capsules[i].SetResourceReference(Border.BackgroundProperty, i <= _step ? "AccentBrush" : "TrackOff");
+            _host.Settings.UserName = NameBox.Text.Trim();
+            _host.SettingsStore.Save(_host.Settings);
+        }
+        _step = Math.Clamp(index, 0, _steps.Length - 1);
+        if (_resumeFirstRun)
+        {
+            if (_host.Settings.RecordOnboardingStep(_step, !_recommendedRoute))
+            {
+                _host.SettingsStore.Save(_host.Settings);
+            }
+        }
+        for (int i = 0; i < _steps.Length; i++) _steps[i].Visibility = i == _step ? Visibility.Visible : Visibility.Collapsed;
+        int progressIndex = _step switch { 1 => 1, 2 or 3 => 2, 4 => 3, 5 => 4, _ => 0 };
+        CapsulePanel.Visibility = StepCaption.Visibility = progressIndex == 0 ? Visibility.Hidden : Visibility.Visible;
+        for (int i = 0; i < _capsules.Count; i++)
+        {
+            _capsules[i].Width = i + 1 == progressIndex ? 28 : 18;
+            _capsules[i].SetResourceReference(Border.BackgroundProperty, i + 1 <= progressIndex ? "AccentBrush" : "TrackOff");
         }
 
         var step = _steps[_step];
-        StepCaption.Text = $"Step {_step + 1} of {_steps.Length}";
+        StepCaption.Text = $"Step {progressIndex} of 4";
         ContinueButton.Content =
-            step == StepWelcome ? "Get Started"
-            : step == StepDone ? "Start Using Cotabby"
-            : "Continue";
+            step == StepWelcome ? InterfaceText.Get("Get Started")
+            : step == StepDone ? InterfaceText.Get("Start Using Cotabby")
+            : InterfaceText.Get("Continue");
         // Hidden rather than collapsed so the footer height never jumps between steps.
         BackButton.Visibility = step == StepWelcome ? Visibility.Hidden : Visibility.Visible;
         SkipButton.Visibility = step == StepDone ? Visibility.Hidden : Visibility.Visible;
@@ -115,13 +151,13 @@ public partial class WelcomeWindow : Window
         }
     }
 
-    private void OnBack(object sender, RoutedEventArgs e) => ShowStep(_steps[_step] == StepProfile && _recommendedRoute ? 1 : _step - 1);
+    private void OnBack(object sender, RoutedEventArgs e) => ShowStep(_steps[_step] == StepProfile && _recommendedRoute ? 2 : _step - 1);
 
     private void OnContinue(object sender, RoutedEventArgs e)
     {
         if (_steps[_step] == StepTemplates && _templateChosen) CommitTemplate();
         if (_steps[_step] == StepDone) Finish();
-        else if (_steps[_step] == StepRecommended) { _recommendedRoute = true; ShowStep(3); }
+        else if (_steps[_step] == StepRecommended) { _recommendedRoute = true; ShowStep(4); }
         else ShowStep(_step + 1);
     }
 
@@ -134,6 +170,7 @@ public partial class WelcomeWindow : Window
         settings.UserName = NameBox.Text.Trim();
         if (settings.Languages.Count == 0) settings.Languages = [.. LanguageCatalog.DefaultLanguages];
         settings.ShowFirstRunWelcome = false;
+        settings.OnboardingProgressValue = null;
         _host.PersistSettings();
         // A model download that is still running continues on the host after this window closes.
         Close();

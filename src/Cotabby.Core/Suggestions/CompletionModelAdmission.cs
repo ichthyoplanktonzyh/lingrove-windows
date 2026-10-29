@@ -1,3 +1,6 @@
+using System.Diagnostics;
+using Cotabby.Core.Runtime.Metrics;
+
 namespace Cotabby.Core.Suggestions;
 
 /// <summary>
@@ -20,6 +23,9 @@ public sealed class CompletionModelAdmission : ISuggestionEngine, IAsyncDisposab
     private int _preparations;
     private CancellationTokenSource _epochCancellation = new();
     private Task? _disposal;
+    /// <summary>Worker-thread notification with metadata only. Observers must marshal and must
+    /// never affect completion admission or generation.</summary>
+    public event Action<CompletionObservation>? Observed;
 
     public CompletionModelAdmission(ISuggestionEngine engine) => _engine = engine ?? throw new ArgumentNullException(nameof(engine));
 
@@ -127,7 +133,21 @@ public sealed class CompletionModelAdmission : ISuggestionEngine, IAsyncDisposab
                 try
                 {
                     if (!IsCurrent(ticket) || !IsReady) return "";
-                    var result = await _engine.GenerateAsync(request, token).ConfigureAwait(false);
+                    var started = Stopwatch.GetTimestamp(); var timestamp = DateTimeOffset.UtcNow;
+                    var outcome = ModelRequestOutcome.Failed;
+                    string result;
+                    try
+                    {
+                        result = await _engine.GenerateAsync(request, token).ConfigureAwait(false);
+                        outcome = token.IsCancellationRequested || !IsCurrent(ticket) ? ModelRequestOutcome.Cancelled : ModelRequestOutcome.Completed;
+                    }
+                    catch (OperationCanceledException) { outcome = ModelRequestOutcome.Cancelled; throw; }
+                    finally
+                    {
+                        var observation = new CompletionObservation(request.RequestId, ticket.ModelId!, timestamp,
+                            Math.Max(0, (long)Math.Round(Stopwatch.GetElapsedTime(started).TotalMilliseconds, MidpointRounding.AwayFromZero)), outcome);
+                        try { Observed?.Invoke(observation); } catch { /* Diagnostics cannot change generation. */ }
+                    }
                     return IsCurrent(ticket) && IsReady && !token.IsCancellationRequested ? result : "";
                 }
                 finally { _exclusive.Release(); }

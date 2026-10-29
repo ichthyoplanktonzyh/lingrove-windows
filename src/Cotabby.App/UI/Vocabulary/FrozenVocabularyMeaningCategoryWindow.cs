@@ -1,3 +1,4 @@
+using Cotabby.App.Localization;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
@@ -23,9 +24,9 @@ internal sealed class FrozenVocabularyMeaningCategoryWindow : FrozenVocabularyCl
     {
         _reader = reader; _node = node; _languages = Array.AsReadOnly(languages.ToArray()); _selected = baseline.Memberships.Where(m => m.NodeId == node).Select(m => m.CategoryId).ToHashSet();
         _query.Tag = "Search categories"; VocabularyNotebookTheme.Input(_query); System.Windows.Automation.AutomationProperties.SetName(_query, "Search categories");
-        var create = new Button { Name = "membershipNewCategory", Content = "New category", Margin = new Thickness(10, 0, 0, 0), Padding = new Thickness(10, 5, 10, 5) }; VocabularyNotebookTheme.Button(create); create.Click += (_, _) => _ = CreateAsync();
+        var create = new Button { Name = "membershipNewCategory", Content = InterfaceText.Get("New category"), Margin = new Thickness(10, 0, 0, 0), Padding = new Thickness(10, 5, 10, 5) }; VocabularyNotebookTheme.Button(create); create.Click += (_, _) => _ = CreateAsync();
         var row = new DockPanel { Margin = new Thickness(0, 0, 0, 14) }; DockPanel.SetDock(create, Dock.Right); row.Children.Add(create); row.Children.Add(_query); Fields.Children.Add(row);
-        Fields.Children.Add(VocabularyInputControls.Heading("Content meanings")); Fields.Children.Add(_content); Fields.Children.Add(VocabularyInputControls.Heading("Communicative functions")); Fields.Children.Add(_functions);
+        Fields.Children.Add(VocabularyInputControls.Heading(InterfaceText.Get("Content meanings"))); Fields.Children.Add(_content); Fields.Children.Add(VocabularyInputControls.Heading(InterfaceText.Get("Communicative functions"))); Fields.Children.Add(_functions);
         System.Windows.Automation.AutomationProperties.SetName(_content, "Content meanings"); System.Windows.Automation.AutomationProperties.SetName(_functions, "Communicative functions");
         foreach (var list in new[] { _content, _functions }) { list.ItemTemplate = FrozenVocabularyCategoryChoice.Template(); list.Margin = new Thickness(0, 0, 0, 12); VirtualizingPanel.SetIsVirtualizing(list, true); VirtualizingPanel.SetVirtualizationMode(list, VirtualizationMode.Recycling); VocabularyNotebookTheme.Brush(list, Control.BackgroundProperty, "CardBg"); VocabularyNotebookTheme.Brush(list, Control.ForegroundProperty, "TextPrimary"); VocabularyNotebookTheme.Brush(list, Control.BorderBrushProperty, "CardBorder"); }
         _query.TextChanged += (_, _) => Render(); Render(); UpdateAdmission();

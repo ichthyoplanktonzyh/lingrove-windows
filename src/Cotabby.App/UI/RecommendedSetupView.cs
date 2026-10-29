@@ -1,3 +1,4 @@
+using Cotabby.App.Localization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -15,7 +16,7 @@ internal sealed class RecommendedSetupView : UserControl
     private readonly RecommendedSetupController _owner;
     private readonly Func<AppSettings> _settings;
     private readonly TextBlock _completion = new(), _translation = new(), _explanation = new(), _endpoint = new(), _size = new();
-    private readonly Button _apply = new() { Content = "Use recommended setup", Padding = new Thickness(12, 6, 12, 6) };
+    private readonly Button _apply = new() { Content = InterfaceText.Get("Use recommended setup"), Padding = new Thickness(12, 6, 12, 6) };
     private readonly Button _cancel = new() { Content = "Cancel downloads", Padding = new Thickness(12, 6, 12, 6), Margin = new Thickness(8, 0, 0, 0) };
     internal event Action? ManualRequested;
     internal event Action? Applied;
@@ -25,7 +26,7 @@ internal sealed class RecommendedSetupView : UserControl
         _owner = owner; _settings = settings;
         Background = SystemColors.WindowBrush; Foreground = SystemColors.WindowTextBrush;
         var body = new StackPanel { Margin = new Thickness(4, 0, 4, 0) };
-        body.Children.Add(new TextBlock { Text = "Recommended setup", FontSize = 20, FontWeight = FontWeights.SemiBold });
+        body.Children.Add(new TextBlock { Text = InterfaceText.Get("Recommended setup"), FontSize = 20, FontWeight = FontWeights.SemiBold });
         body.Children.Add(new TextBlock { Text = "Set up local autocomplete, sentence translation and explanations together. Existing models, languages and shortcuts are kept.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 12), Foreground = SystemColors.GrayTextBrush });
         AddRow(body, "Autocomplete", _completion); AddRow(body, "Translation", _translation); AddRow(body, "AI explanation", _explanation);
         AddRow(body, "Read aloud", new TextBlock { Text = "Not available in this Windows preview", Foreground = SystemColors.GrayTextBrush });
@@ -35,7 +36,7 @@ internal sealed class RecommendedSetupView : UserControl
         var actions = new WrapPanel { Margin = new Thickness(0, 8, 0, 0) };
         _apply.Click += (_, _) => { if (!owner.NeedsApplication) owner.Retry(); else { owner.Apply(); Applied?.Invoke(); } };
         _cancel.Click += (_, _) => owner.Cancel();
-        var manual = new Button { Content = "Configure manually", Padding = new Thickness(12, 6, 12, 6), Margin = new Thickness(8, 0, 0, 0) };
+        var manual = new Button { Content = InterfaceText.Get("Configure manually"), Padding = new Thickness(12, 6, 12, 6), Margin = new Thickness(8, 0, 0, 0) };
         manual.Click += (_, _) => { owner.UseManualConfiguration(); ManualRequested?.Invoke(); };
         actions.Children.Add(_apply); actions.Children.Add(_cancel); actions.Children.Add(manual); body.Children.Add(actions);
         Content = new ScrollViewer { Content = body, VerticalScrollBarVisibility = ScrollBarVisibility.Auto, HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled };

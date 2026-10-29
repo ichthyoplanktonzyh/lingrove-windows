@@ -1,3 +1,4 @@
+using Cotabby.App.Localization;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Automation;
@@ -36,7 +37,7 @@ internal sealed class FrozenVocabularyEntryEditorWindow : Window
     private readonly TextBox _expression = new() { Name = "canonicalEditExpression" }, _dictionary = new(), _meaning = new(), _note = new(), _tags = new();
     private readonly StackPanel _form = new(), _blocks = new(), _examples = new();
     private readonly TextBlock _failure = VocabularyNotebookTheme.Brush(new TextBlock { TextWrapping = TextWrapping.Wrap }, TextBlock.ForegroundProperty, "OrangeBrush");
-    private readonly Button _save = new() { Name = "canonicalEditSave", Content = "Save", IsDefault = true, MinWidth = 90 }, _cancel = new() { Content = "Cancel", IsCancel = true, MinWidth = 90 }, _addText = new() { Content = "Add text" }, _addImage = new() { Content = "Add image" }, _addExample = new() { Content = "Add example" }, _paste = new() { Content = "Paste image" };
+    private readonly Button _save = new() { Name = "canonicalEditSave", Content = InterfaceText.Get("Save"), IsDefault = true, MinWidth = 90 }, _cancel = new() { Content = InterfaceText.Get("Cancel"), IsCancel = true, MinWidth = 90 }, _addText = new() { Content = InterfaceText.Get("Add text") }, _addImage = new() { Content = InterfaceText.Get("Add image") }, _addExample = new() { Content = InterfaceText.Get("Add example") }, _paste = new() { Content = InterfaceText.Get("Paste image") };
     private bool _saving, _retiring, _allowClose, _importing, _rangesPending, _rangeFailed;
     private long _rangeEpoch;
     private readonly Dictionary<Guid, (Guid Id, string Text, string Expression, string Form)> _rangeInputs = [];
@@ -70,7 +71,7 @@ internal sealed class FrozenVocabularyEntryEditorWindow : Window
                 suggestions.Children.Add(Action("+ " + tag, () => { _tags.Text = string.IsNullOrWhiteSpace(_tags.Text) ? tag : _tags.Text.TrimEnd(' ', ',', '，') + ", " + tag; }));
         }
         _tags.TextChanged += (_, _) => RefreshTags(); RefreshTags();
-        _form.Children.Add(_explanation); _explanation.Children.Add(VocabularyInputControls.Heading("Sense explanation")); _explanation.Children.Add(_blocks);
+        _form.Children.Add(_explanation); _explanation.Children.Add(VocabularyInputControls.Heading(InterfaceText.Get("Sense explanation"))); _explanation.Children.Add(_blocks);
         var blockActions = new WrapPanel(); foreach (var b in new[] { _addText, _addImage }) { VocabularyNotebookTheme.Button(b); b.Margin = new Thickness(0, 0, 8, 8); blockActions.Children.Add(b); } _explanation.Children.Add(blockActions);
         VocabularyNotebookTheme.Button(_paste); _paste.Margin = new Thickness(0, 0, 8, 8); blockActions.Children.Add(_paste); _paste.Click += (_, _) => PasteImage();
         CommandManager.AddPreviewCanExecuteHandler(_explanation, (_, e) => { if (e.Command == ApplicationCommands.Paste && _clipboard?.Capture().HasImage == true) { e.CanExecute = CanImport(); e.Handled = true; } });
@@ -82,7 +83,7 @@ internal sealed class FrozenVocabularyEntryEditorWindow : Window
         _meaning.TextChanged += (_, _) => ChangeSense(s => s with { Meaning = _meaning.Text }); _note.TextChanged += (_, _) => ChangeSense(s => s with { Note = _note.Text });
         _save.Click += (_, _) => LastOperation = SaveAsync(); _cancel.Click += (_, _) => Close();
         _addText.Click += (_, _) => { ChangeSense(s => s with { Content = (s.Content ?? []).Append(VocabularyContentBlock.Create(new VocabularyBlockContent.Text(new()))).ToArray() }); RenderBlocks(); };
-        _addImage.Click += (_, _) => { var dialog = new OpenFileDialog { Title = "Add image", Filter = "Images|*.png;*.jpg;*.jpeg;*.tif;*.tiff;*.bmp;*.gif;*.ico;*.webp;*.heic;*.heif", Multiselect = false }; if (dialog.ShowDialog(this) == true) ImportImage(dialog.FileName); };
+        _addImage.Click += (_, _) => { var dialog = new OpenFileDialog { Title = InterfaceText.Get("Add image"), Filter = "Images|*.png;*.jpg;*.jpeg;*.tif;*.tiff;*.bmp;*.gif;*.ico;*.webp;*.heic;*.heif", Multiselect = false }; if (dialog.ShowDialog(this) == true) ImportImage(dialog.FileName); };
         _addExample.Click += (_, _) => { ChangeSense(s => s with { Examples = s.Examples.Append(new F.VocabularyExample(Guid.NewGuid(), "", "", [], R.VocabularyExampleCompleteness.Fragment, "", SourceDate.FromWindows(DateTimeOffset.UtcNow)) { SourceKind = R.VocabularySourceKind.Authored, TranslationLanguage = s.MeaningLanguage }).ToArray() }); RenderExamples(); };
         Closing += (_, e) => { if (_saving && !_allowClose) e.Cancel = true; }; Closed += (_, _) => { _retiring = true; _lifetime.Cancel(); _rangeToken?.Cancel(); _fileDrop?.Dispose(); _fileDrop = null; foreach (var view in _imageViews) view.Dispose(); };
         RenderBlocks(); RenderExamples(); Update();
@@ -139,7 +140,7 @@ internal sealed class FrozenVocabularyEntryEditorWindow : Window
     private bool BeginImport(Func<CancellationToken, Task<VocabularyPreparedImage?>> prepare)
     {
         if (!CanImport()) return false; _importing = true; _failure.Text = ""; Update(); Track(Import()); return true;
-        async Task Import() { try { var prepared = await Task.Run(() => prepare(_lifetime.Token)); if (_retiring || prepared is null) return; var blocks = (Sense!.Content ?? []).Append(VocabularyContentBlock.Create(new VocabularyBlockContent.Image(prepared.Reference))).ToArray(); VocabularyContentPolicy.Validate(blocks); _images[prepared.Reference.Filename] = prepared; ChangeSense(s => s with { Content = blocks }); RenderBlocks(); } catch (OperationCanceledException) { } catch { if (!_retiring) _failure.Text = "Unable to add this image. Try a smaller image."; } finally { _importing = false; Update(); } }
+        async Task Import() { try { var prepared = await Task.Run(() => prepare(_lifetime.Token)); if (_retiring || prepared is null) return; var blocks = (Sense!.Content ?? []).Append(VocabularyContentBlock.Create(new VocabularyBlockContent.Image(prepared.Reference))).ToArray(); VocabularyContentPolicy.Validate(blocks); _images[prepared.Reference.Filename] = prepared; ChangeSense(s => s with { Content = blocks }); RenderBlocks(); } catch (OperationCanceledException) { } catch { if (!_retiring) _failure.Text = InterfaceText.Get("Unable to add this image. Try a smaller image."); } finally { _importing = false; Update(); } }
     }
     private void AttachFileDrop()
     {

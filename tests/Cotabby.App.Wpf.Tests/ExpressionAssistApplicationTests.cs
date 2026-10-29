@@ -28,6 +28,20 @@ public sealed class ExpressionAssistApplicationTests(WpfDispatcher dispatcher)
         await app.DisposeAsync(); Assert.False(last.IsVisible); Assert.Null(app.Notice);
         app.ShowNotice(ScreenRect.Empty, "Too late", null); Assert.Null(app.Notice);
     });
+    [Fact]
+    public Task ReadingSourceShortcutChangesRetireExpressionSnapshot() => dispatcher.RunAsync(async () =>
+    {
+        await using var app = new ExpressionAssistApplication(Dispatcher.CurrentDispatcher, new Focus(), new Hook(),
+            _ => throw new InvalidOperationException(), new UnavailableExpressionAssistEditor(),
+            (_, _) => throw new InvalidOperationException(), () => { });
+        var settings = new AppSettings(); app.ApplySettings(settings, false);
+        app.ShowNotice(ScreenRect.Empty, "First", null);
+        settings.LearningReadingPointerEnabled = true; app.ApplySettings(settings, false);
+        Assert.Null(app.Notice);
+        app.ShowNotice(ScreenRect.Empty, "Second", null);
+        settings.LearningReadingScreenshotShortcut = new(0x45, KeyModifiers.Control, "Ctrl+E");
+        app.ApplySettings(settings, false); Assert.Null(app.Notice);
+    });
     private static FocusedField Field => new()
     {
         ProcessId = Environment.ProcessId + 1, ProcessName = "editor", FieldId = "field", Text = "word??",

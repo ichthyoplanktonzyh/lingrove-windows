@@ -414,7 +414,11 @@ public sealed class CanonicalAnkiReviewBatchTests(WpfDispatcher dispatcher)
             var item = await Add(store, feature, "bank"); var batch = await CanonicalAnkiReviewBatchSession.OpenAsync(feature, store, [item.Selection]);
             var window = new CanonicalAnkiReviewBatchWindow(batch, feature, () => { }); window.Show(); if (window.LastOperation is { } load) await load;
             window.SendButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); await client.Entered.Task;
-            var retire = window.RetireAsync(); Assert.Same(retire, window.RetireAsync()); Assert.False(retire.IsCompleted); Assert.True(window.IsVisible); client.Release.SetResult();
+            var cancelled = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            client.OnCancellation = () => cancelled.TrySetResult();
+            var retire = window.RetireAsync(); Assert.Same(retire, window.RetireAsync()); Assert.False(retire.IsCompleted); Assert.True(window.IsVisible);
+            try { await cancelled.Task.WaitAsync(TimeSpan.FromSeconds(5)); }
+            finally { client.Release.TrySetResult(); }
             var error = await Assert.ThrowsAnyAsync<Exception>(async () => await retire); Assert.Contains("cancel callback failure", error.ToString()); Assert.False(window.IsVisible);
         }
         finally { if (Directory.Exists(root)) Directory.Delete(root, true); }

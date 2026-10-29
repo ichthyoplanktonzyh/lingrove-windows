@@ -1,3 +1,4 @@
+using Cotabby.App.Localization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Automation;
@@ -12,12 +13,12 @@ internal sealed partial class FrozenVocabularyNotebookWindow
 {
     private bool _selectingReviewSenses;
     private readonly HashSet<VocabularySelection> _reviewSelections = [];
-    private readonly Button _selectReview = new() { Name = "canonicalSelectSenses", Content = "Select senses", Padding = new Thickness(10, 5, 10, 5) };
+    private readonly Button _selectReview = new() { Name = "canonicalSelectSenses", Content = InterfaceText.Get("Select senses"), Padding = new Thickness(10, 5, 10, 5) };
     private readonly StackPanel _reviewSelectionBar = new() { Orientation = Orientation.Horizontal, Margin = new Thickness(18, 6, 18, 12) };
     private readonly TextBlock _reviewSelectionCount = new() { VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 12, 0) };
-    private readonly Button _exportSelected = new() { Name = "canonicalExportSelected", Content = "Export selected…" };
-    private readonly Button _selectVisible = new() { Name = "canonicalSelectVisible", Content = "Select visible" }, _clearReview = new() { Name = "canonicalClearSelection", Content = "Clear" },
-        _prepareSelected = new() { Name = "canonicalPrepareSelected", Content = "Prepare selected" }, _finishSelection = new() { Name = "canonicalFinishSelection", Content = "Done" };
+    private readonly Button _exportSelected = new() { Name = "canonicalExportSelected", Content = InterfaceText.Get("Export selected…") };
+    private readonly Button _selectVisible = new() { Name = "canonicalSelectVisible", Content = InterfaceText.Get("Select visible") }, _clearReview = new() { Name = "canonicalClearSelection", Content = InterfaceText.Get("Clear") },
+        _prepareSelected = new() { Name = "canonicalPrepareSelected", Content = InterfaceText.Get("Prepare selected") }, _finishSelection = new() { Name = "canonicalFinishSelection", Content = InterfaceText.Get("Done") };
     private void InitializeReviewSelection(Panel toolbar, DockPanel root)
     {
         VocabularyNotebookTheme.Button(_selectReview); _selectReview.Margin = new Thickness(0, 0, 8, 8); toolbar.Children.Add(_selectReview);

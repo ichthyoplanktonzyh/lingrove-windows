@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using Cotabby.App.UI.Controls;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI.Settings;
 
@@ -12,7 +13,7 @@ internal sealed class PaneView : ScrollViewer
         Pane = pane;
         VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
 
-        var title = Ui.Text(pane.Title);
+        var title = Ui.Text(InterfaceText.Get(pane.Title));
         title.FontSize = 20;
         title.FontWeight = FontWeights.SemiBold;
         title.Margin = new Thickness(2, 0, 0, 16);
@@ -36,7 +37,7 @@ internal sealed class PaneView : ScrollViewer
         }
 
         var view = new StackPanel();
-        if (card.Header is { } header) view.Children.Add(Ui.Text(header, "CardHeader"));
+        if (card.Header is { } header) view.Children.Add(Ui.Text(InterfaceText.Get(header), "CardHeader"));
         view.Children.Add(new Border { Padding = new Thickness(14, 3, 14, 3), Child = rows }.Styled("Card"));
 
         context.OnRefresh(() =>

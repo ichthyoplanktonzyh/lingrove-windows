@@ -29,7 +29,11 @@ internal static class ShortcutsPane
                 "Describe an expression at the caret or use the selected text. Choose a modifier shortcut; Enter and Escape are reserved.")
                 .Tagged("expression term assistance meaning shortcut keybind hotkey"),
             r.Shortcut(GlobalShortcut.LearningReading, "Read selected text using the learning model or bundled dictionary.")
-                .Tagged("selected text reading translation lookup shortcut")),
+                .Tagged("selected text reading translation lookup shortcut"),
+            r.Shortcut(GlobalShortcut.ReadingPointer, "Read text under the pointer in an allowed app.")
+                .Tagged("pointer reading translation shortcut"),
+            r.Shortcut(GlobalShortcut.ReadingScreenshot, "Read an explicitly selected screen region in an allowed app.")
+                .Tagged("screenshot region OCR reading shortcut")),
         new SettingsCard("Per-App Shortcuts",
             Rows.Note("Give a specific app its own accept key, disable an accept action there, "
                 + "or keep inheriting the global shortcut."),
@@ -92,8 +96,25 @@ internal static class ShortcutsPane
                 new DockPanel { Children = { remove, name } },
                 OverrideKey(context, GlobalShortcut.AcceptWord, entry.AcceptWord, key => Replace(entry with { AcceptWord = key })),
                 OverrideKey(context, GlobalShortcut.AcceptAll, entry.AcceptAll, key => Replace(entry with { AcceptAll = key })),
+                ReadingGrant("Allow selected-text reading", entry.SelectionReadingAllowed, value => Replace(entry with { SelectionReadingAllowed = value })),
+                ReadingGrant("Allow reading under pointer", entry.PointerReadingAllowed, value => Replace(entry with { PointerReadingAllowed = value })),
+                ReadingGrant("Allow reading a screen region", entry.ScreenshotReadingAllowed, value => Replace(entry with { ScreenshotReadingAllowed = value })),
+                IconOverride(entry.SelectionIconEnabled, value => Replace(entry with { SelectionIconEnabled = value })),
             },
         };
+    }
+
+    private static CheckBox ReadingGrant(string label, bool enabled, Action<bool> set)
+    {
+        var check = new CheckBox { Content = label, IsChecked = enabled, Margin = new Thickness(0, 5, 0, 0) };
+        check.Checked += (_, _) => set(true); check.Unchecked += (_, _) => set(false); return check;
+    }
+    private static StackPanel IconOverride(bool? enabled, Action<bool?> set)
+    {
+        var panel = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+        panel.Children.Add(new TextBlock { Text = "Selection icon", VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 8, 0) });
+        var choices = new ComboBox { ItemsSource = new[] { "Use default", "Show", "Hide" }, SelectedIndex = enabled is null ? 0 : enabled.Value ? 1 : 2 };
+        choices.SelectionChanged += (_, _) => set(choices.SelectedIndex switch { 1 => true, 2 => false, _ => null }); panel.Children.Add(choices); return panel;
     }
 
     /// <summary>
@@ -112,7 +133,15 @@ internal static class ShortcutsPane
                     : context.Settings.LearningReadingEnabled && candidate.IsBound
                         && candidate.VirtualKey == context.Settings.LearningReadingShortcut.VirtualKey
                         && candidate.Modifiers == context.Settings.LearningReadingShortcut.Modifiers
-                            ? GlobalShortcut.LearningReading.Name : null,
+                            ? GlobalShortcut.LearningReading.Name
+                            : context.Settings.LearningReadingPointerEnabled && candidate.IsBound
+                                && candidate.VirtualKey == context.Settings.LearningReadingPointerShortcut.VirtualKey
+                                && candidate.Modifiers == context.Settings.LearningReadingPointerShortcut.Modifiers
+                                    ? GlobalShortcut.ReadingPointer.Name
+                                    : context.Settings.LearningReadingScreenshotEnabled && candidate.IsBound
+                                        && candidate.VirtualKey == context.Settings.LearningReadingScreenshotShortcut.VirtualKey
+                                        && candidate.Modifiers == context.Settings.LearningReadingScreenshotShortcut.Modifiers
+                                            ? GlobalShortcut.ReadingScreenshot.Name : null,
         };
         recorder.Recorded += binding => set(binding);
         recorder.Show(key switch

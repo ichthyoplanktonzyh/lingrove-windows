@@ -1,3 +1,4 @@
+using Cotabby.App.Localization;
 using System.ComponentModel;
 using System.Globalization;
 using System.Windows;
@@ -30,7 +31,7 @@ internal abstract class FrozenVocabularyClassificationWindow : Window
     protected R.VocabularyClassificationIndex Baseline;
     protected readonly StackPanel Fields = new();
     protected readonly TextBlock Failure = VocabularyNotebookTheme.Brush(new TextBlock { Name = "classificationError", TextWrapping = TextWrapping.Wrap }, TextBlock.ForegroundProperty, "OrangeBrush");
-    private readonly Button _save = new() { Name = "classificationSave", Content = "Save", IsDefault = true, MinWidth = 90 }, _cancel = new() { Content = "Cancel", IsCancel = true, MinWidth = 90 };
+    private readonly Button _save = new() { Name = "classificationSave", Content = InterfaceText.Get("Save"), IsDefault = true, MinWidth = 90 }, _cancel = new() { Content = InterfaceText.Get("Cancel"), IsCancel = true, MinWidth = 90 };
     private bool _saving, _retiring;
     private readonly bool _draftOnly;
     private TaskCompletionSource? _retirement;
@@ -89,7 +90,7 @@ internal sealed class FrozenVocabularyCategoryEditorWindow : FrozenVocabularyCla
     private sealed class CategorySearch : Cotabby.Core.Vocabulary.IVocabularyTextSearching { public bool Contains(string field, string term) => CultureInfo.CurrentCulture.CompareInfo.IndexOf(field, term, CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace) >= 0; }
     private readonly TextBox _name = new() { Name = "categoryName" }, _definition = new() { Name = "categoryDescription", AcceptsReturn = true, TextWrapping = TextWrapping.Wrap, MinHeight = 55 }, _search = new() { Name = "categoryParentSearch" };
     private readonly ComboBox _axis = new() { Name = "categoryAxis" };
-    private readonly CheckBox _visible = new() { Name = "categoryVisible", Content = "Visible" };
+    private readonly CheckBox _visible = new() { Name = "categoryVisible", Content = InterfaceText.Get("Visible") };
     private readonly ListBox _parentList = new() { Name = "categoryParents", Height = 130 };
     internal Guid CategoryId => _original.Id;
     protected override bool Valid => !string.IsNullOrWhiteSpace(_name.Text);
@@ -107,10 +108,10 @@ internal sealed class FrozenVocabularyCategoryEditorWindow : FrozenVocabularyCla
         if (!_currentRules) Fields.Children.Add(VocabularyInputControls.Caption("Label language: " + (_label.Language?.Name() ?? "Unspecified")));
         if (_isNew) Fields.Children.Add(VocabularyInputControls.Group(("Category type", _axis)));
         _visible.Margin = new Thickness(2, 6, 0, 12); VocabularyNotebookTheme.Brush(_visible, Control.ForegroundProperty, "TextPrimary"); Fields.Children.Add(_visible);
-        if (_original.FrameworkId is not null) { Fields.Children.Add(VocabularyInputControls.Caption("Built-in definition and parents remain unchanged; your name, description and visibility are local overrides.")); if (_currentRules && baseline.Overrides.Any(x => x.CategoryId == _original.Id)) { var restore = new Button { Name = "categoryRestoreDefaults", Content = "Restore defaults", HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 6, 0, 6) }; VocabularyNotebookTheme.Button(restore); restore.Click += (_, _) => { var original = R.VocabularyCategoryLocalizationPolicy.Resolve(_original, [_locale]); _name.Text = original.Name; _definition.Text = original.Definition; _visible.IsChecked = true; _restoringDefaults = true; }; Fields.Children.Add(restore); } }
+        if (_original.FrameworkId is not null) { Fields.Children.Add(VocabularyInputControls.Caption("Built-in definition and parents remain unchanged; your name, description and visibility are local overrides.")); if (_currentRules && baseline.Overrides.Any(x => x.CategoryId == _original.Id)) { var restore = new Button { Name = "categoryRestoreDefaults", Content = InterfaceText.Get("Restore defaults"), HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 6, 0, 6) }; VocabularyNotebookTheme.Button(restore); restore.Click += (_, _) => { var original = R.VocabularyCategoryLocalizationPolicy.Resolve(_original, [_locale]); _name.Text = original.Name; _definition.Text = original.Definition; _visible.IsChecked = true; _restoringDefaults = true; }; Fields.Children.Add(restore); } }
         else
         {
-            Fields.Children.Add(VocabularyInputControls.Heading("Parent categories")); _search.Tag = "Search categories"; VocabularyNotebookTheme.Input(_search); System.Windows.Automation.AutomationProperties.SetName(_search, "Search categories"); Fields.Children.Add(_search); System.Windows.Automation.AutomationProperties.SetName(_parentList, "Parent categories"); VocabularyNotebookTheme.Brush(_parentList, Control.BackgroundProperty, "CardBg"); VocabularyNotebookTheme.Brush(_parentList, Control.ForegroundProperty, "TextPrimary"); VocabularyNotebookTheme.Brush(_parentList, Control.BorderBrushProperty, "CardBorder"); _parentList.ItemTemplate = FrozenVocabularyCategoryChoice.Template(); VirtualizingPanel.SetVirtualizationMode(_parentList, VirtualizationMode.Recycling); Fields.Children.Add(_parentList);
+            Fields.Children.Add(VocabularyInputControls.Heading(InterfaceText.Get("Parent categories"))); _search.Tag = "Search categories"; VocabularyNotebookTheme.Input(_search); System.Windows.Automation.AutomationProperties.SetName(_search, "Search categories"); Fields.Children.Add(_search); System.Windows.Automation.AutomationProperties.SetName(_parentList, "Parent categories"); VocabularyNotebookTheme.Brush(_parentList, Control.BackgroundProperty, "CardBg"); VocabularyNotebookTheme.Brush(_parentList, Control.ForegroundProperty, "TextPrimary"); VocabularyNotebookTheme.Brush(_parentList, Control.BorderBrushProperty, "CardBorder"); _parentList.ItemTemplate = FrozenVocabularyCategoryChoice.Template(); VirtualizingPanel.SetVirtualizationMode(_parentList, VirtualizationMode.Recycling); Fields.Children.Add(_parentList);
             _search.TextChanged += (_, _) => RenderParents();
         }
         _axis.SelectionChanged += (_, _) => { if (_isNew) { _parents.Clear(); RenderParents(); } }; _name.TextChanged += (_, _) => UpdateAdmission(); RenderParents(); UpdateAdmission();

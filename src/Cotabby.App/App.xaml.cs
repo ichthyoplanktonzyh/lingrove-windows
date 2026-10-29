@@ -1,5 +1,8 @@
 using System.Windows;
 using System.Windows.Threading;
+using System.Diagnostics;
+using Cotabby.App.Localization;
+using Cotabby.App.Settings;
 using Cotabby.App.Emoji;
 using Cotabby.App.Hosting;
 using Cotabby.App.Overlay;
@@ -27,31 +30,44 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
+        // The local CLI launches a tray-only background instance. It must not raise a modal
+        // duplicate-instance or welcome window while an automation request is pending.
+        bool cliStartup = e.Args.Length == 1 && string.Equals(e.Args[0], "-lingrove-cli", StringComparison.Ordinal);
+
         _singleInstance = new Mutex(initiallyOwned: true, SingleInstanceMutexName, out bool createdNew);
         if (!createdNew)
         {
+            _singleInstance.Dispose();
             _singleInstance = null;
-            MessageBox.Show("Cotabby is already running. Check the system tray.",
-                "Cotabby", MessageBoxButton.OK, MessageBoxImage.Information);
+            if (!cliStartup)
+                MessageBox.Show("Cotabby is already running. Check the system tray.",
+                    "Cotabby", MessageBoxButton.OK, MessageBoxImage.Information);
             Shutdown();
             return;
         }
+
+        // Freeze the app-only interface language before constructing any presentation. AppHost
+        // borrows this exact store/snapshot; it must not load a second settings owner.
+        var settingsStore = new SettingsStore();
+        var settings = settingsStore.Load();
+        InterfaceText.Initialize(settings.InterfaceLanguage);
+        InterfaceText.RequestRestart = () => RequestShutdownAsync(restart: true);
 
         // Realizing the windows now makes the first suggestion and the first popup instant.
         var overlay = Realized(new GhostOverlayWindow());
         var macroPreview = Realized(new GhostOverlayWindow());
         var emojiPopup = Realized(new EmojiPopupWindow());
 
-        _host = new AppHost(SynchronizationContext.Current!, overlay, macroPreview, emojiPopup);
+        _host = new AppHost(SynchronizationContext.Current!, overlay, macroPreview, emojiPopup, settingsStore, settings);
         DispatcherUnhandledException += OnUiException;
 
         _tray = new TrayController(_host);
         _host.Coordinator.Start();
         _ = LoadModelAsync(_host, _tray);
 
-        if (_host.Settings.ShowFirstRunWelcome)
+        if (!cliStartup && _host.Settings.ShowFirstRunWelcome)
         {
-            Dispatcher.BeginInvoke(() => WelcomeWindow.ShowFor(_host), DispatcherPriority.Background);
+            Dispatcher.BeginInvoke(() => WelcomeWindow.ShowFor(_host, resumeFirstRun: true), DispatcherPriority.Background);
         }
     }
 
@@ -82,8 +98,11 @@ public partial class App : Application
 
     /// <summary>Normal Quit keeps the UI dispatcher alive while admitted work drains. WPF's
     /// OnExit is synchronous notification, so awaiting cleanup there cannot delay process exit.</summary>
-    internal Task RequestShutdownAsync()
+    internal Task RequestShutdownAsync() => RequestShutdownAsync(restart: false);
+
+    private Task RequestShutdownAsync(bool restart)
     {
+        Dispatcher.VerifyAccess();
         if (_shutdown is not null) return _shutdown;
         var completion = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         _shutdown = completion.Task;
@@ -91,15 +110,46 @@ public partial class App : Application
         return completion.Task;
         async Task DrainAndShutdown()
         {
+            bool drained = false;
             try
             {
                 // Closing first commits the last masked-key edit and detaches view observers.
-                if (_host is not null) SettingsWindow.CloseFor(_host);
-                _tray?.Dispose(); _tray = null;
-                if (_host is not null) await _host.DisposeAsync();
+                try { if (_host is not null) SettingsWindow.CloseFor(_host); }
+                finally
+                {
+                    try { _tray?.Dispose(); _tray = null; }
+                    finally { if (_host is not null) await _host.DisposeAsync(); }
+                }
+                drained = true;
             }
             catch (Exception error) { _host?.LogError(error, "Application shutdown failed."); }
-            finally { completion.TrySetResult(true); Shutdown(); }
+            finally
+            {
+                InterfaceText.RequestRestart = null;
+                // The mutex is owned by this UI thread. Release it only after admitted work
+                // drains, and before launching the same executable with a fresh interface locale.
+                ReleaseSingleInstance();
+                if (restart && drained)
+                {
+                    try
+                    {
+                        var executable = Environment.ProcessPath ?? throw new InvalidOperationException("Application path is unavailable.");
+                        using var process = Process.Start(new ProcessStartInfo(executable) { UseShellExecute = false });
+                        if (process is null) throw new InvalidOperationException("Application restart did not start.");
+                    }
+                    catch (Exception error)
+                    {
+                        _host?.LogError(error, "Application restart failed.");
+                        MessageBox.Show("Could not restart Lingrove. Please open the application again.",
+                            "Lingrove", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+                else if (restart)
+                    MessageBox.Show("Lingrove could not finish restarting. Please open the application again.",
+                        "Lingrove", MessageBoxButton.OK, MessageBoxImage.Error);
+                completion.TrySetResult(true);
+                Shutdown();
+            }
         }
     }
 
@@ -111,10 +161,18 @@ public partial class App : Application
             // A forced OS exit cannot be delayed here. Normal tray Quit always uses the owned,
             // awaited path above; do not block this dispatcher on asynchronous UI continuations.
             if (_shutdown is null && _host is not null) _ = _host.DisposeAsync();
-            _singleInstance?.ReleaseMutex();
-            _singleInstance?.Dispose();
+            InterfaceText.RequestRestart = null;
+            ReleaseSingleInstance();
         }
         finally { base.OnExit(e); }
+    }
+
+    private void ReleaseSingleInstance()
+    {
+        if (_singleInstance is not { } mutex) return;
+        _singleInstance = null;
+        try { mutex.ReleaseMutex(); }
+        finally { mutex.Dispose(); }
     }
 
     private void OnUiException(object sender, DispatcherUnhandledExceptionEventArgs e)

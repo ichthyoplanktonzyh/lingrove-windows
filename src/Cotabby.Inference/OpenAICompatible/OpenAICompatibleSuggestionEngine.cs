@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Cotabby.Core.Suggestions;
 using Cotabby.Core.Support;
+using Cotabby.Core.Runtime.Metrics;
 using Microsoft.Extensions.Logging;
 
 namespace Cotabby.Inference.OpenAICompatible;
@@ -25,6 +26,8 @@ public sealed class OpenAICompatibleSuggestionEngine : ISuggestionEngine
     private readonly ILogger<OpenAICompatibleSuggestionEngine> _logger;
     private readonly OllamaPreloadWorkController _preloads = new();
     private volatile Endpoint _endpoint;
+    /// <summary>Worker-thread, content-free observation of the frozen endpoint model.</summary>
+    public event Action<CompletionObservation>? Observed;
 
     public OpenAICompatibleSuggestionEngine(
         OpenAICompatibleApiClient client,
@@ -55,6 +58,8 @@ public sealed class OpenAICompatibleSuggestionEngine : ISuggestionEngine
         if (prompt.Length == 0) return string.Empty;
 
         var started = Stopwatch.GetTimestamp();
+        var timestamp = DateTimeOffset.UtcNow;
+        var outcome = ModelRequestOutcome.Failed;
         string raw;
         try
         {
@@ -64,15 +69,23 @@ public sealed class OpenAICompatibleSuggestionEngine : ISuggestionEngine
                 prompt,
                 new OpenAICompatibleGenerationOptions(request.MaxTokens, Temperature, TopP),
                 ct).ConfigureAwait(false);
+            outcome = ct.IsCancellationRequested ? ModelRequestOutcome.Cancelled : ModelRequestOutcome.Completed;
         }
         catch (OperationCanceledException)
         {
+            outcome = ModelRequestOutcome.Cancelled;
             return string.Empty;
         }
         catch (Exception ex)
         {
             _logger.LogWarning(ex, "Req {ReqId}: endpoint generation failed.", request.RequestId);
             throw;
+        }
+        finally
+        {
+            var observation = new CompletionObservation(request.RequestId, configuration.ModelName, timestamp,
+                Math.Max(0, (long)Math.Round(Stopwatch.GetElapsedTime(started).TotalMilliseconds, MidpointRounding.AwayFromZero)), outcome);
+            try { Observed?.Invoke(observation); } catch { /* Diagnostics cannot change generation. */ }
         }
 
         if (ct.IsCancellationRequested) return string.Empty;

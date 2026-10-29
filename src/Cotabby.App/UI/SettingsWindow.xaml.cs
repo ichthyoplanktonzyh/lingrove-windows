@@ -6,6 +6,7 @@ using System.Windows.Threading;
 using Cotabby.App.Hosting;
 using Cotabby.App.UI.Controls;
 using Cotabby.App.UI.Settings;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI;
 
@@ -27,6 +28,9 @@ public partial class SettingsWindow : Window
     {
         _host = host;
         InitializeComponent();
+        InterfaceText.ApplyDirection(this);
+        Title = InterfaceText.Get("Settings");
+        SearchBox.Tag = InterfaceText.Get("Search settings");
         WindowTheme.Follow(this);
 
         _context = new SettingsContext(host, Navigate);
@@ -107,7 +111,7 @@ public partial class SettingsWindow : Window
     {
         var icon = Ui.Icon(pane.Glyph, 14).Themed(TextBlock.ForegroundProperty, "AccentBrush");
         icon.Width = 22;
-        var label = Ui.Text(pane.Title);
+        var label = Ui.Text(InterfaceText.Get(pane.Title));
         label.Margin = new Thickness(8, 0, 0, 0);
         return new ListBoxItem
         {

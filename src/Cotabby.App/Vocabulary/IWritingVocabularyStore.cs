@@ -1,4 +1,5 @@
 using Cotabby.Core.Vocabulary;
+using Cotabby.Core.LanguageLearning;
 
 namespace Cotabby.App.Vocabulary;
 
@@ -14,5 +15,6 @@ internal interface IWritingVocabularyStore
     bool IsPending(VocabularyCapture capture);
     Task<bool> SaveAsync(VocabularyCapture capture);
     Task<bool> RemoveAsync(VocabularyCapture capture);
+    Task<bool> SaveExplanationAsync(LearningExplanationRecord record) => Task.FromResult(false);
     void Show(VocabularyCapture capture);
 }

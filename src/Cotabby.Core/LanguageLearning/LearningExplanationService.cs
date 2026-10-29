@@ -1,4 +1,6 @@
 using System.Text;
+using System.Diagnostics;
+using Cotabby.Core.Runtime.Metrics;
 
 namespace Cotabby.Core.LanguageLearning;
 
@@ -35,6 +37,7 @@ public sealed class LearningExplanationService : ILearningExplanationGenerating,
     public event Action<LearningExplanationRecord>? Explained;
     /// <summary>Hook for the separate telemetry port; no metrics or raw text are logged here.</summary>
     public event Action<string>? Displayed;
+    public event Action<PerformanceRequestObservation>? RequestObserved;
     public Func<LearningExplanationInput, LearningLanguage, Task<LearningExplanationRecord?>>? LoadPersisted { get; set; }
     public Func<LearningExplanationInput, LearningLanguage, LearningExplanationRecord?>? LookupSaved { get; set; }
     public LearningLanguage Language { get { lock (_gate) return _language; } }
@@ -137,14 +140,15 @@ public sealed class LearningExplanationService : ILearningExplanationGenerating,
             var lifetime = new LearningRequestLifetime();
             var key = new Key(input, _language, _profile);
             // Clear a WPF SynchronizationContext before saved lookup, factory, prompt and model IO.
-            var task = Task.Run(() => RunAsync(key, refresh, lifetime, cancellationToken));
+            var task = Task.Run(() => RunAsync(key, requestId, refresh, lifetime, cancellationToken));
             _work.Add(lifetime, task);
             return task;
         }
     }
 
-    private async Task<LearningExplanationRecord> RunAsync(Key key, bool refresh, LearningRequestLifetime lifetime, CancellationToken caller)
+    private async Task<LearningExplanationRecord> RunAsync(Key key, string requestId, bool refresh, LearningRequestLifetime lifetime, CancellationToken caller)
     {
+        long start = 0; DateTimeOffset timestamp = default; var outcome = ModelRequestOutcome.Failed; long? usable = null;
         using var registration = caller.Register(() => _ = ObserveRetirement(lifetime.Retire()));
         void Validate()
         {
@@ -170,6 +174,7 @@ public sealed class LearningExplanationService : ILearningExplanationGenerating,
             await using (var engine = _engineFactory(key.Profile))
             {
                 Validate();
+                timestamp = _clock.GetUtcNow(); start = Stopwatch.GetTimestamp();
                 result = await engine.GenerateAsync(key.Input, key.Language,
                     LearningExplanationModelPolicy.ResolveOutputTokens(key.Profile.MaximumOutputTokens), lifetime.Token).ConfigureAwait(false);
                 Validate();
@@ -177,6 +182,7 @@ public sealed class LearningExplanationService : ILearningExplanationGenerating,
             Validate();
             if (result is null || !LearningExplanationPolicy.IsValid(result))
                 throw new LearningExplanationException(LearningExplanationFailure.InvalidContent);
+            usable = Elapsed(start); outcome = ModelRequestOutcome.Completed;
             var record = new LearningExplanationRecord(Guid.NewGuid(), key.Input, key.Language, result,
                 key.Profile.Backend == LearningModelBackend.Local ? key.Profile.LocalModel : key.Profile.EndpointModel, _clock.GetUtcNow());
             lock (_gate)
@@ -192,17 +198,26 @@ public sealed class LearningExplanationService : ILearningExplanationGenerating,
         }
         catch (Exception error)
         {
+            if (error is OperationCanceledException || caller.IsCancellationRequested || lifetime.Token.IsCancellationRequested) outcome = ModelRequestOutcome.Cancelled;
             Validate();
             throw FixedFailure(error);
         }
         finally
         {
+            if (start != 0)
+            {
+                if (caller.IsCancellationRequested || lifetime.Token.IsCancellationRequested) outcome = ModelRequestOutcome.Cancelled;
+                string model = key.Profile.Backend == LearningModelBackend.Local ? key.Profile.LocalModel : key.Profile.EndpointModel;
+                Notify(RequestObserved, new PerformanceRequestObservation(ModelRequestSource.Explanation, requestId, model, timestamp, Elapsed(start), outcome, UsableResultMs: usable));
+            }
             // Native facade disposal above drains its lease before foreign cancellation callbacks
             // are joined here. A callback may itself be waiting for that lease to become available.
             try { await lifetime.DisposeAsync().ConfigureAwait(false); } catch { }
             lock (_gate) _work.Remove(lifetime);
         }
     }
+
+    private static long Elapsed(long started) => Math.Max(0, (long)Math.Round(Stopwatch.GetElapsedTime(started).TotalMilliseconds, MidpointRounding.AwayFromZero));
 
     public void RecordDisplay(string requestId) => Notify(Displayed, requestId);
 

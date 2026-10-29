@@ -32,7 +32,12 @@ meaning-node and mapping edits. The [latest organization workflow](docs/VOCABULA
 adds atomic category/meaning drafts and localized catalog guidance; usage-pattern edits are connected.
 The [independent card editor](docs/ANKI_CANONICAL_CARD_WINDOW.md) and
 [batch review](docs/ANKI_CANONICAL_REVIEW_BATCH.md) now borrow the existing Feature/client and the
-same Store. Do not confuse these scoped integrations with completed audio, graph or export parity.
+same Store. Graph, export, speech/audio and reading each retain their scoped implementation records;
+none establishes complete native parity. The
+[reading/CLI/interface composition](docs/WINDOWS_READING_CLI_INTERFACE_CHECKPOINT_20261030.md)
+shares this Store, launches one private mailbox, freezes interface language before window construction
+and drains content-free history after task owners. Screenshot reading is limited to a verified field
+region; original-source system dictionary and autocomplete streaming gaps remain separately tracked.
 
 ## Migration principle: adapt the frozen macOS product
 

@@ -35,6 +35,7 @@ internal sealed partial class ReadingPresentation : IReadingPresentation, IAsync
     private readonly Func<ReadingLookupInput, CancellationToken, Task<ReadingLookupResult>> _basicLookup;
     private readonly Func<ReadingLookupInput, ReadingLookupResult, CancellationToken, Task<string>> _detailsLookup;
     private readonly Action _configure;
+    private readonly Func<ReadingLookupInput, ReadingLookupResult, LearningExplanationInput, CancellationToken, Task<LearningExplanationRecord>>? _detailsRecord;
     private readonly LearningTextCopyController _copy;
     private readonly IWritingVocabularyStore _vocabulary;
     private readonly Func<string, LearningLanguage?, IReadOnlyList<LearningTextRange>> _sentences;
@@ -55,11 +56,13 @@ internal sealed partial class ReadingPresentation : IReadingPresentation, IAsync
         Func<ReadingLookupInput, CancellationToken, Task<ReadingLookupResult>> basicLookup,
         Func<ReadingLookupInput, ReadingLookupResult, CancellationToken, Task<string>> detailsLookup, Action configure,
         IClipboardTextWriter clipboard, IWritingVocabularyStore vocabulary,
-        Func<string, LearningLanguage?, IReadOnlyList<LearningTextRange>> sentences, LearningLanguage meaningLanguage)
+        Func<string, LearningLanguage?, IReadOnlyList<LearningTextRange>> sentences, LearningLanguage meaningLanguage,
+        Func<ReadingLookupInput, ReadingLookupResult, LearningExplanationInput, CancellationToken, Task<LearningExplanationRecord>>? detailsRecord = null)
     {
         _dispatcher = dispatcher;
+        InitializeHitTesting();
         _basicLookup = basicLookup; _detailsLookup = detailsLookup; _configure = configure;
-        _copy = new(clipboard);
+        _detailsRecord = detailsRecord; _copy = new(clipboard);
         _vocabulary = vocabulary; _sentences = sentences; _meaningLanguage = meaningLanguage;
         _session = new(dictionary);
         _session.StateChanged += StateChanged;
@@ -83,7 +86,7 @@ internal sealed partial class ReadingPresentation : IReadingPresentation, IAsync
 
     public void BindAuthority(ReadingSelection selection, Func<CancellationToken, Task<bool>> current, CancellationToken token)
     { _selection = selection; _current = current; _token = token; }
-    public Task ShowAsync(ReadingState state) { ReconcileSpeech(state); _readingState = state; return _reading.ShowAsync(state); }
+    public async Task ShowAsync(ReadingState state) { ReconcileSpeech(state); _readingState = state; await _reading.ShowAsync(state); UpdateBounds(); }
     public void Update(ReadingState state)
     {
         ReconcileSpeech(state); Interlocked.Increment(ref _copyRevision); _readingState = state; _reading.Update(state);
@@ -109,7 +112,7 @@ internal sealed partial class ReadingPresentation : IReadingPresentation, IAsync
         _current = current; _selection = selection; _token = token;
         var text = route.LookupText!;
         _words = words;
-        var context = text == selection.Text ? selection.Context : null;
+        var context = text == Cotabby.Core.Text.FoundationText.TrimWhitespaceAndNewlines(selection.Text) ? selection.Context : null;
         _input = new(text, language, target, route.IsSingleWord, context) { Admission = selection.Admission };
         await RunBasicAsync();
     }
@@ -130,7 +133,7 @@ internal sealed partial class ReadingPresentation : IReadingPresentation, IAsync
             if (!await StillCurrentAsync(revision, token)) return;
             _basic = basic; _details = null; _detailsExpanded = false; _reading.SetDetailsExpanded(false);
             if (_readingState is { } state) Update(state with { Status = ReadingStatus.Ready, Text = basic.Meaning });
-            BindFavorite(ReadingVocabularyCaptureFactory.Lookup(input, basic, _meaningLanguage), revision, token,
+            BindFavorite(ReadingVocabularyCaptureFactory.Lookup(input, basic, _meaningLanguage, _selection), revision, token,
                 () => ReferenceEquals(_basic, basic) && _input == input);
         }
         catch (OperationCanceledException) { }
@@ -158,8 +161,8 @@ internal sealed partial class ReadingPresentation : IReadingPresentation, IAsync
     private async Task<bool> StillCurrentAsync(long revision, CancellationToken token)
     {
         var current = _current;
-        return current is not null && !token.IsCancellationRequested && revision == _revision
-            && await current(token) && !token.IsCancellationRequested && revision == _revision;
+        return current is not null && !token.IsCancellationRequested && revision == _revision && _selection?.Admission?.Invoke() != false
+            && await current(token) && !token.IsCancellationRequested && revision == _revision && _selection?.Admission?.Invoke() != false;
     }
     private async Task PrepareTranslationFavoriteAsync(ReadingState state)
     {
@@ -223,10 +226,27 @@ internal sealed partial class ReadingPresentation : IReadingPresentation, IAsync
         if (_readingState is { } loading) Update(loading with { Status = ReadingStatus.Lookup });
         try
         {
-            string details = await _detailsLookup(input, basic, token);
-            if (!await StillCurrentAsync(revision, token) || !ReferenceEquals(basic, _basic)) return;
+            var favorite = _favoriteCapture;
+            LearningExplanationRecord? record = null;
+            string details;
+            if (_detailsRecord is not null && favorite is not null)
+            {
+                var target = LearningExplanationPolicy.Input(favorite);
+                record = await _detailsRecord(input, basic, target, token);
+                details = record.Result.Explanation;
+            }
+            else details = await _detailsLookup(input, basic, token);
+            if (!await StillCurrentAsync(revision, token) || !ReferenceEquals(basic, _basic) || _input != input) return;
             _details = details; _detailsExpanded = true; _reading.SetDetailsExpanded(true);
             if (_readingState is { } state) Update(state with { Status = ReadingStatus.Ready, Text = basic.Meaning + "\n\n" + details });
+            if (record is not null && favorite is not null && ReferenceEquals(favorite, _favoriteCapture) && _selection?.Admission?.Invoke() != false)
+            {
+                BindFavorite(favorite with { Explanation = record }, revision, token, () => ReferenceEquals(_basic, basic) && _input == input);
+                // This synchronous permit check is the accepted-write boundary. Once admitted,
+                // the borrowed Store owns and drains the operation even if the panel retires.
+                if (!token.IsCancellationRequested && _selection?.Admission?.Invoke() != false)
+                    await _vocabulary.SaveExplanationAsync(record);
+            }
         }
         catch (OperationCanceledException) { }
         catch
@@ -251,6 +271,7 @@ internal sealed partial class ReadingPresentation : IReadingPresentation, IAsync
         if (!_dictionaryMode || current is null || selection is null || token.IsCancellationRequested || !ReferenceEquals(state, _session.State)) return;
         if (!await current(token) || token.IsCancellationRequested || revision != _revision || !_dictionaryMode || !ReferenceEquals(state, _session.State)) return;
         _dictionary.ShowState(state, selection.Anchor);
+        UpdateBounds();
         if (state.SelectedWord is null && _favoriteCapture is { } favorite)
         {
             var tokenCopy = token; long binding = Interlocked.Read(ref _favoriteRevision);

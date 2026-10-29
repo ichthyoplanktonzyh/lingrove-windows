@@ -21,6 +21,7 @@
     <Using Include="Xunit" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\src\Cotabby.App\Hosting\FileLoggerProvider.cs" Link="Production\FileLoggerProvider.cs" />
     <Compile Include="..\..\src\Cotabby.App\Speech\LearningSpeechSettings.cs" Link="Production\LearningSpeechSettings.cs" />
     <Compile Include="..\..\src\Cotabby.App\Speech\SpeechParameterSettings.cs" Link="Production\SpeechParameterSettings.cs" />
     <None Include="..\..\fixtures\parity\speech-settings-v1.json" Link="fixtures\speech-settings-v1.json" CopyToOutputDirectory="PreserveNewest" />
@@ -77,6 +78,7 @@
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Review.cs" Link="Production\AppSettings.Review.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Speech.cs" Link="Production\AppSettings.Speech.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Metrics.cs" Link="Production\AppSettings.Metrics.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Onboarding.cs" Link="Production\AppSettings.Onboarding.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Vocabulary.cs" Link="Production\AppSettings.Vocabulary.cs" />
     <Compile Include="..\..\src\Cotabby.App\Vocabulary\VocabularyGraphPreferences.cs" Link="Production\VocabularyGraphPreferences.cs" />
     <Compile Include="..\..\src\Cotabby.App\Vocabulary\VocabularyNotebookListPreferences.cs" Link="Production\VocabularyNotebookListPreferences.cs" />

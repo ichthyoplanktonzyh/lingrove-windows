@@ -48,7 +48,7 @@ internal sealed class VocabularyMediaDirectory : IDisposable
     /// regular private files, so an access failure or a link is never treated as a missing image.
     /// Returned handles belong to the caller and deny deletion until the verification/read ends.
     /// </summary>
-    internal SafeFileHandle? OpenFile(string filename, bool delete = false)
+    internal SafeFileHandle? OpenFile(string filename, bool delete = false, bool reportSharingViolation = false)
     {
         Verify();
         var handle = VocabularyWindowsFile.Native.CreateFileW(System.IO.Path.Combine(Path, filename),
@@ -58,6 +58,7 @@ internal sealed class VocabularyMediaDirectory : IDisposable
         {
             int error = Marshal.GetLastPInvokeError(); handle.Dispose();
             if (error == 2) return null;
+            if (reportSharingViolation && error == 32) throw new VocabularyFileSharingException();
             throw Invalid();
         }
         try
@@ -85,3 +86,7 @@ internal sealed class VocabularyMediaDirectory : IDisposable
     private static VocabularyException Invalid() => new(VocabularyFailure.InvalidContent);
     public void Dispose() => _handle.Dispose();
 }
+
+// Only an explicit mailbox caller may retry the native sharing violation. All other
+// admission failures retain their existing fail-closed behavior.
+internal sealed class VocabularyFileSharingException : IOException;

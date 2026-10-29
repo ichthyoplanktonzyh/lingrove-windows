@@ -1,3 +1,4 @@
+using Cotabby.App.Localization;
 using System.Windows;
 using System.Windows.Controls;
 using Cotabby.Core.Vocabulary;
@@ -9,7 +10,7 @@ namespace Cotabby.App.UI.Vocabulary;
 internal sealed partial class FrozenVocabularyNotebookWindow
 {
     private VocabularyExportWindow? _canonicalExport;
-    private readonly Button _canonicalExportButton = new() { Name = "canonicalExport", Content = "Export…", Padding = new Thickness(10, 5, 10, 5), Margin = new Thickness(0, 0, 8, 8) };
+    private readonly Button _canonicalExportButton = new() { Name = "canonicalExport", Content = InterfaceText.Get("Export…"), Padding = new Thickness(10, 5, 10, 5), Margin = new Thickness(0, 0, 8, 8) };
     private void InitializeCanonicalExport(Panel toolbar)
     {
         VocabularyNotebookTheme.Button(_canonicalExportButton); toolbar.Children.Add(_canonicalExportButton);

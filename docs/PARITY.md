@@ -44,7 +44,10 @@ The [current export flow](VOCABULARY_CANONICAL_EXPORT.md),
 [notebook learning rows](CANONICAL_NOTEBOOK_LEARNING.md),
 [shared speech composition](SPEECH_PRODUCTION_3B.md) and
 [review audio](ANKI_CANONICAL_REVIEW_AUDIO.md) have their own scoped integration records.
-Remaining media variants, broader reading sources and physical acceptance stay incomplete.
+The [reading/CLI/interface checkpoint](WINDOWS_READING_CLI_INTERFACE_CHECKPOINT_20261030.md)
+now composes selection affordances, bounded context, pointer reading and restricted field-region OCR,
+local automation through the same Store, launch-time interface language and shared opt-in request history.
+Remaining media variants, arbitrary-region reading and physical acceptance stay incomplete.
 This is an implementation
 checkpoint with scoped automated/render evidence, not full native desktop parity.
 

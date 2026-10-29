@@ -50,15 +50,24 @@ internal static class LearningPane
             new SettingsCard("Speech",
                 rows.Labeled("Speech and pronunciation", "System voices, an independent local model, or your selected speech endpoint.", configureSpeech)
                     .Tagged("speech pronunciation voice audio rate model endpoint")),
-            new SettingsCard("Selected-text reading",
+            new SettingsCard("Reading",
                 rows.Toggle("Read Selected Text", "Use the reading shortcut on selected text in a supported app.",
                     s => s.LearningReadingEnabled, (s, v) => s.LearningReadingEnabled = v)
                     .Tagged("reading selected text translation dictionary"),
+                rows.Toggle("Selection Icon", "Show a reading icon after selecting text in an allowed app.",
+                    s => s.LearningReadingIconEnabled, (s, v) => s.LearningReadingIconEnabled = v)
+                    .Tagged("selection icon reading"),
+                rows.Toggle("Read Text Under Pointer", "Use the pointer shortcut on a supported focused field in an allowed app.",
+                    s => s.LearningReadingPointerEnabled, (s, v) => s.LearningReadingPointerEnabled = v)
+                    .Tagged("pointer reading"),
+                rows.Toggle("Read Screen Region", "Choose a region inside a supported non-secure text field; uses local Windows OCR.",
+                    s => s.LearningReadingScreenshotEnabled, (s, v) => s.LearningReadingScreenshotEnabled = v)
+                    .Tagged("screen region screenshot OCR reading"),
                 rows.Combo("Reading Target Language", "Independent of the writing translation direction.", Languages,
                     s => s.LearningReadingTargetLanguage, (s, v) => s.LearningReadingTargetLanguage = v),
-                rows.Labeled("Reading Shortcut", "Configure the selected-text shortcut in Shortcuts.",
-                    Ui.Button("Configure shortcut", () => context.Navigate(ShortcutsPane.Build(rows)))),
-                Rows.Note("Uses the translation provider or local AI explanation model below; the destination appears before each request. The bundled dictionary is also available. Reading uses only the selected text, without surrounding context. Favorites retain the translation or meaning; saving AI usage details is not yet available.")),
+                rows.Labeled("Reading Shortcuts and Apps", "Allow each reading source for an app and configure its shortcut in Shortcuts.",
+                    Ui.Button("Configure shortcuts and apps", () => context.Navigate(ShortcutsPane.Build(rows)))),
+                Rows.Note("Reading uses the translation provider or local AI explanation model below. The destination appears before each request. The bundled dictionary is also available. Windows OCR requires a supported language installed in Windows settings.")),
             new SettingsCard("Anki review",
                 new SettingsRow("Anki review", "Connection, default deck and saved card templates", review)
                     .Tagged("anki review ankiConnect address API key connection deck note type templates")),

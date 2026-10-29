@@ -1,3 +1,4 @@
+using Cotabby.App.Localization;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,7 +19,7 @@ internal abstract class FrozenVocabularySemanticFormWindow : Window
     protected readonly VocabularySemanticIndex Baseline;
     protected readonly StackPanel Fields = new();
     private readonly TextBlock _failure = VocabularyNotebookTheme.Brush(new TextBlock { Name = "semanticFormError", TextWrapping = TextWrapping.Wrap }, TextBlock.ForegroundProperty, "OrangeBrush");
-    private readonly Button _save = new() { Name = "semanticFormSave", Content = "Save", IsDefault = true, MinWidth = 90 }, _cancel = new() { Content = "Cancel", IsCancel = true, MinWidth = 90 };
+    private readonly Button _save = new() { Name = "semanticFormSave", Content = InterfaceText.Get("Save"), IsDefault = true, MinWidth = 90 }, _cancel = new() { Content = InterfaceText.Get("Cancel"), IsCancel = true, MinWidth = 90 };
     private bool _saving, _retiring;
     private TaskCompletionSource? _retirement;
     protected Window? ChildWindow;
@@ -79,7 +80,7 @@ internal sealed class FrozenVocabularyMeaningEditorWindow : FrozenVocabularySema
         _languages = languages; _entries = entries ?? []; _draft = classification is not null && store is ICanonicalVocabularyMeaningOrganizationStore ? new(baseline, classification, languages, node, categoryId, linking?.SenseId) : null;
         _isNew = node is null; _linking = linking; _node = _draft?.Original ?? node ?? new VocabularyMeaningNode(Guid.NewGuid(), [new R.VocabularyMeaningLabel("") { Language = languages.Count > 0 ? languages[0] : null }]);
         _label = VocabularyMeaningLabelPolicy.Label(_node.Labels, languages) ?? _node.Labels[0]; _title.Text = _label.Text; _definition.Text = _node.Definition;
-        Fields.Children.Add(VocabularyInputControls.Caption("What do you want to express?"));
+        Fields.Children.Add(VocabularyInputControls.Caption(InterfaceText.Get("What do you want to express?")));
         Fields.Children.Add(VocabularyInputControls.Group(("Name", _title), ("Description (optional)", _definition)));
         Fields.Children.Add(VocabularyInputControls.Caption("Label language: " + (_label.Language?.Name() ?? "Unspecified")));
         if (_isNew)
@@ -89,9 +90,9 @@ internal sealed class FrozenVocabularyMeaningEditorWindow : FrozenVocabularySema
         }
         if (_draft is not null)
         {
-            Fields.Children.Add(VocabularyInputControls.Heading("Categories")); Fields.Children.Add(_categorySummary);
+            Fields.Children.Add(VocabularyInputControls.Heading(InterfaceText.Get("Categories"))); Fields.Children.Add(_categorySummary);
             var categories = new Button { Name = "meaningDraftCategories", Content = "Choose categories", HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 4, 0, 12) }; VocabularyNotebookTheme.Button(categories); categories.Click += (_, _) => _ = ChooseAsync(false); Fields.Children.Add(categories);
-            if (_isNew) { Fields.Children.Add(VocabularyInputControls.Heading("My expressions")); Fields.Children.Add(_expressionSummary); if (linking is null) { var expressions = new Button { Name = "meaningDraftExpressions", Content = "Add from vocabulary", HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 4, 0, 12) }; VocabularyNotebookTheme.Button(expressions); expressions.Click += (_, _) => _ = ChooseAsync(true); Fields.Children.Add(expressions); } }
+            if (_isNew) { Fields.Children.Add(VocabularyInputControls.Heading(InterfaceText.Get("My expressions"))); Fields.Children.Add(_expressionSummary); if (linking is null) { var expressions = new Button { Name = "meaningDraftExpressions", Content = InterfaceText.Get("Add from vocabulary"), HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 4, 0, 12) }; VocabularyNotebookTheme.Button(expressions); expressions.Click += (_, _) => _ = ChooseAsync(true); Fields.Children.Add(expressions); } }
             RefreshDraftSummaries();
         }
         _title.TextChanged += (_, _) => UpdateAdmission(); UpdateAdmission();
@@ -150,7 +151,7 @@ internal sealed class FrozenVocabularyMappingEditorWindow : FrozenVocabularySema
         _node.SelectedValue = nodeId; _sense.SelectedValue = senseId; if (nodeId is null) _node.SelectedIndex = 0; if (senseId is null) _sense.SelectedIndex = 0;
         _node.IsEnabled = fixedNode is null; _sense.IsEnabled = fixedSense is null && original is null;
         _conditions.Text = original?.Conditions ?? ""; _nuance.Text = original?.Nuance ?? "";
-        if (currentRules && senseId is null) { var choose = new Button { Name = "mappingChooseExpression", Content = "Choose an expression", HorizontalAlignment = HorizontalAlignment.Left }; VocabularyNotebookTheme.Button(choose); choose.Click += (_, _) => _ = ChooseExpressionAsync(choose, entries, languages); Fields.Children.Add(VocabularyInputControls.Group(("Expression", choose), ("Meaning group", _node))); }
+        if (currentRules && senseId is null) { var choose = new Button { Name = "mappingChooseExpression", Content = InterfaceText.Get("Choose an expression"), HorizontalAlignment = HorizontalAlignment.Left }; VocabularyNotebookTheme.Button(choose); choose.Click += (_, _) => _ = ChooseExpressionAsync(choose, entries, languages); Fields.Children.Add(VocabularyInputControls.Group(("Expression", choose), ("Meaning group", _node))); }
         else Fields.Children.Add(VocabularyInputControls.Group(("Expression", _sense), ("Meaning group", _node)));
         var context = VocabularyInputControls.Caption(""); Fields.Children.Add(context);
         void UpdateContext()

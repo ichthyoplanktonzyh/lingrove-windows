@@ -1,5 +1,6 @@
 using System.Net;
 using Cotabby.Core.Suggestions;
+using Cotabby.Core.Runtime.Metrics;
 using Cotabby.Inference.OpenAICompatible;
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -40,6 +41,19 @@ public class OpenAICompatibleSuggestionEngineTests : IDisposable
 
     private static Task<string> Collect(OpenAICompatibleSuggestionEngine engine, CancellationToken ct = default) =>
         engine.GenerateAsync(Request, ct);
+
+    [Fact]
+    public async Task ObservationUsesFrozenEndpointModelAfterConfigurationChanges()
+    {
+        var entered = new TaskCompletionSource(); var release = new TaskCompletionSource();
+        _server.Responder = async (_, _) => { entered.SetResult(); await release.Task; return StubHttpMessageHandler.Sse("data: {\"choices\":[{\"text\":\" world\"}]}\n\ndata: [DONE]\n\n"); };
+        var engine = MakeEngine(); var observations = new List<CompletionObservation>(); engine.Observed += observations.Add;
+        var work = Collect(engine); await entered.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        engine.UpdateSettings(Settings(modelName: "new-model")); release.SetResult();
+        Assert.Equal(" world", await work.WaitAsync(TimeSpan.FromSeconds(5)));
+        var observed = Assert.Single(observations); Assert.Equal("local-model", observed.ModelName);
+        Assert.Equal("req-1", observed.RequestId); Assert.Equal(ModelRequestOutcome.Completed, observed.Outcome);
+    }
 
     [Fact]
     public async Task Generation_SendsRequestKnobsAndReturnsNormalizedText()

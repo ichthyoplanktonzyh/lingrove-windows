@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Globalization;
+using Cotabby.App.Localization;
 using Cotabby.App.Speech;
 using Cotabby.App.UI.Vocabulary;
 using Cotabby.Core.LanguageLearning;
@@ -149,7 +150,7 @@ internal sealed class SpeechConfigurationWindow : Window
         try { if (_speech.Settings.SelectedProvider == LearningSpeechProviderKind.Endpoint) SaveKey(); _speech.Toggle(new(Target, Phrase(_language), _language, LanguageMode: SpeechLanguageMode.Fixed)); }
         catch { _status.Text = "Unable to save the speech endpoint key."; }
     }
-    private void RenderStatus() { _destination.Text = _speech.DestinationDescription; if (_test is not null) _test.Content = _speech.IsPlaying(Target) ? "Stop" : "Test voice"; _status.Text = _speech.Error(Target) ?? (_speech.IsPreparing(Target) ? "Generating speech…" : _speech.IsPlaying(Target) ? "Playing" : _speech.ConfigurationError ?? ""); }
+    private void RenderStatus() { _destination.Text = _speech.DestinationDescription; if (_test is not null) _test.Content = InterfaceText.Get(_speech.IsPlaying(Target) ? "Stop" : "Test voice"); _status.Text = _speech.Error(Target) ?? (_speech.IsPreparing(Target) ? InterfaceText.Get("Generating speech…") : _speech.IsPlaying(Target) ? InterfaceText.Get("Playing") : _speech.ConfigurationError ?? ""); }
     private void Input(string label, string value, Action<string> save)
     { var box = new TextBox { Text = value, MinWidth = 240 }; VocabularyNotebookTheme.Input(box); box.LostKeyboardFocus += (_, _) => save(box.Text); Row(label, box); }
     private void Asset(string label, string path, Action<string> save, string filter)
@@ -158,9 +159,9 @@ internal sealed class SpeechConfigurationWindow : Window
         panel.Children.Add(Button("Choose…", () => { var dialog = new OpenFileDialog { Filter = filter, Multiselect = false }; if (dialog.ShowDialog(this) == true) { try { save(dialog.FileName); } catch { _status.Text = "Unable to select this file."; } } }));
         if (path.Length > 0) panel.Children.Add(Button("Clear", () => save(""))); Row(label, panel);
     }
-    private void Heading(string title) => _body.Children.Add(new TextBlock { Text = title, FontSize = 17, FontWeight = FontWeights.SemiBold, Margin = new Thickness(0, 14, 0, 8) });
-    private void Row(string label, UIElement control) { var panel = new StackPanel { Margin = new Thickness(0, 0, 0, 10) }; panel.Children.Add(new TextBlock { Text = label, Margin = new Thickness(0, 0, 0, 4) }); panel.Children.Add(control); _body.Children.Add(panel); }
-    private static Button Button(string text, Action click) { var button = new Button { Content = text, HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 0, 8, 6) }; VocabularyNotebookTheme.Button(button); button.Click += (_, _) => click(); return button; }
+    private void Heading(string title) => _body.Children.Add(new TextBlock { Text = InterfaceText.Get(title), FontSize = 17, FontWeight = FontWeights.SemiBold, Margin = new Thickness(0, 14, 0, 8) });
+    private void Row(string label, UIElement control) { var panel = new StackPanel { Margin = new Thickness(0, 0, 0, 10) }; panel.Children.Add(new TextBlock { Text = InterfaceText.Get(label), Margin = new Thickness(0, 0, 0, 4) }); panel.Children.Add(control); _body.Children.Add(panel); }
+    private static Button Button(string text, Action click) { var button = new Button { Content = InterfaceText.Get(text), HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 0, 8, 6) }; VocabularyNotebookTheme.Button(button); button.Click += (_, _) => click(); return button; }
     private static string Phrase(LearningLanguage language) => language switch
     {
         LearningLanguage.English => "Hello. This is a voice preview.", LearningLanguage.Spanish => "Hola. Esta es una prueba de voz.", LearningLanguage.French => "Bonjour. Ceci est un essai vocal.", LearningLanguage.German => "Hallo. Dies ist eine Sprachprobe.", LearningLanguage.Italian => "Ciao. Questa è una prova vocale.", LearningLanguage.Portuguese => "Olá. Esta é uma amostra de voz.", LearningLanguage.Dutch => "Hallo. Dit is een stemtest.", LearningLanguage.Russian => "Здравствуйте. Это проверка голоса.", LearningLanguage.Chinese => "你好，这是语音试听。", LearningLanguage.TraditionalChinese => "你好，這是語音試聽。", LearningLanguage.Japanese => "こんにちは。音声の試聴です。", LearningLanguage.Korean => "안녕하세요. 음성 미리 듣기입니다.", LearningLanguage.Hindi => "नमस्ते। यह आवाज़ का नमूना है।", LearningLanguage.Arabic => "مرحبًا، هذه عينة صوتية.", _ => ""

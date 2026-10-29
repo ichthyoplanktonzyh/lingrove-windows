@@ -15,6 +15,8 @@ public sealed class FileLoggerProvider : ILoggerProvider
     private readonly object _gate = new();
     private StreamWriter? _writer;
 
+    internal FileLoggerProvider(StreamWriter writer) => _writer = writer;
+
     public FileLoggerProvider(string path)
     {
         var dir = Path.GetDirectoryName(path);
@@ -26,43 +28,45 @@ public sealed class FileLoggerProvider : ILoggerProvider
         { AutoFlush = true };
     }
 
-    public ILogger CreateLogger(string categoryName) => new FileLogger(categoryName, _gate, _writer);
+    public ILogger CreateLogger(string categoryName) => new FileLogger(categoryName, this);
 
     public void Dispose()
     {
         lock (_gate)
         {
-            _writer?.Dispose();
+            var writer = _writer;
             _writer = null;
+            writer?.Dispose();
         }
     }
 
     private sealed class FileLogger : ILogger
     {
         private readonly string _category;
-        private readonly object _gate;
-        private readonly StreamWriter? _writer;
+        private readonly FileLoggerProvider _owner;
 
-        public FileLogger(string category, object gate, StreamWriter? writer)
+        public FileLogger(string category, FileLoggerProvider owner)
         {
             _category = category;
-            _gate = gate;
-            _writer = writer;
+            _owner = owner;
         }
 
         public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
-        public bool IsEnabled(LogLevel logLevel) => _writer is not null && logLevel >= LogLevel.Debug;
+        public bool IsEnabled(LogLevel logLevel) => _owner._writer is not null && logLevel >= LogLevel.Debug;
 
         public void Log<TState>(
             LogLevel logLevel, EventId eventId, TState state,
             Exception? exception, Func<TState, Exception?, string> formatter)
         {
-            if (!IsEnabled(logLevel) || _writer is null) return;
+            if (!IsEnabled(logLevel)) return;
             var line = $"{DateTime.Now:HH:mm:ss.fff} {ShortLevel(logLevel)}: {_category}[{eventId.Id}] {formatter(state, exception)}";
             if (exception is not null) line += $" :: {exception}";
-            lock (_gate)
+            lock (_owner._gate)
             {
-                _writer.WriteLine(line);
+                // Restart/shutdown failures may be reported after DI retired its log provider.
+                // Resolve the live writer under the same gate as Dispose rather than retaining
+                // a closed StreamWriter in every logger.
+                _owner._writer?.WriteLine(line);
             }
         }
 

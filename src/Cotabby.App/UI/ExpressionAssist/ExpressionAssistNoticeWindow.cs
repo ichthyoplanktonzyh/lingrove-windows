@@ -1,3 +1,4 @@
+using Cotabby.App.Localization;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Automation;
@@ -28,7 +29,7 @@ internal sealed class ExpressionAssistNoticeWindow : Window
     internal ExpressionAssistNoticeWindow(string message, string? candidate, Action<string> copy)
     {
         _candidate = candidate; _copy = copy;
-        Title = "Expression assistance"; Width = 400; MinWidth = 260; MaxHeight = 420;
+        Title = InterfaceText.Get("Expression assistance"); Width = 400; MinWidth = 260; MaxHeight = 420;
         SizeToContent = SizeToContent.Height; WindowStyle = WindowStyle.None; ResizeMode = ResizeMode.NoResize;
         AllowsTransparency = true; Background = Brushes.Transparent; ShowActivated = false; ShowInTaskbar = false;
         Topmost = true; WindowStartupLocation = WindowStartupLocation.Manual; FontFamily = new FontFamily("Segoe UI Variable, Segoe UI"); FontSize = 13;
@@ -48,7 +49,7 @@ internal sealed class ExpressionAssistNoticeWindow : Window
         card.SetResourceReference(Border.BackgroundProperty, "CardBg"); card.SetResourceReference(Border.BorderBrushProperty, "CardBorder"); Content = card;
         var layout = new DockPanel(); card.Child = layout;
         var buttons = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0, 14, 0, 0) };
-        var close = Button("Close", "expressionNoticeClose"); close.Click += (_, _) => Close(); buttons.Children.Add(close);
+        var close = Button(InterfaceText.Get("Close"), "expressionNoticeClose"); close.Click += (_, _) => Close(); buttons.Children.Add(close);
         if (candidate is not null)
         {
             _copyButton = Button("Copy", "expressionNoticeCopy"); _copyButton.Margin = new Thickness(8, 0, 0, 0); _copyButton.SetResourceReference(Control.BackgroundProperty, "NoticeAccent"); _copyButton.SetResourceReference(Control.BorderBrushProperty, "NoticeAccent"); _copyButton.SetResourceReference(Control.ForegroundProperty, "NoticeAccentText");

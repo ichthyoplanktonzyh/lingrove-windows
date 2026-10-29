@@ -1,3 +1,4 @@
+using Cotabby.App.Localization;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Controls;
@@ -78,7 +79,7 @@ internal sealed class CanonicalVocabularyImageView : Border, IDisposable
                 if (_disposed || version != _version || !IsVisible) return;
                 _loaded = true; _image.Source = bitmap;
                 _open.Visibility = bitmap is null ? Visibility.Collapsed : Visibility.Visible;
-                _status.Text = "Image unavailable"; _status.Visibility = bitmap is null ? Visibility.Visible : Visibility.Collapsed;
+                _status.Text = InterfaceText.Get("Image unavailable"); _status.Visibility = bitmap is null ? Visibility.Visible : Visibility.Collapsed;
                 _work = null;
             }, DispatcherPriority.Normal, token).Task.ConfigureAwait(false);
         }
@@ -96,10 +97,10 @@ internal sealed class CanonicalVocabularyImageView : Border, IDisposable
     private void Enlarge()
     {
         if (_disposed || !IsVisible || Bitmap is not { } bitmap || _preview is not null) return;
-        var close = new Button { Content = "Close", IsCancel = true, HorizontalAlignment = HorizontalAlignment.Center, Padding = new Thickness(14, 6, 14, 6) };
+        var close = new Button { Content = InterfaceText.Get("Close"), IsCancel = true, HorizontalAlignment = HorizontalAlignment.Center, Padding = new Thickness(14, 6, 14, 6) };
         var panel = new DockPanel { Margin = new Thickness(16) }; DockPanel.SetDock(close, Dock.Bottom); panel.Children.Add(close);
         panel.Children.Add(new Image { Source = bitmap, Stretch = Stretch.Uniform, Margin = new Thickness(0, 0, 0, 12) });
-        var preview = new Window { Title = "Image", Content = panel, Width = 760, Height = 580, MinWidth = 300, MinHeight = 240,
+        var preview = new Window { Title = InterfaceText.Get("Image"), Content = panel, Width = 760, Height = 580, MinWidth = 300, MinHeight = 240,
             Owner = Window.GetWindow(this), WindowStartupLocation = WindowStartupLocation.CenterOwner, ShowInTaskbar = false };
         preview.SetResourceReference(Window.BackgroundProperty, "WindowBg"); preview.SetResourceReference(Window.ForegroundProperty, "TextPrimary"); WindowTheme.Follow(preview);
         close.Click += (_, _) => preview.Close(); _preview = preview;

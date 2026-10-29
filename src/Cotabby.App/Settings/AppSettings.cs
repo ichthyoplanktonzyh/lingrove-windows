@@ -48,6 +48,7 @@ public sealed partial class AppSettings
         LocalModelTaskAssignmentsValue = ModelAssignmentSnapshot().ToDictionary(x => x.Key, x => x.Value.ToArray(), StringComparer.Ordinal),
         LocalModelSourcesValue = new Dictionary<string, string>(LocalModelSourcesValue ?? [], StringComparer.Ordinal),
         ShowFirstRunWelcome = ShowFirstRunWelcome,
+        OnboardingProgressValue = OnboardingProgressValue,
         WordsAccepted = wordsAccepted,
         VocabularyGraphSettingsValue = VocabularyGraphSettingsValue,
         VocabularyBrowserModeValue = VocabularyBrowserModeValue,
@@ -119,6 +120,11 @@ public sealed partial class AppSettings
     /// <summary>Explicit, manual current-sentence translation. The Mac Option+T binding maps to Alt+T on Windows.</summary>
     public KeyBinding LearningTranslationShortcut { get; set; } = new(0x54, KeyModifiers.Alt, "Alt+T");
     public bool LearningReadingEnabled { get; set; }
+    public bool LearningReadingIconEnabled { get; set; }
+    public bool LearningReadingPointerEnabled { get; set; }
+    public bool LearningReadingScreenshotEnabled { get; set; }
+    public KeyBinding LearningReadingPointerShortcut { get; set; } = new(0x54, KeyModifiers.Control | KeyModifiers.Shift, "Ctrl+Shift+T");
+    public KeyBinding LearningReadingScreenshotShortcut { get; set; } = new(0x54, KeyModifiers.Control | KeyModifiers.Alt | KeyModifiers.Shift, "Ctrl+Alt+Shift+T");
     public LearningLanguage LearningReadingTargetLanguage { get; set; } = LearningLanguage.Chinese;
     public KeyBinding LearningReadingShortcut { get; set; } = new(0x54, KeyModifiers.Alt | KeyModifiers.Shift, "Alt+Shift+T");
     // Interaction preferences borrow the explanation profile, never the translation destination.
@@ -144,6 +150,8 @@ public sealed partial class AppSettings
         }
         if (LearningTranslationEnabled) reservations.Add((LearningTranslationShortcut, "Translation"));
         if (LearningReadingEnabled) reservations.Add((LearningReadingShortcut, "Selected Text Reading"));
+        if (LearningReadingPointerEnabled) reservations.Add((LearningReadingPointerShortcut, "Text Under Pointer"));
+        if (LearningReadingScreenshotEnabled) reservations.Add((LearningReadingScreenshotShortcut, "Screen Region Reading"));
         return Cotabby.Core.ExpressionAssist.ExpressionAssistShortcutPolicy.Conflict(candidate, reservations);
     }
 

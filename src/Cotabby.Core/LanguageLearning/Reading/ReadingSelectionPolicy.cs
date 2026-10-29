@@ -24,9 +24,15 @@ public static class ReadingSelectionPolicy
         bool absolute = selection.SelectionStart is int start && start >= 0
             && selection.SelectionLength > 0 && start <= int.MaxValue - selection.SelectionLength;
         bool opaque = selection.SelectionAnchorId is Guid id && id != Guid.Empty;
-        if (selection.Id == Guid.Empty || selection.ProcessId <= 0 || string.IsNullOrWhiteSpace(selection.FieldId)
-            || selection.FocusEpoch <= 0 || absolute == opaque || (selection.SelectionStart.HasValue && !absolute)
-            || (selection.SelectionAnchorId.HasValue && !opaque) || selection.Text is null
+        bool screen = selection.Source == ReadingSourceKind.Screenshot && selection.ScreenReceipt is { } receipt
+            && receipt.EvidenceId != Guid.Empty && !selection.SelectionStart.HasValue && !selection.SelectionAnchorId.HasValue
+            && ReadingRegionPolicy.Contains(receipt.FieldBounds, receipt.DisplayBounds, receipt.Region);
+        bool range = selection.Source is ReadingSourceKind.Selection or ReadingSourceKind.Pointer && absolute != opaque
+            && (!selection.SelectionStart.HasValue || absolute) && (!selection.SelectionAnchorId.HasValue || opaque)
+            && (selection.Source != ReadingSourceKind.Pointer || opaque) && selection.ScreenReceipt is null;
+        if (!(range || screen)
+            || selection.Id == Guid.Empty || selection.ProcessId <= 0 || string.IsNullOrWhiteSpace(selection.FieldId)
+            || selection.FocusEpoch <= 0 || selection.Text is null
             || selection.SelectionLength <= 0 || selection.SelectionLength != selection.Text.Length
             || selection.IsSecure || !selection.IsComplete || selection.Composition != Cotabby.Core.Focus.InputCompositionState.Clear
             || selection.CompositionSequence <= 0) throw new ArgumentException("The selected occurrence could not be verified.");
@@ -64,8 +70,10 @@ public static class ReadingSelectionPolicy
             context.TargetStart > context.Text.Length || context.TargetLength > context.Text.Length - context.TargetStart ||
             context.Text.Length - context.TargetLength > 1_024 || context.TargetLength > 3_072 ||
             !EditorTextRangePolicy.IsValid(context.Text, context.TargetStart, context.TargetLength)) return false;
-        return expected is not null && context.TargetLength == expected.Length
-            && context.Text.AsSpan(context.TargetStart, context.TargetLength).SequenceEqual(expected.AsSpan());
+        if (expected is null || expected.Length > ReadingContextPolicy.MaximumSelection) return false;
+        string target = FoundationText.TrimWhitespaceAndNewlines(expected);
+        return target.Length > 0 && context.TargetLength == target.Length
+            && context.Text.AsSpan(context.TargetStart, context.TargetLength).SequenceEqual(target.AsSpan());
     }
 
     public static bool CoversContext(ReadingContext context)

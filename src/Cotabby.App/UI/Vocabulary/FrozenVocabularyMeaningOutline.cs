@@ -1,3 +1,4 @@
+using Cotabby.App.Localization;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,7 +15,7 @@ internal sealed class FrozenVocabularyMeaningOutline : UserControl
 {
     private sealed class Search : IVocabularyTextSearching { public bool Contains(string field, string term) => CultureInfo.CurrentCulture.CompareInfo.IndexOf(field, term, CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace) >= 0; }
     private readonly ListBox _list = new() { Name = "canonicalMeaningOutline" };
-    private readonly CheckBox _unexplored = new() { Name = "canonicalShowUnexplored", Content = "Show unexplored categories" };
+    private readonly CheckBox _unexplored = new() { Name = "canonicalShowUnexplored", Content = InterfaceText.Get("Show unexplored categories") };
     private readonly Button _manage = new() { Content = "Manage", Name = "outlineManageCategories", Padding = new Thickness(8, 4, 8, 4) }, _create = new() { Content = "+", Name = "outlineNewCategory", Padding = new Thickness(8, 4, 8, 4), ToolTip = "New category" };
     private readonly HashSet<string> _expanded = new(StringComparer.Ordinal);
     private R.VocabularyClassificationIndex _index = new();
@@ -34,7 +35,7 @@ internal sealed class FrozenVocabularyMeaningOutline : UserControl
     {
         var root = new DockPanel(); VocabularyNotebookTheme.Brush(root, Panel.BackgroundProperty, "SidebarBg"); Content = root; var bar = new DockPanel { Margin = new Thickness(10, 8, 10, 8) };
         VocabularyNotebookTheme.Button(_manage); _manage.Click += (_, _) => { if (_canEdit) ManageCategories?.Invoke(); }; DockPanel.SetDock(_manage, Dock.Right); bar.Children.Add(_manage); VocabularyNotebookTheme.Button(_create); _create.Click += (_, _) => { if (_canEdit) NewCategory?.Invoke(null); }; DockPanel.SetDock(_create, Dock.Right); bar.Children.Add(_create);
-        var outlineMenu = new ContextMenu(); var expandAll = new MenuItem { Header = "Expand all populated" }; expandAll.Click += (_, _) => { var populated = _index.Memberships.Where(x => x.Provenance.Status == R.VocabularySemanticStatus.Confirmed).Select(x => x.CategoryId).ToHashSet(); _expanded.UnionWith(VocabularyClassificationProjection.ExpansionPaths(populated, _index, includeTarget: true)); Render(); }; var collapseAll = new MenuItem { Header = "Collapse all" }; collapseAll.Click += (_, _) => { _expanded.Clear(); Render(); }; outlineMenu.Items.Add(expandAll); outlineMenu.Items.Add(collapseAll); _manage.ContextMenu = outlineMenu;
+        var outlineMenu = new ContextMenu(); var expandAll = new MenuItem { Header = InterfaceText.Get("Expand all populated") }; expandAll.Click += (_, _) => { var populated = _index.Memberships.Where(x => x.Provenance.Status == R.VocabularySemanticStatus.Confirmed).Select(x => x.CategoryId).ToHashSet(); _expanded.UnionWith(VocabularyClassificationProjection.ExpansionPaths(populated, _index, includeTarget: true)); Render(); }; var collapseAll = new MenuItem { Header = InterfaceText.Get("Collapse all") }; collapseAll.Click += (_, _) => { _expanded.Clear(); Render(); }; outlineMenu.Items.Add(expandAll); outlineMenu.Items.Add(collapseAll); _manage.ContextMenu = outlineMenu;
         System.Windows.Automation.AutomationProperties.SetAutomationId(_manage, "vocabularyManageCategories"); System.Windows.Automation.AutomationProperties.SetAutomationId(_create, "vocabularyNewCategory"); System.Windows.Automation.AutomationProperties.SetAutomationId(_list, "vocabularyMeaningList");
         VocabularyNotebookTheme.Brush(_unexplored, Control.ForegroundProperty, "TextPrimary"); _unexplored.Margin = new Thickness(0, 5, 8, 5); _unexplored.Click += (_, _) => { ShowUnexploredChanged?.Invoke(ShowUnexplored); Render(); }; bar.Children.Add(_unexplored); DockPanel.SetDock(bar, Dock.Top); root.Children.Add(bar);
         _list.BorderThickness = new Thickness(0); ScrollViewer.SetHorizontalScrollBarVisibility(_list, ScrollBarVisibility.Disabled); VocabularyNotebookTheme.Brush(_list, Control.BackgroundProperty, "SidebarBg"); VocabularyNotebookTheme.Brush(_list, Control.ForegroundProperty, "TextPrimary"); System.Windows.Automation.AutomationProperties.SetName(_list, "Meaning categories"); _list.SelectionChanged += (_, _) => { if (!_updating && _list.SelectedItem is ListBoxItem { Tag: VocabularyMeaningDestination destination }) Selected?.Invoke(destination); }; root.Children.Add(_list);

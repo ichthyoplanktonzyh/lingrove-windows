@@ -134,6 +134,10 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
     /// <summary>True while an inline feature such as the emoji picker owns the keyboard.</summary>
     public Func<bool>? InlineCaptureActive { get; set; }
 
+    /// <summary>Optional local-only readiness owner. It may prepare the already selected cached
+    /// model; a request cancels only its wait, while that owner tracks and drains preparation.</summary>
+    public Func<CancellationToken, Task<bool>>? EnsureLocalReady { get; set; }
+
     /// <summary>
     /// True when Cotabby may act in this field. The emoji picker and macros follow the same
     /// rules as suggestions, so turning Cotabby off or excluding an app silences them too.
@@ -385,10 +389,17 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
             if (!settings.SuggestWithinWords && CaretWordContext.UnfinishedWord(preceding) is not null) return;
             // A completion inside a token would duplicate or splice what follows the caret.
             if (CaretTokenPosition.IsInsideToken(preceding, field.TrailingText)) return;
-            if (!_engine.IsReady) return;
-
             var request = SuggestionRequestFactory.Build(
                 field, requestId, settings, settings.ClipboardContext ? _clipboard?.For(field) : null);
+            if (!_engine.IsReady)
+            {
+                if (settings.UsesEndpoint || EnsureLocalReady is not { } ensure || !await ensure(ct).ConfigureAwait(false)) return;
+                if (ct.IsCancellationRequested || !_pendingEdits.IsCurrent(editEpoch) || !_engine.IsReady) return;
+                var afterPreparation = _focus.Refresh();
+                if (!InsertionTargetPolicy.IsCurrentTarget(field, afterPreparation)
+                    || SuggestionAvailability.DisabledReason(_settings, _clock.GetUtcNow(), _batterySaverOn()) is not null
+                    || SuggestionAvailability.DisabledReason(_settings, afterPreparation!) is not null) return;
+            }
             var stopwatch = Stopwatch.StartNew();
             string text = await GenerateAsync(request, ct).ConfigureAwait(false);
             int latencyMs = (int)stopwatch.ElapsedMilliseconds;

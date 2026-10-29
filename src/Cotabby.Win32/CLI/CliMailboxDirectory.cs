@@ -62,7 +62,7 @@ internal sealed class CliMailboxDirectory : IDisposable
     }
     internal byte[]? Consume(string name, Func<byte[], bool>? admit = null)
     {
-        ValidateName(name); using var handle = _directory.OpenFile(name, delete: true); if (handle is null) return null;
+        ValidateName(name); using var handle = _directory.OpenFile(name, delete: true, reportSharingViolation: true); if (handle is null) return null;
         using var stream = new FileStream(handle, FileAccess.Read);
         if (stream.Length < 0 || stream.Length > CliInputContract.MaximumBytes) throw Invalid();
         using var output = new MemoryStream((int)stream.Length); var buffer = new byte[65536];
@@ -81,7 +81,7 @@ internal sealed class CliMailboxDirectory : IDisposable
         => ClaimOwned(name, target) is not null;
     internal VocabularyWindowsFile.FileIdentity? ClaimOwned(string name, CliMailboxDirectory target, VocabularyWindowsFile.FileIdentity? expected = null)
     {
-        ValidateName(name); using var handle = _directory.OpenFile(name, delete: true); if (handle is null) return null;
+        ValidateName(name); using var handle = _directory.OpenFile(name, delete: true, reportSharingViolation: true); if (handle is null) return null;
         var identity = VocabularyWindowsFile.Identity(handle);
         if (expected is not null && identity != expected) return null;
         Verify(); target.Verify(); Rename(handle, System.IO.Path.Combine(target.Path, name)); return identity;

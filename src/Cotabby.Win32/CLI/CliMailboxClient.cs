@@ -1,4 +1,5 @@
 using Cotabby.Core.CLI;
+using Cotabby.Win32.Vocabulary;
 
 namespace Cotabby.Win32.CLI;
 
@@ -8,6 +9,10 @@ public static class CliMailboxClient
 {
     public static async Task<CliReply> SendAsync(string root, CliRequest request, Func<CancellationToken, Task>? launch = null,
         CancellationToken cancellationToken = default)
+        => await SendCoreAsync(root, request, launch, cancellationToken, null).ConfigureAwait(false);
+
+    internal static async Task<CliReply> SendCoreAsync(string root, CliRequest request, Func<CancellationToken, Task>? launch,
+        CancellationToken cancellationToken, Action? sharingObserved)
     {
         ArgumentNullException.ThrowIfNull(request);
         var retained = CliWire.DecodeRequest(CliWire.Encode(request));
@@ -28,7 +33,10 @@ public static class CliMailboxClient
             while (CliWire.Now() < retained.ExpiresAt)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                if (replies.Consume(name, Admit) is { } data)
+                byte[]? data;
+                try { data = replies.Consume(name, Admit); }
+                catch (VocabularyFileSharingException) { sharingObserved?.Invoke(); data = null; }
+                if (data is not null)
                 {
                     var reply = CliWire.DecodeReply(data);
                     if (reply.Version != 1 || reply.RequestId != retained.Id) throw new CliException(CliErrorCode.Io, "CLI response identity mismatch.");

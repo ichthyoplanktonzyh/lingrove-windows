@@ -38,6 +38,7 @@ internal sealed partial class CanonicalAnkiReviewSession
             cancellationToken.ThrowIfCancellationRequested();
             byte[] data;
             try { data = await Store.ReadImageAsync(image, cancellationToken); }
+            catch (OperationCanceledException) { throw; }
             catch { throw new AnkiReviewException("An explanation image is missing. Add it again before sending."); }
             await ValidateCurrentAsync(content, connection, cancellationToken);
             if (!Same(await Controller.ProfileAsync(connection, cancellationToken), profile)) throw Conflict();

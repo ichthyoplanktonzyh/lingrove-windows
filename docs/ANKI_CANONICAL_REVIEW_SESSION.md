@@ -28,6 +28,13 @@ remote note is followed by a separate receipt transaction even if presentation c
 No operation starts automatically. The future UI must show the selected endpoint/profile before an
 explicit Send. This checkpoint does not connect AppHost or review UI.
 
+Windows additionally rechecks the complete captured plan, deck, binding and mapping after awaited
+reads and immediately before remote writes; accepted Save acknowledgements preserve later draft
+and image edits. Metadata is published only if its captured model, binding and connection remain
+current after each await. The metadata recheck is Windows async safety hardening, not a claim that
+the frozen Mac method performs that same guard. Cancellation while reading an image remains
+cancellation and is not reported as a missing image.
+
 Speech is not activated: any requested review audio or audio layout slot is rejected before a remote
 write, including when it appears while a metadata read is suspended. Text and image preparation do
 not synthesize, upload or silently omit audio. The current Windows image subset remains documented

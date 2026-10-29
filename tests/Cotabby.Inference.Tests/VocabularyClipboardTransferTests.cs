@@ -137,9 +137,13 @@ public sealed class VocabularyClipboardTransferTests
     {
         private readonly string _directory = Path.Combine(Path.GetTempPath(), "lingrove-transfer-" + Guid.NewGuid().ToString("N"));
         private string Marker => Path.Combine(_directory, "child.pid");
+        private string PendingMarker => Path.Combine(_directory, "child.pid.pending");
         private string ReleaseMarker => Path.Combine(_directory, "write-stderr");
         private string ReplyMarker => Path.Combine(_directory, "write-reply");
-        private string PublishPid => "[IO.File]::WriteAllText('" + Marker.Replace("'", "''") + "', $PID.ToString()); ";
+        // Existence is the parent's readiness signal. Publish only after WriteAllText closes
+        // its exclusive Windows handle, so the parent cannot read a partial/locked marker.
+        private string PublishPid => "[IO.File]::WriteAllText('" + PendingMarker.Replace("'", "''") + "', $PID.ToString()); " +
+            "[IO.File]::Move('" + PendingMarker.Replace("'", "''") + "', '" + Marker.Replace("'", "''") + "'); ";
         internal string Script => PublishPid + "[Threading.Thread]::Sleep(-1)";
         internal string StderrBudgetScript => PublishPid + "while (-not [IO.File]::Exists('" + ReleaseMarker.Replace("'", "''") + "')) { [Threading.Thread]::Sleep(25) }; " +
             "$payload=[byte[]]::new(40000); $pipe=[Console]::OpenStandardError(); $pipe.Write($payload,0,$payload.Length); $pipe.Flush(); [Threading.Thread]::Sleep(-1)";

@@ -40,9 +40,20 @@ retained host subscription with composition/finalization and text/selection chan
 generation retirement, bounded waits and fresh
 field/password/process/foreground and active-composition checks. It only permits the exact host
 window or the registered current-process panel while the caller confirms panel keyboard ownership.
-It has no independent global focus listener. The expression session still must enforce panel
-lifetime, third-field revocation and before/after receipt checks; native resume and single-dispatch
-replacement are not yet implemented or connected. UIA TextEdit is absent for some
+It has no independent global focus listener. `Win32ExpressionEditor` borrows the existing keyboard
+hook and focus tracker, revokes unexpected focus/input and retained-host events, and owns a bounded
+capture and explicit panel-to-host return. Under the shared insertion gate it recaptures before one
+native batch. A verified outcome requires observing the expected full value; an incomplete dispatch,
+cancellation after possible dispatch or failed clipboard cleanup is unverified, with no automatic
+retry or rollback. Only the original selection may be replaced; trigger cancellation/replacement is
+limited to printable ASCII before a collapsed caret. Non-ASCII triggers are rejected before opening
+the panel. The panel ownership callback must be a thread-safe, nonblocking snapshot.
+
+This draft is not connected to AppHost and has not yet had independent review. Fake-driven session
+tests cover matched host return, one-shot Unicode selection and ASCII marker deletion, changed
+value, physical input and same-process HWND switch before dispatch, waiting cancellation, partial
+dispatch, and clipboard ownership/cleanup failure. They do not establish physical input or native
+write behavior. UIA TextEdit is absent for some
 hosts, and an unsupported host remains unavailable. No physical IME or desktop acceptance is claimed.
 
 Windows API references: [TextPattern selection](https://learn.microsoft.com/en-us/dotnet/api/system.windows.automation.textpattern.getselection),
@@ -62,3 +73,15 @@ raised a real UIA text change and retired its receipt; the separate synthetic co
 is not a real IME event. Asynchronous provider events and physical IME behavior remain unverified.
 `UiaTextEditEvidenceTests.TimedOutRetainedRegistrationIsRetiredBeforeNativeFocusQuery`
 exercises a held owner and ensures expired queued registration cannot later query the active field.
+
+The product uses the existing UIA focus event and keyboard hook, not a second global hook. A single
+raw focus transition into the registered panel and a single explicit return to the original host
+are allowed; any additional focus transition retires the receipt, even if text later reverts. This
+is deliberately conservative and may reject hosts that produce additional focus notifications.
+The one initiating key-up is exempt only during capture and only for its exact virtual key; no
+other physical input is ignored. UIA events are asynchronous and providers can be defective, so a
+small race between final observation and SendInput remains and physical testing is still required.
+
+`dotnet test tests/Cotabby.App.Wpf.Tests/Cotabby.App.Wpf.Tests.csproj --configuration Release
+--no-restore --filter FullyQualifiedName~ExpressionEditorSessionTests` passed 10/10 with fake native
+effects. These do not type into or focus any user application.

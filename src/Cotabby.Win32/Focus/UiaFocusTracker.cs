@@ -67,6 +67,9 @@ public sealed class UiaFocusTracker : IFocusTracker
     }
 
     public event EventHandler<FocusedField?>? FocusChanged;
+    // Synchronous, metadata-only revocation signal for request owners. Unlike the asynchronously
+    // refreshed snapshot event, this cannot hide an intervening focus transition after a round trip.
+    internal event Action<nint>? FocusTransition;
 
     // The expression session borrows this same MTA owner; no second global listener is created.
     internal UiaTextEditEvidence? ExpressionCompositionOwner =>
@@ -120,6 +123,8 @@ public sealed class UiaFocusTracker : IFocusTracker
             Volatile.Write(ref _current, null);
             _logger.LogInformation("UIA focus tracker stopped.");
         }
+        try { FocusTransition?.Invoke(0); }
+        catch (Exception) { _logger.LogWarning("Focus transition notification failed."); }
         if (handler is not null)
         {
             _composition?.RetireAsync(retirementEpoch);
@@ -245,6 +250,8 @@ public sealed class UiaFocusTracker : IFocusTracker
             retirementEpoch = _composition?.Invalidate() ?? 0;
             Volatile.Write(ref _current, null);
         }
+        try { FocusTransition?.Invoke(NativeMethods.GetForegroundWindow()); }
+        catch (Exception) { _logger.LogWarning("Focus transition notification failed."); }
         _composition?.RetireAsync(retirementEpoch);
         ThreadPool.QueueUserWorkItem(_ => PublishFocusChange(eventSequence));
     }

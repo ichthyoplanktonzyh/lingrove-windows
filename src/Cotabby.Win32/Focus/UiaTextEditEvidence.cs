@@ -19,6 +19,15 @@ internal interface ICompositionEvidenceOwner : IDisposable
     void RetireAsync(long expectedEpoch);
 }
 
+internal interface IExpressionRetainedEvidence
+{
+    long? Register(int processId, string fieldId, nint hostWindow, nint panelWindow, Action changed, CancellationToken ct);
+    (InputCompositionState State, long Version) Observe(long token, bool panelOwnsKeyboard, CancellationToken ct);
+    bool IsCurrent(long token, long version);
+    void Retire(long token);
+    Task DrainAsync();
+}
+
 internal readonly record struct UiaBootstrapResult(int InitializeHResult, int? FactoryHResult, bool HasAutomation);
 internal readonly record struct UiaOwnedElementResult(int ElementHResult, string? RuntimeId, int? PatternHResult,
     bool HasTextEditPattern, int? CompositionRegistrationHResult, int? FinalizedRegistrationHResult,
@@ -27,7 +36,7 @@ internal readonly record struct UiaOwnedElementResult(int ElementHResult, string
 // Owns all native TextEdit subscriptions on one MTA. COM retains each callback until its last
 // native reference is released; callbacks carry only an epoch, never inspect the event payload.
 [SupportedOSPlatform("windows8.1")]
-internal sealed unsafe class UiaTextEditEvidence : ICompositionEvidenceOwner
+internal sealed unsafe class UiaTextEditEvidence : ICompositionEvidenceOwner, IExpressionRetainedEvidence
 {
     private readonly BlockingCollection<Action> _queue = new();
     private readonly Thread _thread;
@@ -172,10 +181,11 @@ internal sealed unsafe class UiaTextEditEvidence : ICompositionEvidenceOwner
                 TreeScope.TreeScope_Element, null, selectionChanged).Failed) return null;
             selectionAdded = true;
             if (token != Interlocked.Read(ref _retainedGeneration) || (requireForeground && Cotabby.Win32.Interop.NativeMethods.GetForegroundWindow() != host)) return null;
-            element->AddRef();
-            _retainedHost = new RetainedHost { Token = token, ProcessId = pid, FieldId = field, HostWindow = host,
+            var retained = new RetainedHost { Token = token, ProcessId = pid, FieldId = field, HostWindow = host,
                 PanelWindow = panel, Changed = changed, Element = element, Pattern = pattern, Composition = composition, Finalized = finalized,
                 TextChanged = textChanged, SelectionChanged = selectionChanged };
+            element->AddRef();
+            Volatile.Write(ref _retainedHost, retained);
             pattern = null; composition = null; finalized = null; textChanged = null; selectionChanged = null;
             return token;
         }
@@ -274,6 +284,21 @@ internal sealed unsafe class UiaTextEditEvidence : ICompositionEvidenceOwner
         catch (InvalidOperationException) { }
     }
 
+    internal bool IsRetainedReceiptCurrent(long token, long version)
+    {
+        var saved = Volatile.Read(ref _retainedHost);
+        return saved is not null && saved.Token == token && token == Interlocked.Read(ref _retainedGeneration)
+            && version > 0 && version == Interlocked.Read(ref saved.Version);
+    }
+
+    internal Task DrainRetainedAsync()
+    {
+        var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        try { _queue.Add(() => completion.TrySetResult()); }
+        catch (InvalidOperationException) { completion.TrySetResult(); }
+        return completion.Task;
+    }
+
     private void RetireRetainedCore()
     {
         var saved = _retainedHost;
@@ -351,6 +376,14 @@ internal sealed unsafe class UiaTextEditEvidence : ICompositionEvidenceOwner
     }
 
     internal Task<UiaBootstrapResult> BootstrapForTest => _bootstrap.Task;
+
+    long? IExpressionRetainedEvidence.Register(int pid, string field, nint host, nint panel, Action changed, CancellationToken ct) =>
+        RegisterRetainedHost(pid, field, host, panel, changed, ct);
+    (InputCompositionState State, long Version) IExpressionRetainedEvidence.Observe(long token, bool panel, CancellationToken ct) =>
+        ObserveRetainedHost(token, panel, ct);
+    bool IExpressionRetainedEvidence.IsCurrent(long token, long version) => IsRetainedReceiptCurrent(token, version);
+    void IExpressionRetainedEvidence.Retire(long token) => RetireRetainedHost(token);
+    Task IExpressionRetainedEvidence.DrainAsync() => DrainRetainedAsync();
 
     // This diagnostic is deliberately limited to a handle owned by this process. It never asks
     // UIA for the focused element and does not read text or authorize a composition receipt.

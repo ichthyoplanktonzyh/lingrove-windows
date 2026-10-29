@@ -56,5 +56,13 @@ public sealed class UiaExpressionSelectionReaderTests(WpfDispatcher dispatcher)
         Assert.NotNull(selection);
         Assert.Equal("a😀b!", selection.Value.Value);
         Assert.Equal(new ExpressionEditorRange(1, 2), selection.Value.Selection);
+        var revoked = await Task.Run(() =>
+        {
+            var root = AutomationElement.FromHandle(handle);
+            var element = root.FindFirst(TreeScope.Descendants, new PropertyCondition(AutomationElement.AutomationIdProperty, "owned-selection"));
+            int checks = 0;
+            return element is null ? null : UiaExpressionSelectionReader.Read(element, () => ++checks < 4);
+        });
+        Assert.Null(revoked);
     });
 }

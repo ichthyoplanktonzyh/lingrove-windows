@@ -7,6 +7,17 @@ namespace Cotabby.Inference.Tests.Insertion;
 public sealed class KeySenderTests
 {
     [Fact]
+    public void UnicodeBatchRechecksExpressionAuthorizationAfterBatchPreparation()
+    {
+        nint foregroundWindow = 10;
+        var native = new FakeKeyboardNativeApi { ForegroundProcessId = 123 };
+        native.OnGetAsyncKeyState = _ => foregroundWindow = 20;
+        var sender = new KeySender(native);
+        Assert.False(sender.SendUnicodeEdit(Field(123), 2, "result", () => foregroundWindow == 10));
+        Assert.Equal(0, native.SendInputCalls);
+    }
+
+    [Fact]
     public void SendsOneCombinedDeleteAndTextBatchWhenTargetProcessIsForeground()
     {
         var native = new FakeKeyboardNativeApi { ForegroundProcessId = 123 };

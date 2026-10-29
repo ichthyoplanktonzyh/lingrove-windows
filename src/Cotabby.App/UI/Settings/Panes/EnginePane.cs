@@ -27,8 +27,8 @@ internal static class EnginePane
         var runtimeStatus = new StatusLine();
         context.OnRefresh(() =>
         {
-            var runtime = context.Host.Runtime;
-            runtimeStatus.Set(runtime.IsReady, runtime.IsReady ? $"Ready · {runtime.ActiveModel?.DisplayName}" : "Not loaded");
+            var active = context.Host.AdmittedLocalModel;
+            runtimeStatus.Set(active is not null, active is not null ? $"Ready · {active.DisplayName}" : "Not loaded");
         });
 
         return new SettingsPane("Engine & Model", "\uE950", "Choose the engine and models",

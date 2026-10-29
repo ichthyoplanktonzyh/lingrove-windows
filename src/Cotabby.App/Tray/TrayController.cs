@@ -108,7 +108,7 @@ public sealed class TrayController : IDisposable
             ?? (!settings.Enabled ? "Cotabby is off"
                 : paused ? settings.Pause!.StatusText(now)
                 : settings.Engine == EngineKind.Endpoint ? $"Endpoint · {settings.EndpointModel}"
-                : _host.Runtime.ActiveModel is { } active ? $"Ready · {active.DisplayName}"
+                : _host.AdmittedLocalModel is { } active ? $"Ready · {active.DisplayName}"
                 : "No model loaded");
         _tray.ToolTipText = $"Cotabby · {_statusItem.Header}";
 

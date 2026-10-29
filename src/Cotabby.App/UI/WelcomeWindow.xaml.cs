@@ -182,7 +182,7 @@ public partial class WelcomeWindow : Window
         // Confirming the same starting point again must not restart a running download.
         if (_ensureBusy && _lastEnsureFor == modelId) return;
 
-        if (_host.Runtime.IsReady && _host.Runtime.ActiveModel?.Id == modelId)
+        if (_host.AdmittedLocalModel?.Id == modelId)
         {
             _modelReadyFor = modelId;
             _modelError = null;
@@ -213,10 +213,12 @@ public partial class WelcomeWindow : Window
 
         try
         {
-            await _host.EnsureModelReadyAsync(progress, _modelCts.Token);
+            bool ready = await _host.EnsureModelReadyAsync(progress, _modelCts.Token)
+                && _host.AdmittedLocalModel?.Id == modelId;
             if (seq == _ensureSeq)
             {
-                _modelReadyFor = modelId;
+                _modelReadyFor = ready ? modelId : null;
+                _modelError = ready ? null : "The selected model is unavailable.";
                 _ensureBusy = false;
             }
         }

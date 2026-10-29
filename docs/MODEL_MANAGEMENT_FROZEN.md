@@ -40,13 +40,36 @@ endpoint profiles stay unchanged. No weights are loaded by opening the settings 
   the frozen display aliases. Power choices use the same exact built-in and Windows case-insensitive
   custom ID comparison as the completion catalog resolver.
 
-`AppHost` owns completion runtime selection. Its synchronous invalidation/async stale-load guard is
-an independent coordinated integration requirement: a filtered UI cannot stop an already loaded
-old runtime from serving requests by itself. Do not treat this branch alone as safe completion
-runtime admission until that host change is integrated and tested. The speech settings owner still
-needs to record subsequent explicit speech selection changes; this checkpoint registers only its
-existing saved choice. Source maps describe this Windows settings envelope and do not imply Mac data
-compatibility.
+`AppHost` owns completion selection and borrows one `CompletionModelAdmission` wrapper around the
+existing llama engine. A selection/settings/power change withdraws local admission and synchronously
+invalidates the coordinator's pending edit epoch before scheduling work. Model download, native load
+and generation share one exclusive span, so a switch cannot dispose native state during tokenization
+or decoding. Selection epochs reject obsolete loads and output, including selecting A after A→B;
+power notifications cannot reauthorize an older resolution. Cancellation is signalled for retired
+work, and shutdown joins accepted work and cancellation callbacks before disposing the existing runtime.
+Endpoint routing is independent and uses no local admission or fallback. Tray, Home, settings and
+welcome readiness borrow the admitted snapshot rather than the physical runtime's `IsReady` flag.
+
+The frozen `Models/Runtime/RuntimeBootstrapModel.swift`, `Services/Runtime/Llama/LlamaRuntimeManager.swift`,
+`Support/Runtime/BundledRuntimeLocator.swift`, `App/Core/LingroveAppEnvironment.swift` and
+`LingroveTests/Models/Runtime/RuntimeBootstrapModelTests.swift` define reconciliation, model-switch
+invalidation, preferred installed-model order and power profiles. Startup and manager refresh keep
+an incompatible or unrecognized stored ID, but reconcile a compatible vanished choice to the first
+installed candidate, or clear it when none is installed. Windows IDs remain Cotabby IDs, custom
+filenames compare case-insensitively, and custom ordering uses Windows/.NET current-culture collation.
+The existing Windows cache adapter checks the GGUF signature before considering a file installed;
+the Mac locator's filename-only discovery differs for malformed files.
+On an explicit power transition an installed profile becomes the current selected model; missing
+profiles retain the current selection, and a later manual selection remains until the next profile,
+power or model-discovery event reapplies an available profile. Windows power profiles currently
+choose local models only; the Mac endpoint and Apple Intelligence profile choices remain open.
+Settings construction stays
+inert; the existing app startup or explicit Get initiates preparation. A manager refresh does not
+reconcile while an explicitly accepted preparation is still in progress.
+
+The speech settings owner still needs to record subsequent explicit speech selection changes; this
+checkpoint registers only its existing saved choice. Source maps describe this Windows settings
+envelope and do not imply Mac data compatibility.
 
 ## Evidence and limits
 
@@ -63,3 +86,6 @@ no deletion safety is claimed. Learning transfer uses its existing Get/cancel im
 does not pretend to support pause/resume. Native typography/DPI, accessibility, keyboard navigation,
 window activation, actual transfers, power switching, and real host runtime behavior need further
 verification. Existing completion ModelList still scans synchronously on its existing refresh path.
+The fake admission tests execute epoch, cancellation, exclusive generation/load, A→B→A, endpoint
+independence, reconciliation and shutdown sequencing; they do not load a native model or exercise
+physical power notifications. A compiled app is not evidence of those native paths.

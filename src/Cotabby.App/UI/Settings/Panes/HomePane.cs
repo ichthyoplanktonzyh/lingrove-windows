@@ -45,7 +45,7 @@ internal static class HomePane
                 ? (true, $"Ready · {settings.EndpointModel}")
                 : (false, "No endpoint model selected");
         }
-        return host.Runtime is { IsReady: true, ActiveModel: { } model }
+        return host.AdmittedLocalModel is { } model
             ? (true, $"Ready · {model.DisplayName}")
             : (false, "No model loaded");
     }

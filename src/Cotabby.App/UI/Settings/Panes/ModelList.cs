@@ -56,7 +56,6 @@ internal sealed class ModelList : StackPanel
 
     private Border Row(CotabbyModel model, bool selected)
     {
-        var runtime = _context.Host.Runtime;
         bool loadingThis = Busy && selected;
 
         var names = new StackPanel { VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 12, 0) };
@@ -71,7 +70,7 @@ internal sealed class ModelList : StackPanel
         {
             trailing = _progressLabel = Ui.Text("", "Caption");
         }
-        else if (selected && runtime.IsReady && runtime.ActiveModel?.Id == model.Id)
+        else if (selected && _context.Host.AdmittedLocalModel?.Id == model.Id)
         {
             var check = Ui.Icon("\uE73E", 12);
             var active = new TextBlock { Text = "Active", FontSize = 12, FontWeight = FontWeights.SemiBold };

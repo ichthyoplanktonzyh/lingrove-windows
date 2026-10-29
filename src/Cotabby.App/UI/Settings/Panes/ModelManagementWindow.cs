@@ -147,6 +147,7 @@ internal sealed class ModelManagementWindow : Window
         _view.Status.Text = "Loading models…";
         await _scan.RunAsync(() => _context.Host.LearningModels.GetInstalledModelsAsync(_lifetime.Token), models =>
         {
+            _context.Host.ReconcileCompletionSelection(models);
             _view.ShowModels(models, _context.Settings, _task, Selected(), _context.Host.LearningModels.ModelsDirectory);
             _view.Status.Text = _notice;
         }, () => _view.Status.Text = "Models could not be listed. Refresh to try again.", _lifetime.Token);

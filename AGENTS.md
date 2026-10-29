@@ -28,7 +28,11 @@ draft edits and file-image import through that same owner. Older review/export l
 establish those operations in the new browser. Preserve unsupported states until each module is ported.
 The [canonical sense commands](docs/VOCABULARY_CANONICAL_SENSE_UI.md) connect acknowledged
 New/Merge/Delete/Move, and the [meaning editors](docs/VOCABULARY_CANONICAL_MEANING_UI.md) connect
-meaning-node and mapping edits. Category management and usage-pattern editing remain separate work.
+meaning-node and mapping edits. The [latest organization workflow](docs/VOCABULARY_MEANING_CLASSIFICATION_3B.md)
+adds atomic category/meaning drafts and localized catalog guidance; usage-pattern edits are connected.
+The [independent card editor](docs/ANKI_CANONICAL_CARD_WINDOW.md) and
+[batch review](docs/ANKI_CANONICAL_REVIEW_BATCH.md) now borrow the existing Feature/client and the
+same Store. Do not confuse these scoped integrations with completed audio, graph or export parity.
 
 ## Migration principle: adapt the frozen macOS product
 

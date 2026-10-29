@@ -119,9 +119,10 @@ cleanup and decide spacing only at the surviving seam; the old shared corpus ret
 
 ## Vocabulary and learning data
 
-The [latest resource value/projection boundary](docs/VOCABULARY_RESOURCES_CURRENT.md) lives under
-`Core/Vocabulary/Resources` and follows the current Mac catalog/evidence/interpretation/collection
-ownership. Its version-seven values are distinct from the older entry-owned runtime document.
+The [historical v7 resource value/projection boundary](docs/VOCABULARY_RESOURCES_CURRENT.md) lives
+under `Core/Vocabulary/Resources` at its documented reference. It follows the catalog/evidence/
+interpretation/collection ownership from that snapshot; it is not the complete frozen v8 boundary.
+Its version-seven values are distinct from the older entry-owned runtime document.
 Do not feed them through the old SQL/backup codec or claim archive activation/migration is complete.
 Collection membership determines notebook display; raw evidence is not garbage when uncollected.
 

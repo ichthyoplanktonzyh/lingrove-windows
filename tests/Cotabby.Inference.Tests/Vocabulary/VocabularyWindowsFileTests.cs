@@ -253,11 +253,12 @@ public sealed class VocabularyWindowsFileTests : IDisposable
     [Fact]
     public async Task ExclusiveLockInAnotherProcessBlocksOurSharedAccessAndReleasesCleanly()
     {
-        string script = Path.Combine(_root, "hold-lock.ps1");
-        File.WriteAllText(script, """
-            param([string]$Path)
+        // Run this fixture inline so a host's default policy for unsigned .ps1 files does not
+        // prevent the child from taking the actual OS lock. Pass the path as data, not script.
+        const string script = """
             $ErrorActionPreference = 'Stop'
-            $file = [System.IO.File]::Open($Path, [System.IO.FileMode]::OpenOrCreate, [System.IO.FileAccess]::ReadWrite, [System.IO.FileShare]::ReadWrite)
+            $lockPath = [Environment]::GetEnvironmentVariable('COTABBY_TEST_LOCK_PATH', 'Process')
+            $file = [System.IO.File]::Open($lockPath, [System.IO.FileMode]::OpenOrCreate, [System.IO.FileAccess]::ReadWrite, [System.IO.FileShare]::ReadWrite)
             try {
                 $file.Lock(0, 1)
                 [Console]::Out.WriteLine('locked')
@@ -265,15 +266,24 @@ public sealed class VocabularyWindowsFileTests : IDisposable
                 [Console]::In.ReadLine() | Out-Null
                 $file.Unlock(0, 1)
             } finally { $file.Dispose() }
-            """);
-        var start = new ProcessStartInfo("powershell.exe") { UseShellExecute = false, CreateNoWindow = true,
+            """;
+        var start = new ProcessStartInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System),
+            "WindowsPowerShell", "v1.0", "powershell.exe")) { UseShellExecute = false, CreateNoWindow = true,
             RedirectStandardInput = true, RedirectStandardOutput = true, RedirectStandardError = true };
-        foreach (string argument in new[] { "-NoProfile", "-NonInteractive", "-File", script, FilePath + ".lock" }) start.ArgumentList.Add(argument);
+        foreach (string argument in new[] { "-NoProfile", "-NonInteractive", "-EncodedCommand",
+            Convert.ToBase64String(Encoding.Unicode.GetBytes(script)) }) start.ArgumentList.Add(argument);
+        start.Environment["COTABBY_TEST_LOCK_PATH"] = FilePath + ".lock";
         using var child = Process.Start(start)!;
         var errors = child.StandardError.ReadToEndAsync();
         try
         {
-            Assert.Equal("locked", await child.StandardOutput.ReadLineAsync().WaitAsync(TimeSpan.FromSeconds(30)));
+            string? readiness = await child.StandardOutput.ReadLineAsync().WaitAsync(TimeSpan.FromSeconds(30));
+            if (readiness is null)
+            {
+                await child.WaitForExitAsync().WaitAsync(TimeSpan.FromSeconds(10));
+                Assert.Fail($"Lock child exited before readiness ({child.ExitCode}): {await errors}");
+            }
+            Assert.Equal("locked", readiness);
             using var gate = new VocabularyWindowsFileLock(FilePath);
             Failure(VocabularyFailure.StorageBusy, () => gate.Enter(false));
             await child.StandardInput.WriteLineAsync("release"); await child.StandardInput.FlushAsync();

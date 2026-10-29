@@ -77,6 +77,17 @@ expansion remains behind the visible writing/notebook/review workflows.
 
 PR #108 supplies the older v7 resource value/projection boundary and Windows handoff; it is a
 prerequisite, not a completed v8 archive. Its existing final-head Mac CI must finish before merge.
-The local Windows file-lock fixture and the documented PowerShell `-File` startup command also
-need compatibility repairs for a host whose Windows PowerShell defaults to Restricted. The primary
-owns these bootstrap fixes while delegates audit their first checkpoints.
+The primary repaired the local Windows file-lock fixture to run a static inline child command,
+passing the path as data without changing execution policy. The documented diagnostic uses a
+process-only RemoteSigned invocation. The focused lock test passes 1/1, the full noninteractive
+Inference suite passes 578/578, and the documented prerequisite check reports Ready on this host.
+Independent review and remote final-head CI remain separate gates.
+
+Executed from the integration worktree with Git/.NET added only to the process PATH and .NET
+telemetry disabled:
+
+```powershell
+dotnet test tests/Cotabby.Inference.Tests/Cotabby.Inference.Tests.csproj --configuration Release --filter 'FullyQualifiedName~VocabularyWindowsFileTests.ExclusiveLockInAnotherProcessBlocksOurSharedAccessAndReleasesCleanly'
+powershell -NoProfile -ExecutionPolicy RemoteSigned -File .\scripts\check-windows-dev.ps1 -Json
+dotnet test tests/Cotabby.Inference.Tests/Cotabby.Inference.Tests.csproj --configuration Release --no-build --no-restore --filter 'FullyQualifiedName!~ClipboardTextReaderTests'
+```

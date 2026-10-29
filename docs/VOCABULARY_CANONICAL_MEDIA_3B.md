@@ -27,6 +27,12 @@ current Windows rename operation cannot bind its replacement target to the verif
 against a same-user replacement race. It does not delete that file or claim a successful restore.
 These are explicit platform gaps, not evidence of complete 3b media parity.
 
+An in-process synthetic COM probe holds an `IMarshal::GetUnmarshalClass` callback and observes
+that `CoMarshalInterface` cannot return until it is released. Thus passing a dropped object from
+the UI apartment to a child process is not by itself a cancellable provider bridge. This probe
+does not establish that a helper-owned drop window integrates safely with WPF; the product
+continues to accept existing-file drops only until that ownership and input behavior are verified.
+
 Synthetic native Windows tests cover RLE4/RLE8 validation and real WIC pixel normalization,
 embedded-profile rejection/bounds and a synthetic linear-light profile converted to sRGB, plus
 RLE8 and a profiled bitmap through the canonical editor and an isolated named Store. Physical clipboard producers,

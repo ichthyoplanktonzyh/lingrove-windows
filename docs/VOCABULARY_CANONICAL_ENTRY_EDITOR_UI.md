@@ -11,3 +11,14 @@ The STA tests use real isolated canonical stores, including a named SQLite/media
 ```powershell
 dotnet test tests/Cotabby.App.Wpf.Tests/Cotabby.App.Wpf.Tests.csproj -c Release --filter 'FullyQualifiedName~FrozenVocabularyEntryEditorWindowTests|FullyQualifiedName~FrozenVocabularyWindowControllerTests|FullyQualifiedName~FrozenVocabularyNotebookWindowTests'
 ```
+
+Independent source, behavior and render review accepted this UI and passed its focused browser,
+controller and editor suite 23/23. The selected-sense editor was integrated with the independently
+reviewed Store transaction, including the exact UTF-8 usage-identity repair. On Windows x64
+10.0.19045, .NET SDK 10.0.403, source `79f6f20` rebuilt the Release solution with zero warnings/errors
+and executed the complete compiled WPF suite 671/671 using `--no-build --no-restore
+--blame-hang-timeout 2m --verbosity minimal`. Core 4814/4814, portable App 1242/1242 and
+noninteractive Inference 641/641 also passed in the combined integration; their relevant sources
+were unchanged by the final UI/style increments. Telemetry and clipboard reads were disabled.
+The broader WPF count includes the separately scoped expression application module. Final-head CI
+and the physical acceptance above remain distinct checks.

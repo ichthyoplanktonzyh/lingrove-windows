@@ -22,9 +22,10 @@ overwriting them. This does not waive current-format validation, stable record i
 acknowledged transactions, media integrity, privacy, or the single production Store owner.
 
 The [current-format production composition](docs/VOCABULARY_CANONICAL_APP.md) selects one canonical
-Store for writing favorites, saved explanations and the notebook's scoped browsing/create/import
-flow. Older editor/media/review/export library checks do not establish those operations in the new
-production browser. Preserve the explicit unsupported states until each canonical module is ported.
+Store for writing favorites, saved explanations and the notebook's browsing/create/import/edit
+flow. The [canonical entry editor](docs/VOCABULARY_CANONICAL_ENTRY_EDITOR_UI.md) adds selected-sense
+draft edits and file-image import through that same owner. Older review/export libraries do not
+establish those operations in the new browser. Preserve unsupported states until each module is ported.
 
 ## Migration principle: adapt the frozen macOS product
 

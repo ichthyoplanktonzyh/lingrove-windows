@@ -45,7 +45,8 @@ public sealed class LocalSpeechRuntime : IAsyncDisposable
         try
         {
             var helper = await PrepareAsync(request.Token, configuration, cancellationToken).ConfigureAwait(false);
-            await helper.StartIfNeededAsync(request.Token).ConfigureAwait(false);
+            SpeechAdmission.Require(request.Admission);
+            await helper.StartIfNeededAsync(request.Token, request.Admission).ConfigureAwait(false);
             cancellationToken.ThrowIfCancellationRequested(); RequireCurrent(request.Token);
             await helper.SynthesizeAsync(request, language, receive).ConfigureAwait(false);
             cancellationToken.ThrowIfCancellationRequested();

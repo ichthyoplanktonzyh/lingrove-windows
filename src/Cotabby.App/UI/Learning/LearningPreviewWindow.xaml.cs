@@ -46,9 +46,11 @@ public partial class LearningPreviewWindow : Window
     public void ShowState(LearningPreviewState state, ScreenRect anchor, bool canRetry)
     {
         Dispatcher.VerifyAccess();
-        if (!LearningExplanationCardPolicy.SameDocument(_displayedPreview, state)) { ClearExplanation(); FavoriteButton.Clear(); }
+        if (!LearningExplanationCardPolicy.SameDocument(_displayedPreview, state)) { StopSpeech(); ClearExplanation(); FavoriteButton.Clear(); }
+        else if (_displayedPreview is { } old) ReconcileSpeech(old, state);
         if (state.Status != LearningPreviewStatus.Ready) FavoriteButton.Clear();
         _displayedPreview = state;
+        UpdateSpeech();
         PresentCopyActions(state, anchor);
         // Mac's error branch replaces the details body. Keep the captured source out of that
         // presentation as well as its Copy footer; retry still belongs to the controller capture.
@@ -127,6 +129,7 @@ public partial class LearningPreviewWindow : Window
     {
         Dispatcher.VerifyAccess();
         _displayedPreview = null;
+        StopSpeech(); UpdateSpeech();
         FavoriteButton.Clear();
         ClearCopyActions();
         ClearExplanation();
@@ -155,8 +158,10 @@ public partial class LearningPreviewWindow : Window
         }
 
         Hide();
+        StopSpeech();
         FavoriteButton.Clear();
         _displayedPreview = null;
+        UpdateSpeech();
         ClearCopyActions();
         // This long-lived window is reused. Retiring the capture also drops the literal editor
         // and translation text from its visual tree rather than keeping a hidden old document.

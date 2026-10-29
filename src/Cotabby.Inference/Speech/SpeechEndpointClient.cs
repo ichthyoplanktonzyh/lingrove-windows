@@ -24,7 +24,7 @@ public sealed class SpeechEndpointClient(Func<HttpMessageHandler>? handlerFactor
         AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
     };
 
-    public async Task<byte[]> AudioAsync(string text, SpeechEndpointConfiguration configuration, string? apiKey, CancellationToken cancellationToken = default)
+    public async Task<byte[]> AudioAsync(string text, SpeechEndpointConfiguration configuration, string? apiKey, CancellationToken cancellationToken = default, Func<bool>? admission = null)
     {
         cancellationToken.ThrowIfCancellationRequested();
         using var resource = new CancellationTokenSource(ResourceTimeout, _clock);
@@ -42,7 +42,7 @@ public sealed class SpeechEndpointClient(Func<HttpMessageHandler>? handlerFactor
             try { request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey); }
             catch (FormatException) { throw new SpeechException(SpeechFailure.GenerationFailed); }
         }
-        using var response = await WithIdleAsync(token => http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token)).ConfigureAwait(false);
+        using var response = await WithIdleAsync(token => { token.ThrowIfCancellationRequested(); SpeechAdmission.Require(admission); return http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token); }).ConfigureAwait(false);
         if (!response.IsSuccessStatusCode) throw new SpeechException(SpeechFailure.EndpointStatus, (int)response.StatusCode);
         if (response.Content.Headers.ContentLength > MaximumBytes) throw new SpeechException(SpeechFailure.ResponseTooLarge);
         // Match CFNetwork's transparent gzip/deflate decoding. For compressed responses the

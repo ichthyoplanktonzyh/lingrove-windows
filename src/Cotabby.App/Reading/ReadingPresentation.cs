@@ -12,7 +12,7 @@ namespace Cotabby.App.Reading;
 
 /// <summary>The reading card and its actual bundled dictionary share the capture's retirement.
 /// The dictionary remains a separate transient session using the app's existing service.</summary>
-internal sealed class ReadingPresentation : IReadingPresentation, IAsyncDisposable
+internal sealed partial class ReadingPresentation : IReadingPresentation, IAsyncDisposable
 {
     private readonly Dispatcher _dispatcher;
     private readonly ReadingWindow _reading = new();
@@ -83,17 +83,17 @@ internal sealed class ReadingPresentation : IReadingPresentation, IAsyncDisposab
 
     public void BindAuthority(ReadingSelection selection, Func<CancellationToken, Task<bool>> current, CancellationToken token)
     { _selection = selection; _current = current; _token = token; }
-    public Task ShowAsync(ReadingState state) { _readingState = state; return _reading.ShowAsync(state); }
+    public Task ShowAsync(ReadingState state) { ReconcileSpeech(state); _readingState = state; return _reading.ShowAsync(state); }
     public void Update(ReadingState state)
     {
-        Interlocked.Increment(ref _copyRevision); _readingState = state; _reading.Update(state);
+        ReconcileSpeech(state); Interlocked.Increment(ref _copyRevision); _readingState = state; _reading.Update(state);
         if (state.Route.IsTranslation && state.Status == ReadingStatus.Ready && _favoriteCapture is null)
             Track(PrepareTranslationFavoriteAsync(state));
     }
-    public void ShowCaptureError(string message) => _reading.ShowCaptureError(message);
+    public void ShowCaptureError(string message) { StopSpeech(); _readingState = null; _reading.ShowCaptureError(message); }
     public void Hide()
     {
-        _dispatcher.VerifyAccess();
+        _dispatcher.VerifyAccess(); StopSpeech();
         ++_revision; Interlocked.Increment(ref _copyRevision); _current = null; _selection = null; _input = null; _basic = null; _details = null;
         Interlocked.Increment(ref _favoriteRevision); _favoriteCapture = null; _favoriteCurrent = null; _reading.ClearVocabulary();
         _detailsExpanded = false; _reading.SetDetailsExpanded(false); _readingState = null; _dictionaryMode = false;
@@ -145,7 +145,7 @@ internal sealed class ReadingPresentation : IReadingPresentation, IAsyncDisposab
     private async Task OpenDictionaryAsync()
     {
         if (_selection is not { } selection || _input is not { } input) return;
-        _dictionaryMode = true; _reading.Hide();
+        _dictionaryMode = true; StopSpeech(); _reading.Hide();
         var unit = new LearningUnit(0, input.Target, input.Target, input.IsWord ? LearningUnitKind.Word : LearningUnitKind.Expression,
             [new LearningTextRange(0, input.Target.Length)], _words);
         await _session.OpenAsync(unit, selection.Id.ToString(), input.Source);
@@ -290,6 +290,6 @@ internal sealed class ReadingPresentation : IReadingPresentation, IAsyncDisposab
             Task[] pending; lock (_gate) { if (_work.Count == 0) break; pending = _work.ToArray(); }
             try { await Task.WhenAll(pending); } catch { }
         }
-        _reading.Close(); _dictionary.Close();
+        DetachSpeech(); _reading.Close(); _dictionary.Close();
     }
 }

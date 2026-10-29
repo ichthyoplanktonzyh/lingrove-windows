@@ -173,7 +173,7 @@ internal sealed partial class LearningSpeechController : INotifyPropertyChanged,
         { SetError("No speech voice is available for this language.", request.Target); return; }
         var token = new SpeechPlaybackToken(); Telemetry.Begin(token, voice.Name, "system_speech", language);
         _activeToken = token; _activeRequest = resolved; ActiveTarget = resolved.Target; Phase = SpeechPlaybackPhase.Preparing; Changed();
-        try { _provider.Speak(text, voice, Settings.RateMultiplier, token); }
+        try { _provider.Speak(text, voice, Settings.RateMultiplier, token, resolved.Admission); }
         catch (Exception error)
         {
             if (_activeToken != token) return;
@@ -184,7 +184,7 @@ internal sealed partial class LearningSpeechController : INotifyPropertyChanged,
     {
         var language = request.LanguageMode == SpeechLanguageMode.Fixed ? request.Language : SpeechLanguageResolver.Resolve(text, request.Language, _recognize, request.Context);
         if (language is null) { SetError(new SpeechException(SpeechFailure.UnrecognizedLanguage).Message, request.Target); return null; }
-        return new(request.Target, text, language.Value, LanguageMode: SpeechLanguageMode.Fixed);
+        return new(request.Target, text, language.Value, LanguageMode: SpeechLanguageMode.Fixed) { Admission = request.Admission };
     }
     public void Audition(SpeechExportAudio audio, Guid ownerId, LearningLanguage language)
     {
@@ -245,7 +245,7 @@ internal sealed partial class LearningSpeechController : INotifyPropertyChanged,
         else if (source is SpeechAudioSource.Endpoint endpoint) Telemetry.Begin(token, endpoint.Configuration.Endpoint.ModelName, "openai_compatible", language);
         double rate = Settings.RateMultiplier;
         _activeToken = token; ActiveTarget = request.Target; _activeRequest = request; Phase = SpeechPlaybackPhase.Preparing; Changed();
-        var audioRequest = new SpeechAudioRequest(token, text, language, source, Settings.GenerationProfile.Sampling);
+        var audioRequest = new SpeechAudioRequest(token, text, language, source, Settings.GenerationProfile.Sampling, request.Admission);
         bool isLocal = source is SpeechAudioSource.Local;
         if (isLocal) _pcmPlayer.Begin(SpeechLocalConfiguration.OutputSampleRate, rate, token);
         _audioTask = StartOwned(cancellation => GenerateAudioAsync(audioRequest, rate, isLocal, cancellation));

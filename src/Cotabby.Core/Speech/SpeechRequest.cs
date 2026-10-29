@@ -1,5 +1,6 @@
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Text;
+using System.Text.Json.Serialization;
 
 namespace Cotabby.Core.Speech;
 
@@ -13,12 +14,23 @@ public sealed record SpeechTarget(Guid OwnerId, string ItemId)
 /// <summary>Normal card clicks detect language locally; settings auditions keep an explicit
 /// selection. This per-action intent does not create another durable language preference.</summary>
 public enum SpeechLanguageMode { Automatic, Fixed }
+public static class SpeechAdmission
+{
+    public static void Require(Func<bool>? admission)
+    {
+        if (admission is null) return;
+        bool allowed; try { allowed = admission(); } catch { allowed = false; }
+        if (!allowed) throw new OperationCanceledException();
+    }
+}
 /// <summary>One explicit click captures its text/hint and optional same-side recognition context.
 /// The controller sanitizes/resolves it once, then creates a fixed request without Context before
 /// any provider sees it. Context is never spoken or sent to an endpoint.</summary>
 public sealed record SpeechRequest(SpeechTarget Target, string Text, LearningLanguage? Language,
     string? Context = null, SpeechLanguageMode LanguageMode = SpeechLanguageMode.Automatic)
 {
+    /// <summary>Optional request-owned, synchronous final-effect admission; never serialized.</summary>
+    [JsonIgnore] public Func<bool>? Admission { get; init; }
     public bool Equals(SpeechRequest? other) => other is not null && Target == other.Target && Language == other.Language && LanguageMode == other.LanguageMode
         && CanonicalStringComparer.Instance.Equals(Text, other.Text) && CanonicalStringComparer.Instance.Equals(Context, other.Context);
     public override int GetHashCode() => HashCode.Combine(Target, Language, LanguageMode, CanonicalStringComparer.Instance.GetHashCode(Text), Context is null ? 0 : CanonicalStringComparer.Instance.GetHashCode(Context));
@@ -32,6 +44,8 @@ public interface ISpeechProviding
     Action<SpeechProviderEvent>? EventHandler { get; set; }
     IReadOnlyList<SpeechVoice> RefreshVoices();
     void Speak(string text, SpeechVoice voice, double rateMultiplier, SpeechPlaybackToken token);
+    void Speak(string text, SpeechVoice voice, double rateMultiplier, SpeechPlaybackToken token, Func<bool>? admission)
+    { if (admission is not null) throw new NotSupportedException("Final speech admission is unavailable."); Speak(text, voice, rateMultiplier, token); }
     void Stop(SpeechPlaybackToken token);
 }
 /// <summary>Encoded endpoint/review playback shares one controller-owned device facade. Like the

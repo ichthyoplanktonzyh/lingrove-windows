@@ -66,6 +66,27 @@ internal static partial class LearningPanelPlacement
             SwpNoActivate | SwpShowWindow);
     }
 
+    // The caller limits its own layout before placement. The monitor work rectangle is in
+    // physical pixels; use that monitor's effective DPI, not the primary window's scale.
+    internal static double WorkAreaHeightDip(Window window, ScreenRect anchor)
+    {
+        int x = anchor.IsEmpty ? 0 : (int)anchor.X, y = anchor.IsEmpty ? 0 : (int)anchor.Y;
+        var monitor = MonitorFromPoint(new NativePoint { X = x, Y = y }, MonitorDefaultToNearest);
+        var info = new MonitorInfo { Size = (uint)Marshal.SizeOf<MonitorInfo>() };
+        if (!GetMonitorInfo(monitor, ref info)) return SystemParameters.WorkArea.Height;
+        double dpi = 96;
+        try
+        {
+            if (GetDpiForMonitor(monitor, 0, out _, out uint verticalDpi) == 0 && verticalDpi != 0) dpi = verticalDpi;
+            else if (PresentationSource.FromVisual(window)?.CompositionTarget is { } target) dpi = 96 * target.TransformToDevice.M22;
+        }
+        catch (DllNotFoundException) { if (PresentationSource.FromVisual(window)?.CompositionTarget is { } target) dpi = 96 * target.TransformToDevice.M22; }
+        catch (EntryPointNotFoundException) { if (PresentationSource.FromVisual(window)?.CompositionTarget is { } target) dpi = 96 * target.TransformToDevice.M22; }
+        return WorkAreaHeightDip(info.Work.Top, info.Work.Bottom, dpi);
+    }
+
+    internal static double WorkAreaHeightDip(int top, int bottom, double dpi) => Math.Max(1, (bottom - top - 4) * 96 / dpi);
+
     [StructLayout(LayoutKind.Sequential)]
     private struct NativePoint { public int X, Y; }
 
@@ -83,6 +104,9 @@ internal static partial class LearningPanelPlacement
 
     [LibraryImport("user32.dll")]
     private static partial IntPtr MonitorFromPoint(NativePoint point, uint flags);
+
+    [LibraryImport("shcore.dll")]
+    private static partial int GetDpiForMonitor(IntPtr monitor, int type, out uint dpiX, out uint dpiY);
 
     [LibraryImport("user32.dll", EntryPoint = "GetMonitorInfoW")]
     [return: MarshalAs(UnmanagedType.Bool)]

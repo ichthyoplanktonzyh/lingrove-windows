@@ -68,6 +68,12 @@ scope.
 
 ## Current project boundaries
 
+The [expression assistance owner](docs/EXPRESSION_ASSIST_APPLICATION.md) borrows the existing
+focus/input services, explanation instruction runtime and shared insertion gate. Its temporary
+panel and immutable interaction settings have independent session/cancellation identity. The
+Windows native adapter remains limited to providers that expose sufficient composition and range
+evidence; application registration does not establish physical editor or model acceptance.
+
 | Project | Owns | Data flowing through it |
 | --- | --- | --- |
 | `Cotabby.App` | WPF tray app, settings and onboarding surfaces, process lifetime, dependency composition | User intents and immutable service state; it coordinates, but should not own OS policy or native pointers |

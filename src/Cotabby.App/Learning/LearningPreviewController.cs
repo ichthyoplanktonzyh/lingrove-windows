@@ -32,6 +32,8 @@ namespace Cotabby.App.Learning;
 /// </remarks>
 internal sealed partial class LearningPreviewController : IAsyncDisposable
 {
+    internal Func<bool>? InlineCaptureActive { get; set; }
+    internal void SuspendForInlineFeature() => CancelAndHide();
     private static readonly TimeSpan CapturePollInterval = TimeSpan.FromMilliseconds(400);
     private static readonly ILearningTranslationEngine UnavailableLocalEngine = new UnavailableLocalLearningTranslationEngine();
     private const string SecureFieldMessage = "Sentence translation is unavailable in secure fields.";
@@ -258,6 +260,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
 
     private void OnKeyEvent(object? sender, KeyEventArgs args)
     {
+        if (InlineCaptureActive?.Invoke() == true) { CancelAndHide(); return; }
         var input = args.Event;
         var settings = Volatile.Read(ref _settings);
         var focused = _focus.Current;
@@ -532,7 +535,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
     }
 
     private bool IsLearningAvailable(LearningRuntimeSettings settings) =>
-        LearningAvailabilityFailure(settings) is null;
+        InlineCaptureActive?.Invoke() != true && LearningAvailabilityFailure(settings) is null;
 
     private string? SharedAvailabilityFailure(LearningRuntimeSettings settings)
     {

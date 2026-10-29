@@ -33,10 +33,10 @@ checkpoint with scoped automated/render evidence, not full native desktop parity
 
 ## Status meanings
 
-The [expression assistance library integration](EXPRESSION_ASSIST_INTEGRATION.md) supplies frozen
-request/output rules, shared explanation instruction leases and an isolated WPF session/view.
-It remains unregistered in AppHost; native capture/effects, settings and event activation are
-subsequent work. Its compiled tests do not establish physical editor or IME support.
+The [expression assistance application composition](EXPRESSION_ASSIST_APPLICATION.md) connects
+frozen request/output rules, shared explanation instruction leases, temporary WPF input and a
+limited native editor adapter. Its compiled checks do not establish physical editor, IME,
+clipboard or model-backed acceptance; unsupported providers/triggers remain explicit gaps.
 
 - **verified** — the behavior has passing automated parity evidence and, where it touches Windows
   UIA, input, display, storage, or inference hardware, has passed the relevant native host check.

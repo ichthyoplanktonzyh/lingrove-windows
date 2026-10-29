@@ -154,6 +154,8 @@ internal sealed class ExpressionAssistSession : IAsyncDisposable
             if (Current(capture, revision, token)) { _result = result; _panel.Update(result, result.Clarification, false); }
         }
         catch (OperationCanceledException) { }
+        catch (LearningTranslationException error) when (error.Failure == LearningTranslationFailure.LocalModelNotConfigured)
+        { if (Current(capture, revision, token)) _panel.Update(null, "Choose a local AI explanation model in Learning settings.", false); }
         catch { if (Current(capture, revision, token)) _panel.Update(null, "Expression assistance could not complete. Press Enter to retry.", false); }
     }
 

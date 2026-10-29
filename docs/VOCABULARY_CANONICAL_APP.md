@@ -53,7 +53,9 @@ The [latest 3b meaning/classification workflow](VOCABULARY_MEANING_CLASSIFICATIO
 uses the attributed v4 catalog, locale-specific guidance, one outline and atomic meaning/category
 draft saves. [Usage-pattern edits](VOCABULARY_CANONICAL_PATTERN_UI.md) retain pattern identity and
 remove restricted mappings as in the source. Show-unexplored preferences survive general reset.
-Graph, image paste/drop/enlargement, full notebook explanation/dictionary rows, export/backup and
+The [canonical graph](VOCABULARY_CANONICAL_GRAPH_3B.md) now shares those selections and the existing
+settings owner, including entry/sense force layout and meaning/category tree navigation.
+Image paste/drop/enlargement, full notebook explanation/dictionary rows, export/backup and
 speech remain subsequent canonical modules. An older library's checks do not activate them.
 
 Windows presentation uses WPF controls/system fonts, native window chrome and 96-DPI layout units.

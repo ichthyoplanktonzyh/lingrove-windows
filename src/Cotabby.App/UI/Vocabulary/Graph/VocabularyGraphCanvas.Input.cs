@@ -53,7 +53,7 @@ internal sealed partial class VocabularyGraphCanvas
         Dispatcher.VerifyAccess(); if (_pointer is not { } pointer || _retired) return;
         if ((point - pointer.Start).Length > 3) pointer = pointer with { Moved = true };
         _pointer = pointer; if (!pointer.Moved) return;
-        if (pointer.Node is { } node)
+        if (pointer.Node is { } node && !_snapshot.IsMeaningGraph)
         {
             _pinSerial = unchecked(_pinSerial + 1); _releasedPin = null; _pinned = node;
             var world = World(point); _pinPosition = new(world.X + pointer.GrabOffset.X, world.Y + pointer.GrabOffset.Y);
@@ -69,7 +69,7 @@ internal sealed partial class VocabularyGraphCanvas
         if (pointer.Moved)
         {
             if (_pinned is { } pin && _pinPosition is { } point) _releasedPin = new(pin, point, _pinSerial);
-            _pinned = null; _pinPosition = null; Wake();
+            _pinned = null; _pinPosition = null; if (!_snapshot.IsMeaningGraph) Wake();
         }
         else if (pointer.Node is { } node) Activate(node);
         else { _presentation.ClearFocus(); _select(null); InvalidateVisual(); }
@@ -78,7 +78,10 @@ internal sealed partial class VocabularyGraphCanvas
     {
         Dispatcher.VerifyAccess(); if (_retired || !IsEnabled || !IsVisible || !_snapshot.Nodes.Any(node => node.Id == id)) return;
         _presentation.FitsInitialLayout = false;
-        if (id.Selection is { } selection) { _presentation.Reveal(selection); _select(selection); }
+        if (id.Kind == VocabularyGraphNodeKind.Meaning) { _presentation.Toggle(id.EntryId); _select(null); _selectMeaning(id.EntryId); }
+        else if (id.Kind == VocabularyGraphNodeKind.Category) { _presentation.Toggle(id.EntryId); _select(null); _selectCategory(id.EntryId); }
+        else if (id.Kind == VocabularyGraphNodeKind.Axis) _presentation.Toggle(id.EntryId);
+        else if (id.Selection is { } selection) { if (!_snapshot.IsMeaningGraph) _presentation.Reveal(selection); _select(selection); }
         else { _presentation.Toggle(id.EntryId); _select(null); }
         InvalidateVisual();
     }
@@ -140,7 +143,9 @@ internal sealed partial class VocabularyGraphCanvas
             case VocabularyGraphCommand.ZoomOut: _presentation.Camera = _presentation.Camera.Zoom(1 / 1.2, center, Viewport); break;
             case VocabularyGraphCommand.Fit: _presentation.Camera = _presentation.Camera.Fit(_positions.Values.ToArray(), Viewport); break;
             case VocabularyGraphCommand.Locate:
-                if (_presentation.FocusedEntryId is { } id && _positions.TryGetValue(VocabularyGraphNodeId.Headword(id), out var point)) Center(point); break;
+                if (!_canonicalLocate) { if (_presentation.FocusedEntryId is { } legacy && _positions.TryGetValue(VocabularyGraphNodeId.Headword(legacy), out var head)) Center(head); break; }
+                var targets = new List<VocabularyGraphNodeId>(); if (_selection is { } selected) targets.Add(VocabularyGraphNodeId.Sense(selected)); if (_meaningSelection is { } meaning) targets.Add(VocabularyGraphNodeId.Meaning(meaning)); if (_categorySelection is { } category) targets.Add(VocabularyGraphNodeId.Category(category)); if (_presentation.FocusedEntryId is { } id) targets.AddRange(_snapshot.Nodes.Where(n => n.Id.EntryId == id).OrderBy(n => n.Id.Kind == VocabularyGraphNodeKind.Meaning ? 0 : n.Id.Kind == VocabularyGraphNodeKind.Category ? 1 : 2).Select(n => n.Id));
+                foreach (var target in targets) if (_positions.TryGetValue(target, out var point)) { Center(point); break; } break;
         }
         InvalidateVisual();
     }

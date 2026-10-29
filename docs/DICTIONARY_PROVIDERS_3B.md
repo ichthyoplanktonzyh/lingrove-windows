@@ -41,6 +41,12 @@ while both slots remain occupied the article shows a retry action without displa
 is released only when no profile could have been created or identity-safe deletion has succeeded. Cleanup
 failure is internally observed and is not reported in the UI. Permanently pending SDK work does not fault
 and keeps its slot and profile. This bound is a Windows adapter constraint, not a Mac product rule.
+An installed-runtime preflight runs before profile creation and controller initialization; a missing
+runtime there returns admission without waiting for a browser that was never requested. After SDK
+controller initialization has been invoked, an exception alone does not prove that no browser started:
+without the browser exit event, the owner remains retained. Microsoft’s
+[initialization documentation](https://learn.microsoft.com/en-us/dotnet/api/microsoft.web.webview2.wpf.iwebview2.ensurecorewebview2async)
+lists possible failures but does not establish a general no-process guarantee for them.
 
 On the Windows development host, the focused Core suite passed 31 tests, including adversarial HTML
 and cancellation. The serialized WPF wrapper passed 31 focused tests, including synthetic MDX/MDD

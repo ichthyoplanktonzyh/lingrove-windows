@@ -30,6 +30,7 @@ internal sealed class DictionaryArticleView : Grid, IAsyncDisposable
     private Task? _nativePending;
     private bool _profileMayExist;
     private readonly Func<Task>? _environmentBarrier, _controllerBarrier;
+    private readonly Func<string> _runtimeVersion;
     private readonly Func<string, string> _sanitize;
     private readonly DictionaryArticleAdmission _slots;
     private readonly DictionaryProfileEffects? _profileEffects;
@@ -47,11 +48,12 @@ internal sealed class DictionaryArticleView : Grid, IAsyncDisposable
     internal string? InitializationFailure { get; private set; }
     internal DictionaryArticleView(Func<Task>? environmentBarrier = null, Func<Task>? controllerBarrier = null,
         Func<string, string>? sanitize = null, DictionaryArticleAdmission? slots = null, DictionaryProfileEffects? profileEffects = null,
-        string? profileParent = null)
+        string? profileParent = null, Func<string>? runtimeVersion = null)
     {
         _environmentBarrier = environmentBarrier; _controllerBarrier = controllerBarrier;
         _sanitize = sanitize ?? DictionaryHtmlPolicy.Document; _slots = slots ?? DictionaryArticleAdmission.Shared;
         _profileEffects = profileEffects;
+        _runtimeVersion = runtimeVersion ?? (() => CoreWebView2Environment.GetAvailableBrowserVersionString());
         _profileParent = profileParent ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Cotabby", "dictionary-profiles");
         _profile = Path.GetFullPath(Path.Combine(Path.GetTempPath(), "lingrove-dictionary-" + Guid.NewGuid().ToString("N")));
         ((UIElement)_view).Opacity = 0;
@@ -90,6 +92,9 @@ internal sealed class DictionaryArticleView : Grid, IAsyncDisposable
     }
     private async Task InitializeAsync()
     {
+        // This read-only preflight happens before creating any profile or invoking Ensure. A
+        // missing runtime therefore has positive no-browser evidence, unlike an SDK failure.
+        if (string.IsNullOrWhiteSpace(_runtimeVersion())) throw new InvalidOperationException("WebView2 Runtime is unavailable.");
         if (_profileEffects is null)
         {
             _profileOwner = WindowsPrivateProfileDirectory.CreateWithPrivateParent(_profileParent);

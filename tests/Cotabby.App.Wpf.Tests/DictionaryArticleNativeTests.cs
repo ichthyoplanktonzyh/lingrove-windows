@@ -12,6 +12,22 @@ namespace Cotabby.App.Wpf.Tests;
 public sealed class DictionaryArticleNativeTests(WpfDispatcher dispatcher)
 {
     [Fact]
+    public Task MissingRuntimeBeforeProfileOrBrowserReturnsAdmission() => dispatcher.RunAsync(async () =>
+    {
+        var slots = new DictionaryArticleAdmission(); int loads = 0;
+        var view = new DictionaryArticleView(slots: slots, runtimeVersion: () => throw new FileNotFoundException());
+        try
+        {
+            await view.ShowAsync(new("<p>fixture</p>", "", "Fixture", Guid.NewGuid()),
+                (_, _) => { loads++; return Task.FromResult<DictionaryResource?>(null); }, () => true, CancellationToken.None);
+            Assert.False(Directory.Exists(view.ProfilePath)); Assert.Equal(0, loads);
+            await view.DisposeAsync(); await view.ProfileCleanup;
+            using var first = slots.TryAcquire(); using var second = slots.TryAcquire(); Assert.NotNull(first); Assert.NotNull(second);
+        }
+        finally { await view.DisposeAsync(); }
+    });
+
+    [Fact]
     public Task NativeOwnedProfileWaitsForRetiredControllerInitialization() => dispatcher.RunAsync(async () =>
     {
         string parent = Path.Combine(Path.GetTempPath(), "lingrove-native-profile-test-" + Guid.NewGuid().ToString("N"));

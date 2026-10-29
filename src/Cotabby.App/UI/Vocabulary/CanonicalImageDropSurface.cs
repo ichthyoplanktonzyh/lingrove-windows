@@ -18,6 +18,7 @@ internal sealed class CanonicalImageDropSurface : HwndHost
     private IntPtr _host;
     private WindowsVocabularyOleDropTransfer? _transfer;
     private Task? _loop, _retirement;
+    internal Action? BeforeInitialPosition { get; set; }
     internal CanonicalImageDropSurface(Action<byte[]> received, Action failed, Action<bool> busy, Func<IntPtr, CancellationToken, Task<WindowsVocabularyOleDropTransfer>>? start = null)
     {
         string label = InterfaceText.Get("Drop image here");
@@ -37,13 +38,17 @@ internal sealed class CanonicalImageDropSurface : HwndHost
     {
         while (!_lifetime.IsCancellationRequested)
         {
+            bool retired = true;
             try
             {
                 IntPtr parent = _host;
                 var receiver = await Task.Run(() => _start(parent, _lifetime.Token));
-                _transfer = receiver; Position();
                 try
                 {
+                    // Startup may have completed on a worker while retirement was awaiting it.
+                    // The returned receiver is ours even if it never reaches presentation.
+                    if (_lifetime.IsCancellationRequested) break;
+                    _transfer = receiver; BeforeInitialPosition?.Invoke(); Position();
                     Task first = await Task.WhenAny(receiver.DropStarted, receiver.Result);
                     if (first == receiver.DropStarted && !_lifetime.IsCancellationRequested) _busy(true);
                     byte[]? bytes = await receiver.Result;
@@ -52,10 +57,22 @@ internal sealed class CanonicalImageDropSurface : HwndHost
                     else if (bytes is null && !_lifetime.IsCancellationRequested) _failed();
                 }
                 catch (Exception) when (!_lifetime.IsCancellationRequested && receiver.DropStarted.IsCompleted) { _failed(); }
-                finally { _busy(false); _transfer = null; await receiver.DisposeAsync(); }
+                finally
+                {
+                    try { _busy(false); }
+                    finally
+                    {
+                        _transfer = null; retired = false;
+                        await receiver.DisposeAsync(); retired = true;
+                    }
+                }
             }
-            catch (OperationCanceledException) when (_lifetime.IsCancellationRequested) { break; }
-            catch (Exception) { if (!_lifetime.IsCancellationRequested) await Task.Delay(1000, _lifetime.Token); }
+            catch (OperationCanceledException) when (_lifetime.IsCancellationRequested && retired) { break; }
+            catch (Exception) when (retired)
+            {
+                if (!_lifetime.IsCancellationRequested)
+                    try { await Task.Delay(1000, _lifetime.Token); } catch (OperationCanceledException) when (_lifetime.IsCancellationRequested) { break; }
+            }
         }
     }
     private void Position()
@@ -73,7 +90,7 @@ internal sealed class CanonicalImageDropSurface : HwndHost
             Exception? failure = null;
             try { _lifetime.Cancel(); } catch (Exception error) { failure = error; }
             try { if (_transfer is { } transfer) await transfer.DisposeAsync(); } catch (Exception error) { failure ??= error; }
-            try { if (_loop is not null) await _loop; } catch (OperationCanceledException) { } catch (Exception error) { failure ??= error; }
+            try { if (_loop is not null) await _loop; } catch (Exception error) { failure ??= error; }
             _lifetime.Dispose(); if (failure is null) done.TrySetResult(); else done.TrySetException(failure);
         }
     }

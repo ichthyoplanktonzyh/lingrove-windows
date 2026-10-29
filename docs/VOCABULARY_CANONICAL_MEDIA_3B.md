@@ -48,6 +48,8 @@ embedded-profile rejection/bounds and a synthetic linear-light profile converted
 RLE8 and a profiled bitmap through the canonical editor and an isolated named Store. Synthetic
 cross-process COM tests exercise image and virtual-file HGLOBAL/IStream payloads through the helper,
 editor and named Store, plus a blocked provider killed and joined before editor dismissal. The test
-helper's explicit marshal-token mode exists only to supply synthetic test providers; normal product
+also holds a ready helper across window retirement and injects presentation failures: every returned
+helper is joined before retry or host destruction, including when no window state was published.
+The helper's explicit marshal-token mode exists only to supply synthetic test providers; normal product
 startup does not request it. Physical clipboard producers, drag providers, Shell interaction,
 scaling and desktop acceptance remain unverified.

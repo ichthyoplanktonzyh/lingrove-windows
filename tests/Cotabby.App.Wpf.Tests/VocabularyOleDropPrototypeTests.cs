@@ -13,6 +13,51 @@ namespace Cotabby.App.Wpf.Tests;
 public sealed class VocabularyOleDropPrototypeTests(WpfDispatcher dispatcher)
 {
     [Fact]
+    public Task ClosingAfterReadyBeforePublicationRetiresReturnedReceiver() => dispatcher.RunAsync(async () =>
+    {
+        var ready = new TaskCompletionSource<WindowsVocabularyOleDropTransfer>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        async Task<WindowsVocabularyOleDropTransfer> Start(IntPtr parent, CancellationToken token)
+        { var receiver = await WindowsVocabularyOleDropTransfer.StartForTestAsync(parent, token); ready.TrySetResult(receiver); await release.Task; return receiver; }
+        var surface = new Cotabby.App.UI.Vocabulary.CanonicalImageDropSurface(_ => { }, () => { }, _ => { }, Start);
+        var window = new Window { Content = surface, Width = 300, Height = 200, ShowInTaskbar = false }; window.Show();
+        try
+        {
+            var receiver = await ready.Task.WaitAsync(TimeSpan.FromSeconds(10)); Assert.True(IsWindow(receiver.Window));
+            Task retirement = surface.RetireAsync(); Assert.False(retirement.IsCompleted); release.SetResult();
+            await retirement.WaitAsync(TimeSpan.FromSeconds(5)); Assert.False(IsWindow(receiver.Window)); Assert.True(receiver.Result.IsCompleted);
+        }
+        finally { release.TrySetResult(); await surface.RetireAsync(); window.Close(); }
+    });
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public Task PresentationFailureRetiresOldReceiverBeforeRetry(bool positionFailure) => dispatcher.RunAsync(async () =>
+    {
+        var first = new TaskCompletionSource<WindowsVocabularyOleDropTransfer>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var second = new TaskCompletionSource<WindowsVocabularyOleDropTransfer>(TaskCreationOptions.RunContinuationsAsynchronously);
+        int starts = 0, throws = 0;
+        async Task<WindowsVocabularyOleDropTransfer> Start(IntPtr parent, CancellationToken token)
+        {
+            var receiver = await WindowsVocabularyOleDropTransfer.StartForTestAsync(parent, token);
+            if (Interlocked.Increment(ref starts) == 1) first.TrySetResult(receiver); else second.TrySetResult(receiver);
+            return receiver;
+        }
+        void Busy(bool busy) { if (!positionFailure && !busy && Interlocked.Increment(ref throws) <= 2) throw new InvalidOperationException("synthetic busy callback"); }
+        var surface = new Cotabby.App.UI.Vocabulary.CanonicalImageDropSurface(_ => { }, () => { }, Busy, Start);
+        if (positionFailure) surface.BeforeInitialPosition = () => { if (Interlocked.Increment(ref throws) == 1) throw new InvalidOperationException("synthetic position failure"); };
+        var window = new Window { Content = surface, Width = 300, Height = 200, ShowInTaskbar = false }; window.Show();
+        try
+        {
+            var original = await first.Task.WaitAsync(TimeSpan.FromSeconds(10));
+            if (!positionFailure) await Task.Run(() => InvokeDrop(Convert.FromBase64String(original.TestTarget!), new PngData())).WaitAsync(TimeSpan.FromSeconds(10));
+            var next = await second.Task.WaitAsync(TimeSpan.FromSeconds(10));
+            Assert.False(IsWindow(original.Window)); Assert.True(original.Result.IsCompleted); Assert.True(IsWindow(next.Window));
+            await surface.RetireAsync().WaitAsync(TimeSpan.FromSeconds(5)); Assert.False(IsWindow(next.Window));
+        }
+        finally { await surface.RetireAsync(); window.Close(); }
+    });
+    [Fact]
     public Task HelperOwnsItsRegisteredChildWindow() => dispatcher.RunAsync(async () =>
     {
         var window = new Window { Width = 300, Height = 200, ShowInTaskbar = false }; window.Show();

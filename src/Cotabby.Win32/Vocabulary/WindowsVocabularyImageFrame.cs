@@ -15,6 +15,7 @@ internal sealed unsafe class WindowsVocabularyImageFrame : IDisposable
 {
     private readonly List<nint> _owned = [];
     private nint _factory, _frame;
+    private byte[]? _embeddedBitmapProfile;
     private bool _uninitialize;
     internal int Width { get; private set; }
     internal int Height { get; private set; }
@@ -26,6 +27,11 @@ internal sealed unsafe class WindowsVocabularyImageFrame : IDisposable
     {
         try
         {
+            // A V5 linked color profile is a path, potentially a network path. Refuse it
+            // before handing any bytes to WIC, including ordinary chosen BMP files.
+            if (data.Length >= 74 && data[0] == 'B' && data[1] == 'M'
+                && System.Buffers.Binary.BinaryPrimitives.ReadUInt32LittleEndian(data[14..]) == 124
+                && System.Buffers.Binary.BinaryPrimitives.ReadUInt32LittleEndian(data[70..]) == 0x4C494E4B) throw new COMException();
             int status = CoInitializeEx(0, 0); // COINIT_MULTITHREADED, or borrow an existing STA.
             if (status >= 0) _uninitialize = true;
             else if (status != unchecked((int)0x80010106)) Check(status); // RPC_E_CHANGED_MODE
@@ -37,15 +43,21 @@ internal sealed unsafe class WindowsVocabularyImageFrame : IDisposable
             // IWICImagingFactory::CreateDecoderFromStream, WICDecodeMetadataCacheOnDemand = 0.
             Check(((delegate* unmanaged[Stdcall]<nint, nint, Guid*, uint, nint*, int>)Slots(_factory)[4])(_factory, stream, null, 0, &decoder)); Own(decoder);
             Guid container; Check(((delegate* unmanaged[Stdcall]<nint, Guid*, int>)Slots(decoder)[5])(decoder, &container)); Container = container;
+            if (Container == new Guid("0af1d87e-fcfe-4188-bdeb-a7906471cbe3") && data.Length >= 74
+                && System.Buffers.Binary.BinaryPrimitives.ReadUInt32LittleEndian(data[14..]) == 124
+                && System.Buffers.Binary.BinaryPrimitives.ReadUInt32LittleEndian(data[70..]) == 0x4D424544)
+                _embeddedBitmapProfile = VocabularyClipboardDib.EmbeddedProfile(data) ?? throw new COMException();
             nint frame = 0; Check(((delegate* unmanaged[Stdcall]<nint, uint, nint*, int>)Slots(decoder)[13])(decoder, 0, &frame)); _frame = Own(frame);
             (Width, Height) = Size(_frame); Orientation = ReadOrientation();
             uint contexts = 0;
             int colors = ((delegate* unmanaged[Stdcall]<nint, uint, nint*, uint*, int>)Slots(_frame)[9])(_frame, 0, null, &contexts);
             // The Windows BMP codec reports UNSUPPORTEDOPERATION even for a plain sRGB BMP.
             // That failure alone proves nothing about color. Only a separately validated BMP
-            // header with no profile and explicit/default RGB evidence can replace this query;
-            // calibrated/unknown/profiled sources and every other codec/error stay fail-closed.
-            if (colors == unchecked((int)0x88982F81) && Container == new Guid("0af1d87e-fcfe-4188-bdeb-a7906471cbe3")
+            // header with no profile and explicit/default RGB evidence can replace this query.
+            // A separately validated embedded profile uses the memory context below; other
+            // calibrated/unknown sources and codec errors stay fail-closed.
+            if (_embeddedBitmapProfile is not null) contexts = 1;
+            else if (colors == unchecked((int)0x88982F81) && Container == new Guid("0af1d87e-fcfe-4188-bdeb-a7906471cbe3")
                 && VocabularyClipboardDib.HasProvenSrgbBitmap(data)) contexts = 0;
             else Check(colors);
             ColorContextCount = contexts;
@@ -68,9 +80,18 @@ internal sealed unsafe class WindowsVocabularyImageFrame : IDisposable
             // A profile cannot simply be dropped after reinterpreting its pixel values. WIC
             // converts the frame's primary source context to explicit sRGB before metadata is
             // discarded. Unsupported profile/format combinations fail instead of guessing.
-            nint originalContext = Create(15), context = originalContext; uint actual = 0;
-            Check(((delegate* unmanaged[Stdcall]<nint, uint, nint*, uint*, int>)Slots(_frame)[9])(_frame, 1, &context, &actual));
-            if (context != originalContext) Own(context);
+            nint originalContext = Create(15), context = originalContext;
+            if (_embeddedBitmapProfile is { } profile)
+            {
+                fixed (byte* bytes = profile)
+                    Check(((delegate* unmanaged[Stdcall]<nint, byte*, uint, int>)Slots(context)[4])(context, bytes, (uint)profile.Length));
+            }
+            else
+            {
+                uint actual = 0;
+                Check(((delegate* unmanaged[Stdcall]<nint, uint, nint*, uint*, int>)Slots(_frame)[9])(_frame, 1, &context, &actual));
+                if (context != originalContext) Own(context);
+            }
             nint srgb = Create(15); Check(((delegate* unmanaged[Stdcall]<nint, uint, int>)Slots(srgb)[5])(srgb, 1));
             nint colors = Create(16);
             Check(((delegate* unmanaged[Stdcall]<nint, nint, nint, nint, Guid*, int>)Slots(colors)[8])(colors, source, context, srgb, &format)); source = colors;

@@ -5,6 +5,16 @@ namespace Cotabby.Inference.Tests;
 
 public sealed class VocabularyClipboardDibTests
 {
+    [Fact]
+    public void EmbeddedProfileIsBoundedDetachedAndCannotOverlapPixels()
+    {
+        byte[] source = VocabularyDibFixture.Image(124); byte[] dib = [.. source, .. new byte[8], .. Enumerable.Repeat((byte)7, 128)];
+        VocabularyDibFixture.U32(dib, 56, 0x4D424544); VocabularyDibFixture.U32(dib, 112, (uint)(source.Length + 8)); VocabularyDibFixture.U32(dib, 116, 128);
+        byte[] bmp = VocabularyClipboardDib.Wrap(dib, true); Assert.Equal((uint)source.Length, U32(bmp, 126));
+        Assert.Equal(Enumerable.Repeat((byte)7, 128), VocabularyClipboardDib.EmbeddedProfile(bmp));
+        VocabularyDibFixture.U32(dib, 112, (uint)(source.Length - 1)); Assert.Throws<InvalidDataException>(() => VocabularyClipboardDib.Wrap(dib, true));
+        VocabularyDibFixture.U32(dib, 112, uint.MaxValue); Assert.Throws<InvalidDataException>(() => VocabularyClipboardDib.Wrap(dib, true));
+    }
     private static byte[] Rle(int bits, byte[] commands)
     {
         byte[] dib = new byte[40 + 16 * 4 + commands.Length]; VocabularyDibFixture.U32(dib, 0, 40);

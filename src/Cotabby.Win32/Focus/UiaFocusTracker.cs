@@ -40,7 +40,7 @@ public sealed class UiaFocusTracker : IFocusTracker
         _addHandler = Automation.AddAutomationFocusChangedEventHandler;
         _removeHandler = Automation.RemoveAutomationFocusChangedEventHandler;
         if (OperatingSystem.IsWindowsVersionAtLeast(8, 1))
-            _composition = new UiaTextEditEvidence(OnCompositionChanged);
+            _composition = new UiaTextEditEvidence(OnCompositionChanged, OnCompositionFailure);
     }
 
     internal UiaFocusTracker(ILogger<UiaFocusTracker> logger, ICompositionEvidenceOwner composition,
@@ -103,13 +103,14 @@ public sealed class UiaFocusTracker : IFocusTracker
     private void Stop(long? expectedGeneration)
     {
         AutomationFocusChangedEventHandler? handler;
+        long retirementEpoch;
         lock (_gate)
         {
             if (!_running || (expectedGeneration.HasValue && expectedGeneration.Value != _startGeneration)) return;
             _running = false;
             ++_startGeneration;
             Interlocked.Increment(ref _focusChangeSequence);
-            _composition?.Invalidate();
+            retirementEpoch = _composition?.Invalidate() ?? 0;
             handler = _handler;
             _handler = null;
             Volatile.Write(ref _current, null);
@@ -117,7 +118,7 @@ public sealed class UiaFocusTracker : IFocusTracker
         }
         if (handler is not null)
         {
-            _composition?.RetireAsync();
+            _composition?.RetireAsync(retirementEpoch);
             _composition?.Execute(() => _removeHandler(handler));
         }
     }
@@ -165,6 +166,22 @@ public sealed class UiaFocusTracker : IFocusTracker
         }
         // Never run consumer code from the COM callback; the receipt was already retired.
         QueueCompositionRefresh();
+    }
+
+    internal void OnCompositionFailure()
+    {
+        lock (_gate)
+        {
+            if (!_running) return;
+            Volatile.Write(ref _current, null);
+        }
+        // A failed poll invalidates work but is not a new native composition event and must not
+        // schedule another poll. The next real event or user action may attempt a fresh capture.
+        ThreadPool.QueueUserWorkItem(_ =>
+        {
+            try { FocusChanged?.Invoke(this, null); }
+            catch (Exception) { _logger.LogWarning("Composition failure notification failed."); }
+        });
     }
 
     private void QueueCompositionRefresh()
@@ -216,14 +233,15 @@ public sealed class UiaFocusTracker : IFocusTracker
     private void OnFocusChanged(object? sender, AutomationFocusChangedEventArgs e)
     {
         long eventSequence;
+        long retirementEpoch;
         lock (_gate)
         {
             if (!_running) return;
             eventSequence = Interlocked.Increment(ref _focusChangeSequence);
-            _composition?.Invalidate();
+            retirementEpoch = _composition?.Invalidate() ?? 0;
             Volatile.Write(ref _current, null);
         }
-        _composition?.RetireAsync();
+        _composition?.RetireAsync(retirementEpoch);
         ThreadPool.QueueUserWorkItem(_ => PublishFocusChange(eventSequence));
     }
 

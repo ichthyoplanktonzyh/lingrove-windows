@@ -15,3 +15,15 @@ MF_MT_SUBTYPE
 MF_SOURCE_READER_CONSTANTS
 MF_VERSION
 SHCreateMemStream
+IUIAutomation3
+IUIAutomationElement
+IUIAutomationTextEditPattern
+IUIAutomationTextEditTextChangedEventHandler
+CoCreateInstance
+CoInitializeEx
+CoUninitialize
+SafeArrayGetLBound
+SafeArrayGetUBound
+SafeArrayAccessData
+SafeArrayUnaccessData
+SafeArrayDestroy

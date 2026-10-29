@@ -28,6 +28,7 @@ internal sealed partial class CanonicalAnkiReviewSession : INotifyPropertyChange
     private readonly Dictionary<string, bool> _keepRemote = new(CanonicalStringComparer.Instance);
     private AnkiRemoteNote? _conflictRemote;
     private ReviewOperationScope? _sendScope;
+    private SendState? _sendState;
     private Guid _metadataId = Guid.NewGuid();
     private readonly string _initialDefaultDeck;
     private readonly bool _initialDefaultRecognition, _initialDefaultGap;
@@ -123,6 +124,13 @@ internal sealed partial class CanonicalAnkiReviewSession : INotifyPropertyChange
         if ((Plan.AudioKinds?.Count ?? 0) != 0 || (Plan.Layout?.AudioKinds.Count ?? 0) != 0)
             throw new AnkiReviewException("Speech is not available for review audio.");
     }
+    private sealed record SendState(ReviewPlan Plan, string Deck, Guid? BindingId, string Model, IReadOnlyDictionary<ReviewField, string> Mapping);
+    private SendState CaptureSendState() => new(Plan, Deck, BindingId, Model, Mapping);
+    private bool MatchesSendState(SendState state) => Plan == state.Plan && Same(Deck, state.Deck) && BindingId == state.BindingId
+        && Same(Model, state.Model) && Mapping.Count == state.Mapping.Count
+        && Mapping.All(pair => state.Mapping.TryGetValue(pair.Key, out var value) && Same(pair.Value, value));
+    private void RequireSendState()
+    { RequireNoAudio(); if (_sendState is not { } state || !MatchesSendState(state)) throw Conflict(); }
     internal IReadOnlyDictionary<ReviewField, string> Mapping => CardId is not null ? ReviewLayoutPolicy.Mapping : Same(Model, AnkiReviewPolicy.PresetName)
         ? new ReadOnlyDictionary<ReviewField, string>(AnkiReviewPolicy.PresetMapping.Where(pair => pair.Key is not (ReviewField.ExpressionAudio or ReviewField.SentenceAudio) || AvailableFields.Count == 0 || Has(AvailableFields, FieldName(pair.Key))).ToDictionary(pair => pair.Key, pair => pair.Value))
         : Binding?.Mapping ?? Controller.Settings.EffectiveMapping;
@@ -165,16 +173,36 @@ internal sealed partial class CanonicalAnkiReviewSession : INotifyPropertyChange
         Plan = restored; if (Binding?.NoteId is null && saved.Deck is { } deck) Deck = deck;
     }
     internal async Task<bool> SaveAsync(CancellationToken token = default)
-    { try { await SavePlanAsync(token); return true; } catch (Exception error) { Message = error is OperationCanceledException ? null : error.Message; Changed(); return false; } }
+    {
+        if (Busy) return false;
+        Busy = true; Changed();
+        try { await SavePlanAsync(token); return true; }
+        catch (Exception error) { Message = error is OperationCanceledException ? null : error.Message; Changed(); return false; }
+        finally { Busy = false; Changed(); }
+    }
     private async Task SavePlanAsync(CancellationToken token)
     {
+        var captured = CaptureSendState(); var images = ImportedImages;
         var current = await CurrentAsync(token); if (ReviewValue(current.Sense, CardId) != _baseline) throw Conflict();
-        if (CardId is not null && (Plan.Name is null || FoundationText.TrimWhitespaceAndNewlines(Plan.Name).Length == 0)) Plan = Plan with { Name = "New card" };
-        Plan = Plan with { Deck = Deck }; var next = (_baseline ?? new F.VocabularyReview(Plan)) with { Plan = Plan, ActiveBindingId = BindingId };
-        int index = next.Bindings.ToList().FindIndex(value => value.Id == BindingId && value.NoteId is null);
-        if (index >= 0) { var bindings = next.Bindings.ToArray(); bindings[index] = bindings[index] with { Deck = Deck }; next = next with { Bindings = bindings }; }
-        var ack = await Store.SaveReviewAsync(EntryId, SenseId, next, _baseline, CardId, ImportedImages, token);
-        ApplySnapshot(ack); _baseline = next; ImportedImages = new Dictionary<string, VocabularyPreparedImage>();
+        if (_sendState is not null) RequireSendState();
+        var plan = captured.Plan;
+        if (CardId is not null && (plan.Name is null || FoundationText.TrimWhitespaceAndNewlines(plan.Name).Length == 0)) plan = plan with { Name = "New card" };
+        plan = plan with { Deck = captured.Deck };
+        if (plan.Layout is { } layout && (plan.AudioKinds is null || !plan.AudioKinds.SetEquals(layout.AudioKinds))) plan = plan with { AudioKinds = layout.AudioKinds };
+        if (MatchesSendState(captured))
+        {
+            Plan = plan;
+            if (_sendState is not null) { _sendState = captured with { Plan = plan }; RequireSendState(); }
+        }
+        var next = (_baseline ?? new F.VocabularyReview(plan)) with { Plan = plan, ActiveBindingId = captured.BindingId };
+        int index = next.Bindings.ToList().FindIndex(value => value.Id == captured.BindingId && value.NoteId is null);
+        if (index >= 0) { var bindings = next.Bindings.ToArray(); bindings[index] = bindings[index] with { Deck = captured.Deck }; next = next with { Bindings = bindings }; }
+        var ack = await Store.SaveReviewAsync(EntryId, SenseId, next, _baseline, CardId, images, token);
+        ApplySnapshot(ack); _baseline = next;
+        var remaining = new Dictionary<string, VocabularyPreparedImage>(ImportedImages, StringComparer.Ordinal);
+        foreach (var pair in images) if (remaining.TryGetValue(pair.Key, out var value) && ReferenceEquals(value, pair.Value)) remaining.Remove(pair.Key);
+        ImportedImages = remaining;
+        if (_sendState is not null) RequireSendState();
     }
     private static bool Same(string? a, string? b) => CanonicalStringComparer.Instance.Equals(a, b);
     private static bool Has(IEnumerable<string> values, string value) => values.Contains(value, CanonicalStringComparer.Instance);

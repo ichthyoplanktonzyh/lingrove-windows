@@ -8,12 +8,58 @@ using Cotabby.Core.Vocabulary;
 using Cotabby.Core.Vocabulary.EntryInput;
 using Cotabby.ReviewTesting;
 using Cotabby.Win32.Vocabulary;
+using Cotabby.Core.LanguageLearning;
+using F = Cotabby.Core.Vocabulary.Frozen;
 
 namespace Cotabby.App.Wpf.Tests;
 
 [Collection("WPF views")]
 public sealed class CanonicalAnkiReviewSessionTests(WpfDispatcher dispatcher)
 {
+    private sealed class HeldStore(F.ICanonicalVocabularyStore inner) : F.ICanonicalVocabularyStore
+    {
+        internal bool HoldRead, HoldImage, HoldSaveAck;
+        internal TaskCompletionSource Entered = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        internal TaskCompletionSource Release = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private async Task Wait(CancellationToken token) { Entered.TrySetResult(); await Release.Task.WaitAsync(token); }
+        public async Task<F.FrozenVocabularyImportSnapshot> ReadAsync(CancellationToken token = default) { var value = await inner.ReadAsync(token); if (HoldRead) { HoldRead = false; await Wait(token); } return value; }
+        public async Task<byte[]> ReadImageAsync(VocabularyImageReference image, CancellationToken token = default) { if (HoldImage) { HoldImage = false; await Wait(token); } return await inner.ReadImageAsync(image, token); }
+        public async Task<F.FrozenVocabularyImportSnapshot> SaveReviewAsync(Guid e, Guid s, F.VocabularyReview v, F.VocabularyReview? b, Guid? c = null, IReadOnlyDictionary<string, VocabularyPreparedImage>? i = null, CancellationToken token = default) { var value = await inner.SaveReviewAsync(e, s, v, b, c, i, token); if (HoldSaveAck) { HoldSaveAck = false; await Wait(CancellationToken.None); } return value; }
+        public IDisposable Subscribe(Action<F.FrozenVocabularyImportSnapshot> changed) => inner.Subscribe(changed);
+        public Task<F.FrozenVocabularyImportPreview> PreviewWordListAsync(VocabularyWordList t, VocabularyWordListConfiguration c, CancellationToken token = default) => inner.PreviewWordListAsync(t, c, token);
+        public Task<F.VocabularyEntryImportResult> AddEntriesAsync(IReadOnlyList<VocabularyEntryInput> i, CancellationToken token = default) => inner.AddEntriesAsync(i, token);
+        public Task<F.CanonicalWritingReceipt> SaveCaptureAsync(VocabularyCapture c, CancellationToken token = default) => inner.SaveCaptureAsync(c, token);
+        public Task<F.CanonicalWritingReceipt> RemoveCaptureAsync(VocabularyCapture c, CancellationToken token = default) => inner.RemoveCaptureAsync(c, token);
+        public Task<LearningExplanationRecord?> FindExplanationAsync(LearningExplanationInput i, LearningLanguage l, CancellationToken token = default) => inner.FindExplanationAsync(i, l, token);
+        public Task<F.CanonicalWritingReceipt> SaveExplanationAsync(LearningExplanationRecord r, CancellationToken token = default) => inner.SaveExplanationAsync(r, token);
+        public Task<F.CanonicalWritingReceipt> AdoptExplanationAsync(LearningExplanationRecord r, VocabularyExplanationDestination d, CancellationToken token = default) => inner.AdoptExplanationAsync(r, d, token);
+        public Task<F.FrozenVocabularyImportSnapshot> RecordAnkiBindingAsync(Guid e, Guid s, F.AnkiNoteBinding b, Guid? c = null, CancellationToken token = default) => inner.RecordAnkiBindingAsync(e, s, b, c, token);
+        public Task<F.FrozenVocabularyImportSnapshot> RemoveReviewAsync(Guid e, Guid s, Guid c, F.VocabularyReview b, CancellationToken token = default) => inner.RemoveReviewAsync(e, s, c, b, token);
+        public Task<F.FrozenVocabularyImportSnapshot> SaveTemplateAsync(ReviewLayoutTemplate t, IReadOnlyDictionary<string, VocabularyPreparedImage>? i = null, CancellationToken token = default) => inner.SaveTemplateAsync(t, i, token);
+        public Task<F.FrozenVocabularyImportSnapshot> RemoveTemplateAsync(Guid id, CancellationToken token = default) => inner.RemoveTemplateAsync(id, token);
+        public Task<VocabularyPreparedImage> PrepareImageAsync(ReadOnlyMemory<byte> data, CancellationToken token = default) => inner.PrepareImageAsync(data, token);
+        public Task<VocabularyPreparedImage> PrepareImageFileAsync(string path, CancellationToken token = default) => inner.PrepareImageFileAsync(path, token);
+        public Task<F.CanonicalVocabularyMediaSnapshot> ReadMediaSnapshotAsync(CancellationToken token = default) => inner.ReadMediaSnapshotAsync(token);
+        public Task<F.FrozenVocabularyImportSnapshot> UpdateEntryAsync(F.VocabularyEntry e, F.VocabularyEntry b, IReadOnlyDictionary<string, VocabularyPreparedImage>? i = null, CancellationToken token = default) => inner.UpdateEntryAsync(e, b, i, token);
+        public Task<F.CanonicalSenseReceipt> CreateSenseAsync(Guid e, CancellationToken token = default) => inner.CreateSenseAsync(e, token);
+        public Task<F.FrozenVocabularyImportSnapshot> MergeSensesAsync(Guid e, Guid s, Guid t, CancellationToken token = default) => inner.MergeSensesAsync(e, s, t, token);
+        public Task<F.FrozenVocabularyImportSnapshot> RemoveSenseAsync(Guid e, Guid s, CancellationToken token = default) => inner.RemoveSenseAsync(e, s, token);
+        public Task<F.CanonicalSenseReceipt> MoveExampleAsync(Guid e, Guid u, Guid s, Guid? t, CancellationToken token = default) => inner.MoveExampleAsync(e, u, s, t, token);
+        public Task<F.FrozenVocabularyImportSnapshot> UpdateSemanticsAsync(F.VocabularySemanticIndex e, F.VocabularySemanticIndex b, CancellationToken token = default) => inner.UpdateSemanticsAsync(e, b, token);
+        public Task<F.FrozenVocabularyImportSnapshot> UpdateClassificationAsync(Cotabby.Core.Vocabulary.Resources.VocabularyClassificationIndex e, Cotabby.Core.Vocabulary.Resources.VocabularyClassificationIndex b, CancellationToken token = default) => inner.UpdateClassificationAsync(e, b, token);
+        public ValueTask DisposeAsync() => ValueTask.CompletedTask;
+    }
+    private sealed class HeldAnki(IAnkiConnecting inner, string target) : IAnkiConnecting
+    {
+        internal TaskCompletionSource Entered = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        internal TaskCompletionSource Release = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        public async Task<AnkiValue> PerformAsync(string action, IReadOnlyDictionary<string, AnkiValue> parameters, AnkiConnection connection, CancellationToken token = default)
+        {
+            var value = await inner.PerformAsync(action, parameters, connection, token);
+            if (action == target) { Entered.TrySetResult(); await Release.Task.WaitAsync(token); }
+            return value;
+        }
+    }
     private static AnkiReviewSettings Settings() { var values = new AppSettings(); return new(() => values, () => { }, new AnkiTestCredentials()); }
     private static async Task<(Guid Entry, Guid Sense)> Seed(Cotabby.Core.Vocabulary.Frozen.ICanonicalVocabularyStore store)
     {
@@ -291,6 +337,151 @@ public sealed class CanonicalAnkiReviewSessionTests(WpfDispatcher dispatcher)
             Assert.False(await session.SendAsync());
             var actions = server.Calls.Select(value => value.GetType().GetProperty("action")!.GetValue(value)!.ToString()).ToArray();
             Assert.DoesNotContain("addNote", actions); Assert.DoesNotContain("createModel", actions); Assert.DoesNotContain("storeMediaFile", actions);
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    });
+    [Theory]
+    [InlineData("audio")]
+    [InlineData("overrides")]
+    [InlineData("deck")]
+    [InlineData("binding")]
+    public Task DraftChangeDuringHeldStoreReadPreventsRemoteWrites(string change) => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "canonical-anki-" + Guid.NewGuid().ToString("N")); string path = Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName);
+        try
+        {
+            await using var backend = FrozenVocabularyStoreFactory.Create(path, false); var (entry, sense) = await Seed(backend);
+            var held = new HeldStore(backend); var server = new SessionTestServer { AfterMetadata = () => held.HoldRead = true };
+            using var session = await CanonicalAnkiReviewSession.OpenAsync(new AnkiReviewController(Settings(), null, server), held, entry, sense);
+            var send = session.SendAsync();
+            try
+            {
+                await held.Entered.Task.WaitAsync(TimeSpan.FromSeconds(10));
+                if (change == "audio") session.Plan = session.Plan with { AudioKinds = new HashSet<ReviewAudioKind> { ReviewAudioKind.Expression } };
+                else if (change == "overrides") session.Plan = session.Plan with { FieldOverrides = new Dictionary<string, string> { ["Meaning"] = "later" } };
+                else if (change == "deck") session.Deck = "Other";
+                else session.SelectBinding(Guid.NewGuid());
+            }
+            finally { held.Release.TrySetResult(); await send.WaitAsync(TimeSpan.FromSeconds(10)); }
+            Assert.False(send.Result);
+            var actions = server.Calls.Select(value => value.GetType().GetProperty("action")!.GetValue(value)!.ToString()).ToArray();
+            Assert.DoesNotContain("addNote", actions); Assert.DoesNotContain("updateNoteFields", actions); Assert.DoesNotContain("storeMediaFile", actions); Assert.DoesNotContain("createModel", actions);
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    });
+    [Theory]
+    [InlineData("modelTemplates")]
+    [InlineData("modelStyling")]
+    public Task MetadataFromOldModelNeverPublishesAfterAwait(string action) => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "canonical-anki-" + Guid.NewGuid().ToString("N")); string path = Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName);
+        try
+        {
+            await using var store = FrozenVocabularyStoreFactory.Create(path, false); var (entry, sense) = await Seed(store);
+            var settings = Settings(); var held = new HeldAnki(new SessionTestServer(), action);
+            using var session = await CanonicalAnkiReviewSession.OpenAsync(new AnkiReviewController(settings, null, held), store, entry, sense);
+            string deck = session.Deck; var load = session.LoadMetadataAsync();
+            try { await held.Entered.Task.WaitAsync(TimeSpan.FromSeconds(10)); settings.Model = "different"; }
+            finally { held.Release.TrySetResult(); await load.WaitAsync(TimeSpan.FromSeconds(10)); }
+            Assert.Null(session.Catalog); Assert.Empty(session.AvailableFields); Assert.False(session.CurrentPresetTemplate); Assert.Equal(deck, session.Deck);
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    });
+    [Fact]
+    public Task SaveAcknowledgementDoesNotOverwriteLaterDraftOrImportedImages() => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "canonical-anki-" + Guid.NewGuid().ToString("N")); string path = Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName);
+        try
+        {
+            await using var backend = FrozenVocabularyStoreFactory.Create(path, false); var (entry, sense) = await Seed(backend);
+            var held = new HeldStore(backend) { HoldSaveAck = true }; var image = Image();
+            using var session = await CanonicalAnkiReviewSession.OpenAsync(new AnkiReviewController(Settings(), null, new SessionTestServer()), held, entry, sense);
+            session.ImportedImages = new Dictionary<string, VocabularyPreparedImage> { [image.Reference.Filename] = image };
+            var save = session.SaveAsync(); var replacement = new VocabularyPreparedImage(image.Reference, [1, 2, 3]);
+            try
+            {
+                await held.Entered.Task.WaitAsync(TimeSpan.FromSeconds(10));
+                session.Plan = session.Plan with { Answer = "later" }; session.Deck = "Other";
+                session.ImportedImages = new Dictionary<string, VocabularyPreparedImage> { [image.Reference.Filename] = replacement };
+            }
+            finally { held.Release.TrySetResult(); await save.WaitAsync(TimeSpan.FromSeconds(10)); }
+            Assert.True(save.Result); Assert.Equal("later", session.Plan.Answer); Assert.Equal("Other", session.Deck);
+            Assert.Same(replacement, session.ImportedImages[image.Reference.Filename]);
+            Assert.Null((await backend.ReadAsync()).Document.Collections[0].Review!.Plan.Answer);
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    });
+    [Fact]
+    public Task AudioAddedDuringTemplateStoreReadPreventsTemplateWrites() => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "canonical-anki-" + Guid.NewGuid().ToString("N")); string path = Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName);
+        try
+        {
+            await using var backend = FrozenVocabularyStoreFactory.Create(path, false); var (entry, sense) = await Seed(backend);
+            var held = new HeldStore(backend); var server = new SessionTestServer(); server.Legacy();
+            using var session = await CanonicalAnkiReviewSession.OpenAsync(new AnkiReviewController(Settings(), null, server), held, entry, sense);
+            held.HoldRead = true; var update = session.UpdateTemplateAsync();
+            try { await held.Entered.Task.WaitAsync(TimeSpan.FromSeconds(10)); session.Plan = session.Plan with { AudioKinds = new HashSet<ReviewAudioKind> { ReviewAudioKind.Expression } }; }
+            finally { held.Release.TrySetResult(); await update.WaitAsync(TimeSpan.FromSeconds(10)); }
+            Assert.Contains("Speech", session.Message);
+            var actions = server.Calls.Select(value => value.GetType().GetProperty("action")!.GetValue(value)!.ToString()).ToArray();
+            Assert.DoesNotContain("modelFieldAdd", actions); Assert.DoesNotContain("updateModelTemplates", actions); Assert.DoesNotContain("updateModelStyling", actions); Assert.DoesNotContain("createModel", actions);
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    });
+    [Fact]
+    public Task DraftChangedDuringSendSaveAcknowledgementDoesNotStartRemoteWrite() => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "canonical-anki-" + Guid.NewGuid().ToString("N")); string path = Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName);
+        try
+        {
+            await using var backend = FrozenVocabularyStoreFactory.Create(path, false); var (entry, sense) = await Seed(backend);
+            var held = new HeldStore(backend) { HoldSaveAck = true }; var server = new SessionTestServer();
+            using var session = await CanonicalAnkiReviewSession.OpenAsync(new AnkiReviewController(Settings(), null, server), held, entry, sense);
+            var send = session.SendAsync();
+            try { await held.Entered.Task.WaitAsync(TimeSpan.FromSeconds(10)); session.Plan = session.Plan with { Answer = "later" }; session.Deck = "Other"; }
+            finally { held.Release.TrySetResult(); await send.WaitAsync(TimeSpan.FromSeconds(10)); }
+            Assert.False(send.Result); Assert.Equal("later", session.Plan.Answer); Assert.Equal("Other", session.Deck);
+            Assert.Null((await backend.ReadAsync()).Document.Collections[0].Review!.Plan.Answer);
+            var actions = server.Calls.Select(value => value.GetType().GetProperty("action")!.GetValue(value)!.ToString()).ToArray();
+            Assert.DoesNotContain("addNote", actions); Assert.DoesNotContain("storeMediaFile", actions); Assert.DoesNotContain("createModel", actions);
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    });
+    [Fact]
+    public Task SynchronousDraftChangeDuringPendingSelectionIsNotAcceptedAsSendState() => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "canonical-anki-" + Guid.NewGuid().ToString("N")); string path = Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName);
+        try
+        {
+            await using var store = FrozenVocabularyStoreFactory.Create(path, false); var (entry, sense) = await Seed(store);
+            var server = new SessionTestServer(); using var session = await CanonicalAnkiReviewSession.OpenAsync(new AnkiReviewController(Settings(), null, server), store, entry, sense);
+            bool changed = false;
+            session.PropertyChanged += (_, _) =>
+            {
+                if (!changed && session.BindingId is not null) { changed = true; session.Plan = session.Plan with { FieldOverrides = new Dictionary<string, string> { ["Meaning"] = "later" } }; }
+            };
+            Assert.False(await session.SendAsync()); Assert.True(changed); Assert.Equal(0, server.AddCount);
+            Assert.Equal("later", session.Plan.FieldOverrides["Meaning"]);
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    });
+    [Fact]
+    public Task CancelledHeldImageReadDoesNotBecomeMissingImageError() => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "canonical-anki-" + Guid.NewGuid().ToString("N")); string path = Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName);
+        try
+        {
+            await using var backend = FrozenVocabularyStoreFactory.Create(path, false); var (entryId, senseId) = await Seed(backend);
+            var entry = (await backend.ReadAsync()).Document.Entries[0]; var image = Image();
+            var edited = entry with { Senses = [entry.Senses[0] with { Content = [VocabularyContentBlock.Create(new VocabularyBlockContent.Image(image.Reference))] }] };
+            await backend.UpdateEntryAsync(edited, entry, new Dictionary<string, VocabularyPreparedImage> { [image.Reference.Filename] = image });
+            var held = new HeldStore(backend) { HoldImage = true }; var server = new SessionTestServer();
+            using var session = await CanonicalAnkiReviewSession.OpenAsync(new AnkiReviewController(Settings(), null, server), held, entryId, senseId);
+            using var token = new CancellationTokenSource(); var send = session.SendAsync(cancellationToken: token.Token);
+            try { await held.Entered.Task.WaitAsync(TimeSpan.FromSeconds(10)); token.Cancel(); await send.WaitAsync(TimeSpan.FromSeconds(10)); }
+            finally { held.Release.TrySetResult(); await send.WaitAsync(TimeSpan.FromSeconds(10)); }
+            Assert.False(send.Result); Assert.Null(session.Message); Assert.Equal(0, server.AddCount);
         }
         finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
     });

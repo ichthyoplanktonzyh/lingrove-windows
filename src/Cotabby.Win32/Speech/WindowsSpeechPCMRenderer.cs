@@ -8,7 +8,7 @@ namespace Cotabby.Win32.Speech;
 /// pumping, so CPU-heavy tempo work cannot block that thread. Only detached PCM and callback
 /// identities cross the boundaries. Stop retires identities before reset; Dispose joins every
 /// accepted operation, device cleanup and UI notification before releasing its serialization.</summary>
-internal sealed class WindowsSpeechPCMRenderer : ISpeechPCMRendering, IAsyncDisposable
+public sealed class WindowsSpeechPCMRenderer : ISpeechPCMRendering, IAsyncDisposable
 {
     private sealed record PendingBuffer(long Id, long OutputEnd);
     private readonly IWindowsSpeechOutputDeviceFactory _factory;

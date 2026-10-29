@@ -1,7 +1,9 @@
 using System.Net.Http;
+using System.Windows;
 using Cotabby.App.Learning;
 using Cotabby.App.Reading;
 using Cotabby.App.Review;
+using Cotabby.App.Speech;
 using Cotabby.App.Emoji;
 using Cotabby.App.Macros;
 using Cotabby.App.Overlay;
@@ -101,6 +103,8 @@ public sealed class AppHost : IAsyncDisposable
     private readonly CanonicalVocabularyFeature _notebook;
     internal CanonicalWritingViewStore Vocabulary => _notebook.Writing;
     internal AnkiReviewFeature Review { get; }
+    internal SpeechFeature Speech { get; }
+    private Cotabby.App.UI.Settings.SpeechConfigurationWindow? _speechWindow;
     internal FrozenVocabularyWindowController VocabularyWindow => _notebook.Window;
 
     /// <summary>Raised on the UI thread after settings were applied or a model was loaded, so open windows and the tray can refresh.</summary>
@@ -185,16 +189,24 @@ public sealed class AppHost : IAsyncDisposable
             new VocabularyNotebookListPreferences(() => Settings, () => SettingsStore.Save(Settings)),
             NotebookLabelLanguages());
         _notebook.AttachGraphPreferences(new VocabularyGraphPreferences(() => Settings, () => SettingsStore.Save(Settings)));
+        var notebookLexical = _services.GetRequiredService<IcuLearningLexicalText>();
+        _notebook.Window.AttachLearning(LearningExplanation.Service,
+            _services.GetRequiredService<ILearningDictionaryProviding>(), notebookLexical, notebookLexical.WordsUnknown,
+            () => SettingsWindow.ShowLearning(this));
+        Speech = new SpeechFeature(() => Settings, () => SettingsStore.Save(Settings),
+            new DpapiOpenAICompatibleCredentialStore(System.IO.Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Cotabby", "speech-endpoint-credential.bin")),
+            SpeechFeature.DefaultModelDirectory);
         // Review has its own inert HTTP/key owners. Its settings save only their durable values;
         // editing a deck or connection must not wake/reconfigure the autocomplete runtime.
         Review = AnkiReviewFeature.CreateConnectionSettings(() => Settings, () => SettingsStore.Save(Settings),
             new Cotabby.Win32.Review.AnkiConnectClient(), new DpapiAnkiCredentialStore(),
-            activateExisting: new Cotabby.Win32.Review.WindowsAnkiActivator().ActivateExisting);
+            activateExisting: new Cotabby.Win32.Review.WindowsAnkiActivator().ActivateExisting,
+            speech: Speech.Controller, canonicalStore: _notebook.Store);
         Review.Controller.Configure = () => SettingsWindow.ShowReview(this);
         _notebook.Window.AttachReviewFeature(Review, () => SettingsWindow.ShowReview(this));
         Vocabulary.EnrichCapture = capture =>
         {
-            if (capture.Language is null) return capture; // The older explanation projection has no unknown-language value.
             var input = LearningExplanationPolicy.Input(capture);
             try { return capture with { Explanation = LearningExplanation.Service.Cached(input) ?? LearningExplanation.Service.SavedRecord(input) }; }
             // Annotation is optional. A shutdown race must preserve the captured favorite even
@@ -277,6 +289,7 @@ public sealed class AppHost : IAsyncDisposable
             clipboardWriter: _services.GetRequiredService<IClipboardTextWriter>(),
             vocabulary: Vocabulary,
             vocabularyCaptures: _services.GetRequiredService<VocabularyCaptureFactory>());
+        LearningPreview.AttachSpeech(Speech.Controller);
         LearningPreview.InlineCaptureActive = () => _expressions.IsActive || _reading?.IsActive == true;
         _expressions.OtherInlineActive = () => _reading?.IsActive == true;
         if (OperatingSystem.IsWindowsVersionAtLeast(8, 1))
@@ -298,6 +311,7 @@ public sealed class AppHost : IAsyncDisposable
                 LearningPreview.ReadingTranslator,
                 () => { Coordinator.InvalidateSession(); LearningPreview.SuspendForInlineFeature(); },
                 () => _expressions.IsActive || EmojiPicker.IsCapturing || Macros.IsCapturing);
+            _reading.AttachSpeech(Speech.Controller);
         }
 
         SystemEvents.PowerModeChanged += OnPowerModeChanged;
@@ -311,6 +325,19 @@ public sealed class AppHost : IAsyncDisposable
         Settings.EndpointUsesChatApi ? OpenAICompatibleApiMode.ChatCompletions : OpenAICompatibleApiMode.Completions);
 
     private void PersistExplanation(LearningExplanationRecord record) => _ = Vocabulary.SaveExplanationAsync(record);
+
+    internal void ShowSpeechSettings(Window? owner = null)
+    {
+        Overlay.Dispatcher.VerifyAccess(); if (_shuttingDown) return;
+        if (_speechWindow is null)
+        {
+            var window = new Cotabby.App.UI.Settings.SpeechConfigurationWindow(Speech.Controller, () => Speech.Models);
+            if (owner?.IsVisible == true) window.Owner = owner;
+            _speechWindow = window; window.Closed += (_, _) => { if (ReferenceEquals(_speechWindow, window)) _speechWindow = null; };
+        }
+        _speechWindow.Show(); if (_speechWindow.WindowState == WindowState.Minimized) _speechWindow.WindowState = WindowState.Normal;
+        _speechWindow.Activate();
+    }
 
     /// <summary>Pushes <see cref="Settings"/> into the running app and saves them.</summary>
     public void PersistSettings()
@@ -702,7 +729,12 @@ public sealed class AppHost : IAsyncDisposable
             finally
             {
                 LearningExplanation.Service.Explained -= PersistExplanation;
-                await Review.DisposeAsync().ConfigureAwait(false);
+                try { await Review.DisposeAsync().ConfigureAwait(false); }
+                finally
+                {
+                    try { await Overlay.Dispatcher.InvokeAsync(() => _speechWindow?.Close()).Task.ConfigureAwait(false); }
+                    finally { await Speech.DisposeAsync().ConfigureAwait(false); }
+                }
             }
         }
     }

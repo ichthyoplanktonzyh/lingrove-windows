@@ -16,7 +16,7 @@ public sealed class SpeechAudioGenerator(LocalSpeechRuntime local, SpeechEndpoin
                 await local.StreamAsync(request, source.Configuration, chunk => receive(new SpeechAudioChunk.Pcm(chunk)), cancellationToken).ConfigureAwait(false);
                 break;
             case SpeechAudioSource.Endpoint source:
-                byte[] data = await endpoint.AudioAsync(request.Text, source.Configuration, source.ApiKey, cancellationToken).ConfigureAwait(false);
+                byte[] data = await endpoint.AudioAsync(request.Text, source.Configuration, source.ApiKey, cancellationToken, request.Admission).ConfigureAwait(false);
                 cancellationToken.ThrowIfCancellationRequested();
                 await receive(new SpeechAudioChunk.Encoded(data)).ConfigureAwait(false);
                 break;

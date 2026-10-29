@@ -50,6 +50,24 @@ public sealed class CanonicalAnkiReviewBatchTests(WpfDispatcher dispatcher)
         finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
     });
     [Fact]
+    public Task BatchUsesOneBorrowedSpeechOwnerForAudioCards() => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "review-batch-audio-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            await using var store = FrozenVocabularyStoreFactory.Create(Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName), false);
+            var values = new AppSettings(); var server = new SessionTestServer(); var speech = new SessionTestSpeech();
+            await using var feature = new AnkiReviewFeature(() => values, () => { }, null, server, new AnkiTestCredentials(), speech: speech);
+            var item = await Add(store, feature, "bank"); var entry = (await store.ReadAsync()).Document.CollectedEntries.Single(); var original = entry.Senses[0].ReviewCards!.Single();
+            var layout = original.Plan.Layout!; var changed = original with { Plan = original.Plan with { Layout = layout with { Front = layout.Front.Append(ReviewCardPart.Create(ReviewContentSource.ExpressionAudio)).ToArray() }, AudioKinds = new HashSet<ReviewAudioKind> { ReviewAudioKind.Expression } } };
+            await store.SaveReviewAsync(entry.Id, entry.Senses[0].Id, changed, original, item.Card);
+            var batch = await CanonicalAnkiReviewBatchSession.OpenAsync(feature, store, [item.Selection]); var scope = await feature.Controller.CanonicalScopeAsync(CancellationToken.None);
+            batch.PresentAudioDisclosure(ReviewSpeechDisclosure.Capture(speech)); batch.Start(scope); await Finish(batch); Assert.Equal(ReviewBatchStatus.Synced, batch.Items.Single().Status); Assert.Equal(1, speech.Exports); Assert.Equal(1, server.AddCount);
+            Assert.NotNull((await store.ReadAsync()).Document.CollectedEntries.Single().Senses[0].ReviewCards!.Single().Plan.AudioReceipts![ReviewAudioKind.Expression]);
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    });
+    [Fact]
     public Task AudioRowNeedsPreparationWithoutRemoteWrites() => dispatcher.RunAsync(async () =>
     {
         string root = Path.Combine(Path.GetTempPath(), "review-batch-" + Guid.NewGuid().ToString("N"));

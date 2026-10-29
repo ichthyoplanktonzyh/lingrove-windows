@@ -23,6 +23,31 @@ namespace Cotabby.App.Wpf.Tests;
 public sealed class AnkiReviewSettingsViewTests(WpfDispatcher dispatcher)
 {
     [Fact]
+    public Task CanonicalTemplatesLoadOnlyWhenVisibleAndDeleteThroughSharedStore() => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "canonical-template-settings-" + Guid.NewGuid().ToString("N"));
+        string path = Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName);
+        try
+        {
+            await using var store = FrozenVocabularyStoreFactory.Create(path, false); var settings = new AppSettings();
+            await using var feature = AnkiReviewFeature.CreateConnectionSettings(() => settings, () => { }, new AnkiTestClient(), new AnkiTestCredentials(), canonicalStore: store);
+            var section = new AnkiReviewSettingsSection(feature) { Visibility = Visibility.Collapsed }; var window = Window(section);
+            try
+            {
+                window.Show(); window.UpdateLayout(); Assert.False(File.Exists(path));
+                await store.SaveTemplateAsync(new ReviewLayoutTemplate(Guid.NewGuid(), "Saved card", ReviewLayoutPolicy.Portable(ReviewLayoutPolicy.Preset(0))));
+                section.Visibility = Visibility.Visible;
+                await Until(() => Descendants<Button>(section.TemplatesView).Any());
+                var delete = Assert.Single(Descendants<Button>(section.TemplatesView)); Assert.Equal("Delete", delete.Content);
+                Click(delete); await Until(() => !Descendants<Button>(section.TemplatesView).Any());
+                Assert.Empty((await store.ReadAsync()).Document.ReviewTemplates!);
+                section.Visibility = Visibility.Collapsed;
+            }
+            finally { section.Close(); window.Close(); }
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    });
+    [Fact]
     public Task ConnectionOnlyViewShowsUnavailableTemplatesAndKeepsExplicitSettingsWorking() => dispatcher.RunAsync(async () =>
     {
         var settings = new AppSettings(); var key = new AnkiTestCredentials(); var client = new AnkiTestClient();

@@ -1172,6 +1172,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         if (_window is not null) return _window;
 
         _window = new LearningPreviewWindow();
+        if (_speechController is not null) _window.AttachSpeech(_speechController);
         _window.RetryRequested += RetryCurrentCapture;
         _window.CancelRequested += CancelAndHide;
         _window.DismissRequested += CancelAndHide;

@@ -13,10 +13,10 @@ internal sealed partial class CanonicalAnkiReviewSession
     internal async Task<bool> SendAsync(bool recreateMissing = false, ReviewOperationScope? expectedScope = null, CancellationToken cancellationToken = default)
     {
         if (Busy) return false;
-        if ((Plan.AudioKinds?.Count ?? 0) != 0 || (Plan.Layout?.AudioKinds.Count ?? 0) != 0) { Message = "Speech is not available for review audio."; Changed(); return false; }
+        try { RequireNoAudio(); } catch (Exception error) { Message = error.Message; Changed(); return false; }
         try { Controller.BeginCanonical(SenseId, CardId); }
         catch (Exception error) { Message = error.Message; Changed(); return false; }
-        Busy = true; Message = null; _sendState = CaptureSendState(); Changed();
+        Busy = true; Message = null; _sendState = CaptureSendState(); _sendSpeech = _presentedSpeech; Changed();
         try
         {
             _sendScope = expectedScope ?? await Controller.CanonicalScopeAsync(cancellationToken);
@@ -30,7 +30,7 @@ internal sealed partial class CanonicalAnkiReviewSession
             Message = error is OperationCanceledException ? null : error.Message;
             Controller.Finish(SenseId, CardId, error, MissingNote); return false;
         }
-        finally { Busy = false; _sendScope = null; _sendState = null; Changed(); }
+        finally { Busy = false; _sendScope = null; _sendState = null; _sendSpeech = null; Changed(); }
     }
     private async Task<bool> SynchronizeAsync(bool recreateMissing, CancellationToken cancellationToken)
     {
@@ -47,7 +47,8 @@ internal sealed partial class CanonicalAnkiReviewSession
         var available = await Controller.CanonicalFieldsAsync(model, connection, false, null, cancellationToken);
         RequireSendState();
         await ValidateImageTemplateAsync(content, connection, cancellationToken);
-        var audioFields = new Dictionary<ReviewField, string>();
+        ValidateAudioMapping(content);
+        var audioFields = await UploadAudioAsync(content, connection, profile, cancellationToken);
         await UploadImagesAsync(content, connection, profile, cancellationToken);
         var desired = AnkiReviewPolicy.Fields(content, identity, mapping, Plan.FieldOverrides, audioFields);
         if (desired.Keys.Any(k => !Has(available, k)) || !mapping.TryGetValue(ReviewField.Identity, out string? identityField))

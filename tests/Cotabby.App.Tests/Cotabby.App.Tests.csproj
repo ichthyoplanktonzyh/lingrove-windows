@@ -59,6 +59,7 @@
     <Compile Include="..\..\src\Cotabby.App\Review\CanonicalAnkiReviewSession.Metadata.cs" Link="Production\CanonicalAnkiReviewSession.Metadata.cs" />
     <Compile Include="..\..\src\Cotabby.App\Review\CanonicalAnkiReviewSession.Sending.cs" Link="Production\CanonicalAnkiReviewSession.Sending.cs" />
     <Compile Include="..\..\src\Cotabby.App\Review\CanonicalAnkiReviewSession.Images.cs" Link="Production\CanonicalAnkiReviewSession.Images.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Review\CanonicalAnkiReviewSession.Audio.cs" Link="Production\CanonicalAnkiReviewSession.Audio.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.cs" Link="Production\AppSettings.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.ModelAssignments.cs" Link="Production\AppSettings.ModelAssignments.cs" />
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularySQLiteConnection.cs" Link="Production\VocabularySQLiteConnection.cs" />

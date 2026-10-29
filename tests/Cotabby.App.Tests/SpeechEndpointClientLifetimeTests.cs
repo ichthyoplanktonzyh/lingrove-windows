@@ -12,6 +12,20 @@ namespace Cotabby.App.Tests;
 
 public sealed partial class SpeechEndpointClientTests
 {
+    [Fact]
+    public async Task RevokedReadingPermitBeforeSendDoesNotCallTransport()
+    {
+        using var entered = new ManualResetEventSlim(); using var release = new ManualResetEventSlim(); int allowed = 1, sent = 0;
+        var client = new SpeechEndpointClient(() => { entered.Set(); release.Wait(); return new PermitHandler(() => Interlocked.Increment(ref sent)); });
+        var call = Task.Run(() => client.AudioAsync("fixture", Configuration(), null, admission: () => Volatile.Read(ref allowed) == 1));
+        try { Assert.True(entered.Wait(TimeSpan.FromSeconds(10))); Volatile.Write(ref allowed, 0); release.Set(); await Assert.ThrowsAnyAsync<OperationCanceledException>(() => call); Assert.Equal(0, sent); }
+        finally { release.Set(); }
+    }
+    private sealed class PermitHandler(Action send) : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        { send(); return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new ByteArrayContent([1]) }); }
+    }
     [Theory]
     [InlineData(false)]
     [InlineData(true)]

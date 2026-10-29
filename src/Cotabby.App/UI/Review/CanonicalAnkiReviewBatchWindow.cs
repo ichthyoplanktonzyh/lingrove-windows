@@ -4,6 +4,8 @@ using System.Windows.Controls;
 using Cotabby.App.Review;
 using Cotabby.App.UI.Vocabulary;
 using Cotabby.Core.Review;
+using Cotabby.Win32.Vocabulary;
+using Cotabby.Inference.Speech;
 
 namespace Cotabby.App.UI.Review;
 
@@ -14,9 +16,13 @@ internal sealed class CanonicalAnkiReviewBatchWindow : Window
     private readonly CanonicalAnkiReviewBatchSession _batch;
     private readonly AnkiReviewFeature _feature;
     private readonly Action _configure;
+    private readonly IVocabularyClipboardImageTransfer? _clipboard;
     private readonly CancellationTokenSource _lifetime = new();
     private readonly StackPanel _rows = new();
     private readonly TextBox _deck = new();
+    private ReviewSpeechDisclosure? _shownSpeech;
+    private readonly TextBlock _speechDestination = new() { Name = "canonicalBatchSpeechDestination", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, 10) };
+    internal TextBlock SpeechDestination => _speechDestination;
     private readonly TextBlock _destination = new() { TextWrapping = TextWrapping.Wrap }, _message = new() { TextWrapping = TextWrapping.Wrap }, _count = new();
     private readonly Button _apply = new() { Content = "Apply to selected" }, _reload = new() { Content = "Refresh connection" },
         _stop = new() { Content = "Stop" }, _close = new() { Content = "Close", IsCancel = true }, _send = new() { Content = "Send remaining", IsDefault = true };
@@ -32,11 +38,14 @@ internal sealed class CanonicalAnkiReviewBatchWindow : Window
     internal CanonicalAnkiReviewBatchSession Batch => _batch;
     internal StackPanel Rows => _rows;
     internal TextBlock MessageText => _message;
-    internal CanonicalAnkiReviewBatchWindow(CanonicalAnkiReviewBatchSession batch, AnkiReviewFeature feature, Action configure)
+    internal CanonicalAnkiReviewBatchWindow(CanonicalAnkiReviewBatchSession batch, AnkiReviewFeature feature, Action configure, IVocabularyClipboardImageTransfer? clipboard = null)
     {
-        _batch = batch; _feature = feature; _configure = configure; Title = "Review cards"; Width = 760; Height = 740; MinWidth = 580; MinHeight = 500; WindowStartupLocation = WindowStartupLocation.CenterOwner;
+        _batch = batch; _feature = feature; _configure = configure; _clipboard = clipboard; Title = "Review cards"; Width = 760; Height = 740; MinWidth = 580; MinHeight = 500; WindowStartupLocation = WindowStartupLocation.CenterOwner;
         VocabularyNotebookTheme.Follow(this); var root = new DockPanel { Margin = new Thickness(22) }; Content = root;
         var heading = VocabularyInputControls.Heading("Review cards"); DockPanel.SetDock(heading, Dock.Top); root.Children.Add(heading);
+        DockPanel.SetDock(_speechDestination, Dock.Top); root.Children.Add(_speechDestination);
+        if (_feature.Controller.Speech is ISpeechDestinationDisclosure disclosure) disclosure.PropertyChanged += SpeechDestinationChanged;
+        RefreshSpeechDestination();
         var footer = new DockPanel { Margin = new Thickness(0, 14, 0, 0) }; DockPanel.SetDock(footer, Dock.Bottom); root.Children.Add(footer); _count.VerticalAlignment = VerticalAlignment.Center; DockPanel.SetDock(_count, Dock.Left); footer.Children.Add(_count);
         var buttons = VocabularyInputControls.Footer(_stop, _close, _send); footer.Children.Add(buttons);
         var form = new StackPanel(); root.Children.Add(new ScrollViewer { VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Content = form });
@@ -49,8 +58,22 @@ internal sealed class CanonicalAnkiReviewBatchWindow : Window
         _send.Click += (_, _) => StartAux(token => StartBatchAsync(null, token));
         _apply.Click += (_, _) => _batch.StartApply(_deck.Text); _reload.Click += (_, _) => StartAux(LoadScopeAsync);
         _stop.Click += (_, _) => Stop(); _close.Click += (_, _) => Close();
-        Loaded += (_, _) => StartAux(LoadScopeAsync); Closing += OnClosing; Closed += (_, _) => RetirePresentation();
+        Loaded += (_, _) => { _batch.PresentAudioDisclosure(_shownSpeech); StartAux(LoadScopeAsync); }; Closing += OnClosing; Closed += (_, _) => RetirePresentation();
         Render();
+    }
+    private void SpeechDestinationChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (_retiring || Dispatcher.HasShutdownStarted) return;
+        if (Dispatcher.CheckAccess()) RefreshSpeechDestination();
+        else _ = Dispatcher.BeginInvoke(() => { if (!_retiring) RefreshSpeechDestination(); });
+    }
+    private void RefreshSpeechDestination()
+    {
+        var shown = ReviewSpeechDisclosure.Capture(_feature.Controller.Speech);
+        if (Equals(_shownSpeech, shown) && _speechDestination.Text.Length != 0) return;
+        _shownSpeech = shown;
+        _speechDestination.Text = shown is null ? "Speech for review audio: unavailable. Configure speech before preparing audio." : "Speech for review audio: " + shown.Destination;
+        _batch.PresentAudioDisclosure(IsVisible ? shown : null);
     }
     private void SettingsChanged(object? sender, PropertyChangedEventArgs e)
     {
@@ -97,7 +120,7 @@ internal sealed class CanonicalAnkiReviewBatchWindow : Window
     {
         var session = await _batch.PrepareAsync(id, token); if (session is null || _retiring) { session?.Dispose(); return; }
         CanonicalAnkiReviewWindow child;
-        try { child = new CanonicalAnkiReviewWindow(session, _feature.RunAsync, _configure) { Owner = this }; }
+        try { child = new CanonicalAnkiReviewWindow(session, _feature.RunAsync, _configure, _clipboard) { Owner = this }; }
         catch { session.Dispose(); throw; }
         _preparation = child;
         try { child.ShowDialog(); } finally { await child.RetireAsync(); _preparation = null; }
@@ -143,6 +166,7 @@ internal sealed class CanonicalAnkiReviewBatchWindow : Window
     private void RetirePresentation()
     {
         if (_retired) return; _retired = true;
+        if (_feature.Controller.Speech is ISpeechDestinationDisclosure disclosure) disclosure.PropertyChanged -= SpeechDestinationChanged;
         _batch.PropertyChanged -= BatchChanged; _feature.Settings.PropertyChanged -= SettingsChanged; _lifetime.Dispose();
     }
 }

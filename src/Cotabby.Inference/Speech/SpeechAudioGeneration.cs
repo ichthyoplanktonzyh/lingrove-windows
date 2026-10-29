@@ -10,13 +10,14 @@ namespace Cotabby.Inference.Speech;
 /// endpoint source; JSON/diagnostic serialization of a request is deliberately unsupported.</summary>
 [JsonConverter(typeof(SpeechAudioRequest.EphemeralConverter))]
 public sealed class SpeechAudioRequest(SpeechPlaybackToken token, string text, LearningLanguage language,
-    SpeechAudioSource source, LearningModelSamplingOverrides? sampling = null)
+    SpeechAudioSource source, LearningModelSamplingOverrides? sampling = null, Func<bool>? admission = null)
 {
     public SpeechPlaybackToken Token { get; } = token;
     public string Text { get; } = text;
     public LearningLanguage Language { get; } = language;
     [JsonIgnore] public SpeechAudioSource Source { get; } = source;
     public LearningModelSamplingOverrides Sampling { get; } = sampling ?? new();
+    [JsonIgnore] public Func<bool>? Admission { get; } = admission;
     public sealed class EphemeralConverter : JsonConverter<SpeechAudioRequest>
     {
         public override SpeechAudioRequest Read(ref Utf8JsonReader reader, Type type, JsonSerializerOptions options) => throw new NotSupportedException("Speech generation requests are ephemeral.");

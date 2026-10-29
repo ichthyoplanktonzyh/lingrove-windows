@@ -101,4 +101,3 @@ internal sealed class FrozenVocabularyImportStore : IVocabularyEntryImportStore,
         lock (_listenersGate) _listeners.Clear();
     }
 }
-

@@ -11,7 +11,7 @@ are provisional; UI navigation must use the result of the committed operation. R
 are cancellable; after commit a late cancellation cannot turn the acknowledgement into failure.
 
 One bounded notification queue coalesces intermediate snapshots for slow observers; delivered
-snapshots remain ordered by revision. Listeners execute serially on a worker outside the SQLite
+snapshots remain ordered by revision. Listeners execute serially on a worker independently of the SQLite
 operation and must marshal to the UI thread. An in-flight callback may finish after unsubscription.
 Disposal rejects new work, waits for accepted database work, and drains queued callbacks. A
 callback must not synchronously wait for disposal of its own Store. File reading is the separate
@@ -24,3 +24,4 @@ notebooks outside the documented read budget are not implemented here. The in-me
 re-planning stale preview inputs, no-op revision and selection identity, concurrent serialized
 writes, failure/cancellation, ordered acknowledged publication and disposal drain; they do not
 establish native desktop acceptance or a Swift compatibility result.
+

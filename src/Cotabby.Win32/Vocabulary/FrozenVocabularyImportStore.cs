@@ -3,6 +3,7 @@ using Cotabby.Core.Vocabulary.EntryInput;
 using Cotabby.Core.Vocabulary.Frozen;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Vocabulary;
+using VocabularyClassificationCatalog = Cotabby.Core.Vocabulary.Resources.VocabularyClassificationCatalog;
 using LiveRecord = Cotabby.Core.LanguageLearning.LearningExplanationRecord;
 
 namespace Cotabby.Win32.Vocabulary;
@@ -16,6 +17,9 @@ internal sealed class FrozenVocabularyImportStore : ICanonicalVocabularyStore
     // Accessed only while the serialized worker owns _gate; a failed open is not cached.
     private FrozenVocabularySQLiteDatabase Database => _database ??= _open();
     private readonly Func<SourceDate> _now;
+    private readonly bool _installClassification;
+    private readonly Func<VocabularyClassificationCatalog> _loadCatalog;
+    private VocabularyClassificationCatalog? _catalog;
     private readonly SemaphoreSlim _gate = new(1, 1);
     private readonly object _listenersGate = new();
     private readonly Dictionary<long, Action<FrozenVocabularyImportSnapshot>> _listeners = [];
@@ -27,9 +31,12 @@ internal sealed class FrozenVocabularyImportStore : ICanonicalVocabularyStore
     private Task? _disposal;
     internal FrozenVocabularyImportStore(FrozenVocabularySQLiteDatabase database, Func<SourceDate>? now = null)
         : this(() => database, now) { _database = database; }
-    internal FrozenVocabularyImportStore(Func<FrozenVocabularySQLiteDatabase> open, Func<SourceDate>? now = null)
+    internal FrozenVocabularyImportStore(Func<FrozenVocabularySQLiteDatabase> open, Func<SourceDate>? now = null,
+        bool installBundledClassification = false, Func<VocabularyClassificationCatalog>? loadCatalog = null)
     {
         _open = open ?? throw new ArgumentNullException(nameof(open)); _now = now ?? (() => SourceDate.FromWindows(DateTimeOffset.UtcNow));
+        _installClassification = installBundledClassification;
+        _loadCatalog = loadCatalog ?? VocabularyClassificationCatalog.Bundled;
         _notificationWorker = Task.Run(DispatchAsync);
     }
     private async Task DispatchAsync()
@@ -80,14 +87,33 @@ internal sealed class FrozenVocabularyImportStore : ICanonicalVocabularyStore
         }
         finally { _gate.Release(); }
     }
+    // Installation and revision publication share the same exclusive database span.
+    // Only a successfully decoded catalog is cached, so a failed load can be retried.
+    private FrozenVocabularySnapshot LoadCurrent(CancellationToken cancellationToken)
+    {
+        if (!_installClassification) return Database.Read(cancellationToken);
+        return Database.Access(true, () =>
+        {
+            var before = Database.Read(cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
+            var catalog = _catalog ??= _loadCatalog() ?? throw new InvalidOperationException("Catalog loader returned null.");
+            var (document, installed) = VocabularyClassificationInstaller.Install(before.Document, catalog);
+            if (!installed) return before;
+            cancellationToken.ThrowIfCancellationRequested();
+            var committed = CanonicalWritingPolicy.PrepareCommit(before.Document, document);
+            var revision = Database.Write(committed, before.Document, before.Revision, cancellationToken: cancellationToken);
+            _notifications.Writer.TryWrite(new(revision, committed));
+            return new FrozenVocabularySnapshot(revision, committed);
+        });
+    }
     public Task<FrozenVocabularyImportSnapshot> ReadAsync(CancellationToken cancellationToken = default) => Run(() =>
     {
-        var snapshot = Database.Read(cancellationToken); return new FrozenVocabularyImportSnapshot(snapshot.Revision, snapshot.Document);
+        var snapshot = LoadCurrent(cancellationToken); return new FrozenVocabularyImportSnapshot(snapshot.Revision, snapshot.Document);
     }, cancellationToken);
     public Task<FrozenVocabularyImportPreview> PreviewWordListAsync(VocabularyWordList table, VocabularyWordListConfiguration configuration, CancellationToken cancellationToken = default) => Run(() =>
     {
         var inputs = VocabularyWordListPolicy.Inputs(table, configuration, cancellationToken);
-        var snapshot = Database.Read(cancellationToken);
+        var snapshot = LoadCurrent(cancellationToken);
         var plan = VocabularyEntryImportPolicy.Plan(inputs, snapshot.Document, _now(), cancellationToken);
         return new FrozenVocabularyImportPreview(inputs, plan.Result, snapshot.Revision);
     }, cancellationToken);
@@ -98,13 +124,13 @@ internal sealed class FrozenVocabularyImportStore : ICanonicalVocabularyStore
         return Run(() => Database.Access(true, () =>
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var before = Database.Read(cancellationToken);
+            var before = LoadCurrent(cancellationToken);
             var plan = VocabularyEntryImportPolicy.Plan(retained, before.Document, _now(), cancellationToken);
             cancellationToken.ThrowIfCancellationRequested();
             var committed = plan.Result.HasChanges ? CanonicalWritingPolicy.PrepareCommit(before.Document, plan.Document) : before.Document;
             ulong revision = plan.Result.HasChanges ? Database.Write(committed, before.Document, before.Revision, cancellationToken: cancellationToken) : before.Revision;
             // Enqueue only after commit. A successful commit must not be reported as cancelled.
-            _notifications.Writer.TryWrite(new(revision, committed));
+            if (plan.Result.HasChanges) _notifications.Writer.TryWrite(new(revision, committed));
             return plan.Result;
         }), cancellationToken);
     }
@@ -113,7 +139,7 @@ internal sealed class FrozenVocabularyImportStore : ICanonicalVocabularyStore
         var adapted = CanonicalWritingPolicy.FromLive(capture);
         return Run(() => Database.Access(true, () =>
         {
-            cancellationToken.ThrowIfCancellationRequested(); var before = Database.Read(cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested(); var before = LoadCurrent(cancellationToken);
             var draft = CanonicalWritingPolicy.Save(adapted, before.Document, _now());
             cancellationToken.ThrowIfCancellationRequested();
             var committed = CanonicalWritingPolicy.PrepareCommit(before.Document, draft.Document);
@@ -129,7 +155,7 @@ internal sealed class FrozenVocabularyImportStore : ICanonicalVocabularyStore
     }
     public Task<LiveRecord?> FindExplanationAsync(LearningExplanationInput input, LearningLanguage language, CancellationToken cancellationToken = default) => Run(() =>
     {
-        var snapshot = Database.Read(cancellationToken);
+        var snapshot = LoadCurrent(cancellationToken);
         return CanonicalWritingPolicy.FindExplanation(input, language, snapshot.Document);
     }, cancellationToken);
     public Task<CanonicalWritingReceipt> SaveExplanationAsync(LiveRecord record, CancellationToken cancellationToken = default)
@@ -149,7 +175,7 @@ internal sealed class FrozenVocabularyImportStore : ICanonicalVocabularyStore
     private Task<CanonicalWritingReceipt> Mutate(Func<Cotabby.Core.Vocabulary.Frozen.VocabularyDocument, (Cotabby.Core.Vocabulary.Frozen.VocabularyDocument? Document, VocabularyExplanationDestination? Destination)> mutation,
         CancellationToken cancellationToken) => Run(() => Database.Access(true, () =>
     {
-        cancellationToken.ThrowIfCancellationRequested(); var before = Database.Read(cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested(); var before = LoadCurrent(cancellationToken);
         var next = mutation(before.Document); cancellationToken.ThrowIfCancellationRequested();
         if (next.Document is null) return new CanonicalWritingReceipt(before.Revision, false);
         var committed = CanonicalWritingPolicy.PrepareCommit(before.Document, next.Document);

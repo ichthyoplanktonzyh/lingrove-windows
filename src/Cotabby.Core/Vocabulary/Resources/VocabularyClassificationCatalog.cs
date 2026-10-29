@@ -85,6 +85,13 @@ public sealed record VocabularyClassificationCatalog
     }
     public (VocabularyClassificationIndex Index, bool Installed) Install(VocabularyClassificationIndex index, IReadOnlyList<VocabularyMeaningNode> nodes)
     {
+        if (nodes is null || nodes.Any(node => node is null)) throw VocabularyClassificationPolicy.Invalid();
+        return InstallForNodeIds(index, nodes.Select(node => node.Id).ToHashSet());
+    }
+    /// <summary>The frozen canonical graph shares this classification directory but owns a
+    /// different semantic node value. Admission depends only on its actual node identities.</summary>
+    internal (VocabularyClassificationIndex Index, bool Installed) InstallForNodeIds(VocabularyClassificationIndex index, IReadOnlySet<Guid> nodeIds)
+    {
         if (Version <= 0 || !VocabularyClassificationPolicy.Fits(Key, 200) || Key.Length == 0 || Categories.Count > 20_000 || Categories.Any(x => x is null || !VocabularyClassificationPolicy.Fits(x.Key, 200) || x.Key.Length == 0 || x.Parents.Count > 100_000)
             || Categories.Select(x => x.Key).Distinct(CanonicalStringComparer.Instance).Count() != Categories.Count) throw VocabularyClassificationPolicy.Invalid();
         var frameworkId = Identifier(Key);
@@ -111,7 +118,7 @@ public sealed record VocabularyClassificationCatalog
             parents.Add(new(Identifier(Key + ".edge." + category.Key + "." + parent), Identifier(Key + "." + category.Key), Identifier(Key + "." + parent)));
         }
         var next = index with { Frameworks = index.Frameworks.Where(x => x.Id != frameworkId).Append(new(frameworkId, Key, Version)).ToArray(), Categories = categories, Parents = parents };
-        VocabularyClassificationPolicy.Validate(next, nodes);
+        VocabularyClassificationPolicy.ValidateNodeIds(next, nodeIds);
         return (next, true);
     }
 }

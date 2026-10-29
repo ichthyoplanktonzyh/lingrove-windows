@@ -51,7 +51,7 @@ public sealed class FrozenVocabularyLazyStoreTests : IDisposable
     public async Task FirstUseCreatesOnlyTheNewCanonicalNamedFile()
     {
         string directory = Path.Combine(_root, "new-notebook"); string path = Path.Combine(directory, FrozenVocabularyStoreFactory.CanonicalFileName);
-        await using var store = FrozenVocabularyStoreFactory.Create(path); Assert.False(Directory.Exists(directory));
+        await using var store = FrozenVocabularyStoreFactory.Create(path, installBundledClassification: false); Assert.False(Directory.Exists(directory));
         Assert.Equal(0UL, (await store.ReadAsync()).Revision); Assert.True(File.Exists(path));
     }
     public void Dispose() => Directory.Delete(_root, recursive: true);

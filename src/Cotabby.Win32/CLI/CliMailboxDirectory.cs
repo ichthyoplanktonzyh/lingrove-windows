@@ -92,7 +92,7 @@ internal sealed class CliMailboxDirectory : IDisposable
         ValidateName(name); using var handle = _directory.OpenFile(name, delete: true); if (handle is null) return;
         Verify(); if (!SetFileInformationByHandle(handle, 4, [1], 1)) throw Invalid();
     }
-    private static void Rename(SafeFileHandle handle, string destination)
+    internal static void Rename(SafeFileHandle handle, string destination)
     {
         byte[] name = Encoding.Unicode.GetBytes(destination); int rootOffset = IntPtr.Size, lengthOffset = rootOffset + IntPtr.Size, nameOffset = lengthOffset + 4;
         byte[] info = new byte[Math.Max(nameOffset + name.Length + 2, IntPtr.Size == 8 ? 24 : 16)];

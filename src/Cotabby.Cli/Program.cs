@@ -19,7 +19,8 @@ static async Task<int> RunAsync(string[] arguments)
             case CliMode.Schema: Console.WriteLine(CliPublishedSchema.Batch().ToJsonString(new JsonSerializerOptions { WriteIndented = true })); return 0;
             case CliMode.CaptureSchema: Console.WriteLine(CliPublishedSchema.Capture().ToJsonString(new JsonSerializerOptions { WriteIndented = true })); return 0;
         }
-        string app = parsed.AppPath is null ? Path.Combine(AppContext.BaseDirectory, "Cotabby.exe") : ExpandHome(parsed.AppPath);
+        string app = parsed.AppPath is not null ? ExpandHome(parsed.AppPath)
+            : Environment.GetEnvironmentVariable("LINGROVE_CLI_APP") ?? Path.Combine(AppContext.BaseDirectory, "Cotabby.exe");
         using var selected = CliApplicationSelection.Open(app);
         var request = CliRequest.FromArguments(parsed, CliWire.Now() + parsed.TimeoutSeconds); id = request.Id;
         if (parsed.InputPath is { } input)

@@ -38,6 +38,15 @@
     <ProjectReference Include="..\Cotabby.Inference\Cotabby.Inference.csproj" />
     <ProjectReference Include="..\Cotabby.Win32\Cotabby.Win32.csproj" />
     <ProjectReference Include="..\Cotabby.ImageTransferHost\Cotabby.ImageTransferHost.csproj" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\Cotabby.Cli\Cotabby.Cli.csproj" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The explicit user-installed command borrows these app-local CLI sidecars. -->
+    <Content Include="..\Cotabby.Cli\bin\$(Configuration)\net10.0-windows\$(RuntimeIdentifier)\lingrove.exe" Link="lingrove.exe" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\Cotabby.Cli\bin\$(Configuration)\net10.0-windows\$(RuntimeIdentifier)\lingrove.dll" Link="lingrove.dll" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\Cotabby.Cli\bin\$(Configuration)\net10.0-windows\$(RuntimeIdentifier)\lingrove.deps.json" Link="lingrove.deps.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\Cotabby.Cli\bin\$(Configuration)\net10.0-windows\$(RuntimeIdentifier)\lingrove.runtimeconfig.json" Link="lingrove.runtimeconfig.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

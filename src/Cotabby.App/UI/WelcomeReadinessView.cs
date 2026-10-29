@@ -53,7 +53,7 @@ internal sealed class WelcomeReadinessView : StackPanel
     { _testInspection = inspect; _testNavigate = navigate; }
     private WelcomeReadinessView()
     {
-        Width = 440; MaxWidth = 440;
+        MaxWidth = 440; HorizontalAlignment = HorizontalAlignment.Stretch;
         foreach (var task in Enum.GetValues<ReadinessTask>())
         {
             var detail = new TextBlock { FontSize = 11, TextTrimming = TextTrimming.CharacterEllipsis };
@@ -61,11 +61,12 @@ internal sealed class WelcomeReadinessView : StackPanel
             var title = new TextBlock { Text = InterfaceText.Get(task switch { ReadinessTask.Completion => "Autocomplete", ReadinessTask.Translation => "Translation", ReadinessTask.Explanation => "AI explanation", _ => "Speech" }), FontWeight = FontWeights.SemiBold };
             var status = new TextBlock { VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(12, 0, 8, 0) };
             status.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondary");
-            var grid = new Grid { Width = 410 }; grid.ColumnDefinitions.Add(new() { Width = new GridLength(1, GridUnitType.Star) }); grid.ColumnDefinitions.Add(new() { Width = GridLength.Auto });
+            var grid = new Grid(); grid.ColumnDefinitions.Add(new() { Width = new GridLength(1, GridUnitType.Star) }); grid.ColumnDefinitions.Add(new() { Width = GridLength.Auto });
             grid.Children.Add(new StackPanel { Children = { title, detail } }); Grid.SetColumn(status, 1); grid.Children.Add(status);
             var button = new Button { Content = grid, HorizontalContentAlignment = HorizontalAlignment.Stretch, Padding = new Thickness(12, 8, 12, 8), Margin = new Thickness(0, 3, 0, 3), MinHeight = 48 };
             button.SetResourceReference(StyleProperty, "Btn");
             button.SetResourceReference(BackgroundProperty, "CardBg");
+            SizeChanged += (_, _) => grid.Width = Math.Max(0, ActualWidth - 26);
             button.Click += (_, _) => { if (_host is null) _testNavigate?.Invoke(task); else if (task == ReadinessTask.Speech) _host.ShowSpeechSettings(Window.GetWindow(this)); else SettingsWindow.ShowReadinessTask(_host, task); };
             Children.Add(button); _rows.Add(task, (detail, status));
         }

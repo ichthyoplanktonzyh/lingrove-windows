@@ -2,7 +2,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
 using Cotabby.App.Hosting;
 using Cotabby.App.Localization;
 using Cotabby.App.Settings;
@@ -32,6 +31,7 @@ public partial class WelcomeWindow : Window
     private bool _templateChosen, _recommendedRoute = true;
     private readonly bool _resumeFirstRun;
     private readonly WelcomeReadinessView _readiness;
+    private readonly WelcomeDonePage StepDone;
     private bool _retired, _retiring;
 
     // Background model preparation. The sequence number lets a run that was superseded,
@@ -51,9 +51,13 @@ public partial class WelcomeWindow : Window
         _host = host; _resumeFirstRun = resumeFirstRun;
         InitializeComponent();
         OpenWindows.Add(this);
+        StepDone = new WelcomeDonePage { Visibility = Visibility.Collapsed };
+        Grid.SetRowSpan(StepDone, 3); ((Panel)NormalFooter.Parent).Children.Add(StepDone);
+        StepDone.FinishRequested += Finish;
+        StepDone.BackRequested += () => ShowStep(_step - 1);
         _readiness = new WelcomeReadinessView(host);
         _readiness.CompletionFailed = id => _modelError is not null && _lastEnsureFor == id;
-        ReadinessHost.Content = _readiness;
+        StepDone.ReadinessHost.Content = _readiness;
         _readiness.IsVisibleChanged += (_, _) => _readiness.VisibilityChanged();
         Activated += (_, _) => _readiness.Refresh();
         Closing += OnRetiring;
@@ -81,7 +85,6 @@ public partial class WelcomeWindow : Window
         _templates = [(QuickCard, QuickBadge), (EverydayCard, EverydayBadge), (PowerCard, PowerBadge)];
         BuildCapsules();
         BuildShortcutRows();
-        StartSpinner();
 
         // Seeding from the current settings makes a second run from the tray non-destructive.
         var settings = _host.Settings;
@@ -163,6 +166,7 @@ public partial class WelcomeWindow : Window
         }
 
         var step = _steps[_step];
+        NormalFooter.Visibility = step == StepDone ? Visibility.Collapsed : Visibility.Visible;
         StepCaption.Text = $"Step {progressIndex} of 4";
         ContinueButton.Content =
             step == StepWelcome ? InterfaceText.Get("Get Started")
@@ -175,7 +179,7 @@ public partial class WelcomeWindow : Window
         if (step == StepTemplates) UpdateTemplateStatus();
         if (step == StepDone)
         {
-            DoneKeysText.Text = DoneKeysHint();
+            StepDone.Keys.Text = DoneKeysHint();
             UpdateModelStatusUi();
         }
     }
@@ -334,25 +338,6 @@ public partial class WelcomeWindow : Window
     private void UpdateModelStatusUi()
     {
         _readiness.Refresh();
-        bool ready = _modelReadyFor is not null;
-        bool busy = !ready && _modelError is null && _ensureBusy;
-        DoneSpinner.Visibility = busy ? Visibility.Visible : Visibility.Collapsed;
-        DoneCheck.Visibility = ready ? Visibility.Visible : Visibility.Collapsed;
-        DoneModelStatus.SetResourceReference(TextBlock.ForegroundProperty, ready ? "GreenBrush" : "TextSecondary");
-        DoneModelStatus.Text =
-            ready ? "Your model is ready"
-            : _modelError is not null ? "Model setup didn't finish. You can retry from Settings."
-            : !busy ? ""
-            : _modelPercent is int percent ? $"Downloading your model… {percent}%"
-            : "Preparing your model…";
-    }
-
-    private void StartSpinner()
-    {
-        // The spinner is mostly hidden. One endless animation is cheaper than
-        // starting and stopping it on every status change.
-        var spin = new DoubleAnimation(0, 360, TimeSpan.FromSeconds(1.1)) { RepeatBehavior = RepeatBehavior.Forever };
-        DoneSpinnerRotate.BeginAnimation(RotateTransform.AngleProperty, spin);
     }
 
     // ---------- Keybinds ----------

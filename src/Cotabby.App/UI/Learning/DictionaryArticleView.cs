@@ -67,7 +67,7 @@ internal sealed class DictionaryArticleView : Grid, IAsyncDisposable
         Retire(); if (article.ResourceLibrary is not { } id || !permit() || token.IsCancellationRequested || Encoding.UTF8.GetByteCount(article.Html) > 8_000_000) return;
         if (_initialization is null && _admission is null && (_admission = _slots.TryAcquire()) is null)
         {
-            _status.Text = "Rich dictionary display is waiting for another dictionary to close. Try again.";
+            _status.Text = "Rich dictionary display is waiting for resources to close. Retry may not succeed until the application restarts.";
             _status.Visibility = Visibility.Visible; _retry.Visibility = Visibility.Visible;
             _retryAction = () => { if (!_disposed && permit() && !token.IsCancellationRequested) _ = ShowAsync(article, load, permit, token); };
             return;

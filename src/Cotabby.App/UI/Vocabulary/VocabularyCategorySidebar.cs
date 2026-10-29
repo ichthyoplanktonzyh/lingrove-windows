@@ -22,6 +22,9 @@ public sealed class VocabularyCategorySidebar : UserControl
     private readonly IVocabularyTextSearching _search;
     private readonly ListBox _list = new();
     private readonly TextBox _query = new();
+    private readonly Button _create, _manage;
+    private bool _allowEditing = true;
+    public bool AllowEditing { get => _allowEditing; set { _allowEditing = value; _create.IsEnabled = value; _manage.IsEnabled = value; _create.Opacity = _manage.Opacity = value ? 1 : 0.35; Refresh(); } }
     private readonly HashSet<string> _expanded = new(StringComparer.Ordinal);
     private R.VocabularyClassificationIndex _index = new();
     private IReadOnlyList<F.VocabularyMeaningNode> _nodes = [];
@@ -39,10 +42,10 @@ public sealed class VocabularyCategorySidebar : UserControl
         _labels = labels; _search = search;
         var root = new DockPanel { Background = SystemColors.WindowBrush };
         var heading = new DockPanel { Margin = new Thickness(12) };
-        var manage = VocabularySidebarVisuals.IconButton("\uE712", labels.ManageCategories);
+        var manage = _manage = VocabularySidebarVisuals.IconButton("\uE712", labels.ManageCategories);
         VocabularySidebarVisuals.Automation(manage, "vocabularyManageCategories", labels.ManageCategories);
         manage.Click += (_, _) => ManageRequested?.Invoke(); DockPanel.SetDock(manage, Dock.Right); heading.Children.Add(manage);
-        var create = VocabularySidebarVisuals.IconButton("\uE710", labels.NewCategory);
+        var create = _create = VocabularySidebarVisuals.IconButton("\uE710", labels.NewCategory);
         VocabularySidebarVisuals.Automation(create, "vocabularyNewCategory", labels.NewCategory);
         create.Click += (_, _) => CreateRequested?.Invoke(Guid.TryParse(_selection, out var parent) ? parent : null); DockPanel.SetDock(create, Dock.Right); heading.Children.Add(create);
         heading.Children.Add(VocabularySidebarVisuals.Text(labels.Categories, 14, FontWeights.SemiBold));
@@ -124,7 +127,7 @@ public sealed class VocabularyCategorySidebar : UserControl
         }
         var text = VocabularySidebarVisuals.Text(value.Title, 12.5 * _scale, FontWeights.Normal); text.Margin = new Thickness(5, 0, 2, 0); panel.Children.Add(text);
         string key = value.Category.Id.ToString("D").ToUpperInvariant(); var row = MakeRow(panel, key, value.Title); row.DataContext = value;
-        var menu = new ContextMenu(); var edit = new MenuItem { Header = _labels.EditCategory };
+        var menu = new ContextMenu(); var edit = new MenuItem { Header = _labels.EditCategory, IsEnabled = _allowEditing };
         edit.Click += (_, _) => EditRequested?.Invoke(value.Category.Id); menu.Items.Add(edit); row.ContextMenu = menu;
         _list.Items.Add(row); if (_selection.Equals(key, StringComparison.OrdinalIgnoreCase) && _list.SelectedItem is null) _list.SelectedItem = row;
     }

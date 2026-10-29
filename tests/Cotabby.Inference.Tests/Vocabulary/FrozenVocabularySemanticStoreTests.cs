@@ -7,6 +7,24 @@ namespace Cotabby.Inference.Tests.Vocabulary;
 
 public sealed class FrozenVocabularySemanticStoreTests : IDisposable
 {
+    [Fact]
+    public async Task CurrentCatalogPersistsGuidanceThroughRealDatabase()
+    {
+        await using var store = new FrozenVocabularyImportStore(FrozenVocabularySQLiteDatabase.CreateMemory, installBundledClassification: true, loadCatalog: VocabularyClassificationCatalog.CurrentBundled);
+        var snapshot = await store.ReadAsync(); Assert.Equal(4, snapshot.Document.Classification.Frameworks.Single().Version); var category = snapshot.Document.Classification.Categories.First(c => c.References.Count > 0); Assert.NotEmpty(category.Localizations);
+        var next = await store.UpdateClassificationAsync(snapshot.Document.Classification, snapshot.Document.Classification); var roundtrip = (await store.ReadAsync()).Document.Classification.Categories.Single(c => c.Id == category.Id); Assert.Equal(category, roundtrip); Assert.True(next.Revision > snapshot.Revision);
+    }
+    [Fact]
+    public async Task MeaningOrganizationCommitsTogetherAndConflictDoesNotPublishHalf()
+    {
+        await using var store = FrozenVocabularyStoreFactory.Create(FileName, false); var initial = await store.ReadAsync(); var category = new VocabularyCategory(Guid.NewGuid(), VocabularyCategoryAxis.Content, [new VocabularyMeaningLabel("category")]);
+        var baseClassification = (await store.UpdateClassificationAsync(initial.Document.Classification with { Categories = [category] }, initial.Document.Classification)).Document.Classification;
+        var node = Node("meaning"); var sem = initial.Document.Semantics with { Nodes = [node] }; var membership = new VocabularyMeaningCategoryMembership(Guid.NewGuid(), node.Id, category.Id); var classification = baseClassification with { Memberships = [membership] };
+        var concurrent = await store.UpdateClassificationAsync(baseClassification with { Categories = [category with { Definition = "other" }] }, baseClassification);
+        var conflicting = classification with { Categories = [category with { Definition = "mine" }] };
+        var organization = Assert.IsAssignableFrom<F.ICanonicalVocabularyMeaningOrganizationStore>(store); await Assert.ThrowsAsync<VocabularyException>(() => organization.UpdateMeaningOrganizationAsync(sem, initial.Document.Semantics, conflicting, baseClassification)); Assert.Equal(concurrent, await store.ReadAsync());
+        var saved = await organization.UpdateMeaningOrganizationAsync(sem, initial.Document.Semantics, classification, baseClassification); Assert.Equal(concurrent.Revision + 1, saved.Revision); Assert.Equal(node, Assert.Single(saved.Document.Semantics.Nodes)); Assert.Equal(membership, Assert.Single(saved.Document.Classification.Memberships)); Assert.Equal("other", saved.Document.Classification.Categories.Single().Definition);
+    }
     private readonly string _root = Path.Combine(Path.GetTempPath(), "canonical-semantic-" + Guid.NewGuid().ToString("N"));
     private string FileName => Path.Combine(_root, FrozenVocabularyStoreFactory.CanonicalFileName);
     public FrozenVocabularySemanticStoreTests() => VocabularyWindowsFile.CreateParentDirectory(_root);

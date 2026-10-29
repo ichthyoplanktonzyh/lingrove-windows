@@ -26,6 +26,7 @@ public static class VocabularyPayloadCodec
 {
     private static readonly UTF8Encoding StrictUtf8 = new(false, true);
     private static readonly JsonSerializerOptions Options = CreateOptions();
+    private static readonly JsonSerializerOptions Historical35bOptions = CreateOptions(true);
 
 
     public static byte[] Encode(VocabularyDatabasePayload payload)
@@ -105,7 +106,7 @@ public static class VocabularyPayloadCodec
     }
     // The v8 document codec supplies its transport limit before writing. The stream refuses
     // additional output before its backing buffer grows beyond the accepted document bound.
-    internal static byte[] EncodePortableValue<T>(T value, int maximumBytes)
+    internal static byte[] EncodePortableValue<T>(T value, int maximumBytes, bool historical35b = false)
     {
         try
         {
@@ -114,7 +115,7 @@ public static class VocabularyPayloadCodec
             using var output = new LimitedOutputStream(maximumBytes);
             using (var writer = new Utf8JsonWriter(output, new JsonWriterOptions { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping, MaxDepth = 512 }))
             {
-                JsonSerializer.Serialize(writer, value, Options);
+                JsonSerializer.Serialize(writer, value, historical35b ? Historical35bOptions : Options);
                 writer.Flush();
             }
             var bytes = output.ToArray();
@@ -188,9 +189,10 @@ public static class VocabularyPayloadCodec
         { writer.WriteStartArray(); foreach (var item in value.EnumerateArray()) WriteFirst(item, writer); writer.WriteEndArray(); }
         else value.WriteTo(writer);
     }
-    private static JsonSerializerOptions CreateOptions()
+    private static JsonSerializerOptions CreateOptions(bool historical35b = false)
     {
         var resolver = new DefaultJsonTypeInfoResolver(); resolver.Modifiers.Add(Configure);
+        if (historical35b) resolver.Modifiers.Add(info => { if (info.Type == typeof(R.VocabularyCategory) || info.Type == typeof(R.VocabularyCategoryOverride)) for (int i = info.Properties.Count - 1; i >= 0; i--) if (info.Properties[i].AttributeProvider is PropertyInfo member && member.Name is nameof(R.VocabularyCategory.Examples) or nameof(R.VocabularyCategory.ScopeNote) or nameof(R.VocabularyCategory.References) or nameof(R.VocabularyCategory.Localizations)) info.Properties.RemoveAt(i); });
         var result = new JsonSerializerOptions
         {
             TypeInfoResolver = resolver, PropertyNamingPolicy = new SourceNames(), DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
@@ -223,9 +225,17 @@ public static class VocabularyPayloadCodec
             // System.Text.Json cannot mark getter-only constructor-bound members required.
             // ValidateShape checks those too, without making nullable constructor arguments required.
             property.IsRequired = property.Set is not null && Required(member, nullability);
+            if (IsDefaultedCategoryField(member)) { if (member.PropertyType == typeof(bool)) property.CustomConverter = new DefaultBoolConverter(); else property.IsSetNullable = true; }
         }
     }
-    private static bool Required(PropertyInfo member, NullabilityInfoContext nullability) => Nullable.GetUnderlyingType(member.PropertyType) is null
+    private static bool IsDefaultedCategoryField(PropertyInfo member) => member.DeclaringType == typeof(R.VocabularyCategory) && member.Name is nameof(R.VocabularyCategory.Definition) or nameof(R.VocabularyCategory.Examples) or nameof(R.VocabularyCategory.ScopeNote) or nameof(R.VocabularyCategory.References) or nameof(R.VocabularyCategory.Localizations) or nameof(R.VocabularyCategory.IsRetired) or nameof(R.VocabularyCategory.Provenance);
+    private sealed class DefaultBoolConverter : JsonConverter<bool>
+    {
+        public override bool HandleNull => true;
+        public override bool Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => reader.TokenType == JsonTokenType.Null ? false : reader.GetBoolean();
+        public override void Write(Utf8JsonWriter writer, bool value, JsonSerializerOptions options) => writer.WriteBooleanValue(value);
+    }
+    private static bool Required(PropertyInfo member, NullabilityInfoContext nullability) => !IsDefaultedCategoryField(member) && Nullable.GetUnderlyingType(member.PropertyType) is null
         && (member.PropertyType.IsValueType || nullability.Create(member).ReadState == NullabilityState.NotNull);
     private static void ValidateShape(JsonElement value, Type type)
     {

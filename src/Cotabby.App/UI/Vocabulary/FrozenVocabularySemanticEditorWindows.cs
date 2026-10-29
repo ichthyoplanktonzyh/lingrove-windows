@@ -14,31 +14,35 @@ namespace Cotabby.App.UI.Vocabulary;
 /// cannot be dismissed and retirement joins them before the notebook releases its owner.</summary>
 internal abstract class FrozenVocabularySemanticFormWindow : Window
 {
-    private readonly ICanonicalVocabularySemanticStore _store;
+    protected readonly ICanonicalVocabularySemanticStore Store;
     protected readonly VocabularySemanticIndex Baseline;
     protected readonly StackPanel Fields = new();
     private readonly TextBlock _failure = VocabularyNotebookTheme.Brush(new TextBlock { Name = "semanticFormError", TextWrapping = TextWrapping.Wrap }, TextBlock.ForegroundProperty, "OrangeBrush");
     private readonly Button _save = new() { Name = "semanticFormSave", Content = "Save", IsDefault = true, MinWidth = 90 }, _cancel = new() { Content = "Cancel", IsCancel = true, MinWidth = 90 };
     private bool _saving, _retiring;
     private TaskCompletionSource? _retirement;
+    protected Window? ChildWindow;
+    protected TaskCompletionSource? ChildDone;
     internal bool Saved { get; private set; }
+    protected bool Retiring => _retiring;
     internal Task? LastOperation { get; private set; }
     protected abstract bool Valid { get; }
     protected abstract VocabularySemanticIndex Edited();
+    protected virtual Task SubmitAsync() => Store.UpdateSemanticsAsync(Edited(), Baseline, CancellationToken.None);
     protected FrozenVocabularySemanticFormWindow(ICanonicalVocabularySemanticStore store, VocabularySemanticIndex baseline, string title)
     {
-        _store = store; Baseline = baseline; Title = title; Width = 600; Height = 520; MinWidth = 500; MinHeight = 400; WindowStartupLocation = WindowStartupLocation.CenterOwner; ShowInTaskbar = false; VocabularyNotebookTheme.Follow(this);
+        Store = store; Baseline = baseline; Title = title; Width = 600; Height = 520; MinWidth = 500; MinHeight = 400; WindowStartupLocation = WindowStartupLocation.CenterOwner; ShowInTaskbar = false; VocabularyNotebookTheme.Follow(this);
         var root = new DockPanel { Margin = new Thickness(20) }; Content = root; var heading = VocabularyInputControls.Heading(title); DockPanel.SetDock(heading, Dock.Top); root.Children.Add(heading);
         var footer = VocabularyInputControls.Footer(_cancel, _save); DockPanel.SetDock(footer, Dock.Bottom); root.Children.Add(footer); DockPanel.SetDock(_failure, Dock.Bottom); root.Children.Add(_failure);
         root.Children.Add(new ScrollViewer { Content = Fields, VerticalScrollBarVisibility = ScrollBarVisibility.Auto, HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled });
         _save.Click += (_, _) => LastOperation = SaveAsync(); _cancel.Click += (_, _) => Close(); Closing += OnClosing;
     }
-    private void OnClosing(object? sender, CancelEventArgs e) { if (_saving) e.Cancel = true; }
-    protected void UpdateAdmission() { Fields.IsEnabled = !_saving && !_retiring; _cancel.IsEnabled = !_saving && !_retiring; _save.IsEnabled = !_saving && !_retiring && Valid; }
+    private void OnClosing(object? sender, CancelEventArgs e) { if (_saving || ChildDone is not null) e.Cancel = true; }
+    protected void UpdateAdmission() { Fields.IsEnabled = !_saving && !_retiring && ChildDone is null; _cancel.IsEnabled = !_saving && !_retiring && ChildDone is null; _save.IsEnabled = !_saving && !_retiring && ChildDone is null && Valid; }
     private async Task SaveAsync()
     {
         if (!_save.IsEnabled) return; _saving = true; _failure.Text = ""; UpdateAdmission();
-        try { await _store.UpdateSemanticsAsync(Edited(), Baseline, CancellationToken.None); Saved = true; }
+        try { await SubmitAsync(); Saved = true; }
         catch (Exception error) { if (!_retiring) _failure.Text = error.Message; }
         finally { _saving = false; UpdateAdmission(); }
         if (Saved && !_retiring) Close();
@@ -49,7 +53,7 @@ internal abstract class FrozenVocabularySemanticFormWindow : Window
     }
     private async Task Finish(TaskCompletionSource done)
     {
-        _retiring = true; try { UpdateAdmission(); if (LastOperation is { } task) await task; if (IsVisible) Close(); done.TrySetResult(); } catch (Exception e) { done.TrySetException(e); }
+        _retiring = true; try { UpdateAdmission(); if (ChildWindow is FrozenVocabularyDraftPickerWindow picker) await picker.RetireAsync(); else ChildWindow?.Close(); if (ChildDone is { } child) await child.Task; if (LastOperation is { } task) await task; if (IsVisible) Close(); done.TrySetResult(); } catch (Exception e) { done.TrySetException(e); }
     }
 }
 
@@ -63,12 +67,17 @@ internal sealed class FrozenVocabularyMeaningEditorWindow : FrozenVocabularySema
     private readonly TextBox _title = new() { Name = "canonicalMeaningName" }, _definition = new() { Name = "canonicalMeaningDescription", AcceptsReturn = true, TextWrapping = TextWrapping.Wrap, MinHeight = 60 };
     private readonly ComboBox _kind = new() { Name = "canonicalMeaningKind" };
     private readonly bool _isNew;
+    private readonly VocabularyMeaningDraft? _draft;
+    private readonly IReadOnlyList<VocabularyEntry> _entries;
+    private readonly IReadOnlyList<LearningLanguage> _languages;
+    private readonly TextBlock _categorySummary = VocabularyInputControls.Caption(""), _expressionSummary = VocabularyInputControls.Caption("");
     internal Guid NodeId => _node.Id;
     protected override bool Valid => !string.IsNullOrWhiteSpace(_title.Text);
-    internal FrozenVocabularyMeaningEditorWindow(ICanonicalVocabularySemanticStore store, VocabularySemanticIndex baseline, IReadOnlyList<LearningLanguage> languages, VocabularyMeaningNode? node = null, VocabularySelection? linking = null)
+    internal FrozenVocabularyMeaningEditorWindow(ICanonicalVocabularySemanticStore store, VocabularySemanticIndex baseline, IReadOnlyList<LearningLanguage> languages, VocabularyMeaningNode? node = null, VocabularySelection? linking = null, R.VocabularyClassificationIndex? classification = null, IReadOnlyList<VocabularyEntry>? entries = null, Guid? categoryId = null)
         : base(store, baseline, "Group by meaning")
     {
-        _isNew = node is null; _linking = linking; _node = node ?? new VocabularyMeaningNode(Guid.NewGuid(), [new R.VocabularyMeaningLabel("") { Language = languages.Count > 0 ? languages[0] : null }]);
+        _languages = languages; _entries = entries ?? []; _draft = classification is not null && store is ICanonicalVocabularyMeaningOrganizationStore ? new(baseline, classification, languages, node, categoryId, linking?.SenseId) : null;
+        _isNew = node is null; _linking = linking; _node = _draft?.Original ?? node ?? new VocabularyMeaningNode(Guid.NewGuid(), [new R.VocabularyMeaningLabel("") { Language = languages.Count > 0 ? languages[0] : null }]);
         _label = VocabularyMeaningLabelPolicy.Label(_node.Labels, languages) ?? _node.Labels[0]; _title.Text = _label.Text; _definition.Text = _node.Definition;
         Fields.Children.Add(VocabularyInputControls.Caption("What do you want to express?"));
         Fields.Children.Add(VocabularyInputControls.Group(("Name", _title), ("Description (optional)", _definition)));
@@ -78,7 +87,38 @@ internal sealed class FrozenVocabularyMeaningEditorWindow : FrozenVocabularySema
             _kind.ItemsSource = new[] { new KindChoice("Things and situations", R.VocabularyMeaningNodeKind.Concept), new KindChoice("Requests, suggestions and attitudes", R.VocabularyMeaningNodeKind.Function) }; _kind.DisplayMemberPath = "Label"; _kind.SelectedValuePath = "Value"; _kind.SelectedValue = _node.Kind;
             Fields.Children.Add(VocabularyInputControls.Group(("Use this to describe", _kind)));
         }
+        if (_draft is not null)
+        {
+            Fields.Children.Add(VocabularyInputControls.Heading("Categories")); Fields.Children.Add(_categorySummary);
+            var categories = new Button { Name = "meaningDraftCategories", Content = "Choose categories", HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 4, 0, 12) }; VocabularyNotebookTheme.Button(categories); categories.Click += (_, _) => _ = ChooseAsync(false); Fields.Children.Add(categories);
+            if (_isNew) { Fields.Children.Add(VocabularyInputControls.Heading("My expressions")); Fields.Children.Add(_expressionSummary); if (linking is null) { var expressions = new Button { Name = "meaningDraftExpressions", Content = "Add from vocabulary", HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 4, 0, 12) }; VocabularyNotebookTheme.Button(expressions); expressions.Click += (_, _) => _ = ChooseAsync(true); Fields.Children.Add(expressions); } }
+            RefreshDraftSummaries();
+        }
         _title.TextChanged += (_, _) => UpdateAdmission(); UpdateAdmission();
+    }
+    private void RefreshDraftSummaries()
+    {
+        if (_draft is null) return; var locale = VocabularyCategoryUiLanguage.Identifier;
+        var names = _draft.Classification.Categories.Where(c => _draft.CategoryIds.Contains(c.Id)).Select(c => string.Join(" › ", VocabularyClassificationProjection.Breadcrumb(c.Id, _draft.Classification).TakeLast(2).Select(part => R.VocabularyCategoryLocalizationPolicy.Resolve(R.VocabularyClassificationPolicy.Effective(part, _draft.Classification), [locale]).Name))).ToArray(); _categorySummary.Text = names.Length == 0 ? "Uncategorized meanings" : string.Join(" · ", names);
+        _expressionSummary.Text = string.Join("\n", _entries.SelectMany(e => e.Senses.Where(s => _draft.SenseIds.Contains(s.Id)).Select(s => e.Expression + " · " + s.Meaning)));
+    }
+    private async Task ChooseAsync(bool expressions)
+    {
+        if (Retiring || ChildDone is not null || _draft is null) return; var done = ChildDone = new(TaskCreationOptions.RunContinuationsAsynchronously); UpdateAdmission();
+        try
+        {
+            var selectedKind = _kind.SelectedValue is R.VocabularyMeaningNodeKind value ? value : _node.Kind; var axis = selectedKind == R.VocabularyMeaningNodeKind.Function ? R.VocabularyCategoryAxis.Function : R.VocabularyCategoryAxis.Content;
+            var picker = new FrozenVocabularyDraftPickerWindow(Store, _draft.Classification, _languages, expressions ? _draft.SenseIds : _draft.CategoryIds, axis, expressions ? _entries : null) { Owner = this }; ChildWindow = picker;
+            try { picker.ShowDialog(); } finally { await picker.RetireAsync(); ChildWindow = null; }
+            if (!Retiring && picker.Accepted) { var target = expressions ? _draft.SenseIds : _draft.CategoryIds; target.Clear(); target.UnionWith(picker.Selection); if (!expressions) { _draft.Classification = picker.Classification; var axes = _draft.Classification.Categories.Where(c => target.Contains(c.Id)).Select(c => c.Axis).Distinct().ToArray(); if (_isNew && axes.Length == 1) _kind.SelectedValue = axes[0] == R.VocabularyCategoryAxis.Function ? R.VocabularyMeaningNodeKind.Function : R.VocabularyMeaningNodeKind.Concept; } RefreshDraftSummaries(); }
+        }
+        finally { ChildWindow = null; ChildDone = null; try { UpdateAdmission(); } finally { done.TrySetResult(); } }
+    }
+    protected override async Task SubmitAsync()
+    {
+        if (_draft is null || Store is not ICanonicalVocabularyMeaningOrganizationStore store) { await base.SubmitAsync(); return; }
+        var kind = _kind.SelectedValue is R.VocabularyMeaningNodeKind value ? value : _node.Kind; var indexes = _draft.Indexes(_title.Text, _definition.Text, kind, SourceDate.FromWindows(DateTimeOffset.UtcNow));
+        await store.UpdateMeaningOrganizationAsync(indexes.Semantics, _draft.SemanticBaseline, indexes.Classification, _draft.ClassificationBaseline, CancellationToken.None);
     }
     protected override VocabularySemanticIndex Edited()
     {
@@ -100,7 +140,7 @@ internal sealed class FrozenVocabularyMappingEditorWindow : FrozenVocabularySema
     private readonly ComboBox _node = new() { Name = "canonicalMappingNode" }, _sense = new() { Name = "canonicalMappingSense" };
     private readonly TextBox _conditions = new() { Name = "canonicalMappingConditions", AcceptsReturn = true, TextWrapping = TextWrapping.Wrap, MinHeight = 55 }, _nuance = new() { Name = "canonicalMappingNuance", AcceptsReturn = true, TextWrapping = TextWrapping.Wrap, MinHeight = 55 };
     protected override bool Valid => _node.SelectedValue is Guid node && Baseline.Nodes.Any(n => n.Id == node) && _sense.SelectedValue is Guid sense && _entries.Any(e => e.Senses.Any(s => s.Id == sense));
-    internal FrozenVocabularyMappingEditorWindow(ICanonicalVocabularySemanticStore store, VocabularySemanticIndex baseline, IReadOnlyList<VocabularyEntry> entries, IReadOnlyList<LearningLanguage> languages, Guid? fixedNode = null, Guid? fixedSense = null, R.VocabularyMeaningMapping? original = null)
+    internal FrozenVocabularyMappingEditorWindow(ICanonicalVocabularySemanticStore store, VocabularySemanticIndex baseline, IReadOnlyList<VocabularyEntry> entries, IReadOnlyList<LearningLanguage> languages, Guid? fixedNode = null, Guid? fixedSense = null, R.VocabularyMeaningMapping? original = null, bool currentRules = false)
         : base(store, baseline, "Group by meaning")
     {
         _entries = entries; _original = original; Guid? senseId = original?.SenseId ?? fixedSense; Guid? nodeId = original?.NodeId ?? fixedNode;
@@ -110,7 +150,8 @@ internal sealed class FrozenVocabularyMappingEditorWindow : FrozenVocabularySema
         _node.SelectedValue = nodeId; _sense.SelectedValue = senseId; if (nodeId is null) _node.SelectedIndex = 0; if (senseId is null) _sense.SelectedIndex = 0;
         _node.IsEnabled = fixedNode is null; _sense.IsEnabled = fixedSense is null && original is null;
         _conditions.Text = original?.Conditions ?? ""; _nuance.Text = original?.Nuance ?? "";
-        Fields.Children.Add(VocabularyInputControls.Group(("Expression", _sense), ("Meaning group", _node)));
+        if (currentRules && senseId is null) { var choose = new Button { Name = "mappingChooseExpression", Content = "Choose an expression", HorizontalAlignment = HorizontalAlignment.Left }; VocabularyNotebookTheme.Button(choose); choose.Click += (_, _) => _ = ChooseExpressionAsync(choose, entries, languages); Fields.Children.Add(VocabularyInputControls.Group(("Expression", choose), ("Meaning group", _node))); }
+        else Fields.Children.Add(VocabularyInputControls.Group(("Expression", _sense), ("Meaning group", _node)));
         var context = VocabularyInputControls.Caption(""); Fields.Children.Add(context);
         void UpdateContext()
         {
@@ -122,6 +163,12 @@ internal sealed class FrozenVocabularyMappingEditorWindow : FrozenVocabularySema
         if (original?.PatternId is { } patternId && baseline.Patterns.FirstOrDefault(p => p.Id == patternId) is { } pattern) Fields.Children.Add(VocabularyInputControls.Caption("Used in this wording: " + pattern.Template + (pattern.Note.Length > 0 ? "\n" + pattern.Note : "")));
         Fields.Children.Add(VocabularyInputControls.Group(("Usage conditions", _conditions), ("Nuance", _nuance)));
         _node.SelectionChanged += (_, _) => { UpdateContext(); UpdateAdmission(); }; _sense.SelectionChanged += (_, _) => { UpdateContext(); UpdateAdmission(); }; UpdateContext(); UpdateAdmission();
+    }
+    private async Task ChooseExpressionAsync(Button button, IReadOnlyList<VocabularyEntry> entries, IReadOnlyList<LearningLanguage> languages)
+    {
+        if (Retiring || ChildDone is not null) return; var done = ChildDone = new(TaskCreationOptions.RunContinuationsAsynchronously); UpdateAdmission();
+        try { var selected = _sense.SelectedValue is Guid id ? new HashSet<Guid> { id } : []; var picker = new FrozenVocabularyDraftPickerWindow(Store, new(), languages, selected, R.VocabularyCategoryAxis.Content, entries, allowsMultiple: false) { Owner = this }; ChildWindow = picker; try { picker.ShowDialog(); } finally { await picker.RetireAsync(); ChildWindow = null; } if (!Retiring && picker.Accepted) { _sense.SelectedValue = picker.Selection.Cast<Guid?>().FirstOrDefault(); var entry = entries.FirstOrDefault(e => e.Senses.Any(s => s.Id == (Guid?)_sense.SelectedValue)); var sense = entry?.Senses.FirstOrDefault(s => s.Id == (Guid?)_sense.SelectedValue); button.Content = entry is null ? "Choose an expression" : entry.Expression + " · " + (sense?.Meaning ?? ""); } }
+        finally { ChildWindow = null; ChildDone = null; try { UpdateAdmission(); } finally { done.TrySetResult(); } }
     }
     protected override VocabularySemanticIndex Edited()
     {

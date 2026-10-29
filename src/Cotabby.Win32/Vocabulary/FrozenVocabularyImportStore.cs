@@ -37,7 +37,7 @@ internal sealed partial class FrozenVocabularyImportStore : ICanonicalVocabulary
     {
         _open = open ?? throw new ArgumentNullException(nameof(open)); _now = now ?? (() => SourceDate.FromWindows(DateTimeOffset.UtcNow));
         _installClassification = installBundledClassification;
-        _loadCatalog = loadCatalog ?? VocabularyClassificationCatalog.Bundled;
+        _loadCatalog = loadCatalog ?? VocabularyClassificationCatalog.CurrentBundled;
         _images = images;
         _notificationWorker = Task.Run(DispatchAsync);
     }

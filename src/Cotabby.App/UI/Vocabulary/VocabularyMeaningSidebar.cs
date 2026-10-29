@@ -12,8 +12,8 @@ using F = Cotabby.Core.Vocabulary.Frozen;
 
 namespace Cotabby.App.UI.Vocabulary;
 
-public enum VocabularyMeaningDestinationKind { Node, Unclassified, Sense }
-public sealed record VocabularyMeaningDestination(VocabularyMeaningDestinationKind Kind, Guid? NodeId = null, Guid? SenseId = null);
+public enum VocabularyMeaningDestinationKind { Node, Unclassified, Sense, Category }
+public sealed record VocabularyMeaningDestination(VocabularyMeaningDestinationKind Kind, Guid? NodeId = null, Guid? SenseId = null, Guid? CategoryId = null);
 
 /// <summary>Detached presentation of an acknowledged browser snapshot. It owns only selection,
 /// disclosure and WPF controls; the eventual notebook owner supplies current data and callbacks.</summary>

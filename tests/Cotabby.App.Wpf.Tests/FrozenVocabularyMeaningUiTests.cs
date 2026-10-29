@@ -15,6 +15,38 @@ namespace Cotabby.App.Wpf.Tests;
 public sealed class FrozenVocabularyMeaningUiTests(WpfDispatcher dispatcher)
 {
     [Fact]
+    public Task RetiringNotebookClosesPatternConfirmationWithoutDeleting() => dispatcher.RunAsync(async () =>
+    {
+        await using var store = new FrozenVocabularyImportStore(FrozenVocabularySQLiteDatabase.CreateMemory()); var added = await store.AddEntriesAsync([new(Expression: "hello")]); var before = await store.ReadAsync(); var pattern = new R.VocabularyUsagePattern(added.Selection!.Value.SenseId, "hello there"); await store.UpdateSemanticsAsync(before.Document.Semantics with { Patterns = [pattern] }, before.Document.Semantics);
+        var window = new FrozenVocabularyNotebookWindow(store, new WindowsVocabularyWordListReader()); window.Show(); await window.LastOperation!; window.Reveal(added.Selection); await window.LastOperation!; var completed = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        _ = window.Dispatcher.BeginInvoke(async () => { try { Assert.Single(Application.Current.Windows.OfType<FrozenVocabularyPatternDeleteWindow>()); await window.RetireAsync(); completed.SetResult(); } catch (Exception error) { completed.SetException(error); } });
+        Find<Button>(window, "canonicalRemovePattern").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); await completed.Task.WaitAsync(TimeSpan.FromSeconds(5)); Assert.Single((await store.ReadAsync()).Document.Semantics.Patterns);
+    });
+    [Fact]
+    public Task LatestMeaningRetirementClosesNestedDraftWithoutPublishing() => dispatcher.RunAsync(async () =>
+    {
+        await using var store = new FrozenVocabularyImportStore(FrozenVocabularySQLiteDatabase.CreateMemory()); var before = await store.ReadAsync(); var form = new FrozenVocabularyMeaningEditorWindow(store, before.Document.Semantics, [], classification: before.Document.Classification, entries: []); form.Show(); Find<TextBox>(form, "canonicalMeaningName").Text = "draft";
+        var done = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously); _ = form.Dispatcher.BeginInvoke(async () => { try { Assert.Single(Application.Current.Windows.OfType<FrozenVocabularyDraftPickerWindow>()); await form.RetireAsync(); done.SetResult(); } catch (Exception error) { done.SetException(error); } });
+        Find<Button>(form, "meaningDraftCategories").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); await done.Task.WaitAsync(TimeSpan.FromSeconds(5)); Assert.False(form.IsVisible); Assert.Equal(before, await store.ReadAsync());
+    });
+    [Fact]
+    public Task LatestMeaningDraftCreatesCategoryAndSenseInOneAcknowledgedSave() => dispatcher.RunAsync(async () =>
+    {
+        await using var store = new FrozenVocabularyImportStore(FrozenVocabularySQLiteDatabase.CreateMemory()); var added = await store.AddEntriesAsync([new(Expression: "hello", Meaning: "greeting")]); var before = await store.ReadAsync();
+        var form = new FrozenVocabularyMeaningEditorWindow(store, before.Document.Semantics, [LearningLanguage.English], classification: before.Document.Classification, entries: before.Document.CollectedEntries); form.Show(); Find<TextBox>(form, "canonicalMeaningName").Text = "Greeting";
+        _ = form.Dispatcher.BeginInvoke(() => { var picker = Application.Current.Windows.OfType<FrozenVocabularyDraftPickerWindow>().Single(); VocabularyThemeRender.Capture(picker, "latest-category-picker", 600, 560);
+            _ = picker.Dispatcher.BeginInvoke(() => { var editor = Application.Current.Windows.OfType<FrozenVocabularyCategoryEditorWindow>().Single(); Find<TextBox>(editor, "categoryName").Text = "Social"; Find<Button>(editor, "classificationSave").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); });
+            Find<Button>(picker, "meaningDraftNewCategory").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            _ = picker.Dispatcher.BeginInvoke(() => Find<Button>(picker, "meaningDraftPickerSave").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)));
+        });
+        Find<Button>(form, "meaningDraftCategories").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); await Until(() => form.IsEnabled && Find<Button>(form, "meaningDraftExpressions").IsEnabled);
+        Assert.Empty((await store.ReadAsync()).Document.Classification.Categories);
+        _ = form.Dispatcher.BeginInvoke(() => { var picker = Application.Current.Windows.OfType<FrozenVocabularyDraftPickerWindow>().Single(); var checkbox = Descendants(picker).OfType<CheckBox>().Single(); checkbox.IsChecked = true; checkbox.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent)); Find<Button>(picker, "meaningDraftPickerSave").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); });
+        Find<Button>(form, "meaningDraftExpressions").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); await Until(() => Find<Button>(form, "meaningDraftExpressions").IsEnabled); VocabularyThemeRender.Capture(form, "latest-meaning-draft", 600, 520);
+        Find<Button>(form, "semanticFormSave").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); await form.LastOperation!; await form.RetireAsync(); var result = await store.ReadAsync();
+        Assert.Equal(before.Revision + 1, result.Revision); var node = Assert.Single(result.Document.Semantics.Nodes); var category = Assert.Single(result.Document.Classification.Categories); Assert.Equal(node.Id, Assert.Single(result.Document.Classification.Memberships).NodeId); Assert.Equal(category.Id, result.Document.Classification.Memberships.Single().CategoryId); Assert.Equal(added.Selection!.Value.SenseId, Assert.Single(result.Document.Semantics.Mappings).SenseId);
+    });
+    [Fact]
     public Task UsagePatternCreateEditConflictAndRemoveThroughNotebook() => dispatcher.RunAsync(async () =>
     {
         await using var store = new FrozenVocabularyImportStore(FrozenVocabularySQLiteDatabase.CreateMemory()); var added = await store.AddEntriesAsync([new(Expression: "hello", Example: "hello there")]);
@@ -96,7 +128,7 @@ public sealed class FrozenVocabularyMeaningUiTests(WpfDispatcher dispatcher)
         _ = window.Dispatcher.BeginInvoke(() => { var form = Application.Current.Windows.OfType<FrozenVocabularyMeaningEditorWindow>().Single(); Find<TextBox>(form, "canonicalMeaningName").Text = "Salutation"; Find<ComboBox>(form, "canonicalMeaningKind").SelectedIndex = 1; window.SetPreferredLanguages([LearningLanguage.English]); VocabularyThemeRender.Capture(form, "meaning-create", 600, 520); Find<Button>(form, "semanticFormSave").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); });
         Find<Button>(window, "canonicalNewMeaning").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); await window.LastOperation!;
         var created = await store.ReadAsync(); var node = created.Document.Semantics.Nodes.Single(); Assert.Equal("Salutation", node.Labels.Single().Text); Assert.Equal(LearningLanguage.French, node.Labels.Single().Language); Assert.Equal(R.VocabularyMeaningNodeKind.Function, node.Kind); Assert.Equal(first.Selection!.Value.SenseId, created.Document.Semantics.Mappings.Single().SenseId); Assert.Equal(node.Id, window.Session.Destination!.NodeId);
-        _ = window.Dispatcher.BeginInvoke(() => { var form = Application.Current.Windows.OfType<FrozenVocabularyMappingEditorWindow>().Single(); Find<ComboBox>(form, "canonicalMappingSense").SelectedValue = second.Selection!.Value.SenseId; Find<TextBox>(form, "canonicalMappingNuance").Text = "informal"; VocabularyThemeRender.Capture(form, "meaning-mapping", 600, 520); Find<Button>(form, "semanticFormSave").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); });
+        _ = window.Dispatcher.BeginInvoke(() => { var form = Application.Current.Windows.OfType<FrozenVocabularyMappingEditorWindow>().Single(); _ = form.Dispatcher.BeginInvoke(() => { var picker = Application.Current.Windows.OfType<FrozenVocabularyDraftPickerWindow>().Single(); var search = Find<TextBox>(picker, "meaningDraftPickerSearch"); search.Text = "hi"; picker.UpdateLayout(); var check = Descendants(picker).OfType<CheckBox>().Single(); check.IsChecked = true; check.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent)); Find<Button>(picker, "meaningDraftPickerSave").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); }); Find<Button>(form, "mappingChooseExpression").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); _ = form.Dispatcher.BeginInvoke(() => { Find<TextBox>(form, "canonicalMappingNuance").Text = "informal"; VocabularyThemeRender.Capture(form, "meaning-mapping", 600, 520); Find<Button>(form, "semanticFormSave").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); }); });
         Find<Button>(window, "canonicalAddMapping").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); await window.LastOperation!;
         var mapped = await store.ReadAsync(); Assert.Equal(2, mapped.Document.Semantics.Mappings.Count); Assert.Contains(mapped.Document.Semantics.Mappings, m => m.SenseId == second.Selection!.Value.SenseId && m.Nuance == "informal" && m.Relation == R.VocabularyMappingRelation.RealizesFunction);
         var category = new R.VocabularyCategory(Guid.NewGuid(), R.VocabularyCategoryAxis.Content, [new R.VocabularyMeaningLabel("People")]);
@@ -174,6 +206,7 @@ public sealed class FrozenVocabularyMeaningUiTests(WpfDispatcher dispatcher)
         }
         finally { if (System.IO.Directory.Exists(directory)) System.IO.Directory.Delete(directory, true); }
     });
+    private static async Task Until(Func<bool> condition) { for (int i = 0; i < 200 && !condition(); i++) await Task.Delay(10); Assert.True(condition()); }
     private static T Find<T>(DependencyObject root, string name) where T : FrameworkElement { if (root is Window window) window.UpdateLayout(); return Descendants(root).OfType<T>().First(x => x.Name == name); }
     private static IEnumerable<DependencyObject> Descendants(DependencyObject root) { yield return root; for (int i = 0; i < VisualTreeHelper.GetChildrenCount(root); i++) foreach (var value in Descendants(VisualTreeHelper.GetChild(root, i))) yield return value; }
 }

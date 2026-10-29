@@ -6,6 +6,8 @@ using System.Windows.Data;
 using System.Windows.Threading;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Vocabulary.Frozen;
+using Cotabby.Core.Vocabulary;
+using Cotabby.Core.Vocabulary.Notebook;
 using R = Cotabby.Core.Vocabulary.Resources;
 
 namespace Cotabby.App.UI.Vocabulary;
@@ -23,10 +25,14 @@ internal sealed class FrozenVocabularyCategoryManagerWindow : Window
           </ControlTemplate></Setter.Value></Setter>
         </Style>
         """);
-    private sealed record Row(R.VocabularyCategory Category, string Title, bool Visible)
-    { public Visibility CanDelete => Category.FrameworkId is null ? Visibility.Visible : Visibility.Collapsed; }
+    private sealed record Row(R.VocabularyCategory Category, string Title, bool Visible, string Path = "", int Depth = 0, bool HasChildren = false)
+    { public Visibility CanDelete => Category.FrameworkId is null ? Visibility.Visible : Visibility.Collapsed; public Visibility CanExpand => HasChildren ? Visibility.Visible : Visibility.Collapsed; public string DisplayTitle => new string(' ', Math.Min(Depth, 8) * 3) + Title; }
+    private sealed class Search : IVocabularyTextSearching { public bool Contains(string field, string term) => CultureInfo.CurrentCulture.CompareInfo.IndexOf(field, term, CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace) >= 0; }
     private readonly ICanonicalVocabularySemanticStore _store;
     private readonly IReadOnlyList<LearningLanguage> _languages;
+    private readonly bool _currentRules;
+    private readonly HashSet<string> _expanded = new(StringComparer.Ordinal);
+    private readonly ComboBox _axis = new() { Name = "categoryManagerAxis", ItemsSource = Enum.GetValues<R.VocabularyCategoryAxis>(), SelectedIndex = 0 };
     private readonly IDisposable _subscription;
     private readonly object _gate = new();
     private readonly CancellationTokenSource _readCancellation = new();
@@ -42,12 +48,14 @@ internal sealed class FrozenVocabularyCategoryManagerWindow : Window
     private TaskCompletionSource? _childDone, _retirement;
     private Task? _mutation;
     internal Task? LastOperation { get; private set; }
-    internal FrozenVocabularyCategoryManagerWindow(ICanonicalVocabularySemanticStore store, IVocabularyEntryImportStore reader, FrozenVocabularyImportSnapshot snapshot, IReadOnlyList<LearningLanguage> languages)
+    internal FrozenVocabularyCategoryManagerWindow(ICanonicalVocabularySemanticStore store, IVocabularyEntryImportStore reader, FrozenVocabularyImportSnapshot snapshot, IReadOnlyList<LearningLanguage> languages, bool currentRules = false)
     {
-        _store = store; _snapshot = snapshot; _languages = Array.AsReadOnly(languages.ToArray()); Title = "Manage categories"; Width = 620; Height = 540; MinWidth = 500; MinHeight = 400; WindowStartupLocation = WindowStartupLocation.CenterOwner; ShowInTaskbar = false; VocabularyNotebookTheme.Follow(this);
+        _store = store; _snapshot = snapshot; _languages = Array.AsReadOnly(languages.ToArray()); _currentRules = currentRules; Title = "Manage categories"; Width = 620; Height = 540; MinWidth = 500; MinHeight = 400; WindowStartupLocation = WindowStartupLocation.CenterOwner; ShowInTaskbar = false; VocabularyNotebookTheme.Follow(this);
         var root = new DockPanel { Margin = new Thickness(20) }; Content = root; var header = VocabularyInputControls.Heading("Manage categories"); DockPanel.SetDock(header, Dock.Top); root.Children.Add(header);
+        if (_currentRules) { var create = new Button { Name = "categoryManagerNew", Content = "New category", HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 0, 0, 8) }; VocabularyNotebookTheme.Button(create); create.Click += (_, _) => LastOperation = EditAsync(null); DockPanel.SetDock(create, Dock.Top); root.Children.Add(create); }
         var footer = VocabularyInputControls.Footer(_done); DockPanel.SetDock(footer, Dock.Bottom); root.Children.Add(footer); DockPanel.SetDock(_error, Dock.Bottom); root.Children.Add(_error);
         VocabularyNotebookTheme.Input(_search); System.Windows.Automation.AutomationProperties.SetName(_search, "Search categories"); _search.Margin = new Thickness(0, 0, 0, 10); DockPanel.SetDock(_search, Dock.Top); root.Children.Add(_search);
+        if (_currentRules) { VocabularyNotebookTheme.Combo(_axis); _axis.Margin = new Thickness(0, 0, 0, 8); DockPanel.SetDock(_axis, Dock.Top); root.Children.Add(_axis); _axis.SelectionChanged += (_, _) => Render(); }
         var rowStyle = new Style(typeof(ListBoxItem)); rowStyle.Setters.Add(new Setter(Control.HorizontalContentAlignmentProperty, HorizontalAlignment.Stretch)); _list.ItemContainerStyle = rowStyle;
         _list.ItemTemplate = RowTemplate(); VirtualizingPanel.SetIsVirtualizing(_list, true); VirtualizingPanel.SetVirtualizationMode(_list, VirtualizationMode.Recycling); VocabularyNotebookTheme.Brush(_list, Control.BackgroundProperty, "CardBg"); VocabularyNotebookTheme.Brush(_list, Control.ForegroundProperty, "TextPrimary"); VocabularyNotebookTheme.Brush(_list, Control.BorderBrushProperty, "CardBorder"); System.Windows.Automation.AutomationProperties.SetName(_list, "Categories"); root.Children.Add(_list);
         _search.TextChanged += (_, _) => Render(); _done.Click += (_, _) => Close(); Closing += OnClosing; Closed += (_, _) => BeginRetire();
@@ -57,10 +65,11 @@ internal sealed class FrozenVocabularyCategoryManagerWindow : Window
     private DataTemplate RowTemplate()
     {
         var panel = new FrameworkElementFactory(typeof(DockPanel)); panel.SetValue(FrameworkElement.MarginProperty, new Thickness(5, 4, 5, 4));
+        if (_currentRules) { var expand = Button("+", ExpandClicked); expand.SetBinding(UIElement.VisibilityProperty, new Binding(nameof(Row.CanExpand))); expand.SetValue(DockPanel.DockProperty, Dock.Left); panel.AppendChild(expand); }
         var delete = Button("Delete", DeleteClicked); delete.SetBinding(UIElement.VisibilityProperty, new Binding(nameof(Row.CanDelete))); delete.SetBinding(System.Windows.Automation.AutomationProperties.NameProperty, new Binding(nameof(Row.Title)) { StringFormat = "Delete {0}" }); delete.SetValue(DockPanel.DockProperty, Dock.Right); panel.AppendChild(delete);
         var edit = Button("Edit", EditClicked); edit.SetBinding(System.Windows.Automation.AutomationProperties.NameProperty, new Binding(nameof(Row.Title)) { StringFormat = "Edit {0}" }); edit.SetValue(DockPanel.DockProperty, Dock.Right); panel.AppendChild(edit);
         var visible = new FrameworkElementFactory(typeof(CheckBox)); visible.SetValue(ContentControl.ContentProperty, "Visible"); visible.SetBinding(System.Windows.Automation.AutomationProperties.NameProperty, new Binding(nameof(Row.Title)) { StringFormat = "Visible: {0}" }); visible.SetValue(FrameworkElement.MarginProperty, new Thickness(10, 4, 10, 4)); visible.SetValue(DockPanel.DockProperty, Dock.Right); visible.SetValue(Control.ForegroundProperty, new DynamicResourceExtension("TextPrimary")); visible.SetBinding(System.Windows.Controls.Primitives.ToggleButton.IsCheckedProperty, new Binding(nameof(Row.Visible)) { Mode = BindingMode.OneWay }); visible.AddHandler(System.Windows.Controls.Primitives.ButtonBase.ClickEvent, new RoutedEventHandler(VisibilityClicked)); panel.AppendChild(visible);
-        var title = Button(null, EditClicked); title.SetBinding(ContentControl.ContentProperty, new Binding(nameof(Row.Title))); title.SetBinding(FrameworkElement.ToolTipProperty, new Binding(nameof(Row.Title))); title.SetValue(FrameworkElement.StyleProperty, TitleStyle); panel.AppendChild(title);
+        var title = Button(null, EditClicked); title.SetBinding(ContentControl.ContentProperty, new Binding(_currentRules ? nameof(Row.DisplayTitle) : nameof(Row.Title))); title.SetBinding(FrameworkElement.ToolTipProperty, new Binding(nameof(Row.Title))); title.SetValue(FrameworkElement.StyleProperty, TitleStyle); panel.AppendChild(title);
         return new DataTemplate { VisualTree = panel };
     }
     private static FrameworkElementFactory Button(string? text, RoutedEventHandler handler)
@@ -70,7 +79,8 @@ internal sealed class FrozenVocabularyCategoryManagerWindow : Window
     private void Render()
     {
         if (_retiring) return; var index = _snapshot.Document.Classification;
-        _list.ItemsSource = index.Categories.Where(c => !c.IsRetired).Select(c => new Row(c, R.VocabularyClassificationPolicy.Title(c, index, _languages), !index.Overrides.Any(o => o.CategoryId == c.Id && o.IsHidden)))
+        if (_currentRules) _list.ItemsSource = VocabularyClassificationProjection.CurrentRows(index, _snapshot.Document.Semantics.Nodes, _expanded, new Search(), [VocabularyCategoryUiLanguage.Identifier], _search.Text, true).Where(row => _search.Text.Length > 0 || Equals(row.Category.Axis, _axis.SelectedItem)).Select(row => new Row(row.Category, row.Title, !row.IsHidden, row.Id, row.Depth, row.HasChildren)).ToArray();
+        else _list.ItemsSource = index.Categories.Where(c => !c.IsRetired).Select(c => new Row(c, R.VocabularyClassificationPolicy.Title(c, index, _languages), !index.Overrides.Any(o => o.CategoryId == c.Id && o.IsHidden)))
             .Where(row => CultureInfo.CurrentCulture.CompareInfo.IndexOf(row.Title, _search.Text, CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace) >= 0).ToArray();
         _list.IsEnabled = _search.IsEnabled = _done.IsEnabled = !_busy && _childDone is null;
     }
@@ -94,13 +104,14 @@ internal sealed class FrozenVocabularyCategoryManagerWindow : Window
     private void DrainSnapshot() { FrozenVocabularyImportSnapshot? value; lock (_gate) { _queued = false; value = _retiring ? null : _pending; _pending = null; } if (value is not null) Accept(value); }
     private void Accept(FrozenVocabularyImportSnapshot value) { if (_retiring || value.Revision < _snapshot.Revision) return; _snapshot = value; Render(); }
     private void EditClicked(object sender, RoutedEventArgs e) { if (sender is FrameworkElement { DataContext: Row row }) LastOperation = EditAsync(row.Category.Id); }
+    private void ExpandClicked(object sender, RoutedEventArgs e) { if (sender is FrameworkElement { DataContext: Row row }) { if (!_expanded.Add(row.Path)) _expanded.Remove(row.Path); Render(); } }
     private void VisibilityClicked(object sender, RoutedEventArgs e) { if (sender is CheckBox { DataContext: Row row } check) LastOperation = SetVisibleAsync(row.Category.Id, check.IsChecked == true); }
     private void DeleteClicked(object sender, RoutedEventArgs e) { if (sender is FrameworkElement { DataContext: Row row }) LastOperation = DeleteAsync(row.Category.Id); }
-    private async Task EditAsync(Guid id)
+    private async Task EditAsync(Guid? id)
     {
-        if (_retiring || _busy || _childDone is not null || _snapshot.Document.Classification.Categories.FirstOrDefault(c => c.Id == id && !c.IsRetired) is not { } category) return;
+        if (_retiring || _busy || _childDone is not null) return; var category = id is { } categoryId ? _snapshot.Document.Classification.Categories.FirstOrDefault(c => c.Id == categoryId && !c.IsRetired) : null; if (id is not null && category is null) return;
         var done = _childDone = new(TaskCreationOptions.RunContinuationsAsynchronously); Render();
-        try { var editor = new FrozenVocabularyCategoryEditorWindow(_store, _snapshot.Document.Classification, _languages, category) { Owner = this }; _child = editor; try { editor.ShowDialog(); } finally { await editor.RetireAsync(); _child = null; } if (!_retiring && editor.Receipt is { } receipt) Accept(receipt); }
+        try { var editor = new FrozenVocabularyCategoryEditorWindow(_store, _snapshot.Document.Classification, _languages, category, currentRules: _currentRules, initialAxis: _axis.SelectedItem is R.VocabularyCategoryAxis axis ? axis : R.VocabularyCategoryAxis.Content) { Owner = this }; _child = editor; try { editor.ShowDialog(); } finally { await editor.RetireAsync(); _child = null; } if (!_retiring && editor.Receipt is { } receipt) Accept(receipt); }
         finally { _child = null; _childDone = null; try { Render(); } finally { done.TrySetResult(); } }
     }
     private async Task DeleteAsync(Guid id)

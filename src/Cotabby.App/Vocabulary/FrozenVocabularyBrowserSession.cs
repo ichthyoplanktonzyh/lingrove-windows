@@ -124,6 +124,7 @@ internal sealed class FrozenVocabularyBrowserSession : IDisposable
         Snapshot = value; Loading = false; Failure = null;
         if (Selection is { } selection && !Entries.Any(e => e.Id == selection.EntryId && e.Senses.Any(s => s.Id == selection.SenseId))) Selection = null;
         if (Destination is { NodeId: { } id } && !value.Document.Semantics.Nodes.Any(n => n.Id == id)) Destination = null;
+        if (Destination is { CategoryId: { } categoryId } && (!value.Document.Classification.Categories.Any(c => c.Id == categoryId && !c.IsRetired) || value.Document.Classification.Overrides.Any(o => o.CategoryId == categoryId && o.IsHidden))) Destination = null;
         if (Destination is { SenseId: { } sense } && !Entries.Any(e => e.Senses.Any(s => s.Id == sense)))
             Destination = Destination.NodeId is { } node ? new(Cotabby.App.UI.Vocabulary.VocabularyMeaningDestinationKind.Node, node) : null;
         if (Guid.TryParse(Category, out var category) && (!value.Document.Classification.Categories.Any(c => c.Id == category && !c.IsRetired) || value.Document.Classification.Overrides.Any(o => o.CategoryId == category && o.IsHidden))) Category = "all";

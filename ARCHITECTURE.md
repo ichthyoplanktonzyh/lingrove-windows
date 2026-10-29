@@ -11,9 +11,9 @@ The frozen macOS Lingrove implementation is the architecture, behavior, informat
 and presentation-state reference for this port.
 The Windows work adapts the existing macOS work; it does not independently redesign Lingrove's product,
 interaction model, or business rules. The current target is
-`35b7fbe5c788c5524936ade1dfb7c89a3a285b04`; [the frozen baseline](docs/MAC_LATEST_BASELINE.md)
-records its source paths and dependency changes. Later Mac commits require an explicit maintainer
-decision before entering this campaign. Existing module evidence keeps its
+`3b53402f2cbc196b0398d133177fd80006d165b2`, after the maintainer authorized latest-Mac alignment;
+[the committed baseline](docs/MAC_LATEST_BASELINE.md) records its source paths and dependency
+changes. Record and inspect each later target before adopting its changes. Existing module evidence keeps its
 explicit historical revision until upgraded. Compare committed source and tests rather than a dirty
 working checkout. The project/layer map below translates existing responsibilities into C# and
 Windows technology, and the future-flow descriptions identify migration targets rather than new

@@ -11,12 +11,15 @@ for this attempt; no host behavior of that candidate has passed yet.
 
 | Host | Actual observation | Acceptance state |
 | --- | --- | --- |
-| Word | Returned as installed and launched. Initial screenshot capture reported `FrameArrived timed out: timed out waiting on channel`; refreshed window selection and one activation/capture retry reported `window capture timed out: timed out waiting on channel`. No test text was entered. | Blocked at automation observation; feature behavior untested. |
+| Word | Returned as installed and launched; executable file version `16.0.20326.20232`. Initial screenshot capture reported `FrameArrived timed out: timed out waiting on channel`; refreshed window selection and one activation/capture retry reported `window capture timed out: timed out waiting on channel`. No test text was entered. | Blocked at automation observation; feature behavior untested. |
 | Chrome | Not returned by the installed-app inventory; neither standard Program Files Chrome executable was found. Portable/nonstandard locations were not exhaustively searched. | Availability unconfirmed; feature behavior untested. |
 | Codex | Returned under the ChatGPT display name. The available computer-use skill prohibits automating that desktop UI, so no draft or message was changed. | Manual input-box acceptance pending; no message submission required. |
 
 No user document, clipboard, model or endpoint was used. The screenshot failure does not establish
 a Word defect. No browser was installed and no system setting was changed during the attempt.
+The maintainer has accepted responsibility for physical acceptance. Development continues without
+requiring desktop automation to succeed; a runnable candidate and concrete steps will be handed
+over for Word, Chrome and Codex when the relevant user flow is connected.
 
 ## Checks to execute once observation is available
 

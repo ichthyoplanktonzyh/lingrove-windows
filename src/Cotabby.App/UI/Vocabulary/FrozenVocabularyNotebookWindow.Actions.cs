@@ -17,7 +17,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow
     private long _actionSelectionEpoch, _actionMenuEpoch;
     private string? _actionError;
     private readonly List<ContextMenu> _senseMenus = [];
-    private static readonly Style SenseMenuStyle = (Style)System.Windows.Markup.XamlReader.Parse("""
+    internal static readonly Style SenseMenuStyle = (Style)System.Windows.Markup.XamlReader.Parse("""
         <Style xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" TargetType="{x:Type ContextMenu}">
           <Setter Property="Background" Value="{DynamicResource CardBg}" /><Setter Property="BorderBrush" Value="{DynamicResource CardBorder}" /><Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
           <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="{x:Type ContextMenu}">
@@ -25,7 +25,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow
           </ControlTemplate></Setter.Value></Setter>
         </Style>
         """);
-    private static readonly Style SenseMenuItemStyle = (Style)System.Windows.Markup.XamlReader.Parse("""
+    internal static readonly Style SenseMenuItemStyle = (Style)System.Windows.Markup.XamlReader.Parse("""
         <Style xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" TargetType="{x:Type MenuItem}">
           <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" /><Setter Property="Padding" Value="12,7" />
           <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="{x:Type MenuItem}">
@@ -127,6 +127,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow
         if (confirmed && CanSenseAct(source, epoch)) await SenseActionAsync(source, epoch, async store => { await store.RemoveSenseAsync(source.EntryId, source.SenseId, CancellationToken.None); return null; }, false);
         if (!_retiring && _pendingShow is { } pending) { _pendingShow = null; _expanded.Add(pending.EntryId); await _session.RevealSelectionAsync(pending); }
         if (_hideRequested && !_retiring) { _hideRequested = false; Hide(); }
+        if (!_retiring) _session.Refresh();
     }
 }
 

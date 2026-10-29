@@ -107,7 +107,44 @@ internal sealed partial class FrozenVocabularyNotebookWindow
             if (!_retiring && form.Receipt is not null) await _session.LoadAsync();
             if (!_retiring && _pendingShow is { } pending) { _pendingShow = null; _expanded.Add(pending.EntryId); await _session.RevealSelectionAsync(pending); }
         }
-        finally { _inputWindow = null; _modalDone = null; if (_hideRequested && !_retiring) { _hideRequested = false; Hide(); } done.TrySetResult(); }
+        finally { _inputWindow = null; _modalDone = null; try { if (_hideRequested && !_retiring) { _hideRequested = false; Hide(); } if (!_retiring) _session.Refresh(); } finally { done.TrySetResult(); } }
+    }
+    private async Task OpenCategoryEditorAsync(Guid? id, Guid? parent)
+    {
+        if (!CanSemantic || _store is not ICanonicalVocabularySemanticStore store || _session.Snapshot is not { } snapshot) return;
+        var category = id is { } target ? snapshot.Document.Classification.Categories.FirstOrDefault(c => c.Id == target && !c.IsRetired) : null;
+        if (id is not null && category is null) return;
+        if (parent is { } parentId && !snapshot.Document.Classification.Categories.Any(c => c.Id == parentId && !c.IsRetired)) parent = null;
+        long epoch = _actionSelectionEpoch; var form = new FrozenVocabularyCategoryEditorWindow(store, snapshot.Document.Classification, _session.PreferredLanguages, category, parent) { Owner = this };
+        var done = _modalDone = new(TaskCreationOptions.RunContinuationsAsynchronously); CloseActionMenus();
+        try
+        {
+            _inputWindow = form; try { form.ShowDialog(); } finally { await form.RetireAsync(); _inputWindow = null; }
+            if (!_retiring && form.Receipt is not null)
+            {
+                await _session.LoadAsync();
+                if (!_retiring && id is null && epoch == _actionSelectionEpoch && _session.Snapshot is { } current)
+                {
+                    var index = current.Document.Classification; _session.Category = index.Categories.Any(c => c.Id == form.CategoryId && !c.IsRetired) && !index.Overrides.Any(o => o.CategoryId == form.CategoryId && o.IsHidden) ? form.CategoryId.ToString("D").ToUpperInvariant() : "all";
+                    _session.Refresh();
+                }
+            }
+            if (!_retiring && _pendingShow is { } pending) { _pendingShow = null; _expanded.Add(pending.EntryId); await _session.RevealSelectionAsync(pending); }
+        }
+        finally { _inputWindow = null; _modalDone = null; try { if (_hideRequested && !_retiring) { _hideRequested = false; Hide(); } if (!_retiring) _session.Refresh(); } finally { done.TrySetResult(); } }
+    }
+    private async Task OpenCategoryManagerAsync()
+    {
+        if (!CanSemantic || _store is not ICanonicalVocabularySemanticStore store || _session.Snapshot is not { } snapshot) return;
+        var form = new FrozenVocabularyCategoryManagerWindow(store, _store, snapshot, _session.PreferredLanguages) { Owner = this };
+        var done = _modalDone = new(TaskCreationOptions.RunContinuationsAsynchronously); CloseActionMenus();
+        try
+        {
+            _inputWindow = form; try { form.ShowDialog(); } finally { await form.RetireAsync(); _inputWindow = null; }
+            if (!_retiring) await _session.LoadAsync();
+            if (!_retiring && _pendingShow is { } pending) { _pendingShow = null; _expanded.Add(pending.EntryId); await _session.RevealSelectionAsync(pending); }
+        }
+        finally { _inputWindow = null; _modalDone = null; try { if (_hideRequested && !_retiring) { _hideRequested = false; Hide(); } if (!_retiring) _session.Refresh(); } finally { done.TrySetResult(); } }
     }
     private async Task OpenSemanticFormAsync(FrozenVocabularySemanticFormWindow form, Guid? revealNode)
     {
@@ -118,7 +155,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow
             if (!_retiring && form.Saved) { await _session.LoadAsync(); if (!_retiring && epoch == _actionSelectionEpoch && revealNode is { } id && _session.Snapshot!.Document.Semantics.Nodes.Any(n => n.Id == id)) ShowMeaning(id); }
             if (!_retiring && _pendingShow is { } pending) { _pendingShow = null; _expanded.Add(pending.EntryId); await _session.RevealSelectionAsync(pending); }
         }
-        finally { _inputWindow = null; _modalDone = null; if (_hideRequested && !_retiring) { _hideRequested = false; Hide(); } done.TrySetResult(); }
+        finally { _inputWindow = null; _modalDone = null; try { if (_hideRequested && !_retiring) { _hideRequested = false; Hide(); } if (!_retiring) _session.Refresh(); } finally { done.TrySetResult(); } }
     }
     private void ShowMeaning(Guid node)
     {
@@ -141,6 +178,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow
         { var baseline = snapshot.Document.Semantics; await MutateSemanticsAsync(VocabularySemanticFormPolicy.RemoveNode(baseline, node), baseline); }
         if (!_retiring && _pendingShow is { } pending) { _pendingShow = null; _expanded.Add(pending.EntryId); await _session.RevealSelectionAsync(pending); }
         if (_hideRequested && !_retiring) { _hideRequested = false; Hide(); }
+        if (!_retiring) _session.Refresh();
     }
     private async Task MutateSemanticsAsync(F.VocabularySemanticIndex edited, F.VocabularySemanticIndex baseline)
     {

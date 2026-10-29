@@ -113,7 +113,8 @@ public sealed class Win32ReadingSelectionLease : IAsyncDisposable
     [ThreadStatic] private static Win32ReadingSelectionLease? _notifying;
     internal object? NotificationGroup;
     internal static bool InNotificationFor(object group) => ReferenceEquals(_notifying?.NotificationGroup, group);
-    internal bool IsLive => Volatile.Read(ref _retired) == 0;
+    /// <summary>Nonblocking receipt eligibility, independent of notification delivery.</summary>
+    public bool IsLive => Volatile.Read(ref _retired) == 0 && _currentEpoch() == _epoch;
 
     internal Win32ReadingSelectionLease(UiaFocusTracker focus, IKeyboardHook keyboard, IReadingSelectionEvidence owner,
         nint host, int pid, long epoch, int? initialKey, Func<long>? currentEpoch = null,

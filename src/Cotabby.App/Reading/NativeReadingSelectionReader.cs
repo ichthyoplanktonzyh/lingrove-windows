@@ -16,6 +16,7 @@ internal sealed class NativeReadingSelectionReader(Win32ReadingSelectionReader r
     private sealed class Adapter(Win32ReadingSelectionLease native) : IReadingSelectionLease
     {
         public ReadingSelection Selection => native.Selection;
+        public bool IsLive => native.IsLive;
         public event Action? Invalidated { add => native.Invalidated += value; remove => native.Invalidated -= value; }
         public Task<bool> IsCurrentAsync(CancellationToken token) => native.IsCurrentAsync(token);
         public void Retire() => native.Retire();

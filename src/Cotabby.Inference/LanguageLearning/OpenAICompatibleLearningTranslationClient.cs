@@ -63,6 +63,7 @@ internal sealed class OpenAICompatibleLearningTranslationClient(HttpClient httpC
 
         using var timeout = new CancellationTokenSource(GenerationTimeout);
         using var linked = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeout.Token);
+        if (translation.Admission?.Invoke() == false) throw new OperationCanceledException();
         try
         {
             using var response = await httpClient.SendAsync(

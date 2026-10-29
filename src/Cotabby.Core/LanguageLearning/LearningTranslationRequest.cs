@@ -10,7 +10,12 @@ public sealed record LearningTranslationRequest(
     string Source,
     LearningTranslationOptions Options,
     LearningTranslationPrompt.Request Prompt,
-    int MaxOutputTokens);
+    int MaxOutputTokens)
+{
+    /// <summary>Optional nonblocking final admission; absent for ordinary translation.</summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public Func<bool>? Admission { get; set; }
+}
 
 /// <summary>
 /// Narrow engine boundary for one language-learning request. Implementations own their runtime or

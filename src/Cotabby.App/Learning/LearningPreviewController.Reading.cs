@@ -25,6 +25,7 @@ internal sealed partial class LearningPreviewController
                 token.ThrowIfCancellationRequested();
                 if (request.RequestId != id || request.Source != selection.Text || request.Options != options)
                     throw new LearningTranslationException(LearningTranslationFailure.InvalidOptions);
+                request.Admission = selection.Admission;
                 var stream = new LearningExpressionOutputPolicy.Stream();
                 object gate = new();
                 Exception? streamFailure = null;

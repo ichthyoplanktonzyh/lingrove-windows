@@ -27,6 +27,27 @@ public sealed class ReadingSessionTests(WpfDispatcher dispatcher)
     });
 
     [Fact]
+    public Task RetiredLeaseWithoutNotificationWithdrawsProviderAdmission() => dispatcher.RunAsync(async () =>
+    {
+        var reader = new Reader(); var panel = new Panel();
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        int sends = 0;
+        await using var session = new ReadingSession(Dispatcher.CurrentDispatcher, reader, panel,
+            _ => new(null, ReadingLanguageEvidence.Unavailable), (_, _) => 2,
+            async (selection, _, _, _, _) => { entered.SetResult(); await release.Task.ConfigureAwait(false);
+                if (selection.Admission?.Invoke() == true) Interlocked.Increment(ref sends); return "result"; },
+            (_, _, _, _, _, _) => Task.CompletedTask);
+        try
+        {
+            session.Begin(Settings); await entered.Task.WaitAsync(TimeSpan.FromSeconds(5));
+            reader.Lease.Retire(); release.SetResult(); await Task.Delay(50);
+            Assert.Equal(0, Volatile.Read(ref sends));
+        }
+        finally { release.TrySetResult(); }
+    });
+
+    [Fact]
     public Task LateOldInvalidationDoesNotCancelNewSelection() => dispatcher.RunAsync(async () =>
     {
         var reader = new Reader(); var panel = new Panel();
@@ -207,6 +228,7 @@ public sealed class ReadingSessionTests(WpfDispatcher dispatcher)
     }
     private sealed class Lease : IReadingSelectionLease
     {
+        public bool IsLive => !Retired;
         public ReadingSelection Value = ReadingSessionTests.Selection;
         public ReadingSelection Selection => Value; public bool Retired;
         public event Action? Invalidated;

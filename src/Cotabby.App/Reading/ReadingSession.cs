@@ -9,6 +9,7 @@ namespace Cotabby.App.Reading;
 internal interface IReadingSelectionLease : IAsyncDisposable
 {
     ReadingSelection Selection { get; }
+    bool IsLive { get; }
     event Action? Invalidated;
     Task<bool> IsCurrentAsync(CancellationToken token);
     void Retire();
@@ -109,7 +110,7 @@ internal sealed class ReadingSession : IAsyncDisposable
             };
             capture.Invalidated += _invalidated;
             if (!Current(revision, token)) return;
-            var selection = capture.Selection;
+            var selection = capture.Selection with { Admission = () => capture.IsLive && !token.IsCancellationRequested };
             ReadingSelectionPolicy.ValidateReceipt(selection);
             if (!await capture.IsCurrentAsync(token) || !Current(revision, token)) { if (Current(revision, token)) Dismiss(); return; }
             var (resolution, route, wordCount) = await Task.Run(() =>

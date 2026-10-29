@@ -135,6 +135,32 @@ public sealed class ReadingPresentationTests(WpfDispatcher dispatcher)
         finally { gate.TrySetResult(false); await presentation.DisposeAsync(); }
     });
     [Fact]
+    public Task RetiredWithoutNotificationRejectsFavoriteAfterPreflight() => dispatcher.RunAsync(async () =>
+    {
+        var store = new ReadingVocabularyStoreFake(); var gate = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        bool hold = false; bool live = true; int checks = 0;
+        var presentation = new ReadingPresentation(Dispatcher.CurrentDispatcher, new Dictionary(),
+            (_, _) => Task.FromResult(new ReadingLookupResult("河岸", "")), (_, _, _) => throw new InvalidOperationException(),
+            () => { }, new Clipboard(), store, (_, _) => [], LearningLanguage.Chinese);
+        var selection = new ReadingSelection(Guid.NewGuid(), "bank", 1, "field", 1, 0, 4, false, true,
+            InputCompositionState.Clear, 1, ScreenRect.Empty) { Admission = () => live };
+        var route = new ReadingRoute(false, ReadingRouteReason.StandaloneUnit, "bank", true);
+        Task<bool> Current(CancellationToken _) { checks++; return hold ? gate.Task : Task.FromResult(true); }
+        try
+        {
+            presentation.BindAuthority(selection, Current, default);
+            await presentation.ShowAsync(new(selection, null, LearningLanguage.Chinese, route, ReadingStatus.Lookup, "Local model", ""));
+            await presentation.LookupAsync(selection, route, null, LearningLanguage.Chinese, Current, default, []);
+            var favorite = Descendants(presentation.ReadingCard).OfType<VocabularyFavoriteButton>().Single();
+            await favorite.LastOperation; Assert.True(favorite.IsEnabled);
+            hold = true; favorite.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            for (int i = 0; i < 100 && checks < 3; i++) await Task.Delay(10);
+            live = false; gate.SetResult(true); await favorite.LastOperation;
+            Assert.Null(store.Saved);
+        }
+        finally { gate.TrySetResult(false); await presentation.DisposeAsync(); }
+    });
+    [Fact]
     public Task CopyUsesCompleteResultAndRetiredReceiptCannotCommitClipboard() => dispatcher.RunAsync(async () =>
     {
         var clipboard = new GatedClipboard();
@@ -153,6 +179,30 @@ public sealed class ReadingPresentationTests(WpfDispatcher dispatcher)
             await clipboard.Entered.Task.WaitAsync(TimeSpan.FromSeconds(5));
             cancellation.Cancel(); presentation.Hide(); var disposing = presentation.DisposeAsync().AsTask();
             Assert.False(disposing.IsCompleted); clipboard.Release.Set(); await disposing;
+            Assert.Equal("result", clipboard.Payload); Assert.False(clipboard.Committed);
+        }
+        finally { clipboard.Release.Set(); }
+    });
+    [Fact]
+    public Task RetiredWithoutNotificationRejectsFinalClipboardGrant() => dispatcher.RunAsync(async () =>
+    {
+        bool live = true; var clipboard = new GatedClipboard();
+        var presentation = new ReadingPresentation(Dispatcher.CurrentDispatcher, new Dictionary(),
+            (_, _) => throw new InvalidOperationException(), (_, _, _) => throw new InvalidOperationException(), () => { }, clipboard, new ReadingVocabularyStoreFake(), (_, _) => [], LearningLanguage.Chinese);
+        var selection = new ReadingSelection(Guid.NewGuid(), "source", 1, "field", 1, 0, 6, false, true,
+            InputCompositionState.Clear, 1, ScreenRect.Empty) { Admission = () => live };
+        using var cancellation = new CancellationTokenSource();
+        presentation.BindAuthority(selection, _ => Task.FromResult(true), cancellation.Token);
+        var state = new ReadingState(selection, null, LearningLanguage.Chinese,
+            new(true, ReadingRouteReason.TerminalText, null, false), ReadingStatus.Ready, "Local model", "result");
+        try
+        {
+            await presentation.ShowAsync(state);
+            FindButton(presentation.ReadingCard, "Copy result").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            await clipboard.Entered.Task.WaitAsync(TimeSpan.FromSeconds(5));
+            live = false; clipboard.Release.Set();
+            await clipboard.Finished.Task.WaitAsync(TimeSpan.FromSeconds(5));
+            await presentation.DisposeAsync();
             Assert.Equal("result", clipboard.Payload); Assert.False(clipboard.Committed);
         }
         finally { clipboard.Release.Set(); }
@@ -248,9 +298,10 @@ public sealed class ReadingPresentationTests(WpfDispatcher dispatcher)
     private sealed class GatedClipboard : Cotabby.Core.Context.IClipboardTextWriter
     {
         public TaskCompletionSource Entered = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        public TaskCompletionSource Finished = new(TaskCreationOptions.RunContinuationsAsynchronously);
         public ManualResetEventSlim Release = new(); public string? Payload; public bool Committed;
         public bool TryWrite(string text, Func<bool> tryCommit)
-        { Payload = text; Entered.TrySetResult(); Release.Wait(TimeSpan.FromSeconds(5)); return Committed = tryCommit(); }
+        { Payload = text; Entered.TrySetResult(); Release.Wait(TimeSpan.FromSeconds(5)); Committed = tryCommit(); Finished.TrySetResult(); return Committed; }
     }
     private sealed class RecordingClipboard : Cotabby.Core.Context.IClipboardTextWriter
     {

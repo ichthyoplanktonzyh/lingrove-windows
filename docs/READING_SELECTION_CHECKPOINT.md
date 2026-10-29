@@ -42,3 +42,6 @@ reader independently validates readonly or editable selection evidence. Selectio
 clipboard sources are not implemented. No model, external endpoint, user editor or clipboard is
 exercised by tests; real host UIA, physical IME, accessibility, DPI and model-backed behavior remain
 acceptance gates.
+
+
+The native reading lease exposes a nonblocking live permit based on retirement and its capture epoch. Copy checks it at the clipboard grant; favorite checks it at Store acceptance; translation checks it immediately before HTTP send or local generation; basic and detail lookup check it at local generation. These checks do not wait for the asynchronous invalidation notification. Accepted work remains owned and drained. The permit contains no UIA call and is request-scoped; ordinary translation without a permit retains its existing behavior. These fake-driven checks do not establish physical desktop acceptance.

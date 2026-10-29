@@ -110,7 +110,7 @@ internal sealed class ReadingPresentation : IReadingPresentation, IAsyncDisposab
         var text = route.LookupText!;
         _words = words;
         var context = text == selection.Text ? selection.Context : null;
-        _input = new(text, language, target, route.IsSingleWord, context);
+        _input = new(text, language, target, route.IsSingleWord, context) { Admission = selection.Admission };
         await RunBasicAsync();
     }
     private async Task RetryAsync()
@@ -185,7 +185,7 @@ internal sealed class ReadingPresentation : IReadingPresentation, IAsyncDisposab
     private void BindFavorite(VocabularyCapture capture, long revision, CancellationToken token, Func<bool> contentCurrent)
     {
         _favoriteCapture = capture; _favoriteCurrent = contentCurrent; long binding = Interlocked.Increment(ref _favoriteRevision);
-        bool Current() => !token.IsCancellationRequested && Interlocked.Read(ref _favoriteRevision) == binding && contentCurrent();
+        bool Current() => !token.IsCancellationRequested && _selection?.Admission?.Invoke() != false && Interlocked.Read(ref _favoriteRevision) == binding && contentCurrent();
         async Task<bool> Preflight() => Current() && await StillCurrentAsync(revision, token) && Current();
         _reading.BindVocabulary(_vocabulary, capture, Current, Preflight);
     }
@@ -198,7 +198,7 @@ internal sealed class ReadingPresentation : IReadingPresentation, IAsyncDisposab
         if (!await StillCurrentAsync(revision, token) || !ReferenceEquals(state, _readingState)) return;
         long copyRevision = Interlocked.Increment(ref _copyRevision);
         bool allowed() => !Volatile.Read(ref _disposed) && !token.IsCancellationRequested
-            && Interlocked.Read(ref _copyRevision) == copyRevision;
+            && state.Selection.Admission?.Invoke() != false && Interlocked.Read(ref _copyRevision) == copyRevision;
         bool copied = await _copy.CopyAsync(text, allowed);
         if (allowed() && ReferenceEquals(state, _readingState)) _reading.ShowCopyOutcome(copied);
     }
@@ -254,7 +254,7 @@ internal sealed class ReadingPresentation : IReadingPresentation, IAsyncDisposab
         if (state.SelectedWord is null && _favoriteCapture is { } favorite)
         {
             var tokenCopy = token; long binding = Interlocked.Read(ref _favoriteRevision);
-            bool Current() => !tokenCopy.IsCancellationRequested && Interlocked.Read(ref _favoriteRevision) == binding && _favoriteCurrent?.Invoke() == true;
+            bool Current() => !tokenCopy.IsCancellationRequested && selection.Admission?.Invoke() != false && Interlocked.Read(ref _favoriteRevision) == binding && _favoriteCurrent?.Invoke() == true;
             async Task<bool> Preflight() => Current() && await StillCurrentAsync(revision, tokenCopy) && Current();
             _dictionary.BindVocabulary(_vocabulary, favorite, state.TargetIdentity, Current, Preflight);
         }

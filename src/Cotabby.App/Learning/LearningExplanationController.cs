@@ -240,8 +240,8 @@ internal sealed class LearningExplanationController : IAsyncDisposable
             string prompt = ReadingLookupPolicy.Prompt(input, language, profile.ContextWindowTokens, output, basic);
             await using var engine = new LearningLocalInstructionEngine(config, _runtime);
             string raw = basic is null
-                ? await engine.GenerateLookupAsync(prompt, output, 24_000, input.Context is not null, lease.Token).ConfigureAwait(false)
-                : await engine.GenerateAsync(prompt, output, 24_000, lease.Token).ConfigureAwait(false);
+                ? await engine.GenerateLookupAsync(prompt, output, 24_000, input.Context is not null, lease.Token, input.Admission).ConfigureAwait(false)
+                : await engine.GenerateAsync(prompt, output, 24_000, lease.Token, input.Admission).ConfigureAwait(false);
             caller.ThrowIfCancellationRequested(); CheckCurrent(profile, lease.Token);
             lock (_gate) if (_instructionLanguage != language) throw new OperationCanceledException();
             return parse(raw);

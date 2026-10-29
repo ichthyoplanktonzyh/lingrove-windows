@@ -6,7 +6,11 @@ using Cotabby.Core.Text;
 namespace Cotabby.Core.LanguageLearning.Reading;
 
 public sealed record ReadingLookupInput(string Target, LearningLanguage? Source, LearningLanguage TranslationLanguage,
-    bool IsWord, ReadingContext? Context);
+    bool IsWord, ReadingContext? Context)
+{
+    [System.Text.Json.Serialization.JsonIgnore]
+    public Func<bool>? Admission { get; init; }
+}
 public sealed record ReadingLookupResult(string Meaning, string SentenceTranslation);
 
 /// <summary>The 35b two-stage lookup contract. No editor, provider or storage crosses this boundary.</summary>

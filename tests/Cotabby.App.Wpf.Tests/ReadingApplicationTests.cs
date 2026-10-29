@@ -126,6 +126,7 @@ public sealed class ReadingApplicationTests(WpfDispatcher dispatcher)
     }
     private sealed class Lease : IReadingSelectionLease
     {
+        public bool IsLive => !Retired;
         public ReadingSelection Selection { get; set; } = new(Guid.NewGuid(), "Hello world!", Environment.ProcessId + 1, "field", 1, 0, 12,
             false, true, InputCompositionState.Clear, 1, ScreenRect.Empty);
         public bool Retired; public event Action? Invalidated { add { } remove { } }

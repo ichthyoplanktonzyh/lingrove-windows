@@ -20,6 +20,7 @@ internal sealed class CanonicalVocabularyFeature : IAsyncDisposable
     internal static string DefaultPath => Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
         "Cotabby", "vocabulary", FrozenVocabularyStoreFactory.CanonicalFileName);
+    internal void AttachGraphPreferences(IVocabularyGraphPreferences preferences) => Window.AttachGraphPreferences(preferences);
 
     internal CanonicalVocabularyFeature(string path, SynchronizationContext ui, Dispatcher dispatcher,
         IVocabularyNotebookListPreferences listPreferences, IReadOnlyList<LearningLanguage> preferredLanguages)

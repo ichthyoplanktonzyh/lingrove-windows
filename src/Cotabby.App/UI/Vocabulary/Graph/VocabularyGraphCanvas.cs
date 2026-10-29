@@ -17,6 +17,9 @@ internal sealed partial class VocabularyGraphCanvas : FrameworkElement
     private VocabularyGraphSnapshot _snapshot = new();
     private VocabularySelection? _selection;
     private Action<VocabularySelection?> _select = _ => { };
+    private Action<Guid> _selectMeaning = _ => { }, _selectCategory = _ => { };
+    private Guid? _meaningSelection, _categorySelection;
+    private bool _canonicalLocate;
     private Dictionary<VocabularyGraphNodeId, VocabularyGraphPoint> _positions = [];
     private VocabularyGraphSettings _applied = new();
     private CancellationTokenSource? _animationCancellation;
@@ -53,10 +56,10 @@ internal sealed partial class VocabularyGraphCanvas : FrameworkElement
             InvalidateVisual();
         };
     }
-    internal void Update(VocabularyGraphSnapshot snapshot, VocabularySelection? selection, Action<VocabularySelection?> select)
+    internal void Update(VocabularyGraphSnapshot snapshot, VocabularySelection? selection, Action<VocabularySelection?> select, Guid? meaningSelection = null, Guid? categorySelection = null, Action<Guid>? selectMeaning = null, Action<Guid>? selectCategory = null, bool canonicalLocate = false)
     {
         Dispatcher.VerifyAccess(); if (_retired) return;
-        _select = select;
+        _select = select; _canonicalLocate = canonicalLocate; if (_categorySelection != categorySelection && categorySelection is { } category) _pendingSearchTarget = VocabularyGraphNodeId.Category(category); _categorySelection = categorySelection; if (_meaningSelection != meaningSelection && meaningSelection is { } meaning) _pendingSearchTarget = VocabularyGraphNodeId.Meaning(meaning); _meaningSelection = meaningSelection; _selectMeaning = selectMeaning ?? (_ => { }); _selectCategory = selectCategory ?? (_ => { });
         if (_selection != selection && selection is { } target) _pendingSearchTarget = VocabularyGraphNodeId.Sense(target);
         _selection = selection; var oldMatches = _snapshot.Matches; string oldQuery = _snapshot.SearchQuery;
         bool changed = _snapshot != snapshot; _snapshot = snapshot;
@@ -113,6 +116,11 @@ internal sealed partial class VocabularyGraphCanvas : FrameworkElement
         Dispatcher.VerifyAccess(); if (_retired) return;
         if (!CanAnimate || _snapshot.Nodes.Count == 0)
         { if (_snapshot.Nodes.Count == 0) { Suspend(); _positions = []; InvalidateVisual(); } return; }
+        if (_snapshot.IsMeaningGraph && _snapshot.TreePositions.Count > 0)
+        {
+            CancelAnimation(); _animation = null; _animationCancellation = null; _needsLayoutWake = false; _epoch = _presentation.NextEpoch();
+            Apply(new VocabularyGraphFrame { Positions = _snapshot.TreePositions, IsRunning = false }, _epoch); return;
+        }
         if (_animation is not null) { if (!_needsLayoutWake) return; CancelAnimation(); }
         _needsLayoutWake = false; _epoch = _presentation.NextEpoch();
         ulong ticket = _epoch; var worker = _presentation.Worker; var graph = _snapshot; var settings = _applied;

@@ -21,6 +21,7 @@ public sealed class CliMailboxServer : IAsyncDisposable
     private Task? _work, _stop;
     private bool _stopping, _dirty, _started, _leaseHeld;
     internal Action<string>? AfterRecoveryObservation { get; init; }
+    internal Action? SharingObserved { get; init; }
     public CliMailboxServer(string root, Func<CliRequest, Task<CliReply>> handler) { _path = root; _handler = handler ?? throw new ArgumentNullException(nameof(handler)); }
     public Task StartAsync()
     {
@@ -117,11 +118,13 @@ public sealed class CliMailboxServer : IAsyncDisposable
                 lock (_gate) { if (_stopping) return; _dirty = false; }
                 var requests = _requests!; var working = _working!; var replies = _replies!;
                 bool progressed = false;
+                bool sharingBusy = false;
                 foreach (string name in requests.Names())
                 {
                     lock (_gate) if (_stopping) return;
                     VocabularyWindowsFile.FileIdentity? claimed;
                     try { claimed = requests.ClaimOwned(name, working); if (claimed is null) continue; }
+                    catch (VocabularyFileSharingException) { SharingObserved?.Invoke(); sharingBusy = true; continue; }
                     catch (Exception e) when (e is CliException or IOException or UnauthorizedAccessException or VocabularyException) { continue; }
                     progressed = true;
                     Guid id = Guid.ParseExact(name[..36], "D"); CliReply reply;
@@ -145,6 +148,9 @@ public sealed class CliMailboxServer : IAsyncDisposable
                     catch (Exception e) when (e is CliException or IOException or UnauthorizedAccessException or VocabularyException) { /* Retain claimed input for restart. */ }
                 }
                 foreach (string name in replies.Names()) { try { replies.RemoveIfOlderThan(name, DateTime.UtcNow.AddDays(-1)); } catch (Exception e) when (e is CliException or IOException or UnauthorizedAccessException or VocabularyException) { } }
+                // Rename can become visible before the publisher closes its exclusive handle.
+                // Retry only that specific native error; a watcher event alone may already be spent.
+                if (sharingBusy) { await Task.Delay(50).ConfigureAwait(false); lock (_gate) { if (_stopping) return; _dirty = true; } }
                 lock (_gate) if ((!_dirty && (!progressed || requests.Names().Count == 0)) || _stopping) return;
             }
         }

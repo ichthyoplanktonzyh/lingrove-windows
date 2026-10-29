@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using System.Security.AccessControl;
 using Cotabby.Core.CLI;
 using Cotabby.Win32.CLI;
 using Cotabby.Win32.Vocabulary;
@@ -12,6 +13,37 @@ public sealed class CliMailboxServerTests : IAsyncLifetime
     public Task DisposeAsync() { if (Directory.Exists(_root)) Directory.Delete(_root, true); return Task.CompletedTask; }
     private static async Task WaitUntil(Func<bool> condition)
     { var until = DateTime.UtcNow.AddSeconds(10); while (!condition()) { Assert.True(DateTime.UtcNow < until, "Mailbox operation did not finish."); await Task.Delay(20); } }
+    private static FileStream PublishHeld(string directory, string name, byte[] bytes)
+    {
+        var stream = new FileInfo(Path.Combine(directory, ".stage-" + Guid.NewGuid())).Create(
+            FileMode.CreateNew, FileSystemRights.FullControl, FileShare.None, 4096, FileOptions.None, VocabularyWindowsFile.NewFileSecurity());
+        stream.Write(bytes); stream.Flush(true);
+        CliMailboxDirectory.Rename(stream.SafeFileHandle, Path.Combine(directory, name));
+        return stream;
+    }
+    [Fact]
+    public async Task RequestPublishedWhileHandleHeldIsRetriedWithoutAnotherEvent()
+    {
+        int handled = 0;
+        var observed = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        await using var server = new CliMailboxServer(_root, request => { Interlocked.Increment(ref handled); return Task.FromResult(new CliReply { RequestId = request.Id, Ok = true }); }) { SharingObserved = () => observed.TrySetResult() };
+        await server.StartAsync();
+        var request = new CliRequest { ExpiresAt = CliWire.Now() + 10 }; string name = request.Id.ToString("D") + ".json";
+        using (PublishHeld(Path.Combine(_root, "requests"), name, CliWire.Encode(request)))
+        { await observed.Task.WaitAsync(TimeSpan.FromSeconds(10)); Assert.Equal(0, Volatile.Read(ref handled)); }
+        await WaitUntil(() => Volatile.Read(ref handled) == 1);
+    }
+    [Fact]
+    public async Task ReplyPublishedWhileHandleHeldIsRetried()
+    {
+        using var replies = new CliMailboxDirectory(Path.Combine(_root, "replies"));
+        var request = new CliRequest { ExpiresAt = CliWire.Now() + 10 }; string name = request.Id.ToString("D") + ".json";
+        var observed = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var pending = CliMailboxClient.SendCoreAsync(_root, request, null, CancellationToken.None, () => observed.TrySetResult());
+        using (PublishHeld(replies.Path, name, CliWire.Encode(new CliReply { RequestId = request.Id, Ok = true })))
+        { await observed.Task.WaitAsync(TimeSpan.FromSeconds(10)); Assert.False(pending.IsCompleted); }
+        Assert.True((await pending.WaitAsync(TimeSpan.FromSeconds(10))).Ok);
+    }
     [Fact]
     public async Task DirectoryEventsWakeServerAndSecondLeaseFails()
     {

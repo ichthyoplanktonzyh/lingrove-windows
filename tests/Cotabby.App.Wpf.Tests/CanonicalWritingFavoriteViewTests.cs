@@ -110,6 +110,10 @@ public sealed class CanonicalWritingFavoriteViewTests(WpfDispatcher dispatcher)
         public Task<byte[]> ReadImageAsync(VocabularyImageReference reference, CancellationToken token = default) => inner.ReadImageAsync(reference, token);
         public Task<Frozen.CanonicalVocabularyMediaSnapshot> ReadMediaSnapshotAsync(CancellationToken token = default) => inner.ReadMediaSnapshotAsync(token);
         public Task<Frozen.FrozenVocabularyImportSnapshot> UpdateEntryAsync(Frozen.VocabularyEntry edited, Frozen.VocabularyEntry baseline, IReadOnlyDictionary<string, VocabularyPreparedImage>? images = null, CancellationToken token = default) => inner.UpdateEntryAsync(edited, baseline, images, token);
+        public Task<Frozen.CanonicalSenseReceipt> CreateSenseAsync(Guid entry, CancellationToken token = default) => inner.CreateSenseAsync(entry, token);
+        public Task<Frozen.FrozenVocabularyImportSnapshot> MergeSensesAsync(Guid entry, Guid source, Guid target, CancellationToken token = default) => inner.MergeSensesAsync(entry, source, target, token);
+        public Task<Frozen.FrozenVocabularyImportSnapshot> RemoveSenseAsync(Guid entry, Guid sense, CancellationToken token = default) => inner.RemoveSenseAsync(entry, sense, token);
+        public Task<Frozen.CanonicalSenseReceipt> MoveExampleAsync(Guid entry, Guid example, Guid source, Guid? target, CancellationToken token = default) => inner.MoveExampleAsync(entry, example, source, target, token);
         public ValueTask DisposeAsync() => ValueTask.CompletedTask;
     }
     [Fact]

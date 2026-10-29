@@ -32,7 +32,7 @@ public sealed class CliCommandInstallationTests : IDisposable
     public async Task UnicodeCommandForwardsArgumentsStandardInputAndExitCode()
     {
         string app = App(), bin = Path.Combine(_root, "bin"); string command = CliCommandInstallation.Install(app, bin);
-        var start = new ProcessStartInfo(Environment.GetEnvironmentVariable("ComSpec")!) { UseShellExecute = false, RedirectStandardOutput = true, RedirectStandardError = true, RedirectStandardInput = true, CreateNoWindow = true };
+        var start = new ProcessStartInfo(Environment.GetEnvironmentVariable("ComSpec")!) { UseShellExecute = false, RedirectStandardOutput = true, RedirectStandardError = true, RedirectStandardInput = true, StandardInputEncoding = new System.Text.UTF8Encoding(false, true), CreateNoWindow = true };
         // cmd /s /c requires the whole command in one quoted argument; the path and the
         // argument containing '&' are independently quoted just as an interactive user must.
         start.Arguments = "/d /v:off /s /c \"\"" + command + "\" --option \"two & words\" 100% bang!\"";

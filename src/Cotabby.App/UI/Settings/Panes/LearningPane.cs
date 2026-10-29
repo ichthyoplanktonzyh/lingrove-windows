@@ -39,12 +39,17 @@ internal static class LearningPane
         var context = rows.Context;
         var review = new AnkiReviewSettingsSection(context.Host.Review);
         context.Closed += review.Close;
+        Button? configureSpeech = null;
+        configureSpeech = Ui.Button("Configure speech…", () => context.Host.ShowSpeechSettings(Window.GetWindow(configureSpeech!)));
         var destination = Ui.Text("", "Caption");
         destination.Margin = new Thickness(0, 10, 0, 0);
         context.OnRefresh(() => UpdateDestination(context.Settings, destination));
 
         return new SettingsPane("Learning", "\uE8A5", "Translate the current sentence while writing",
         [
+            new SettingsCard("Speech",
+                rows.Labeled("Speech and pronunciation", "System voices, an independent local model, or your selected speech endpoint.", configureSpeech)
+                    .Tagged("speech pronunciation voice audio rate model endpoint")),
             new SettingsCard("Selected-text reading",
                 rows.Toggle("Read Selected Text", "Use the reading shortcut on selected text in a supported app.",
                     s => s.LearningReadingEnabled, (s, v) => s.LearningReadingEnabled = v)

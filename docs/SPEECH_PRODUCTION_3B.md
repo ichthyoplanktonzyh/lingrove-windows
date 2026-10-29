@@ -1,4 +1,4 @@
-# Speech production integration work in progress
+# Speech production integration
 
 This work targets macOS `3b53402f2cbc196b0398d133177fd80006d165b2`, including
 `Lingrove/Services/Speech/LearningSpeechController.swift`, `SystemSpeechProvider.swift`,
@@ -36,8 +36,13 @@ voice on this Windows host; it did not play sound or read user text. CI without 
 cannot establish this native path. SAPI native calls themselves are not forcibly interruptible;
 a nonresponsive engine can delay cancellation and shutdown despite the deadline.
 
-The application owner and card/settings presentation are not yet attached to AppHost. Native
-audio hardware, real clipboard/editor
+AppHost now owns one SpeechFeature, with an independent DPAPI credential file in the Cotabby
+local data root. The existing Review Feature borrows its controller and the canonical Store;
+writing windows and every new reading presentation receive that same controller. Learning settings
+open the single speech configuration window. Normal shutdown drains cards/notebook/Review before
+closing speech configuration and releasing providers, then releases the canonical Store. Attachment
+does not enumerate voices, open audio devices, launch a helper or read speech credentials.
+Native audio hardware, real clipboard/editor
 focus, endpoint operation, helper generation, screen readers and real high contrast remain
 unverified. Tests use isolated temporary GGUF files, in-memory audio and substituted provider
 effects, with no real audio playback, model download or network endpoint.
@@ -51,7 +56,7 @@ The reading card borrows this owner through `ReadingPresentation.AttachSpeech`. 
 until the destination is rendered, then rechecks the captured reading selection, application
 admission and speech configuration identity before dispatch. Hiding, switching to the dictionary
 or replacing the text retires the relevant target. The application must attach the same owner
-to each reading presentation; this component alone does not activate that composition.
+to each reading presentation; the application now makes that attachment when it creates the session.
 Reading carries an in-memory synchronous admission callback through the shared controller and
 generator. The callback checks the captured selection authority, presentation/settings epochs
 and cancellation without touching WPF or credentials. The SAPI worker rechecks immediately

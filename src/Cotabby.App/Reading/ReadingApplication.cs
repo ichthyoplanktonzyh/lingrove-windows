@@ -36,6 +36,14 @@ internal sealed class ReadingApplication : IAsyncDisposable
     private Preferences? _preferences;
     private ReadingSession? _session;
     private ReadingPresentation? _presentation;
+    private Cotabby.App.Speech.LearningSpeechController? _speechController;
+    internal void AttachSpeech(Cotabby.App.Speech.LearningSpeechController speech)
+    {
+        _dispatcher.VerifyAccess(); ArgumentNullException.ThrowIfNull(speech);
+        if (_speechController is not null && !ReferenceEquals(_speechController, speech))
+            throw new InvalidOperationException("Speech is already attached.");
+        _speechController = speech; _presentation?.AttachSpeech(speech);
+    }
     private int _active;
     private long _revision;
     private bool _disposed;
@@ -124,6 +132,7 @@ internal sealed class ReadingApplication : IAsyncDisposable
         Retire(); _beforeCapture();
         var presentation = new ReadingPresentation(_dispatcher, _dictionary, _basicLookup, _detailsLookup, _configure, _clipboard,
             _vocabulary, _sentences, preferences.LookupLanguage);
+        if (_speechController is not null) presentation.AttachSpeech(_speechController);
         var session = new ReadingSession(_dispatcher, new OriginReader(_reader, _origin, origin), presentation,
             _ => new(null, ReadingLanguageEvidence.Unavailable),
             (text, language) => _words(text, language).Count,

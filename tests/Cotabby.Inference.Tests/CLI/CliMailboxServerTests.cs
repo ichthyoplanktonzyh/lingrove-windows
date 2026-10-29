@@ -56,4 +56,22 @@ public sealed class CliMailboxServerTests : IAsyncLifetime
         await using var server = new CliMailboxServer(_root, request => { Interlocked.Increment(ref handled); return Task.FromResult(new CliReply { RequestId = request.Id, Ok = true }); });
         await server.StartAsync(); await WaitUntil(() => Volatile.Read(ref handled) == 129);
     }
+    [Fact]
+    public async Task RealMailboxBorrowsOneNamedStoreForCaptureAndRead()
+    {
+        var path = Path.Combine(_root, "notebook", FrozenVocabularyStoreFactory.CanonicalFileName);
+        await using var store = FrozenVocabularyStoreFactory.Create(path, false);
+        var cli = Assert.IsAssignableFrom<Cotabby.Core.Vocabulary.Frozen.ICanonicalVocabularyCliStore>(store);
+        await using var server = CanonicalCliMailbox.Create(Path.Combine(_root, "automation"), cli);
+        await server.StartAsync();
+        var batch = CliInputContract.DecodeCapture(System.Text.Encoding.UTF8.GetBytes("""{"version":1,"idempotencyKey":"e2e","defaults":{"language":"en"},"entries":[{"expression":"bank","senses":[{"meaning":"money"}]}]}"""));
+        var write = new CliRequest { Command = "apply", ExpiresAt = CliWire.Now() + 20, Batch = batch.CopyValue() };
+        var result = await CliMailboxClient.SendAsync(Path.Combine(_root, "automation"), write);
+        Assert.True(result.Ok); Assert.Single((await store.ReadAsync()).Document.CollectedEntries);
+        var status = await CliMailboxClient.SendAsync(Path.Combine(_root, "automation"), new CliRequest { ExpiresAt = CliWire.Now() + 20 });
+        Assert.True(status.Ok); Assert.Equal(1, status.Result!["entryCount"]!.GetValue<int>());
+        var retry = await CliMailboxClient.SendAsync(Path.Combine(_root, "automation"), write with { Id = Guid.NewGuid() });
+        Assert.True(retry.Ok); Assert.True(retry.Result!["replayed"]!.GetValue<bool>());
+        Assert.Equal(1UL, (await store.ReadAsync()).Revision);
+    }
 }

@@ -71,7 +71,7 @@ public sealed class FrozenVocabularyRelationalInterchangeTests : IDisposable
             var original = F.VocabularyDocumentCodec.Decode(Encoding.UTF8.GetBytes(item.GetProperty("input").GetRawText()));
             if (name == "full-v8") Assert.Equal(29, expected.EnumerateArray().Select(x => x.GetProperty("table").GetString()).Distinct().Count());
             // This unchanged corpus records 35b leaves. Current SQLite includes 3b guidance
-            // defaults; compare its actual stored bytes to the current projection separately.
+            // defaults; compare its stored JSON structures to the current projection separately.
             EqualJson(expected, Projection(original, historical35b: true));
             string path = Path.Combine(_root, name + ".sqlite");
             using (var writer = FrozenVocabularySQLiteDatabase.OpenFile(path)) Assert.Equal(1UL, writer.Write(original, new(), 0));

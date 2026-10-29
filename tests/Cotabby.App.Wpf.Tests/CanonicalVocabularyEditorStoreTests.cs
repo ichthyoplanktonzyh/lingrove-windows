@@ -64,4 +64,22 @@ public sealed class CanonicalVocabularyEditorStoreTests(WpfDispatcher dispatcher
         }
         finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
     });
+    [Fact]
+    public Task UncollectingSenseCleansLastImageButKeepsRawEvidence() => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "canonical-editor-" + Guid.NewGuid().ToString("N")); string file = Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName);
+        try
+        {
+            await using var store = FrozenVocabularyStoreFactory.Create(file, false);
+            await store.AddEntriesAsync([new VocabularyEntryInput(Expression: "hello", Meaning: "greeting", Example: "hello there")]);
+            var before = await store.ReadAsync(); var baseline = before.Document.Entries[0]; var image = Image();
+            var draft = Edit(baseline, sense => sense with { Content = [VocabularyContentBlock.Create(new VocabularyBlockContent.Image(image.Reference))] });
+            var saved = await store.UpdateEntryAsync(draft, baseline, new Dictionary<string, VocabularyPreparedImage> { [image.Reference.Filename] = image });
+            string media = Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalMediaDirectoryName, image.Reference.Filename); Assert.True(File.Exists(media));
+            var removed = await store.RemoveSenseAsync(baseline.Id, baseline.Senses[0].Id);
+            Assert.False(File.Exists(media)); Assert.Empty(removed.Document.Collections);
+            Assert.Equal(saved.Document.Sources, removed.Document.Sources); Assert.Equal(saved.Document.Interpretations, removed.Document.Interpretations);
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    });
 }

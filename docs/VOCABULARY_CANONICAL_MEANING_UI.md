@@ -11,6 +11,12 @@ does not add or rewrite evidence IDs.
 
 Forms retain detached baselines, cancel without writing, disable dismissal while an accepted save drains and retain a failed draft with its error. The notebook joins direct semantic writes and modal saves before unsubscribing. Later navigation supersedes a form's optional reveal, and Store revision notifications remain the browser's existing bounded responsibility. Pure `VocabularySemanticFormPolicy` ports the frozen rename/classify/remove-node editing rules using frozen `SourceDate`; Store validation and three-way merge remain separate.
 
+Independent review accepted the representative-example repair after Core 4/4 and meaning-view
+11/11 checks. The combined Windows integration built the Release solution with zero warnings or
+errors, and the documented notebook/meaning WPF filter passed 35/35. Light/dark form renders were
+also inspected for hierarchy and legibility. These are automated/component and offscreen checks;
+physical desktop acceptance remains open.
+
 This is the meaning-node and mapping slice. Category membership, category editing/management and usage-pattern editing remain explicit disabled/unconnected work; existing patterns are shown read-only. The WPF adaptation uses the notebook's scoped theme, Segoe UI Variable/Segoe UI and 96-DPI units. The STA tests drive real isolated in-memory and named SQLite Stores, reopen a saved node, and cover linked creation, locale/label identity, mapping evidence/pattern preservation, proposal confirmation/removal, cancellation, conflict, delete, and accepted-write drain. Optional offscreen light/dark/simulated-high-contrast captures do not establish physical desktop, real high contrast, per-monitor DPI, screen-reader or keyboard acceptance.
 
 ```powershell

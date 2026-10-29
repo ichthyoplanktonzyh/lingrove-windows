@@ -54,6 +54,7 @@ internal sealed class CanonicalVocabularyExplanationRow : StackPanel, IDisposabl
     {
         _store = store; _owner = owner; _key = key; _session = session; _canAct = canAct; _track = track; _configure = configure;
         _presentationToken = _presentation.Token;
+        VocabularyNotebookTheme.Button(_generate);
         var header = new DockPanel(); DockPanel.SetDock(_generate, Dock.Right); header.Children.Add(_generate); header.Children.Add(_heading);
         var body = new StackPanel(); body.Children.Add(_proposal); body.Children.Add(_replace); body.Children.Add(_prose); _details.Content = body;
         Children.Add(header); Children.Add(_meaning); Children.Add(_details); Children.Add(_status);

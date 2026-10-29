@@ -112,6 +112,8 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
         Dispatcher.VerifyAccess(); if (_retiring || selection is null) return;
         ++_actionSelectionEpoch;
         if (_modalDone is not null) { _pendingShow = selection; return; }
+        // Explicit show replaces the source root; ordinary hide/reopen retains disclosure state.
+        ClearLearningRows();
         _expanded.Add(selection.Value.EntryId); LastOperation = Track(_session.RevealSelectionAsync(selection));
     }
     private async Task Track(Task operation)

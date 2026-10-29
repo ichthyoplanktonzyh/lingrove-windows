@@ -60,7 +60,13 @@ public sealed class CanonicalNotebookLearningTests(WpfDispatcher dispatcher)
             await disclosure.LastLookup; Assert.Equal(1, dictionary.UnknownCalls);
             window.UpdateLayout(); var bitmap = new RenderTargetBitmap((int)window.ActualWidth, (int)window.ActualHeight, 96, 96, PixelFormats.Pbgra32);
             bitmap.Render(window); var encoder = new PngBitmapEncoder(); encoder.Frames.Add(BitmapFrame.Create(bitmap));
-            using var file = File.Create(Path.Combine(Path.GetTempPath(), "canonical-notebook-learning.png")); encoder.Save(file);
+            using (var file = File.Create(Path.Combine(Path.GetTempPath(), "canonical-notebook-learning.png"))) encoder.Save(file);
+            window.Hide(); window.Show(); window.UpdateLayout();
+            var reopenedDisclosure = Descendants(window).OfType<CanonicalVocabularyDictionarySection>().Single();
+            Assert.Same(disclosure, reopenedDisclosure); Assert.True(reopenedDisclosure.IsExpanded);
+            window.Reveal(new(entry.Id, sense.Id)); await window.LastOperation!; window.UpdateLayout();
+            var nextDisclosure = Descendants(window).OfType<CanonicalVocabularyDictionarySection>().Single();
+            Assert.NotSame(disclosure, nextDisclosure); Assert.False(nextDisclosure.IsExpanded);
         }
         finally { await window.RetireAsync(); }
     });

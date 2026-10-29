@@ -11,6 +11,38 @@ namespace Cotabby.App.Tests;
 /// existing lazy archive. No WPF view, operating-system credential, endpoint or model is used.</summary>
 public sealed class AnkiReviewFeatureTests
 {
+    [Fact]
+    public async Task ConnectionOnlyOwnerUsesRealSettingsAndClientButRefusesNotebookReview()
+    {
+        var current = new AppSettings(); int saves = 0; var key = new AnkiTestCredentials(); var client = new AnkiTestClient();
+        var feature = AnkiReviewFeature.CreateConnectionSettings(() => current, () => saves++, client, key);
+        Assert.False(feature.Controller.NotebookAvailable); Assert.Null(feature.Controller.StoreOrNull);
+        Assert.Equal(0, key.Reads); Assert.Empty(client.Calls);
+        var interaction = new AnkiReviewSettingsInteraction(feature); interaction.ReadKeyOnAppearance();
+        interaction.Key = "explicit key"; await interaction.TestConnectionAsync();
+        Assert.Equal("Connected", feature.Controller.ConnectionMessage); Assert.NotNull(feature.Controller.Catalog);
+        Assert.All(client.Calls, call => Assert.Equal("explicit key", call.Key));
+        feature.Settings.Deck = "My deck"; Assert.Equal("My deck", current.AnkiReviewDeckValue?.GetString()); Assert.True(saves > 0);
+        client.Calls.Clear();
+        Assert.Equal(AnkiReviewController.NotebookUnavailableMessage, (await Assert.ThrowsAsync<AnkiReviewException>(() => feature.Controller.OperationScopeAsync())).Message);
+        Assert.Equal(AnkiReviewController.NotebookUnavailableMessage, await feature.Controller.ReviewDeckAsync());
+        Assert.Equal(AnkiReviewController.NotebookUnavailableMessage, (await Assert.ThrowsAsync<AnkiReviewException>(() => feature.Controller.UpdatePresetTemplateAsync())).Message);
+        Assert.Equal(AnkiReviewController.NotebookUnavailableMessage, Assert.Throws<AnkiReviewException>(() => feature.Controller.Begin(Guid.NewGuid())).Message);
+        Assert.Equal(AnkiReviewController.NotebookUnavailableMessage, Assert.Throws<AnkiReviewException>(() => _ = feature.Controller.Store).Message);
+        Assert.Empty(client.Calls); await feature.DisposeAsync(); Assert.Equal(1, client.Disposals);
+    }
+
+    [Fact]
+    public async Task ConnectionOnlyShutdownCancelsAndDrainsAnExplicitTest()
+    {
+        var settings = new AppSettings(); var client = new AnkiTestClient { ProfileGate = new(TaskCreationOptions.RunContinuationsAsynchronously) };
+        var feature = AnkiReviewFeature.CreateConnectionSettings(() => settings, () => { }, client, new AnkiTestCredentials());
+        var interaction = new AnkiReviewSettingsInteraction(feature); interaction.ReadKeyOnAppearance();
+        var action = interaction.TestConnectionAsync(); Assert.Single(client.Calls);
+        await feature.DisposeAsync(); await action;
+        Assert.False(feature.Controller.Testing); Assert.Equal(1, client.Disposals);
+        await Assert.ThrowsAsync<ObjectDisposedException>(() => feature.RunAsync(_ => Task.CompletedTask));
+    }
     private static VocabularyStore Store(Action? opened = null) => new(new VocabularyArchive(() =>
     { opened?.Invoke(); return VocabularySQLiteDatabase.CreateMemory(); }), new SynchronizationContext());
 

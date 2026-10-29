@@ -20,6 +20,7 @@ internal sealed partial class AnkiReviewController
     }
     internal async Task<string?> ReviewDeckAsync(AnkiNoteBinding? binding = null, CancellationToken cancellationToken = default)
     {
+        if (!NotebookAvailable) return NotebookUnavailableMessage;
         try
         {
             var connection = Settings.Connection(); string deck = Settings.Deck;
@@ -44,6 +45,7 @@ internal sealed partial class AnkiReviewController
     }
     internal async Task UpdatePresetTemplateAsync(CancellationToken cancellationToken = default)
     {
+        RequireNotebook();
         if (SendingSenseId is not null || UpdatingTemplate) throw Conflict();
         UpdatingTemplate = true;
         try

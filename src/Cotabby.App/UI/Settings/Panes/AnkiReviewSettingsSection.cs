@@ -64,7 +64,7 @@ internal sealed class AnkiReviewSettingsSection : StackPanel
         Unloaded += (_, _) => EndAppearance();
         feature.Controller.PropertyChanged += OnControllerChanged;
         feature.Settings.PropertyChanged += OnSettingsChanged;
-        feature.Controller.Store.Changed += Refresh;
+        if (feature.Controller.StoreOrNull is { } store) store.Changed += Refresh;
         _interaction.PropertyChanged += OnControllerChanged;
         Refresh();
     }
@@ -80,7 +80,7 @@ internal sealed class AnkiReviewSettingsSection : StackPanel
         {
             if (_appeared) return;
             _appeared = true;
-            _ = LoadStore();
+            if (_feature.Controller.StoreOrNull is not null) _ = LoadStore();
             _interaction.ReadKeyOnAppearance();
             Refresh();
         }
@@ -133,7 +133,12 @@ internal sealed class AnkiReviewSettingsSection : StackPanel
                 DeckPicker.SelectedItem = DeckPicker.Items.Cast<string>().First(value => CanonicalStringComparer.Instance.Equals(value, settings.Deck));
             }
             _templates.Children.Clear();
-            foreach (var template in controller.Store.ReviewTemplates)
+            if (controller.StoreOrNull is not { } store)
+            {
+                _templates.Children.Add(new TextBlock { Text = AnkiReviewController.NotebookUnavailableMessage, TextWrapping = TextWrapping.Wrap,
+                    Foreground = System.Windows.SystemColors.GrayTextBrush, Margin = new Thickness(0, 4, 0, 4) });
+            }
+            else foreach (var template in store.ReviewTemplates)
             {
                 var delete = new Button { Content = "Delete" }.Styled("Btn"); AutomationProperties.SetName(delete, "Delete template " + template.Name);
                 delete.Click += async (_, _) =>
@@ -154,7 +159,7 @@ internal sealed class AnkiReviewSettingsSection : StackPanel
         EndAppearance(); _closed = true; _interaction.ClearEphemeralKey();
         _feature.Controller.PropertyChanged -= OnControllerChanged;
         _feature.Settings.PropertyChanged -= OnSettingsChanged;
-        _feature.Controller.Store.Changed -= Refresh;
+        if (_feature.Controller.StoreOrNull is { } store) store.Changed -= Refresh;
         _interaction.PropertyChanged -= OnControllerChanged;
     }
 }

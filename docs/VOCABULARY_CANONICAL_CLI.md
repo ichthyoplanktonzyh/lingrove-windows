@@ -27,6 +27,9 @@ is a path/identity guard, not a binary publisher trust guarantee. A competing ap
 make the selected path unavailable or cause a timeout; the CLI never falls back to its mailbox.
 A CLI start is background-only and suppresses duplicate-instance and first-use dialogs without
 changing the saved first-use setting. Replies and pending requests expire; SQLite receipts do not.
+Crash recovery observes each working filename and file identity only once per startup; a
+replacement is left untouched. Windows processes at most 4,096 recovered names per startup,
+leaving any remaining working files for a later start.
 
 General settings offers explicit user-local installation of `lingrove.cmd` under
 `%LOCALAPPDATA%\Cotabby\bin`; no PATH modification occurs. Its ASCII script passes the UTF-8

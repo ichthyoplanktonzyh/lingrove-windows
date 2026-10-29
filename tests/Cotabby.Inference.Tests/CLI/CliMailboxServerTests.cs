@@ -101,4 +101,47 @@ public sealed class CliMailboxServerTests : IAsyncLifetime
         var error = await Assert.ThrowsAsync<CliException>(() => CliMailboxClient.SendAsync(_root, request));
         Assert.Equal(CliErrorCode.Io, error.Code); Assert.True(replies.Exists(name));
     }
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task RecoveryNeverRecapturesAReplacementLeaf(bool duplicatePending)
+    {
+        using var requests = new CliMailboxDirectory(Path.Combine(_root, "requests"));
+        using var working = new CliMailboxDirectory(Path.Combine(_root, "working"));
+        var input = new CliRequest { ExpiresAt = CliWire.Now() + 30 }; string name = input.Id.ToString("D") + ".json";
+        byte[] bytes = CliWire.Encode(input); working.Publish(name, bytes);
+        if (duplicatePending) requests.Publish(name, bytes);
+        var original = working.CaptureIdentity(name)!.Value; int observations = 0;
+        var server = new CliMailboxServer(_root, request => Task.FromResult(new CliReply { RequestId = request.Id, Ok = true }))
+        {
+            AfterRecoveryObservation = leaf =>
+            {
+                Assert.Equal(name, leaf); Interlocked.Increment(ref observations);
+                File.Move(Path.Combine(working.Path, name), Path.Combine(working.Path, "displaced"));
+                working.Publish(name, bytes);
+            }
+        };
+        await server.StartAsync(); await server.DisposeAsync();
+        Assert.Equal(1, observations); Assert.NotEqual(original, working.CaptureIdentity(name));
+        Assert.Equal(bytes, working.Read(name));
+    }
+    [Fact]
+    public async Task RecoveryPinsLaterPageBeforeProcessingFirstPage()
+    {
+        using var working = new CliMailboxDirectory(Path.Combine(_root, "working"));
+        var bytes = CliWire.Encode(new CliRequest { ExpiresAt = CliWire.Now() + 30 });
+        for (int index = 0; index < 129; index++) working.Publish(Guid.NewGuid().ToString("D") + ".json", bytes);
+        var first = working.Names().ToHashSet(StringComparer.OrdinalIgnoreCase); string target = Assert.Single(working.Names(first));
+        var identity = working.CaptureIdentity(target)!.Value; int replaced = 0;
+        var server = new CliMailboxServer(_root, request => Task.FromResult(new CliReply { RequestId = request.Id, Ok = true }))
+        {
+            AfterRecoveryObservation = _ =>
+            {
+                if (Interlocked.Exchange(ref replaced, 1) != 0) return;
+                File.Move(Path.Combine(working.Path, target), Path.Combine(working.Path, "displaced")); working.Publish(target, bytes);
+            }
+        };
+        await server.StartAsync(); await server.DisposeAsync();
+        Assert.Equal(1, replaced); Assert.NotEqual(identity, working.CaptureIdentity(target)); Assert.Equal(bytes, working.Read(target));
+    }
 }

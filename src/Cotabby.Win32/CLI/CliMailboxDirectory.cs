@@ -19,12 +19,12 @@ internal sealed class CliMailboxDirectory : IDisposable
     internal string Path => _directory.Path;
     internal CliMailboxDirectory(string path, bool create = true) => _directory = VocabularyMediaDirectory.Open(path, create);
     internal void Verify() => _directory.Verify();
-    internal IReadOnlyList<string> Names()
+    internal IReadOnlyList<string> Names(IReadOnlySet<string>? excluded = null)
     {
         Verify(); var names = new List<string>();
         foreach (var path in Directory.EnumerateFiles(Path, "*.json", SearchOption.TopDirectoryOnly))
         {
-            string name = System.IO.Path.GetFileName(path); if (name.Length != 41 || !Guid.TryParseExact(name[..36], "D", out _)) continue;
+            string name = System.IO.Path.GetFileName(path); if (name.Length != 41 || !Guid.TryParseExact(name[..36], "D", out _) || excluded?.Contains(name) == true) continue;
             names.Add(name); if (names.Count == 128) break;
         }
         Verify(); return names;
@@ -39,6 +39,8 @@ internal sealed class CliMailboxDirectory : IDisposable
         Verify(); return output.ToArray();
     }
     internal bool Exists(string name) { ValidateName(name); using var handle = _directory.OpenFile(name); return handle is not null; }
+    internal VocabularyWindowsFile.FileIdentity? CaptureIdentity(string name)
+    { ValidateName(name); using var handle = _directory.OpenFile(name); return handle is null ? null : VocabularyWindowsFile.Identity(handle); }
     internal void RemoveIfOlderThan(string name, DateTime cutoff)
     {
         ValidateName(name); using var handle = _directory.OpenFile(name, delete: true); if (handle is null) return;
@@ -77,17 +79,18 @@ internal sealed class CliMailboxDirectory : IDisposable
     }
     internal bool Claim(string name, CliMailboxDirectory target)
         => ClaimOwned(name, target) is not null;
-    internal VocabularyWindowsFile.FileIdentity? ClaimOwned(string name, CliMailboxDirectory target)
+    internal VocabularyWindowsFile.FileIdentity? ClaimOwned(string name, CliMailboxDirectory target, VocabularyWindowsFile.FileIdentity? expected = null)
     {
         ValidateName(name); using var handle = _directory.OpenFile(name, delete: true); if (handle is null) return null;
         var identity = VocabularyWindowsFile.Identity(handle);
+        if (expected is not null && identity != expected) return null;
         Verify(); target.Verify(); Rename(handle, System.IO.Path.Combine(target.Path, name)); return identity;
     }
-    internal void RemoveOwned(string name, VocabularyWindowsFile.FileIdentity identity)
+    internal bool RemoveOwned(string name, VocabularyWindowsFile.FileIdentity identity)
     {
-        ValidateName(name); using var handle = _directory.OpenFile(name, delete: true); if (handle is null) return;
-        if (VocabularyWindowsFile.Identity(handle) != identity) return;
-        Verify(); if (!SetFileInformationByHandle(handle, 4, [1], 1)) throw Invalid();
+        ValidateName(name); using var handle = _directory.OpenFile(name, delete: true); if (handle is null) return false;
+        if (VocabularyWindowsFile.Identity(handle) != identity) return false;
+        Verify(); if (!SetFileInformationByHandle(handle, 4, [1], 1)) throw Invalid(); return true;
     }
     internal void Remove(string name)
     {

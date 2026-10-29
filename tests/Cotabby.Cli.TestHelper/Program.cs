@@ -1,4 +1,5 @@
 using System.Text.Json;
+Console.InputEncoding = new System.Text.UTF8Encoding(false, true);
 if (args.Length == 2 && args[0] == "lease")
 {
     using var lease = new FileStream(args[1], FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);

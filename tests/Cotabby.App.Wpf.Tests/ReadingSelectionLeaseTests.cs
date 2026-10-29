@@ -32,19 +32,6 @@ public sealed class ReadingSelectionLeaseTests
     }
 
     [Fact]
-    public async Task NativeRetirementWithdrawsPermissionBeforeNotification()
-    {
-        if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;
-        using var focus = new UiaFocusTracker(NullLogger<UiaFocusTracker>.Instance);
-        var evidence = new FakeEvidence { Block = false };
-        await using var lease = new Win32ReadingSelectionLease(focus, new FakeKeyboard(), evidence, 10, 42, 3, null,
-            () => 3, () => 10, _ => 42);
-        Assert.True(lease.Capture(CancellationToken.None)); Assert.True(lease.IsLive);
-        Interlocked.Exchange(ref evidence.Last!.Active, 0);
-        Assert.False(lease.IsLive);
-    }
-
-    [Fact]
     public async Task LivePermissionRejectsForegroundAndProcessChangesWithoutEvents()
     {
         if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;

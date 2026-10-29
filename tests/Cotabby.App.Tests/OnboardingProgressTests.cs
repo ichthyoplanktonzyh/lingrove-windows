@@ -5,6 +5,17 @@ namespace Cotabby.App.Tests;
 public sealed class OnboardingProgressTests
 {
     [Fact]
+    public void GeneralResetPreservesFirstRunResumeState()
+    {
+        var settings = new AppSettings { ShowFirstRunWelcome = true };
+        settings.OnboardingProgress = (5, true);
+        var reset = settings.ResetGeneralPreferences(42);
+        Assert.True(reset.ShowFirstRunWelcome);
+        Assert.Equal((5, true), reset.OnboardingProgress);
+        Assert.Equal(42, reset.WordsAccepted);
+    }
+
+    [Fact]
     public void ProgressRoundTripsAndInvalidInputDoesNotDiscardOtherSettings()
     {
         var settings = new AppSettings { UserName = "fixture" };

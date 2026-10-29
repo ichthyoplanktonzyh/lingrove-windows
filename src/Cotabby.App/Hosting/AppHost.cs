@@ -4,6 +4,7 @@ using Cotabby.App.Learning;
 using Cotabby.App.Reading;
 using Cotabby.App.Review;
 using Cotabby.App.Speech;
+using Cotabby.App.Runtime;
 using Cotabby.App.Emoji;
 using Cotabby.App.Macros;
 using Cotabby.App.Overlay;
@@ -28,6 +29,9 @@ using Cotabby.Inference.LanguageLearning;
 using Cotabby.Inference.LanguageLearning.Local;
 using Cotabby.Inference.OpenAICompatible;
 using Cotabby.Win32.Clipboard;
+using Cotabby.Win32.CLI;
+using Cotabby.Core.CLI;
+using ICanonicalVocabularyCliStore = Cotabby.Core.Vocabulary.Frozen.ICanonicalVocabularyCliStore;
 using Cotabby.Win32.Focus;
 using Cotabby.Win32.Input;
 using Cotabby.Win32.Insertion;
@@ -104,6 +108,11 @@ public sealed class AppHost : IAsyncDisposable
     internal CanonicalWritingViewStore Vocabulary => _notebook.Writing;
     internal AnkiReviewFeature Review { get; }
     internal SpeechFeature Speech { get; }
+    internal PerformanceMetricsStore PerformanceHistory { get; }
+    private readonly PerformanceHistoryCollector _performance;
+    private readonly ReadingPointerMonitor? _readingPointer;
+    private CliMailboxServer? _cli;
+    private readonly Task _cliStartup;
     private Cotabby.App.UI.Settings.SpeechConfigurationWindow? _speechWindow;
     internal FrozenVocabularyWindowController VocabularyWindow => _notebook.Window;
 
@@ -112,7 +121,7 @@ public sealed class AppHost : IAsyncDisposable
 
     public AppHost(
         SynchronizationContext ui, GhostOverlayWindow overlay, GhostOverlayWindow macroPreview,
-        EmojiPopupWindow emojiPopup)
+        EmojiPopupWindow emojiPopup, SettingsStore? preloadedStore = null, AppSettings? initialSettings = null)
     {
         _ui = ui;
         Overlay = overlay;
@@ -140,7 +149,7 @@ public sealed class AppHost : IAsyncDisposable
                 "Cotabby-Windows/0.2 (+https://github.com/Msde-7/cotabby-windows)");
             return http;
         });
-        sc.AddSingleton<SettingsStore>();
+        sc.AddSingleton(preloadedStore ?? new SettingsStore());
         sc.AddSingleton<IFocusTracker, UiaFocusTracker>();
         sc.AddSingleton<IKeyboardHook, KeyboardHook>();
         sc.AddSingleton<ClipboardTextReader>();
@@ -171,13 +180,19 @@ public sealed class AppHost : IAsyncDisposable
         _services = sc.BuildServiceProvider();
 
         SettingsStore = _services.GetRequiredService<SettingsStore>();
-        Settings = SettingsStore.Load();
+        Settings = initialSettings ?? SettingsStore.Load();
         Runtime = _services.GetRequiredService<LlamaRuntimeManager>();
         Downloader = _services.GetRequiredService<ModelDownloader>();
         EndpointClient = _services.GetRequiredService<OpenAICompatibleApiClient>();
         EndpointCredentials = _services.GetRequiredService<IOpenAICompatibleCredentialStore>();
 
         var loggers = _services.GetRequiredService<ILoggerFactory>();
+        _logger = loggers.CreateLogger("Cotabby.App");
+        // The UI settings owner and all task producers borrow one bounded, content-free history.
+        // Worker observations never read mutable settings; ApplySettings updates admission.
+        PerformanceHistory = new(() => Settings, () => SettingsStore.Save(Settings),
+            (error, count) => _logger.LogWarning(error, "Saving request history failed ({Count} records).", count));
+        _performance = new(overlay.Dispatcher, PerformanceHistory, Settings.PerformanceTrackingEnabled);
         // Explanation is a third independent native owner. Construction is inert; only an
         // explicit request through its service can load weights, and shutdown drains it first.
         LearningExplanation = new LearningExplanationController(
@@ -196,7 +211,9 @@ public sealed class AppHost : IAsyncDisposable
         Speech = new SpeechFeature(() => Settings, () => SettingsStore.Save(Settings),
             new DpapiOpenAICompatibleCredentialStore(System.IO.Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Cotabby", "speech-endpoint-credential.bin")),
-            SpeechFeature.DefaultModelDirectory);
+            SpeechFeature.DefaultModelDirectory, PerformanceHistory,
+            (context, phase, _) => _logger.LogDebug("Speech lifecycle {Phase} ({RequestId}).", phase, context.RequestId));
+        Speech.HistoryCollector = _performance;
         // Review has its own inert HTTP/key owners. Its settings save only their durable values;
         // editing a deck or connection must not wake/reconfigure the autocomplete runtime.
         Review = AnkiReviewFeature.CreateConnectionSettings(() => Settings, () => SettingsStore.Save(Settings),
@@ -220,8 +237,9 @@ public sealed class AppHost : IAsyncDisposable
         };
         LearningExplanation.Service.LookupSaved = Vocabulary.Explanation;
         LearningExplanation.Service.Explained += PersistExplanation;
+        LearningExplanation.Service.RequestObserved += _performance.Observe;
+        LearningExplanation.RequestObserved += _performance.Observe;
         _spelling = new SymSpellCorrector(logger: loggers.CreateLogger<SymSpellCorrector>());
-        _logger = loggers.CreateLogger("Cotabby.App");
         _hook = _services.GetRequiredService<IKeyboardHook>();
         var focus = _services.GetRequiredService<IFocusTracker>();
         var inserter = _services.GetRequiredService<ITextInserter>();
@@ -230,6 +248,8 @@ public sealed class AppHost : IAsyncDisposable
             EndpointClient, EndpointCredentials, EndpointSettings,
             loggers.CreateLogger<OpenAICompatibleSuggestionEngine>());
         _completion = new CompletionModelAdmission(_services.GetRequiredService<LlamaSuggestionEngine>());
+        _completion.Observed += _performance.Observe;
+        Endpoint.Observed += _performance.Observe;
         _router = new SuggestionEngineRouter(_completion, Endpoint);
 
         IcuWordBreaker.Install();
@@ -290,6 +310,7 @@ public sealed class AppHost : IAsyncDisposable
             vocabulary: Vocabulary,
             vocabularyCaptures: _services.GetRequiredService<VocabularyCaptureFactory>());
         LearningPreview.AttachSpeech(Speech.Controller);
+        LearningPreview.AttachPerformanceHistory(_performance);
         LearningPreview.InlineCaptureActive = () => _expressions.IsActive || _reading?.IsActive == true;
         _expressions.OtherInlineActive = () => _reading?.IsActive == true;
         if (OperatingSystem.IsWindowsVersionAtLeast(8, 1))
@@ -312,11 +333,37 @@ public sealed class AppHost : IAsyncDisposable
                 () => { Coordinator.InvalidateSession(); LearningPreview.SuspendForInlineFeature(); },
                 () => _expressions.IsActive || EmojiPicker.IsCapturing || Macros.IsCapturing);
             _reading.AttachSpeech(Speech.Controller);
+            _reading.AttachDetails(LearningExplanation.GenerateReadingLookupDetailsAsync);
+            _reading.AttachPerformance(_performance.Observe);
+            _readingPointer = new ReadingPointerMonitor();
+            _reading.AttachPointer(_readingPointer);
+            _reading.AttachScreen(new NativeReadingScreenReader(_nativeReading, new WindowsReadingOcr(), _performance.Observe));
         }
 
         SystemEvents.PowerModeChanged += OnPowerModeChanged;
         ApplySettings();
         RecommendedSetup = new RecommendedSetupController(new RecommendedSetupHost(this, ui), Cotabby.Win32.Models.WindowsPhysicalMemory.GetBytes());
+        // Only private mailbox setup runs here. The single canonical Store remains lazy until
+        // an explicit CLI request, and the tracked setup/claimed operation drains before Store.
+        _cliStartup = Task.Run(StartCliAsync);
+    }
+
+    private async Task StartCliAsync()
+    {
+        try
+        {
+            var executable = Environment.ProcessPath ?? throw new InvalidOperationException("Application path is unavailable.");
+            var identity = CliApplicationIdentity.Resolve(executable);
+            _cli = CanonicalCliMailbox.Create(identity.MailboxRoot, (ICanonicalVocabularyCliStore)_notebook.Store);
+            await _cli.StartAsync().ConfigureAwait(false);
+        }
+        catch (Exception error) { _logger.LogWarning(error, "Local automation mailbox is unavailable."); }
+    }
+
+    private async Task RetireCliAsync()
+    {
+        try { await _cliStartup.ConfigureAwait(false); }
+        finally { if (_cli is not null) await _cli.DisposeAsync().ConfigureAwait(false); }
     }
 
     private OpenAICompatibleEndpointSettings EndpointSettings => new(
@@ -390,6 +437,7 @@ public sealed class AppHost : IAsyncDisposable
     private void ApplySettings(bool discoveryChanged = false, bool allowCompletionLoad = true)
     {
         if (_shuttingDown) return;
+        _performance.ApplySettings(Settings);
         // An expired pause is dropped so the tray stops showing it.
         if (Settings.Pause?.IsActive(DateTimeOffset.Now) == false) Settings.Pause = null;
 
@@ -653,21 +701,18 @@ public sealed class AppHost : IAsyncDisposable
         WithdrawCompletion();
         try
         {
-            try { await RetireWritingFeaturesAsync().ConfigureAwait(false); }
+            try
+            {
+                try { await RetireCliAsync().ConfigureAwait(false); }
+                finally { await RetireWritingFeaturesAsync().ConfigureAwait(false); }
+            }
             finally
             {
                 // Producer or presentation failures must not strand the sole database owner.
                 try { await _notebook.DisposeAsync().ConfigureAwait(false); }
                 finally
                 {
-                    await LearningModels.DisposeAsync().ConfigureAwait(false);
-                    EmojiPicker.Dispose();
-                    Macros.Dispose();
-                    _spelling.Dispose();
-                    await Coordinator.DisposeAsync().ConfigureAwait(false);
-                    EndpointClient.Dispose();
-                    _learningHttpClient.Dispose();
-                    await _services.DisposeAsync().ConfigureAwait(false);
+                    await RetireRemainingOwnersAsync().ConfigureAwait(false);
                 }
             }
         }
@@ -675,6 +720,32 @@ public sealed class AppHost : IAsyncDisposable
         {
             await Runtime.DisposeAsync().ConfigureAwait(false);
         }
+    }
+
+    private async Task RetireRemainingOwnersAsync()
+    {
+        // Every retirement runs even if an earlier owner fails. In particular, the endpoint
+        // coordinator must finish before history is flushed and its settings owner is retired.
+        List<Exception> errors = [];
+        async Task Run(Func<Task> retire)
+        { try { await retire().ConfigureAwait(false); } catch (Exception error) { errors.Add(error); } }
+        await Run(() => LearningModels.DisposeAsync().AsTask());
+        await Run(() => { EmojiPicker.Dispose(); return Task.CompletedTask; });
+        await Run(() => { Macros.Dispose(); return Task.CompletedTask; });
+        await Run(() => { _spelling.Dispose(); return Task.CompletedTask; });
+        await Run(() => Coordinator.DisposeAsync().AsTask());
+        await Run(() => Overlay.Dispatcher.InvokeAsync(() =>
+        {
+            _completion.Observed -= _performance.Observe;
+            Endpoint.Observed -= _performance.Observe;
+            LearningExplanation.Service.RequestObserved -= _performance.Observe;
+            LearningExplanation.RequestObserved -= _performance.Observe;
+            Speech.HistoryCollector = null;
+            _performance.Dispose();
+        }).Task);
+        await Run(() => { EndpointClient.Dispose(); _learningHttpClient.Dispose(); return Task.CompletedTask; });
+        await Run(() => _services.DisposeAsync().AsTask());
+        if (errors.Count != 0) throw new AggregateException("Application owners failed to retire.", errors);
     }
 
     private async Task RetireWritingFeaturesAsync()
@@ -700,10 +771,14 @@ public sealed class AppHost : IAsyncDisposable
         try { if (_reading is not null) await _reading.DisposeAsync().ConfigureAwait(false); }
         finally
         {
-            if (OperatingSystem.IsWindowsVersionAtLeast(8, 1))
+            try { _readingPointer?.Dispose(); }
+            finally
             {
-                try { if (_nativeReading is not null) await _nativeReading.DisposeAsync().ConfigureAwait(false); }
-                finally { if (_readingOrigin is not null) await _readingOrigin.DisposeAsync().ConfigureAwait(false); }
+                if (OperatingSystem.IsWindowsVersionAtLeast(8, 1))
+                {
+                    try { if (_nativeReading is not null) await _nativeReading.DisposeAsync().ConfigureAwait(false); }
+                    finally { if (_readingOrigin is not null) await _readingOrigin.DisposeAsync().ConfigureAwait(false); }
+                }
             }
         }
     }

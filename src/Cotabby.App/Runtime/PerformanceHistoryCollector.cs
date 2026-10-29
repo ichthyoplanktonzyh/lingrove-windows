@@ -1,6 +1,7 @@
 using System.Windows.Threading;
 using Cotabby.Core.Runtime.Metrics;
 using Cotabby.Core.Suggestions;
+using Cotabby.App.Settings;
 
 namespace Cotabby.App.Runtime;
 
@@ -17,6 +18,8 @@ internal sealed class PerformanceHistoryCollector : IDisposable
     internal PerformanceHistoryCollector(Dispatcher dispatcher, PerformanceMetricsStore history, bool enabled)
     { _dispatcher = dispatcher; _history = history; _enabled = enabled; }
     internal void SetEnabled(bool enabled) { lock (_gate) { if (!_closed) _enabled = enabled; } }
+    internal void ApplySettings(AppSettings settings)
+    { _dispatcher.VerifyAccess(); SetEnabled(settings.PerformanceTrackingEnabled); }
     internal void Observe(CompletionObservation value)
         => Observe(new PerformanceRequestObservation(ModelRequestSource.Completion, value.RequestId, value.ModelName,
             value.Timestamp, value.LatencyMs, value.Outcome));

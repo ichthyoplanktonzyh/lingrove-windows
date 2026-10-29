@@ -34,6 +34,7 @@
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Review.cs" Link="Production\AppSettings.Review.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Speech.cs" Link="Production\AppSettings.Speech.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Metrics.cs" Link="Production\AppSettings.Metrics.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Onboarding.cs" Link="Production\AppSettings.Onboarding.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Vocabulary.cs" Link="AppSettings\AppSettings.Vocabulary.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Explanation.cs" Link="AppSettings\AppSettings.Explanation.cs" />
     <Compile Include="..\..\src\Cotabby.App\Learning\LearningModelCatalogManager.cs" Link="AppLearning\LearningModelCatalogManager.cs" />

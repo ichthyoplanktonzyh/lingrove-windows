@@ -59,6 +59,23 @@ public sealed class InterfaceAndHistoryTests(WpfDispatcher dispatcher)
         Assert.Equal(100, history.Entries.Count);
     });
     [Fact]
+    public Task GeneralResetRevokesWorkerObservationAdmissionAndKeepsRecordedHistory() => dispatcher.RunAsync(async () =>
+    {
+        var settings = new AppSettings { PerformanceTrackingEnabled = true };
+        var history = new PerformanceMetricsStore(() => settings, () => { }, (_, _) => Assert.Fail("Unexpected save failure"));
+        using var collector = new PerformanceHistoryCollector(System.Windows.Threading.Dispatcher.CurrentDispatcher, history, true);
+        collector.Observe(new CompletionObservation("accepted", "test model", DateTimeOffset.UnixEpoch, 1, ModelRequestOutcome.Completed));
+        // Reset replaces AppHost's settings object. Admission must use that new snapshot even
+        // when the pane/checkbox was never opened; already accepted observations still drain.
+        settings = settings.ResetGeneralPreferences(0);
+        collector.ApplySettings(settings);
+        await Task.Run(() => collector.Observe(new CompletionObservation("after-reset", "test model", DateTimeOffset.UnixEpoch, 1, ModelRequestOutcome.Completed)));
+        collector.Dispose();
+        Assert.False(settings.PerformanceTrackingEnabled);
+        Assert.Equal("accepted", Assert.Single(history.Entries).RequestId);
+    });
+
+    [Fact]
     public Task CatalogUsesSelectedLocaleAndSystemFallbackWithoutChangingStoredValue() => dispatcher.RunAsync(() =>
     {
         try

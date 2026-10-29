@@ -48,6 +48,7 @@ public sealed partial class AppSettings
         LocalModelTaskAssignmentsValue = ModelAssignmentSnapshot().ToDictionary(x => x.Key, x => x.Value.ToArray(), StringComparer.Ordinal),
         LocalModelSourcesValue = new Dictionary<string, string>(LocalModelSourcesValue ?? [], StringComparer.Ordinal),
         ShowFirstRunWelcome = ShowFirstRunWelcome,
+        OnboardingProgressValue = OnboardingProgressValue,
         WordsAccepted = wordsAccepted,
         VocabularyGraphSettingsValue = VocabularyGraphSettingsValue,
         VocabularyBrowserModeValue = VocabularyBrowserModeValue,

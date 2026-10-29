@@ -46,10 +46,11 @@ single-dispatch history collector; AppHost must attach and drain those events. T
 translation coordinator reports actual cache-miss generation and validated-result stages through
 the same collector, which its controller borrows. Explanation service and expression-assistance
 generation also publish content-free observations with their frozen model; AppHost attaches these
-to that collector. Reading translation and OCR observer wiring, child-process/GPU counters, and native
-resource sampling comparison remain open. AppHost must construct and inject this one history and a
-content-free log sink, and perform early language bootstrap before any window construction; the
-present component does not claim production composition until that glue is installed.
+to that collector. The integration checkpoint now attaches reading translation and OCR observations,
+injects this one history and content-free speech log sink, and freezes language before constructing
+windows. Central settings application also updates observation admission after General reset.
+Child-process/GPU counters and native resource sampling comparison remain open. See
+`WINDOWS_READING_CLI_INTERFACE_CHECKPOINT_20261030.md` for ownership, shutdown and validation.
 
 Validation in this candidate: Release solution build 0 warnings/errors; Core targeted language,
 completion, translation and explanation 82/82; portable App explanation/telemetry/onboarding

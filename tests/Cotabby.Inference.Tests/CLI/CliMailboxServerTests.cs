@@ -74,4 +74,22 @@ public sealed class CliMailboxServerTests : IAsyncLifetime
         Assert.True(retry.Ok); Assert.True(retry.Result!["replayed"]!.GetValue<bool>());
         Assert.Equal(1UL, (await store.ReadAsync()).Revision);
     }
+    [Fact]
+    public async Task AnotherProcessHoldingLeaseBlocksServer()
+    {
+        await using (var initial = new CliMailboxServer(_root, request => Task.FromResult(new CliReply { RequestId = request.Id })))
+            await initial.StartAsync();
+        string executable = Path.Combine(AppContext.BaseDirectory, "cli-helper", "lingrove.exe");
+        var start = new System.Diagnostics.ProcessStartInfo(executable) { UseShellExecute = false, RedirectStandardInput = true, RedirectStandardError = true, CreateNoWindow = true };
+        start.ArgumentList.Add("lease"); start.ArgumentList.Add(Path.Combine(_root, "server.lock"));
+        using var helper = System.Diagnostics.Process.Start(start)!;
+        try
+        {
+            Assert.Equal("ready", await helper.StandardError.ReadLineAsync().WaitAsync(TimeSpan.FromSeconds(10)));
+            await using var server = new CliMailboxServer(_root, request => Task.FromResult(new CliReply { RequestId = request.Id }));
+            Assert.Equal(CliErrorCode.Busy, (await Assert.ThrowsAsync<CliException>(async () => await server.StartAsync())).Code);
+            helper.StandardInput.Close(); await helper.WaitForExitAsync().WaitAsync(TimeSpan.FromSeconds(10)); Assert.Equal(0, helper.ExitCode);
+        }
+        finally { if (!helper.HasExited) { helper.Kill(entireProcessTree: true); await helper.WaitForExitAsync(); } }
+    }
 }

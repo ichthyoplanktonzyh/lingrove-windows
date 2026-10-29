@@ -28,7 +28,9 @@ public sealed class LlamaSuggestionEngine : ISuggestionEngine
 
     public bool SpacingIsExact => true;
 
-    public async Task<string> GenerateAsync(SuggestionRequest request, CancellationToken ct)
+    public Task<string> GenerateAsync(SuggestionRequest request, CancellationToken ct) => GenerateAsync(request, null, ct);
+
+    public async Task<string> GenerateAsync(SuggestionRequest request, Action<string>? onPartial, CancellationToken ct)
     {
         var core = _runtime.Core;
         if (core is null)
@@ -56,7 +58,7 @@ public sealed class LlamaSuggestionEngine : ISuggestionEngine
             prompt = request.Prefix;
             int maxPromptTokens = Math.Max(1, core.ContextWindowTokens - request.MaxTokens);
             generation = core.GenerateAsync(
-                core.BuildFimTokens(request.Prefix, request.Suffix, maxPromptTokens), options, ct);
+                core.BuildFimTokens(request.Prefix, request.Suffix, maxPromptTokens), options, ct, Partial(prompt));
         }
         else
         {
@@ -66,8 +68,15 @@ public sealed class LlamaSuggestionEngine : ISuggestionEngine
                 PromptTokenBudget.ForRequest(
                     PromptTokenBudget.Configured(core.ContextWindowTokens), request.MaxTokens));
             if (prompt.Length == 0) return string.Empty;
-            generation = core.GenerateAsync(prompt, options, ct);
+            generation = core.GenerateAsync(prompt, options, ct, Partial(prompt));
         }
+
+        Action<string>? Partial(string capturedPrompt) => onPartial is null ? null : raw =>
+        {
+            if (ct.IsCancellationRequested) return;
+            var text = CompletionPipeline.Normalize(raw, capturedPrompt, request).Text;
+            if (text.Length > 0) onPartial(text);
+        };
 
         string raw;
         try

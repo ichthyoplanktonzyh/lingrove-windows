@@ -306,6 +306,9 @@ public sealed partial class AppSettings
         AddSpaceAfterAccept = AddSpaceAfterAccept,
         DisplayMode = DisplayMode,
         SuggestWithinWords = SuggestWithinWords,
+        StreamSuggestionsWhileGenerating = StreamSuggestionsWhileGenerating,
+        PredictAheadWhileTyping = PredictAheadWhileTyping,
+        ShowFollowingWords = ShowFollowingWords,
         // Offering a fix needs typo detection on, and fixing automatically needs offering on.
         Typos = new TypoGateSettings(
             SuppressCompletionsOnTypo,

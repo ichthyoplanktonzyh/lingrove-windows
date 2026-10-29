@@ -117,7 +117,9 @@ public sealed class CompletionModelAdmission : ISuggestionEngine, IAsyncDisposab
         }, false, cancellationToken, ticket, preparation: true);
     }
 
-    public Task<string> GenerateAsync(SuggestionRequest request, CancellationToken cancellationToken)
+    public Task<string> GenerateAsync(SuggestionRequest request, CancellationToken cancellationToken) => GenerateAsync(request, null, cancellationToken);
+
+    public Task<string> GenerateAsync(SuggestionRequest request, Action<string>? onPartial, CancellationToken cancellationToken)
     {
         Ticket ticket;
         lock (_sync)
@@ -138,7 +140,11 @@ public sealed class CompletionModelAdmission : ISuggestionEngine, IAsyncDisposab
                     string result;
                     try
                     {
-                        result = await _engine.GenerateAsync(request, token).ConfigureAwait(false);
+                        result = await _engine.GenerateAsync(request, onPartial is null ? null : text =>
+                        {
+                            if (!token.IsCancellationRequested && IsCurrent(ticket))
+                                try { onPartial(text); } catch { /* Presentation cannot break native generation. */ }
+                        }, token).ConfigureAwait(false);
                         outcome = token.IsCancellationRequested || !IsCurrent(ticket) ? ModelRequestOutcome.Cancelled : ModelRequestOutcome.Completed;
                     }
                     catch (OperationCanceledException) { outcome = ModelRequestOutcome.Cancelled; throw; }

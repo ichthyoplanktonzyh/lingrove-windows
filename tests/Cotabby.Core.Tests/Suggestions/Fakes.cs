@@ -188,17 +188,22 @@ internal sealed class FakeFocus : IFocusTracker, ITextInserter
     public void Dispose() { }
 }
 
-internal sealed class ScriptedEngine : ISuggestionEngine
+internal sealed class ScriptedEngine : ISuggestionEngine, ILocalSpeculativeSuggestionEngine
 {
     public Func<SuggestionRequest, string> Completion { get; set; } = _ => " world again";
     public Func<SuggestionRequest, CancellationToken, Task<string>>? GenerateOverride { get; set; }
+    public Func<SuggestionRequest, Action<string>?, CancellationToken, Task<string>>? StreamOverride { get; set; }
     public ConcurrentQueue<SuggestionRequest> Requests { get; } = new();
     public bool IsReady { get; set; } = true;
     public bool SpacingIsExact => true;
+    public bool CanSpeculateLocally { get; set; }
+    public Task<string> GenerateLocalSpeculationAsync(SuggestionRequest request, CancellationToken ct) => GenerateAsync(request, ct);
 
-    public async Task<string> GenerateAsync(SuggestionRequest request, CancellationToken ct)
+    public Task<string> GenerateAsync(SuggestionRequest request, CancellationToken ct) => GenerateAsync(request, null, ct);
+    public async Task<string> GenerateAsync(SuggestionRequest request, Action<string>? onPartial, CancellationToken ct)
     {
         Requests.Enqueue(request);
+        if (StreamOverride is { } stream) return await stream(request, onPartial, ct).ConfigureAwait(false);
         if (GenerateOverride is { } generate)
         {
             return await generate(request, ct).ConfigureAwait(false);
@@ -252,12 +257,15 @@ internal sealed class RecordingOverlay : IOverlayPresenter
 {
     private readonly object _gate = new();
     private string _text = "";
+    private readonly List<string> _shownTexts = [];
     private readonly Dictionary<string, List<TaskCompletionSource<bool>>> _waiters = new(StringComparer.Ordinal);
 
     public string Text
     {
         get { lock (_gate) return _text; }
     }
+
+    public IReadOnlyList<string> ShownTexts { get { lock (_gate) return _shownTexts.ToArray(); } }
 
     public OverlayStyle Style { get; private set; }
 
@@ -296,6 +304,7 @@ internal sealed class RecordingOverlay : IOverlayPresenter
         lock (_gate)
         {
             _text = text;
+            _shownTexts.Add(text);
             _waiters.Remove(text, out completed);
         }
         if (completed is not null)

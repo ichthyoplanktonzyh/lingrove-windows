@@ -39,6 +39,10 @@ internal static class AppearancePane
                 ],
                 s => s.DisplayMode, (s, v) => s.DisplayMode = v)
                 .Tagged("mirror card ghost overlay render mode position"),
+            r.Toggle("Stream Suggestions While Generating",
+                "Reveal ghost text as it is generated and allow early acceptance. Off shows the completed suggestion.",
+                s => s.StreamSuggestionsWhileGenerating, (s, v) => s.StreamSuggestionsWhileGenerating = v)
+                .Tagged("stream partial live generation"),
             r.Toggle("Fade In Suggestions",
                 "Let a new suggestion fade in smoothly instead of appearing all at once.",
                 s => s.FadeInSuggestions, (s, v) => s.FadeInSuggestions = v)

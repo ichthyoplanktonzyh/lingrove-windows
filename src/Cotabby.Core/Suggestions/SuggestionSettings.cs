@@ -56,6 +56,9 @@ public sealed record SuggestionSettings
 
     /// <summary>When off, a new suggestion waits for the word being typed to be finished.</summary>
     public bool SuggestWithinWords { get; init; } = true;
+    public bool StreamSuggestionsWhileGenerating { get; init; }
+    public bool PredictAheadWhileTyping { get; init; } = true;
+    public bool ShowFollowingWords { get; init; } = true;
 
     public TypoGateSettings Typos { get; init; } = new(
         SuppressCompletionsOnTypo: true, OfferTypoCorrections: true, AutomaticallyFixTypos: false);

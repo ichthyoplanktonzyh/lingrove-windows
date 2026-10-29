@@ -89,13 +89,16 @@
                 </Border>
                 <TextBlock Text="Welcome to Cotabby" FontSize="28" FontWeight="SemiBold"
                            HorizontalAlignment="Center" Margin="0,22,0,0" />
-                <TextBlock Text="Ghost-text autocomplete in every app, generated entirely on your PC."
+                <TextBlock Text="Autocomplete and manual sentence translation, with local models or endpoints you choose."
                            FontSize="15" Foreground="{DynamicResource TextSecondary}"
                            HorizontalAlignment="Center" TextAlignment="Center"
                            TextWrapping="Wrap" MaxWidth="320" Margin="0,10,0,0" />
             </StackPanel>
 
-            <!-- Step 2. Starting point templates -->
+            <!-- Recommended setup remains inert until its explicit action. -->
+            <ContentControl x:Name="StepRecommended" Visibility="Collapsed" />
+
+            <!-- Manual starting point templates -->
             <StackPanel x:Name="StepTemplates" VerticalAlignment="Center" Visibility="Collapsed">
                 <TextBlock Style="{StaticResource StepTitle}" Text="Choose a starting point" />
                 <TextBlock Style="{StaticResource Caption}" FontSize="13" Margin="0,6,0,18"

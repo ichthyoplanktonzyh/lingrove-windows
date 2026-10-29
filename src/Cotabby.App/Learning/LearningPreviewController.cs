@@ -41,6 +41,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
     private const string SelectedTextMessage = "Collapse the text selection and leave the caret in the sentence you want to translate.";
     private const string IncompleteTextMessage = "The editor did not expose the complete field text, so the current sentence cannot be verified.";
     private const string UnreliableSelectionMessage = "The editor did not expose a reliable caret position for this sentence.";
+    private const string CompositionMessage = "Finish composing text in a supported editor before translating this sentence.";
     private const string UnsupportedFieldMessage = "Focus a supported text field and try the sentence shortcut again.";
     private const string ChangedFieldMessage = "The sentence changed before its preview could open. Try again.";
     private const string SameLanguageMessage = "Choose different source and target languages in Learning settings.";
@@ -420,6 +421,8 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         var preflightFailure = FieldEnvironmentFailure(origin.Field, settings);
         if (preflightFailure is not null)
             return new CaptureAttempt(null, preflightFailure, origin.Field.CaretRect);
+        if (!CompositionEvidencePolicy.IsClear(origin.Field))
+            return new CaptureAttempt(null, CompositionMessage, origin.Field.CaretRect);
 
         FocusedField? field;
         try
@@ -479,9 +482,6 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
             if (sourceLanguage is null)
                 return new CaptureAttempt(null, UncertainSourceLanguageMessage, field.CaretRect);
 
-            // FocusedField currently has no native marked-text/composition value. The capture is
-            // therefore preserved as unknown input-method evidence, which the Mac readonly preview
-            // permits; no live-IME state is fabricated from key timing and this path cannot write.
             return new CaptureAttempt(
                 new CapturedSentence(field, range, source, settings,
                     settings.Options with { SourceLanguage = sourceLanguage.Value }), null, field.CaretRect);
@@ -501,6 +501,8 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         var environmentFailure = FieldEnvironmentFailure(field, settings);
         if (environmentFailure is not null) return environmentFailure;
         if (field.IsSecure) return SecureFieldMessage;
+        if (!CompositionEvidencePolicy.IsClear(field))
+            return CompositionMessage;
         if (field.HasSelection) return SelectedTextMessage;
         if (!field.HasReliableSelection || field.CaretOffset < 0 || field.CaretOffset > field.Text.Length)
             return UnreliableSelectionMessage;
@@ -654,6 +656,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         current.ProcessId == captured.ProcessId
         && string.Equals(current.FieldId, captured.FieldId, StringComparison.Ordinal)
         && current.FocusChangeSequence == captured.FocusChangeSequence
+        && CompositionEvidencePolicy.IsSameReceipt(captured, current)
         && string.Equals(current.Text, captured.Text, StringComparison.Ordinal)
         && current.CaretOffset == captured.CaretOffset
         && !current.HasSelection
@@ -1193,7 +1196,8 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
     {
         public bool Matches(FocusedField current) => current.ProcessId == Field.ProcessId
             && string.Equals(current.FieldId, Field.FieldId, StringComparison.Ordinal)
-            && current.FocusChangeSequence == Field.FocusChangeSequence;
+            && current.FocusChangeSequence == Field.FocusChangeSequence
+            && CompositionEvidencePolicy.IsSameReceipt(Field, current);
 
         public static CaptureOrigin? From(FocusedField? field) =>
             field is { ProcessId: > 0, FieldId.Length: > 0, FocusChangeSequence: > 0 }

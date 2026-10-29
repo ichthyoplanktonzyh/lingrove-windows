@@ -11,6 +11,8 @@ public sealed class InlineQueryReplacementPolicyTests
         ProcessName = "test-editor",
         FieldId = "document",
         FocusChangeSequence = 3,
+        Composition = InputCompositionState.Clear,
+        CompositionSequence = 1,
         HasReliableSelection = true,
         IsTextWindowTruncated = false,
         Text = text,

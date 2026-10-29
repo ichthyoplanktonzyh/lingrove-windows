@@ -23,6 +23,7 @@ public static class InsertionTargetPolicy
             || field.FocusChangeSequence <= 0
             || string.IsNullOrWhiteSpace(field.FieldId)
             || field.IsSecure
+            || !CompositionEvidencePolicy.IsClear(field)
             || field.HasSelection
             || !field.HasReliableSelection
             || field.IsTextWindowTruncated
@@ -58,7 +59,8 @@ public static class InsertionTargetPolicy
 
         return expected!.ProcessId == current!.ProcessId
             && string.Equals(expected.FieldId, current.FieldId, StringComparison.Ordinal)
-            && expected.FocusChangeSequence == current.FocusChangeSequence;
+            && expected.FocusChangeSequence == current.FocusChangeSequence
+            && CompositionEvidencePolicy.IsSameReceipt(expected, current);
     }
 
     /// <summary>

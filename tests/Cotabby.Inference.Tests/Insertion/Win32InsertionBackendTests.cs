@@ -137,6 +137,8 @@ public sealed class Win32InsertionBackendTests
             IsSecure = false,
             HasReliableSelection = true,
             FocusChangeSequence = 1,
+            Composition = InputCompositionState.Clear,
+            CompositionSequence = 1,
             IsTextWindowTruncated = false,
             FieldId = "fake:field",
         };

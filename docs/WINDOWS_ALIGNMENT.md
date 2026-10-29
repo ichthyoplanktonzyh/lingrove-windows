@@ -84,6 +84,13 @@ process-only RemoteSigned invocation. The focused lock test passes 1/1, the full
 Inference suite passes 578/578, and the documented prerequisite check reports Ready on this host.
 Independent review and remote final-head CI remain separate gates.
 
+Combined validation exposed a second test-only Windows race: `File.ReadAllLines` can conflict with
+the helper's concurrent append. The marker reader now shares the append-only file and publishes
+only complete newline-terminated snapshot records. The existing native process suite passes 5/5,
+the complete noninteractive Inference suite passes 578/578, and portable App passes 1222/1222.
+Independent read-only review checked the writer and reader without a remaining blocker. This does
+not change the speech protocol or activate an audio provider.
+
 Executed from the integration worktree with Git/.NET added only to the process PATH and .NET
 telemetry disabled:
 
@@ -91,4 +98,6 @@ telemetry disabled:
 dotnet test tests/Cotabby.Inference.Tests/Cotabby.Inference.Tests.csproj --configuration Release --filter 'FullyQualifiedName~VocabularyWindowsFileTests.ExclusiveLockInAnotherProcessBlocksOurSharedAccessAndReleasesCleanly'
 powershell -NoProfile -ExecutionPolicy RemoteSigned -File .\scripts\check-windows-dev.ps1 -Json
 dotnet test tests/Cotabby.Inference.Tests/Cotabby.Inference.Tests.csproj --configuration Release --no-build --no-restore --filter 'FullyQualifiedName!~ClipboardTextReaderTests'
+dotnet test tests/Cotabby.Inference.Tests/Cotabby.Inference.Tests.csproj --configuration Release --filter FullyQualifiedName~WindowsSpeechProcessTests
+dotnet test tests/Cotabby.App.Tests/Cotabby.App.Tests.csproj --configuration Release
 ```

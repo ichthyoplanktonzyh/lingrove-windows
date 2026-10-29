@@ -77,6 +77,20 @@ internal sealed class LearningModelCatalogManager : IAsyncDisposable
         }, ct);
 
     /// <summary>
+    /// Reads a detached assignment snapshot for a task-scoped picker. Discovery alone never grants
+    /// an unknown file a task; the shared settings owner records explicit choices separately.
+    /// </summary>
+    public async Task<IReadOnlyList<LearningInstalledModel>> GetInstalledModelsForTaskAsync(
+        LocalModelTask task, IReadOnlyDictionary<string, string[]> assignments, CancellationToken ct = default)
+    {
+        ArgumentNullException.ThrowIfNull(assignments);
+        var snapshot = assignments.ToDictionary(pair => pair.Key, pair => pair.Value.ToArray(), StringComparer.Ordinal);
+        var models = await GetInstalledModelsAsync(ct).ConfigureAwait(false);
+        return models.Where(model => LocalModelTaskPolicy.IsCandidate(model.Filename, task,
+            LocalModelTaskAssignments.TasksFor(model.Filename, snapshot))).ToArray();
+    }
+
+    /// <summary>
     /// Downloads one curated model only after its Get button was pressed. A verified staging file
     /// is atomically promoted; an existing same-name file is never overwritten without consent.
     /// </summary>

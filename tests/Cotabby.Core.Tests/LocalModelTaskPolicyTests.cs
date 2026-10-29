@@ -1,0 +1,65 @@
+using Cotabby.Core.LanguageLearning;
+using Cotabby.Core.Models;
+
+namespace Cotabby.Core.Tests.Models;
+
+public class LocalModelTaskPolicyTests
+{
+    [Fact]
+    public void CatalogOwnsEachTaskAndDecodersNeverBecomeCandidates()
+    {
+        var allTasks = Enum.GetValues<LocalModelTask>().ToHashSet();
+        foreach (var entry in LocalModelCatalog.Entries)
+        {
+            Assert.Equal(entry, LocalModelCatalog.Descriptor(entry.Filename.ToUpperInvariant()));
+            foreach (var task in allTasks)
+                Assert.Equal(entry.Task == task && !entry.IsResource,
+                    LocalModelTaskPolicy.IsCandidate(entry.Filename, task, allTasks));
+        }
+    }
+
+    [Fact]
+    public void UnknownFilesRequireAssignmentAndFamilyRulesSurviveRenaming()
+    {
+        var none = new HashSet<LocalModelTask>();
+        var translation = new HashSet<LocalModelTask> { LocalModelTask.Translation };
+        Assert.False(LocalModelTaskPolicy.IsCandidate("custom.gguf", LocalModelTask.Translation, none));
+        Assert.True(LocalModelTaskPolicy.IsCandidate("custom.gguf", LocalModelTask.Translation, translation));
+        Assert.False(LocalModelTaskPolicy.IsCandidate("custom.gguf", LocalModelTask.Explanation, translation));
+        Assert.False(LocalModelTaskPolicy.Supports("Qwen-Base-Q8.gguf", LocalModelTask.Translation));
+        Assert.False(LocalModelTaskPolicy.Supports("TranslateGemma-custom.gguf", LocalModelTask.Explanation));
+        Assert.False(LocalModelTaskPolicy.Supports("mmproj-custom.gguf", LocalModelTask.Speech));
+        Assert.True(LocalModelTaskPolicy.Supports("Qwen3-TTS-other.gguf", LocalModelTask.Speech));
+        Assert.False(LocalModelTaskPolicy.Supports("Qwen3-TTS-other.gguf", LocalModelTask.Completion));
+        Assert.False(LocalModelTaskPolicy.Supports("", LocalModelTask.Completion));
+        foreach (var template in LearningChatTemplatePolicy.AvailableFor(LearningModelRole.Translation))
+            Assert.True(LocalModelTaskPolicy.PermitsTemplate(template, LocalModelTask.Translation));
+        Assert.False(LocalModelTaskPolicy.PermitsTemplate(LearningChatTemplate.HyMt, LocalModelTask.Explanation));
+    }
+
+    [Fact]
+    public void ExplicitAssignmentsUseLowercaseKeysSortedTaskValuesAndKeepCatalogOwnership()
+    {
+        var map = new Dictionary<string, string[]>();
+        Assert.True(LocalModelTaskAssignments.TryRecord("CUSTOM.gguf", LocalModelTask.Translation, map));
+        Assert.True(LocalModelTaskAssignments.TryRecord("custom.gguf", LocalModelTask.Completion, map));
+        Assert.Equal(new[] { "completion", "translation" }, map["custom.gguf"]);
+        Assert.Equal(new[] { LocalModelTask.Completion, LocalModelTask.Translation },
+            LocalModelTaskAssignments.TasksFor("CUSTOM.gguf", map).Order().ToArray());
+        Assert.False(LocalModelTaskAssignments.TryRecord("gemma-4-E2B.i1-Q6_K.gguf", LocalModelTask.Translation, map));
+        Assert.True(LocalModelTaskAssignments.TryRecord("mmproj-custom.gguf", LocalModelTask.Speech, map));
+        Assert.False(map.ContainsKey("mmproj-custom.gguf"));
+        Assert.False(LocalModelTaskPolicy.IsCandidate("mmproj-custom.gguf", LocalModelTask.Speech,
+            new HashSet<LocalModelTask> { LocalModelTask.Speech }));
+        map["unknown.gguf"] = ["bogus", "speech"];
+        Assert.Equal(new[] { LocalModelTask.Speech }, LocalModelTaskAssignments.TasksFor("unknown.gguf", map));
+    }
+
+    [Fact]
+    public void UsageProtectsCurrentAndFutureSelectionsAcrossTasks()
+    {
+        var names = ModelUsagePolicy.ProtectedFilenames("current.gguf", ["battery.gguf", "", null],
+            [new[] { "translation.gguf", "explanation.gguf" }]);
+        Assert.True(names.SetEquals(["current.gguf", "battery.gguf", "translation.gguf", "explanation.gguf"]));
+    }
+}

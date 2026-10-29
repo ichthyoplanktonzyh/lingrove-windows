@@ -56,4 +56,19 @@ public sealed class FrozenVocabularyEntryDraftTests
         Assert.Contains(added.Id, result.Collections[0].InterpretationIds);
         F.VocabularyArchiveValidation.Validate(result);
     }
+    [Fact]
+    public void CanonicallyEquivalentCombiningOrdersRemainDistinctUsageEvidence()
+    {
+        var doc = Seed(); var baseline = doc.Entries[0]; var existing = baseline.Senses[0].Examples[0];
+        var first = new F.VocabularyExample(Guid.NewGuid(), "a\u0301\u0323", "", [],
+            Cotabby.Core.Vocabulary.Resources.VocabularyExampleCompleteness.Fragment, "", Time);
+        var second = new F.VocabularyExample(Guid.NewGuid(), "a\u0323\u0301", "", [],
+            Cotabby.Core.Vocabulary.Resources.VocabularyExampleCompleteness.Fragment, "", Time);
+        var edited = ChangeSense(baseline, sense => sense with { Examples = [existing, first, second] });
+        var result = F.VocabularyEntryDraftPolicy.Update(edited, baseline, doc, Time);
+        Assert.Contains(first.Id, result.Collections[0].InterpretationIds);
+        Assert.Contains(second.Id, result.Collections[0].InterpretationIds);
+        Assert.Equal(3, result.CollectedEntries[0].Senses[0].Examples.Count);
+        F.VocabularyArchiveValidation.Validate(result);
+    }
 }

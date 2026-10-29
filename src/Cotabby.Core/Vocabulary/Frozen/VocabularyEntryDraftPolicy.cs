@@ -1,5 +1,4 @@
 using Cotabby.Core.Support;
-using Cotabby.Core.Text;
 using Cotabby.Core.Vocabulary.Resources;
 using FrozenCompleteness = Cotabby.Core.Vocabulary.Resources.VocabularyExampleCompleteness;
 
@@ -26,8 +25,8 @@ public static class VocabularyEntryDraftPolicy
         var merged = current with { Expression = Merge(baseline.Expression, current.Expression, edited.Expression, CollectionValues.Same),
             DictionaryForm = Merge(baseline.DictionaryForm, current.DictionaryForm, edited.DictionaryForm, CollectionValues.Same),
             Senses = MergeSenses(baseline.Senses, current.Senses, edited.Senses, now), UpdatedAt = now };
-        var prior = current.Examples.GroupBy(Key, CanonicalStringComparer.Instance).ToDictionary(group => group.Key, group => group.Count(), CanonicalStringComparer.Instance);
-        if (merged.Examples.GroupBy(Key, CanonicalStringComparer.Instance).Any(group => group.Count() > 1 && group.Count() > prior.GetValueOrDefault(group.Key))) throw Conflict();
+        var prior = current.Examples.GroupBy(Key, StringComparer.Ordinal).ToDictionary(group => group.Key, group => group.Count(), StringComparer.Ordinal);
+        if (merged.Examples.GroupBy(Key, StringComparer.Ordinal).Any(group => group.Count() > 1 && group.Count() > prior.GetValueOrDefault(group.Key))) throw Conflict();
         entries[index] = merged;
         var next = VocabularyNotebookProjection.Replace(entries, document);
         var collections = next.Collections.ToList();
@@ -76,7 +75,7 @@ public static class VocabularyEntryDraftPolicy
         foreach (var value in edited)
         {
             var before = baseline.FirstOrDefault(item => item.Id == value.Id);
-            if (before is null) { if (!result.Any(item => CanonicalStringComparer.Instance.Equals(Key(item), Key(value)))) result.Add(value); continue; }
+            if (before is null) { if (!result.Any(item => StringComparer.Ordinal.Equals(Key(item), Key(value)))) result.Add(value); continue; }
             if (value == before) continue;
             int index = result.FindIndex(item => item.Id == value.Id); if (index < 0) throw Conflict();
             var corrected = value;
@@ -93,6 +92,8 @@ public static class VocabularyEntryDraftPolicy
     }
     private static string Key(VocabularyExample value)
     {
+        // Mac hashes the UTF-8 bytes of the framed fields. Ordinal framing comparison retains
+        // those exact bytes instead of applying Swift String canonical equivalence to the frame.
         var ranges = string.Join(",", value.Ranges.Select(range => $"{range.Location}:{range.Length}"));
         string kind = value.Completeness switch { FrozenCompleteness.Sentence => "sentence", FrozenCompleteness.Fragment => "fragment", _ => "unknown" };
         return string.Concat(new[] { value.Text, ranges, kind }.Select(part => $"{System.Text.Encoding.UTF8.GetByteCount(part)}:{part}"));

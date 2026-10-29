@@ -37,7 +37,7 @@ internal sealed class SpeechHelperSession(string executable, SpeechLocalConfigur
 
     internal bool HasLifetimeErrors { get { lock (_gate) return _lifetimeErrors.Count > 0; } }
 
-    internal async Task StartIfNeededAsync(SpeechPlaybackToken token)
+    internal async Task StartIfNeededAsync(SpeechPlaybackToken token, Func<bool>? admission = null)
     {
         Task<ISpeechHelperProcess> startup; Task readiness;
         lock (_gate)
@@ -48,7 +48,7 @@ internal sealed class SpeechHelperSession(string executable, SpeechLocalConfigur
             _started = true; _loadingTimestamp = clock.GetTimestamp();
             var admitted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
             _startup = LaunchAsync(); startup = _startup;
-            async Task<ISpeechHelperProcess> LaunchAsync() { await admitted.Task.ConfigureAwait(false); return await factory.StartAsync(executable, configuration, CancellationToken.None).ConfigureAwait(false); }
+            async Task<ISpeechHelperProcess> LaunchAsync() { await admitted.Task.ConfigureAwait(false); SpeechAdmission.Require(admission); return await factory.StartAsync(executable, configuration, CancellationToken.None).ConfigureAwait(false); }
             _readyWaiter = new(TaskCreationOptions.RunContinuationsAsynchronously); readiness = _readyWaiter.Task;
             admitted.SetResult();
         }
@@ -95,7 +95,7 @@ internal sealed class SpeechHelperSession(string executable, SpeechLocalConfigur
             _resultWaiter = new(TaskCreationOptions.RunContinuationsAsynchronously); result = _resultWaiter.Task; process = _process;
             ScheduleTimeoutLocked();
         }
-        try { await process.Input.WriteAsync(line, _readCancellation.Token).ConfigureAwait(false); await process.Input.FlushAsync(_readCancellation.Token).ConfigureAwait(false); }
+        try { SpeechAdmission.Require(request.Admission); await process.Input.WriteAsync(line, _readCancellation.Token).ConfigureAwait(false); await process.Input.FlushAsync(_readCancellation.Token).ConfigureAwait(false); }
         catch { lock (_gate) FailPendingLocked(); }
         await result.ConfigureAwait(false);
     }

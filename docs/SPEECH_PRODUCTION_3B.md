@@ -52,3 +52,11 @@ until the destination is rendered, then rechecks the captured reading selection,
 admission and speech configuration identity before dispatch. Hiding, switching to the dictionary
 or replacing the text retires the relevant target. The application must attach the same owner
 to each reading presentation; this component alone does not activate that composition.
+Reading carries an in-memory synchronous admission callback through the shared controller and
+generator. The callback checks the captured selection authority, presentation/settings epochs
+and cancellation without touching WPF or credentials. The SAPI worker rechecks immediately
+before synthesis, the local helper rechecks before launch and before writing text to its pipe,
+and endpoint transport checks immediately before `SendAsync`. A missing permit leaves ordinary
+speech behavior unchanged; a provider that cannot honor a non-null permit fails closed.
+System synthesis is serialized: one real worker drains before the latest pending request starts,
+and intermediate requests are discarded. Shutdown joins the worker even if native code is slow.

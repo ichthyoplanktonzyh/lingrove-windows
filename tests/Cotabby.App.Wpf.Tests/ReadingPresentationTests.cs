@@ -15,12 +15,42 @@ using Cotabby.Core.Speech;
 using Cotabby.Core.Models;
 using Cotabby.Inference.Speech;
 using Cotabby.Inference.OpenAICompatible;
+using Cotabby.Win32.Speech;
+using System.Net;
+using System.Net.Http;
 
 namespace Cotabby.App.Wpf.Tests;
 
 [Collection("WPF views")]
 public sealed class ReadingPresentationTests(WpfDispatcher dispatcher)
 {
+    [Fact]
+    public Task ReadingRevocationAfterUiAdmissionBlocksActualEndpointSend() => dispatcher.RunAsync(async () =>
+    {
+        int live = 1, sent = 0; var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously); var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var settings = new LearningSpeechSettings(() => new AppSettings(), () => { }, new SpeechCredentials()); settings.SetEndpointBaseUrl("https://fixture.example/v1"); settings.SetEndpointModel("fixture"); settings.SetEndpointVoice("voice"); settings.SelectProvider(LearningSpeechProviderKind.Endpoint);
+        var effects = new SpeechEffects(); await using var actual = new SpeechAudioGenerator(new LocalSpeechRuntime(new WindowsSpeechProcessFactory(), new WindowsSpeechMemoryPressure()), new SpeechEndpointClient(() => new CountSpeechHandler(() => Interlocked.Increment(ref sent))));
+        var delayed = new DelayedSpeechGenerator(actual, entered, release);
+        await using var speech = new LearningSpeechController(settings, new SpeechTelemetry((_, _, _) => { }), effects, delayed, effects, effects, effects, effects,
+            _ => new System.Collections.Generic.Dictionary<string, double>(), StringComparer.Ordinal, Path.GetTempPath(), () => effects);
+        var presentation = new ReadingPresentation(Dispatcher.CurrentDispatcher, new Dictionary(), (_, _) => throw new InvalidOperationException(), (_, _, _) => throw new InvalidOperationException(), () => { }, new Clipboard(), new ReadingVocabularyStoreFake(), (_, _) => [], LearningLanguage.Chinese);
+        var selection = new ReadingSelection(Guid.NewGuid(), "Fixture sentence.", 1, "field", 1, 0, 17, false, true, InputCompositionState.Clear, 1, ScreenRect.Empty) { Admission = () => Volatile.Read(ref live) == 1 };
+        try
+        {
+            presentation.AttachSpeech(speech); presentation.BindAuthority(selection, _ => Task.FromResult(true), default);
+            await presentation.ShowAsync(new(selection, LearningLanguage.English, LearningLanguage.English, new(true, ReadingRouteReason.TerminalText, null, false), ReadingStatus.Ready, "Local model", "Result."));
+            FindButton(presentation.ReadingCard, "Read source").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); await entered.Task.WaitAsync(TimeSpan.FromSeconds(10));
+            Volatile.Write(ref live, 0); release.SetResult(); await speech.DrainAsync(); Assert.Equal(0, sent);
+        }
+        finally { release.TrySetResult(); await presentation.DisposeAsync(); speech.Shutdown(); await speech.DrainAsync(); }
+    });
+    private sealed class CountSpeechHandler(Action send) : HttpMessageHandler
+    { protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken token) { send(); return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new ByteArrayContent([1]) }); } }
+    private sealed class DelayedSpeechGenerator(ISpeechAudioGenerating inner, TaskCompletionSource entered, TaskCompletionSource release) : ISpeechAudioGenerating
+    {
+        public Task GenerateAsync(SpeechAudioRequest request, Func<SpeechAudioChunk, Task> receive, CancellationToken token) => Task.Run(async () => { entered.SetResult(); await release.Task; await inner.GenerateAsync(request, receive, token); });
+        public Task CancelAsync(SpeechPlaybackToken token) => inner.CancelAsync(token); public Task ShutdownAsync() => inner.ShutdownAsync();
+    }
     [Fact]
     public Task ReadingSpeechRetiresHeldAdmissionBeforeAnyProviderCall() => dispatcher.RunAsync(async () =>
     {
@@ -57,6 +87,7 @@ public sealed class ReadingPresentationTests(WpfDispatcher dispatcher)
         internal int Starts; internal string? LastText;
         public IReadOnlyList<SpeechVoice> RefreshVoices() => [new("test", "Test", "en-US", SpeechVoiceQuality.Standard)];
         public void Speak(string text, SpeechVoice voice, double rateMultiplier, SpeechPlaybackToken token) { Starts++; LastText = text; }
+        public void Speak(string text, SpeechVoice voice, double rateMultiplier, SpeechPlaybackToken token, Func<bool>? admission) { SpeechAdmission.Require(admission); Speak(text, voice, rateMultiplier, token); }
         public void Stop(SpeechPlaybackToken token) { } public void Stop() { } public void Shutdown() { }
         public void Play(ReadOnlySpan<byte> data, double rate, SpeechPlaybackToken token) => throw new NotSupportedException();
         public void Begin(int sampleRate, double rate, SpeechPlaybackToken token) => throw new NotSupportedException();

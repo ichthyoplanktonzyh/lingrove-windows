@@ -9,13 +9,42 @@ namespace Cotabby.App.Wpf.Tests;
 public sealed class WindowsSystemSpeechProviderTests(WpfDispatcher dispatcher)
 {
     [Fact]
+    public Task BurstWaitsForPriorWorkerAndKeepsOnlyLatestPending() => dispatcher.RunAsync(async () =>
+    {
+        using var release = new ManualResetEventSlim(); var first = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var last = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously); var calls = new System.Collections.Concurrent.ConcurrentQueue<string>(); int active = 0, maxActive = 0;
+        var voice = new SpeechVoice("voice", "Voice", "en-US", SpeechVoiceQuality.Standard);
+        var provider = new WindowsSystemSpeechProvider(() => [voice], (text, _, _, _, _, _) =>
+        {
+            int count = Interlocked.Increment(ref active); maxActive = Math.Max(maxActive, count); calls.Enqueue(text);
+            if (text == "first") { first.TrySetResult(); release.Wait(); } else last.TrySetResult();
+            Interlocked.Decrement(ref active);
+        });
+        provider.Speak("first", voice, 1, new()); await first.Task.WaitAsync(TimeSpan.FromSeconds(10));
+        for (int i = 0; i < 100; i++) provider.Speak("next-" + i, voice, 1, new());
+        Assert.Single(calls); release.Set(); await last.Task.WaitAsync(TimeSpan.FromSeconds(10)); await provider.DisposeAsync();
+        Assert.Equal(1, maxActive); Assert.Equal(new[] { "first", "next-99" }, calls.ToArray());
+    });
+    [Fact]
+    public Task RevokedPendingPermitNeverEntersNativeWorker() => dispatcher.RunAsync(async () =>
+    {
+        using var release = new ManualResetEventSlim(); var first = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously); int calls = 0, allowed = 1;
+        var voice = new SpeechVoice("voice", "Voice", "en-US", SpeechVoiceQuality.Standard);
+        var rejected = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously); var pendingToken = new SpeechPlaybackToken();
+        var provider = new WindowsSystemSpeechProvider(() => [voice], (_, _, _, _, _, _) => { Interlocked.Increment(ref calls); first.TrySetResult(); release.Wait(); });
+        provider.EventHandler = e => { if (e is SpeechProviderEvent.Cancelled && e.Token == pendingToken) rejected.TrySetResult(); };
+        provider.Speak("first", voice, 1, new()); await first.Task.WaitAsync(TimeSpan.FromSeconds(10));
+        provider.Speak("revoked", voice, 1, pendingToken, () => Volatile.Read(ref allowed) == 1);
+        Volatile.Write(ref allowed, 0); release.Set(); await rejected.Task.WaitAsync(TimeSpan.FromSeconds(10)); await provider.DisposeAsync(); Assert.Equal(1, calls);
+    });
+    [Fact]
     public Task LazyCatalogAndCancelledWorkerAreJoinedOnRepeatedDisposal() => dispatcher.RunAsync(async () =>
     {
         int catalogs = 0; var entered = new TaskCompletionSource<CancellationToken>(TaskCreationOptions.RunContinuationsAsynchronously);
         using var release = new ManualResetEventSlim();
         var voice = new SpeechVoice("voice", "Voice", "en-US", SpeechVoiceQuality.Standard);
         var provider = new WindowsSystemSpeechProvider(() => { catalogs++; return [voice]; },
-            (_, _, _, _, token) => { entered.TrySetResult(token); release.Wait(); });
+            (_, _, _, _, token, _) => { entered.TrySetResult(token); release.Wait(); });
         Assert.Equal(0, catalogs); Assert.Single(provider.RefreshVoices()); Assert.Equal(1, catalogs);
         var token = new SpeechPlaybackToken(); provider.Speak("fixture", voice, 1, token);
         var workerToken = await entered.Task.WaitAsync(TimeSpan.FromSeconds(10)); provider.Stop(token);

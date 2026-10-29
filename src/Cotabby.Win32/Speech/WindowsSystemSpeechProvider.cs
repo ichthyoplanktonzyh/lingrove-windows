@@ -14,9 +14,11 @@ public sealed class WindowsSystemSpeechProvider : ISpeechProviding, IAsyncDispos
     private readonly SynchronizationContext _context = SynchronizationContext.Current
         ?? throw new InvalidOperationException("Speech requires a UI context.");
     private readonly object _gate = new();
-    private readonly HashSet<Task> _work = [];
+    private sealed record Pending(string Text, string VoiceId, double Rate, SpeechPlaybackToken Token, Func<bool>? Admission);
+    private Pending? _pending;
+    private Task? _pump;
     private readonly Func<IReadOnlyList<SpeechVoice>> _catalog;
-    private readonly Action<string, string, double, SpeechPlaybackToken, CancellationToken> _speak;
+    private readonly Action<string, string, double, SpeechPlaybackToken, CancellationToken, Func<bool>?> _speak;
     private CancellationTokenSource? _active;
     private SpeechPlaybackToken? _token;
     private bool _closed;
@@ -25,7 +27,7 @@ public sealed class WindowsSystemSpeechProvider : ISpeechProviding, IAsyncDispos
 
     public WindowsSystemSpeechProvider() { _catalog = Catalog; _speak = SpeakCore; }
     internal WindowsSystemSpeechProvider(Func<IReadOnlyList<SpeechVoice>> catalog,
-        Action<string, string, double, SpeechPlaybackToken, CancellationToken> speak)
+        Action<string, string, double, SpeechPlaybackToken, CancellationToken, Func<bool>?> speak)
     { _catalog = catalog; _speak = speak; }
 
     public IReadOnlyList<SpeechVoice> RefreshVoices()
@@ -34,21 +36,39 @@ public sealed class WindowsSystemSpeechProvider : ISpeechProviding, IAsyncDispos
         return _catalog();
     }
 
-    public void Speak(string text, SpeechVoice voice, double rateMultiplier, SpeechPlaybackToken token)
+    public void Speak(string text, SpeechVoice voice, double rateMultiplier, SpeechPlaybackToken token) => Speak(text, voice, rateMultiplier, token, null);
+    public void Speak(string text, SpeechVoice voice, double rateMultiplier, SpeechPlaybackToken token, Func<bool>? admission)
     {
-        CancellationTokenSource cancellation = new();
         lock (_gate)
         {
-            if (_closed) { cancellation.Dispose(); throw new ObjectDisposedException(nameof(WindowsSystemSpeechProvider)); }
-            _active?.Cancel(); _active = cancellation; _token = token;
-            Task task = WindowsSpeechMta.RunAsync(() => { _speak(text, voice.Id, rateMultiplier, token, cancellation.Token); return true; }, CancellationToken.None);
-            _work.Add(task);
-            _ = task.ContinueWith(t => { if (t.IsFaulted) { _ = t.Exception; Post(new SpeechProviderEvent.Failed(token, "Unable to play the selected system voice.")); } lock (_gate) { _work.Remove(t); if (ReferenceEquals(_active, cancellation)) { _active = null; _token = null; } } cancellation.Dispose(); }, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+            if (_closed) throw new ObjectDisposedException(nameof(WindowsSystemSpeechProvider));
+            _active?.Cancel(); _pending = new(text, voice.Id, rateMultiplier, token, admission); _token = token;
+            _pump ??= Task.Run(PumpAsync);
         }
     }
 
     public void Stop(SpeechPlaybackToken token)
-    { lock (_gate) { if (_token == token) _active?.Cancel(); } }
+    { lock (_gate) { if (_token == token) { _pending = null; _active?.Cancel(); _token = null; } } }
+
+    private async Task PumpAsync()
+    {
+        while (true)
+        {
+            Pending item; CancellationTokenSource cancellation;
+            lock (_gate)
+            {
+                if (_closed || _pending is null) { _pump = null; return; }
+                item = _pending; _pending = null; _active = cancellation = new();
+            }
+            try
+            {
+                await WindowsSpeechMta.RunAsync(() => { SpeechAdmission.Require(item.Admission); _speak(item.Text, item.VoiceId, item.Rate, item.Token, cancellation.Token, item.Admission); return true; }, CancellationToken.None).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException) { Post(new SpeechProviderEvent.Cancelled(item.Token)); }
+            catch { Post(new SpeechProviderEvent.Failed(item.Token, "Unable to play the selected system voice.")); }
+            finally { lock (_gate) { if (ReferenceEquals(_active, cancellation)) _active = null; if (_token == item.Token && _pending is null) _token = null; } cancellation.Dispose(); }
+        }
+    }
 
     private void Post(SpeechProviderEvent value) => _context.Post(_ =>
     {
@@ -85,7 +105,7 @@ public sealed class WindowsSystemSpeechProvider : ISpeechProviding, IAsyncDispos
         finally { Release(voices); Release(synth); }
     }
 
-    private void SpeakCore(string text, string voiceId, double rate, SpeechPlaybackToken token, CancellationToken cancellation)
+    private void SpeakCore(string text, string voiceId, double rate, SpeechPlaybackToken token, CancellationToken cancellation, Func<bool>? admission)
     {
         dynamic? synth = null, voices = null, selected = null;
         try
@@ -96,7 +116,7 @@ public sealed class WindowsSystemSpeechProvider : ISpeechProviding, IAsyncDispos
             for (int i = 0; i < count; i++) { dynamic item = voices.Item(i); if (string.Equals((string)item.Id, voiceId, StringComparison.Ordinal)) { selected = item; break; } Release(item); }
             if (selected is null) throw new InvalidOperationException("The selected speech voice is no longer available.");
             synth.Voice = selected; synth.Rate = Math.Clamp((int)Math.Round(Math.Log2(Math.Clamp(rate, .5, 1.5)) * 10), -10, 10);
-            cancellation.ThrowIfCancellationRequested(); synth.Speak(text, 17); Post(new SpeechProviderEvent.Started(token));
+            cancellation.ThrowIfCancellationRequested(); SpeechAdmission.Require(admission); synth.Speak(text, 17); Post(new SpeechProviderEvent.Started(token));
             while (!(bool)synth.WaitUntilDone(50)) { if (cancellation.IsCancellationRequested) { synth.Speak("", 3); throw new OperationCanceledException(cancellation); } }
             cancellation.ThrowIfCancellationRequested(); Post(new SpeechProviderEvent.Finished(token));
         }
@@ -110,7 +130,7 @@ public sealed class WindowsSystemSpeechProvider : ISpeechProviding, IAsyncDispos
         lock (_gate)
         {
             if (_disposal is not null) return new(_disposal);
-            _closed = true; _active?.Cancel(); _disposal = Task.WhenAll(_work.ToArray()); return new(_disposal);
+            _closed = true; _pending = null; _active?.Cancel(); _disposal = _pump ?? Task.CompletedTask; return new(_disposal);
         }
     }
 }

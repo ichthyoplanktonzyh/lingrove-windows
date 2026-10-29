@@ -34,6 +34,9 @@ internal sealed class VocabularyEntryImportSession
     private readonly IDisposable _subscription;
     private long _generation;
     private ulong? _latestRevision;
+    private readonly object _revisionGate = new();
+    private ulong _pendingRevision;
+    private bool _revisionQueued, _revisionRetired;
     internal VocabularyEntryImportSession(Dispatcher dispatcher, IVocabularyEntryInputOwner owner, IVocabularyWordListReader reader)
     {
         _dispatcher = dispatcher; _owner = owner; _reader = reader; dispatcher.VerifyAccess();
@@ -102,15 +105,35 @@ internal sealed class VocabularyEntryImportSession
     internal void Cancel()
     {
         Verify(); if (!Active || Saving) return;
-        Active = false; _subscription.Dispose(); _generation++; _work?.Cancel(); _work?.Dispose(); _work = null;
+        Active = false; lock (_revisionGate) { _revisionRetired = true; _pendingRevision = 0; }
+        _subscription.Dispose(); _generation++; _work?.Cancel(); _work?.Dispose(); _work = null;
         Preview = null; Preparing = false; Notify();
     }
-    // Store callbacks are worker-owned and may already be in flight after unsubscription.
+    // Worker callbacks can arrive faster than the dispatcher can run. Keep one pending operation
+    // and the maximum revision; cancellation retires even a callback already copied by the Store.
     private void QueueRevision(ulong revision)
     {
-        if (_dispatcher.HasShutdownStarted || _dispatcher.HasShutdownFinished) return;
-        try { _dispatcher.BeginInvoke(() => { if (Active) _ = OwnerRevisionChangedAsync(revision); }); }
-        catch (InvalidOperationException) when (_dispatcher.HasShutdownStarted || _dispatcher.HasShutdownFinished) { }
+        lock (_revisionGate)
+        {
+            if (_revisionRetired || _dispatcher.HasShutdownStarted || _dispatcher.HasShutdownFinished) return;
+            _pendingRevision = Math.Max(_pendingRevision, revision);
+            if (_revisionQueued) return;
+            _revisionQueued = true;
+            try { _dispatcher.BeginInvoke(DispatcherPriority.DataBind, DrainRevision); }
+            catch (InvalidOperationException) when (_dispatcher.HasShutdownStarted || _dispatcher.HasShutdownFinished)
+            { _revisionQueued = false; _pendingRevision = 0; }
+        }
+    }
+    private void DrainRevision()
+    {
+        ulong revision;
+        lock (_revisionGate)
+        {
+            _revisionQueued = false;
+            if (_revisionRetired) { _pendingRevision = 0; return; }
+            revision = _pendingRevision; _pendingRevision = 0;
+        }
+        if (Active) _ = OwnerRevisionChangedAsync(revision);
     }
     private (long, CancellationToken) Begin()
     {

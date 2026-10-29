@@ -21,7 +21,8 @@ public sealed class VocabularyEntryImportViewTests(WpfDispatcher dispatcher)
         internal Func<IReadOnlyList<VocabularyEntryInput>, CancellationToken, Task<VocabularyInputResult>> Add = (_, _) => Task.FromResult(NewResult());
         public async Task<VocabularyInputPreview> PreviewAsync(VocabularyWordList table, VocabularyWordListConfiguration configuration, CancellationToken token)
         { var inputs = VocabularyWordListPolicy.Inputs(table, configuration, token); return new(inputs, await Preview(inputs, token)); }
-        public IDisposable Subscribe(Action<ulong> changed) => new EmptySubscription();
+        internal Action<ulong>? RevisionCallback;
+        public IDisposable Subscribe(Action<ulong> changed) { RevisionCallback = changed; return new EmptySubscription(); }
         private sealed class EmptySubscription : IDisposable { public void Dispose() { } }
         public Task<VocabularyInputResult> AddEntriesAsync(IReadOnlyList<VocabularyEntryInput> inputs, CancellationToken token) => Add(inputs, token);
     }
@@ -144,6 +145,60 @@ public sealed class VocabularyEntryImportViewTests(WpfDispatcher dispatcher)
         }
         finally { File.Delete(path); }
     });
+    [Fact]
+    public Task BusyDispatcherCoalescesRevisionBurstAndIgnoresLateCallbacks() => dispatcher.RunAsync(async () =>
+    {
+        string path = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".txt"); await File.WriteAllTextAsync(path, "word");
+        try
+        {
+            long revision = 0; int previews = 0;
+            var owner = new Owner { Preview = (_, _) => { previews++; return Task.FromResult(new VocabularyInputPreviewResult((ulong)Interlocked.Read(ref revision), NewResult())); } };
+            var session = new VocabularyEntryImportSession(System.Windows.Threading.Dispatcher.CurrentDispatcher, owner, new WindowsVocabularyWordListReader());
+            await session.LoadAsync(path, LearningLanguage.English); Assert.Equal(0ul, session.Preview!.Plan.Revision);
+            var hooks = System.Windows.Threading.Dispatcher.CurrentDispatcher.Hooks; int posted = 0;
+            System.Windows.Threading.DispatcherHookEventHandler onPosted = (_, e) =>
+            { if (e.Operation.Priority == System.Windows.Threading.DispatcherPriority.DataBind) Interlocked.Increment(ref posted); };
+            hooks.OperationPosted += onPosted;
+            try
+            {
+                // Keep this UI turn blocked while a worker delivers a descending burst. Only one
+                // dispatcher operation may be queued, and the maximum, not the last value, wins.
+                Task.Run(() => { Interlocked.Exchange(ref revision, 1000); for (ulong i = 1000; i > 0; i--) owner.RevisionCallback!(i); }).GetAwaiter().GetResult();
+                Assert.Equal(1, Volatile.Read(ref posted));
+            }
+            finally { hooks.OperationPosted -= onPosted; }
+            var deadline = DateTime.UtcNow.AddSeconds(10);
+            while (session.Preview?.Plan.Revision != 1000) { if (DateTime.UtcNow >= deadline) throw new TimeoutException(); await Task.Delay(10); }
+            Assert.Equal(2, previews);
+            Task.Run(() => owner.RevisionCallback!(1001)).GetAwaiter().GetResult(); session.Cancel();
+            await Task.Delay(50); Assert.Equal(2, previews);
+            int latePosted = 0; System.Windows.Threading.DispatcherHookEventHandler onLate = (_, e) =>
+            { if (e.Operation.Priority == System.Windows.Threading.DispatcherPriority.DataBind) Interlocked.Increment(ref latePosted); };
+            hooks.OperationPosted += onLate;
+            try { Task.Run(() => owner.RevisionCallback!(1001)).GetAwaiter().GetResult(); Assert.Equal(0, latePosted); }
+            finally { hooks.OperationPosted -= onLate; }
+            Assert.False(session.Active); Assert.Null(session.Preview);
+        }
+        finally { File.Delete(path); }
+    });
+    [Fact]
+    public async Task RevisionAfterDispatcherShutdownDoesNotPostOrThrow()
+    {
+        var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var thread = new Thread(() =>
+        {
+            try
+            {
+                var ui = System.Windows.Threading.Dispatcher.CurrentDispatcher; var owner = new Owner();
+                _ = new VocabularyEntryImportSession(ui, owner, new WindowsVocabularyWordListReader());
+                ui.InvokeShutdown(); Assert.True(ui.HasShutdownFinished);
+                Task.Run(() => owner.RevisionCallback!(10)).GetAwaiter().GetResult(); completion.SetResult();
+            }
+            catch (Exception error) { completion.SetException(error); }
+        });
+        thread.SetApartmentState(ApartmentState.STA); thread.Start();
+        await completion.Task.WaitAsync(TimeSpan.FromSeconds(10)); Assert.True(thread.Join(TimeSpan.FromSeconds(10)));
+    }
     private static T Find<T>(DependencyObject root, string name) where T : FrameworkElement
     {
         if (root is T value && value.Name == name) return value;

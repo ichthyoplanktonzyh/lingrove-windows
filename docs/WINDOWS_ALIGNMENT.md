@@ -31,7 +31,9 @@ review. Test counts and successful XAML builds do not replace visible or desktop
 ## Team and file ownership
 
 The primary agent orchestrates three implementation delegates, all using `gpt-6.1-terra` with
-`xhigh` reasoning. Each delegate owns a complete module through source audit, implementation,
+`high` reasoning for subsequent dispatches, as clarified by the maintainer on 2026-10-29. Existing
+running assignments may finish their checkpoint before the next dispatch adopts this setting.
+Each delegate owns a complete module through source audit, implementation,
 tests, module documentation and review repairs. Work is delivered through bounded checkpoints,
 not a single unreviewable whole-product change.
 
@@ -64,7 +66,7 @@ data retention, reopen and rollback before application activation.
 3. Run appropriate narrow checks and a Release build. Broaden checks when changes or unresolved
    concerns require them. Keep historical fixture expectations and pins intact.
 4. Obtain independent review from another delegate/primary; an author is not the sole reviewer.
-   All delegates use Terra xhigh under the current maintainer instruction. Reviewers report
+   Subsequent delegates use Terra high under the current maintainer instruction. Reviewers report
    findings; the implementation owner repairs them.
 5. Integrate acknowledged checkpoints, run final-head required CI, then merge scoped PRs under the
    existing maintainer authorization. Missing remote authentication does not prevent isolated local

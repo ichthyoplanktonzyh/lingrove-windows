@@ -57,6 +57,8 @@ public class LocalModelTaskPolicyTests
         Assert.False(LocalModelTaskPolicy.Supports("custom.gguf", invalid));
         Assert.False(LocalModelTaskPolicy.IsCandidate("custom.gguf", invalid, new HashSet<LocalModelTask> { invalid }));
         Assert.False(LocalModelTaskPolicy.PermitsTemplate(LearningChatTemplate.Automatic, invalid));
+        foreach (var task in Enum.GetValues<LocalModelTask>())
+            Assert.False(LocalModelTaskPolicy.PermitsTemplate((LearningChatTemplate)999, task));
         Assert.False(LocalModelTaskAssignments.TryRecord("custom.gguf", invalid, assignments));
         Assert.Empty(assignments);
     }

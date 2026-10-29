@@ -55,7 +55,8 @@ public static class LocalModelTaskPolicy
         Supports(filename, task) && (LocalModelCatalog.Descriptor(filename) is not null || assignedTasks.Contains(task));
 
     public static bool PermitsTemplate(LearningChatTemplate template, LocalModelTask task) =>
-        Enum.IsDefined(task) && (task != LocalModelTask.Explanation || template is not (LearningChatTemplate.HyMt or LearningChatTemplate.HyMt7 or LearningChatTemplate.TranslateGemma));
+        Enum.IsDefined(task) && Enum.IsDefined(template)
+        && (task != LocalModelTask.Explanation || template is not (LearningChatTemplate.HyMt or LearningChatTemplate.HyMt7 or LearningChatTemplate.TranslateGemma));
 
     private static bool IsKnownBaseModel(string lower)
     {

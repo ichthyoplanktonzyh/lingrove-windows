@@ -100,6 +100,11 @@ public sealed class CanonicalWritingFavoriteViewTests(WpfDispatcher dispatcher)
         public Task<LearningExplanationRecord?> FindExplanationAsync(LearningExplanationInput i, LearningLanguage l, CancellationToken token = default) => inner.FindExplanationAsync(i, l, token);
         public Task<Frozen.CanonicalWritingReceipt> SaveExplanationAsync(LearningExplanationRecord r, CancellationToken token = default) => inner.SaveExplanationAsync(r, token);
         public Task<Frozen.CanonicalWritingReceipt> AdoptExplanationAsync(LearningExplanationRecord r, VocabularyExplanationDestination d, CancellationToken token = default) => inner.AdoptExplanationAsync(r, d, token);
+        public Task<Frozen.FrozenVocabularyImportSnapshot> SaveReviewAsync(Guid e, Guid s, Frozen.VocabularyReview v, Frozen.VocabularyReview? expected, Guid? cardId = null, IReadOnlyDictionary<string, VocabularyPreparedImage>? images = null, CancellationToken token = default) => inner.SaveReviewAsync(e, s, v, expected, cardId, images, token);
+        public Task<Frozen.FrozenVocabularyImportSnapshot> RecordAnkiBindingAsync(Guid e, Guid s, Frozen.AnkiNoteBinding b, Guid? cardId = null, CancellationToken token = default) => inner.RecordAnkiBindingAsync(e, s, b, cardId, token);
+        public Task<Frozen.FrozenVocabularyImportSnapshot> RemoveReviewAsync(Guid e, Guid s, Guid cardId, Frozen.VocabularyReview expected, CancellationToken token = default) => inner.RemoveReviewAsync(e, s, cardId, expected, token);
+        public Task<Frozen.FrozenVocabularyImportSnapshot> SaveTemplateAsync(Cotabby.Core.Review.ReviewLayoutTemplate template, IReadOnlyDictionary<string, VocabularyPreparedImage>? images = null, CancellationToken token = default) => inner.SaveTemplateAsync(template, images, token);
+        public Task<Frozen.FrozenVocabularyImportSnapshot> RemoveTemplateAsync(Guid id, CancellationToken token = default) => inner.RemoveTemplateAsync(id, token);
         public ValueTask DisposeAsync() => ValueTask.CompletedTask;
     }
     [Fact]

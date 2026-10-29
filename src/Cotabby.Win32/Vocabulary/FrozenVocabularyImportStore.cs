@@ -10,7 +10,7 @@ namespace Cotabby.Win32.Vocabulary;
 
 /// <summary>Isolated candidate for the eventual single app-owned Store. It owns its database,
 /// serializes operations and emits only acknowledged revisioned snapshots.</summary>
-internal sealed class FrozenVocabularyImportStore : ICanonicalVocabularyStore
+internal sealed partial class FrozenVocabularyImportStore : ICanonicalVocabularyStore
 {
     private FrozenVocabularySQLiteDatabase? _database;
     private readonly Func<FrozenVocabularySQLiteDatabase> _open;

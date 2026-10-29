@@ -74,7 +74,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
         System.Windows.Automation.AutomationProperties.SetName(_query, "Search vocabulary"); System.Windows.Automation.AutomationProperties.SetName(_language, "Language filter"); System.Windows.Automation.AutomationProperties.SetName(_tag, "Tag filter"); System.Windows.Automation.AutomationProperties.SetName(_organization, "Browse organization"); System.Windows.Automation.AutomationProperties.SetName(_sort, "Sort order"); System.Windows.Automation.AutomationProperties.SetName(_density, "List density");
         VocabularyNotebookTheme.Input(_query); _query.Tag = "Search vocabulary"; foreach (var box in new[] { _organization, _language, _tag, _sort, _density }) VocabularyNotebookTheme.Combo(box);
         foreach (var control in new FrameworkElement[] { _organization, _query, _language, _tag, _sort, _density }) { control.Margin = new Thickness(0, 0, 8, 6); filters.Children.Add(control); }
-        DockPanel.SetDock(filters, Dock.Top); root.Children.Add(filters); root.Children.Add(_content); InitializeReviewSelection(toolbar, root);
+        DockPanel.SetDock(filters, Dock.Top); root.Children.Add(filters); root.Children.Add(_content); InitializeReviewSelection(toolbar, root); InitializeCanonicalBackup(toolbar);
         ScrollViewer.SetHorizontalScrollBarVisibility(_entries, ScrollBarVisibility.Disabled); VocabularyNotebookTheme.Brush(_entries, Control.BackgroundProperty, "SidebarBg"); VocabularyNotebookTheme.Brush(_entries, Control.ForegroundProperty, "TextPrimary");
         _meanings = new("Other expressions", "Suggested grouping", SenseTitle, LanguageLabel);
         _categories = new(new("Categories", "Search categories", "All meanings", "Uncategorized meanings", "Content meanings", "Communicative functions", "New category", "Manage categories", "Edit category"), search) { AllowEditing = false };
@@ -117,13 +117,16 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
     private void OnClosing(object? sender, CancelEventArgs e)
     {
         if (_allowClose) return;
-        if (!_hideOnClose && !_retiring && _reviewSection is not null) { e.Cancel = true; _ = RetireAsync(); return; }
+        CancelCanonicalBackupPresentation();
+        if (!_hideOnClose && !_retiring && (_reviewSection is not null || _backupCompletion is not null)) { e.Cancel = true; _ = RetireAsync(); return; }
         if (_hideOnClose || _retiring) { e.Cancel = true; if (!_retiring) { if (_modalDone is null) Hide(); else _hideRequested = true; } }
     }
     internal async Task RetireAsync()
     {
         Dispatcher.VerifyAccess(); if (_retiring) return; _retiring = true;
-        Exception? reviewFailure = null; try { await RetireReviewAsync(); } catch (Exception error) { reviewFailure = error; }
+        var retirementErrors = new List<Exception>();
+        try { await RetireCanonicalBackupAsync(); } catch (Exception error) { retirementErrors.Add(error); }
+        try { await RetireReviewAsync(); } catch (Exception error) { retirementErrors.Add(error); }
         CloseActionMenus();
         _add.IsEnabled = _import.IsEnabled = false;
         if (_inputWindow is VocabularyEntryCreationWindow creation) await creation.RetireAsync();
@@ -141,7 +144,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
         if (_semanticCompletion is { } semantic) await semantic.Task;
         if (_graphView is not null) await _graphView.RetireAsync(); await _session.RetireAsync();
         while (_operations.Count != 0) { var operations = _operations.ToArray(); await Task.WhenAll(operations); _operations.RemoveWhere(t => t.IsCompleted); }
-        _allowClose = true; Close(); if (reviewFailure is not null) throw reviewFailure;
+        _allowClose = true; Close(); if (retirementErrors.Count > 0) throw new AggregateException(retirementErrors);
     }
     private async Task AddAsync()
     {
@@ -211,7 +214,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
     }
     private void Present()
     {
-        if (!_session.Active || _retiring) return; UpdateReviewSelection(); CloseActionMenus(); _restoreEntryFocus = _entries.IsKeyboardFocusWithin; _updating = true;
+        if (!_session.Active || _retiring) return; UpdateReviewSelection(); UpdateCanonicalBackup(); CloseActionMenus(); _restoreEntryFocus = _entries.IsKeyboardFocusWithin; _updating = true;
         try
         {
             _query.Text = _session.Query; _organization.SelectedIndex = _session.MeaningMode ? 1 : 0; _sort.SelectedIndex = _session.NewestFirst ? 0 : 1; _density.SelectedIndex = _session.Detailed ? 1 : 0;

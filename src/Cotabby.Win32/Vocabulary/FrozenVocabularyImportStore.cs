@@ -21,6 +21,7 @@ internal sealed partial class FrozenVocabularyImportStore : ICanonicalVocabulary
     private readonly Func<VocabularyClassificationCatalog> _loadCatalog;
     private VocabularyClassificationCatalog? _catalog;
     private readonly IVocabularyImageStorage? _images;
+    private readonly string? _notebookPath;
     private readonly SemaphoreSlim _gate = new(1, 1);
     private readonly object _listenersGate = new();
     private readonly Dictionary<long, Action<FrozenVocabularyImportSnapshot>> _listeners = [];
@@ -33,12 +34,12 @@ internal sealed partial class FrozenVocabularyImportStore : ICanonicalVocabulary
     internal FrozenVocabularyImportStore(FrozenVocabularySQLiteDatabase database, Func<SourceDate>? now = null)
         : this(() => database, now) { _database = database; }
     internal FrozenVocabularyImportStore(Func<FrozenVocabularySQLiteDatabase> open, Func<SourceDate>? now = null,
-        bool installBundledClassification = false, Func<VocabularyClassificationCatalog>? loadCatalog = null, IVocabularyImageStorage? images = null)
+        bool installBundledClassification = false, Func<VocabularyClassificationCatalog>? loadCatalog = null, IVocabularyImageStorage? images = null, string? notebookPath = null)
     {
         _open = open ?? throw new ArgumentNullException(nameof(open)); _now = now ?? (() => SourceDate.FromWindows(DateTimeOffset.UtcNow));
         _installClassification = installBundledClassification;
         _loadCatalog = loadCatalog ?? VocabularyClassificationCatalog.CurrentBundled;
-        _images = images;
+        _images = images; _notebookPath = notebookPath;
         _notificationWorker = Task.Run(DispatchAsync);
     }
     private async Task DispatchAsync()

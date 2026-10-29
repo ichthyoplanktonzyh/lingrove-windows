@@ -116,6 +116,8 @@ public sealed class CanonicalWritingFavoriteViewTests(WpfDispatcher dispatcher)
         public Task<Frozen.CanonicalSenseReceipt> MoveExampleAsync(Guid entry, Guid example, Guid source, Guid? target, CancellationToken token = default) => inner.MoveExampleAsync(entry, example, source, target, token);
         public Task<Frozen.FrozenVocabularyImportSnapshot> UpdateSemanticsAsync(Frozen.VocabularySemanticIndex edited, Frozen.VocabularySemanticIndex baseline, CancellationToken token = default) => inner.UpdateSemanticsAsync(edited, baseline, token);
         public Task<Frozen.FrozenVocabularyImportSnapshot> UpdateClassificationAsync(Cotabby.Core.Vocabulary.Resources.VocabularyClassificationIndex edited, Cotabby.Core.Vocabulary.Resources.VocabularyClassificationIndex baseline, CancellationToken token = default) => inner.UpdateClassificationAsync(edited, baseline, token);
+        public Task BackupAsync(string destination, CancellationToken token = default) => inner.BackupAsync(destination, token);
+        public Task<Frozen.FrozenVocabularyImportSnapshot> RestoreAsync(string source, CancellationToken token = default) => inner.RestoreAsync(source, token);
         public ValueTask DisposeAsync() => ValueTask.CompletedTask;
     }
     [Fact]

@@ -34,6 +34,8 @@ public sealed class ExpressionEditorReceiptTests
         Assert.Null(ExpressionEditorReceiptPolicy.Capture(field with { ObservationVersion = 0 }, null));
         Assert.Null(ExpressionEditorReceiptPolicy.Capture(Field(new string('x', 65537), 0), null));
         Assert.Null(ExpressionEditorReceiptPolicy.Capture(Field("a😀b", 2), null));
+        Assert.Null(ExpressionEditorReceiptPolicy.Capture(Field("e\u0301", 1), null));
+        Assert.Null(ExpressionEditorReceiptPolicy.Capture(Field("e\u0301", 0, 1), null));
         Assert.Null(ExpressionEditorReceiptPolicy.Capture(Field("\ud800", 0), null));
     }
 

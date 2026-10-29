@@ -1,4 +1,5 @@
 using Cotabby.Core.Focus;
+using Cotabby.Core.Text;
 
 namespace Cotabby.Core.ExpressionAssist;
 
@@ -30,7 +31,7 @@ public static class ExpressionEditorReceiptPolicy
             || observation.FocusEpoch <= 0 || observation.ObservationVersion <= 0 || observation.IsSecure
             || !observation.IsComplete || observation.Composition != InputCompositionState.Clear
             || observation.CompositionSequence <= 0 || observation.Value is null
-            || observation.Value.Length > MaximumValueUtf16Units || !WellFormed(observation.Value)) return false;
+            || observation.Value.Length > MaximumValueUtf16Units) return false;
         return InBounds(observation.Value, observation.Selection);
     }
 
@@ -43,7 +44,7 @@ public static class ExpressionEditorReceiptPolicy
         bool isTrigger = trigger is not null;
         if (trigger is not null)
         {
-            if (trigger.Length == 0 || !WellFormed(trigger) || range.Length != 0 || trigger.Length > range.Start) return null;
+            if (trigger.Length == 0 || !EditorTextRangePolicy.IsValid(trigger, 0, trigger.Length) || range.Length != 0 || trigger.Length > range.Start) return null;
             range = new(range.Start - trigger.Length, trigger.Length);
             if (!InBounds(value, range) || !value.AsSpan(range.Start, range.Length).SequenceEqual(trigger.AsSpan())) return null;
         }
@@ -74,18 +75,5 @@ public static class ExpressionEditorReceiptPolicy
     }
 
     private static bool InBounds(string text, ExpressionEditorRange range) =>
-        range.Start >= 0 && range.Length >= 0 && range.Start <= text.Length && range.Length <= text.Length - range.Start
-        && Boundary(text, range.Start) && Boundary(text, range.Start + range.Length);
-
-    private static bool Boundary(string text, int i) => i == 0 || i == text.Length || !(char.IsHighSurrogate(text[i - 1]) && char.IsLowSurrogate(text[i]));
-
-    private static bool WellFormed(string text)
-    {
-        for (int i = 0; i < text.Length; i++)
-        {
-            if (char.IsHighSurrogate(text[i])) { if (++i >= text.Length || !char.IsLowSurrogate(text[i])) return false; }
-            else if (char.IsLowSurrogate(text[i])) return false;
-        }
-        return true;
-    }
+        EditorTextRangePolicy.IsValid(text, range.Start, range.Length);
 }

@@ -23,3 +23,12 @@ The solution rebuilt with zero warnings/errors and the complete compiled WPF sui
 The render helper fills the window's actual background before drawing its WPF content, avoiding
 transparent bitmap margins; the images use no postprocessing. These checks do not establish the
 remaining physical desktop, DPI or accessibility acceptance above.
+
+The canonical theme additionally scopes a WPF ScrollBar template to opt-in windows, including the
+entry editor and creation/import sheets. Its native `Track`, `Thumb`, line and page commands retain
+vertical/horizontal directions and scrolling input; track, thumb and hover colors follow the window
+palette or Windows system high-contrast colors. Other windows and non-opt-in sidebar callers do not
+receive this style. An STA control test exercises wheel, Page Down, line/page commands and thumb drag
+on both axes; optional light/dark/simulated-high-contrast captures include the image editor and
+narrow editor. Physical pointer, real system high contrast, screen reader and DPI acceptance remain
+open.

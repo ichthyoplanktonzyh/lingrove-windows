@@ -115,6 +115,7 @@ internal sealed class FrozenVocabularyNotebookWindow : Window
         _add.IsEnabled = _import.IsEnabled = false;
         if (_inputWindow is VocabularyEntryCreationWindow creation) await creation.RetireAsync();
         else if (_inputWindow is VocabularyWordListImportWindow import) await import.RetireAsync();
+        else if (_inputWindow is FrozenVocabularyEntryEditorWindow editor) await editor.RetireAsync();
         if (_modalDone is { } modal) await modal.Task;
         await _session.RetireAsync();
         while (_operations.Count != 0) { var operations = _operations.ToArray(); await Task.WhenAll(operations); _operations.RemoveWhere(t => t.IsCompleted); }
@@ -147,6 +148,22 @@ internal sealed class FrozenVocabularyNotebookWindow : Window
                 if (!_retiring && window.Result is { } result) { _expanded.Add(result.Selection?.EntryId ?? Guid.Empty); await _session.RevealAsync(result); }
             }
             if (!_retiring && _pendingShow is { } selection) { _pendingShow = null; _expanded.Add(selection.EntryId); await _session.RevealSelectionAsync(selection); }
+        }
+        finally { _inputWindow = null; _modalDone = null; if (_hideRequested && !_retiring) { _hideRequested = false; Hide(); } done.TrySetResult(); }
+    }
+    private async Task EditAsync(VocabularySelection selection)
+    {
+        if (_retiring || _modalDone is not null || _store is not ICanonicalVocabularyEditorStore editor || _store is not ICanonicalVocabularyMediaStore media) return;
+        var entry = _session.Snapshot?.Document.Entries.FirstOrDefault(e => e.Id == selection.EntryId);
+        if (entry is null || !entry.Senses.Any(s => s.Id == selection.SenseId)) return;
+        var done = _modalDone = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        try
+        {
+            var tags = _session.Entries.SelectMany(e => e.Senses).SelectMany(s => s.Tags).ToArray();
+            var window = new FrozenVocabularyEntryEditorWindow(editor, media, entry, selection.SenseId, tags) { Owner = this }; _inputWindow = window;
+            try { window.ShowDialog(); } finally { await window.RetireAsync(); _inputWindow = null; }
+            if (!_retiring && window.Saved) await _session.LoadAsync();
+            if (!_retiring && _pendingShow is { } pending) { _pendingShow = null; _expanded.Add(pending.EntryId); await _session.RevealSelectionAsync(pending); }
         }
         finally { _inputWindow = null; _modalDone = null; if (_hideRequested && !_retiring) { _hideRequested = false; Hide(); } done.TrySetResult(); }
     }
@@ -306,7 +323,9 @@ internal sealed class FrozenVocabularyNotebookWindow : Window
         if (sense.Tags.Count > 0) panel.Children.Add(Caption(string.Join("  ·  ", sense.Tags)));
         if (sense.Examples.Count > 0) { Section(panel, "Examples"); foreach (var example in sense.Examples) { panel.Children.Add(Paragraph(example.Text)); if (example.Translation.Length > 0) panel.Children.Add(Caption(example.Translation)); foreach (var translation in example.TranslationVariants) panel.Children.Add(Caption(translation.Text)); } }
         var actions = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 18, 0, 0) };
-        foreach (string text in new[] { "Edit", "Delete", "Review", "Export" }) { var button = Disabled(text, "This action is not available in this notebook yet."); button.Margin = new Thickness(0, 0, 8, 0); actions.Children.Add(button); } panel.Children.Add(actions);
+        var edit = new Button { Name = "frozenNotebookEdit", Content = "Edit", IsEnabled = _store is ICanonicalVocabularyEditorStore && _store is ICanonicalVocabularyMediaStore, Margin = new Thickness(0, 0, 8, 0) };
+        VocabularyNotebookTheme.Button(edit); edit.Click += (_, _) => LastOperation = EditAsync(new(entry.Id, sense.Id)); actions.Children.Add(edit);
+        foreach (string text in new[] { "Delete", "Review", "Export" }) { var button = Disabled(text, "This action is not available in this notebook yet."); button.Margin = new Thickness(0, 0, 8, 0); actions.Children.Add(button); } panel.Children.Add(actions);
     }
     private void MeaningDetail(StackPanel panel, F.VocabularyMeaningNode node)
     {

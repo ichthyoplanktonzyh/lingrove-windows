@@ -30,12 +30,18 @@ explanation producer, then drains writing operations and closes the sole backend
 releases the backend even if a borrower reports a disposal failure. Classification installation is
 owned by the canonical Store's serialized transaction, not by a window or the model runtime.
 
+The [canonical entry editor](VOCABULARY_CANONICAL_ENTRY_EDITOR_UI.md) now edits a selected existing
+sense using the complete joined entry as its isolated baseline. Save waits for the same Store's
+acknowledged three-way merge; conflict retains the draft and Cancel discards it. Authored fields,
+content blocks and usages remain distinct from generated explanations. File-image preparation,
+preview and persistence use the Store's identity-bound media transaction. Closing the modal or app
+drains accepted saves and image/range preparation before releasing that owner.
+
 The existing Anki connection, credential and default-deck settings retain their independent real
-client. Canonical review transactions, templates and preparation are not connected in this round;
-the settings show that limitation rather than loading the old notebook. Graph, sense/category
-editing, deletion, image/media, full notebook explanation/dictionary rows, export/backup, review,
-speech and their physical desktop acceptance remain subsequent canonical modules. An older library's
-passing tests do not establish those features in the new production browser.
+client. Canonical review/card/template transactions exist at the Store boundary; review presentation
+and preparation remain unavailable. Graph, independent sense/category creation/merge/move/deletion,
+image paste/drop/enlargement, full notebook explanation/dictionary rows, export/backup, review and
+speech remain subsequent canonical modules. An older library's checks do not activate them.
 
 Windows presentation uses WPF controls/system fonts, native window chrome and 96-DPI layout units.
 The [window-scoped visual adaptation](VOCABULARY_NOTEBOOK_THEME.md) follows Windows light/dark

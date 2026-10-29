@@ -109,6 +109,7 @@ public sealed class CanonicalWritingFavoriteViewTests(WpfDispatcher dispatcher)
         public Task<VocabularyPreparedImage> PrepareImageFileAsync(string path, CancellationToken token = default) => inner.PrepareImageFileAsync(path, token);
         public Task<byte[]> ReadImageAsync(VocabularyImageReference reference, CancellationToken token = default) => inner.ReadImageAsync(reference, token);
         public Task<Frozen.CanonicalVocabularyMediaSnapshot> ReadMediaSnapshotAsync(CancellationToken token = default) => inner.ReadMediaSnapshotAsync(token);
+        public Task<Frozen.FrozenVocabularyImportSnapshot> UpdateEntryAsync(Frozen.VocabularyEntry edited, Frozen.VocabularyEntry baseline, IReadOnlyDictionary<string, VocabularyPreparedImage>? images = null, CancellationToken token = default) => inner.UpdateEntryAsync(edited, baseline, images, token);
         public ValueTask DisposeAsync() => ValueTask.CompletedTask;
     }
     [Fact]

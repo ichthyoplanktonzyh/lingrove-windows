@@ -28,6 +28,7 @@ public static partial class VocabularyArchiveValidation
         && Language(record.Input.Language) && Enum.IsDefined(record.Input.Kind) && Enum.IsDefined(record.Input.ContextKind);
     private static bool Entry(VocabularyEntry? entry) => entry is not null && Fits(entry.Expression) && Fits(entry.DictionaryForm)
         && Language(entry.Language) && Enum.IsDefined(entry.Kind) && entry.Senses.All(Sense);
+    internal static void ValidateEntryRepresentability(VocabularyEntry? entry) { if (!Entry(entry)) throw Invalid(); }
     private static bool Sense(VocabularySense? sense) => sense is not null && Fits(sense.Meaning) && Fits(sense.Note)
         && Language(sense.MeaningLanguage) && Enum.IsDefined(sense.MeaningOrigin) && sense.Tags.All(tag => Fits(tag))
         && sense.StandaloneMeanings.All(Meaning) && sense.AlternateMeanings.All(Meaning) && sense.Explanations.All(Record)

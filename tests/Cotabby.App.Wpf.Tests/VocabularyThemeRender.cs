@@ -24,6 +24,7 @@ internal static class VocabularyThemeRender
                     foreach (string key in new[] { "WindowBg", "SidebarBg", "CardBg", "InputBg", "KeycapBg", "AccentTint", "HoverBg" }) window.Resources[key] = Brushes.Black;
                     foreach (string key in new[] { "TextPrimary", "TextSecondary", "CardBorder" }) window.Resources[key] = Brushes.White;
                     window.Resources["AccentBrush"] = Brushes.Yellow; window.Resources["OrangeBrush"] = Brushes.Yellow; window.Resources["AccentText"] = Brushes.Black;
+                    window.Resources["NotebookScrollTrack"] = Brushes.Black; window.Resources["NotebookScrollThumb"] = Brushes.White; window.Resources["NotebookScrollThumbHot"] = Brushes.Yellow;
                 }
                 root.Measure(new Size(width, height)); root.Arrange(new Rect(0, 0, width, height)); root.UpdateLayout();
                 var background = new DrawingVisual(); using (var draw = background.RenderOpen()) draw.DrawRectangle(window.Background, null, new Rect(0, 0, width, height));

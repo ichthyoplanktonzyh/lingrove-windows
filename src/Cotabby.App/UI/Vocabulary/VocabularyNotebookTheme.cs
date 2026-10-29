@@ -3,6 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using System.Windows.Markup;
 using Cotabby.App.UI.Controls;
 using Microsoft.Win32;
 
@@ -15,9 +16,12 @@ internal static class VocabularyNotebookTheme
     private static readonly Style SidebarSelection = CreateSelectionStyle();
     private static readonly Style FlatIcon = CreateFlatIconStyle();
     private static readonly Style TreeRow = CreateTreeRowStyle();
+    private static readonly Style Scrollbar = CreateScrollbarStyle();
     internal static void Follow(Window window)
     {
         window.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("/Cotabby;component/UI/Theme.xaml", UriKind.Relative) });
+        // Scoped implicit style also reaches scrollbars created inside native ScrollViewer templates.
+        window.Resources[typeof(ScrollBar)] = Scrollbar;
         WindowTheme.Follow(window);
         void Apply() => ApplyPalette(window, SystemTheme.IsDark, SystemParameters.HighContrast);
         void Changed(object sender, UserPreferenceChangedEventArgs args) => window.Dispatcher.BeginInvoke(Apply);
@@ -33,6 +37,9 @@ internal static class VocabularyNotebookTheme
         foreach (string key in new[] { "AccentBrush", "AccentTint", "OrangeBrush", "Btn", "Input", "Combo" }) window.Resources.Remove(key);
                 window.Resources["AccentText"] = highContrast ? SystemColors.HighlightTextBrush : Brushes.White;
         var error = new SolidColorBrush((Color)ColorConverter.ConvertFromString(dark ? "#FFA057" : "#A83C00")); error.Freeze(); window.Resources["OrangeBrush"] = error;
+        window.Resources["NotebookScrollTrack"] = highContrast ? SystemColors.WindowBrush : BrushColor(dark ? "#292929" : "#F3F3F5");
+        window.Resources["NotebookScrollThumb"] = highContrast ? SystemColors.WindowTextBrush : BrushColor(dark ? "#858585" : "#A3A3AA");
+        window.Resources["NotebookScrollThumbHot"] = highContrast ? SystemColors.HighlightBrush : BrushColor(dark ? "#B0B0B0" : "#72727A");
         ConfigureAccent(window);
         if (!highContrast) return;
         foreach (var (key, brush) in new (string, Brush)[] {
@@ -41,6 +48,26 @@ internal static class VocabularyNotebookTheme
             ("InputBg", SystemColors.WindowBrush), ("KeycapBg", SystemColors.WindowBrush), ("HoverBg", SystemColors.WindowBrush),
             ("AccentBrush", SystemColors.HighlightBrush), ("AccentTint", SystemColors.WindowBrush), ("OrangeBrush", SystemColors.WindowTextBrush) }) window.Resources[key] = brush;
     }
+    private static Brush BrushColor(string value) { var brush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(value)); brush.Freeze(); return brush; }
+    private static Style CreateScrollbarStyle() => (Style)XamlReader.Parse("""
+        <Style xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" TargetType="{x:Type ScrollBar}">
+          <Setter Property="Width" Value="14" />
+          <Setter Property="Focusable" Value="False" />
+          <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="{x:Type ScrollBar}">
+            <Border Background="{DynamicResource NotebookScrollTrack}"><DockPanel>
+              <RepeatButton x:Name="lineBack" DockPanel.Dock="Top" Width="14" Height="14" Content="▴" Command="ScrollBar.LineUpCommand" Focusable="False" Foreground="{DynamicResource NotebookScrollThumb}"><RepeatButton.Template><ControlTemplate TargetType="{x:Type RepeatButton}"><Border Background="Transparent"><ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" /></Border></ControlTemplate></RepeatButton.Template></RepeatButton>
+              <RepeatButton x:Name="lineForward" DockPanel.Dock="Bottom" Width="14" Height="14" Content="▾" Command="ScrollBar.LineDownCommand" Focusable="False" Foreground="{DynamicResource NotebookScrollThumb}"><RepeatButton.Template><ControlTemplate TargetType="{x:Type RepeatButton}"><Border Background="Transparent"><ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" /></Border></ControlTemplate></RepeatButton.Template></RepeatButton>
+              <Track x:Name="PART_Track" Orientation="{TemplateBinding Orientation}" Minimum="{TemplateBinding Minimum}" Maximum="{TemplateBinding Maximum}" Value="{TemplateBinding Value}" ViewportSize="{TemplateBinding ViewportSize}" IsDirectionReversed="True">
+                <Track.DecreaseRepeatButton><RepeatButton x:Name="decrease" Command="ScrollBar.PageUpCommand" Focusable="False"><RepeatButton.Template><ControlTemplate TargetType="{x:Type RepeatButton}"><Border Background="Transparent" /></ControlTemplate></RepeatButton.Template></RepeatButton></Track.DecreaseRepeatButton>
+                <Track.IncreaseRepeatButton><RepeatButton x:Name="increase" Command="ScrollBar.PageDownCommand" Focusable="False"><RepeatButton.Template><ControlTemplate TargetType="{x:Type RepeatButton}"><Border Background="Transparent" /></ControlTemplate></RepeatButton.Template></RepeatButton></Track.IncreaseRepeatButton>
+                <Track.Thumb><Thumb x:Name="thumb" MinHeight="24" Margin="3,2" Focusable="False"><Thumb.Template><ControlTemplate TargetType="{x:Type Thumb}"><Border x:Name="handle" CornerRadius="4" Background="{DynamicResource NotebookScrollThumb}" /><ControlTemplate.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="handle" Property="Background" Value="{DynamicResource NotebookScrollThumbHot}" /></Trigger><Trigger Property="IsDragging" Value="True"><Setter TargetName="handle" Property="Background" Value="{DynamicResource NotebookScrollThumbHot}" /></Trigger></ControlTemplate.Triggers></ControlTemplate></Thumb.Template></Thumb></Track.Thumb>
+              </Track>
+            </DockPanel></Border>
+            <ControlTemplate.Triggers><Trigger Property="Orientation" Value="Horizontal"><Setter TargetName="PART_Track" Property="IsDirectionReversed" Value="False" /><Setter TargetName="decrease" Property="Command" Value="ScrollBar.PageLeftCommand" /><Setter TargetName="increase" Property="Command" Value="ScrollBar.PageRightCommand" /><Setter TargetName="lineBack" Property="DockPanel.Dock" Value="Left" /><Setter TargetName="lineForward" Property="DockPanel.Dock" Value="Right" /><Setter TargetName="lineBack" Property="Content" Value="◂" /><Setter TargetName="lineForward" Property="Content" Value="▸" /><Setter TargetName="lineBack" Property="Command" Value="ScrollBar.LineLeftCommand" /><Setter TargetName="lineForward" Property="Command" Value="ScrollBar.LineRightCommand" /><Setter TargetName="thumb" Property="MinHeight" Value="0" /><Setter TargetName="thumb" Property="MinWidth" Value="24" /><Setter TargetName="thumb" Property="Margin" Value="2,3" /></Trigger></ControlTemplate.Triggers>
+          </ControlTemplate></Setter.Value></Setter>
+          <Style.Triggers><Trigger Property="Orientation" Value="Horizontal"><Setter Property="Width" Value="Auto" /><Setter Property="Height" Value="14" /></Trigger></Style.Triggers>
+        </Style>
+        """);
     private static void ConfigureAccent(Window window)
     {
         var style = new Style(typeof(Button), (Style)window.FindResource("Btn"));

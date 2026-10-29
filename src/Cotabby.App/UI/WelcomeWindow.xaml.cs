@@ -27,6 +27,7 @@ public partial class WelcomeWindow : Window
     private readonly List<Border> _capsules = [];
     private int _step;
     private string _templateModelId;
+    private bool _templateChosen, _recommendedRoute = true;
 
     // Background model preparation. The sequence number lets a run that was superseded,
     // because the user went back and picked another starting point, drop its late results.
@@ -48,7 +49,11 @@ public partial class WelcomeWindow : Window
         Closed += (_, _) => { _host.SettingsApplied -= HostSettingsApplied; _statusGate.Invalidate(); _modelCts?.Cancel(); };
         WindowTheme.Follow(this);
 
-        _steps = [StepWelcome, StepTemplates, StepProfile, StepKeys, StepDone];
+        _steps = [StepWelcome, StepRecommended, StepTemplates, StepProfile, StepKeys, StepDone];
+        var recommendation = new RecommendedSetupView(host);
+        recommendation.ManualRequested += () => { _recommendedRoute = false; ShowStep(2); };
+        recommendation.Applied += () => _recommendedRoute = true;
+        StepRecommended.Content = recommendation;
         _templates = [(QuickCard, QuickBadge), (EverydayCard, EverydayBadge), (PowerCard, PowerBadge)];
         BuildCapsules();
         BuildShortcutRows();
@@ -110,12 +115,13 @@ public partial class WelcomeWindow : Window
         }
     }
 
-    private void OnBack(object sender, RoutedEventArgs e) => ShowStep(_step - 1);
+    private void OnBack(object sender, RoutedEventArgs e) => ShowStep(_steps[_step] == StepProfile && _recommendedRoute ? 1 : _step - 1);
 
     private void OnContinue(object sender, RoutedEventArgs e)
     {
-        if (_steps[_step] == StepTemplates) CommitTemplate();
+        if (_steps[_step] == StepTemplates && _templateChosen) CommitTemplate();
         if (_steps[_step] == StepDone) Finish();
+        else if (_steps[_step] == StepRecommended) { _recommendedRoute = true; ShowStep(3); }
         else ShowStep(_step + 1);
     }
 
@@ -140,6 +146,7 @@ public partial class WelcomeWindow : Window
     private void OnTemplateClicked(object sender, MouseButtonEventArgs e)
     {
         _templateModelId = TemplateId((Border)sender);
+        _templateChosen = true;
         UpdateTemplateVisuals();
         UpdateTemplateStatus();
     }
@@ -148,7 +155,7 @@ public partial class WelcomeWindow : Window
     {
         foreach (var (card, badge) in _templates)
         {
-            bool selected = TemplateId(card) == _templateModelId;
+            bool selected = _templateChosen && TemplateId(card) == _templateModelId;
             card.SetResourceReference(Border.BorderBrushProperty, selected ? "AccentBrush" : "CardBorder");
             badge.SetResourceReference(Border.BackgroundProperty, selected ? "AccentTint" : "KeycapBg");
         }
@@ -162,7 +169,7 @@ public partial class WelcomeWindow : Window
             return;
         }
         bool ready = ModelDownloader.IsCached(model);
-        TemplateStatusText.Text = ready
+        TemplateStatusText.Text = !_templateChosen ? "Choose a model to configure it, or continue without changes." : ready
             ? "Model ready"
             : $"Will download {model.ApproxSizeBytes / 1_000_000_000.0:0.#} GB on Continue";
         TemplateStatusText.SetResourceReference(TextBlock.ForegroundProperty, ready ? "GreenBrush" : "TextSecondary");

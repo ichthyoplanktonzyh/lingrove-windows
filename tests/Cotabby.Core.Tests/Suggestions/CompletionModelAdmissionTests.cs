@@ -19,6 +19,19 @@ public sealed class CompletionModelAdmissionTests
         owner.PrepareAsync(ticket, _ => Task.CompletedTask, load ?? (() => Task.CompletedTask), () => true, CancellationToken.None);
 
     [Fact]
+    public async Task SharedColdPreparationSurvivesCancelledWaitAndRetiresOnSelectionChange()
+    {
+        await using var owner = new CompletionModelAdmission(new Engine()); var sharing = new CompletionPreparationSharing();
+        var first = owner.Select("A", true); var entered = Signal<bool>(); var release = Signal<bool>(); int starts = 0;
+        Task<bool> Start() { starts++; return Prepare(owner, first, async () => { entered.SetResult(true); await release.Task; }); }
+        var shared = sharing.GetOrStart(first.Epoch, Start); await entered.Task.WaitAsync(Timeout);
+        using var waiter = new CancellationTokenSource(); var cancelled = shared.WaitAsync(waiter.Token); waiter.Cancel();
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => cancelled); Assert.Same(shared, sharing.GetOrStart(first.Epoch, Start)); Assert.Equal(1, starts);
+        var second = owner.Select("B", true); var newWork = sharing.GetOrStart(second.Epoch, () => Prepare(owner, second));
+        release.SetResult(true); Assert.False(await shared.WaitAsync(Timeout)); Assert.True(await newWork.WaitAsync(Timeout)); Assert.True(owner.IsReady);
+    }
+
+    [Fact]
     public void BootstrapReconcilesCompatibleMissingChoicesButPreservesIncompatibleAndUnknownIds()
     {
         var first = ModelCatalog.All[0]; var other = ModelCatalog.All[1];

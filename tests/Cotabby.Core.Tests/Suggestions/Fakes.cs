@@ -24,6 +24,8 @@ internal static class Fields
         HasReliableSelection = true,
         IsTextWindowTruncated = false,
         FocusChangeSequence = 1,
+        Composition = InputCompositionState.Clear,
+        CompositionSequence = 1,
     };
 }
 
@@ -128,6 +130,13 @@ internal sealed class FakeFocus : IFocusTracker, ITextInserter
     public void Replace(FocusedField field)
     {
         lock (_gate) _field = field;
+    }
+
+    public void PublishComposition(InputCompositionState state, long sequence)
+    {
+        FocusedField field;
+        lock (_gate) { field = _field! with { Composition = state, CompositionSequence = sequence }; _field = field; }
+        FocusChanged?.Invoke(this, field);
     }
 
     public void Move(ScreenRect caret)

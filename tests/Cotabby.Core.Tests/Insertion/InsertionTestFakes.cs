@@ -22,6 +22,8 @@ internal static class InsertionTestFields
         IsSecure = false,
         FieldId = fieldId,
         FocusChangeSequence = focusChangeSequence,
+        Composition = InputCompositionState.Clear,
+        CompositionSequence = 1,
         HasReliableSelection = true,
         IsTextWindowTruncated = false,
     };

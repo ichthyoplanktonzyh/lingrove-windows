@@ -63,6 +63,9 @@ public sealed class AppHost : IAsyncDisposable
     private bool _completionStarted;
     private volatile bool _shuttingDown;
     private CompletionModelSelection.PowerProfileState? _lastPowerSelection;
+    // UI-owned sharing of one cold preparation per selection epoch. Individual keystrokes
+    // may stop waiting without cancelling the selection-owned native load.
+    private readonly CompletionPreparationSharing _lazyPreparation = new();
 
     public SuggestionCoordinator Coordinator { get; }
     public LlamaRuntimeManager Runtime { get; }
@@ -81,6 +84,7 @@ public sealed class AppHost : IAsyncDisposable
     public IOpenAICompatibleCredentialStore EndpointCredentials { get; }
     public IOpenAICompatibleCredentialStore LearningEndpointCredentials { get; }
     internal LearningModelCatalogManager LearningModels { get; }
+    internal RecommendedSetupController RecommendedSetup { get; }
     internal LearningPreviewController LearningPreview { get; }
     internal LearningExplanationController LearningExplanation { get; }
     internal VocabularyStore Vocabulary { get; }
@@ -225,6 +229,7 @@ public sealed class AppHost : IAsyncDisposable
                 _spelling, new SpellingLanguageResolver(), new WindowsSpellChecker(_spelling)),
             clipboard: _services.GetRequiredService<ClipboardTextReader>());
         _suggestionApplication = new SuggestionSettingsApplication(Coordinator, _completion);
+        Coordinator.EnsureLocalReady = EnsureSelectedCompletionReadyAsync;
         Coordinator.InlineCaptureActive = () => EmojiPicker.IsCapturing || Macros.IsCapturing;
         EmojiPicker.CanCapture = Macros.CanCapture = Coordinator.IsAvailableIn;
         EmojiPicker.CommitKeyFor = Macros.CommitKeyFor = Coordinator.AcceptWordKeyFor;
@@ -250,6 +255,7 @@ public sealed class AppHost : IAsyncDisposable
 
         SystemEvents.PowerModeChanged += OnPowerModeChanged;
         ApplySettings();
+        RecommendedSetup = new RecommendedSetupController(new RecommendedSetupHost(this, ui), Cotabby.Win32.Models.WindowsPhysicalMemory.GetBytes());
     }
 
     private OpenAICompatibleEndpointSettings EndpointSettings => new(
@@ -264,6 +270,14 @@ public sealed class AppHost : IAsyncDisposable
     {
         if (_shuttingDown) return;
         ApplySettings();
+        Settings.WordsAccepted = Coordinator.Metrics.WordsAccepted;
+        SettingsStore.Save(Settings);
+    }
+
+    internal void PersistRecommendedSelection()
+    {
+        if (_shuttingDown) return;
+        ApplySettings(allowCompletionLoad: false);
         Settings.WordsAccepted = Coordinator.Metrics.WordsAccepted;
         SettingsStore.Save(Settings);
     }
@@ -298,7 +312,7 @@ public sealed class AppHost : IAsyncDisposable
         PersistSettings();
     }
 
-    private void ApplySettings(bool discoveryChanged = false)
+    private void ApplySettings(bool discoveryChanged = false, bool allowCompletionLoad = true)
     {
         if (_shuttingDown) return;
         // An expired pause is dropped so the tray stops showing it.
@@ -348,7 +362,7 @@ public sealed class AppHost : IAsyncDisposable
         Overlay.ApplyAppearance(Settings);
         _macroPreview.ApplyAppearance(Settings);
         LaunchAtLogin.Set(Settings.LaunchAtLogin);
-        if (!_completion.IsReady) LoadSelectedModelIfChanged();
+        if (allowCompletionLoad && RecommendedSetup?.Busy != true && !_completion.IsReady) LoadSelectedModelIfChanged();
         SettingsApplied?.Invoke();
     }
 
@@ -414,7 +428,28 @@ public sealed class AppHost : IAsyncDisposable
         return ready;
     }
 
-    private Task AcknowledgeCompletionDownloadAsync(CotabbyModel model)
+    private async Task<bool> EnsureSelectedCompletionReadyAsync(CancellationToken requestCancellation)
+    {
+        var dispatched = new TaskCompletionSource<Task<bool>?>(TaskCreationOptions.RunContinuationsAsynchronously);
+        _ui.Post(_ =>
+        {
+            try
+            {
+                if (requestCancellation.IsCancellationRequested || _shuttingDown || Settings.Engine != EngineKind.Local
+                    || !Settings.Enabled || string.IsNullOrEmpty(Settings.ActiveModelId) || ResolveActiveModel() is not { } model
+                    || _completion.Capture(model.Id) is not { } ticket)
+                { dispatched.TrySetResult(null); return; }
+                if (_completion.IsReady) { dispatched.TrySetResult(Task.FromResult(true)); return; }
+                dispatched.TrySetResult(_lazyPreparation.GetOrStart(ticket.Epoch,
+                    () => PrepareModelAsync(model, allowDownload: false, null, CancellationToken.None)));
+            }
+            catch (Exception error) { dispatched.TrySetException(error); }
+        }, null);
+        var preparation = await dispatched.Task.WaitAsync(requestCancellation).ConfigureAwait(false);
+        return preparation is not null && await preparation.WaitAsync(requestCancellation).ConfigureAwait(false);
+    }
+
+    internal Task AcknowledgeCompletionDownloadAsync(CotabbyModel model)
     {
         var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         _ui.Post(_ =>
@@ -526,6 +561,7 @@ public sealed class AppHost : IAsyncDisposable
         WithdrawCompletion();
         try
         {
+            await RecommendedSetup.DisposeAsync().ConfigureAwait(false);
             await _completion.DisposeAsync().ConfigureAwait(false);
             await LearningPreview.DisposeAsync().ConfigureAwait(false);
             await VocabularyWindow.DisposeAsync().ConfigureAwait(false);

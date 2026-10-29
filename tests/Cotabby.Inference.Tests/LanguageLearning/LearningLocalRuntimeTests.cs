@@ -74,6 +74,44 @@ public sealed class LearningLocalRuntimeTests
         finally { release.TrySetResult(); }
     }
 
+    [Theory]
+    [InlineData(false)] [InlineData(true)]
+    public async Task RetiredReadingPermitWhileNativeClearIsHeldNeverPrefills(bool lookup)
+    {
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        int clears = 0, live = 1;
+        var session = new FakeNativeSession { OnClearMemory = () =>
+        { if (Interlocked.Increment(ref clears) == 1) { entered.TrySetResult(); release.Task.GetAwaiter().GetResult(); } } };
+        await using var runtime = new LearningLocalRuntime(new FakeSessionFactory(session));
+        await using var operation = await runtime.BeginOperationAsync(Configuration, default);
+        Func<bool> permit = () => Volatile.Read(ref live) != 0;
+        var generation = lookup ? operation.GenerateLookupAsync(Tokens(1), Sampling, 2, null, false, default, permit)
+            : operation.GenerateAsync(Tokens(1), Sampling, 2, null, default, permit);
+        try
+        {
+            await entered.Task.WaitAsync(TestTimeout); Volatile.Write(ref live, 0); release.TrySetResult();
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => generation.WaitAsync(TestTimeout));
+            Assert.Empty(session.PromptBatches); Assert.Empty(session.Samplers); Assert.Equal(2, session.ClearMemoryCount);
+        }
+        finally { release.TrySetResult(); }
+    }
+
+    [Theory]
+    [InlineData(false)] [InlineData(true)]
+    public async Task RetiredReadingPermitBetweenNativePromptBatchesStopsNextDecode(bool lookup)
+    {
+        int live = 1;
+        var session = new FakeNativeSession { AfterPromptBatch = _ => Volatile.Write(ref live, 0) };
+        await using var runtime = new LearningLocalRuntime(new FakeSessionFactory(session));
+        await using var operation = await runtime.BeginOperationAsync(Configuration, default);
+        Func<bool> permit = () => Volatile.Read(ref live) != 0;
+        var generation = lookup ? operation.GenerateLookupAsync(Tokens(513), Sampling, 2, null, false, default, permit)
+            : operation.GenerateAsync(Tokens(513), Sampling, 2, null, default, permit);
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => generation.WaitAsync(TestTimeout));
+        Assert.Single(session.PromptBatches); Assert.Empty(session.Samplers); Assert.Equal(2, session.ClearMemoryCount);
+    }
+
     [Fact]
     public async Task TrustedAndLiteralSegmentsUseDifferentTokenizerModes()
     {
@@ -836,6 +874,7 @@ public sealed class LearningLocalRuntimeTests
         public List<bool> LookupContexts { get; } = [];
         public Action<(int Offset, int Count, bool RequestLogits)>? AfterPromptBatch { get; set; }
         public Action<(int Offset, int Count, bool RequestLogits)>? OnPromptBatch { get; set; }
+        public Action? OnClearMemory { get; set; }
         public int ClearMemoryCount { get; private set; }
         public bool FailMetadataReads { get; set; }
         public int MetadataReadCount { get; private set; }
@@ -856,6 +895,7 @@ public sealed class LearningLocalRuntimeTests
         {
             ThrowIfDisposed();
             ClearMemoryCount++;
+            OnClearMemory?.Invoke();
         }
 
         public int DecodeBatch(

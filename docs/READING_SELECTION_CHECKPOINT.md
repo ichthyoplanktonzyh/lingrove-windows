@@ -44,4 +44,12 @@ exercised by tests; real host UIA, physical IME, accessibility, DPI and model-ba
 acceptance gates.
 
 
-The native reading lease exposes a nonblocking live permit based on retirement, its capture epoch and the current foreground window and process. Copy checks it at the clipboard grant; favorite checks it at Store acceptance; translation checks it immediately before HTTP send or local generation; basic and detail lookup check it after the local runtime call gate and again on its worker immediately before native state or prefill. These checks do not wait for the asynchronous invalidation notification. Accepted work remains owned and drained. The permit contains no UIA call and is request-scoped; ordinary translation without a permit retains its existing behavior. These fake-driven checks do not establish physical desktop acceptance.
+The native reading lease exposes a nonblocking live permit based on retirement, its capture epoch
+and current foreground HWND/PID. Copy checks it at the clipboard grant; favorite checks it at Store
+acceptance; translation checks it immediately before HTTP send. Local translation/basic/detail
+lookup carry it through the call gate and worker queue, after native memory clearing and immediately
+before each prompt batch decode. These checks do not wait for asynchronous invalidation notification.
+Already accepted Store work remains owned and drained. The permit contains no UIA call and is
+request-scoped; ordinary translation without a permit retains its existing behavior. Held gate,
+worker and native-clear tests plus invalidation between prompt batches exercise those final checks.
+They do not establish physical desktop acceptance.

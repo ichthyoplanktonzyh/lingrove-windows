@@ -493,7 +493,7 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
             bool? lookupContext,
             CancellationToken ct, Func<bool>? admission)
         {
-            // This worker check is the linearization point for reading native work.
+            // Queue admission is checked again at each native prompt decode below.
             ThrowIfStopped(ct);
             if (admission?.Invoke() == false) throw new OperationCanceledException();
             Exception? generationFailure = null;
@@ -501,7 +501,8 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
             {
                 _session.ClearMemory();
                 ThrowIfStopped(ct);
-                int logitsIndex = Prefill(promptTokens, ct);
+                if (admission?.Invoke() == false) throw new OperationCanceledException();
+                int logitsIndex = Prefill(promptTokens, ct, admission);
                 using var sampler = lookupContext is { } context ? _session.CreateLookupSampler(sampling, context) : _session.CreateSampler(sampling);
                 var output = new StrictUtf8Output(MaximumOutputBytes);
                 int nextPosition = promptTokens.Length;
@@ -563,7 +564,7 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
             }
         }
 
-        private int Prefill(IReadOnlyList<LLamaToken> promptTokens, CancellationToken ct)
+        private int Prefill(IReadOnlyList<LLamaToken> promptTokens, CancellationToken ct, Func<bool>? admission)
         {
             int logitsIndex = -1;
             int batchSize = Math.Max(1, _session.BatchSize);
@@ -573,6 +574,7 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
                 int count = Math.Min(batchSize, promptTokens.Count - offset);
                 // Only the final prompt token needs logits. DecodeBatch returns that token's row
                 // index, which is the starting point for the first sample.
+                if (admission?.Invoke() == false) throw new OperationCanceledException();
                 logitsIndex = _session.DecodeBatch(
                     promptTokens,
                     offset,

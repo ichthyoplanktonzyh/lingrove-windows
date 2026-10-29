@@ -1,0 +1,51 @@
+# Canonical CLI candidate
+
+Reference: `3b53402f2cbc196b0398d133177fd80006d165b2`, read from the committed macOS tree.
+Source: `CLI.md`, `LingroveCLI/LingroveCLI.swift`, `LingroveCLI/CLIInputSchema.swift`,
+`Lingrove/Models/CLI/{CLIProtocol,CLICaptureModels,CLICaptureContract,CLIResourceContract}.swift`,
+`Lingrove/Support/CLI/{CLIArguments,CLIInputPolicy,CLIFileIO}.swift`,
+`Lingrove/Services/CLI/{CLIMailboxServer,CLIInstallation}.swift`,
+`Lingrove/Support/Vocabulary/{VocabularyCLIPlan,VocabularyCLICapturePlan,VocabularyCLIResources,VocabularyCLIClassificationResources,VocabularyCLIReadBudget}.swift`,
+`Lingrove/Services/Vocabulary/{VocabularyArchive+CLI,VocabularyArchive+CLIResources,VocabularyStore}.swift`,
+`LingroveTests/Services/CLI/VocabularyCLITests.swift`, and
+`LingroveTests/Support/Vocabulary/VocabularyCLICaptureTests.swift`.
+
+This is an unactivated candidate. `Cotabby.Cli` parses commands, reads only explicitly named,
+bounded local inputs, attaches image bytes and exchanges bounded JSON through a private mailbox.
+The app-owned `CanonicalCliMailbox` borrows `ICanonicalVocabularyCliStore`; its constructor does
+no IO. Composition must explicitly start the server and drain it before retiring the sole Store.
+The Store serializes requests with all existing notebook work. Graph validation, staged image
+writes, SQLite revision and idempotency receipt share that existing transaction boundary; replay
+checks the receipt before decoding images. No AI or Anki service is called by this module.
+
+On Windows the mailbox is `%LOCALAPPDATA%\Cotabby\Automation-v1\<identity>`, where identity is a
+hash of the selected executable's final path using case-insensitive Windows path handling. This
+separates routing for different application paths, **not** notebooks or product channels: all
+current instances use the existing single Cotabby data root and app single-instance mutex. The
+selected executable and its resolved parent directories are held and rechecked for launch. This
+is a path/identity guard, not a binary publisher trust guarantee. A competing app instance can
+make the selected path unavailable or cause a timeout; the CLI never falls back to its mailbox.
+A CLI start is background-only and suppresses duplicate-instance and first-use dialogs without
+changing the saved first-use setting. Replies and pending requests expire; SQLite receipts do not.
+
+General settings offers explicit user-local installation of `lingrove.cmd` under
+`%LOCALAPPDATA%\Cotabby\bin`; no PATH modification occurs. The script is built only from safely
+representable ASCII paths (including verified system short paths where available), quotes paths,
+disables delayed expansion and escapes percent characters. It never overwrites a different file.
+When Windows cannot supply an ASCII path, installation explicitly fails; the executable beside
+Cotabby remains available. The script's app default can be overridden by `--app`.
+
+The implementation currently preserves ordinary typed nil/UUID fingerprint canonicalization and
+literal resource patch nulls. Floating-point JSON encoding, Unicode substring matching and all
+fingerprint cases have not yet been independently run against native Swift; exact source parity
+must not be claimed until those observations are tested. Source-generated identifier collisions
+currently fail closed instead of adopting or overwriting an existing record. Windows' existing
+image preparer admits its documented PNG/decoder subset; native visual/desktop acceptance and
+actual app-owned startup/shutdown integration remain open. Existing historical fixture pins and
+old Windows/macOS data are untouched.
+
+Executed in the isolated development tree: CLI Core tests, named SQLite Store dry-run/commit/
+replay and injected SQL rollback, private mailbox event/lease/recovery/client exchange, image
+SQL rollback and retry through the WPF test lease, app/CLI Release builds, and app-output CLI
+version/schema/error commands. These checks do not establish physical Shell acceptance, native
+Swift behavior, final integration, or a release.

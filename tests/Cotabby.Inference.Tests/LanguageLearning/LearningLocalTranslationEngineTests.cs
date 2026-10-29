@@ -9,13 +9,16 @@ public sealed class LearningLocalTranslationEngineTests
     private static readonly TimeSpan TestTimeout = TimeSpan.FromSeconds(5);
     private const string Source = "Please close the window before you leave.";
 
-    [Fact]
-    public async Task RetiredReadingAdmissionRejectsAfterPlanningBeforeNativeGeneration()
+    [Theory]
+    [InlineData(false)] [InlineData(true)]
+    public async Task RetiredReadingAdmissionRejectsAfterPlanningBeforeNativeGeneration(bool changeProcess)
     {
         var operation = new FakeLocalOperation(new LearningGgufMetadata("llama"), 8192);
         await using var engine = new LearningLocalTranslationEngine(LocalConfiguration(), new FakeLocalRuntime(operation));
         var request = await engine.PlanAsync("reading", Source, Options(), default);
-        request.Admission = () => false;
+        int foreground = 10, process = 42;
+        request.Admission = () => foreground == 10 && process == 42;
+        if (changeProcess) process = 43; else foreground = 11;
         await Assert.ThrowsAnyAsync<OperationCanceledException>(() => engine.TranslateAsync(request, default));
         Assert.Equal(0, operation.GenerateCount);
     }

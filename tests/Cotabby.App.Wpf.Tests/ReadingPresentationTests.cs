@@ -134,16 +134,17 @@ public sealed class ReadingPresentationTests(WpfDispatcher dispatcher)
         }
         finally { gate.TrySetResult(false); await presentation.DisposeAsync(); }
     });
-    [Fact]
-    public Task RetiredWithoutNotificationRejectsFavoriteAfterPreflight() => dispatcher.RunAsync(async () =>
+    [Theory]
+    [InlineData(false)] [InlineData(true)]
+    public Task RetiredWithoutNotificationRejectsFavoriteAfterPreflight(bool changeProcess) => dispatcher.RunAsync(async () =>
     {
         var store = new ReadingVocabularyStoreFake(); var gate = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-        bool hold = false; bool live = true; int checks = 0;
+        bool hold = false; int foreground = 10, process = 42; int checks = 0;
         var presentation = new ReadingPresentation(Dispatcher.CurrentDispatcher, new Dictionary(),
             (_, _) => Task.FromResult(new ReadingLookupResult("河岸", "")), (_, _, _) => throw new InvalidOperationException(),
             () => { }, new Clipboard(), store, (_, _) => [], LearningLanguage.Chinese);
         var selection = new ReadingSelection(Guid.NewGuid(), "bank", 1, "field", 1, 0, 4, false, true,
-            InputCompositionState.Clear, 1, ScreenRect.Empty) { Admission = () => live };
+            InputCompositionState.Clear, 1, ScreenRect.Empty) { Admission = () => foreground == 10 && process == 42 };
         var route = new ReadingRoute(false, ReadingRouteReason.StandaloneUnit, "bank", true);
         Task<bool> Current(CancellationToken _) { checks++; return hold ? gate.Task : Task.FromResult(true); }
         try
@@ -155,7 +156,7 @@ public sealed class ReadingPresentationTests(WpfDispatcher dispatcher)
             await favorite.LastOperation; Assert.True(favorite.IsEnabled);
             hold = true; favorite.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             for (int i = 0; i < 100 && checks < 3; i++) await Task.Delay(10);
-            live = false; gate.SetResult(true); await favorite.LastOperation;
+            if (changeProcess) process = 43; else foreground = 11; gate.SetResult(true); await favorite.LastOperation;
             Assert.Null(store.Saved);
         }
         finally { gate.TrySetResult(false); await presentation.DisposeAsync(); }
@@ -183,14 +184,15 @@ public sealed class ReadingPresentationTests(WpfDispatcher dispatcher)
         }
         finally { clipboard.Release.Set(); }
     });
-    [Fact]
-    public Task RetiredWithoutNotificationRejectsFinalClipboardGrant() => dispatcher.RunAsync(async () =>
+    [Theory]
+    [InlineData(false)] [InlineData(true)]
+    public Task RetiredWithoutNotificationRejectsFinalClipboardGrant(bool changeProcess) => dispatcher.RunAsync(async () =>
     {
-        bool live = true; var clipboard = new GatedClipboard();
+        int foreground = 10, process = 42; var clipboard = new GatedClipboard();
         var presentation = new ReadingPresentation(Dispatcher.CurrentDispatcher, new Dictionary(),
             (_, _) => throw new InvalidOperationException(), (_, _, _) => throw new InvalidOperationException(), () => { }, clipboard, new ReadingVocabularyStoreFake(), (_, _) => [], LearningLanguage.Chinese);
         var selection = new ReadingSelection(Guid.NewGuid(), "source", 1, "field", 1, 0, 6, false, true,
-            InputCompositionState.Clear, 1, ScreenRect.Empty) { Admission = () => live };
+            InputCompositionState.Clear, 1, ScreenRect.Empty) { Admission = () => foreground == 10 && process == 42 };
         using var cancellation = new CancellationTokenSource();
         presentation.BindAuthority(selection, _ => Task.FromResult(true), cancellation.Token);
         var state = new ReadingState(selection, null, LearningLanguage.Chinese,
@@ -200,7 +202,7 @@ public sealed class ReadingPresentationTests(WpfDispatcher dispatcher)
             await presentation.ShowAsync(state);
             FindButton(presentation.ReadingCard, "Copy result").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             await clipboard.Entered.Task.WaitAsync(TimeSpan.FromSeconds(5));
-            live = false; clipboard.Release.Set();
+            if (changeProcess) process = 43; else foreground = 11; clipboard.Release.Set();
             await clipboard.Finished.Task.WaitAsync(TimeSpan.FromSeconds(5));
             await presentation.DisposeAsync();
             Assert.Equal("result", clipboard.Payload); Assert.False(clipboard.Committed);

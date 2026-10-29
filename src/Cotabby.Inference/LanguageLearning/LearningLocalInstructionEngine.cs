@@ -88,8 +88,8 @@ public sealed class LearningLocalInstructionEngine : IAsyncDisposable
             }
             if (admission?.Invoke() == false) throw new OperationCanceledException();
             var raw = lookupContext is { } context
-                ? await operation.GenerateLookupAsync(tokens, profile.Sampling, output, CheckDelta, context, linked.Token).ConfigureAwait(false)
-                : await operation.GenerateAsync(tokens, profile.Sampling, output, CheckDelta, linked.Token).ConfigureAwait(false);
+                ? await operation.GenerateLookupAsync(tokens, profile.Sampling, output, CheckDelta, context, linked.Token, admission).ConfigureAwait(false)
+                : await operation.GenerateAsync(tokens, profile.Sampling, output, CheckDelta, linked.Token, admission).ConfigureAwait(false);
             callbackFailure?.Throw(); Check();
             if (StrictUtf8.GetByteCount(raw) > maximumBytes) throw new LearningExplanationException(LearningExplanationFailure.InvalidContent);
             return raw;

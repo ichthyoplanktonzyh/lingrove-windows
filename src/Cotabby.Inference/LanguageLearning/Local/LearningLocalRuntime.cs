@@ -404,14 +404,22 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
             int maxTokens,
             Action<string>? onDelta,
             CancellationToken ct)
-            => await GenerateCoreAsync(promptTokens, sampling, maxTokens, onDelta, null, ct).ConfigureAwait(false);
+            => await GenerateCoreAsync(promptTokens, sampling, maxTokens, onDelta, null, ct, null).ConfigureAwait(false);
+
+        public Task<string> GenerateAsync(IReadOnlyList<LLamaToken> promptTokens, LearningModelSamplingValues sampling,
+            int maxTokens, Action<string>? onDelta, CancellationToken ct, Func<bool>? admission) =>
+            GenerateCoreAsync(promptTokens, sampling, maxTokens, onDelta, null, ct, admission);
 
         public Task<string> GenerateLookupAsync(IReadOnlyList<LLamaToken> promptTokens, LearningModelSamplingValues sampling,
             int maxTokens, Action<string>? onDelta, bool hasContext, CancellationToken ct) =>
-            GenerateCoreAsync(promptTokens, sampling, maxTokens, onDelta, hasContext, ct);
+            GenerateCoreAsync(promptTokens, sampling, maxTokens, onDelta, hasContext, ct, null);
+
+        public Task<string> GenerateLookupAsync(IReadOnlyList<LLamaToken> promptTokens, LearningModelSamplingValues sampling,
+            int maxTokens, Action<string>? onDelta, bool hasContext, CancellationToken ct, Func<bool>? admission) =>
+            GenerateCoreAsync(promptTokens, sampling, maxTokens, onDelta, hasContext, ct, admission);
 
         private async Task<string> GenerateCoreAsync(IReadOnlyList<LLamaToken> promptTokens,
-            LearningModelSamplingValues sampling, int maxTokens, Action<string>? onDelta, bool? lookupContext, CancellationToken ct)
+            LearningModelSamplingValues sampling, int maxTokens, Action<string>? onDelta, bool? lookupContext, CancellationToken ct, Func<bool>? admission)
         {
             if (promptTokens is null || sampling is null || promptTokens.Count == 0 || maxTokens <= 0)
                 throw new LearningLocalRuntimeException(LearningLocalRuntimeFailure.InvalidRequest);
@@ -444,11 +452,13 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
             await EnterCallAsync(linked.Token).ConfigureAwait(false);
             try
             {
+                ThrowIfStopped(linked.Token);
+                if (admission?.Invoke() == false) throw new OperationCanceledException();
                 // Native Decode is synchronous. Task.Run keeps it off a caller/UI context, while
                 // None deliberately avoids pretending Task cancellation can abort an in-flight
                 // llama.cpp call. The loop observes the linked token as soon as each call returns.
                 return await Task.Run(
-                    () => Generate(frozenTokens, sampling, maxTokens, onDelta, lookupContext, linked.Token),
+                    () => Generate(frozenTokens, sampling, maxTokens, onDelta, lookupContext, linked.Token, admission),
                     CancellationToken.None).ConfigureAwait(false);
             }
             finally
@@ -481,8 +491,11 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
             int maxTokens,
             Action<string>? onDelta,
             bool? lookupContext,
-            CancellationToken ct)
+            CancellationToken ct, Func<bool>? admission)
         {
+            // This worker check is the linearization point for reading native work.
+            ThrowIfStopped(ct);
+            if (admission?.Invoke() == false) throw new OperationCanceledException();
             Exception? generationFailure = null;
             try
             {

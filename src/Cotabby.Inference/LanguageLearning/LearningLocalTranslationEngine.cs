@@ -233,7 +233,7 @@ public sealed class LearningLocalTranslationEngine :
                 prepared.Sampling,
                 request.MaxOutputTokens,
                 forwardDelta,
-                linked.Token).ConfigureAwait(false);
+                linked.Token, request.Admission).ConfigureAwait(false);
             linked.Token.ThrowIfCancellationRequested();
             return result;
         }

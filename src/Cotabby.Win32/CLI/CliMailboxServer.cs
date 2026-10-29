@@ -20,6 +20,7 @@ public sealed class CliMailboxServer : IAsyncDisposable
     private Timer? _recovery;
     private Task? _work, _stop;
     private bool _stopping, _dirty, _started, _leaseHeld;
+    internal Action<string>? AfterRecoveryObservation { get; init; }
     public CliMailboxServer(string root, Func<CliRequest, Task<CliReply>> handler) { _path = root; _handler = handler ?? throw new ArgumentNullException(nameof(handler)); }
     public Task StartAsync()
     {
@@ -35,17 +36,25 @@ public sealed class CliMailboxServer : IAsyncDisposable
                     throw new CliException(Marshal.GetLastPInvokeError() == 33 ? CliErrorCode.Busy : CliErrorCode.Io, "Another instance owns the CLI mailbox.");
                 _leaseHeld = true;
                 _lease.Verify();
-                while (true)
+                // Each name is observed at most once per startup. In particular, a same-name
+                // replacement cannot be adopted on a later scan after its original ID failed.
+                // Unprocessed names beyond this Windows recovery budget remain for next start.
+                var observed = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                var recovery = new List<(string Name, VocabularyWindowsFile.FileIdentity Identity)>();
+                while (observed.Count < 4096)
                 {
-                    var interrupted = _working.Names(); if (interrupted.Count == 0) break;
-                    bool requeued = false;
-                    foreach (string name in interrupted)
+                    var interrupted = _working.Names(observed); if (interrupted.Count == 0) break;
+                    foreach (string name in interrupted.Take(4096 - observed.Count))
                     {
-                        var identity = _working.CaptureIdentity(name); if (identity is null) continue;
-                        if (_requests.Exists(name)) { _working.RemoveOwned(name, identity.Value); requeued = true; }
-                        else requeued |= _working.ClaimOwned(name, _requests, identity) is not null;
+                        observed.Add(name);
+                        if (_working.CaptureIdentity(name) is { } identity) recovery.Add((name, identity));
                     }
-                    if (!requeued) throw new CliException(CliErrorCode.Io, "Cannot recover the CLI mailbox.");
+                }
+                foreach (var item in recovery)
+                {
+                    AfterRecoveryObservation?.Invoke(item.Name);
+                    if (_requests.Exists(item.Name)) _ = _working.RemoveOwned(item.Name, item.Identity);
+                    else _ = _working.ClaimOwned(item.Name, _requests, item.Identity);
                 }
                 StartWatcher();
                 _started = true;

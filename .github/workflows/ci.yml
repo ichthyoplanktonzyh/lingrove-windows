@@ -68,6 +68,8 @@ jobs:
         run: dotnet test tests/Cotabby.Core.Tests/Cotabby.Core.Tests.csproj --configuration Release
       - name: Test portable app settings and task ownership
         run: dotnet test tests/Cotabby.App.Tests/Cotabby.App.Tests.csproj --configuration Release
+      - name: Compile Windows solution with targeting enabled on macOS
+        run: dotnet build Cotabby.sln --configuration Release -p:EnableWindowsTargeting=true
       - name: Read the pinned macOS reference
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:

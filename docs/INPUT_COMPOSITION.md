@@ -29,8 +29,10 @@ Unknown. The focus owner never asks a secure element for its text or composition
 
 This implementation depends on the provider honoring TextEdit's reporting contract. It does not
 establish that every editor supports or correctly implements that contract. Unsupported editors
-remain unavailable. Completion generation and key handling require their own coordinator guards;
-this checkpoint alone does not establish them.
+remain unavailable. GetActiveComposition describes IME composition; a null range does not prove
+the absence of a host-owned inline prediction. Mac also holds for host predictive marked text, so
+the Windows observation does not establish complete host-marked-text parity. Completion generation
+and key handling require their own coordinator guards; this checkpoint alone does not establish them.
 
 Microsoft's [TextEdit provider contract](https://learn.microsoft.com/en-us/windows/win32/winauto/textedit-control-pattern)
 defines active composition and requires change events. Its

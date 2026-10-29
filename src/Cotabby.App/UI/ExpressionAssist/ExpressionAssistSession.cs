@@ -65,12 +65,15 @@ internal sealed class ExpressionAssistSession : IAsyncDisposable
     }
 
     internal bool IsActive => _sessionCancellation is not null;
+    internal bool HasInputFocus => _panel.OwnsKeyboard;
+    internal event Action<bool>? ActivityChanged;
 
     internal void Begin(string? trigger, int? initiatingVirtualKey = null)
     {
         Verify();
         if (_disposed || IsActive) return;
         _sessionCancellation = new(); _acquiring = true;
+        ActivityChanged?.Invoke(true);
         Track(BeginAsync(trigger, initiatingVirtualKey, _sessionCancellation.Token));
     }
 
@@ -193,7 +196,9 @@ internal sealed class ExpressionAssistSession : IAsyncDisposable
     {
         Verify(); ++_revision;
         CancelAndDispose(_requestCancellation); _requestCancellation = null;
+        bool wasActive = _sessionCancellation is not null;
         CancelAndDispose(_sessionCancellation); _sessionCancellation = null;
+        if (wasActive) ActivityChanged?.Invoke(false);
         var capture = _capture; _capture = null;
         if (capture is not null)
         {

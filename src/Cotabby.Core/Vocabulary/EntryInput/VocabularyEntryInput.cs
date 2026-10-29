@@ -1,15 +1,33 @@
 using System.Text;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Text;
+using Cotabby.Core.Support;
 
 namespace Cotabby.Core.Vocabulary.EntryInput;
 
 /// <summary>Unsaved form or import row. Archive ownership assigns identities and commits it.</summary>
-public sealed record VocabularyEntryInput(
-    string Expression = "", string DictionaryForm = "", LearningLanguage? Language = LearningLanguage.English,
-    VocabularyEntryKind Kind = VocabularyEntryKind.Word, string Meaning = "", LearningLanguage? MeaningLanguage = null,
-    string Note = "", IReadOnlyList<string>? Tags = null, string Example = "", string ExampleTranslation = "");
-
+public sealed record VocabularyEntryInput
+{
+    public VocabularyEntryInput(string Expression = "", string DictionaryForm = "", LearningLanguage? Language = LearningLanguage.English,
+        VocabularyEntryKind Kind = VocabularyEntryKind.Word, string Meaning = "", LearningLanguage? MeaningLanguage = null,
+        string Note = "", IReadOnlyList<string>? Tags = null, string Example = "", string ExampleTranslation = "")
+    {
+        this.Expression = Expression; this.DictionaryForm = DictionaryForm; this.Language = Language; this.Kind = Kind;
+        this.Meaning = Meaning; this.MeaningLanguage = MeaningLanguage; this.Note = Note; this.Tags = Tags ?? [];
+        this.Example = Example; this.ExampleTranslation = ExampleTranslation;
+    }
+    private IReadOnlyList<string> _tags = Array.Empty<string>();
+    public string Expression { get; init; }
+    public string DictionaryForm { get; init; }
+    public LearningLanguage? Language { get; init; }
+    public VocabularyEntryKind Kind { get; init; }
+    public string Meaning { get; init; }
+    public LearningLanguage? MeaningLanguage { get; init; }
+    public string Note { get; init; }
+    public IReadOnlyList<string> Tags { get => _tags; init => _tags = CollectionValues.List(value ?? throw new ArgumentNullException(nameof(value))); }
+    public string Example { get; init; }
+    public string ExampleTranslation { get; init; }
+}
 public enum VocabularyWordListError
 {
     TooLarge, Encoding, UnsupportedFile, Empty, Mapping, InvalidInput, MalformedCsv,
@@ -28,7 +46,10 @@ public static class VocabularyEntryInputPolicy
 {
     public static VocabularyEntryInput Validated(VocabularyEntryInput input)
     {
-        ArgumentNullException.ThrowIfNull(input);
+        if (input is null || input.Expression is null || input.DictionaryForm is null || input.Meaning is null
+            || input.Note is null || input.Example is null || input.ExampleTranslation is null
+            || input.Tags.Any(tag => tag is null))
+            throw new VocabularyWordListException(VocabularyWordListError.InvalidInput);
         try
         {
             string expression = VocabularyCapturePolicy.Normalized(input.Expression);
@@ -36,7 +57,7 @@ public static class VocabularyEntryInputPolicy
             if (dictionary.Length == 0) dictionary = expression;
             string meaning = FoundationText.TrimWhitespaceAndNewlines(input.Meaning), note = FoundationText.TrimWhitespaceAndNewlines(input.Note);
             string example = FoundationText.TrimWhitespaceAndNewlines(input.Example), translation = FoundationText.TrimWhitespaceAndNewlines(input.ExampleTranslation);
-            string[] tags = (input.Tags ?? []).Select(VocabularyCapturePolicy.Normalized).Where(t => t.Length != 0)
+            string[] tags = input.Tags.Select(VocabularyCapturePolicy.Normalized).Where(t => t.Length != 0)
                 .Distinct(StringComparer.Ordinal).Order(ScalarOrder).ToArray();
             if (expression.Length == 0 || !Fits(expression, 32_000) || !Fits(dictionary, 32_000)
                 || !Fits(meaning, 32_000) || !Fits(note, 262_144) || !Fits(example, 262_144)

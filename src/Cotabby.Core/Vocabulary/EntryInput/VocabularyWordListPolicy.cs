@@ -1,19 +1,35 @@
 using System.Text;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Text;
+using Cotabby.Core.Support;
 
 namespace Cotabby.Core.Vocabulary.EntryInput;
 
 public enum VocabularyWordListFormat { Csv, Text }
 public enum VocabularyImportField { Expression, Meaning, DictionaryForm, Language, Kind, MeaningLanguage, Note, Tags, Example, ExampleTranslation }
-public sealed record VocabularyWordListRow(int Line, IReadOnlyList<string> Cells);
+public sealed record VocabularyWordListRow(int Line, IReadOnlyList<string> Cells)
+{
+    private IReadOnlyList<string> _cells = CopyCells(Cells);
+    public IReadOnlyList<string> Cells { get => _cells; init => _cells = CopyCells(value); }
+    private static IReadOnlyList<string> CopyCells(IReadOnlyList<string> source) =>
+        source is null || source.Any(cell => cell is null) ? throw new ArgumentException("Cells must contain strings.", nameof(source)) : CollectionValues.List(source);
+}
 public sealed record VocabularyWordList(VocabularyWordListFormat Format, IReadOnlyList<VocabularyWordListRow> Rows)
 {
+    private IReadOnlyList<VocabularyWordListRow> _rows = CopyRows(Rows);
+    public IReadOnlyList<VocabularyWordListRow> Rows { get => _rows; init => _rows = CopyRows(value); }
     public int ColumnCount => Rows.Count == 0 ? 0 : Rows.Max(row => row.Cells.Count);
+    private static IReadOnlyList<VocabularyWordListRow> CopyRows(IReadOnlyList<VocabularyWordListRow> source) =>
+        source is null || source.Any(row => row is null) ? throw new ArgumentException("Rows must contain values.", nameof(source)) : CollectionValues.List(source);
 }
 public sealed record VocabularyWordListConfiguration(bool HasHeader, IReadOnlyDictionary<VocabularyImportField, int> Columns,
     LearningLanguage Language = LearningLanguage.English, VocabularyEntryKind Kind = VocabularyEntryKind.Word,
-    LearningLanguage? MeaningLanguage = null);
+    LearningLanguage? MeaningLanguage = null)
+{
+    private IReadOnlyDictionary<VocabularyImportField, int> _columns = CollectionValues.Map(Columns ?? throw new ArgumentNullException(nameof(Columns)));
+    public IReadOnlyDictionary<VocabularyImportField, int> Columns
+    { get => _columns; init => _columns = CollectionValues.Map(value ?? throw new ArgumentNullException(nameof(value))); }
+}
 
 /// <summary>Bounded, value-only word-list decoding and column mapping; no file handles or writes.</summary>
 public static class VocabularyWordListPolicy
@@ -58,6 +74,8 @@ public static class VocabularyWordListPolicy
 
     public static VocabularyWordListConfiguration Configuration(VocabularyWordList table, LearningLanguage language)
     {
+        ValidateTable(table);
+        if (!Enum.IsDefined(language)) throw Error(VocabularyWordListError.InvalidInput);
         var columns = new Dictionary<VocabularyImportField, int> { [VocabularyImportField.Expression] = 0 };
         if (table.Format != VocabularyWordListFormat.Csv || table.Rows.Count == 0) return new(false, columns, language);
         string[] names = table.Rows[0].Cells.Select(HeaderName).ToArray();
@@ -84,6 +102,11 @@ public static class VocabularyWordListPolicy
 
     public static IReadOnlyList<VocabularyEntryInput> Inputs(VocabularyWordList table, VocabularyWordListConfiguration configuration, CancellationToken cancellationToken = default)
     {
+        ValidateTable(table);
+        if (configuration is null || !Enum.IsDefined(configuration.Language) || !Enum.IsDefined(configuration.Kind)
+            || (configuration.MeaningLanguage is { } annotationLanguage && !Enum.IsDefined(annotationLanguage)))
+            throw Error(VocabularyWordListError.InvalidInput);
+        if (configuration.Columns.Keys.Any(field => !Enum.IsDefined(field))) throw Error(VocabularyWordListError.Mapping);
         if (!configuration.Columns.TryGetValue(VocabularyImportField.Expression, out int expression)
             || expression < 0 || expression >= table.ColumnCount || configuration.Columns.Values.Any(i => i < 0 || i >= table.ColumnCount))
             throw Error(VocabularyWordListError.Mapping);
@@ -111,6 +134,14 @@ public static class VocabularyWordListPolicy
         return result.AsReadOnly();
     }
 
+    private static void ValidateTable(VocabularyWordList table)
+    {
+        if (table is null || !Enum.IsDefined(table.Format)) throw Error(VocabularyWordListError.InvalidInput);
+        foreach (var row in table.Rows)
+            foreach (var cell in row.Cells)
+                try { if (cell.Contains('\0')) throw Error(VocabularyWordListError.InvalidInput); _ = Utf8.GetByteCount(cell); }
+                catch (EncoderFallbackException) { throw Error(VocabularyWordListError.InvalidInput); }
+    }
     private static LearningLanguage? ParseLanguage(string value, LearningLanguage? fallback, int line)
     {
         if (value.Length == 0) return fallback;

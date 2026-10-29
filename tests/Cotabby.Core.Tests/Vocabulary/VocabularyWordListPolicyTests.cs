@@ -120,4 +120,55 @@ public sealed class VocabularyWordListPolicyTests
         var table = Table("hello");
         Assert.Throws<OperationCanceledException>(() => VocabularyWordListPolicy.Inputs(table, VocabularyWordListPolicy.Configuration(table, LearningLanguage.English), cancelled.Token));
     }
+    [Fact]
+    public void ConstructorsAndWithDetachCollectionsFromTheirOwners()
+    {
+        var tags = new List<string> { "first" };
+        var input = new VocabularyEntryInput("word", Tags: tags);
+        var cells = new List<string> { "word" };
+        var row = new VocabularyWordListRow(1, cells);
+        var rows = new List<VocabularyWordListRow> { row };
+        var table = new VocabularyWordList(VocabularyWordListFormat.Csv, rows);
+        var columns = new Dictionary<VocabularyImportField, int> { [VocabularyImportField.Expression] = 0 };
+        var configuration = new VocabularyWordListConfiguration(false, columns);
+        var newTags = new List<string> { "second" };
+        var newCells = new List<string> { "another" };
+        var newRows = new List<VocabularyWordListRow> { new(2, newCells) };
+        var newColumns = new Dictionary<VocabularyImportField, int> { [VocabularyImportField.Expression] = 1 };
+        var editedInput = input with { Tags = newTags };
+        var editedRow = row with { Cells = newCells };
+        var editedTable = table with { Rows = newRows };
+        var editedConfiguration = configuration with { Columns = newColumns };
+        tags.Clear(); cells.Clear(); rows.Clear(); columns.Clear();
+        newTags.Clear(); newCells.Clear(); newRows.Clear(); newColumns.Clear();
+        Assert.Equal("first", Assert.Single(input.Tags!)); Assert.Equal("second", Assert.Single(editedInput.Tags!));
+        Assert.Equal("word", Assert.Single(row.Cells)); Assert.Equal("another", Assert.Single(editedRow.Cells));
+        Assert.Equal("word", Assert.Single(Assert.Single(table.Rows).Cells));
+        Assert.Equal("another", Assert.Single(Assert.Single(editedTable.Rows).Cells));
+        Assert.Equal(0, configuration.Columns[VocabularyImportField.Expression]); Assert.Equal(1, editedConfiguration.Columns[VocabularyImportField.Expression]);
+        Assert.Empty(new VocabularyEntryInput().Tags);
+        Assert.Throws<NotSupportedException>(() => ((IList<string>)editedRow.Cells)[0] = "changed");
+        Assert.Throws<NotSupportedException>(() => ((IDictionary<VocabularyImportField, int>)configuration.Columns).Clear());
+    }
+
+    [Fact]
+    public void MalformedClrValuesFailClosedAtInputBoundaries()
+    {
+        static void Invalid(Action action) => Assert.Equal(VocabularyWordListError.InvalidInput, Assert.Throws<VocabularyWordListException>(action).Error);
+        Invalid(() => VocabularyEntryInputPolicy.Validated(new("word", Meaning: null!)));
+        Invalid(() => VocabularyEntryInputPolicy.Validated(new("word", Tags: [null!])));
+        Invalid(() => VocabularyEntryInputPolicy.Validated(new("word", Kind: (VocabularyEntryKind)100)));
+        Invalid(() => VocabularyEntryInputPolicy.Validated(new("word", Language: (LearningLanguage)100)));
+        Assert.Throws<ArgumentException>(() => new VocabularyWordListRow(1, [null!]));
+        Assert.Throws<ArgumentException>(() => new VocabularyWordList(VocabularyWordListFormat.Csv, [null!]));
+        Assert.Throws<ArgumentNullException>(() => new VocabularyWordListConfiguration(false, null!));
+        var table = Table("hello");
+        var config = VocabularyWordListPolicy.Configuration(table, LearningLanguage.English);
+        Invalid(() => VocabularyWordListPolicy.Inputs(table, config with { Language = (LearningLanguage)100 }));
+        Invalid(() => VocabularyWordListPolicy.Inputs(table, config with { Kind = (VocabularyEntryKind)100 }));
+        Invalid(() => VocabularyWordListPolicy.Inputs(table with { Format = (VocabularyWordListFormat)100 }, config));
+        Invalid(() => VocabularyWordListPolicy.Inputs(new(VocabularyWordListFormat.Text, [new(1, ["bad\0text"])]), config));
+        var invalidField = config with { Columns = new Dictionary<VocabularyImportField, int> { [VocabularyImportField.Expression] = 0, [(VocabularyImportField)100] = 0 } };
+        Assert.Equal(VocabularyWordListError.Mapping, Assert.Throws<VocabularyWordListException>(() => VocabularyWordListPolicy.Inputs(table, invalidField)).Error);
+    }
 }

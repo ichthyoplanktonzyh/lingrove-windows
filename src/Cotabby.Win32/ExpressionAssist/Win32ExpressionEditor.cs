@@ -62,9 +62,24 @@ public sealed class Win32ExpressionEditor : IAsyncDisposable
             session.Track(work);
             Track(work);
         }
+        return await PublishCaptureAsync(session, work, ct).ConfigureAwait(false);
+    }
+
+    // The optional barrier is a test-only seam for the completed-work/publication interval.
+    internal async Task<ExpressionEditorSession?> PublishCaptureAsync(ExpressionEditorSession session, Task<bool> work,
+        CancellationToken ct, Func<Task>? beforePublish = null)
+    {
         try
         {
-            if (await work.WaitAsync(TimeSpan.FromSeconds(2), ct).ConfigureAwait(false)) return session;
+            if (await work.WaitAsync(TimeSpan.FromSeconds(2), ct).ConfigureAwait(false))
+            {
+                if (beforePublish is not null) await beforePublish().ConfigureAwait(false);
+                lock (_sync)
+                {
+                    if (!_disposed && ReferenceEquals(_active, session) && session.IsPublishable && !ct.IsCancellationRequested)
+                        return session;
+                }
+            }
         }
         catch (Exception ex) when (ex is OperationCanceledException or TimeoutException) { }
         session.Retire();
@@ -128,6 +143,7 @@ public sealed class ExpressionEditorSession : IAsyncDisposable
     private bool _returnFocusEvent;
     private bool _panelFocusEvent;
     private int _retiredFlag;
+    private int _capturedFlag;
     private nint _host;
     private AutomationElement? _element;
     private long _retainedToken;
@@ -166,6 +182,7 @@ public sealed class ExpressionEditorSession : IAsyncDisposable
             _observationVersion = receipt.Original.ObservationVersion;
             _roundTrip = new(receipt, host, _panel, Environment.ProcessId);
             _phase = Phase.Captured;
+            Volatile.Write(ref _capturedFlag, 1);
         }
     }
 
@@ -219,6 +236,7 @@ public sealed class ExpressionEditorSession : IAsyncDisposable
             {
                 if (_phase != Phase.Capturing || ct.IsCancellationRequested) return false;
                 _receipt = receipt; _roundTrip = new(receipt, host, _panel, Environment.ProcessId); _phase = Phase.Captured;
+                Volatile.Write(ref _capturedFlag, 1);
                 return true;
             }
         }
@@ -472,6 +490,7 @@ public sealed class ExpressionEditorSession : IAsyncDisposable
     }
 
     private bool IsLive() => Volatile.Read(ref _retiredFlag) == 0;
+    internal bool IsPublishable => Volatile.Read(ref _capturedFlag) != 0 && IsLive();
 
     private void OnKey(object? sender, KeyEventArgs e)
     {

@@ -14,6 +14,30 @@ namespace Cotabby.App.Wpf.Tests;
 public sealed class ExpressionEditorSessionTests
 {
     [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(2)]
+    public async Task CaptureCompletedBeforeRetirementIsNotPublished(int invalidation)
+    {
+        if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;
+        await using var fixture = new Fixture();
+        await using var replacement = new Fixture();
+        var editor = new Win32ExpressionEditor(fixture.Focus, fixture.Keyboard, fixture.Gate);
+        editor.AttachSessionForTest(fixture.Session);
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        Task<ExpressionEditorSession?> publication = editor.PublishCaptureAsync(fixture.Session, Task.FromResult(true),
+            CancellationToken.None, () => { entered.SetResult(); return release.Task; });
+        await entered.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        if (invalidation == 0) await editor.DisposeAsync();
+        else if (invalidation == 1) fixture.Session.Retire();
+        else editor.AttachSessionForTest(replacement.Session);
+        release.SetResult();
+        Assert.Null(await publication.WaitAsync(TimeSpan.FromSeconds(5)));
+        await editor.DisposeAsync();
+    }
+
+    [Theory]
     [InlineData(true)]
     [InlineData(false)]
     public async Task EditorDisposeFromActiveSessionNotificationDoesNotDeadlockAndExternalDisposeDrainsIt(bool externalStarts)

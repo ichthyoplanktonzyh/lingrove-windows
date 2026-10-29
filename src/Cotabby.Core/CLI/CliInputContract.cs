@@ -43,7 +43,7 @@ public static class CliInputContract
         long? version = Integer(batch["version"]); string? key = Text(batch["idempotencyKey"]);
         if (version is not (1 or 2) || key is null || Encoding.UTF8.GetByteCount(key) is < 1 or > 200 || FoundationText.TrimWhitespaceAndNewlines(key).Length == 0
             || batch["operations"] is not JsonArray ops || ops.Count is < 1 or > 100) throw Invalid("Invalid batch header or operation count.");
-        if (batch.ContainsKey("expectedRevision") && Integer(batch["expectedRevision"]) is not >= 0) throw Invalid("Invalid expectedRevision.");
+        if (batch["expectedRevision"] is not null && Integer(batch["expectedRevision"]) is not >= 0) throw Invalid("Invalid expectedRevision.");
         int images = 0, blocks = 0, examples = 0, imageBytes = 0;
         foreach (var opNode in ops)
         {
@@ -111,7 +111,7 @@ public static class CliInputContract
         foreach (var range in OptionalArray(item, "ranges", 64)) { if (range is not JsonObject pair) throw Invalid("Invalid range."); Only(pair, ["location", "length"]); if (Integer(pair["location"]) is null || Integer(pair["length"]) is null) throw Invalid("Invalid range."); }
     }
     private static void Only(JsonObject value, IReadOnlyCollection<string> names) { if (value.Any(p => !names.Contains(p.Key))) throw Invalid("Unknown fields or invalid object."); }
-    private static JsonArray OptionalArray(JsonObject value, string name, int limit) { if (value[name] is null) return []; if (value[name] is not JsonArray array || array.Count > limit) throw Invalid("Invalid array or count."); return array; }
+    private static JsonArray OptionalArray(JsonObject value, string name, int limit) { if (!value.ContainsKey(name)) return []; if (value[name] is not JsonArray array || array.Count > limit) throw Invalid("Invalid array or count."); return array; }
     private static void OptionalBool(JsonObject value, string name) { if (value[name] is not null && (value[name] is not JsonValue v || !v.TryGetValue<bool>(out _))) throw Invalid("Invalid boolean."); }
     private static string? Text(JsonNode? value) => value is JsonValue scalar && scalar.TryGetValue<string>(out var text) ? text : null;
     private static long? Integer(JsonNode? value) { if (value is not JsonValue scalar) return null; if (scalar.TryGetValue<long>(out var n)) return n; if (scalar.TryGetValue<int>(out var i)) return i; return null; }

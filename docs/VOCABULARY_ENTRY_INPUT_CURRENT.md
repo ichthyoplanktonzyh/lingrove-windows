@@ -25,4 +25,4 @@ The Windows adaptation must preserve controls, ordering, states, selection ident
 
 ## Verification
 
-On Windows x64 with SDK 10.0.402, `dotnet test tests/Cotabby.Core.Tests/Cotabby.Core.Tests.csproj --configuration Release --filter FullyQualifiedName~VocabularyWordListPolicyTests` passed 12/12; `dotnet test tests/Cotabby.Core.Tests/Cotabby.Core.Tests.csproj --configuration Release --no-build` passed 4622/4622; `dotnet build Cotabby.sln --configuration Release` passed with zero warnings and errors. Tests do not exercise a native file picker, UI, persisted notebook, real endpoint or model.
+On Windows x64 with SDK 10.0.402, `dotnet test tests/Cotabby.Core.Tests/Cotabby.Core.Tests.csproj --configuration Release --filter FullyQualifiedName~VocabularyWordListPolicyTests` passed 13/13; `dotnet test tests/Cotabby.Core.Tests/Cotabby.Core.Tests.csproj --configuration Release --no-build` passed 4623/4623; `dotnet build Cotabby.sln --configuration Release` passed with zero warnings and errors. Tests do not exercise a native file picker, UI, persisted notebook, real endpoint or model.

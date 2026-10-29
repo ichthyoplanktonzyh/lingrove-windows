@@ -32,6 +32,12 @@ public sealed class VocabularyWordListPolicyTests
     }
 
     [Fact]
+    public void HeaderInferenceKeepsWholeLetterGraphemes()
+    {
+        Assert.True(VocabularyWordListPolicy.Configuration(Table("EX-PRESSION,meaning\nword,meaning"), LearningLanguage.English).HasHeader);
+        Assert.False(VocabularyWordListPolicy.Configuration(Table("e\u0301xpression,meaning\nword,meaning"), LearningLanguage.English).HasHeader);
+    }
+    [Fact]
     public void ChineseHeadersAndLanguageTypeAndTagsRetainRowIntent()
     {
         var table = Table("单词,释义,语言,类型,释义语言,标签\nbank,河岸,en,word,zh-Hans,work; water\nkeep me posted,让我知道,en,expression,zh-Hans,work");

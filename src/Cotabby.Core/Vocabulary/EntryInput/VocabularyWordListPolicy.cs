@@ -119,7 +119,7 @@ public static class VocabularyWordListPolicy
         throw Error(VocabularyWordListError.Language, line);
     }
 
-    private static string HeaderName(string value) => string.Concat(value.ToLowerInvariant().EnumerateRunes().Where(r => Rune.IsLetter(r) || Rune.IsNumber(r)).Select(r => r.ToString()));
+    private static string HeaderName(string value) => string.Concat(new GraphemeString(value.ToLowerInvariant()).Where(g => g.IsLetter || g.IsNumber).Select(g => g.ToString())).Normalize(NormalizationForm.FormC);
     private static VocabularyWordListException Error(VocabularyWordListError error, int? line = null) => new(error, line);
 
     private static readonly char[] WhitespaceCharacters = "\u0009\u0020\u00a0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u202f\u205f\u3000".ToCharArray();

@@ -170,5 +170,3 @@ public static class VocabularyEntryImportPolicy
             MeaningOrigin = input.Meaning.Length == 0 ? VocabularyMeaningOrigin.Captured : VocabularyMeaningOrigin.User,
             Note = input.Note, Tags = input.Tags, CreatedWithoutContext = withoutContext ? true : null };
 }
-
-

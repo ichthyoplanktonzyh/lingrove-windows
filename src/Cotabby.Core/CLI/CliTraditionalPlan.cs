@@ -15,7 +15,7 @@ internal static class CliTraditionalPlan
         ulong revision, F.SourceDate now, IReadOnlyDictionary<string, VocabularyPreparedImage> prepared, CancellationToken cancellationToken)
     {
         Guid Id(string suffix) => CliIdentity.OperationId(key, fingerprint, index, suffix);
-        var graph = draft.RawGraph; var document = draft.Working(); var entries = document.Entries;
+        var document = draft.Working(); var entries = document.Entries;
         F.VocabularyEntry entry; F.VocabularySense sense; bool createdEntry = false;
         if (kind == "add")
         {
@@ -63,7 +63,9 @@ internal static class CliTraditionalPlan
         }
         else throw Invalid();
         var usageIds = new List<Guid>(); var examples = sense.Examples.ToList(); var allExamples = entry.Examples.ToList();
-        var rawSources = graph["sources"]!.AsArray(); var rawOccurrences = graph["occurrences"]!.AsArray(); var rawClaims = graph["interpretations"]!.AsArray();
+        var claims = document.Interpretations.ToDictionary(value => value.Id);
+        var sourceIds = document.Sources.Select(value => value.Id).ToHashSet();
+        var occurrenceIds = document.Occurrences.Select(value => value.Id).ToHashSet();
         foreach (var (exampleNode, position) in (input["examples"] as JsonArray ?? []).Select((value, offset) => (value, offset)))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -72,27 +74,25 @@ internal static class CliTraditionalPlan
             if (existing >= 0)
             {
                 var merged = CliExamplePolicy.Merge(examples[existing], value); examples[existing] = merged;
-                var prior = draft.Working().Interpretations.First(item => item.Id == merged.Id);
+                var prior = claims[merged.Id];
                 var claim = prior with { Meaning = merged.Meaning, MeaningLanguage = merged.MeaningLanguage, MeaningOrigin = merged.MeaningOrigin,
                     Translation = merged.Translation, TranslationLanguage = merged.TranslationLanguage, TranslationVariants = merged.TranslationVariants };
-                CliResourceDraft.UpsertRaw(rawClaims, "id", claim.Id, CliResourceDraft.RawValue(claim)); usageIds.Add(merged.Id);
+                draft.Upsert("interpretations", claim.Id, claim); usageIds.Add(merged.Id);
+                claims[claim.Id] = claim;
             }
             else
             {
                 if (allExamples.Any(item => StringComparer.Ordinal.Equals(CliExamplePolicy.Key(item), CliExamplePolicy.Key(value))))
                     throw new CliException(CliErrorCode.Conflict, "This usage already belongs to another sense. Append to its current owner.");
-                var current = draft.Working();
-                if (current.Sources.Any(item => item.Id == value.SourceId) || current.Occurrences.Any(item => item.Id == value.Id)
-                    || current.Interpretations.Any(item => item.Id == value.Id))
+                if (!sourceIds.Add(value.SourceId) || !occurrenceIds.Add(value.Id) || claims.ContainsKey(value.Id))
                     throw new CliException(CliErrorCode.Conflict, "Generated evidence identity already exists.");
                 var source = new F.VocabularySourceSnapshot(value.SourceId, value.Text, value.SourceKind, null, now);
                 var occurrence = new R.VocabularySourceOccurrence(value.Id, value.SourceId, value.Ranges);
                 var claim = new F.VocabularyInterpretation(value.Id, value.Id, now) { SenseId = sense.Id, Status = R.VocabularyInterpretationStatus.Accepted,
                     Meaning = value.Meaning, MeaningLanguage = value.MeaningLanguage, MeaningOrigin = value.MeaningOrigin, Translation = value.Translation,
                     TranslationLanguage = value.TranslationLanguage, Completeness = value.Completeness };
-                CliResourceDraft.UpsertRaw(rawSources, "id", source.Id, CliResourceDraft.RawValue(source));
-                CliResourceDraft.UpsertRaw(rawOccurrences, "id", occurrence.Id, CliResourceDraft.RawValue(occurrence));
-                CliResourceDraft.UpsertRaw(rawClaims, "id", claim.Id, CliResourceDraft.RawValue(claim));
+                draft.Append("sources", source.Id, source); draft.Append("occurrences", occurrence.Id, occurrence); draft.Append("interpretations", claim.Id, claim);
+                claims.Add(claim.Id, claim);
                 examples.Add(value); allExamples.Add(value); usageIds.Add(value.Id);
             }
         }
@@ -113,8 +113,8 @@ internal static class CliTraditionalPlan
         headerSense = headerSense with { UpdatedAt = now };
         if (senseOffset < 0) headers.Add(headerSense); else headers[senseOffset] = headerSense;
         header = header with { Senses = headers, UpdatedAt = now };
-        CliResourceDraft.UpsertRaw(graph["catalog"]!.AsArray(), "id", header.Id, CliResourceDraft.RawValue(header));
-        CliResourceDraft.UpsertRaw(graph["collections"]!.AsArray(), "senseID", collection.SenseId, CliResourceDraft.RawValue(collection));
+        draft.Upsert("entries", header.Id, header);
+        draft.Upsert("collections", collection.SenseId, collection);
         return new JsonObject { ["operation"] = index, ["entryID"] = entry.Id.ToString("D").ToUpperInvariant(), ["senseID"] = sense.Id.ToString("D").ToUpperInvariant(),
             ["createdEntry"] = createdEntry, ["usageIDs"] = new JsonArray(usageIds.Select(id => (JsonNode?)JsonValue.Create(id.ToString("D").ToUpperInvariant())).ToArray()),
             ["blockIDs"] = new JsonArray(blockIds.Select(id => (JsonNode?)JsonValue.Create(id.ToString("D").ToUpperInvariant())).ToArray()) };

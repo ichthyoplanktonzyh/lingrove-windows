@@ -96,4 +96,22 @@ public sealed class CliBatchPlanTests
         Assert.Throws<OperationCanceledException>(() => CliBatchPlan.Create(batch, baseline, 0, CliIdentity.Fingerprint(batch), new F.SourceDate(0), new Dictionary<string, VocabularyPreparedImage>(), cancellation.Token));
         Assert.Empty(baseline.Catalog);
     }
+    [Fact]
+    public void MixedResourceCaptureAndAppendSeeIncrementalTypedChanges()
+    {
+        var entry = Guid.NewGuid(); var sense = Guid.NewGuid();
+        string json = """{"version":2,"idempotencyKey":"mixed-index","expectedRevision":0,"operations":[{"put":{"resource":"entries","value":{"id":"ENTRY","expression":"bank","language":"en","kind":"word"}}},{"put":{"resource":"senses","value":{"id":"SENSE","entryID":"ENTRY","meaning":"first"}}},{"capture":{"entries":[{"expression":"bank","language":"en","senses":[{"id":"SENSE","examples":[{"text":"the bank opens"}]}]}]}},{"put":{"resource":"senses","value":{"id":"SENSE","meaning":"edited"}}},{"append":{"entryID":"ENTRY","senseID":"SENSE","examples":[{"text":"the bank closes"}]}}]}""".Replace("ENTRY", entry.ToString("D")).Replace("SENSE", sense.ToString("D"));
+        var batch = Decode(json); var result = CliBatchPlan.Create(batch, new F.VocabularyDocument(), 0, CliIdentity.Fingerprint(batch), new F.SourceDate(3), new Dictionary<string, VocabularyPreparedImage>()).Document;
+        var saved = result.CollectedEntries.Single().Senses.Single(); Assert.Equal(sense, saved.Id); Assert.Equal("edited", saved.Meaning);
+        Assert.Equal(2, saved.Examples.Count); Assert.Equal(2, result.Sources.Count); Assert.Equal(2, result.Interpretations.Count);
+    }
+    [Fact]
+    public void CaptureCanReferenceCategoryCreatedEarlierInSameBatch()
+    {
+        var category = Guid.NewGuid(); var label = Guid.NewGuid();
+        string json = """{"version":2,"idempotencyKey":"category","expectedRevision":0,"operations":[{"put":{"resource":"categories","value":{"id":"CATEGORY","axis":"content","labels":[{"id":"LABEL","text":"custom"}]}}},{"capture":{"meanings":[{"ref":"m","title":"meaning","categories":["CATEGORY"]}],"entries":[{"expression":"bank","language":"en","senses":[{"meaning":"money","associations":[{"meaning":"m"}]}]}]}}]}""".Replace("CATEGORY", category.ToString("D")).Replace("LABEL", label.ToString("D"));
+        var batch = Decode(json); var result = CliBatchPlan.Create(batch, new F.VocabularyDocument(), 0, CliIdentity.Fingerprint(batch), new F.SourceDate(3), new Dictionary<string, VocabularyPreparedImage>()).Document;
+        Assert.Equal(category, result.Classification.Categories.Single().Id); Assert.Equal(category, result.Classification.Memberships.Single().CategoryId);
+        Assert.Equal(result.Semantics.Nodes.Single().Id, result.Classification.Memberships.Single().NodeId);
+    }
 }

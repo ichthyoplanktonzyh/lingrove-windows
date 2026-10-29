@@ -45,6 +45,17 @@ image preparer admits its documented PNG/decoder subset; native visual/desktop a
 actual app-owned startup/shutdown integration remain open. Existing historical fixture pins and
 old Windows/macOS data are untouched.
 
+Batch planning starts from one detached graph and maintains typed UUID/entry/usage indexes with
+incremental raw-row synchronization; it does not encode the whole graph per example or operation.
+The initial raw graph and final whole-graph validation still require bounded full-document buffers.
+On the shared Windows development host, synthetic 20 MiB of 5,000 retained sources plus 1,000
+new examples took 1.04 s and allocated 286.7 MiB (294.1 MiB process peak); 100 operations over
+that baseline took 1.69 s and allocated 553.5 MiB. A separate synthetic 137 MiB baseline of
+35,000 sources plus 1,000 examples took 5.81 s, allocated 2,743.7 MiB cumulatively and peaked
+at 1,279.6 MiB working set. These are observations, not upper-bound guarantees for the 192 MiB
+adapter envelope. Cancellation is checked between records; one full-document codec pass itself
+is not interruptible. No user notebook or real content was used for these measurements.
+
 The bounded native check is `python3 scripts/verify-cli-3b-macos-parity.py --mac-repo <checkout>`.
 It reads `CLIProtocol.swift`, `CLICaptureModels.swift` and `VocabularyCLIPlan.swift` at 3b, keeps
 the actual Codable declarations, fingerprint and operation ID bodies, and extracts the NSString

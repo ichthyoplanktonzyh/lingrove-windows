@@ -10,33 +10,32 @@ namespace Cotabby.Core.CLI;
 public sealed class CliResourceDraft
 {
     private readonly JsonObject _graph;
+    private readonly CliTypedGraph _typed;
     private readonly F.SourceDate _now;
     private const double UnixOffset = 978307200;
     public CliResourceDraft(F.VocabularyDocument document, F.SourceDate now)
-    { _graph = JsonNode.Parse(F.VocabularyDocumentCodec.Encode(document))!.AsObject(); _now = now; }
-    private sealed record WorkingWire(long SchemaVersion, IReadOnlyList<F.VocabularyEntry> Catalog,
-        IReadOnlyList<F.VocabularySourceSnapshot> Sources, IReadOnlyList<R.VocabularySourceOccurrence> Occurrences,
-        IReadOnlyList<F.VocabularyInterpretation> Interpretations, IReadOnlyList<F.VocabularyCollectionItem> Collections,
-        IReadOnlyList<Cotabby.Core.Review.ReviewLayoutTemplate>? ReviewTemplates, F.VocabularySemanticIndex Semantics,
-        R.VocabularyClassificationIndex Classification);
+    { _graph = JsonNode.Parse(F.VocabularyDocumentCodec.Encode(document))!.AsObject(); _typed = new(document); _now = now; }
     // Intermediate resource operations can temporarily have unresolved references. This is
     // a query view only: graph admission remains deferred until Finish, and callers must update
     // raw entities explicitly instead of replacing a projected graph and losing evidence.
-    internal F.VocabularyDocument Working()
-    {
-        var wire = VocabularyPayloadCodec.DecodePortableValue<WorkingWire>(System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(_graph));
-        return new F.VocabularyDocument { SchemaVersion = wire.SchemaVersion, Catalog = wire.Catalog, Sources = wire.Sources,
-            Occurrences = wire.Occurrences, Interpretations = wire.Interpretations, Collections = wire.Collections,
-            ReviewTemplates = wire.ReviewTemplates, Semantics = wire.Semantics, Classification = wire.Classification };
-    }
-    internal JsonObject RawGraph => _graph;
+    internal F.VocabularyDocument Working() => _typed.Snapshot();
     internal static JsonObject RawValue<T>(T value) => JsonNode.Parse(VocabularyPayloadCodec.EncodePortableValue(value))!.AsObject();
-    internal static void UpsertRaw(JsonArray values, string field, Guid id, JsonObject value)
+    private static void UpsertRaw(JsonArray values, string field, Guid id, JsonObject value)
     {
         for (int i = 0; i < values.Count; i++)
             if (Guid.TryParse(values[i]?[field]?.GetValue<string>(), out var candidate) && candidate == id) { values[i] = value; return; }
         values.Add(value);
     }
+    internal void Upsert<T>(string resource, Guid id, T value) where T : notnull
+    {
+        var node = RawValue(value); UpsertRaw(ArrayFor(resource), Key(resource), id, node); _typed.Put(resource, value);
+    }
+    internal void Append<T>(string resource, Guid id, T value) where T : notnull
+    {
+        var node = RawValue(value); ArrayFor(resource).Add(node); _typed.Put(resource, value);
+    }
+    private void SyncEntry(JsonObject? entry)
+    { if (entry is not null) _typed.Sync("entries", Identifier(entry, "entries"), entry); }
     private static CliException Invalid(string message) => new(CliErrorCode.InvalidInput, message);
     private JsonArray ArrayFor(string resource) => resource switch
     {
@@ -101,8 +100,13 @@ public sealed class CliResourceDraft
             if (!Guid.TryParseExact(requested, "D", out var parentId) || Find(ArrayFor("entries"), "entries", parentId) is not { } parent) throw new CliException(CliErrorCode.NotFound, "Create the parent entry before writing its sense.");
             if (ReferenceEquals(parent, oldParent)) { int index = parent["senses"]!.AsArray().IndexOf(oldValue); parent["senses"]!.AsArray()[index] = value; }
             else { if (oldParent is not null) oldParent["senses"]!.AsArray().Remove(oldValue); parent["senses"]!.AsArray().Add(value); }
+            SyncEntry(oldParent); if (!ReferenceEquals(parent, oldParent)) SyncEntry(parent);
         }
-        else if (oldValue is null) destination!.Add(value); else destination![destination.IndexOf(oldValue)] = value;
+        else
+        {
+            if (oldValue is null) destination!.Add(value); else destination![destination.IndexOf(oldValue)] = value;
+            _typed.Sync(resource, id, value);
+        }
         return id;
     }
     private static JsonObject PublicFields(JsonObject source, CliShapeContract.Shape shape)
@@ -112,7 +116,7 @@ public sealed class CliResourceDraft
     }
     public void Delete(string resource, Guid id)
     {
-        if (resource == "senses") { var (parent, sense) = FindSense(id); if (sense is null) throw Missing(); parent!["senses"]!.AsArray().Remove(sense); return; }
+        if (resource == "senses") { var (parent, sense) = FindSense(id); if (sense is null) throw Missing(); parent!["senses"]!.AsArray().Remove(sense); SyncEntry(parent); return; }
         var values = ArrayFor(resource); var old = Find(values, resource, id) ?? throw Missing();
         if (resource == "frameworks") throw Invalid("Frameworks are read-only catalog receipts.");
         if (resource == "entries" && old["senses"]!.AsArray().Count != 0) throw Invalid("Delete or move the entry's senses explicitly first.");
@@ -121,9 +125,11 @@ public sealed class CliResourceDraft
             if (!IsCustomCategory(id)) throw Invalid("Built-in categories are read-only.");
             RemoveMatching(ArrayFor("categoryParents"), x => Match(x, "categoryID", id) || Match(x, "parentID", id));
             RemoveMatching(ArrayFor("categoryMemberships"), x => Match(x, "categoryID", id)); RemoveMatching(ArrayFor("categoryOverrides"), x => Match(x, "categoryID", id));
+            _typed.RetainCategoryRelations(ArrayFor("categoryParents"), ArrayFor("categoryMemberships"), ArrayFor("categoryOverrides"));
         }
         if (resource == "categoryParents" && !IsCustomCategory(Guid.Parse(old["categoryID"]!.GetValue<string>()))) throw Invalid("Built-in category parents are read-only.");
         values.Remove(old);
+        _typed.Sync(resource, id, null);
     }
     private static void RemoveMatching(JsonArray values, Func<JsonObject, bool> predicate) { for (int i = values.Count - 1; i >= 0; i--) if (values[i] is JsonObject value && predicate(value)) values.RemoveAt(i); }
     private static bool Match(JsonObject value, string field, Guid id) => Guid.TryParse(value[field]?.GetValue<string>(), out var actual) && actual == id;

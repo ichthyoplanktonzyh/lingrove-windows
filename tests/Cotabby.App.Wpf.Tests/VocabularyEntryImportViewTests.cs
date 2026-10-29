@@ -7,6 +7,7 @@ using Cotabby.App.UI.Vocabulary;
 using Cotabby.App.Vocabulary;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Vocabulary.EntryInput;
+using Cotabby.Win32.Vocabulary;
 
 namespace Cotabby.App.Wpf.Tests;
 
@@ -19,6 +20,12 @@ public sealed class VocabularyEntryImportViewTests(WpfDispatcher dispatcher)
         internal Func<IReadOnlyList<VocabularyEntryInput>, CancellationToken, Task<VocabularyInputResult>> Add = (_, _) => Task.FromResult(NewResult());
         public Task<VocabularyInputPreviewResult> PreviewAsync(IReadOnlyList<VocabularyEntryInput> inputs, CancellationToken token) => Preview(inputs, token);
         public Task<VocabularyInputResult> AddEntriesAsync(IReadOnlyList<VocabularyEntryInput> inputs, CancellationToken token) => Add(inputs, token);
+    }
+    private sealed class DeferredReader : IVocabularyWordListReader
+    {
+        internal readonly TaskCompletionSource<VocabularyWordList> Gate = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        internal CancellationToken Token;
+        public Task<VocabularyWordList> ReadAsync(string path, CancellationToken token) { Token = token; return Gate.Task; }
     }
     private static VocabularyInputResult NewResult() => new(1, 1, 0, 0, 0, 0, new(Guid.NewGuid(), Guid.NewGuid()));
     [Fact]
@@ -40,7 +47,7 @@ public sealed class VocabularyEntryImportViewTests(WpfDispatcher dispatcher)
         {
             var first = new TaskCompletionSource<VocabularyInputPreviewResult>(TaskCreationOptions.RunContinuationsAsynchronously); int calls = 0;
             var owner = new Owner { Preview = (_, _) => ++calls == 1 ? first.Task : Task.FromResult(new VocabularyInputPreviewResult(2, NewResult())) };
-            var session = new VocabularyEntryImportSession(System.Windows.Threading.Dispatcher.CurrentDispatcher, owner);
+            var session = new VocabularyEntryImportSession(System.Windows.Threading.Dispatcher.CurrentDispatcher, owner, new WindowsVocabularyWordListReader());
             var loading = session.LoadAsync(path, LearningLanguage.English);
             while (calls == 0) await Task.Delay(10);
             var current = session.RefreshAsync(session.Configuration! with { Language = LearningLanguage.French }); await current;
@@ -58,7 +65,7 @@ public sealed class VocabularyEntryImportViewTests(WpfDispatcher dispatcher)
         try
         {
             var gate = new TaskCompletionSource<VocabularyInputResult>(TaskCreationOptions.RunContinuationsAsynchronously); var owner = new Owner { Add = (_, _) => gate.Task };
-            var window = new VocabularyWordListImportWindow(owner, path); window.Show(); await window.LastOperation!;
+            var window = new VocabularyWordListImportWindow(owner, new WindowsVocabularyWordListReader(), path); window.Show(); await window.LastOperation!;
             var grid = Find<DataGrid>(window, "vocabularyImportPreview"); Assert.Equal(50, grid.Items.Count); Render(window, "entry-import.png", 900, 760);
             Find<Button>(window, "vocabularyConfirmImport").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); window.Close(); Assert.True(window.IsVisible);
             gate.SetResult(NewResult()); await window.LastOperation!; Assert.NotNull(window.Result);
@@ -73,7 +80,7 @@ public sealed class VocabularyEntryImportViewTests(WpfDispatcher dispatcher)
         {
             var gate = new TaskCompletionSource<VocabularyInputPreviewResult>(TaskCreationOptions.RunContinuationsAsynchronously); int calls = 0;
             var owner = new Owner { Preview = (_, _) => ++calls == 1 ? gate.Task : Task.FromResult(new VocabularyInputPreviewResult(2, NewResult())) };
-            var window = new VocabularyWordListImportWindow(owner, path); window.Show();
+            var window = new VocabularyWordListImportWindow(owner, new WindowsVocabularyWordListReader(), path); window.Show();
             while (calls == 0) await Task.Delay(10);
             await window.Session.OwnerRevisionChangedAsync(2);
             gate.SetResult(new VocabularyInputPreviewResult(1, NewResult())); await window.LastOperation!;
@@ -94,16 +101,26 @@ public sealed class VocabularyEntryImportViewTests(WpfDispatcher dispatcher)
         {
             await File.WriteAllTextAsync(path, "bank"); var gate = new TaskCompletionSource<VocabularyInputPreviewResult>(TaskCreationOptions.RunContinuationsAsynchronously); int calls = 0;
             var owner = new Owner { Preview = (_, _) => { calls++; return gate.Task; } };
-            var session = new VocabularyEntryImportSession(System.Windows.Threading.Dispatcher.CurrentDispatcher, owner);
+            var session = new VocabularyEntryImportSession(System.Windows.Threading.Dispatcher.CurrentDispatcher, owner, new WindowsVocabularyWordListReader());
             var loading = session.LoadAsync(path, LearningLanguage.English); while (calls == 0) await Task.Delay(10);
             session.Cancel(); gate.SetResult(new VocabularyInputPreviewResult(1, NewResult())); await loading;
             Assert.Null(session.Preview); Assert.False(session.Active);
             await File.WriteAllBytesAsync(path, new byte[VocabularyWordListPolicy.MaximumBytes + 1]);
-            var oversized = new VocabularyEntryImportSession(System.Windows.Threading.Dispatcher.CurrentDispatcher, owner);
+            var oversized = new VocabularyEntryImportSession(System.Windows.Threading.Dispatcher.CurrentDispatcher, owner, new WindowsVocabularyWordListReader());
             await oversized.LoadAsync(path, LearningLanguage.English);
             Assert.Contains("4 MB", oversized.Failure!); Assert.Equal(1, calls); oversized.Cancel();
         }
         finally { File.Delete(path); }
+    });
+    [Fact]
+    public Task CancelDuringReaderRejectsLateCompletion() => dispatcher.RunAsync(async () =>
+    {
+        var reader = new DeferredReader(); int calls = 0;
+        var owner = new Owner { Preview = (_, _) => { calls++; return Task.FromResult(new VocabularyInputPreviewResult(1, NewResult())); } };
+        var session = new VocabularyEntryImportSession(System.Windows.Threading.Dispatcher.CurrentDispatcher, owner, reader);
+        var loading = session.LoadAsync("ignored.txt", LearningLanguage.English); session.Cancel(); Assert.True(reader.Token.IsCancellationRequested);
+        reader.Gate.SetResult(new VocabularyWordList(VocabularyWordListFormat.Text, [new(1, ["bank"])])); await loading;
+        Assert.Null(session.Table); Assert.Equal(0, calls);
     });
     private static T Find<T>(DependencyObject root, string name) where T : FrameworkElement
     {

@@ -1,4 +1,4 @@
-using System.IO;
+
 using System.Windows.Threading;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Vocabulary.EntryInput;
@@ -28,11 +28,12 @@ internal sealed class VocabularyEntryImportSession
 {
     private readonly Dispatcher _dispatcher;
     private readonly IVocabularyEntryInputOwner _owner;
+    private readonly IVocabularyWordListReader _reader;
     private CancellationTokenSource? _work;
     private long _generation;
     private ulong? _latestRevision;
-    internal VocabularyEntryImportSession(Dispatcher dispatcher, IVocabularyEntryInputOwner owner)
-    { _dispatcher = dispatcher; _owner = owner; dispatcher.VerifyAccess(); }
+    internal VocabularyEntryImportSession(Dispatcher dispatcher, IVocabularyEntryInputOwner owner, IVocabularyWordListReader reader)
+    { _dispatcher = dispatcher; _owner = owner; _reader = reader; dispatcher.VerifyAccess(); }
     internal VocabularyWordList? Table { get; private set; }
     internal VocabularyWordListConfiguration? Configuration { get; private set; }
     internal VocabularyInputPreview? Preview { get; private set; }
@@ -48,20 +49,7 @@ internal sealed class VocabularyEntryImportSession
         var (id, token) = Begin(); Table = null; Configuration = null; Notify();
         try
         {
-            var table = await Task.Run(async () =>
-            {
-                await using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 65536, true);
-                using var buffer = new MemoryStream(); var chunk = new byte[65536];
-                while (true)
-                {
-                    int count = await stream.ReadAsync(chunk, token).ConfigureAwait(false);
-                    if (count == 0) break;
-                    if (buffer.Length + count > VocabularyWordListPolicy.MaximumBytes)
-                        throw new VocabularyWordListException(VocabularyWordListError.TooLarge);
-                    buffer.Write(chunk, 0, count);
-                }
-                return VocabularyWordListPolicy.Decode(buffer.ToArray(), Path.GetExtension(path).TrimStart('.'), token);
-            }, token);
+            var table = await _reader.ReadAsync(path, token);
             if (!Current(id)) return;
             Table = table; Configuration = VocabularyWordListPolicy.Configuration(table, language);
             await RefreshAsync(Configuration);

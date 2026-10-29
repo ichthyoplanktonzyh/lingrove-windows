@@ -24,9 +24,9 @@ internal sealed class VocabularyWordListImportWindow : Window
     internal VocabularyInputResult? Result { get; private set; }
     internal Task? LastOperation { get; private set; }
     internal VocabularyEntryImportSession Session => _session;
-    internal VocabularyWordListImportWindow(IVocabularyEntryInputOwner owner, string path, LearningLanguage language = LearningLanguage.English)
+    internal VocabularyWordListImportWindow(IVocabularyEntryInputOwner owner, IVocabularyWordListReader reader, string path, LearningLanguage language = LearningLanguage.English)
     {
-        _session = new(Dispatcher, owner); _path = path; _language = language;
+        _session = new(Dispatcher, owner, reader); _path = path; _language = language;
         Title = "Import word list"; Width = 900; Height = 760; MinWidth = 650; MinHeight = 550; WindowStartupLocation = WindowStartupLocation.CenterOwner;
         Background = Brushes.White; var root = new DockPanel { Margin = new Thickness(20), Background = Brushes.White }; Content = root;
         var footer = VocabularyInputControls.Footer(_cancel, _import); DockPanel.SetDock(footer, Dock.Bottom); root.Children.Add(footer);

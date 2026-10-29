@@ -66,6 +66,17 @@ public static class CliWire
         }
         catch (JsonException) { throw new CliException(CliErrorCode.InvalidInput, "Invalid CLI request JSON."); }
     }
+    public static CliReply DecodeReply(ReadOnlyMemory<byte> data)
+    {
+        if (data.Length > CliInputContract.MaximumBytes) throw new CliException(CliErrorCode.Io, "Invalid CLI response.");
+        try
+        {
+            using var json = JsonDocument.Parse(data, new JsonDocumentOptions { MaxDepth = 128 }); var root = json.RootElement;
+            if (root.ValueKind != JsonValueKind.Object || !root.TryGetProperty("version", out _) || !root.TryGetProperty("requestID", out _) || !root.TryGetProperty("ok", out _)) throw new JsonException();
+            return JsonSerializer.Deserialize<CliReply>(data.Span, Options) ?? throw new JsonException();
+        }
+        catch (JsonException) { throw new CliException(CliErrorCode.Io, "Invalid CLI response."); }
+    }
     public static CliReply Failure(Guid id, CliException error) => new() { RequestId = id, Ok = false, Error = new(Code(error.Code), error.Message) };
     public static string Code(CliErrorCode error) => error switch { CliErrorCode.InvalidInput => "invalid_input", CliErrorCode.NotFound => "not_found", CliErrorCode.Conflict => "conflict", CliErrorCode.Busy => "busy", CliErrorCode.Unavailable => "unavailable", CliErrorCode.Io => "io", CliErrorCode.Timeout => "timeout", _ => "io" };
 }

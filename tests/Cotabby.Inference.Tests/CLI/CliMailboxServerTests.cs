@@ -92,4 +92,13 @@ public sealed class CliMailboxServerTests : IAsyncLifetime
         }
         finally { if (!helper.HasExited) { helper.Kill(entireProcessTree: true); await helper.WaitForExitAsync(); } }
     }
+    [Fact]
+    public async Task InvalidReplyIsNotConsumedAsAnAcknowledgement()
+    {
+        using var replies = new CliMailboxDirectory(Path.Combine(_root, "replies"));
+        var request = new CliRequest { ExpiresAt = CliWire.Now() + 10 }; string name = request.Id.ToString("D") + ".json";
+        replies.Publish(name, System.Text.Encoding.UTF8.GetBytes("""{"requestID":"00000000-0000-0000-0000-000000000000","ok":true}"""));
+        var error = await Assert.ThrowsAsync<CliException>(() => CliMailboxClient.SendAsync(_root, request));
+        Assert.Equal(CliErrorCode.Io, error.Code); Assert.True(replies.Exists(name));
+    }
 }

@@ -58,7 +58,7 @@ internal sealed class CliMailboxDirectory : IDisposable
         }
         finally { if (stream is not null) { if (!published) _ = SetFileInformationByHandle(stream.SafeFileHandle, 4, [1], 1); stream.Dispose(); } }
     }
-    internal byte[]? Consume(string name)
+    internal byte[]? Consume(string name, Func<byte[], bool>? admit = null)
     {
         ValidateName(name); using var handle = _directory.OpenFile(name, delete: true); if (handle is null) return null;
         using var stream = new FileStream(handle, FileAccess.Read);
@@ -70,8 +70,10 @@ internal sealed class CliMailboxDirectory : IDisposable
             if (count == 0) break; output.Write(buffer, 0, count);
             if (output.Length > CliInputContract.MaximumBytes) throw Invalid();
         }
+        var result = output.ToArray();
+        if (admit is not null && !admit(result)) throw Invalid();
         Verify(); if (!SetFileInformationByHandle(handle, 4, [1], 1)) throw Invalid();
-        return output.ToArray();
+        return result;
     }
     internal bool Claim(string name, CliMailboxDirectory target)
         => ClaimOwned(name, target) is not null;

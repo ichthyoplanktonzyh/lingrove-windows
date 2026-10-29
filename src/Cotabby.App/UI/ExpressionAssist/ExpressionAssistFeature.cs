@@ -13,13 +13,16 @@ internal sealed record ExpressionAssistFeatureSettings(bool Enabled = false, str
 
 /// <summary>Routes existing shared input and focus events into one explicit expression session.
 /// It never starts or owns the hook/focus tracker. ShortcutConflict must be a cheap, thread-safe
-/// pure test of the active field and committed shortcut configuration; it performs no UIA reads.</summary>
+/// pure test of the active field and committed shortcut configuration; it performs no UIA reads.
+/// GuardedRefresh must recheck its permit before every native read phase and publication; there is
+/// deliberately no unguarded IFocusTracker.Refresh fallback.</summary>
 internal sealed class ExpressionAssistFeature : IAsyncDisposable
 {
     private readonly object _gate = new();
     private readonly Dispatcher _dispatcher;
     private readonly IFocusTracker _focus;
     private readonly IKeyboardHook _input;
+    private readonly Func<Func<bool>, FocusedField?> _guardedRefresh;
     private readonly Func<FocusedField, (ExpressionAssistSession Session, Action Close)> _factory;
     private readonly Func<FocusedField?, ExpressionAssistFeatureSettings, bool> _shortcutConflict;
     private readonly ExpressionAssistTriggerObserver _observer = new();
@@ -37,10 +40,12 @@ internal sealed class ExpressionAssistFeature : IAsyncDisposable
     internal bool IsActive { get { lock (_gate) return _active; } }
 
     internal ExpressionAssistFeature(Dispatcher dispatcher, IFocusTracker focus, IKeyboardHook input,
+        Func<Func<bool>, FocusedField?> guardedRefresh,
         Func<FocusedField, (ExpressionAssistSession Session, Action Close)> factory,
         Func<FocusedField?, ExpressionAssistFeatureSettings, bool> shortcutConflict)
     {
         dispatcher.VerifyAccess(); _dispatcher = dispatcher; _focus = focus; _input = input;
+        _guardedRefresh = guardedRefresh ?? throw new ArgumentNullException(nameof(guardedRefresh));
         _factory = factory; _shortcutConflict = shortcutConflict;
     }
 
@@ -124,7 +129,8 @@ internal sealed class ExpressionAssistFeature : IAsyncDisposable
             {
                 source.Token.ThrowIfCancellationRequested();
                 if (!Current(epoch) || _session?.IsActive == true) return;
-                var field = await Task.Run(() => _focus.Refresh());
+                bool Permit() => Current(epoch) && !source.IsCancellationRequested;
+                var field = await Task.Run(() => Permit() ? _guardedRefresh(Permit) : null);
                 if (!Current(epoch) || source.IsCancellationRequested) return;
                 // Refresh publishes Current but does not necessarily raise FocusChanged. Admit
                 // only the very snapshot still owned by the focus tracker after the async read.

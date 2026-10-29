@@ -23,6 +23,9 @@ probes. Async refreshes and retired sessions are joined at shutdown. While the n
 keyboard focus, ordinary host focus notifications do not close it; otherwise loss invalidates the
 session. Each factory invocation owns a distinct session and window, closed after that session
 drains. The native editor still performs the independent capture, freshness and write checks.
+The host must inject a guarded refresh adapter which checks the supplied permit before each
+native read phase and before publication. Queued work checks the same permit before entering it;
+there is no fallback to an unguarded refresh. An already-started native call is joined on shutdown.
 
 This is an unactivated adapter. AppHost/settings composition, native editor bridge, physical
 keyboard/IME/editor acceptance, shortcut conflicts across real applications, and native placement

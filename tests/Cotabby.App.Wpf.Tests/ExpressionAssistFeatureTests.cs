@@ -10,6 +10,39 @@ namespace Cotabby.App.Wpf.Tests;
 [Collection("WPF views")]
 public sealed class ExpressionAssistFeatureTests(WpfDispatcher dispatcher)
 {
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public Task RetiredQueuedRefreshCannotReadOrPublish(bool shutdown) => dispatcher.RunAsync(async () =>
+    {
+        var focus = new Focus { Current = Field("word?") }; var hook = new Hook(); int captures = 0;
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        using var release = new ManualResetEventSlim();
+        FocusedField? Guarded(Func<bool> permit)
+        {
+            entered.TrySetResult(); release.Wait(TimeSpan.FromSeconds(10));
+            return permit() ? focus.Refresh() : null;
+        }
+        var feature = new ExpressionAssistFeature(Dispatcher.CurrentDispatcher, focus, hook, Guarded,
+            _ => (Session(new Editor(() => captures++), new Panel()), () => { }), (_, _) => false);
+        var settings = new ExpressionAssistFeatureSettings(true, "??", 0, KeyModifiers.None, true, 1);
+        try
+        {
+            feature.Start(settings);
+            hook.Emit(new KeyboardEvent { Kind = KeyKind.Character, Character = '?', IsKeyDown = true });
+            await entered.Task.WaitAsync(TimeSpan.FromSeconds(10));
+            Task? drain = null;
+            if (shutdown) { drain = feature.DisposeAsync().AsTask(); Assert.False(drain.IsCompleted); }
+            else feature.SettingsChanged(settings with { Available = false, Revision = 2 });
+            focus.Current = Field("different??") with { FieldId = "other", FocusChangeSequence = 2 };
+            release.Set();
+            if (drain is not null) await drain.WaitAsync(TimeSpan.FromSeconds(10));
+            else await Task.Delay(100);
+            Assert.Equal(0, focus.Refreshes); Assert.Equal(0, captures);
+        }
+        finally { release.Set(); await feature.DisposeAsync(); }
+    });
+
     private static FocusedField Field(string text) => new()
     {
         ProcessId = 1, ProcessName = "editor", FieldId = "field", FocusChangeSequence = 1,
@@ -25,7 +58,7 @@ public sealed class ExpressionAssistFeatureTests(WpfDispatcher dispatcher)
     {
         var focus = new Focus { Current = Field("") }; var hook = new Hook(); int captures = 0; int closed = 0; bool conflict = true;
         var settings = new ExpressionAssistFeatureSettings(true, "??", 0x45, KeyModifiers.Control, true, 1);
-        await using var feature = new ExpressionAssistFeature(Dispatcher.CurrentDispatcher, focus, hook,
+        await using var feature = new ExpressionAssistFeature(Dispatcher.CurrentDispatcher, focus, hook, permit => permit() ? focus.Refresh() : null,
             _ => (Session(new Editor(() => captures++), new Panel()), () => closed++), (_, _) => conflict);
         feature.Start(settings);
         var binding = new KeyboardEvent { Kind = KeyKind.Shortcut, Character = '\0', IsKeyDown = true, VirtualKey = 0x45, Modifiers = KeyModifiers.Control };
@@ -48,7 +81,7 @@ public sealed class ExpressionAssistFeatureTests(WpfDispatcher dispatcher)
         foreach (bool secure in new[] { false, true })
         {
             var focus = new Focus { Current = Field("") }; var hook = new Hook(); int captures = 0;
-            await using var feature = new ExpressionAssistFeature(Dispatcher.CurrentDispatcher, focus, hook,
+            await using var feature = new ExpressionAssistFeature(Dispatcher.CurrentDispatcher, focus, hook, permit => permit() ? focus.Refresh() : null,
                 _ => (Session(new Editor(() => captures++), new Panel()), () => { }), (_, _) => false);
             feature.Start(new(true, "??", 0x45, KeyModifiers.Control, true, 1));
             hook.Emit(new KeyboardEvent { Kind = KeyKind.Shortcut, Character = '\0', IsKeyDown = true, VirtualKey = 0x45, Modifiers = KeyModifiers.Control });
@@ -62,7 +95,7 @@ public sealed class ExpressionAssistFeatureTests(WpfDispatcher dispatcher)
     public Task RefreshCanPublishNewClearCompositionReceiptWithoutFocusEvent() => dispatcher.RunAsync(async () =>
     {
         var focus = new Focus { Current = Field("word?") }; var hook = new Hook(); int captures = 0;
-        await using var feature = new ExpressionAssistFeature(Dispatcher.CurrentDispatcher, focus, hook,
+        await using var feature = new ExpressionAssistFeature(Dispatcher.CurrentDispatcher, focus, hook, permit => permit() ? focus.Refresh() : null,
             _ => (Session(new Editor(() => captures++), new Panel()), () => { }), (_, _) => false);
         feature.Start(new(true, "??", 0, KeyModifiers.None, true, 1));
         hook.Emit(new KeyboardEvent { Kind = KeyKind.Character, Character = '?', IsKeyDown = true });
@@ -74,7 +107,7 @@ public sealed class ExpressionAssistFeatureTests(WpfDispatcher dispatcher)
     public Task SettingsWithdrawalRetiresQueuedShortcutBeforeCapture() => dispatcher.RunAsync(async () =>
     {
         var focus = new Focus { Current = Field("") }; var hook = new Hook(); int captures = 0;
-        await using var feature = new ExpressionAssistFeature(Dispatcher.CurrentDispatcher, focus, hook,
+        await using var feature = new ExpressionAssistFeature(Dispatcher.CurrentDispatcher, focus, hook, permit => permit() ? focus.Refresh() : null,
             _ => (Session(new Editor(() => captures++), new Panel()), () => { }), (_, _) => false);
         var settings = new ExpressionAssistFeatureSettings(true, "??", 0x45, KeyModifiers.Control, true, 1);
         feature.Start(settings);
@@ -88,7 +121,7 @@ public sealed class ExpressionAssistFeatureTests(WpfDispatcher dispatcher)
     public Task FocusChangeRetiresOnlyAfterPanelLosesKeyboard() => dispatcher.RunAsync(async () =>
     {
         var focus = new Focus { Current = Field("") }; var hook = new Hook(); var panel = new Panel(); int closed = 0;
-        await using var feature = new ExpressionAssistFeature(Dispatcher.CurrentDispatcher, focus, hook,
+        await using var feature = new ExpressionAssistFeature(Dispatcher.CurrentDispatcher, focus, hook, permit => permit() ? focus.Refresh() : null,
             _ => (Session(new Editor(() => { }), panel), () => closed++), (_, _) => false);
         feature.Start(new(true, "??", 0x45, KeyModifiers.Control, true, 1));
         hook.Emit(new KeyboardEvent { Kind = KeyKind.Shortcut, Character = '\0', IsKeyDown = true, VirtualKey = 0x45, Modifiers = KeyModifiers.Control });
@@ -102,7 +135,7 @@ public sealed class ExpressionAssistFeatureTests(WpfDispatcher dispatcher)
     public Task ProbeIsBoundedAndShutdownJoinsOutstandingRefresh() => dispatcher.RunAsync(async () =>
     {
         var focus = new Focus { Current = Field("word?") }; var hook = new Hook(); int captures = 0;
-        var feature = new ExpressionAssistFeature(Dispatcher.CurrentDispatcher, focus, hook,
+        var feature = new ExpressionAssistFeature(Dispatcher.CurrentDispatcher, focus, hook, permit => permit() ? focus.Refresh() : null,
             _ => (Session(new Editor(() => captures++), new Panel()), () => { }), (_, _) => false);
         feature.Start(new(true, "??", 0, KeyModifiers.None, true, 1));
         hook.Emit(new KeyboardEvent { Kind = KeyKind.Character, Character = '?', IsKeyDown = true });
@@ -121,7 +154,7 @@ public sealed class ExpressionAssistFeatureTests(WpfDispatcher dispatcher)
     {
         var focus = new Focus { Current = Field("word?") }; var hook = new Hook(); int captures = 0; string? marker = null;
         var editor = new Editor(() => captures++, value => marker = value);
-        await using var feature = new ExpressionAssistFeature(Dispatcher.CurrentDispatcher, focus, hook,
+        await using var feature = new ExpressionAssistFeature(Dispatcher.CurrentDispatcher, focus, hook, permit => permit() ? focus.Refresh() : null,
             _ => (Session(editor, new Panel()), () => { }), (_, _) => false);
         feature.Start(new(true, "??", 0, KeyModifiers.None, true, 1));
         focus.Publish(Field("word??")); await Task.Delay(50); Assert.Equal(0, captures); // Focus entry alone is not a command.

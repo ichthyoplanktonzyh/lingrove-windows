@@ -41,3 +41,11 @@ SendInput, mixed DPI, accessibility and model-backed output remain native accept
 favorite-row actions and expression endpoints remain unavailable. Native effects tests use fake
 effects or hidden owned windows, never a user's editor. Application adapter tests use synthetic
 events and denied commands, and never open an active input panel or load a model.
+
+Integration review found and repaired two notification handoff races. A terminal invalidation
+latch replays across native/bridge/UI subscriptions; the panel checks a live original-host
+preactivation permit before showing and immediately before activating. Already-started native
+effects still have a short check-to-call race. A write's consumption notification cannot erase
+its pending verified/unverified outcome; failure feedback is shown only while the original host
+window remains foreground. Settings/quit cancellation still retires the whole operation directly.
+The tray preview and delayed capture also yield to expression input before reads or presentation.

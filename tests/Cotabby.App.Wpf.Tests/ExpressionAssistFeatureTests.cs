@@ -191,6 +191,8 @@ public sealed class ExpressionAssistFeatureTests(WpfDispatcher dispatcher)
     }
     private sealed class FakeCapture(string? trigger) : IExpressionAssistEditorSession
     {
+        public bool CanPresentPanel => true;
+        public bool IsHostForeground => true;
         private readonly ExpressionEditorObservation _field = new(1, "field", 1, 1, "??", new(2, 0), false, true, InputCompositionState.Clear, 1);
         public ExpressionEditorReceipt Receipt => ExpressionEditorReceiptPolicy.Capture(_field, trigger)!;
         public event Action? Invalidated { add { } remove { } }
@@ -202,7 +204,8 @@ public sealed class ExpressionAssistFeatureTests(WpfDispatcher dispatcher)
     {
         private bool _visible, _owns; public nint WindowHandle => 1; public bool OwnsKeyboard => _owns; public bool IsVisible => _visible;
         public void LoseFocus() => _owns = false;
-        public Task ShowAsync(ExpressionEditorReceipt receipt, string query) { _visible = _owns = true; return Task.CompletedTask; }
+        public Task ShowAsync(ExpressionEditorReceipt receipt, string query, Func<bool> mayActivate)
+        { if (mayActivate()) _visible = _owns = true; return Task.CompletedTask; }
         public void Update(ExpressionAssistResult? result, string? message, bool loading) { } public void Hide(bool restoringHost) { _visible = _owns = false; }
         public void ShowFailure(string candidate, string message) { } public void ShowUnavailable(string message) { }
     }

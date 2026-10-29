@@ -9,6 +9,8 @@ namespace Cotabby.App.UI.ExpressionAssist;
 internal interface IExpressionAssistEditorSession : IAsyncDisposable
 {
     ExpressionEditorReceipt Receipt { get; }
+    bool CanPresentPanel { get; }
+    bool IsHostForeground { get; }
     event Action? Invalidated;
     bool EnterPanel();
     Task<bool> IsUnchangedAsync(CancellationToken cancellationToken);
@@ -28,7 +30,7 @@ internal interface IExpressionAssistPanel
     nint WindowHandle { get; }
     bool OwnsKeyboard { get; }
     bool IsVisible { get; }
-    Task ShowAsync(ExpressionEditorReceipt receipt, string initialQuery);
+    Task ShowAsync(ExpressionEditorReceipt receipt, string initialQuery, Func<bool> mayActivate);
     void Update(ExpressionAssistResult? result, string? message, bool loading);
     void Hide(bool restoringHost);
     void ShowFailure(string candidate, string message);
@@ -90,12 +92,17 @@ internal sealed class ExpressionAssistSession : IAsyncDisposable
             transferred = true;
             _editorInvalidated = () =>
             {
-                void RetireIfCurrent() { if (ReferenceEquals(_capture, capture)) Invalidate(); }
+                // A native write consumes its session before publishing the verified/unverified
+                // outcome. FinishAsync owns that terminal feedback; settings still cancel directly.
+                void RetireIfCurrent() { if (ReferenceEquals(_capture, capture) && !_committing) Invalidate(); }
                 if (_dispatcher.CheckAccess()) RetireIfCurrent(); else _dispatcher.BeginInvoke(RetireIfCurrent);
             };
             capture.Invalidated += _editorInvalidated;
+            if (token.IsCancellationRequested || !ReferenceEquals(_capture, capture) || !capture.CanPresentPanel)
+            { if (ReferenceEquals(_capture, capture)) Invalidate(); return; }
             _query = trigger is null ? capture.Receipt.Source : "";
-            await _panel.ShowAsync(capture.Receipt, _query);
+            await _panel.ShowAsync(capture.Receipt, _query,
+                () => !token.IsCancellationRequested && ReferenceEquals(_capture, capture) && capture.CanPresentPanel);
             token.ThrowIfCancellationRequested();
             if (!_panel.IsVisible || !_panel.OwnsKeyboard || !capture.EnterPanel() || !await capture.IsUnchangedAsync(token))
             { Invalidate(); return; }
@@ -175,7 +182,8 @@ internal sealed class ExpressionAssistSession : IAsyncDisposable
         if (!capture.BeginReturn())
         {
             Invalidate();
-            if (text is not null) _panel.ShowFailure(text, "The insertion could not be verified. Check the editor before copying this candidate.");
+            if (text is not null && capture.IsHostForeground)
+                _panel.ShowFailure(text, "The insertion could not be verified. Check the editor before copying this candidate.");
             return;
         }
         _panel.Hide(true);
@@ -190,7 +198,7 @@ internal sealed class ExpressionAssistSession : IAsyncDisposable
         if (!ReferenceEquals(_capture, capture)) return;
         bool cancelled = token.IsCancellationRequested;
         Invalidate();
-        if (!verified && candidate && !cancelled)
+        if (!verified && candidate && !cancelled && capture.IsHostForeground)
             _panel.ShowFailure(replacement, "The insertion could not be verified. Check the editor before copying this candidate.");
     }
 

@@ -193,6 +193,8 @@ public sealed class ExpressionEditorSession : IAsyncDisposable
     /// <remarks>This is a metadata-only preflight, not authorization for an edit. The session can
     /// still be invalidated immediately after this check; callers must observe Invalidated.</remarks>
     public bool CanPresentPanel => IsPublishable && _host != 0 && _effects.Foreground == _host && IsPublishable;
+    /// <summary>Metadata-only feedback gate, also usable after a one-shot edit retires the receipt.</summary>
+    public bool IsHostForeground => _host != 0 && _effects.Foreground == _host;
 
     internal bool Capture(string? trigger, CancellationToken ct)
     {

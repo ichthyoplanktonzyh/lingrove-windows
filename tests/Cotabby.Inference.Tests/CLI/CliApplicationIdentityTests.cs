@@ -19,8 +19,14 @@ public sealed class CliApplicationIdentityTests : IDisposable
             { ArgumentList = { "/c", "mklink", "/J", junction, one }, UseShellExecute = false, CreateNoWindow = true })!)
         { process.WaitForExit(); Assert.Equal(0, process.ExitCode); }
         Assert.Equal(a.MailboxRoot, CliApplicationIdentity.Resolve(Path.Combine(junction, "Cotabby.exe"), _root).MailboxRoot);
+        using (var selection = CliApplicationSelection.Open(first, _root))
+        {
+            selection.Verify();
+            Assert.Throws<IOException>(() => File.Move(first, Path.Combine(one, "old.exe")));
+            Assert.Throws<IOException>(() => Directory.Move(one, Path.Combine(_root, "moved")));
+        }
         File.Move(first, Path.Combine(one, "old.exe")); File.WriteAllText(first, "fixture");
-        Assert.NotEqual(a.MailboxRoot, CliApplicationIdentity.Resolve(first, _root).MailboxRoot);
+        Assert.Equal(a.MailboxRoot, CliApplicationIdentity.Resolve(first, _root).MailboxRoot);
         Assert.Throws<CliException>(() => CliApplicationIdentity.Resolve(Path.Combine(one, "other.exe"), _root));
     }
     public void Dispose()

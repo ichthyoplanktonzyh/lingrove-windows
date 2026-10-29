@@ -12,6 +12,31 @@ namespace Cotabby.App.Wpf.Tests;
 public sealed class DictionaryArticleNativeTests(WpfDispatcher dispatcher)
 {
     [Fact]
+    public Task ReleasedTransientFileLockRetriesNativeCleanupAndReturnsSlot() => dispatcher.RunAsync(async () =>
+    {
+        string parent = Path.Combine(Path.GetTempPath(), "lingrove-native-profile-test-" + Guid.NewGuid().ToString("N"));
+        VocabularyWindowsFile.CreateParentDirectory(parent); var slots = new DictionaryArticleAdmission();
+        var retry = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var view = new DictionaryArticleView(slots: slots, profileParent: parent, cleanupRetryObserved: () => retry.TrySetResult());
+        var window = new Window { Width = 360, Height = 240, Content = view, ShowInTaskbar = false };
+        FileStream? held = null;
+        try
+        {
+            window.Show(); await view.ShowAsync(new("<p>synthetic</p>", "synthetic", "Fixture", Guid.NewGuid()),
+                (_, _) => Task.FromResult<DictionaryResource?>(null), () => true, CancellationToken.None);
+            Assert.NotNull(Assert.Single(view.Children.OfType<WebView2CompositionControl>()).CoreWebView2);
+            string leaf = Path.Combine(view.ProfilePath, "test-lock"); File.WriteAllText(leaf, "synthetic");
+            held = new FileStream(leaf, FileMode.Open, FileAccess.Read, FileShare.None);
+            window.Close(); await view.DisposeAsync();
+            await retry.Task.WaitAsync(TimeSpan.FromSeconds(15)); Assert.False(view.ProfileCleanup.IsCompleted);
+            held.Dispose(); held = null; await view.ProfileCleanup.WaitAsync(TimeSpan.FromSeconds(15));
+            Assert.False(Directory.Exists(view.ProfilePath));
+            using var first = slots.TryAcquire(); using var second = slots.TryAcquire(); Assert.NotNull(first); Assert.NotNull(second);
+        }
+        finally { held?.Dispose(); if (window.IsVisible) window.Close(); await view.DisposeAsync(); try { Directory.Delete(parent, false); } catch (IOException) { } }
+    });
+
+    [Fact]
     public Task MissingRuntimeBeforeProfileOrBrowserReturnsAdmission() => dispatcher.RunAsync(async () =>
     {
         var slots = new DictionaryArticleAdmission(); int loads = 0;

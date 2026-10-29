@@ -31,6 +31,7 @@ internal sealed class DictionaryArticleView : Grid, IAsyncDisposable
     private bool _profileMayExist;
     private readonly Func<Task>? _environmentBarrier, _controllerBarrier;
     private readonly Func<string> _runtimeVersion;
+    private readonly Action? _cleanupRetryObserved;
     private readonly Func<string, string> _sanitize;
     private readonly DictionaryArticleAdmission _slots;
     private readonly DictionaryProfileEffects? _profileEffects;
@@ -48,12 +49,13 @@ internal sealed class DictionaryArticleView : Grid, IAsyncDisposable
     internal string? InitializationFailure { get; private set; }
     internal DictionaryArticleView(Func<Task>? environmentBarrier = null, Func<Task>? controllerBarrier = null,
         Func<string, string>? sanitize = null, DictionaryArticleAdmission? slots = null, DictionaryProfileEffects? profileEffects = null,
-        string? profileParent = null, Func<string>? runtimeVersion = null)
+        string? profileParent = null, Func<string>? runtimeVersion = null, Action? cleanupRetryObserved = null)
     {
         _environmentBarrier = environmentBarrier; _controllerBarrier = controllerBarrier;
         _sanitize = sanitize ?? DictionaryHtmlPolicy.Document; _slots = slots ?? DictionaryArticleAdmission.Shared;
         _profileEffects = profileEffects;
         _runtimeVersion = runtimeVersion ?? (() => CoreWebView2Environment.GetAvailableBrowserVersionString());
+        _cleanupRetryObserved = cleanupRetryObserved;
         _profileParent = profileParent ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Cotabby", "dictionary-profiles");
         _profile = Path.GetFullPath(Path.Combine(Path.GetTempPath(), "lingrove-dictionary-" + Guid.NewGuid().ToString("N")));
         ((UIElement)_view).Opacity = 0;
@@ -211,13 +213,13 @@ internal sealed class DictionaryArticleView : Grid, IAsyncDisposable
         _shutdown.Dispose();
         var pending = _nativePending;
         ProfileCleanup = CleanupProfileAsync(pending, _profile, _admission, _profileEffects, _profileMayExist, _profileOwner,
-            _browserStarted ? _browserExited.Task : null);
+            _browserStarted ? _browserExited.Task : null, _cleanupRetryObserved);
         _admission = null; _profileOwner = null;
         lock (CleanupGate) CleanupOwners.Add(ProfileCleanup);
         _ = ProfileCleanup.ContinueWith(t => { _ = t.Exception; lock (CleanupGate) CleanupOwners.Remove(t); }, TaskScheduler.Default);
     }
     private static async Task CleanupProfileAsync(Task? pending, string profile, IDisposable? admission, DictionaryProfileEffects? effects, bool mayExist,
-        WindowsPrivateProfileDirectory? owner, Task? browserExited)
+        WindowsPrivateProfileDirectory? owner, Task? browserExited, Action? retryObserved)
     {
         if (pending is not null) try { await pending.ConfigureAwait(false); } catch { }
         if (browserExited is not null) await browserExited.ConfigureAwait(false);
@@ -229,8 +231,8 @@ internal sealed class DictionaryArticleView : Grid, IAsyncDisposable
                 for (int attempt = 0; ; attempt++)
                 {
                     try { await owner.DeleteOwnedAsync().ConfigureAwait(false); break; }
-                    catch (IOException) when (attempt < 39) { await Task.Delay(250).ConfigureAwait(false); }
-                    catch (UnauthorizedAccessException) when (attempt < 39) { await Task.Delay(250).ConfigureAwait(false); }
+                    catch (IOException) when (attempt < 39) { retryObserved?.Invoke(); await Task.Delay(250).ConfigureAwait(false); }
+                    catch (UnauthorizedAccessException) when (attempt < 39) { retryObserved?.Invoke(); await Task.Delay(250).ConfigureAwait(false); }
                 }
                 await owner.DisposeAsync().ConfigureAwait(false); admission?.Dispose(); return;
             }

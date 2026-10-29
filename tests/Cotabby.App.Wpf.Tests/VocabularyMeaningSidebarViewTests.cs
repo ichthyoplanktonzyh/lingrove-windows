@@ -88,6 +88,40 @@ public sealed class VocabularyMeaningSidebarViewTests(WpfDispatcher dispatcher)
         list.RaiseEvent(new KeyEventArgs(Keyboard.PrimaryDevice, source, 0, Key.Left) { RoutedEvent = Keyboard.PreviewKeyDownEvent });
         Assert.DoesNotContain(list.Items.Cast<ListBoxItem>(), row => AutomationProperties.GetName(row) == "Child");
     });
+    [Fact]
+    public Task NarrowSelectedRowsReserveSpaceForTitleAndPreview() => dispatcher.Run(() =>
+    {
+        const string title = "A very long localized meaning title that must be trimmed";
+        const string expression = "An exceptionally long expression that needs trimming";
+        var entry = Entry(101, 102, expression); var node = Node(103, title);
+        var item = new VocabularyMeaningBrowserProjection.Item(node, title, [new(entry.Id, Id(102))], 0);
+        var sidebar = new VocabularyMeaningSidebar("Other expressions", "Suggested", s => s.Meaning, l => l?.Name() ?? "Unspecified");
+        using var source = new HwndSource(new HwndSourceParameters("Narrow meaning test") { Width = 220, Height = 300, WindowStyle = 0 });
+        source.RootVisual = sidebar;
+        sidebar.Present([item], [entry], [new(entry.Id, Id(102))], new(VocabularyMeaningDestinationKind.Node, node.Id));
+        sidebar.Measure(new Size(220, 300)); sidebar.Arrange(new Rect(0, 0, 220, 300)); sidebar.UpdateLayout();
+        var list = Find<ListBox>(sidebar, "vocabularyMeaningList");
+        var row = (ListBoxItem)list.SelectedItem; AssertConstrainedPair(row, title, expression);
+        Render(sidebar, "meaning-sidebar-narrow-node.png", width: 220);
+        sidebar.Present([item], [entry], [new(entry.Id, Id(102))], new(VocabularyMeaningDestinationKind.Sense, SenseId: Id(102)));
+        sidebar.Measure(new Size(220, 300)); sidebar.Arrange(new Rect(0, 0, 220, 300)); sidebar.UpdateLayout();
+        list = Find<ListBox>(sidebar, "vocabularyMeaningList"); row = (ListBoxItem)list.SelectedItem;
+        AssertConstrainedPair(row, expression, "A meaning"); Render(sidebar, "meaning-sidebar-narrow-sense.png", width: 220);
+    });
+    private static void AssertConstrainedPair(DependencyObject row, string title, string detail)
+    {
+        var blocks = Descendants(row).OfType<TextBlock>().ToArray();
+        var primary = blocks.Single(b => b.Text == title); var secondary = blocks.Single(b => b.Text == detail);
+        Assert.Equal(TextTrimming.CharacterEllipsis, primary.TextTrimming); Assert.Equal(TextTrimming.CharacterEllipsis, secondary.TextTrimming);
+        Assert.InRange(primary.ActualWidth, 20, 150); Assert.InRange(secondary.ActualWidth, 20, 150);
+        Assert.True(secondary.TranslatePoint(new Point(), primary).X >= primary.ActualWidth);
+    }
+    private static IEnumerable<DependencyObject> Descendants(DependencyObject root)
+    {
+        yield return root;
+        for (int i = 0; i < VisualTreeHelper.GetChildrenCount(root); i++)
+            foreach (var child in Descendants(VisualTreeHelper.GetChild(root, i))) yield return child;
+    }
     private static T Find<T>(DependencyObject root, string id) where T : DependencyObject
     {
         if (root is T match && AutomationProperties.GetAutomationId(root) == id) return match;
@@ -102,11 +136,11 @@ public sealed class VocabularyMeaningSidebarViewTests(WpfDispatcher dispatcher)
             if (FindOrNull<T>(VisualTreeHelper.GetChild(root, index), id) is { } found) return found;
         return null;
     }
-    private static void Render(FrameworkElement element, string filename, bool expectInk = true)
+    private static void Render(FrameworkElement element, string filename, bool expectInk = true, int width = 300)
     {
-        element.Measure(new Size(300, 440)); element.Arrange(new Rect(0, 0, 300, 440)); element.UpdateLayout();
-        var bitmap = new RenderTargetBitmap(300, 440, 96, 96, PixelFormats.Pbgra32); bitmap.Render(element);
-        var pixels = new byte[300 * 440 * 4]; bitmap.CopyPixels(pixels, 300 * 4, 0);
+        element.Measure(new Size(width, 440)); element.Arrange(new Rect(0, 0, width, 440)); element.UpdateLayout();
+        var bitmap = new RenderTargetBitmap(width, 440, 96, 96, PixelFormats.Pbgra32); bitmap.Render(element);
+        var pixels = new byte[width * 440 * 4]; bitmap.CopyPixels(pixels, width * 4, 0);
         Assert.Contains(Enumerable.Range(0, pixels.Length / 4), i => pixels[4 * i + 3] != 0);
         if (expectInk) Assert.Contains(Enumerable.Range(0, pixels.Length / 4), i => pixels[4 * i + 3] != 0 && (pixels[4 * i] < 240 || pixels[4 * i + 1] < 240 || pixels[4 * i + 2] < 240));
         if (Environment.GetEnvironmentVariable("LINGROVE_TEST_RENDER_DIR") is { Length: > 0 } directory)
@@ -116,3 +150,5 @@ public sealed class VocabularyMeaningSidebarViewTests(WpfDispatcher dispatcher)
         }
     }
 }
+
+

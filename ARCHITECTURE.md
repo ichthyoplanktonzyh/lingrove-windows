@@ -7,11 +7,12 @@ Windows host behavior is unverified. See [the preview port record](docs/LEARNING
 
 ## Architecture authority
 
-The latest committed macOS Lingrove implementation is the architecture and behavior reference for this port.
+The frozen macOS Lingrove implementation is the architecture, behavior and visual-design reference for this port.
 The Windows work adapts the existing macOS work; it does not independently redesign Lingrove's product,
 interaction model, or business rules. The current target is
-`9290066ef7f20a50068ce820f477737fdfc2b8b0`; [the latest baseline](docs/MAC_LATEST_BASELINE.md)
-records its source paths, dependency changes and refresh rule. Existing module evidence keeps its
+`35b7fbe5c788c5524936ade1dfb7c89a3a285b04`; [the frozen baseline](docs/MAC_LATEST_BASELINE.md)
+records its source paths and dependency changes. Later Mac commits require an explicit maintainer
+decision before entering this campaign. Existing module evidence keeps its
 explicit historical revision until upgraded. Compare committed source and tests rather than a dirty
 working checkout. The project/layer map below translates existing responsibilities into C# and
 Windows technology, and the future-flow descriptions identify migration targets rather than new
@@ -22,6 +23,10 @@ ownership, cancellation, stale-result checks, and privacy behavior. Port pure ru
 regression cases first. Replace platform implementations where needed: AX observation with UIA,
 AppKit/SwiftUI presentation with WPF/Win32, and Apple-only inference with a supported Windows
 provider. A different framework does not by itself justify a different user flow.
+
+User-facing adaptations include the source UI structure, interaction and visual hierarchy, not only
+the underlying services. [The alignment contract](docs/WINDOWS_ALIGNMENT.md) records ownership,
+source/render evidence, platform differences and functional/visual acceptance gates.
 
 Each migrated subsystem must trace its Windows files and tests to the Mac source/test paths at the
 reference revision. Document unavoidable platform differences and unimplemented behavior alongside

@@ -14,11 +14,11 @@ binary names, settings locations, and storage identifiers stable unless a specif
 designed and documented. Lingrove branding in documentation does not mean the Windows runtime has
 been rebranded or that its data is compatible with the macOS app.
 
-## Migration principle: adapt the latest macOS product
+## Migration principle: adapt the frozen macOS product
 
-**Windows 版本以最新已提交的 macOS 成果为基准做适配与移植，不是重新发明产品、交互或业务架构。**
+**本轮 Windows 版本以固定的 macOS 稳定快照为基准，对齐功能、交互、UI 和视觉设计；不重新发明产品或业务架构。**
 
-- Treat the latest recorded macOS implementation and its tests as the behavior reference. Read the relevant
+- Treat the frozen macOS implementation and its tests as the behavior and design reference. Read the relevant
   Mac subsystem before implementing its Windows counterpart; preserve its responsibilities, data
   contracts, defaults, user flow, prompting, budgets, cancellation, and privacy semantics.
 - Port deterministic rules and regression cases directly into C# where possible. Do not invent a
@@ -43,11 +43,12 @@ been rebranded or that its data is compatible with the macOS app.
   user-authored changes.
 - Keep changes within the requested scope. Coordinate before editing a shared file another worker
   owns.
-- The latest alignment target is `9290066ef7f20a50068ce820f477737fdfc2b8b0`; see
-  [the latest baseline and backlog](docs/MAC_LATEST_BASELINE.md). At the beginning of each new
-  feature round, check the Mac repository's committed `main` again (or fetched `origin/main` in a
-  read-only Windows reference clone) and record any advancement
-  before implementing that round. Do not wait for the old stable backlog to finish first.
+- The maintainer froze this alignment campaign at Mac
+  `35b7fbe5c788c5524936ade1dfb7c89a3a285b04` on 2026-10-29; see
+  [the frozen baseline and backlog](docs/MAC_LATEST_BASELINE.md) and
+  [the team and UI acceptance contract](docs/WINDOWS_ALIGNMENT.md). Read that exact committed
+  snapshot for every new module. Do not chase or incorporate subsequent Mac commits unless the
+  maintainer explicitly advances the campaign baseline.
 - Existing modules/fixtures retain their explicit reference until upgraded individually, including
   the original `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f` and intermediate
   `cc468b89f5c360cc7210fac4f1a8b52197870bf2`. Their passing checks do not establish latest parity.
@@ -78,6 +79,21 @@ Explain subsystem ownership and data flow in type/file comments when introducing
 boundary. Put a rule in Core when it is deterministic; put effects in Win32 or Inference; keep App
 coordinators focused on sequencing, cancellation, and current UI state.
 
+## UI, interaction and visual parity
+
+- Functional parity alone does not complete a user-facing module. Adapt the frozen Mac navigation,
+  information hierarchy, window/card structure, control placement, typography hierarchy, spacing,
+  color, icons, density, and loading/empty/error/disabled/selected states alongside its behavior.
+- Preserve keyboard interaction, focus/activation, dismissal, resizing and accessibility semantics.
+  WPF is the rendering adapter; an existing Windows placeholder is not the design authority.
+- Trace UI decisions to committed Mac views, styles, resources and UI tests. Use comparable rendered
+  Windows views/screenshots for visual review. If a matching Mac screenshot is unavailable, record
+  that limit rather than claiming a completed pixel comparison.
+- Document necessary Windows differences such as native window chrome, available fonts, DPI and
+  platform input conventions. These differences do not authorize a separate visual redesign.
+- A compiled XAML/control test establishes component behavior, not physical desktop or visual
+  acceptance. Record the executed checks and remaining native checks in the module handoff.
+
 The [latest autocomplete output module](docs/AUTOCOMPLETE_OUTPUT_CURRENT.md) explicitly upgrades
 normalization to the latest recorded Mac target. Preserve newline evidence through prompt/prefix
 cleanup and decide spacing only at the surviving seam; the old shared corpus retains its own pin.
@@ -103,9 +119,10 @@ cleanup and decide spacing only at the surviving seam; the old shared corpus ret
 
 ## Vocabulary and learning data
 
-The [latest resource value/projection boundary](docs/VOCABULARY_RESOURCES_CURRENT.md) lives under
-`Core/Vocabulary/Resources` and follows the current Mac catalog/evidence/interpretation/collection
-ownership. Its version-seven values are distinct from the older entry-owned runtime document.
+The [historical v7 resource value/projection boundary](docs/VOCABULARY_RESOURCES_CURRENT.md) lives
+under `Core/Vocabulary/Resources` at its documented reference. It follows the catalog/evidence/
+interpretation/collection ownership from that snapshot; it is not the complete frozen v8 boundary.
+Its version-seven values are distinct from the older entry-owned runtime document.
 Do not feed them through the old SQL/backup codec or claim archive activation/migration is complete.
 Collection membership determines notebook display; raw evidence is not garbage when uncollected.
 
@@ -315,9 +332,14 @@ and a passing `build-for-testing` equivalent is not the same as executing tests.
 
 The maintainer has authorized merging each completed round into `main` after independent review and
 the required checks pass. Create a scoped PR, resolve review findings, verify CI for its final head,
-and merge it without asking for another approval. The primary agent writes all production code,
-configuration, verification code, and tests. Use GPT-6 Luna with maximum reasoning only for independent
-read-only review and running tests; delegated agents report findings without editing project files.
+and merge it without asking for another approval. The primary agent coordinates shared contracts,
+integration, independent review and acceptance. The maintainer authorizes implementation delegates
+to own complete modules, including production code, configuration, tests and module documentation.
+Use `gpt-6.1-terra` with `xhigh` reasoning for implementation and review delegates unless the
+maintainer explicitly requests another setting. This supersedes the earlier root-only implementation
+and Luna read-only delegation rule. Use one isolated worktree/branch per implementation owner;
+coordinate shared-file changes through the primary agent. An author cannot be the sole reviewer of
+their own change. Follow [the ownership and delivery contract](docs/WINDOWS_ALIGNMENT.md).
 Continue to exclude installers, downloadable build artifacts and releases from routine rounds. A virtual machine is not a prerequisite for portable
 logic, WPF compile checks or fake-driven tests; native desktop behavior still needs a Windows host.
 The maintainer has also authorized continuous progress through the documented migration slices:

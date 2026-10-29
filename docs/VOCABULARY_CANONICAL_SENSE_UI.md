@@ -11,3 +11,10 @@ The isolated STA tests drive the actual controls and real SQLite Store for creat
 ```powershell
 dotnet test tests/Cotabby.App.Wpf.Tests/Cotabby.App.Wpf.Tests.csproj -c Release --filter 'FullyQualifiedName~FrozenVocabularySenseActionsTests|FullyQualifiedName~FrozenVocabularyWindowControllerTests|FullyQualifiedName~FrozenVocabularyNotebookWindowTests|FullyQualifiedName~FrozenVocabularyEntryEditorWindowTests'
 ```
+
+Independent source/render review and a rebuilt focused WPF suite passed 30/30. Final scoped
+integration source `5b5d820` on Windows x64, SDK 10.0.403, rebuilt the Release solution with zero
+warnings/errors. The same compiled WPF filter passed 30/30, Core `FrozenVocabularySenseActionTests`
+passed 4/4 and Inference `FrozenVocabularySenseStoreTests` passed 3/3. Tests used Release,
+`--no-build --no-restore --verbosity minimal`, telemetry and clipboard reads disabled. These
+isolated checks do not establish the physical acceptance above; final-head CI is separate.

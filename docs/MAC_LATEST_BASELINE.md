@@ -60,6 +60,8 @@ committed contracts and tests; the older v7 Windows value boundary does not yet 
 
 Functional and UI/design scope, team ownership, shared-file coordination and rendered/native
 acceptance are defined in [WINDOWS_ALIGNMENT.md](WINDOWS_ALIGNMENT.md).
+The maintainer's 2026-10-29 clarification preserves behavior, IA, content hierarchy and state
+expression while allowing attractive Windows/WPF visual design; Mac pixel identity is not required.
 
 ## Next implementation order
 

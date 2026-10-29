@@ -7,7 +7,8 @@ Windows host behavior is unverified. See [the preview port record](docs/LEARNING
 
 ## Architecture authority
 
-The frozen macOS Lingrove implementation is the architecture, behavior and visual-design reference for this port.
+The frozen macOS Lingrove implementation is the architecture, behavior, information-architecture
+and presentation-state reference for this port.
 The Windows work adapts the existing macOS work; it does not independently redesign Lingrove's product,
 interaction model, or business rules. The current target is
 `35b7fbe5c788c5524936ade1dfb7c89a3a285b04`; [the frozen baseline](docs/MAC_LATEST_BASELINE.md)
@@ -27,6 +28,9 @@ provider. A different framework does not by itself justify a different user flow
 User-facing adaptations include the source UI structure, interaction and visual hierarchy, not only
 the underlying services. [The alignment contract](docs/WINDOWS_ALIGNMENT.md) records ownership,
 source/render evidence, platform differences and functional/visual acceptance gates.
+The maintainer permits attractive native Windows/WPF visual design: controls, fonts, icons, spacing,
+colors and chrome need not duplicate Mac pixels. Preserve behavior, IA, content priority and state
+expression while assessing the Windows rendering for beauty, consistency and usability.
 
 Each migrated subsystem must trace its Windows files and tests to the Mac source/test paths at the
 reference revision. Document unavoidable platform differences and unimplemented behavior alongside

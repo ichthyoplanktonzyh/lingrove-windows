@@ -106,6 +106,28 @@ public sealed class VocabularyFileDropTests(WpfDispatcher dispatcher)
         finally { window.Close(); }
     });
 
+    [Fact]
+    public Task CanonicalEditorAcceptsDropOnlyInsideExplanation() => dispatcher.RunAsync(async () =>
+    {
+        using var folder = new Folder(); string file = Path.Combine(folder.Path, "image.png"); File.WriteAllBytes(file, Png);
+        await using var store = FrozenVocabularyStoreFactory.Create(Path.Combine(folder.Path, FrozenVocabularyStoreFactory.CanonicalFileName), false);
+        await store.AddEntriesAsync([new(Expression: "hello")]); var entry = (await store.ReadAsync()).Document.Entries.Single();
+        var editor = new FrozenVocabularyEntryEditorWindow(store, store, entry, entry.Senses.Single().Id); editor.Show();
+        try
+        {
+            editor.UpdateLayout(); var expression = FindVisual<TextBox>(editor).Single(t => t.Name == "canonicalEditExpression");
+            Drop(editor, Payload([file], DevicePoint(editor, expression))); Assert.Null(editor.Draft.Senses.Single().Content);
+            var area = FindVisual<StackPanel>(editor).Single(p => p.Name == "canonicalExplanationDropArea"); area.BringIntoView(); editor.UpdateLayout();
+            var add = FindVisual<Button>(area).Single(b => Equals(b.Content, "Add image")); add.BringIntoView(); editor.UpdateLayout();
+            Drop(editor, Payload([file], DevicePoint(editor, add)));
+            for (int i = 0; i < 200 && editor.Draft.Senses.Single().Content is null; i++) await Task.Delay(10);
+            Assert.Single(editor.Draft.Senses.Single().Content!);
+        }
+        finally { editor.Close(); await editor.RetireAsync(); }
+    });
+    private static IEnumerable<T> FindVisual<T>(DependencyObject root) where T : DependencyObject
+    { if (root is T match) yield return match; for (int i = 0; i < VisualTreeHelper.GetChildrenCount(root); i++) foreach (var child in FindVisual<T>(VisualTreeHelper.GetChild(root, i))) yield return child; }
+
     [Theory]
     [InlineData(false)]
     [InlineData(true)]

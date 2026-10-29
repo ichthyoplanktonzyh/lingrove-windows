@@ -9,32 +9,34 @@ namespace Cotabby.App.Reading;
 internal interface IReadingSelectionLease : IAsyncDisposable
 {
     ReadingSelection Selection { get; }
+    bool IsLive { get; }
     event Action? Invalidated;
     Task<bool> IsCurrentAsync(CancellationToken token);
     void Retire();
 }
 internal interface IReadingSelectionReader
 {
-    Task<IReadingSelectionLease?> CaptureAsync(CancellationToken token);
+    Task<IReadingSelectionLease?> CaptureAsync(CancellationToken token, int? initiatingVirtualKey = null);
 }
 
-internal sealed record ReadingDestination(string Label, bool UsesEndpoint, bool Authorized, string? EndpointUrl = null)
+internal sealed record ReadingDestination(string Label, bool UsesEndpoint, bool Authorized, string? EndpointUrl = null, string? Model = null)
 {
     internal string? Display()
     {
         if (!UsesEndpoint) return string.IsNullOrWhiteSpace(Label) ? null : Label;
         if (!Authorized || !Uri.TryCreate(EndpointUrl, UriKind.Absolute, out var uri)
             || uri.Scheme is not ("http" or "https") || !string.IsNullOrEmpty(uri.UserInfo)) return null;
-        return "Endpoint: " + uri.GetLeftPart(UriPartial.Path);
+        return "Endpoint: " + uri.GetLeftPart(UriPartial.Path) + (string.IsNullOrWhiteSpace(Model) ? "" : " · " + Model);
     }
 }
 internal sealed record ReadingSettings(bool Enabled, bool SelectionEnabled, bool AppAllowed, LearningLanguage Target,
     ReadingDestination Translation, ReadingDestination Lookup, long Revision);
 internal enum ReadingStatus { Loading, Translating, Lookup, Ready, Error }
 internal sealed record ReadingState(ReadingSelection Selection, LearningLanguage? Source, LearningLanguage Target,
-    ReadingRoute Route, ReadingStatus Status, string Destination, string Text, string? Message = null);
+    ReadingRoute Route, ReadingStatus Status, string Destination, string Text, string? Message = null, int WordCount = 0);
 internal interface IReadingPresentation
 {
+    void BindAuthority(ReadingSelection selection, Func<CancellationToken, Task<bool>> current, CancellationToken token) { }
     /// <summary>Displays the destination before any provider receives selected text.</summary>
     Task ShowAsync(ReadingState state);
     void Update(ReadingState state);
@@ -52,11 +54,12 @@ internal sealed class ReadingSession : IAsyncDisposable
     private readonly Func<ReadingSelection, ReadingLanguageResolution> _resolve;
     private readonly Func<string, LearningLanguage?, int> _wordCount;
     private readonly Func<ReadingSelection, LearningLanguage?, LearningLanguage, Action<string>, CancellationToken, Task<string>> _translate;
-    private readonly Func<ReadingSelection, ReadingRoute, LearningLanguage?, LearningLanguage, CancellationToken, Task> _lookup;
+    private readonly Func<ReadingSelection, ReadingRoute, LearningLanguage?, LearningLanguage, Func<CancellationToken, Task<bool>>, CancellationToken, Task> _lookup;
     private readonly HashSet<Task> _work = [];
     // Callback admission and registration are atomic with retirement and disposal.
     private readonly object _workGate = new();
     private CancellationTokenSource? _cancel;
+    private Task? _withdrawal;
     private IReadingSelectionLease? _lease;
     private Action? _invalidated;
     private long _revision;
@@ -67,7 +70,7 @@ internal sealed class ReadingSession : IAsyncDisposable
     internal ReadingSession(Dispatcher dispatcher, IReadingSelectionReader reader, IReadingPresentation presentation,
         Func<ReadingSelection, ReadingLanguageResolution> resolve, Func<string, LearningLanguage?, int> wordCount,
         Func<ReadingSelection, LearningLanguage?, LearningLanguage, Action<string>, CancellationToken, Task<string>> translate,
-        Func<ReadingSelection, ReadingRoute, LearningLanguage?, LearningLanguage, CancellationToken, Task> lookup)
+        Func<ReadingSelection, ReadingRoute, LearningLanguage?, LearningLanguage, Func<CancellationToken, Task<bool>>, CancellationToken, Task> lookup)
     {
         dispatcher.VerifyAccess();
         if (SynchronizationContext.Current is not DispatcherSynchronizationContext) throw new InvalidOperationException("Reading requires dispatcher ownership.");
@@ -76,48 +79,64 @@ internal sealed class ReadingSession : IAsyncDisposable
     }
 
     internal bool IsActive => _cancel is not null;
-    internal void Begin(ReadingSettings settings)
+    internal void Begin(ReadingSettings settings, int? initiatingVirtualKey = null)
     {
         _dispatcher.VerifyAccess();
         if (_disposed) return;
         if (!settings.Enabled || !settings.SelectionEnabled || !settings.AppAllowed) { Dismiss(); return; }
-        Dismiss(); _settings = settings; _cancel = new(); long revision = ++_revision;
-        Track(RunAsync(settings, revision, _cancel.Token));
+        Dismiss(); _settings = settings; var cancellation = new CancellationTokenSource();
+        lock (_workGate) { _cancel = cancellation; _withdrawal = null; }
+        long revision = ++_revision;
+        Track(RunAsync(settings, revision, cancellation, initiatingVirtualKey));
     }
 
-    private async Task RunAsync(ReadingSettings settings, long revision, CancellationToken token)
+    private async Task RunAsync(ReadingSettings settings, long revision, CancellationTokenSource owner, int? initiatingVirtualKey)
     {
+        var token = owner.Token;
         IReadingSelectionLease? capture = null; bool transferred = false; ReadingState? displayed = null;
         try
         {
-            capture = await _reader.CaptureAsync(token);
+            capture = await _reader.CaptureAsync(token, initiatingVirtualKey);
             if (!Current(revision, token)) return;
             if (capture is null) { Dismiss(); _presentation.ShowCaptureError("Selected text is unavailable in this app."); return; }
             _lease = capture; transferred = true;
             _invalidated = () =>
             {
+                // Invalidation may arrive while the dispatcher is blocked. Withdraw provider
+                // admission synchronously, but never cancel a newer request's token.
+                Withdraw(owner);
                 void Retire() { if (ReferenceEquals(_lease, capture)) Dismiss(); }
-                if (_dispatcher.CheckAccess()) Retire(); else Post(() => !token.IsCancellationRequested, Retire);
+                if (_dispatcher.CheckAccess()) Retire(); else Post(() => true, Retire);
             };
             capture.Invalidated += _invalidated;
-            var selection = capture.Selection;
+            if (!Current(revision, token)) return;
+            var selection = capture.Selection with { Admission = () => capture.IsLive && !token.IsCancellationRequested };
             ReadingSelectionPolicy.ValidateReceipt(selection);
             if (!await capture.IsCurrentAsync(token) || !Current(revision, token)) { if (Current(revision, token)) Dismiss(); return; }
-            var resolution = _resolve(selection);
-            var route = ReadingSelectionPolicy.Route(selection, _wordCount(selection.Text, resolution.Language));
+            var (resolution, route, wordCount) = await Task.Run(() =>
+            {
+                token.ThrowIfCancellationRequested();
+                var resolved = _resolve(selection);
+                token.ThrowIfCancellationRequested();
+                var words = _wordCount(selection.Text, resolved.Language);
+                return (resolved, ReadingSelectionPolicy.Route(selection, words), words);
+            }, token);
+            if (!Current(revision, token)) return;
+            if (!await capture.IsCurrentAsync(token)) { if (Current(revision, token)) Dismiss(); return; }
             var destination = route.IsTranslation ? settings.Translation : settings.Lookup;
             var destinationLabel = destination?.Display();
             if (destinationLabel is null)
             {
                 Dismiss(); _presentation.ShowCaptureError("Configure and explicitly select a destination for this reading task."); return;
             }
+            _presentation.BindAuthority(selection, capture.IsCurrentAsync, token);
             if (route.IsTranslation && resolution.Language == settings.Target)
             {
                 await _presentation.ShowAsync(new(selection, resolution.Language, settings.Target, route, ReadingStatus.Error,
                     destinationLabel, "", "The text is already in the reading target language."));
                 return;
             }
-            var state = new ReadingState(selection, resolution.Language, settings.Target, route, ReadingStatus.Loading, destinationLabel, "");
+            var state = new ReadingState(selection, resolution.Language, settings.Target, route, ReadingStatus.Loading, destinationLabel, "", WordCount: wordCount);
             await _presentation.ShowAsync(state);
             displayed = state;
             if (!Current(revision, token)) return;
@@ -129,7 +148,7 @@ internal sealed class ReadingSession : IAsyncDisposable
             {
                 // The existing dictionary/meaning card owns its rich target state and controls;
                 // never flatten that result into a synthetic translation string here.
-                await _lookup(selection, route, resolution.Language, settings.Target, token);
+                await _lookup(selection, route, resolution.Language, settings.Target, capture.IsCurrentAsync, token);
                 if (!Current(revision, token)) return;
                 if (!await capture.IsCurrentAsync(token)) { if (Current(revision, token)) Dismiss(); return; }
                 return;
@@ -192,8 +211,12 @@ internal sealed class ReadingSession : IAsyncDisposable
     internal void Dismiss()
     {
         _dispatcher.VerifyAccess(); ++_revision;
-        var cancellation = _cancel; _cancel = null;
-        if (cancellation is not null) Track(DisposeCancellationAsync(cancellation, cancellation.CancelAsync()));
+        lock (_workGate)
+        {
+            var cancellation = _cancel; _cancel = null;
+            if (cancellation is not null) TrackLocked(DisposeCancellationAsync(cancellation, _withdrawal ?? cancellation.CancelAsync()));
+            _withdrawal = null;
+        }
         var lease = _lease; _lease = null;
         if (lease is not null)
         {
@@ -207,6 +230,14 @@ internal sealed class ReadingSession : IAsyncDisposable
         _dispatcher.VerifyAccess();
         if (_settings is not null && _settings != settings) Dismiss();
         _settings = settings;
+    }
+    /// <summary>Synchronously withdraws eligibility from any thread; UI retirement joins callbacks.</summary>
+    internal void Withdraw() => Withdraw(null);
+    private void Withdraw(CancellationTokenSource? expected)
+    {
+        lock (_workGate)
+            if (_cancel is { } cancellation && (expected is null || ReferenceEquals(expected, cancellation)) && _withdrawal is null)
+            { _withdrawal = cancellation.CancelAsync(); TrackLocked(_withdrawal); }
     }
     private bool Current(long revision, CancellationToken token) => !_disposed && !token.IsCancellationRequested && _revision == revision;
     private static string SafeOutput(string text)

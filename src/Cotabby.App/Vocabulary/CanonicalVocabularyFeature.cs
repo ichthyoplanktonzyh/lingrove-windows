@@ -12,6 +12,7 @@ namespace Cotabby.App.Vocabulary;
 internal sealed class CanonicalVocabularyFeature : IAsyncDisposable
 {
     private readonly ICanonicalVocabularyStore _backend;
+    private readonly WindowsVocabularyClipboardTransfer _clipboard = new();
     private readonly object _gate = new();
     private Task? _disposal;
     internal CanonicalWritingViewStore Writing { get; }
@@ -28,6 +29,7 @@ internal sealed class CanonicalVocabularyFeature : IAsyncDisposable
         _backend = FrozenVocabularyStoreFactory.Create(path);
         Writing = new(_backend, ui);
         Window = new(_backend, dispatcher, new WindowsVocabularyWordListReader(), listPreferences, preferredLanguages);
+        Window.AttachClipboard(_clipboard);
         Writing.OpenSelection = Window.Show;
     }
 
@@ -44,7 +46,7 @@ internal sealed class CanonicalVocabularyFeature : IAsyncDisposable
             Writing.OpenSelection = null;
             Writing.EnrichCapture = null;
             try { await Writing.DisposeAsync().ConfigureAwait(false); }
-            finally { await _backend.DisposeAsync().ConfigureAwait(false); }
+            finally { try { await _clipboard.DisposeAsync().ConfigureAwait(false); } finally { await _backend.DisposeAsync().ConfigureAwait(false); } }
         }
     }
 }

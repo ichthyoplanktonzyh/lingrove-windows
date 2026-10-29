@@ -52,6 +52,8 @@ public static class VocabularyPolicy
     public static VocabularySaveResult Save(VocabularyCapture capture, VocabularyDocument document, DateTimeOffset now)
     {
         VocabularyCapturePolicy.Validate(capture);
+        // This historical live graph has a required language; the canonical graph accepts nil.
+        if (capture.Language is not { } language) throw new VocabularyException(VocabularyFailure.InvalidContent);
         string key = VocabularyCapturePolicy.EntryKey(capture);
         if (capture.Example is { } example && document.Entries.Any(entry => VocabularyCapturePolicy.EntryKey(entry) != key
             && entry.Examples.Any(usage => usage.Id == example.Id))) capture = capture with { Example = example.CopiedWithNewId() };
@@ -60,7 +62,7 @@ public static class VocabularyPolicy
         if (index < 0)
         {
             if (capture.SenseId is not null) throw new VocabularyException(VocabularyFailure.InvalidContent);
-            entries.Add(new(Guid.NewGuid(), capture.Expression, capture.DictionaryForm, capture.Language, capture.Kind, [], now, now));
+            entries.Add(new(Guid.NewGuid(), capture.Expression, capture.DictionaryForm, language, capture.Kind, [], now, now));
             index = entries.Count - 1;
         }
         entries[index] = VocabularySensePolicy.Save(capture, entries[index], now);

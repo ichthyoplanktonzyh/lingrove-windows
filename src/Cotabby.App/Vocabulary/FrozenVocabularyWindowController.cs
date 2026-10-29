@@ -6,6 +6,7 @@ using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Vocabulary;
 using Cotabby.Core.Vocabulary.EntryInput;
 using Cotabby.Core.Vocabulary.Frozen;
+using Cotabby.Win32.Vocabulary;
 
 namespace Cotabby.App.Vocabulary;
 
@@ -23,6 +24,7 @@ internal sealed class FrozenVocabularyWindowController : IAsyncDisposable
     private AnkiReviewFeature? _reviewFeature;
     private Action? _configureReview;
     private IVocabularyGraphPreferences? _graphPreferences;
+    private IVocabularyClipboardImageTransfer? _clipboard;
     private Task? _retirement;
     private bool _closed;
     internal FrozenVocabularyWindowController(IVocabularyEntryImportStore store, Dispatcher dispatcher,
@@ -35,12 +37,19 @@ internal sealed class FrozenVocabularyWindowController : IAsyncDisposable
         if (!_dispatcher.CheckAccess()) { if (!_dispatcher.HasShutdownStarted) _dispatcher.BeginInvoke(() => Show(selection)); return; }
         lock (_gate) if (_closed) return;
         _window ??= new FrozenVocabularyNotebookWindow(_store, _reader, _languages, listPreferences: _preferences, hideOnClose: true);
+        if (_clipboard is { } clipboard) _window.AttachClipboard(clipboard);
         if (_graphPreferences is { } graph) _window.AttachGraphPreferences(graph);
         if (_reviewFeature is { } review && _configureReview is { } configure) _window.AttachReviewFeature(review, configure);
         _window.Reveal(selection); _window.Show();
         if (_window.WindowState == WindowState.Minimized) _window.WindowState = WindowState.Normal;
         _window.Activate();
     }
+    internal void AttachClipboard(IVocabularyClipboardImageTransfer clipboard)
+    {
+        ArgumentNullException.ThrowIfNull(clipboard); lock (_gate) { if (_closed) return; if (_clipboard is not null && !ReferenceEquals(_clipboard, clipboard)) throw new InvalidOperationException("Clipboard is already attached."); _clipboard = clipboard; }
+        if (!_dispatcher.CheckAccess()) { if (!_dispatcher.HasShutdownStarted) _dispatcher.BeginInvoke(ApplyClipboard); return; } ApplyClipboard();
+    }
+    private void ApplyClipboard() { IVocabularyClipboardImageTransfer? clipboard; lock (_gate) { if (_closed) return; clipboard = _clipboard; } if (clipboard is not null) _window?.AttachClipboard(clipboard); }
     internal void AttachGraphPreferences(IVocabularyGraphPreferences preferences)
     {
         ArgumentNullException.ThrowIfNull(preferences); lock (_gate) { if (_closed) return; if (_graphPreferences is not null && !ReferenceEquals(_graphPreferences, preferences)) throw new InvalidOperationException("Graph preferences are already attached."); _graphPreferences = preferences; }

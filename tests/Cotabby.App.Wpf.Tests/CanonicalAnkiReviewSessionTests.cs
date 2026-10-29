@@ -18,7 +18,7 @@ public sealed class CanonicalAnkiReviewSessionTests(WpfDispatcher dispatcher)
 {
     internal sealed class HeldStore(F.ICanonicalVocabularyStore inner) : F.ICanonicalVocabularyStore
     {
-        internal bool HoldRead, HoldImage, HoldSaveAck;
+        internal bool HoldRead, HoldImage, HoldSaveAck, HoldRestoreAck;
         internal TaskCompletionSource Entered = new(TaskCreationOptions.RunContinuationsAsynchronously);
         internal TaskCompletionSource Release = new(TaskCreationOptions.RunContinuationsAsynchronously);
         private async Task Wait(CancellationToken token) { Entered.TrySetResult(); await Release.Task.WaitAsync(token); }
@@ -47,6 +47,10 @@ public sealed class CanonicalAnkiReviewSessionTests(WpfDispatcher dispatcher)
         public Task<F.CanonicalSenseReceipt> MoveExampleAsync(Guid e, Guid u, Guid s, Guid? t, CancellationToken token = default) => inner.MoveExampleAsync(e, u, s, t, token);
         public Task<F.FrozenVocabularyImportSnapshot> UpdateSemanticsAsync(F.VocabularySemanticIndex e, F.VocabularySemanticIndex b, CancellationToken token = default) => inner.UpdateSemanticsAsync(e, b, token);
         public Task<F.FrozenVocabularyImportSnapshot> UpdateClassificationAsync(Cotabby.Core.Vocabulary.Resources.VocabularyClassificationIndex e, Cotabby.Core.Vocabulary.Resources.VocabularyClassificationIndex b, CancellationToken token = default) => inner.UpdateClassificationAsync(e, b, token);
+        public Task BackupAsync(string destination, CancellationToken token = default) => inner.BackupAsync(destination, token);
+        public Task<Cotabby.Core.Vocabulary.VocabularyExportPackage> PrepareExportAsync(IReadOnlyList<Cotabby.Core.Vocabulary.VocabularySelection> selections, Cotabby.Core.Vocabulary.VocabularyExportConfiguration configuration, CancellationToken token = default) => inner.PrepareExportAsync(selections, configuration, token);
+        public Task WriteExportAsync(Cotabby.Core.Vocabulary.VocabularyExportPackage package, string destination, CancellationToken token = default) => inner.WriteExportAsync(package, destination, token);
+        public async Task<F.FrozenVocabularyImportSnapshot> RestoreAsync(string source, CancellationToken token = default) { var value = await inner.RestoreAsync(source, token); if (HoldRestoreAck) { HoldRestoreAck = false; await Wait(CancellationToken.None); } return value; }
         public ValueTask DisposeAsync() => ValueTask.CompletedTask;
     }
     private sealed class HeldAnki(IAnkiConnecting inner, string target) : IAnkiConnecting

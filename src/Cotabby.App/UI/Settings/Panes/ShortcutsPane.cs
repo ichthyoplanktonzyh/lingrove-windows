@@ -27,7 +27,9 @@ internal static class ShortcutsPane
                 .Tagged("learning translate sentence translation hotkey option alt t keybind binding"),
             r.Shortcut(GlobalShortcut.ExpressionAssist,
                 "Describe an expression at the caret or use the selected text. Choose a modifier shortcut; Enter and Escape are reserved.")
-                .Tagged("expression term assistance meaning shortcut keybind hotkey")),
+                .Tagged("expression term assistance meaning shortcut keybind hotkey"),
+            r.Shortcut(GlobalShortcut.LearningReading, "Read selected text using the learning model or bundled dictionary.")
+                .Tagged("selected text reading translation lookup shortcut")),
         new SettingsCard("Per-App Shortcuts",
             Rows.Note("Give a specific app its own accept key, disable an accept action there, "
                 + "or keep inheriting the global shortcut."),
@@ -106,7 +108,11 @@ internal static class ShortcutsPane
             Conflict = candidate => context.Settings.ExpressionAssistEnabled
                 && candidate.IsBound && candidate.VirtualKey == context.Settings.ExpressionAssistShortcut.VirtualKey
                 && candidate.Modifiers == context.Settings.ExpressionAssistShortcut.Modifiers
-                    ? GlobalShortcut.ExpressionAssist.Name : null,
+                    ? GlobalShortcut.ExpressionAssist.Name
+                    : context.Settings.LearningReadingEnabled && candidate.IsBound
+                        && candidate.VirtualKey == context.Settings.LearningReadingShortcut.VirtualKey
+                        && candidate.Modifiers == context.Settings.LearningReadingShortcut.Modifiers
+                            ? GlobalShortcut.LearningReading.Name : null,
         };
         recorder.Recorded += binding => set(binding);
         recorder.Show(key switch

@@ -2,6 +2,7 @@ using System.Threading.Channels;
 using Cotabby.App.Learning;
 using Cotabby.App.Settings;
 using Cotabby.Core.LanguageLearning;
+using Cotabby.Core.LanguageLearning.Reading;
 using Cotabby.Core.ExpressionAssist;
 using Cotabby.Core.Suggestions;
 using Cotabby.Core.Support.Runtime;
@@ -14,6 +15,30 @@ namespace Cotabby.App.Tests.Learning;
 /// <summary>Actual non-WPF app owner with deterministic timers and effects; never loads a model.</summary>
 public sealed class LearningExplanationControllerTests
 {
+    [Fact]
+    public async Task UnknownReadingLookupUsesConstrainedSharedOwnerAndRetiresOnLanguageChange()
+    {
+        var started = new TaskCompletionSource<CancellationToken>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var pending = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var runtime = new FakeRuntime { Generate = ct => { started.TrySetResult(ct); return pending.Task; } };
+        var settings = Settings(); var owner = Owner(runtime, settings, new Clock());
+        var input = new ReadingLookupInput("bank", null, LearningLanguage.Chinese, true, null);
+        var work = owner.GenerateReadingLookupAsync(input, null, raw => ReadingLookupPolicy.Parse(raw, input, x => x.ToLowerInvariant()), default);
+        try
+        {
+            var token = await started.Task.WaitAsync(TimeoutLimit);
+            Assert.False(runtime.LastOperation.LookupContext); Assert.Equal(512, runtime.LastOperation.Output);
+            var cancelled = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            using var registration = token.Register(() => cancelled.TrySetResult());
+            settings.LearningExplanationLanguage = LearningLanguage.French; owner.ApplySettings(settings);
+            await cancelled.Task.WaitAsync(TimeoutLimit);
+            var shutdown = owner.DisposeAsync().AsTask(); Assert.False(shutdown.IsCompleted);
+            pending.SetResult("{\"meaning\":\"bank\",\"sentence_translation\":\"\"}");
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => work.WaitAsync(TimeoutLimit));
+            await shutdown.WaitAsync(TimeoutLimit); Assert.Equal(1, runtime.Disposals);
+        }
+        finally { pending.TrySetResult("{}"); await owner.DisposeAsync(); }
+    }
     private static readonly TimeSpan TimeoutLimit = TimeSpan.FromSeconds(10);
     private static readonly LearningExplanationResult Answer = new("Meaning", "Explanation");
     private static LearningExplanationInput Input => new("know", "know", LearningLanguage.English, VocabularyEntryKind.Word,
@@ -400,6 +425,7 @@ public sealed class LearningExplanationControllerTests
     {
         public Func<CancellationToken, Task<string>>? Generate;
         public int Output, Disposals;
+        public bool? LookupContext;
         public LearningGgufMetadata Metadata => new("qwen3");
         public int ContextWindowTokens => 4096;
         public IReadOnlyList<LLamaToken> TokenizeTrusted(string text) => text.Length == 0 ? [] : new LLamaToken[1];
@@ -410,6 +436,8 @@ public sealed class LearningExplanationControllerTests
             if (Generate is not null) return Generate(ct);
             const string raw = "{\"meaning\":\"Meaning\",\"explanation\":\"Explanation\"}"; onDelta?.Invoke(raw); return Task.FromResult(raw);
         }
+        public Task<string> GenerateLookupAsync(IReadOnlyList<LLamaToken> promptTokens, LearningModelSamplingValues sampling, int maxTokens, Action<string>? onDelta, bool hasContext, CancellationToken ct)
+        { LookupContext = hasContext; return GenerateAsync(promptTokens, sampling, maxTokens, onDelta, ct); }
         public ValueTask DisposeAsync() { Interlocked.Increment(ref Disposals); return ValueTask.CompletedTask; }
     }
     private sealed class Clock : TimeProvider

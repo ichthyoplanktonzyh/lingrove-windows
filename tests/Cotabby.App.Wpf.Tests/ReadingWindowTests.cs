@@ -28,6 +28,11 @@ public sealed class ReadingWindowTests(WpfDispatcher dispatcher)
             var labels = Descendants<TextBlock>(window).Select(block => block.Text).ToArray();
             Assert.Contains("Selected text translation", labels); Assert.Contains("Local model", labels);
             Assert.Contains(selection.Text, labels); Assert.Contains("这是一句话。", labels);
+            var copy = Descendants<Button>(window).Single(button => Equals(button.Content, "Copy result"));
+            Assert.Equal(System.Windows.Visibility.Visible, copy.Visibility);
+            window.Update(state with { Status = ReadingStatus.Translating, Text = "partial" });
+            Assert.Equal(System.Windows.Visibility.Collapsed, copy.Visibility);
+            window.Update(state);
             if (Environment.GetEnvironmentVariable("LINGROVE_READING_RENDER") is { Length: > 0 } path)
             {
                 var image = new RenderTargetBitmap((int)window.ActualWidth, (int)window.ActualHeight, 96, 96, PixelFormats.Pbgra32);

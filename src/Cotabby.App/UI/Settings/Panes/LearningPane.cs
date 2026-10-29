@@ -45,6 +45,15 @@ internal static class LearningPane
 
         return new SettingsPane("Learning", "\uE8A5", "Translate the current sentence while writing",
         [
+            new SettingsCard("Selected-text reading",
+                rows.Toggle("Read Selected Text", "Use the reading shortcut on selected text in a supported app.",
+                    s => s.LearningReadingEnabled, (s, v) => s.LearningReadingEnabled = v)
+                    .Tagged("reading selected text translation dictionary"),
+                rows.Combo("Reading Target Language", "Independent of the writing translation direction.", Languages,
+                    s => s.LearningReadingTargetLanguage, (s, v) => s.LearningReadingTargetLanguage = v),
+                rows.Labeled("Reading Shortcut", "Configure the selected-text shortcut in Shortcuts.",
+                    Ui.Button("Configure shortcut", () => context.Navigate(ShortcutsPane.Build(rows)))),
+                Rows.Note("Uses the translation provider or local AI explanation model below; the destination appears before each request. The bundled dictionary is also available. Reading uses only the selected text, without surrounding context. Favorites retain the translation or meaning; saving AI usage details is not yet available.")),
             new SettingsCard("Anki review",
                 new SettingsRow("Anki review", "Connection, default deck and saved card templates", review)
                     .Tagged("anki review ankiConnect address API key connection deck note type templates")),

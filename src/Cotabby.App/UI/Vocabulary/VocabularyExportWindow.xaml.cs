@@ -19,17 +19,23 @@ public partial class VocabularyExportWindow : Window
     private readonly CancellationTokenSource _lifetime = new();
     private readonly HashSet<Task> _work = [];
     private CancellationTokenSource? _preparation;
+    private TaskCompletionSource? _retirement;
     private bool _presenting = true, _retired, _forceClose, _started, _choosing, _operating;
     private string? _pickerMessage;
-    private sealed record Option<T>(T Value, string Label, bool IsEnabled = true);
+    private sealed record Option<T>(T Value, string Label, bool IsEnabled = true)
+    { public override string ToString() => Label; }
     internal VocabularyExportSession Session => _session;
     internal Task LastPreparation { get; private set; } = Task.CompletedTask;
     internal Task LastOperation { get; private set; } = Task.CompletedTask;
     internal event Action<Task>? OperationStarted;
 
     internal VocabularyExportWindow(VocabularyStore store, VocabularyExportRequest request, IVocabularyExportDestinationPicker? picker = null)
+        : this(request, (dispatcher, value) => new(dispatcher, store, value), picker) { }
+    internal VocabularyExportWindow(Cotabby.Core.Vocabulary.Frozen.ICanonicalVocabularyExportStore store, VocabularyExportRequest request, IVocabularyExportDestinationPicker? picker = null)
+        : this(request, (dispatcher, value) => new(dispatcher, value, store.PrepareExportAsync, store.WriteExportAsync), picker) { }
+    private VocabularyExportWindow(VocabularyExportRequest request, Func<Dispatcher, VocabularyExportRequest, VocabularyExportSession> createSession, IVocabularyExportDestinationPicker? picker)
     {
-        _session = new(Dispatcher, store, request); _picker = picker ?? new WindowsVocabularyExportDestinationPicker();
+        _session = createSession(Dispatcher, request); _picker = picker ?? new WindowsVocabularyExportDestinationPicker();
         InitializeComponent(); WindowTheme.Follow(this);
         ScopeChoice.ItemsSource = new[] { new Option<VocabularyExportScope>(VocabularyExportScope.All, "Entire notebook", request.All.Count > 0),
             new(VocabularyExportScope.Filtered, "Current results", request.Filtered.Count > 0), new(VocabularyExportScope.Selected, "Selected senses", request.Selected.Count > 0) };
@@ -120,13 +126,25 @@ public partial class VocabularyExportWindow : Window
     private void OnClosing(object? sender, CancelEventArgs args) { if (_choosing && !_forceClose) args.Cancel = true; }
     private void CancelPreparation()
     { var old = _preparation; _preparation = null; try { old?.Cancel(); } catch (ObjectDisposedException) { } }
-    private void Retire()
+    private void Retire() => _ = RetireAsync();
+    internal Task RetireAsync()
     {
-        if (_retired) return;
-        _retired = true; _session.Changed -= Render; _session.Cancel(); _lifetime.Cancel(); CancelPreparation();
-        _ = DrainAsync().ContinueWith(_ => _lifetime.Dispose(), CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+        Dispatcher.VerifyAccess();
+        if (_retirement is not null) return _retirement.Task;
+        var done = _retirement = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        _ = RetireCoreAsync(done); return done.Task;
     }
-    internal Task RetireAsync() { Dispatcher.VerifyAccess(); if (!_retired) { _forceClose = true; Retire(); Close(); } return DrainAsync(); }
+    private async Task RetireCoreAsync(TaskCompletionSource done)
+    {
+        var errors = new List<Exception>(); _retired = true; _session.Changed -= Render;
+        try { _session.Cancel(); } catch (Exception e) { errors.Add(e); }
+        try { _lifetime.Cancel(); } catch (Exception e) { errors.Add(e); }
+        try { CancelPreparation(); } catch (Exception e) { errors.Add(e); }
+        try { _forceClose = true; Close(); } catch (Exception e) { errors.Add(e); }
+        try { await DrainAsync(); } catch (Exception e) { errors.Add(e); }
+        _lifetime.Dispose();
+        if (errors.Count == 0) done.TrySetResult(); else done.TrySetException(new AggregateException(errors));
+    }
     internal Task DrainAsync() { lock (_work) return Task.WhenAll(_work.ToArray()); }
     private void Track(Task task)
     {

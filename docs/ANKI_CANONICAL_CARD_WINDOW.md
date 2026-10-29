@@ -38,9 +38,10 @@ are visible but speech is unavailable; sending remains blocked until the user de
 Preview uses native WPF text and validated Store/prepared images, with no script, network HTML or
 WebBrowser. File image import is supported; clipboard image paste and image drops in card-only
 content are not yet connected. [Batch preparation](ANKI_CANONICAL_REVIEW_BATCH.md) is now connected;
-review template management outside this editor,
-and real Anki foreground-window activation are also incomplete. This component's GUI navigation
-requests are real, but the existing connection-only Feature's native activation callback is a no-op.
+review template management outside this editor remains incomplete.
+The shared Feature now attaches the [Windows existing-app activation adapter](ANKI_WINDOWS_ACTIVATION.md)
+after verified deck navigation. Windows foreground restrictions and unrecognized executable hosts
+remain explicit platform limits.
 Physical Anki, Shell, keyboard/accessibility, DPI and desktop acceptance remain open.
 
 The notebook theme uses Segoe UI Variable/Segoe UI, native WPF chrome and high-contrast palette.

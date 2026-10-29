@@ -17,7 +17,7 @@ public static class FrozenVocabularyStoreFactory
             throw new VocabularyException(VocabularyFailure.InvalidContent);
         string retained = VocabularyWindowsFile.FullPath(path);
         var images = WindowsVocabularyImageStorage.ForDirectory(Path.Combine(Path.GetDirectoryName(retained)!, CanonicalMediaDirectoryName));
-        return new FrozenVocabularyImportStore(() => FrozenVocabularySQLiteDatabase.OpenFile(retained), installBundledClassification: installBundledClassification, images: images);
+        return new FrozenVocabularyImportStore(() => FrozenVocabularySQLiteDatabase.OpenFile(retained), installBundledClassification: installBundledClassification, images: images, notebookPath: retained);
     }
     /// <summary>Eager convenience for explicitly requested open; failures dispose the candidate owner.</summary>
     public static async Task<ICanonicalVocabularyStore> OpenAsync(string path, CancellationToken cancellationToken = default, bool installBundledClassification = true)

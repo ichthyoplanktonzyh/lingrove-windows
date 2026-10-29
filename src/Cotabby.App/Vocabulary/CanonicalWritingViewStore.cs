@@ -69,7 +69,7 @@ internal sealed class CanonicalWritingViewStore : IWritingVocabularyStore, IAsyn
     public Task<bool> SaveAsync(VocabularyCapture capture)
     {
         VocabularyCapture enriched;
-        try { enriched = EnrichCapture?.Invoke(capture) ?? capture; }
+        try { enriched = capture.AllowsExplanationEnrichment ? EnrichCapture?.Invoke(capture) ?? capture : capture; }
         catch (Exception error) { Report(error); return Task.FromResult(false); }
         return Change(capture, () => _backend.SaveCaptureAsync(enriched));
     }

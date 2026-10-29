@@ -61,14 +61,18 @@ the initial gap audit; its initial Windows gap descriptions are historical. Curr
   [canonical Anki sessions](ANKI_CANONICAL_REVIEW_SESSION.md), and
   [unknown-source translation planning](READING_TRANSLATION_UNKNOWN_SOURCE.md).
   The latter two are prerequisites, not activated Anki or reading UI.
-- [Meaning/mapping editors](VOCABULARY_CANONICAL_MEANING_UI.md) await final candidate CI.
-  Complete category management, independent Anki card preparation and selected-text reading are
-  the active user-flow deliveries. Their internal components are reviewed before production
-  integration; an unconnected component does not complete its feature.
-- Remaining frozen scope includes usage-pattern editing, the canonical notebook's remaining
-  graph/media/explanation/dictionary/export/backup workflows, review batch UI, pointer/icon/OCR
-  reading, CLI, remaining onboarding/localization and speech activation. Existing older libraries
-  retain their references and are reused only after checking the frozen consumer contract.
+- The [meaning/mapping editors](VOCABULARY_CANONICAL_MEANING_UI.md) merged in #133.
+  Current category management, usage-pattern editing, independent Anki card preparation and batch
+  review are connected in #136, awaiting its final-head checks. The canonical graph follows in
+  #137. These reviewable checkpoints remain distinct from merged-main delivery and physical acceptance.
+- The next integration branch connects [image paste/drop/enlargement](VOCABULARY_CANONICAL_ENTRY_EDITOR_UI.md),
+  [full backup/restore](VOCABULARY_CANONICAL_BACKUP.md), [learning-material export](VOCABULARY_CANONICAL_EXPORT.md)
+  and [manual selected-text reading](READING_SELECTION_CHECKPOINT.md). Reading's final-effect
+  admission findings are being repaired; it is not yet accepted for publication.
+- Remaining scope includes canonical notebook explanation/dictionary rows, review audio,
+  pointer/icon/context/OCR reading, CLI, remaining onboarding/localization and speech activation.
+  Speech providers, settings and card composition are now active work over the existing libraries.
+  Those libraries retain their references and are reused only after checking the current consumer contract.
 
 After the maintainer's delivery adjustment, implementation owners carry each active user flow
 through its settings, entry and production adapters. Internal commits use targeted validation;
@@ -117,8 +121,9 @@ expression while allowing attractive Windows/WPF visual design; Mac pixel identi
    then finish review preparation, layout, batch and conflict choices over the same Store.
 4. Adapt latest expression assistance and reading/OCR, carrying field/selection receipts,
    cancellation, bounded context and per-task destination disclosure through Windows APIs.
-5. Complete latest onboarding, localization and remaining runtime/provider/CLI integration. Audio expansion remains
-   deferred while these visible workflows are adapted; its known gaps stay recorded.
+5. Complete latest onboarding, localization and remaining runtime/provider/CLI integration. Speech
+   production adapters and review audio now follow the completed card/review foundations; their
+   known gaps stay recorded until their full user flows are connected and reviewed.
 
 This order follows frozen Mac ownership and dependencies. It does not authorize a replacement
 product design, new hosted transmission or automatic classification. The primary agent coordinates

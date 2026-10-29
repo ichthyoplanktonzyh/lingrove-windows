@@ -62,4 +62,21 @@ public interface ILearningLocalOperation : IAsyncDisposable
         int maxTokens,
         Action<string>? onDelta,
         CancellationToken ct);
+
+    /// <summary>Reading admission must be rechecked inside the native worker immediately before prefill.
+    /// Implementations that do not provide that boundary reject a non-null permit.</summary>
+    Task<string> GenerateAsync(IReadOnlyList<LLamaToken> promptTokens, LearningModelSamplingValues sampling,
+        int maxTokens, Action<string>? onDelta, CancellationToken ct, Func<bool>? admission) =>
+        admission is null ? GenerateAsync(promptTokens, sampling, maxTokens, onDelta, ct)
+            : Task.FromException<string>(new NotSupportedException("Final reading admission is unavailable."));
+
+    /// <summary>Fixed lookup grammars are optional; implementations lacking support fail closed.</summary>
+    Task<string> GenerateLookupAsync(IReadOnlyList<LLamaToken> promptTokens, LearningModelSamplingValues sampling,
+        int maxTokens, Action<string>? onDelta, bool hasContext, CancellationToken ct) =>
+        Task.FromException<string>(new NotSupportedException("Constrained lookup is unavailable."));
+
+    Task<string> GenerateLookupAsync(IReadOnlyList<LLamaToken> promptTokens, LearningModelSamplingValues sampling,
+        int maxTokens, Action<string>? onDelta, bool hasContext, CancellationToken ct, Func<bool>? admission) =>
+        admission is null ? GenerateLookupAsync(promptTokens, sampling, maxTokens, onDelta, hasContext, ct)
+            : Task.FromException<string>(new NotSupportedException("Final reading admission is unavailable."));
 }

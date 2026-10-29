@@ -234,11 +234,12 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         if (_explanationSession is not null) _explanationSession.StateChanged -= OnExplanationStateChanged;
         CancelCurrentState();
 
+        Task articleShutdown = Task.CompletedTask;
         if (_dispatcher.CheckAccess())
         {
             _window?.Close();
             _window = null;
-            _dictionaryWindow?.Close();
+            var dictionaryWindow = _dictionaryWindow; dictionaryWindow?.Close(); articleShutdown = dictionaryWindow?.ArticleShutdown ?? Task.CompletedTask;
             _dictionaryWindow = null;
         }
         else
@@ -247,13 +248,14 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
             {
                 _window?.Close();
                 _window = null;
-                _dictionaryWindow?.Close();
+                var dictionaryWindow = _dictionaryWindow; dictionaryWindow?.Close(); articleShutdown = dictionaryWindow?.ArticleShutdown ?? Task.CompletedTask;
                 _dictionaryWindow = null;
             });
         }
 
         // Core waits only for its documented bounded interval. The dedicated endpoint client is
         // owned by AppHost and stays alive until this drain has completed.
+        await articleShutdown.ConfigureAwait(false);
         _coordinator.ClearCache();
         await _coordinator.DisposeAsync().ConfigureAwait(false);
         DetachPerformanceHistory();

@@ -21,6 +21,11 @@ internal static class LearningDictionaryDefinitions
         if (state.Status == LearningDictionaryContentStatus.Loading) AddText(content, "Looking up…", secondary: true);
         else if (state.Status == LearningDictionaryContentStatus.Failed)
             AddText(content, state.ErrorMessage ?? "The dictionary could not complete this lookup.", secondary: true);
+        else if (state.Result is LearningDictionaryResult.Article article)
+        {
+            AddText(content, article.Text);
+            AddText(content, "Rich dictionary display is unavailable.", secondary: true);
+        }
         else if (state.Result is LearningDictionaryResult.Entries entries)
         {
             foreach (var entry in entries.Values)

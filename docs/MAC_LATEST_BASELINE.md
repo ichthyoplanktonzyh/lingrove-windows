@@ -60,6 +60,11 @@ committed contracts and tests; the older v7 Windows value boundary does not yet 
 
 Functional and UI/design scope, team ownership, shared-file coordination and rendered/native
 acceptance are defined in [WINDOWS_ALIGNMENT.md](WINDOWS_ALIGNMENT.md).
+The maintainer subsequently removed old-data compatibility from scope: current-format notebook
+activation uses a fresh versioned file in the existing Cotabby data root. Legacy Windows
+conversion and cross-OS binary admission are not blockers; older files remain untouched. Current
+format validity, record identity, media integrity, acknowledged operations and one shared Store
+remain required.
 The maintainer's 2026-10-29 clarification preserves behavior, IA, content hierarchy and state
 expression while allowing attractive Windows/WPF visual design; Mac pixel identity is not required.
 

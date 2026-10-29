@@ -112,9 +112,20 @@ public sealed class FrozenVocabularyEntryEditorWindowTests(WpfDispatcher dispatc
         internal VocabularyClipboardImageOffer Offer = new(41, true);
         internal uint ReadSequence;
         internal TaskCompletionSource<byte[]?>? Held;
+        internal bool ThrowOnCancellation;
         public VocabularyClipboardImageOffer Capture() => Offer;
-        public Task<byte[]?> ReadAsync(uint expectedSequence, CancellationToken token = default) { ReadSequence = expectedSequence; return Held?.Task ?? Task.FromResult(bytes); }
+        public Task<byte[]?> ReadAsync(uint expectedSequence, CancellationToken token = default) { if (ThrowOnCancellation) token.Register(() => throw new InvalidOperationException("synthetic cancellation")); ReadSequence = expectedSequence; return Held?.Task ?? Task.FromResult(bytes); }
     }
+    [Fact]
+    public Task CancellationCallbackFailureStillDrainsAcceptedImportAndCloses() => dispatcher.RunAsync(async () =>
+    {
+        await using var store = new FrozenVocabularyImportStore(FrozenVocabularySQLiteDatabase.CreateMemory(), () => new SourceDate(123));
+        await store.AddEntriesAsync([new(Expression: "hello")]); var entry = (await store.ReadAsync()).Document.Entries.Single();
+        var clipboard = new ClipboardFixture(null) { ThrowOnCancellation = true, Held = new(TaskCreationOptions.RunContinuationsAsynchronously) };
+        var window = new FrozenVocabularyEntryEditorWindow(store, store, entry, entry.Senses.Single().Id, clipboard: clipboard); window.Show();
+        Assert.True(window.PasteImage()); await Until(() => clipboard.ReadSequence == 41); window.Close(); Task retirement = window.RetireAsync(); Assert.False(retirement.IsCompleted);
+        clipboard.Held.SetResult(null); await Assert.ThrowsAnyAsync<Exception>(async () => await retirement); Assert.False(window.IsVisible);
+    });
     [Theory]
     [InlineData(0)]
     [InlineData(1)]
@@ -192,7 +203,9 @@ public sealed class FrozenVocabularyEntryEditorWindowTests(WpfDispatcher dispatc
         await store.AddEntriesAsync([new(Expression: "hello")]); var entry = (await store.ReadAsync()).Document.Entries.Single();
         var clipboard = new ClipboardFixture(null) { Held = new(TaskCreationOptions.RunContinuationsAsynchronously) };
         var window = new FrozenVocabularyEntryEditorWindow(store, store, entry, entry.Senses.Single().Id, clipboard: clipboard); window.Show();
-        Assert.True(window.PasteImage()); await Until(() => clipboard.ReadSequence == 41); window.Close(); var retirement = window.RetireAsync(); Assert.False(retirement.IsCompleted);
+        Assert.True(window.PasteImage()); await Until(() => clipboard.ReadSequence == 41);
+        Assert.False(Descendants(window).OfType<CanonicalImageDropSurface>().Single().IsEnabled);
+        window.Close(); var retirement = window.RetireAsync(); Assert.False(retirement.IsCompleted);
         clipboard.Held.SetResult([1, 2, 3]); await retirement; Assert.Null(window.Draft.Senses.Single().Content); Assert.Null((await store.ReadAsync()).Document.Entries.Single().Senses.Single().Content);
     });
     private static async Task Until(Func<bool> predicate) { for (int i = 0; i < 100 && !predicate(); i++) await Task.Delay(10); Assert.True(predicate()); }

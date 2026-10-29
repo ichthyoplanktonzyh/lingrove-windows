@@ -14,6 +14,8 @@ internal static class Program
     [STAThread]
     private static int Main(string[] arguments)
     {
+        if (arguments is ["--ole-drop", var parent, var label]) return OleDropWindow.Run(parent, false, label);
+        if (arguments is ["--ole-drop-test", var testParent]) return OleDropWindow.Run(testParent, true);
         if (arguments is not ["--clipboard", var sequence] || !uint.TryParse(sequence, NumberStyles.None, CultureInfo.InvariantCulture, out uint expected)) return 2;
         using var output = Console.OpenStandardOutput(); byte[]? bytes;
         try { bytes = new VocabularyClipboardImageReader().Read(expected); }

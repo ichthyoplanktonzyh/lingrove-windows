@@ -1,7 +1,6 @@
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
-using System.Text.Encodings.Web;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Text;
 
@@ -12,10 +11,11 @@ public static class ExpressionAssistPrompt
 {
     public static string Render(ExpressionAssistRequest request, int total, int output)
     {
-        var payload = JsonSerializer.Serialize(new { query = request.Query, leftContext = request.LeftContext,
-            rightContext = request.RightContext, selectedText = request.SelectedText,
-            targetLanguage = request.TargetLanguage, explanationLanguage = request.ExplanationLanguage },
-            new JsonSerializerOptions { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
+        string Q(string value) => LearningExplanationText.Fits(value, int.MaxValue)
+            ? LearningExplanationText.Quote(value) : throw Invalid();
+        var payload = "{\"query\":" + Q(request.Query) + ",\"leftContext\":" + Q(request.LeftContext)
+            + ",\"rightContext\":" + Q(request.RightContext) + ",\"selectedText\":" + Q(request.SelectedText)
+            + ",\"targetLanguage\":" + Q(request.TargetLanguage) + ",\"explanationLanguage\":" + Q(request.ExplanationLanguage) + "}";
         var target = LearningLanguages.FromCode(request.TargetLanguage)?.Name() ?? request.TargetLanguage;
         var explanation = LearningLanguages.FromCode(request.ExplanationLanguage)?.Name() ?? request.ExplanationLanguage;
         var prompt = $$"""
@@ -51,8 +51,9 @@ public static class ExpressionAssistPrompt
         return prompt;
     }
 
-    public static ExpressionAssistResult Parse(string raw, ExpressionAssistRequest request)
+    public static ExpressionAssistResult Parse(string raw, ExpressionAssistRequest request, Func<string, string> lowercase)
     {
+        ArgumentNullException.ThrowIfNull(lowercase);
         if (!LearningExplanationText.Fits(raw, 12_000)) throw Invalid();
         try
         {
@@ -73,7 +74,7 @@ public static class ExpressionAssistPrompt
                     new StringInfo(hint).LengthInTextElements > 160 || !LearningExplanationText.Fits(form ?? "", 1_500) ||
                     (new GraphemeString(request.LeftContext).Count >= 12 && CanonicalEdge(text, request.LeftContext, false)) ||
                     (new GraphemeString(request.RightContext).Count >= 12 && CanonicalEdge(text, request.RightContext, true))) throw Invalid();
-                if (unique.Add(normalized.ToLowerInvariant())) result.Add(new(text, hint, form));
+                if (unique.Add(lowercase(normalized))) result.Add(new(text, hint, form));
             }
             var clarification = root.TryGetProperty("clarification", out var c) && c.ValueKind != JsonValueKind.Null ? c.GetString() : null;
             if (clarification is not null) clarification = FoundationText.TrimWhitespaceAndNewlines(clarification);

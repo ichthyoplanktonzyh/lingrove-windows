@@ -5,6 +5,7 @@ namespace Cotabby.Core.Tests.ExpressionAssist;
 
 public sealed class ExpressionAssistPolicyTests
 {
+    private static string Lowercase(string value) => value.ToLowerInvariant(); // Test oracle for these fixtures only.
     [Theory]
     [InlineData("??", "word？？", "？？")]
     [InlineData(";;", "文字;;", ";;")]
@@ -30,9 +31,12 @@ public sealed class ExpressionAssistPolicyTests
     public void CanonicalDuplicateAndFormatControlsFollowFoundation()
     {
         var request = ExpressionAssistPolicy.Request("x", "??", 0, 2, LearningLanguage.English, LearningLanguage.Chinese);
-        var result = ExpressionAssistPrompt.Parse("{\"candidates\":[{\"text\":\"é\",\"hint\":\"one\"},{\"text\":\"e\\u0301\",\"hint\":\"two\"}]}", request);
+        var result = ExpressionAssistPrompt.Parse("{\"candidates\":[{\"text\":\"é\",\"hint\":\"one\"},{\"text\":\"e\\u0301\",\"hint\":\"two\"}]}", request, Lowercase);
         Assert.Single(result.Candidates);
-        Assert.Throws<ArgumentException>(() => ExpressionAssistPrompt.Parse("{\"candidates\":[{\"text\":\"a\\u202Eb\",\"hint\":\"x\"}]}", request));
+        var expanded = ExpressionAssistPrompt.Parse("{\"candidates\":[{\"text\":\"İ\",\"hint\":\"one\"},{\"text\":\"i\\u0307\",\"hint\":\"two\"}]}", request,
+            value => value == "İ" ? "i\u0307" : value);
+        Assert.Single(expanded.Candidates);
+        Assert.Throws<ArgumentException>(() => ExpressionAssistPrompt.Parse("{\"candidates\":[{\"text\":\"a\\u202Eb\",\"hint\":\"x\"}]}", request, Lowercase));
     }
 
     [Fact]
@@ -55,11 +59,11 @@ public sealed class ExpressionAssistPolicyTests
     public void ParsesExactInsertionDeduplicatesAndAllowsClarification()
     {
         var request = ExpressionAssistPolicy.Request("排除", "We can rule??.", 11, 2, LearningLanguage.English, LearningLanguage.Chinese);
-        var result = ExpressionAssistPrompt.Parse("{\"candidates\":[{\"text\":\" out\",\"hint\":\"排除\"},{\"text\":\"out \",\"hint\":\"重复\"}]}", request);
+        var result = ExpressionAssistPrompt.Parse("{\"candidates\":[{\"text\":\" out\",\"hint\":\"排除\"},{\"text\":\"out \",\"hint\":\"重复\"}]}", request, Lowercase);
         Assert.Single(result.Candidates);
         Assert.Equal(" out", result.Candidates[0].Text);
         Assert.Equal("We can rule out.", request.LeftContext + result.Candidates[0].Text + request.RightContext);
-        Assert.Empty(ExpressionAssistPrompt.Parse("{\"candidates\":[],\"clarification\":\"哪一种？\"}", request).Candidates);
+        Assert.Empty(ExpressionAssistPrompt.Parse("{\"candidates\":[],\"clarification\":\"哪一种？\"}", request, Lowercase).Candidates);
     }
 
     [Theory]
@@ -70,6 +74,6 @@ public sealed class ExpressionAssistPolicyTests
     public void InvalidOrContextEchoingResultsCannotBeInserted(string raw)
     {
         var request = ExpressionAssistPolicy.Request("排除", "We still cannot ?? yet.", 16, 2, LearningLanguage.English, LearningLanguage.Chinese);
-        Assert.Throws<ArgumentException>(() => ExpressionAssistPrompt.Parse(raw, request));
+        Assert.Throws<ArgumentException>(() => ExpressionAssistPrompt.Parse(raw, request, Lowercase));
     }
 }

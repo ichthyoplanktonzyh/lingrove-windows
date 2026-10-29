@@ -10,8 +10,9 @@ expression prompt and complete-result admission. UTF-16 ranges must fall on .NET
 boundaries and the existing Foundation composed-range map. Trigger classification uses the shared
 Swift-character adapter; candidate identity uses the shared canonical comparer and Foundation
 whitespace/control rules. The target and explanation languages use the existing learning language
-catalog and the prompt uses the existing context budget. Unicode-version differences and full
-Unicode lowercasing beyond .NET invariant casing remain a platform verification gap.
+catalog and the prompt uses the existing context budget. Result parsing requires an injected full
+Unicode lowercase function; Windows supplies the existing system ICU adapter, without lexical-key
+whitespace or apostrophe normalization. Unicode-version differences remain a platform verification gap.
 The caller must clear selected text for a symbol-trigger request as in the source coordinator.
 
 This is a library checkpoint, not an activated feature. The source's disabled-by-default settings,

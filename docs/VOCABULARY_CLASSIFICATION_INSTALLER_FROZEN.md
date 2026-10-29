@@ -32,7 +32,7 @@ SQLite commit/reopen/retry and production Store composition remain the archive o
 work; no existing user notebook was accessed. Native Swift execution and physical notebook UI remain
 separate validation gates.
 
-Windows x64 SDK 10.0.402: `dotnet test tests/Cotabby.Core.Tests/Cotabby.Core.Tests.csproj
+Windows x64 .NET SDK 10.0.403: `dotnet test tests/Cotabby.Core.Tests/Cotabby.Core.Tests.csproj
 --configuration Release --filter 'FullyQualifiedName~FrozenClassificationInstallerTests|FullyQualifiedName~VocabularyFrozenClassificationTests'`
 passed 30/30, including the raw embedded blob hash. `dotnet build Cotabby.sln --configuration Release`
 passed with zero warnings/errors. These checks do not execute the macOS application or open a user notebook.

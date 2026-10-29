@@ -5,7 +5,8 @@ Reference: frozen Mac `35b7fbe5c788c5524936ade1dfb7c89a3a285b04`, especially
 `Lingrove/Support/Vocabulary/VocabularyPolicy.swift`, `VocabularySensePolicy.swift`,
 `VocabularyNotebookProjection.swift`, `VocabularySemanticPolicy.swift` and
 `Lingrove/Support/LanguageLearning/LearningExplanationPolicy.swift`. This is an isolated
-current-format implementation and composition boundary; AppHost does not yet create it.
+current-format implementation and composition boundary. The subsequent
+[application composition](VOCABULARY_CANONICAL_APP.md) shares this owner across writing and notebook UI.
 
 `FrozenVocabularyStoreFactory.OpenAsync` admits only the explicit fresh file name
 `vocabulary-v8.sqlite` in a caller-selected directory, with the existing private file/identity and
@@ -48,11 +49,10 @@ canonical record itself remains unchanged. An unrepresentable timestamp or unsup
 context is refused rather than silently inventing a value. Existing endpoint selection, input
 freshness, IME and privacy gates remain owned by the writing coordinator.
 
-The fresh owner currently leaves the classification directory empty: the frozen Mac application
-enables its bundled catalog on load, while the existing Windows catalog has an older explicit source
-reference. Porting that frozen catalog/installer is a separate open gate for classification UI. Media
-files, editor/review mutations, backup/restore, physical desktop acceptance, visual checks and AppHost
-activation are also incomplete. These tests do not establish those features or cross-platform storage
+The [lazy Store](VOCABULARY_CANONICAL_LAZY_STORE.md) subsequently enabled the exact frozen bundled
+classification catalog within its serialized read/commit span. Media files, editor/review mutations,
+backup/restore, physical desktop acceptance and complete visual checks remain incomplete.
+These tests do not establish those features or cross-platform storage
 compatibility. No pre-existing user file is opened, modified or migrated by this slice.
 
 Executed on the Windows host:

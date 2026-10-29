@@ -21,7 +21,7 @@ starting review network operations. The legacy constructor still accepts its exi
 for isolated older library consumers; this is not a second production Store or a data migration.
 `AppHost` activation of this factory belongs to the separate canonical Store composition change.
 
-On Windows SDK 10.0.402, `dotnet build Cotabby.sln --configuration Release` passed with zero warnings
+On Windows with .NET SDK 10.0.403, `dotnet build Cotabby.sln --configuration Release` passed with zero warnings
 or errors. Portable App filter `AnkiReviewFeatureTests|AnkiReviewControllerTests|AnkiReviewSettingsInteractionTests`
 passed 195/195; compiled WPF `AnkiReviewSettingsViewTests` passed 7/7. Tests use synthetic key/client
 effects and isolated legacy Store fixtures only. The full `dotnet test tests/Cotabby.App.Tests/Cotabby.App.Tests.csproj

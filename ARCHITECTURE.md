@@ -41,6 +41,12 @@ report that the provider is unavailable.
 
 ## Product loops
 
+The [current-format notebook composition](docs/VOCABULARY_CANONICAL_APP.md) is owned once by
+`AppHost` through `CanonicalVocabularyFeature`. Its lazy backend is shared by writing favorites,
+saved explanations and the canonical browser/create/import window. It uses a fresh versioned file;
+the older notebook/media/review libraries described below are not a parallel production archive.
+Their remaining canonical adaptations stay explicit in the composition record.
+
 The [latest independent vocabulary resources](docs/VOCABULARY_RESOURCES_CURRENT.md) provide the
 current Mac value/projection boundary in `Core/Vocabulary/Resources`. Catalog, evidence, claims and
 personal collection state have separate identities; joined entries are read/edit adapters. The

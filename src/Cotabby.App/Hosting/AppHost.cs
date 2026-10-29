@@ -16,6 +16,7 @@ using Cotabby.Core.Models;
 using Cotabby.Core.Spelling;
 using Cotabby.Core.Suggestions;
 using Cotabby.Core.Vocabulary;
+using Cotabby.Core.Vocabulary.Notebook;
 using Cotabby.Inference;
 using Cotabby.Inference.LanguageLearning;
 using Cotabby.Inference.LanguageLearning.Local;
@@ -87,10 +88,10 @@ public sealed class AppHost : IAsyncDisposable
     internal RecommendedSetupController RecommendedSetup { get; }
     internal LearningPreviewController LearningPreview { get; }
     internal LearningExplanationController LearningExplanation { get; }
-    internal VocabularyStore Vocabulary { get; }
+    private readonly CanonicalVocabularyFeature _notebook;
+    internal CanonicalWritingViewStore Vocabulary => _notebook.Writing;
     internal AnkiReviewFeature Review { get; }
-    internal VocabularyWindowController VocabularyWindow { get; }
-    private readonly WindowsVocabularyClipboardTransfer _vocabularyClipboard;
+    internal FrozenVocabularyWindowController VocabularyWindow => _notebook.Window;
 
     /// <summary>Raised on the UI thread after settings were applied or a model was loaded, so open windows and the tray can refresh.</summary>
     public event Action? SettingsApplied;
@@ -168,23 +169,14 @@ public sealed class AppHost : IAsyncDisposable
             ModelCatalog.DefaultLocalDirectory(), batterySaverOn: () => PowerStatus.IsBatterySaverOn);
         // One notebook owner is shared by every card/window. Construction does no IO; saved
         // explanation lookup or a user action loads it lazily. Saving never starts generation.
-        Vocabulary = new VocabularyStore(new VocabularyArchive(System.IO.Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "Cotabby", "vocabulary", "vocabulary.sqlite")), ui);
+        _notebook = new CanonicalVocabularyFeature(CanonicalVocabularyFeature.DefaultPath, ui, overlay.Dispatcher,
+            new VocabularyNotebookListPreferences(() => Settings, () => SettingsStore.Save(Settings)),
+            NotebookLabelLanguages());
         // Review has its own inert HTTP/key owners. Its settings save only their durable values;
         // editing a deck or connection must not wake/reconfigure the autocomplete runtime.
-        Review = new AnkiReviewFeature(() => Settings, () => SettingsStore.Save(Settings),
-            Vocabulary, new Cotabby.Win32.Review.AnkiConnectClient(), new DpapiAnkiCredentialStore());
+        Review = AnkiReviewFeature.CreateConnectionSettings(() => Settings, () => SettingsStore.Save(Settings),
+            new Cotabby.Win32.Review.AnkiConnectClient(), new DpapiAnkiCredentialStore());
         Review.Controller.Configure = () => SettingsWindow.ShowReview(this);
-        _vocabularyClipboard = new WindowsVocabularyClipboardTransfer();
-        VocabularyWindow = new VocabularyWindowController(Vocabulary, overlay.Dispatcher,
-            () => new VocabularyNotebookSession(overlay.Dispatcher, _services.GetRequiredService<ILearningDictionaryProviding>(),
-                _services.GetRequiredService<ILearningLexicalText>(), LearningExplanation.Service),
-            () => SettingsWindow.ShowLearning(this), _vocabularyClipboard,
-            // Notebook preferences share the existing settings owner, but do not re-apply engine
-            // or generation settings when only graph appearance/browser mode changes.
-            new VocabularyGraphPreferences(() => Settings, () => SettingsStore.Save(Settings)),
-            new VocabularyNotebookListPreferences(() => Settings, () => SettingsStore.Save(Settings)));
         Vocabulary.EnrichCapture = capture =>
         {
             var input = LearningExplanationPolicy.Input(capture);
@@ -359,12 +351,18 @@ public sealed class AppHost : IAsyncDisposable
         Macros.Enabled = Settings.MacrosEnabled;
         LearningPreview.ApplySettings(Settings, _learningCredentialRevision);
         LearningExplanation.ApplySettings(Settings);
+        VocabularyWindow.SetPreferredLanguages(NotebookLabelLanguages());
         Overlay.ApplyAppearance(Settings);
         _macroPreview.ApplyAppearance(Settings);
         LaunchAtLogin.Set(Settings.LaunchAtLogin);
         if (allowCompletionLoad && RecommendedSetup?.Busy != true && !_completion.IsReady) LoadSelectedModelIfChanged();
         SettingsApplied?.Invoke();
     }
+
+    // The current Windows interface is English. Explicit explanation language has priority;
+    // changing it updates labels only, preserving the notebook's authored languages and selection.
+    private IReadOnlyList<LearningLanguage> NotebookLabelLanguages() =>
+        VocabularyMeaningLabelPolicy.PreferredLanguages(Settings.LearningExplanationLanguage, ["en"]);
 
     private void OnGlobalToggleKey(object? sender, KeyEventArgs args)
     {
@@ -561,33 +559,57 @@ public sealed class AppHost : IAsyncDisposable
         WithdrawCompletion();
         try
         {
-            await RecommendedSetup.DisposeAsync().ConfigureAwait(false);
-            await _completion.DisposeAsync().ConfigureAwait(false);
-            await LearningPreview.DisposeAsync().ConfigureAwait(false);
-            await VocabularyWindow.DisposeAsync().ConfigureAwait(false);
-            await _vocabularyClipboard.DisposeAsync().ConfigureAwait(false);
-            Vocabulary.EnrichCapture = null;
-            await LearningExplanation.DisposeAsync().ConfigureAwait(false);
-            LearningExplanation.Service.Explained -= PersistExplanation;
-            try { await Review.DisposeAsync().ConfigureAwait(false); }
+            try { await RetireWritingFeaturesAsync().ConfigureAwait(false); }
             finally
             {
-                // Review already drains all admitted actions even if cancellation/disposal reports
-                // an error. Its failure must not strand the shared notebook or skip existing cleanup.
-                await Vocabulary.DisposeAsync().ConfigureAwait(false);
-                await LearningModels.DisposeAsync().ConfigureAwait(false);
-                EmojiPicker.Dispose();
-                Macros.Dispose();
-                _spelling.Dispose();
-                await Coordinator.DisposeAsync().ConfigureAwait(false);
-                EndpointClient.Dispose();
-                _learningHttpClient.Dispose();
-                await _services.DisposeAsync().ConfigureAwait(false);
+                // Producer or presentation failures must not strand the sole database owner.
+                try { await _notebook.DisposeAsync().ConfigureAwait(false); }
+                finally
+                {
+                    await LearningModels.DisposeAsync().ConfigureAwait(false);
+                    EmojiPicker.Dispose();
+                    Macros.Dispose();
+                    _spelling.Dispose();
+                    await Coordinator.DisposeAsync().ConfigureAwait(false);
+                    EndpointClient.Dispose();
+                    _learningHttpClient.Dispose();
+                    await _services.DisposeAsync().ConfigureAwait(false);
+                }
             }
         }
         finally
         {
             await Runtime.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    private async Task RetireWritingFeaturesAsync()
+    {
+        try { await RecommendedSetup.DisposeAsync().ConfigureAwait(false); }
+        finally
+        {
+            try { await _completion.DisposeAsync().ConfigureAwait(false); }
+            finally
+            {
+                try { await LearningPreview.DisposeAsync().ConfigureAwait(false); }
+                finally { await RetireNotebookProducersAsync().ConfigureAwait(false); }
+            }
+        }
+    }
+
+    private async Task RetireNotebookProducersAsync()
+    {
+        try { await VocabularyWindow.DisposeAsync().ConfigureAwait(false); }
+        finally
+        {
+            Vocabulary.OpenSelection = null;
+            Vocabulary.EnrichCapture = null;
+            try { await LearningExplanation.DisposeAsync().ConfigureAwait(false); }
+            finally
+            {
+                LearningExplanation.Service.Explained -= PersistExplanation;
+                await Review.DisposeAsync().ConfigureAwait(false);
+            }
         }
     }
 }

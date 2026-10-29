@@ -83,7 +83,7 @@ public sealed class VocabularyMeaningSidebar : UserControl
                 var icon = VocabularySidebarVisuals.SemanticIcon(item.Node.Kind == R.VocabularyMeaningNodeKind.Concept, _scale);
                 icon.Margin = new Thickness(0, 0, 6, 0); DockPanel.SetDock(icon, Dock.Left); top.Children.Add(icon);
                 var text = InlineText(item.Title, 14.5 * _scale, detail, 12.5 * _scale, !_detailed && selected);
-                
+
                 top.Children.Add(text);
                 var body = new StackPanel(); body.Children.Add(top);
                 if (_detailed && detail.Length > 0) { var sub = VocabularySidebarVisuals.Text(detail, 13 * _scale, FontWeights.Normal, VocabularySidebarVisuals.Secondary); sub.Margin = new Thickness(16, 3, 0, 0); body.Children.Add(sub); }
@@ -126,7 +126,7 @@ public sealed class VocabularyMeaningSidebar : UserControl
             var language = VocabularySidebarVisuals.Text(_languageLabel(entry.Language), 10.5 * _scale, FontWeights.Medium, VocabularySidebarVisuals.Secondary);
             DockPanel.SetDock(language, Dock.Right); top.Children.Add(language);
             var text = InlineText(entry.Expression, 13.5 * _scale, detail, 12 * _scale, !_detailed && selected);
-            
+
             top.Children.Add(text); var body = new StackPanel { Margin = new Thickness(16, 0, 0, 0) }; body.Children.Add(top);
             if (_detailed && detail.Length > 0) { var sub = VocabularySidebarVisuals.Text(detail, 12.5 * _scale, FontWeights.Normal, VocabularySidebarVisuals.Secondary); sub.Margin = new Thickness(0, 2, 0, 0); body.Children.Add(sub); }
             var row = Row(body, new(VocabularyMeaningDestinationKind.Sense, SenseId: sense.Id), entry.Expression, 2.5); _list.Items.Add(row); if (selected) _list.SelectedItem = row;
@@ -152,4 +152,3 @@ public sealed class VocabularyMeaningSidebar : UserControl
         System.Windows.Automation.AutomationProperties.SetName(row, name); return row;
     }
 }
-

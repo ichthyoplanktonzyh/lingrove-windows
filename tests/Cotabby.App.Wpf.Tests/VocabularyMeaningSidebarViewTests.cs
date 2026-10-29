@@ -150,5 +150,3 @@ public sealed class VocabularyMeaningSidebarViewTests(WpfDispatcher dispatcher)
         }
     }
 }
-
-

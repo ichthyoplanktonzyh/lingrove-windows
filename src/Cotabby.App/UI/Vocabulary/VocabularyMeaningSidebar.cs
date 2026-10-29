@@ -29,7 +29,7 @@ public sealed class VocabularyMeaningSidebar : UserControl
     private VocabularyMeaningDestination? _destination;
     private bool _expanded, _updating;
     private double _scale = 1;
-    private bool _detailed;
+    private bool _detailed, _notebookTheme;
     public event Action<VocabularyMeaningDestination>? DestinationChanged;
 
     public VocabularyMeaningSidebar(string otherExpressionsLabel, string suggestedGroupingLabel,
@@ -43,6 +43,10 @@ public sealed class VocabularyMeaningSidebar : UserControl
         _list.SelectionChanged += SelectionChanged; Content = _list;
     }
 
+    internal void UseNotebookTheme()
+    {
+        _notebookTheme = true; VocabularyNotebookTheme.Brush(_list, Control.BackgroundProperty, "SidebarBg"); Refresh();
+    }
     public void Present(IReadOnlyList<VocabularyMeaningBrowserProjection.Item> items, IReadOnlyList<F.VocabularyEntry> entries,
         IReadOnlyList<VocabularySelection> unclassified, VocabularyMeaningDestination? destination, bool detailed = false, double textScale = 1)
     {
@@ -92,6 +96,7 @@ public sealed class VocabularyMeaningSidebar : UserControl
             if (_unclassified.Count > 0) AddUnclassified();
         }
         finally { _updating = false; }
+        if (_notebookTheme) VocabularyNotebookTheme.Sidebar(this);
         if (restoreFocus) (_list.SelectedItem as ListBoxItem ?? (UIElement)_list).Focus();
     }
 

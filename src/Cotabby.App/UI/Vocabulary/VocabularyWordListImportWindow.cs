@@ -18,7 +18,7 @@ internal sealed class VocabularyWordListImportWindow : Window
     private readonly string _path;
     private readonly LearningLanguage _language;
     private readonly StackPanel _settings = new(), _results = new();
-    private readonly TextBlock _status = new() { TextWrapping = TextWrapping.Wrap }, _failure = new() { Foreground = Brushes.Firebrick, TextWrapping = TextWrapping.Wrap };
+    private readonly TextBlock _status = new() { TextWrapping = TextWrapping.Wrap }, _failure = VocabularyNotebookTheme.Brush(new TextBlock { TextWrapping = TextWrapping.Wrap }, TextBlock.ForegroundProperty, "OrangeBrush");
     private readonly Button _import = new() { Name = "vocabularyConfirmImport", Content = "Import", IsDefault = true, MinWidth = 90 }, _cancel = new() { Content = "Cancel", IsCancel = true, MinWidth = 90 };
     private VocabularyWordList? _renderedTable;
     private bool _retiring;
@@ -30,10 +30,10 @@ internal sealed class VocabularyWordListImportWindow : Window
     {
         _session = new(Dispatcher, owner, reader); _path = path; _language = language;
         Title = "Import word list"; Width = 900; Height = 760; MinWidth = 650; MinHeight = 550; WindowStartupLocation = WindowStartupLocation.CenterOwner;
-        Background = Brushes.White; var root = new DockPanel { Margin = new Thickness(20), Background = Brushes.White }; Content = root;
+        VocabularyNotebookTheme.Follow(this); var root = new DockPanel { Margin = new Thickness(22) }; VocabularyNotebookTheme.Brush(root, Panel.BackgroundProperty, "WindowBg"); Content = root;
         var footer = VocabularyInputControls.Footer(_cancel, _import); DockPanel.SetDock(footer, Dock.Bottom); root.Children.Add(footer);
         var body = new StackPanel(); root.Children.Add(new ScrollViewer { VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Content = body });
-        var heading = new DockPanel(); var filename = new TextBlock { Text = Path.GetFileName(path), Foreground = Brushes.DimGray, TextTrimming = TextTrimming.CharacterEllipsis, MaxWidth = 300 }; DockPanel.SetDock(filename, Dock.Right); heading.Children.Add(filename);
+        var heading = new DockPanel(); var filename = new TextBlock { Text = Path.GetFileName(path), TextTrimming = TextTrimming.CharacterEllipsis, MaxWidth = 300 }; VocabularyNotebookTheme.Brush(filename, TextBlock.ForegroundProperty, "TextSecondary"); DockPanel.SetDock(filename, Dock.Right); heading.Children.Add(filename);
         heading.Children.Add(VocabularyInputControls.Heading("Import word list")); body.Children.Add(heading);
         body.Children.Add(VocabularyInputControls.Caption("Preview the list before adding it. Existing entries and notes are kept."));
         body.Children.Add(VocabularyInputControls.Caption("CSV columns can be mapped below. TXT uses one expression per line."));
@@ -83,7 +83,7 @@ internal sealed class VocabularyWordListImportWindow : Window
         if (examples) _results.Children.Add(new TextBlock { Text = $"New examples: {count.AddedExamples}     New translations: {count.AddedTranslations}", Margin = new Thickness(0, 0, 0, 5) });
         var grid = new DataGrid { Name = "vocabularyImportPreview", AutoGenerateColumns = false, IsReadOnly = true, CanUserAddRows = false, HeadersVisibility = DataGridHeadersVisibility.Column,
             Height = Math.Min(9, Math.Max(3, preview.Inputs.Count + 1)) * (examples ? 40 : 24) + 4, ItemsSource = preview.Inputs.Take(50).ToArray() };
-        AddColumn(grid, "Expression", "Expression"); AddColumn(grid, "Core meaning", "Meaning");
+        VocabularyNotebookTheme.Grid(grid); AddColumn(grid, "Expression", "Expression"); AddColumn(grid, "Core meaning", "Meaning");
         if (examples) { AddColumn(grid, "Example sentence", "Example"); AddColumn(grid, "Example translation", "ExampleTranslation"); }
         AddColumn(grid, "Language", "Language"); _results.Children.Add(grid);
         if (preview.Inputs.Count > 50) _results.Children.Add(VocabularyInputControls.Caption("Showing the first 50 rows."));
@@ -94,25 +94,25 @@ internal sealed class VocabularyWordListImportWindow : Window
     {
         _settings.Children.Clear(); var config = _session.Configuration!;
         var lang = VocabularyInputControls.Languages(false, config.Language); var kind = VocabularyInputControls.Kinds(); kind.Name = "vocabularyImportKind"; kind.SelectedItem = config.Kind; var meaningLang = VocabularyInputControls.Languages(true, config.MeaningLanguage);
-        _settings.Children.Add(VocabularyInputControls.Group(("Language", lang), ("Entry type", kind), ("Meaning language", meaningLang)));
+        _settings.Children.Add(VocabularyInputControls.Defaults(("Language", lang), ("Entry type", kind), ("Meaning language", meaningLang)));
         _settings.Children.Add(VocabularyInputControls.Caption("Empty language and type cells use these defaults."));
         lang.SelectionChanged += (_, _) => Change(c => c with { Language = (LearningLanguage)lang.SelectedValue });
         kind.SelectionChanged += (_, _) => Change(c => c with { Kind = (VocabularyEntryKind)kind.SelectedValue });
         meaningLang.SelectionChanged += (_, _) => Change(c => c with { MeaningLanguage = (LearningLanguage?)meaningLang.SelectedValue });
         if (table.Format != VocabularyWordListFormat.Csv) return;
         _settings.Children.Add(VocabularyInputControls.Caption("Only mapped columns are imported. Images are not included."));
-        var header = new CheckBox { Name = "vocabularyImportHeader", Content = "First row contains column names", IsChecked = config.HasHeader, Margin = new Thickness(0, 4, 0, 8) }; _settings.Children.Add(header);
+        var header = new CheckBox { Name = "vocabularyImportHeader", Content = "First row contains column names", IsChecked = config.HasHeader, Margin = new Thickness(0, 4, 0, 8) }; VocabularyNotebookTheme.Brush(header, Control.ForegroundProperty, "TextPrimary"); _settings.Children.Add(header);
         var primary = new List<(string Label, FrameworkElement Control)>(); var more = new List<(string Label, FrameworkElement Control)>();
         foreach (var field in Enum.GetValues<VocabularyImportField>())
         {
             var box = new ComboBox { MinWidth = 200 }; box.Items.Add("No column");
             for (int i = 0; i < table.ColumnCount; i++) box.Items.Add(ColumnName(i, table, config.HasHeader));
             box.SelectedIndex = config.Columns.TryGetValue(field, out int index) ? index + 1 : 0;
-            box.SelectionChanged += (_, _) => Change(c => { var columns = c.Columns.ToDictionary(); if (box.SelectedIndex <= 0) columns.Remove(field); else columns[field] = box.SelectedIndex - 1; return c with { Columns = columns }; });
+            VocabularyNotebookTheme.Combo(box); box.SelectionChanged += (_, _) => Change(c => { var columns = c.Columns.ToDictionary(); if (box.SelectedIndex <= 0) columns.Remove(field); else columns[field] = box.SelectedIndex - 1; return c with { Columns = columns }; });
             (field is VocabularyImportField.Expression or VocabularyImportField.Meaning or VocabularyImportField.Example or VocabularyImportField.ExampleTranslation ? primary : more)
                 .Add((FieldName(field), box));
         }
-        var mappings = new StackPanel(); mappings.Children.Add(VocabularyInputControls.Group(primary.ToArray())); mappings.Children.Add(new Expander { Header = "More columns", Content = VocabularyInputControls.Group(more.ToArray()), Margin = new Thickness(0, 0, 0, 10) }); _settings.Children.Add(new ScrollViewer { Content = mappings, MaxHeight = 280, VerticalScrollBarVisibility = ScrollBarVisibility.Auto });
+        var mappings = new StackPanel(); mappings.Children.Add(VocabularyInputControls.Group(primary.ToArray())); var expander = new Expander { Header = "More columns", Content = VocabularyInputControls.Group(more.ToArray()), Margin = new Thickness(0, 0, 0, 10) }; VocabularyNotebookTheme.Brush(expander, Control.ForegroundProperty, "TextPrimary"); mappings.Children.Add(expander); _settings.Children.Add(new ScrollViewer { Content = mappings, MaxHeight = 280, VerticalScrollBarVisibility = ScrollBarVisibility.Auto });
         header.Checked += (_, _) => { Change(c => c with { HasHeader = true }); BuildSettings(table); }; header.Unchecked += (_, _) => { Change(c => c with { HasHeader = false }); BuildSettings(table); };
     }
     private static string ColumnName(int index, VocabularyWordList table, bool header)

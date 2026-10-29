@@ -38,6 +38,8 @@ speech and their physical desktop acceptance remain subsequent canonical modules
 passing tests do not establish those features in the new production browser.
 
 Windows presentation uses WPF controls/system fonts, native window chrome and 96-DPI layout units.
+The [window-scoped visual adaptation](VOCABULARY_NOTEBOOK_THEME.md) follows Windows light/dark
+settings and maps high contrast to system colors; physical theme/DPI acceptance remains open.
 The browser/component records describe rendered states and available Mac reference images:
 [browser](VOCABULARY_NOTEBOOK_FROZEN_UI.md),
 [writing bridge](VOCABULARY_CANONICAL_WRITING_UI.md), and

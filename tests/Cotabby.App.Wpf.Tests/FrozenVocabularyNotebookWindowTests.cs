@@ -67,6 +67,9 @@ public sealed class FrozenVocabularyNotebookWindowTests(WpfDispatcher dispatcher
         Assert.False(FindByAutomation<Button>(window, "vocabularyNewCategory").IsEnabled); Assert.False(FindByAutomation<Button>(window, "vocabularyManageCategories").IsEnabled);
         Assert.False(((MenuItem)categoryRow.ContextMenu.Items[0]).IsEnabled);
         Render(window, "frozen-meaning.png");
+        window.Width = 760; window.Height = 500; window.UpdateLayout();
+        Assert.True(Find<Button>(window, "frozenNotebookAdd").IsVisible); Assert.True(Find<Button>(window, "frozenNotebookImport").IsVisible);
+        Render(window, "frozen-meaning-narrow.png"); window.Width = 1100; window.Height = 720; window.UpdateLayout();
         var card = Descendants(window).OfType<Button>().Single(b => b.Tag is VocabularySelection selection && selection.SenseId == bank.Senses[0].Id);
         card.RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); window.UpdateLayout();
         Assert.Equal(bank.Senses[0].Id, window.Session.Destination!.SenseId); Assert.NotNull(Find<Button>(window, "frozenMeaningBack"));
@@ -87,7 +90,11 @@ public sealed class FrozenVocabularyNotebookWindowTests(WpfDispatcher dispatcher
         var two = await store.AddEntriesAsync([new(Expression: "bank", Meaning: "finance")]);
         var window = new FrozenVocabularyNotebookWindow(store, new WindowsVocabularyWordListReader()); window.Show(); await window.LastOperation!;
         var tree = Find<TreeView>(window, "frozenNotebookEntries"); var header = (TreeViewItem)tree.Items[0]; header.IsSelected = true; window.UpdateLayout();
-        tree = Find<TreeView>(window, "frozenNotebookEntries"); header = (TreeViewItem)tree.Items[0]; Assert.True(header.IsExpanded);
+                tree = Find<TreeView>(window, "frozenNotebookEntries"); header = (TreeViewItem)tree.Items[0]; Assert.True(header.IsExpanded);
+                var toggle = Descendants(header).OfType<System.Windows.Controls.Primitives.ToggleButton>().First(); toggle.IsChecked = false; Assert.False(header.IsExpanded); toggle.IsChecked = true; Assert.True(header.IsExpanded); window.UpdateLayout();
+        header.Focus(); var source = PresentationSource.FromVisual(window)!;
+        header.RaiseEvent(new System.Windows.Input.KeyEventArgs(System.Windows.Input.Keyboard.PrimaryDevice, source, 0, System.Windows.Input.Key.Left) { RoutedEvent = System.Windows.Input.Keyboard.KeyDownEvent }); Assert.False(header.IsExpanded);
+        header.RaiseEvent(new System.Windows.Input.KeyEventArgs(System.Windows.Input.Keyboard.PrimaryDevice, source, 0, System.Windows.Input.Key.Right) { RoutedEvent = System.Windows.Input.Keyboard.KeyDownEvent }); Assert.True(header.IsExpanded); window.UpdateLayout();
         var second = header.Items.Cast<TreeViewItem>().Single(row => row.Tag is VocabularySelection selection && selection.SenseId == two.Selection!.Value.SenseId);
         second.IsSelected = true; Assert.Equal(two.Selection!.Value.SenseId, window.Session.Selection!.Value.SenseId);
         await store.AddEntriesAsync([new(Expression: "other")]); await Until(() => window.Session.Snapshot?.Revision == 3);
@@ -191,9 +198,7 @@ public sealed class FrozenVocabularyNotebookWindowTests(WpfDispatcher dispatcher
     { yield return root; for (int i = 0; i < VisualTreeHelper.GetChildrenCount(root); i++) foreach (var child in Descendants(VisualTreeHelper.GetChild(root, i))) yield return child; }
     private static void Render(Window window, string name)
     {
-        var root = (FrameworkElement)window.Content; root.UpdateLayout(); int width = (int)Math.Ceiling(root.ActualWidth), height = (int)Math.Ceiling(root.ActualHeight);
-        var bitmap = new RenderTargetBitmap(width, height, 96, 96, PixelFormats.Pbgra32); bitmap.Render(root);
-        if (Environment.GetEnvironmentVariable("LINGROVE_TEST_RENDER_DIR") is { Length: > 0 } dir)
-        { Directory.CreateDirectory(dir); var encoder = new PngBitmapEncoder(); encoder.Frames.Add(BitmapFrame.Create(bitmap)); using var output = File.Create(Path.Combine(dir, name)); encoder.Save(output); }
+        var root = (FrameworkElement)window.Content; root.UpdateLayout();
+        VocabularyThemeRender.Capture(window, name, (int)Math.Ceiling(root.ActualWidth), (int)Math.Ceiling(root.ActualHeight));
     }
 }

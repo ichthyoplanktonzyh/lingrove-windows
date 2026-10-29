@@ -189,6 +189,11 @@ public sealed class ExpressionEditorSession : IAsyncDisposable
     public ExpressionEditorReceipt Receipt => _receipt ?? throw new InvalidOperationException("Capture is unavailable.");
     public event EventHandler? Invalidated;
 
+    /// <summary>Checks whether the captured host is still foreground before showing the panel.</summary>
+    /// <remarks>This is a metadata-only preflight, not authorization for an edit. The session can
+    /// still be invalidated immediately after this check; callers must observe Invalidated.</remarks>
+    public bool CanPresentPanel => IsPublishable && _host != 0 && _effects.Foreground == _host && IsPublishable;
+
     internal bool Capture(string? trigger, CancellationToken ct)
     {
         try
@@ -249,6 +254,7 @@ public sealed class ExpressionEditorSession : IAsyncDisposable
         {
             if (_phase != Phase.Captured || !PanelOwnsInput() || _roundTrip?.EnterPanel(_panel, Environment.ProcessId, true) != true)
             { Retire(); return false; }
+            Volatile.Write(ref _capturedFlag, 0);
             _phase = Phase.Panel;
             return true;
         }

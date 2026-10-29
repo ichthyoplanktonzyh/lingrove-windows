@@ -13,6 +13,30 @@ namespace Cotabby.App.Wpf.Tests;
 [SupportedOSPlatform("windows8.1")]
 public sealed class ExpressionEditorSessionTests
 {
+    [Fact]
+    public async Task PanelPreflightRequiresLiveCapturedSessionAndOriginalForeground()
+    {
+        if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;
+        await using var fixture = new Fixture();
+        fixture.Effects.Foreground = 10;
+        Assert.True(fixture.Session.CanPresentPanel);
+        fixture.Effects.Foreground = 30;
+        Assert.False(fixture.Session.CanPresentPanel);
+        fixture.Effects.Foreground = 10;
+        fixture.Session.Retire();
+        Assert.False(fixture.Session.CanPresentPanel);
+    }
+
+    [Fact]
+    public async Task PanelPreflightRejectsAfterPanelEntry()
+    {
+        if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;
+        await using var fixture = new Fixture();
+        Assert.True(fixture.Session.EnterPanel());
+        fixture.Effects.Foreground = 10;
+        Assert.False(fixture.Session.CanPresentPanel);
+    }
+
     [Theory]
     [InlineData(0)]
     [InlineData(1)]

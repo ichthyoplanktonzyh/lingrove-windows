@@ -14,6 +14,8 @@ public sealed record LearningDictionaryState
     public string? DocumentId { get; init; }
     public LearningUnit? Unit { get; init; }
     public LearningDictionaryWord? SelectedWord { get; init; }
+    public string? ReferenceQuery { get; init; }
+    public bool ReferenceIsExpression { get; init; }
     public LearningLanguage? Language { get; init; }
     public string? SpeechContext { get; init; }
     public LearningDictionaryPage Page { get; init; } = LearningDictionaryPage.Dictionary;
@@ -26,7 +28,10 @@ public sealed record LearningDictionaryState
     public LearningDictionaryContentStatus Status { get; init; } = LearningDictionaryContentStatus.Loading;
     public LearningDictionaryResult? Result { get; init; }
     public string? ErrorMessage { get; init; }
-    public string Title => SelectedWord?.Text ?? Unit?.Surface ?? string.Empty;
-    public string Query => SelectedWord?.Text ?? Unit?.Query ?? string.Empty;
-    public bool IsExpression => SelectedWord is null && Unit?.Kind is LearningUnitKind.Expression or LearningUnitKind.Pattern;
+    public DictionarySource? SelectedSource { get; init; }
+    public IReadOnlyList<DictionarySource> AvailableSources { get; init; } = [];
+    public IReadOnlyDictionary<DictionarySource, string> SourceLabels { get; init; } = new Dictionary<DictionarySource, string>();
+    public string Title => ReferenceQuery ?? SelectedWord?.Text ?? Unit?.Surface ?? string.Empty;
+    public string Query => ReferenceQuery ?? SelectedWord?.Text ?? Unit?.Query ?? string.Empty;
+    public bool IsExpression => ReferenceQuery is not null ? ReferenceIsExpression : SelectedWord is null && Unit?.Kind is LearningUnitKind.Expression or LearningUnitKind.Pattern;
 }

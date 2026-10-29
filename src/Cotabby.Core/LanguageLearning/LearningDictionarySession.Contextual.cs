@@ -69,7 +69,7 @@ public sealed partial class LearningDictionarySession
         _contextual = null;
         // The current explanation input contract cannot represent unknown language yet.
         // Keep the real bundled dictionary available without inventing a language.
-        bool hasExplanation = _explanationService is not null && (_state.Language is not null || _unitExplanationInput is not null);
+        bool hasExplanation = _explanationService is not null && (_state.ReferenceQuery is not null || _state.Language is not null || _unitExplanationInput is not null);
         _state = _state with { TargetIdentity = identity, RequestIdentity = Guid.NewGuid(),
             Status = LearningDictionaryContentStatus.Loading, Result = null, ErrorMessage = null,
             Page = hasExplanation ? LearningDictionaryPage.Contextual : LearningDictionaryPage.Dictionary,
@@ -77,7 +77,11 @@ public sealed partial class LearningDictionarySession
             ExplanationLanguage = null, Explanation = null };
         if (hasExplanation)
         {
-            var input = _unitExplanationInput;
+            var input = _state.ReferenceQuery is { } reference
+                ? new LearningExplanationInput(reference, reference, _state.Language,
+                    _state.ReferenceIsExpression ? Cotabby.Core.Vocabulary.VocabularyEntryKind.Expression : Cotabby.Core.Vocabulary.VocabularyEntryKind.Word,
+                    reference, [new Cotabby.Core.Vocabulary.VocabularyTextRange(0, reference.Length)], LearningExplanationContext.None)
+                : _unitExplanationInput;
             if (_state.SelectedWord is { } word && _state.Unit is { } unit && input is not null)
                 input = LearningExplanationInputFactory.ProjectComponent(word, unit, input);
             ContextualOwner scope;

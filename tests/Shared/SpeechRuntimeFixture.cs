@@ -39,7 +39,26 @@ internal sealed class SpeechRuntimeFixture : IAsyncDisposable
         await Runtime.StreamAsync(request, configuration ?? Configuration, chunk => { bytes.Write(chunk.CopyBytes()); return Task.CompletedTask; }, cancellationToken);
         return bytes.ToArray();
     }
-    internal string[] Lines(string file) => File.Exists(Path.Combine(Root, file)) ? File.ReadAllLines(Path.Combine(Root, file)) : [];
+    internal string[] Lines(string file)
+    {
+        // These append-only marker files are observations, not the helper protocol. Allow the
+        // live writer on Windows and admit only newline-terminated records from this snapshot.
+        // A partially written JSON/ready marker must not satisfy a barrier or reach Parameters.
+        try
+        {
+            using var stream = new FileStream(Path.Combine(Root, file), FileMode.Open, FileAccess.Read,
+                FileShare.ReadWrite | FileShare.Delete);
+            using var reader = new StreamReader(stream);
+            string snapshot = reader.ReadToEnd();
+            int lastLine = snapshot.LastIndexOf('\n');
+            if (lastLine < 0) return [];
+            using var lines = new StringReader(snapshot[..(lastLine + 1)]);
+            var result = new List<string>();
+            while (lines.ReadLine() is { } line) result.Add(line);
+            return result.ToArray();
+        }
+        catch (FileNotFoundException) { return []; }
+    }
     internal JsonElement[] Parameters() => Lines("parameters").Select(line => JsonSerializer.Deserialize<JsonElement>(line)).ToArray();
     internal async Task WaitForRequestAsync(string text) => await WaitAsync(() => Lines("requests").Contains(text));
     internal static async Task WaitAsync(Func<bool> condition)

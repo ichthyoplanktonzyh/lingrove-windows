@@ -61,8 +61,10 @@ dotnet test tests/Cotabby.App.Wpf.Tests/Cotabby.App.Wpf.Tests.csproj -c Release 
 ```
 
 The build passed with zero warnings/errors. Core passed 4758/4758, portable App 1230/1230,
-noninteractive Inference 628/628 and compiled WPF 583/583. Each test command executed a test
+noninteractive Inference 628/628 and compiled WPF 585/585. Each test command executed a test
 assembly and reported its count. The test processes disabled .NET telemetry and clipboard reads;
-no live model, endpoint or existing notebook was used. Independent review also identified a late
-import-preparation drain case beyond those passing tests; its focused repair/verification is recorded
-with the window-lifetime module rather than treating these counts as proof of every shutdown path.
+no live model, endpoint or existing notebook was used. Independent review identified a late
+import-preparation drain case beyond the initial 583 passing WPF tests. The repair retained and
+drained ordinarily cancelled child windows; independent focused checks passed 22/22, followed by
+the zero-warning solution rebuild and complete 585/585 WPF run recorded above. Physical desktop
+shutdown, Shell interaction and other native acceptance remain separate.

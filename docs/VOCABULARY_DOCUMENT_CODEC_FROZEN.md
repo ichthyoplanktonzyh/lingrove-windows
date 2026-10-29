@@ -1,53 +1,52 @@
 # Frozen portable vocabulary document codec
 
 Reference: committed Mac `35b7fbe5c788c5524936ade1dfb7c89a3a285b04`. This is a pure
-in-memory document boundary, not SQLite, a backup-with-media envelope, or a Store activation.
+in-memory document boundary, not SQLite, a backup-with-media envelope, or Store activation.
 
-| Mac evidence | Windows mapping |
+| Frozen Mac evidence | Windows mapping |
 | --- | --- |
-| `Lingrove/Models/Vocabulary/VocabularyModels.swift`, `VocabularyDocument` Codable | `Core/Vocabulary/Resources/VocabularyFrozenDocumentCodec.cs` decodes the flat v7/v8 document and encodes flat v8 |
-| `VocabularyLifecycleModels.swift`, `VocabularySemanticModels.swift`, `VocabularyClassificationModels.swift` | existing detached resource values, with exact `sourceID`, `interpretationIDs`, `evidenceIDs` and other source field spellings |
-| `VocabularyContentModels.swift`, `Models/Review/ReviewModels.swift`, `ReviewLayout.swift`, `ReviewAudioModels.swift`, `Models/LanguageLearning/LearningExplanationModels.swift` | narrow resource-specific metadata extends the existing source-shaped leaf machinery; no v3 document or SQL projection is used |
-| `VocabularyClassificationTests.swift` version-seven portable upgrade, `VocabularySemanticTests.swift`, `VocabularyClassificationPersistenceTests.swift` | Core tests cover handwritten source-shaped v7, complete v8 graph, upgrade, strict failures and owned snapshots; Swift execution is a separate gate |
+| `Lingrove/Models/Vocabulary/VocabularyModels.swift`, `VocabularyDocument` Codable | `Core/Vocabulary/Frozen/VocabularyDocumentCodec.cs` decodes flat v7/v8 and encodes flat v8 |
+| `VocabularyModels.swift`, `VocabularyLifecycleModels.swift`, `VocabularySemanticModels.swift`, `LearningExplanationModels.swift`, `ReviewModels.swift` | `Core/Vocabulary/Frozen` owns timestamp-bearing v8 values and the native graph validator; unchanged content, review plans, labels, classification and identity primitives remain shared |
+| `VocabularyContentModels.swift`, `ReviewLayout.swift`, `ReviewAudioModels.swift` | source-shaped leaf machinery preserves content unions, review enum dictionaries, UUIDs and optional fields; the v3 whole-document codec is not used |
+| `VocabularyClassificationTests.swift` version-seven portable upgrade, `VocabularySemanticTests.swift`, `VocabularyClassificationPersistenceTests.swift` | Core tests cover handwritten source-shaped v7, full v8 graph, upgrade and fixed failure cases; native Swift execution remains a separate gate |
 
-`Decode` accepts schema 7 or 8. Version 7 has no directory; its `classification` field, if present,
-is ignored just as in the Mac decoder, and the internal v8 envelope receives an empty directory.
-Version 8 requires the directory. Both paths retain lexical, source, occurrence, interpretation,
-collection, semantic, review/template and media-reference values; they invoke the frozen graph
-gate before returning. `Encode` validates first and emits `schemaVersion: 8` with those fields at
-the root. The internal v7 resource marker is not emitted as the document schema. No projection
-through the historical entry-owned v3 graph occurs. Encode/decode failures use fixed domain errors
-without text or paths.
+`Decode` accepts schema 7 or 8. Version 7 ignores any `classification` field and becomes an empty
+directory, as in the Mac decoder. Version 8 requires a directory. Both produce a detached frozen
+v8 graph and pass its v8-native admission gate before return. `Encode` validates that graph and emits
+`schemaVersion: 8` and source resources at the root. The historical entry-owned v3 and exact-tick
+v7 Resources graphs, their codecs and fixtures remain separate.
 
-The JSON boundary retains UUID uppercase output, optional absence, language raw codes, exact enum
-spellings, the Swift content associated-value structure and enum-key dictionaries as alternating
-arrays. It shares the existing Foundation UTF-8/16/32 recognition and first-key handling. It does
-not promise byte-identical object ordering or JSON escaping. Review endpoints remain retained
-strings and validation does not connect to them. Image references carry metadata only; media bytes,
-existence and digest verification are separate.
+`Frozen.SourceDate` holds the finite IEEE-754 Double count of seconds from 2001-01-01 UTC used by
+Foundation Date. It is the canonical date, not a sidecar or replay value. The document codec reads
+and writes that Double directly, including sub-tick and out-of-Windows-range dates. `FromWindows`
+explicitly selects the nearest Foundation Double for a `DateTimeOffset`; several Windows ticks can
+map to the same Double. `TryToWindows` explicitly returns a nearest tick and whether it was exact,
+or fails when the value cannot fit Windows' calendar. Neither operation mutates the source value.
+`VocabularyV7Upgrade.Convert` is an explicit detached adapter from the older v7 graph: its typed,
+immutable receipts include original UTC ticks, resulting Double, tick-preservation status, owner,
+field and source path. Paths distinguish repeated nested explanation/binding IDs. The adapter makes
+no durable change; a future migration must decide how to handle any non-preserved Windows ticks.
 
-Input and output are limited to 192 MiB, adapting the frozen archive backup/restore bound from
-`VocabularyArchive+Media.swift` to a standalone document; this is an explicit Windows transport
-restriction. UTF transcoding is checked again against that limit. Output is written to capped
-chunks; text size is checked before the writer starts, although serializer buffers and the returned
-byte array require additional bounded memory. The JSON nesting bound is 512, following the existing
-Foundation decoder observations. Source lifecycle, semantic, classification, layout and review
-collection limits are checked on parsed JSON before graph materialization; collections without an
-upstream count limit are bounded by transport bytes and whole-graph validation. This does not imply
-an on-disk schema or database transaction.
+UUIDs emit uppercase, optional absence survives, languages/enums use source raw values, content
+associated cases retain their Swift structure, and enum-key dictionaries use alternating arrays.
+Existing Foundation UTF-8/16/32 and first-key handling are reused. JSON object order and escaping
+are not byte-identical guarantees. Review endpoints remain strings and no request is sent. Media
+references carry metadata only; media bytes, existence and digest verification remain separate.
 
-Swift `Date` is a Double count of seconds from 2001 and spans a wider range than .NET
-`DateTimeOffset` (years 1–9999, 100 ns ticks). This codec rejects out-of-range or fractional wire
-dates that cannot be represented as integral ticks; it also rejects tick values that cannot survive
-the Swift Double-to-tick roundtrip. It does not round or clamp them. Other Swift `Int` fields that
-map to .NET Int32, such as text-range offsets and classification framework version, reject values
-outside Int32; no truncation is performed. These are interoperability limits and can reject an
-otherwise valid Mac document. The prior v3 leaf codec retains its own historical date behavior.
+Input and output are limited to 192 MiB, adapting the frozen archive backup/restore bound in
+`VocabularyArchive+Media.swift` to a standalone document. This is an explicit Windows transport
+restriction. Transcoded UTF-8 is checked again. Output uses capped chunks and checks the total source
+text budget before writing; serializer buffers and the returned array require additional bounded
+memory. JSON depth is limited to 512, following existing Foundation decoder observations. Source
+lifecycle, semantic, classification, layout and review collection limits are checked before graph
+materialization; collections without an upstream count limit are bounded by bytes and admission.
+Swift Int fields still modeled as .NET Int32, such as text-range offsets, reject out-of-range values;
+classification catalog and framework versions use Int64. These are explicit representability limits.
 
-Tests cover valid graph roundtrip and source leaf shapes, manual v7 upgrade including ignored extra
-classification, noncollection evidence, unknown language/completeness, encoded review maps/content,
-UTF-16 input and detached ownership, required/null/enum/version errors, dangling references,
-malformed bytes, nesting and collection limits, exact tick and range failures. They do not run
-Foundation's frozen Codable implementation; source-shaped cases and Windows tests are not proof of
-cross-runtime byte parity. Database schemas/migration, media transactions, backup envelope, rollback,
-Store publication, app UI and physical acceptance remain future work.
+Tests exercise real-world and near-2001 Double spellings, negative zero and subnormal values,
+timestamps outside the Windows calendar, all timestamp-bearing owners, and 100 consecutive ordinary
+Windows ticks. They also cover v7 conversion receipts, source-shaped graph roundtrip and wire fields,
+unknown language/completeness, reviews/media references, immutable ownership, bad versions/enums,
+malformed bytes, nesting and collection limits. The Windows host has no Swift toolchain; these tests
+are not a native Foundation Codable run or a byte-parity claim. Database schema/migration, media
+transactions, backup envelope, rollback, Store publication and physical UI acceptance remain work.

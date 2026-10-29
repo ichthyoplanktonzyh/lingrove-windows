@@ -2,11 +2,13 @@ using System.Text.Json;
 using Cotabby.Core.Review;
 using Cotabby.Core.Text;
 
-namespace Cotabby.Core.Vocabulary.Resources;
+using Cotabby.Core.Vocabulary.Resources;
+
+namespace Cotabby.Core.Vocabulary.Frozen;
 
 /// <summary>Bounded flat Mac v7/v8 document wire boundary. The internal v7 resource value is
 /// not the wire version and is never sent to the older entry-owned database or backup codec.</summary>
-public static class VocabularyFrozenDocumentCodec
+public static class VocabularyDocumentCodec
 {
     // Frozen archive backup and restore use this 192 MiB transport envelope. A standalone
     // document is bounded here too, before parsing or publishing it to a future owner.
@@ -22,37 +24,37 @@ public static class VocabularyFrozenDocumentCodec
         IReadOnlyList<ReviewLayoutTemplate>? ReviewTemplates, VocabularySemanticIndex Semantics,
         VocabularyClassificationIndex Classification);
 
-    public static VocabularyFrozenDocument Decode(ReadOnlyMemory<byte> input)
+    public static VocabularyDocument Decode(ReadOnlyMemory<byte> input)
     {
         if (input.Length > MaximumDocumentBytes) throw new VocabularyException(VocabularyFailure.OversizedArchive);
         try
         {
             var bytes = FoundationJsonInput.Utf8Input(input);
             if (bytes.Length > MaximumDocumentBytes) throw new VocabularyException(VocabularyFailure.OversizedArchive);
-            var version = VocabularyPayloadCodec.DecodePortableValue<VersionProbe>(bytes, strictDates: true).SchemaVersion;
+            var version = VocabularyPayloadCodec.DecodePortableValue<VersionProbe>(bytes).SchemaVersion;
             if (version is not (7 or 8)) throw new VocabularyException(VocabularyFailure.UnsupportedVersion);
             CheckCollectionBounds(bytes, version);
-            VocabularyFrozenDocument document;
+            VocabularyDocument document;
             if (version == 7)
             {
-                var wire = VocabularyPayloadCodec.DecodePortableValue<Wire7>(bytes, strictDates: true);
+                var wire = VocabularyPayloadCodec.DecodePortableValue<Wire7>(bytes);
                 document = Create(wire.Catalog, wire.Sources, wire.Occurrences, wire.Interpretations, wire.Collections, wire.ReviewTemplates, wire.Semantics, new());
             }
             else
             {
-                var wire = VocabularyPayloadCodec.DecodePortableValue<Wire8>(bytes, strictDates: true);
+                var wire = VocabularyPayloadCodec.DecodePortableValue<Wire8>(bytes);
                 document = Create(wire.Catalog, wire.Sources, wire.Occurrences, wire.Interpretations, wire.Collections, wire.ReviewTemplates, wire.Semantics, wire.Classification);
             }
-            VocabularyFrozenArchiveValidation.Validate(document);
+            VocabularyArchiveValidation.Validate(document);
             return document;
         }
         catch (System.Text.DecoderFallbackException) { throw new VocabularyException(VocabularyFailure.InvalidArchive); }
         catch (JsonException) { throw new VocabularyException(VocabularyFailure.InvalidArchive); }
     }
-    public static byte[] Encode(VocabularyFrozenDocument document)
+    public static byte[] Encode(VocabularyDocument document)
     {
-        VocabularyFrozenArchiveValidation.Validate(document);
-        var r = document.Resources;
+        VocabularyArchiveValidation.Validate(document);
+        var r = document;
         return VocabularyPayloadCodec.EncodePortableValue(new Wire8(8, r.Catalog, r.Sources, r.Occurrences,
             r.Interpretations, r.Collections, r.ReviewTemplates, r.Semantics, document.Classification), MaximumDocumentBytes);
     }
@@ -147,10 +149,10 @@ public static class VocabularyFrozenDocumentCodec
             Each(Array(classification, "overrides", 20_000, VocabularyFailure.InvalidContent), overlay => _ = Array(overlay, "labels", 64, VocabularyFailure.InvalidContent));
         }
     }
-    private static VocabularyFrozenDocument Create(IReadOnlyList<VocabularyEntry> catalog, IReadOnlyList<VocabularySourceSnapshot> sources,
+    private static VocabularyDocument Create(IReadOnlyList<VocabularyEntry> catalog, IReadOnlyList<VocabularySourceSnapshot> sources,
         IReadOnlyList<VocabularySourceOccurrence> occurrences, IReadOnlyList<VocabularyInterpretation> interpretations,
         IReadOnlyList<VocabularyCollectionItem> collections, IReadOnlyList<ReviewLayoutTemplate>? reviewTemplates,
         VocabularySemanticIndex semantics, VocabularyClassificationIndex classification) =>
-        new(new VocabularyDocument { Catalog = catalog, Sources = sources, Occurrences = occurrences, Interpretations = interpretations,
-            Collections = collections, ReviewTemplates = reviewTemplates, Semantics = semantics }, classification);
+        new VocabularyDocument { Catalog = catalog, Sources = sources, Occurrences = occurrences, Interpretations = interpretations,
+            Collections = collections, ReviewTemplates = reviewTemplates, Semantics = semantics, Classification = classification };
 }

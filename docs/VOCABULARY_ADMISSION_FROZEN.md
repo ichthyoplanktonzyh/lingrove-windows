@@ -1,9 +1,9 @@
 # Frozen vocabulary resource admission
 
-Reference: Mac `35b7fbe5c788c5524936ade1dfb7c89a3a285b04`. `VocabularyFrozenArchiveValidation.Validate`
-accepts the detached v8 envelope over the separately pinned v7 resource value; it has no file,
+Reference: Mac `35b7fbe5c788c5524936ade1dfb7c89a3a285b04`. `Resources.VocabularyFrozenArchiveValidation.Validate`
+accepts the historical v7-backed resource envelope; it has no file,
 database, Store, network, codec or UI effects. Its internal v7 resource schema marker remains 7;
-the envelope denotes the frozen v8 graph and is not a portable JSON representation.
+that envelope is not the native frozen v8 graph or a portable JSON representation.
 
 | Frozen source | Windows boundary |
 | --- | --- |
@@ -36,4 +36,4 @@ example references are resolved at use rather than newly rejected by this gate.
 The Core tests cover uncollected evidence, null language, unknown-context/general receipts,
 identity/alias collisions, lifecycle ranges and accepted ownership, semantic/classification
 references, image metadata, review and template scopes, and malformed CLR values. They do not
-execute the Swift suite or establish platform Unicode equivalence. The [frozen document codec](VOCABULARY_DOCUMENT_CODEC_FROZEN.md) now adds bounded portable v7/v8 decoding and encoding with the gate. Row projection/SQL relationships, atomic migration and rollback verification remain required before Store activation. A successful pure gate is not an archive save or native desktop acceptance.
+execute the Swift suite or establish platform Unicode equivalence. The [frozen v8 graph and document codec](VOCABULARY_DOCUMENT_CODEC_FROZEN.md) now have their own native admission path and retain Foundation Double dates without converting them through this historical v7 value. Row projection/SQL relationships, atomic migration and rollback verification remain required before Store activation. A successful pure gate is not an archive save or native desktop acceptance.

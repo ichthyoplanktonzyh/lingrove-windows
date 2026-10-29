@@ -1,8 +1,8 @@
-using System.Buffers;
+
 using System.Reflection;
 using System.Collections;
 using System.Globalization;
-using System.Numerics;
+
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -12,6 +12,7 @@ using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Review;
 using Cotabby.Core.Text;
 using R = Cotabby.Core.Vocabulary.Resources;
+using F = Cotabby.Core.Vocabulary.Frozen;
 
 namespace Cotabby.Core.Vocabulary;
 
@@ -25,7 +26,7 @@ public static class VocabularyPayloadCodec
 {
     private static readonly UTF8Encoding StrictUtf8 = new(false, true);
     private static readonly JsonSerializerOptions Options = CreateOptions();
-    private static readonly JsonSerializerOptions StrictDateOptions = CreateOptions(strictDates: true);
+
 
     public static byte[] Encode(VocabularyDatabasePayload payload)
     {
@@ -113,7 +114,7 @@ public static class VocabularyPayloadCodec
             using var output = new LimitedOutputStream(maximumBytes);
             using (var writer = new Utf8JsonWriter(output, new JsonWriterOptions { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping, MaxDepth = 512 }))
             {
-                JsonSerializer.Serialize(writer, value, StrictDateOptions);
+                JsonSerializer.Serialize(writer, value, Options);
                 writer.Flush();
             }
             var bytes = output.ToArray();
@@ -161,9 +162,9 @@ public static class VocabularyPayloadCodec
         public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
         public override void SetLength(long value) => throw new NotSupportedException();
     }
-    internal static T DecodePortableValue<T>(ReadOnlyMemory<byte> bytes, bool strictDates = false)
+    internal static T DecodePortableValue<T>(ReadOnlyMemory<byte> bytes)
     {
-        try { return Deserialize<T>(FoundationJsonInput.Utf8Input(bytes), strictDates ? StrictDateOptions : Options); }
+        try { return Deserialize<T>(FoundationJsonInput.Utf8Input(bytes)); }
         catch (Exception error) when (error is JsonException or NotSupportedException or ArgumentException or InvalidOperationException or OverflowException or FormatException or KeyNotFoundException)
         { throw Invalid(); }
     }
@@ -187,7 +188,7 @@ public static class VocabularyPayloadCodec
         { writer.WriteStartArray(); foreach (var item in value.EnumerateArray()) WriteFirst(item, writer); writer.WriteEndArray(); }
         else value.WriteTo(writer);
     }
-    private static JsonSerializerOptions CreateOptions(bool strictDates = false)
+    private static JsonSerializerOptions CreateOptions()
     {
         var resolver = new DefaultJsonTypeInfoResolver(); resolver.Modifiers.Add(Configure);
         var result = new JsonSerializerOptions
@@ -195,7 +196,7 @@ public static class VocabularyPayloadCodec
             TypeInfoResolver = resolver, PropertyNamingPolicy = new SourceNames(), DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
             RespectNullableAnnotations = true, MaxDepth = 512, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
         };
-        result.Converters.Add(new ContentConverter()); result.Converters.Add(new EpochDateConverter(strictDates)); result.Converters.Add(new UpperUuidConverter());
+        result.Converters.Add(new SourceDateConverter()); result.Converters.Add(new ContentConverter()); result.Converters.Add(new EpochDateConverter()); result.Converters.Add(new UpperUuidConverter());
         result.Converters.Add(new FoundationDataConverter());
         result.Converters.Add(new FoundationInt64Converter());
         result.Converters.Add(new EnumDictionaryConverterFactory()); result.Converters.Add(new AudioSetConverter());
@@ -214,6 +215,7 @@ public static class VocabularyPayloadCodec
             var property = info.Properties[index];
             if (property.AttributeProvider is not PropertyInfo member) continue;
             if (Computed(info.Type, member.Name)) { info.Properties.RemoveAt(index); continue; }
+            if (info.Type == typeof(F.VocabularyCollectionItem) && member.Name == nameof(F.VocabularyCollectionItem.InterpretationIds)) property.Name = "interpretationIDs";
             if (info.Type == typeof(R.VocabularyCollectionItem) && member.Name == nameof(R.VocabularyCollectionItem.InterpretationIds)) property.Name = "interpretationIDs";
             if (info.Type == typeof(R.VocabularyMeaningMapping) && member.Name == nameof(R.VocabularyMeaningMapping.EvidenceIds)) property.Name = "evidenceIDs";
             // Swift synthesized Codable requires nonoptional fields even when Swift/C# declares
@@ -323,6 +325,11 @@ public static class VocabularyPayloadCodec
         }
     }
     private static bool Computed(Type type, string name) =>
+        type == typeof(F.VocabularyEntry) && name is nameof(F.VocabularyEntry.Examples) or nameof(F.VocabularyEntry.Explanations)
+        || type == typeof(F.VocabularySense) && name == nameof(F.VocabularySense.SupportsGeneralExplanation)
+        || type == typeof(F.VocabularyMeaningNode) && name == nameof(F.VocabularyMeaningNode.Title)
+        || type == typeof(F.VocabularyReview) && name is nameof(F.VocabularyReview.ActiveBinding) or nameof(F.VocabularyReview.NeedsBindingChoice)
+        ||
         type == typeof(R.VocabularyEntry) && name is nameof(R.VocabularyEntry.Examples) or nameof(R.VocabularyEntry.Explanations)
         || type == typeof(R.VocabularySense) && name == nameof(R.VocabularySense.SupportsGeneralExplanation)
         || type == typeof(R.VocabularyMeaningNode) && name == nameof(R.VocabularyMeaningNode.Title)
@@ -397,71 +404,32 @@ public static class VocabularyPayloadCodec
         }
         public override void Write(Utf8JsonWriter writer, long value, JsonSerializerOptions options) => writer.WriteNumberValue(value);
     }
-    private sealed class EpochDateConverter(bool strict) : JsonConverter<DateTimeOffset>
+    private sealed class EpochDateConverter : JsonConverter<DateTimeOffset>
     {
         private static readonly long Epoch = new DateTimeOffset(2001, 1, 1, 0, 0, 0, TimeSpan.Zero).UtcTicks;
         public override DateTimeOffset Read(ref Utf8JsonReader reader, Type type, JsonSerializerOptions options)
         {
-            decimal ticks = strict ? ExactTicks(ref reader) : decimal.Round(reader.GetDecimal() * TimeSpan.TicksPerSecond, 0, MidpointRounding.ToEven);
-            if (strict && !ReproducesTicks(ticks)) throw new JsonException();
+            decimal ticks = decimal.Round(reader.GetDecimal() * TimeSpan.TicksPerSecond, 0, MidpointRounding.ToEven);
             return new DateTimeOffset(checked(Epoch + (long)ticks), TimeSpan.Zero);
-        }
-        private static decimal ExactTicks(ref Utf8JsonReader reader)
-        {
-            if (reader.TokenType != JsonTokenType.Number) throw new JsonException();
-            string raw = Encoding.UTF8.GetString(reader.HasValueSequence ? reader.ValueSequence.ToArray() : reader.ValueSpan);
-            int exponentAt = raw.IndexOfAny(['e', 'E']);
-            string mantissa = exponentAt < 0 ? raw : raw[..exponentAt];
-            int exponent = 0;
-            if (exponentAt >= 0 && !int.TryParse(raw.AsSpan(exponentAt + 1), NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out exponent)) throw new JsonException();
-            int dot = mantissa.IndexOf('.'); long scale = (long)exponent - (dot < 0 ? 0 : mantissa.Length - dot - 1) + 7;
-            bool negative = mantissa.StartsWith('-');
-            string digits = mantissa.Replace(".", "", StringComparison.Ordinal).TrimStart('-').TrimStart('0');
-            if (digits.Length == 0) return 0;
-            if (scale < 0)
-            {
-                if (-scale >= digits.Length) throw new JsonException();
-                int keep = digits.Length - (int)-scale;
-                if (digits.AsSpan(keep).IndexOfAnyExcept('0') >= 0) throw new JsonException();
-                digits = digits[..keep]; scale = 0;
-            }
-            if (scale > 19 || digits.Length + scale > 19) throw new JsonException();
-            decimal ticks = decimal.Parse(digits, CultureInfo.InvariantCulture);
-            for (int i = 0; i < scale; i++) ticks *= 10;
-            return negative ? -ticks : ticks;
         }
         // Decimal JSON retains all .NET ticks locally while remaining a numeric Foundation Date.
         // Mac decodes these numbers as Double; its sub-tick precision is a separate format limit.
-        private static bool ReproducesTicks(decimal ticks)
+        public override void Write(Utf8JsonWriter writer, DateTimeOffset value, JsonSerializerOptions options) =>
+            writer.WriteNumberValue((value.UtcTicks - Epoch) / (decimal)TimeSpan.TicksPerSecond);
+    }
+    private sealed class SourceDateConverter : JsonConverter<F.SourceDate>
+    {
+        public override F.SourceDate Read(ref Utf8JsonReader reader, Type type, JsonSerializerOptions options)
         {
-            // Reconstruct the exact IEEE-754 rational used by Swift Date, then round to the
-            // nearest .NET tick. A shortest decimal rendering can straddle a tick midpoint.
-            double seconds = (double)(ticks / TimeSpan.TicksPerSecond);
-            long bits = BitConverter.DoubleToInt64Bits(seconds);
-            bool negative = bits < 0;
-            int exponentBits = (int)((bits >> 52) & 0x7ff);
-            long fraction = bits & 0x000f_ffff_ffff_ffffL;
-            BigInteger numerator = exponentBits == 0 ? fraction : fraction | (1L << 52);
-            numerator *= TimeSpan.TicksPerSecond;
-            int exponent = exponentBits == 0 ? -1074 : exponentBits - 1023 - 52;
-            if (exponent >= 0) numerator <<= exponent;
-            else
-            {
-                var denominator = BigInteger.One << -exponent;
-                var rounded = BigInteger.DivRem(numerator, denominator, out var remainder);
-                int order = (remainder * 2).CompareTo(denominator);
-                if (order > 0 || order == 0 && !rounded.IsEven) rounded++;
-                numerator = rounded;
-            }
-            if (negative) numerator = -numerator;
-            return numerator == (BigInteger)ticks;
+            if (reader.TokenType != JsonTokenType.Number) throw new JsonException();
+            double value = reader.GetDouble();
+            if (!double.IsFinite(value)) throw new JsonException();
+            return new F.SourceDate(value);
         }
-        public override void Write(Utf8JsonWriter writer, DateTimeOffset value, JsonSerializerOptions options)
+        public override void Write(Utf8JsonWriter writer, F.SourceDate value, JsonSerializerOptions options)
         {
-            long ticks = value.UtcTicks - Epoch;
-            decimal seconds = ticks / (decimal)TimeSpan.TicksPerSecond;
-            if (strict && !ReproducesTicks(ticks)) throw new JsonException();
-            writer.WriteNumberValue(seconds);
+            if (!double.IsFinite(value.ReferenceSeconds)) throw new JsonException();
+            writer.WriteNumberValue(value.ReferenceSeconds);
         }
     }
     private sealed class ContentConverter : JsonConverter<VocabularyBlockContent>

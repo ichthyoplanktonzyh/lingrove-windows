@@ -13,16 +13,12 @@ archive remains an independent type and codec. This checkpoint creates no Store 
 | `Lingrove/Models/Vocabulary/VocabularyModels.swift` | `VocabularyFrozenDocument.cs`: isolated v8 envelope and explicit v7 resource upgrade, with classification initially empty |
 | `LingroveTests/Support/Vocabulary/VocabularyClassificationTests.swift`, `LingroveTests/Services/Vocabulary/VocabularySemanticTests.swift` | focused classification/catalog and semantic tests under `tests/Cotabby.Core.Tests/Vocabulary/Resources` |
 
-The immutable envelope retains the original v7 resource snapshot rather than re-encoding or relabeling
-it; its shape is an internal Windows value, not the Mac portable JSON layout. Its explicit upgrade
-rejects versions other than seven. A future v7/v8 decoder must implement and test the actual Mac
-wire shape and reject unsupported versions. Categories are separate from collections and evidence;
-catalog upgrades preserve retired IDs, custom children, memberships and overrides. A catalog decode
-is bounded and validates the staged index; it only reads a trusted authored catalog manifest and is
-not a notebook decoder. Coding keys and category axis raw strings are case-sensitive; required
-arrays reject null. Malformed UTF-8, excessive nesting and invalid or numeric axes fail closed.
-A failed install leaves its input untouched. SHA-256 derived IDs use network
-byte order and the original UUID version and variant bits.
+The prior Resources envelope remains a historical v7-facing value and is not the frozen wire graph.
+The separate [frozen v8 canonical values and document codec](VOCABULARY_DOCUMENT_CODEC_FROZEN.md)
+retain source Double dates and perform explicit v7 conversion with receipts. Catalog upgrades preserve
+retired IDs, custom children, memberships and overrides. Catalog coding keys and category axis raw
+strings are case-sensitive, required arrays reject null, and SHA-256 derived IDs retain network byte
+order and the original UUID version and variant bits.
 
 The [frozen resource admission gate](VOCABULARY_ADMISSION_FROZEN.md) now composes lifecycle,
 semantic, classification, lexical identity and review/content validation after a CLR

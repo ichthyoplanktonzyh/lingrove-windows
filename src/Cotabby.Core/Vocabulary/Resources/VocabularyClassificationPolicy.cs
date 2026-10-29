@@ -8,7 +8,13 @@ public static class VocabularyClassificationPolicy
 {
     public static void Validate(VocabularyClassificationIndex index, IReadOnlyList<VocabularyMeaningNode> nodes)
     {
-        if (index is null || nodes is null || index.Frameworks.Count > 64 || index.Categories.Count > 20_000 || index.Parents.Count > 100_000
+        if (nodes is null || nodes.Any(x => x is null)) throw Invalid();
+        ValidateNodeIds(index, nodes.Select(x => x.Id).ToHashSet());
+    }
+    // Both resource versions validate the directory against explicit meaning identities.
+    internal static void ValidateNodeIds(VocabularyClassificationIndex index, IReadOnlySet<Guid> nodeIds)
+    {
+        if (index is null || nodeIds is null || index.Frameworks.Count > 64 || index.Categories.Count > 20_000 || index.Parents.Count > 100_000
             || index.Memberships.Count > 500_000 || index.Overrides.Count > 20_000) throw Invalid();
         var frameworks = Identified(index.Frameworks, x => x.Id); var categories = Identified(index.Categories, x => x.Id);
         _ = Identified(index.Parents, x => x.Id); _ = Identified(index.Memberships, x => x.Id); _ = Identified(index.Overrides, x => x.Id);
@@ -37,8 +43,7 @@ public static class VocabularyClassificationPolicy
         var queue = new Queue<Guid>(indegree.Where(x => x.Value == 0).Select(x => x.Key)); var visited = 0;
         while (queue.TryDequeue(out var id)) { visited++; if (children.TryGetValue(id, out var list)) foreach (var child in list) if (--indegree[child] == 0) queue.Enqueue(child); }
         if (visited != categories.Count) throw Invalid();
-        if (nodes.Any(x => x is null)) throw Invalid();
-        var nodeIds = nodes.Select(x => x.Id).ToHashSet(); var memberships = new HashSet<(Guid, Guid)>();
+        var memberships = new HashSet<(Guid, Guid)>();
         foreach (var membership in index.Memberships)
         {
             if (!nodeIds.Contains(membership.NodeId) || !categories.ContainsKey(membership.CategoryId) || !memberships.Add((membership.NodeId, membership.CategoryId))) throw Invalid();

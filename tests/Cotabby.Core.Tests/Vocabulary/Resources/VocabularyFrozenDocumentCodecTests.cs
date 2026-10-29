@@ -5,6 +5,7 @@ using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Review;
 using Cotabby.Core.Vocabulary;
 using R = Cotabby.Core.Vocabulary.Resources;
+using F = Cotabby.Core.Vocabulary.Frozen;
 
 namespace Cotabby.Core.Tests.Vocabulary.Resources;
 
@@ -12,6 +13,7 @@ public sealed class VocabularyFrozenDocumentCodecTests
 {
     private static readonly DateTimeOffset Now = new(2024, 1, 2, 3, 4, 5, TimeSpan.Zero);
     private static Guid Id(int n) => Guid.Parse($"00000000-0000-0000-0000-{n:x12}");
+    private static F.VocabularyDocument Upgrade(R.VocabularyFrozenDocument source) => F.VocabularyV7Upgrade.Convert(source.Resources, source.Classification).Document;
     private static R.VocabularyFrozenDocument Fixture()
     {
         var entry = new R.VocabularyEntry(Id(1), "hello", "hello", null, VocabularyEntryKind.Word,
@@ -73,63 +75,126 @@ public sealed class VocabularyFrozenDocumentCodecTests
          "collections":[],"semantics":{"nodes":[],"patterns":[],"mappings":[],"relations":[],"cues":[],"cueTargets":[]}}
         """;
     [Fact]
+    public void UpgradeReceiptsDistinguishRepeatedNestedIdentitiesByOwnerPath()
+    {
+        var value = FullFixture(); var r = value.Resources;
+        var claim = r.Interpretations[0] with { Explanations = [r.Interpretations[0].Explanations[0] with { Id = Id(35) }] };
+        var collection = r.Collections[0] with { ReviewCards = [r.Collections[0].Review!] };
+        var result = F.VocabularyV7Upgrade.Convert(r with { Interpretations = [claim], Collections = [collection] }, value.Classification);
+        var explanations = result.Dates.Where(x => x.OwnerKind == F.DateOwnerKind.Explanation && x.OwnerId == Id(35)).ToArray();
+        Assert.Equal(2, explanations.Length); Assert.Equal(2, explanations.Select(x => x.Path).Distinct().Count());
+        var bindings = result.Dates.Where(x => x.OwnerKind == F.DateOwnerKind.ReviewBinding && x.OwnerId == Id(17)).ToArray();
+        Assert.Equal(2, bindings.Length); Assert.Equal(2, bindings.Select(x => x.Path).Distinct().Count());
+    }
+    [Fact]
+    public void EveryTimestampOwnerRetainsItsOwnSourceDouble()
+    {
+        var json = JsonNode.Parse(F.VocabularyDocumentCodec.Encode(Upgrade(FullFixture())))!;
+        var dates = new[] { 814759445.12345672, 0.00000001, -0.00000001, 1e100, 0.00000007, -123.4567890123, 8.123456789, 3.141592653589793 };
+        json["catalog"]![0]!["createdAt"] = dates[0];
+        json["catalog"]![0]!["senses"]![0]!["updatedAt"] = dates[1];
+        json["sources"]![0]!["encounteredAt"] = dates[2];
+        json["interpretations"]![0]!["createdAt"] = dates[3];
+        json["interpretations"]![0]!["explanations"]![0]!["createdAt"] = dates[4];
+        json["collections"]![0]!["savedAt"] = dates[5];
+        json["collections"]![0]!["review"]!["bindings"]![0]!["syncedAt"] = dates[6];
+        json["semantics"]!["nodes"]![0]!["updatedAt"] = dates[7];
+        var first = F.VocabularyDocumentCodec.Decode(Encoding.UTF8.GetBytes(json.ToJsonString()));
+        var second = F.VocabularyDocumentCodec.Decode(F.VocabularyDocumentCodec.Encode(first));
+        Assert.Equal(first, second);
+        var actual = new[] { second.Catalog[0].CreatedAt.ReferenceSeconds, second.Catalog[0].Senses[0].UpdatedAt.ReferenceSeconds,
+            second.Sources[0].EncounteredAt.ReferenceSeconds, second.Interpretations[0].CreatedAt.ReferenceSeconds,
+            second.Interpretations[0].Explanations[0].CreatedAt.ReferenceSeconds, second.Collections[0].SavedAt.ReferenceSeconds,
+            second.Collections[0].Review!.Bindings[0].SyncedAt!.Value.ReferenceSeconds, second.Semantics.Nodes[0].UpdatedAt.ReferenceSeconds };
+        Assert.Equal(dates.Select(BitConverter.DoubleToInt64Bits), actual.Select(BitConverter.DoubleToInt64Bits));
+    }
+    [Fact]
+    public void UpgradeReportsEveryWindowsTickConversionWithoutChangingV7()
+    {
+        var now = new DateTimeOffset(2026, 10, 29, 0, 0, 0, TimeSpan.Zero);
+        var lossy = Enumerable.Range(0, 100).Select(i => now.AddTicks(i)).First(value =>
+        {
+            var converted = F.SourceDate.FromWindows(value);
+            return converted.TryToWindows(out var back, out _) && back.UtcTicks != value.UtcTicks;
+        });
+        var old = Fixture(); var oldSource = new R.VocabularySourceSnapshot(Id(3), "hello", R.VocabularySourceKind.Imported, null, lossy);
+        var upgraded = F.VocabularyV7Upgrade.Convert(old.Resources with { Sources = [oldSource] }, old.Classification);
+        var receipt = Assert.Single(upgraded.Dates, x => x.OwnerKind == F.DateOwnerKind.Source && x.OwnerId == Id(3));
+        Assert.Equal(lossy.UtcTicks, receipt.OriginalUtcTicks); Assert.False(receipt.PreservedWindowsTick);
+        Assert.Equal(receipt.Result, upgraded.Document.Sources[0].EncounteredAt);
+        Assert.Equal(lossy, oldSource.EncounteredAt);
+        Assert.Throws<NotSupportedException>(() => ((IList<F.DateConversionReceipt>)upgraded.Dates).Clear());
+    }
+    [Fact]
+    public void FrozenDocumentClassificationFrameworkUsesFullSwiftInt64()
+    {
+        var json = Encoding.UTF8.GetString(F.VocabularyDocumentCodec.Encode(Upgrade(FullFixture())));
+        var large = json.Replace("\"version\":1", "\"version\":2147483648", StringComparison.Ordinal);
+        Assert.NotEqual(json, large);
+        Assert.Equal(2147483648L, F.VocabularyDocumentCodec.Decode(Encoding.UTF8.GetBytes(large)).Classification.Frameworks[0].Version);
+        var decimalVersion = json.Replace("\"version\":1", "\"version\":1.0", StringComparison.Ordinal);
+        Assert.Equal(1L, F.VocabularyDocumentCodec.Decode(Encoding.UTF8.GetBytes(decimalVersion)).Classification.Frameworks[0].Version);
+    }
+    [Fact]
     public void V8RejectsWrongAxisShapeReviewMapShapeAndUnrepresentableIntegerRanges()
     {
-        var original = R.VocabularyFrozenDocumentCodec.Encode(FullFixture());
+        var original = F.VocabularyDocumentCodec.Encode(Upgrade(FullFixture()));
         var wrongAxis = JsonNode.Parse(original)!; wrongAxis["classification"]!["categories"]![0]!["axis"] = "Content";
-        Assert.ThrowsAny<VocabularyException>(() => R.VocabularyFrozenDocumentCodec.Decode(Encoding.UTF8.GetBytes(wrongAxis.ToJsonString())));
+        Assert.ThrowsAny<VocabularyException>(() => F.VocabularyDocumentCodec.Decode(Encoding.UTF8.GetBytes(wrongAxis.ToJsonString())));
         var wrongMap = JsonNode.Parse(original)!; wrongMap["collections"]![0]!["review"]!["bindings"]![0]!["mapping"] = new JsonObject { ["LingroveID"] = "LingroveID" };
-        Assert.ThrowsAny<VocabularyException>(() => R.VocabularyFrozenDocumentCodec.Decode(Encoding.UTF8.GetBytes(wrongMap.ToJsonString())));
+        Assert.ThrowsAny<VocabularyException>(() => F.VocabularyDocumentCodec.Decode(Encoding.UTF8.GetBytes(wrongMap.ToJsonString())));
         var hugeRange = JsonNode.Parse(original)!; hugeRange["occurrences"]![0]!["ranges"]![0]!["location"] = 2_147_483_648L;
-        Assert.ThrowsAny<VocabularyException>(() => R.VocabularyFrozenDocumentCodec.Decode(Encoding.UTF8.GetBytes(hugeRange.ToJsonString())));
+        Assert.ThrowsAny<VocabularyException>(() => F.VocabularyDocumentCodec.Decode(Encoding.UTF8.GetBytes(hugeRange.ToJsonString())));
     }
     [Fact]
     public void DecodeOwnsItsValuesAndAcceptsFoundationUtf16Input()
     {
-        var bytes = Encoding.UTF8.GetBytes(SourceV7); var decoded = R.VocabularyFrozenDocumentCodec.Decode(bytes);
-        Array.Fill(bytes, (byte)0); Assert.Equal("hi", decoded.Resources.Catalog[0].Expression);
+        var bytes = Encoding.UTF8.GetBytes(SourceV7); var decoded = F.VocabularyDocumentCodec.Decode(bytes);
+        Array.Fill(bytes, (byte)0); Assert.Equal("hi", decoded.Catalog[0].Expression);
         var utf16 = Encoding.Unicode.GetPreamble().Concat(Encoding.Unicode.GetBytes(SourceV7)).ToArray();
-        Assert.Equal(decoded, R.VocabularyFrozenDocumentCodec.Decode(utf16));
-        Assert.Throws<NotSupportedException>(() => ((IList<R.VocabularyEntry>)decoded.Resources.Catalog).Clear());
+        Assert.Equal(decoded, F.VocabularyDocumentCodec.Decode(utf16));
+        Assert.Throws<NotSupportedException>(() => ((IList<F.VocabularyEntry>)decoded.Catalog).Clear());
     }
     [Fact]
     public void BoundedCollectionAndDepthChecksRunBeforeGraphMaterialization()
     {
-        var document = JsonNode.Parse(R.VocabularyFrozenDocumentCodec.Encode(FullFixture()))!;
+        var document = JsonNode.Parse(F.VocabularyDocumentCodec.Encode(Upgrade(FullFixture())))!;
         var roles = new JsonArray(); for (int i = 0; i < 65; i++) roles.Add((JsonNode?)null);
         document["semantics"]!["nodes"]![0]!["roles"] = roles;
-        var error = Assert.ThrowsAny<VocabularyException>(() => R.VocabularyFrozenDocumentCodec.Decode(Encoding.UTF8.GetBytes(document.ToJsonString())));
+        var error = Assert.ThrowsAny<VocabularyException>(() => F.VocabularyDocumentCodec.Decode(Encoding.UTF8.GetBytes(document.ToJsonString())));
         Assert.Equal(VocabularyFailure.InvalidContent, error.Failure);
         var deep = SourceV7.Replace("\"schemaVersion\":7", "\"extra\":" + new string('[', 513) + "0" + new string(']', 513) + ",\"schemaVersion\":7");
-        Assert.ThrowsAny<VocabularyException>(() => R.VocabularyFrozenDocumentCodec.Decode(Encoding.UTF8.GetBytes(deep)));
+        Assert.ThrowsAny<VocabularyException>(() => F.VocabularyDocumentCodec.Decode(Encoding.UTF8.GetBytes(deep)));
     }
     [Fact]
-    public void EncodingValidatesOwnershipAndRejectsUnrepresentableDates()
+    public void EncodingValidatesOwnershipAndRetainsDatesOutsideWindowsRange()
     {
-        var value = Fixture();
-        var bad = value with { Resources = value.Resources with { Sources = [] } };
-        Assert.ThrowsAny<VocabularyException>(() => R.VocabularyFrozenDocumentCodec.Encode(bad));
-        var source = new R.VocabularySourceSnapshot(Id(3), "hello", R.VocabularySourceKind.Imported, null, DateTimeOffset.MaxValue);
-        var date = value with { Resources = value.Resources with { Sources = [source] } };
-        Assert.ThrowsAny<VocabularyException>(() => R.VocabularyFrozenDocumentCodec.Encode(date));
+        var value = Upgrade(Fixture());
+        var bad = value with { Sources = [] };
+        Assert.ThrowsAny<VocabularyException>(() => F.VocabularyDocumentCodec.Encode(bad));
+        var source = new F.VocabularySourceSnapshot(Id(3), "hello", R.VocabularySourceKind.Imported, null, new F.SourceDate(1e100));
+        var date = value with { Sources = [source] };
+        var decoded = F.VocabularyDocumentCodec.Decode(F.VocabularyDocumentCodec.Encode(date));
+        Assert.Equal(1e100, decoded.Sources[0].EncounteredAt.ReferenceSeconds);
+        Assert.False(decoded.Sources[0].EncounteredAt.TryToWindows(out _, out _));
     }
     [Fact]
     public void SourceShapedV7UpgradesWithoutChangingEvidenceOrSynthesizingClassification()
     {
-        var source = Encoding.UTF8.GetBytes(SourceV7); var value = R.VocabularyFrozenDocumentCodec.Decode(source);
-        Assert.Equal(7, value.Resources.SchemaVersion); Assert.Null(value.Resources.Catalog[0].Language);
-        Assert.Equal(Id(3), Assert.Single(value.Resources.Sources).Id); Assert.Equal(Id(5), Assert.Single(value.Resources.Interpretations).Id);
-        Assert.Equal(R.VocabularyInterpretationStatus.Candidate, value.Resources.Interpretations[0].Status);
-        Assert.Empty(value.Classification.Categories); Assert.Empty(value.Resources.Collections);
-        var encoded = JsonNode.Parse(R.VocabularyFrozenDocumentCodec.Encode(value))!;
+        var source = Encoding.UTF8.GetBytes(SourceV7); var value = F.VocabularyDocumentCodec.Decode(source);
+        Assert.Equal(8, value.SchemaVersion); Assert.Null(value.Catalog[0].Language);
+        Assert.Equal(Id(3), Assert.Single(value.Sources).Id); Assert.Equal(Id(5), Assert.Single(value.Interpretations).Id);
+        Assert.Equal(R.VocabularyInterpretationStatus.Candidate, value.Interpretations[0].Status);
+        Assert.Empty(value.Classification.Categories); Assert.Empty(value.Collections);
+        var encoded = JsonNode.Parse(F.VocabularyDocumentCodec.Encode(value))!;
         Assert.Equal(8, (int)encoded["schemaVersion"]!); Assert.NotNull(encoded["classification"]);
         var ignored = JsonNode.Parse(SourceV7)!; ignored["classification"] = "not a v8 directory";
-        Assert.Equal(value, R.VocabularyFrozenDocumentCodec.Decode(Encoding.UTF8.GetBytes(ignored.ToJsonString())));
+        Assert.Equal(value, F.VocabularyDocumentCodec.Decode(Encoding.UTF8.GetBytes(ignored.ToJsonString())));
     }
     [Fact]
     public void WireVersionsRequiredFieldsEnumsAndAdmissionFailClosed()
     {
-        static VocabularyFailure Failure(string text) => Assert.ThrowsAny<VocabularyException>(() => R.VocabularyFrozenDocumentCodec.Decode(Encoding.UTF8.GetBytes(text))).Failure;
+        static VocabularyFailure Failure(string text) => Assert.ThrowsAny<VocabularyException>(() => F.VocabularyDocumentCodec.Decode(Encoding.UTF8.GetBytes(text))).Failure;
         Assert.Equal(VocabularyFailure.UnsupportedVersion, Failure(SourceV7.Replace("\"schemaVersion\":7", "\"schemaVersion\":9")));
         Assert.Equal(VocabularyFailure.InvalidArchive, Failure(SourceV7.Replace("\"schemaVersion\":7", "\"schemaVersion\":8")));
         Assert.Equal(VocabularyFailure.InvalidArchive, Failure(SourceV7.Replace("\"sources\":[", "\"Sources\":[")));
@@ -138,23 +203,40 @@ public sealed class VocabularyFrozenDocumentCodecTests
         Assert.Equal(VocabularyFailure.InvalidArchive, Failure(SourceV7.Replace("\"collections\":[]", "\"collections\":null")));
         Assert.Equal(VocabularyFailure.InvalidArchive, Failure(SourceV7.Replace("\"sourceID\":\"00000000-0000-0000-0000-000000000003\"", "\"sourceID\":\"00000000-0000-0000-0000-000000000999\"")));
         var duplicate = SourceV7.Replace("\"schemaVersion\":7", "\"schemaVersion\":7,\"schemaVersion\":8");
-        Assert.Empty(R.VocabularyFrozenDocumentCodec.Decode(Encoding.UTF8.GetBytes(duplicate)).Classification.Categories);
-        Assert.ThrowsAny<VocabularyException>(() => R.VocabularyFrozenDocumentCodec.Decode(new byte[] { 0xff }));
+        Assert.Empty(F.VocabularyDocumentCodec.Decode(Encoding.UTF8.GetBytes(duplicate)).Classification.Categories);
+        Assert.ThrowsAny<VocabularyException>(() => F.VocabularyDocumentCodec.Decode(new byte[] { 0xff }));
     }
     [Fact]
-    public void NonRepresentableWireDatesFailWithoutRoundingOrClamping()
+    public void SourceDoubleDatesRoundTripWithoutTickCoercion()
     {
-        var fractional = SourceV7.Replace("\"encounteredAt\":0", "\"encounteredAt\":0.00000001");
-        var outOfRange = SourceV7.Replace("\"encounteredAt\":0", "\"encounteredAt\":99999999999999");
-        Assert.ThrowsAny<VocabularyException>(() => R.VocabularyFrozenDocumentCodec.Decode(Encoding.UTF8.GetBytes(fractional)));
-        Assert.ThrowsAny<VocabularyException>(() => R.VocabularyFrozenDocumentCodec.Decode(Encoding.UTF8.GetBytes(outOfRange)));
-        var representable = SourceV7.Replace("\"encounteredAt\":0", "\"encounteredAt\":0.0000001");
-        Assert.Equal(new DateTimeOffset(2001,1,1,0,0,0,TimeSpan.Zero).AddTicks(1), R.VocabularyFrozenDocumentCodec.Decode(Encoding.UTF8.GetBytes(representable)).Resources.Sources[0].EncounteredAt);
+        foreach (var spelling in new[] { "814759445.12345672", "0.00000001", "-0.00000001", "-0.0", "5e-324", "99999999999999" })
+        {
+            var json = SourceV7.Replace("\"encounteredAt\":0", "\"encounteredAt\":" + spelling);
+            var decoded = F.VocabularyDocumentCodec.Decode(Encoding.UTF8.GetBytes(json));
+            var expected = double.Parse(spelling, System.Globalization.CultureInfo.InvariantCulture);
+            Assert.Equal(BitConverter.DoubleToInt64Bits(expected), BitConverter.DoubleToInt64Bits(decoded.Sources[0].EncounteredAt.ReferenceSeconds));
+            var roundtrip = F.VocabularyDocumentCodec.Decode(F.VocabularyDocumentCodec.Encode(decoded));
+            Assert.Equal(BitConverter.DoubleToInt64Bits(expected), BitConverter.DoubleToInt64Bits(roundtrip.Sources[0].EncounteredAt.ReferenceSeconds));
+        }
+        var overflow = SourceV7.Replace("\"encounteredAt\":0", "\"encounteredAt\":1e400");
+        Assert.ThrowsAny<VocabularyException>(() => F.VocabularyDocumentCodec.Decode(Encoding.UTF8.GetBytes(overflow)));
+    }
+    [Fact]
+    public void ConsecutiveCurrentWindowsTicksEncodeWithoutRejectingNormalSaves()
+    {
+        var now = DateTimeOffset.UtcNow; var value = Upgrade(Fixture());
+        for (int i = 0; i < 100; i++)
+        {
+            var sourceDate = F.SourceDate.FromWindows(now.AddTicks(i));
+            var source = new F.VocabularySourceSnapshot(Id(3), "hello", R.VocabularySourceKind.Imported, null, sourceDate);
+            var decoded = F.VocabularyDocumentCodec.Decode(F.VocabularyDocumentCodec.Encode(value with { Sources = [source] }));
+            Assert.Equal(BitConverter.DoubleToInt64Bits(sourceDate.ReferenceSeconds), BitConverter.DoubleToInt64Bits(decoded.Sources[0].EncounteredAt.ReferenceSeconds));
+        }
     }
     [Fact]
     public void CompleteGraphRoundTripsSourceShapedReviewContentAndMeaningLeaves()
     {
-        var source = FullFixture(); var bytes = R.VocabularyFrozenDocumentCodec.Encode(source);
+        var source = FullFixture(); var bytes = F.VocabularyDocumentCodec.Encode(Upgrade(source));
         using var json = JsonDocument.Parse(bytes); var root = json.RootElement;
         var collection = root.GetProperty("collections")[0]; var review = collection.GetProperty("review");
         var binding = review.GetProperty("bindings")[0]; var mapping = binding.GetProperty("mapping");
@@ -168,12 +250,12 @@ public sealed class VocabularyFrozenDocumentCodecTests
         Assert.Equal("zh-Hans", explanation.GetProperty("language").GetString()); Assert.Equal(JsonValueKind.Number, explanation.GetProperty("createdAt").ValueKind);
         Assert.True(root.GetProperty("semantics").GetProperty("patterns")[0].TryGetProperty("senseID", out _));
         var overlay = root.GetProperty("classification").GetProperty("overrides")[0]; Assert.True(overlay.TryGetProperty("categoryID", out _)); Assert.False(overlay.TryGetProperty("id", out _));
-        Assert.Equal(source, R.VocabularyFrozenDocumentCodec.Decode(bytes));
+        Assert.Equal(Upgrade(source), F.VocabularyDocumentCodec.Decode(bytes));
     }
     [Fact]
     public void FlatV8PreservesIndependentEvidenceAndSourceNames()
     {
-        var source = Fixture(); var bytes = R.VocabularyFrozenDocumentCodec.Encode(source);
+        var source = Fixture(); var bytes = F.VocabularyDocumentCodec.Encode(Upgrade(source));
         using var json = JsonDocument.Parse(bytes); var root = json.RootElement;
         Assert.Equal(8, root.GetProperty("schemaVersion").GetInt32()); Assert.True(root.TryGetProperty("catalog", out var catalog));
         Assert.False(root.TryGetProperty("resources", out _)); Assert.False(root.TryGetProperty("entries", out _));
@@ -184,6 +266,6 @@ public sealed class VocabularyFrozenDocumentCodecTests
         Assert.True(root.GetProperty("collections")[0].TryGetProperty("interpretationIDs", out _));
         Assert.True(root.GetProperty("semantics").GetProperty("mappings")[0].TryGetProperty("evidenceIDs", out _));
         Assert.False(root.GetProperty("classification").GetProperty("categories")[0].TryGetProperty("title", out _));
-        Assert.Equal(source, R.VocabularyFrozenDocumentCodec.Decode(bytes));
+        Assert.Equal(Upgrade(source), F.VocabularyDocumentCodec.Decode(bytes));
     }
 }

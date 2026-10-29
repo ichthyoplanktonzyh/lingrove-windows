@@ -1,7 +1,5 @@
 using System.Runtime.Versioning;
 using System.IO;
-using System.Runtime.InteropServices;
-using Microsoft.Win32.SafeHandles;
 using System.Windows.Media.Imaging;
 using System.Text;
 using Cotabby.Core.LanguageLearning;
@@ -63,9 +61,10 @@ public sealed class MDictLibraryService(Func<string, string> lowercase) : IAsync
         var book = OpenBook(library, ct); int remaining = 8_000_000; var visited = new HashSet<string>(CanonicalStringComparer.Instance);
         var records = Definitions(query, 0); if (records.Count == 0) return LearningDictionaryResult.NotFound;
         string html = string.Join("<hr>", records); if (!book.Main.IsHtml) html = "<pre>" + DictionaryContentPolicy.Escaped(html) + "</pre>";
-        string css = Path.GetFileNameWithoutExtension(library.MdxPath) + ".css";
-        if (File.Exists(Path.Combine(library.FolderPath, css))) html = "<link rel=\"stylesheet\" href=\"" + DictionaryContentPolicy.Escaped(css) + "\">" + html;
-        return new LearningDictionaryResult.Article(html, DictionaryContentPolicy.PlainText(html), library.Name, library.Id, library.Languages);
+        string text;
+        try { text = DictionaryContentPolicy.PlainText(html, ct); }
+        catch (System.Text.RegularExpressions.RegexMatchTimeoutException) { throw Invalid(); }
+        return new LearningDictionaryResult.Article(html, text, library.Name, library.Id, library.Languages);
         List<string> Definitions(string value, int depth)
         {
             ct.ThrowIfCancellationRequested(); if (depth >= 8 || !visited.Add(value)) return [];
@@ -93,7 +92,6 @@ public sealed class MDictLibraryService(Func<string, string> lowercase) : IAsync
         {
             ct.ThrowIfCancellationRequested(); var values = resource.Records(key, ct); if (values.Count != 0) { data = values[0]; break; }
         }
-        data ??= ReadContainedFile(library.FolderPath, relative, ct);
         if (data is null || data.Length > 8_000_000) return null;
         if (mime.StartsWith("image/", StringComparison.Ordinal) && !ImageWithinLimits(data)) return null;
         return new(data, mime);
@@ -115,30 +113,6 @@ public sealed class MDictLibraryService(Func<string, string> lowercase) : IAsync
         }
         catch { return false; }
     }
-    private static byte[]? ReadContainedFile(string folder, string relative, CancellationToken token)
-    {
-        try
-        {
-            using var directory = CreateFile(folder, 0x80, 7, 0, 3, 0x02000000, 0);
-            if (directory.IsInvalid) return null; string root = FinalPath(directory).TrimEnd('\\') + "\\";
-            using var stream = Open(Path.Combine(folder, relative.Replace('/', Path.DirectorySeparatorChar)));
-            string actual = FinalPath(stream.SafeFileHandle);
-            if (!actual.StartsWith(root, StringComparison.OrdinalIgnoreCase) || stream.Length > 8_000_000) return null;
-            var result = new byte[checked((int)stream.Length)]; token.ThrowIfCancellationRequested(); stream.ReadExactly(result); token.ThrowIfCancellationRequested(); return result;
-        }
-        catch (FileNotFoundException) { return null; }
-        catch (DirectoryNotFoundException) { return null; }
-    }
-    private static string FinalPath(SafeFileHandle handle)
-    {
-        var output = new StringBuilder(32768); uint length = GetFinalPathNameByHandle(handle, output, (uint)output.Capacity, 0);
-        if (length == 0 || length >= output.Capacity) throw Invalid(); return output.ToString();
-    }
-    [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-    private static extern SafeFileHandle CreateFile(string path, uint access, uint share, nint security, uint creation, uint flags, nint template);
-    [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-    private static extern uint GetFinalPathNameByHandle(SafeFileHandle file, StringBuilder path, uint length, uint flags);
-
     private Book OpenBook(MDictLibraryDescriptor descriptor, CancellationToken token)
     {
         if (descriptor.ResourcePaths.Count > 16) throw Invalid(); var paths = new[] { descriptor.MdxPath }.Concat(descriptor.ResourcePaths).ToArray();

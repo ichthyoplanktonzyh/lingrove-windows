@@ -15,7 +15,9 @@ and opens them, bounds blocks, decompression, aliases and resources, and retires
 the descriptor or files change. Existing sessions borrow the same router; source changes retire stale
 work. Unknown entry language is retained, not guessed. The original Apple system dictionary and online
 providers are unavailable here; selecting one reports an unavailable source. No network dictionary
-provider is activated.
+provider is activated. Loose directory resources and automatic adjacent stylesheets are unavailable:
+only resources in explicitly authorized MDD files are opened, preventing a reparse point from initiating
+an unvalidated remote file access.
 
 The App-hosted rich article uses WebView2 with a separate temporary in-private profile, JavaScript
 disabled, CSP, denied navigation and a request filter that starts with a deny response. Only a current
@@ -28,15 +30,16 @@ activity are outside this adapter's request interception; independent security r
 desktop verification remain required. A controlled native WebView2 component test loads a synthetic
 article and a synthetic authorized image in a dedicated temporary profile; it checks that scripting
 and web messages are disabled. It does not establish the full browser security boundary or physical
-desktop acceptance. If the SDK's controller initialization stalls after the WPF view unloads, disposal
-cancels the managed wait, disposes the control and observes a late SDK fault; it cannot guarantee that
-the SDK's own initialization task has completed. This platform lifecycle remains subject to review.
+desktop acceptance. Environment and controller initialization have bounded managed waits. On retirement
+the control is disposed and a separately rooted cleanup owner waits for the outstanding SDK operation
+before attempting private-profile removal; a native operation that never finishes retains that cleanup
+owner and profile. Removal retries report failure through the cleanup task. SDK process lifetime and
+this deferred cleanup remain subject to independent review.
 
-On the Windows development host, the focused Core dictionary/session/parser suite passed 30 tests.
-The serialized WPF wrapper passed 20 focused tests, including synthetic MDX/MDD import, settings,
-existing cards and three WebView2 cases (authorized resource, closing during initialization, and
-draining an accepted resource). Release solution build succeeded before the final native tests; the
-WPF test project was rebuilt after those changes. These are component checks, not user acceptance.
+On the Windows development host, the focused Core suite passed 31 tests, including adversarial HTML
+and cancellation. The serialized WPF wrapper passed 23 focused tests, including synthetic MDX/MDD
+import, local reparse refusal, cancellation and drain, settings, existing cards, WebView2 resource
+ownership and delayed environment/controller retirement. These are component checks, not user acceptance.
 
 The application composition must construct one `DictionaryFeature` with the existing bundled
 provider and ICU lowercase/word segmentation and pass its router to writing, reading and notebook

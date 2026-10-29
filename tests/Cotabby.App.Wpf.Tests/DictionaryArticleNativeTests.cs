@@ -8,6 +8,32 @@ namespace Cotabby.App.Wpf.Tests;
 [Collection("WPF views")]
 public sealed class DictionaryArticleNativeTests(WpfDispatcher dispatcher)
 {
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public Task HeldInitializationRetiresBeforeLateCompletionAndCleansPrivateProfile(bool controller) => dispatcher.RunAsync(async () =>
+    {
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        Task Hold() { entered.TrySetResult(); return release.Task; }
+        var view = new DictionaryArticleView(controller ? null : Hold, controller ? Hold : null);
+        var window = new Window { Width = 360, Height = 240, Content = view, ShowInTaskbar = false };
+        int loads = 0;
+        try
+        {
+            window.Show();
+            var show = view.ShowAsync(new("<img src=\"late.png\">", "", "Fixture", Guid.NewGuid()),
+                (_, _) => { loads++; return Task.FromResult<DictionaryResource?>(null); }, () => true, CancellationToken.None);
+            await entered.Task.WaitAsync(TimeSpan.FromSeconds(15));
+            window.Close(); await view.DisposeAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(5));
+            await show.WaitAsync(TimeSpan.FromSeconds(5));
+            Assert.True(System.IO.Directory.Exists(view.ProfilePath)); Assert.False(view.ProfileCleanup.IsCompleted);
+            release.SetResult(); await view.ProfileCleanup.WaitAsync(TimeSpan.FromSeconds(15));
+            Assert.False(System.IO.Directory.Exists(view.ProfilePath)); Assert.Equal(0, loads);
+        }
+        finally { release.TrySetResult(); if (window.IsVisible) window.Close(); await view.DisposeAsync(); }
+    });
+
     [Fact]
     public Task RetirementDrainsAnAlreadyAcceptedResource() => dispatcher.RunAsync(async () =>
     {

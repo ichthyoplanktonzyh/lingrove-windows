@@ -20,13 +20,21 @@ internal sealed class DictionaryArticleView : Grid, IAsyncDisposable
     private readonly HashSet<Task> _work = []; private readonly object _gate = new();
     private readonly CancellationTokenSource _shutdown = new();
     private readonly string _profile; private CoreWebView2Environment? _environment; private Task? _initialization;
+    private Task? _nativePending;
+    private readonly Func<Task>? _environmentBarrier, _controllerBarrier;
+    // Retired SDK operations remain rooted until they really finish and their private profile is removed.
+    private static readonly object CleanupGate = new();
+    private static readonly HashSet<Task> CleanupOwners = [];
+    internal Task ProfileCleanup { get; private set; } = Task.CompletedTask;
+    internal string ProfilePath => _profile;
     private CancellationTokenSource? _targetCancel; private Target? _target; private long _epoch;
     private bool _allowInitial, _disposed; private Task? _dispose;
     private int _resourceRequests, _resourceBytes;
     internal event Action<string>? ReferenceRequested;
     internal string? InitializationFailure { get; private set; }
-    internal DictionaryArticleView()
+    internal DictionaryArticleView(Func<Task>? environmentBarrier = null, Func<Task>? controllerBarrier = null)
     {
+        _environmentBarrier = environmentBarrier; _controllerBarrier = controllerBarrier;
         _profile = Path.GetFullPath(Path.Combine(Path.GetTempPath(), "lingrove-dictionary-" + Guid.NewGuid().ToString("N")));
         ((UIElement)_view).Opacity = 0;
         _status.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondary"); Children.Add(_status); Children.Add(_view);
@@ -57,16 +65,17 @@ internal sealed class DictionaryArticleView : Grid, IAsyncDisposable
     private async Task InitializeAsync()
     {
         Directory.CreateDirectory(_profile);
+        if (_environmentBarrier is not null) await AwaitNativeAsync(_environmentBarrier());
         var registration = new CoreWebView2CustomSchemeRegistration(DictionaryResourceRequestPolicy.Scheme) { HasAuthorityComponent = true };
         var options = new CoreWebView2EnvironmentOptions(customSchemeRegistrations: [registration]) { AreBrowserExtensionsEnabled = false,
             ExclusiveUserDataFolderAccess = true, IsCustomCrashReportingEnabled = true,
             AdditionalBrowserArguments = "--disable-background-networking --disable-component-update --disable-sync --no-first-run" };
-        _environment = await CoreWebView2Environment.CreateAsync(null, _profile, options);
+        var environmentTask = CoreWebView2Environment.CreateAsync(null, _profile, options);
+        await AwaitNativeAsync(environmentTask); _environment = await environmentTask;
         if (_disposed) return;
+        if (_controllerBarrier is not null) await AwaitNativeAsync(_controllerBarrier());
         var controller = _environment.CreateCoreWebView2ControllerOptions(); controller.IsInPrivateModeEnabled = true;
-        var nativeInitialization = _view.EnsureCoreWebView2Async(_environment, controller);
-        _ = nativeInitialization.ContinueWith(t => _ = t.Exception, TaskContinuationOptions.OnlyOnFaulted);
-        await nativeInitialization.WaitAsync(_shutdown.Token);
+        await AwaitNativeAsync(_view.EnsureCoreWebView2Async(_environment, controller));
         var core = _view.CoreWebView2; var settings = core.Settings;
         settings.IsScriptEnabled = false; settings.IsWebMessageEnabled = false; settings.AreDefaultScriptDialogsEnabled = false;
         settings.AreDevToolsEnabled = false; settings.AreDefaultContextMenusEnabled = false; settings.IsStatusBarEnabled = false;
@@ -86,6 +95,12 @@ internal sealed class DictionaryArticleView : Grid, IAsyncDisposable
         core.NewWindowRequested += (_, e) => e.Handled = true;
         core.PermissionRequested += (_, e) => e.State = CoreWebView2PermissionState.Deny;
         core.DownloadStarting += (_, e) => e.Cancel = true;
+    }
+    private async Task AwaitNativeAsync(Task native)
+    {
+        _nativePending = native;
+        await native.WaitAsync(TimeSpan.FromSeconds(10), _shutdown.Token);
+        _nativePending = null;
     }
     private void ResourceRequested(object? sender, CoreWebView2WebResourceRequestedEventArgs e)
     {
@@ -150,9 +165,24 @@ internal sealed class DictionaryArticleView : Grid, IAsyncDisposable
         _view.Dispose();
         if (_initialization is { } initialization) try { await initialization; } catch { }
         _shutdown.Dispose();
+        var pending = _nativePending;
+        ProfileCleanup = CleanupProfileAsync(pending, _profile);
+        lock (CleanupGate) CleanupOwners.Add(ProfileCleanup);
+        _ = ProfileCleanup.ContinueWith(t => { _ = t.Exception; lock (CleanupGate) CleanupOwners.Remove(t); }, TaskScheduler.Default);
+    }
+    private static async Task CleanupProfileAsync(Task? pending, string profile)
+    {
+        if (pending is not null) try { await pending.ConfigureAwait(false); } catch { }
         // The path is generated by this control under the system temp directory; never accept a user path.
         string parent = Path.GetFullPath(Path.GetTempPath()).TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar;
-        if (_profile.StartsWith(parent + "lingrove-dictionary-", StringComparison.OrdinalIgnoreCase))
-            try { if (Directory.Exists(_profile)) Directory.Delete(_profile, recursive: true); } catch (IOException) { } catch (UnauthorizedAccessException) { }
+        if (profile.StartsWith(parent + "lingrove-dictionary-", StringComparison.OrdinalIgnoreCase))
+        {
+            for (int attempt = 0; attempt < 40; attempt++)
+            {
+                try { if (Directory.Exists(profile)) Directory.Delete(profile, recursive: true); return; }
+                catch (IOException) when (attempt < 39) { await Task.Delay(250).ConfigureAwait(false); }
+                catch (UnauthorizedAccessException) when (attempt < 39) { await Task.Delay(250).ConfigureAwait(false); }
+            }
+        }
     }
 }

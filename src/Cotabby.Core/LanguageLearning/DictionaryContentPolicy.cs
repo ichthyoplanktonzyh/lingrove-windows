@@ -27,11 +27,16 @@ public static class DictionaryContentPolicy
         return normalized;
     }
     public static string Escaped(string value) => value.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;").Replace("\"", "&quot;");
-    public static string PlainText(string html)
+    public static string PlainText(string html, CancellationToken cancellationToken = default)
     {
-        string cleaned = Regex.Replace(html, @"<(script|style)\b[^>]*>.*?</\1\s*>", "", RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.CultureInvariant);
-        cleaned = Regex.Replace(cleaned, @"</?(?:div|p|br|li|h[1-6]|tr)\b[^>]*>", "\n", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
-        cleaned = Regex.Replace(cleaned, @"<[^>]*>", "", RegexOptions.CultureInvariant);
+        cancellationToken.ThrowIfCancellationRequested();
+        var deadline = TimeSpan.FromMilliseconds(250);
+        string cleaned = Regex.Replace(html, @"<(script|style)\b[^>]*>.*?</\1\s*>", "", RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.CultureInvariant, deadline);
+        cancellationToken.ThrowIfCancellationRequested();
+        cleaned = Regex.Replace(cleaned, @"</?(?:div|p|br|li|h[1-6]|tr)\b[^>]*>", "\n", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant, deadline);
+        cancellationToken.ThrowIfCancellationRequested();
+        cleaned = Regex.Replace(cleaned, @"<[^>]*>", "", RegexOptions.CultureInvariant, deadline);
+        cancellationToken.ThrowIfCancellationRequested();
         cleaned = cleaned.Replace("&nbsp;", " ").Replace("&lt;", "<").Replace("&gt;", ">").Replace("&quot;", "\"").Replace("&amp;", "&");
         return FoundationText.TrimWhitespaceAndNewlines(cleaned);
     }

@@ -24,4 +24,14 @@ public sealed class DictionaryContent3bTests
         Assert.Contains("script-src 'none'", document); Assert.Contains("connect-src 'none'", document);
         Assert.Contains("base-uri 'none'", document); Assert.Contains("<p>word</p>", document);
     }
+    [Fact]
+    public void AdversarialUnclosedScriptsAreTimeBoundAndCancellationIsObserved()
+    {
+        var html = string.Concat(Enumerable.Repeat("<script>", 100_000));
+        var watch = System.Diagnostics.Stopwatch.StartNew();
+        Assert.Throws<System.Text.RegularExpressions.RegexMatchTimeoutException>(() => DictionaryContentPolicy.PlainText(html));
+        Assert.True(watch.Elapsed < TimeSpan.FromSeconds(5));
+        using var canceled = new CancellationTokenSource(); canceled.Cancel();
+        Assert.Throws<OperationCanceledException>(() => DictionaryContentPolicy.PlainText("<p>text</p>", canceled.Token));
+    }
 }

@@ -70,7 +70,7 @@ internal sealed class VocabularyWordListImportWindow : Window
     private void BuildSettings(VocabularyWordList table)
     {
         _settings.Children.Clear(); var config = _session.Configuration!;
-        var lang = VocabularyInputControls.Languages(false, config.Language); var kind = VocabularyInputControls.Kinds(); var meaningLang = VocabularyInputControls.Languages(true, config.MeaningLanguage);
+        var lang = VocabularyInputControls.Languages(false, config.Language); var kind = VocabularyInputControls.Kinds(); kind.Name = "vocabularyImportKind"; kind.SelectedItem = config.Kind; var meaningLang = VocabularyInputControls.Languages(true, config.MeaningLanguage);
         _settings.Children.Add(VocabularyInputControls.Group(("Language", lang), ("Entry type", kind), ("Meaning language", meaningLang)));
         _settings.Children.Add(VocabularyInputControls.Caption("Empty language and type cells use these defaults."));
         lang.SelectionChanged += (_, _) => Change(c => c with { Language = (LearningLanguage)lang.SelectedValue });
@@ -78,7 +78,7 @@ internal sealed class VocabularyWordListImportWindow : Window
         meaningLang.SelectionChanged += (_, _) => Change(c => c with { MeaningLanguage = (LearningLanguage?)meaningLang.SelectedValue });
         if (table.Format != VocabularyWordListFormat.Csv) return;
         _settings.Children.Add(VocabularyInputControls.Caption("Only mapped columns are imported. Images are not included."));
-        var header = new CheckBox { Content = "First row contains column names", IsChecked = config.HasHeader, Margin = new Thickness(0, 4, 0, 8) }; _settings.Children.Add(header);
+        var header = new CheckBox { Name = "vocabularyImportHeader", Content = "First row contains column names", IsChecked = config.HasHeader, Margin = new Thickness(0, 4, 0, 8) }; _settings.Children.Add(header);
         var primary = new List<(string Label, FrameworkElement Control)>(); var more = new List<(string Label, FrameworkElement Control)>();
         foreach (var field in Enum.GetValues<VocabularyImportField>())
         {

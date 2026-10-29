@@ -6,6 +6,7 @@ using System.Windows.Media.Imaging;
 using Cotabby.App.UI.Vocabulary;
 using Cotabby.App.Vocabulary;
 using Cotabby.Core.LanguageLearning;
+using Cotabby.Core.Vocabulary;
 using Cotabby.Core.Vocabulary.EntryInput;
 using Cotabby.Win32.Vocabulary;
 
@@ -121,6 +122,24 @@ public sealed class VocabularyEntryImportViewTests(WpfDispatcher dispatcher)
         var loading = session.LoadAsync("ignored.txt", LearningLanguage.English); session.Cancel(); Assert.True(reader.Token.IsCancellationRequested);
         reader.Gate.SetResult(new VocabularyWordList(VocabularyWordListFormat.Text, [new(1, ["bank"])])); await loading;
         Assert.Null(session.Table); Assert.Equal(0, calls);
+    });
+    [Fact]
+    public Task HeaderToggleKeepsDisplayedKindAndCommittedInputsAligned() => dispatcher.RunAsync(async () =>
+    {
+        string path = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".csv"); await File.WriteAllTextAsync(path, "expression\nbank\n");
+        try
+        {
+            IReadOnlyList<VocabularyEntryInput>? submitted = null;
+            var owner = new Owner { Add = (inputs, _) => { submitted = inputs; return Task.FromResult(NewResult()); } };
+            var window = new VocabularyWordListImportWindow(owner, new WindowsVocabularyWordListReader(), path); window.Show(); await window.LastOperation!;
+            Find<ComboBox>(window, "vocabularyImportKind").SelectedItem = VocabularyEntryKind.Sentence; await window.LastOperation!;
+            Find<CheckBox>(window, "vocabularyImportHeader").IsChecked = false; await window.LastOperation!;
+            Assert.Equal(VocabularyEntryKind.Sentence, Find<ComboBox>(window, "vocabularyImportKind").SelectedItem);
+            Assert.All(window.Session.Preview!.Inputs, input => Assert.Equal(VocabularyEntryKind.Sentence, input.Kind));
+            Find<Button>(window, "vocabularyConfirmImport").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); await window.LastOperation!;
+            Assert.NotNull(submitted); Assert.All(submitted!, input => Assert.Equal(VocabularyEntryKind.Sentence, input.Kind));
+        }
+        finally { File.Delete(path); }
     });
     private static T Find<T>(DependencyObject root, string name) where T : FrameworkElement
     {

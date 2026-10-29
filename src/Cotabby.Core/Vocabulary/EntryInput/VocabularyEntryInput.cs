@@ -46,7 +46,7 @@ public sealed record VocabularyEntryInput
 public enum VocabularyWordListError
 {
     TooLarge, Encoding, UnsupportedFile, Empty, Mapping, InvalidInput, MalformedCsv,
-    MissingExpression, Language, Kind, MissingExample, TranslationWithoutExample,
+    MissingExpression, Language, Kind, MissingExample, TranslationWithoutExample, ExampleConflict,
 }
 
 /// <summary>Failure category and physical source line, if the error belongs to a row.</summary>

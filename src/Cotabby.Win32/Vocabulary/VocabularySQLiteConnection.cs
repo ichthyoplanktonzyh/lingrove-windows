@@ -71,6 +71,15 @@ internal sealed class VocabularySQLiteConnection : IDisposable
     internal void Execute(string sql, params Value[] values) => _ = Rows(sql, values);
     internal Value[][] Rows(string sql, params Value[] values)
     {
+        var rows = new List<Value[]>();
+        VisitRows(sql, values, CancellationToken.None, null, rows.Add);
+        return rows.ToArray();
+    }
+    // Bounded streaming for archive reads. Account before copying SQLite buffers and check
+    // cancellation for every row; statement lifetime remains inside this synchronous method.
+    internal void VisitRows(string sql, Value[] values, CancellationToken cancellationToken,
+        Action<int>? account, Action<Value[]> visit)
+    {
         var handle = _handle ?? throw Invalid();
         int status = raw.sqlite3_prepare_v2(handle, sql, out var statement);
         // A failed prepare may still return a handle. Dispose it on every path, including bind
@@ -84,14 +93,19 @@ internal sealed class VocabularySQLiteConnection : IDisposable
             try
             {
                 for (int index = 0; index < values.Length; index++) Bind(statement, index + 1, values[index]);
-                var rows = new List<Value[]>();
                 while (true)
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     status = raw.sqlite3_step(statement);
-                    if (status == raw.SQLITE_DONE) return rows.ToArray();
+                    if (status == raw.SQLITE_DONE) return;
                     Check(status);
                     if (status != raw.SQLITE_ROW) throw Invalid();
-                    var row = new Value[raw.sqlite3_column_count(statement)];
+                    int count = raw.sqlite3_column_count(statement);
+                    account?.Invoke(256 + count * 16);
+                    for (int index = 0; index < count; index++)
+                        if (raw.sqlite3_column_type(statement, index) is raw.SQLITE_TEXT or raw.SQLITE_BLOB)
+                            account?.Invoke(raw.sqlite3_column_bytes(statement, index));
+                    var row = new Value[count];
                     for (int index = 0; index < row.Length; index++)
                     {
                         // Inspect the original SQL type before requesting any conversion. TEXT
@@ -106,7 +120,7 @@ internal sealed class VocabularySQLiteConnection : IDisposable
                             _ => throw Invalid(),
                         };
                     }
-                    rows.Add(row);
+                    visit(row);
                 }
             }
             catch (ArgumentException) { throw Invalid(); }

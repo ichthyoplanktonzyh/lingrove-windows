@@ -21,6 +21,7 @@
     <Using Include="Xunit" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\src\Cotabby.App\Hosting\FileLoggerProvider.cs" Link="Production\FileLoggerProvider.cs" />
     <Compile Include="..\..\src\Cotabby.App\Speech\LearningSpeechSettings.cs" Link="Production\LearningSpeechSettings.cs" />
     <Compile Include="..\..\src\Cotabby.App\Speech\SpeechParameterSettings.cs" Link="Production\SpeechParameterSettings.cs" />
     <None Include="..\..\fixtures\parity\speech-settings-v1.json" Link="fixtures\speech-settings-v1.json" CopyToOutputDirectory="PreserveNewest" />

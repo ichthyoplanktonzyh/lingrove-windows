@@ -1,4 +1,5 @@
 using Cotabby.Core.CLI;
+using System.Text.Json.Nodes;
 using Cotabby.Win32.Vocabulary;
 using Xunit;
 
@@ -19,5 +20,27 @@ public sealed class CliStoreReadTests
         var error = await Assert.ThrowsAsync<CliException>(() => store.ExecuteCliAsync(new CliRequest { ExpiresAt = now - 1 }));
         Assert.Equal(CliErrorCode.Timeout, error.Code);
         Assert.Equal(0UL, (await store.ReadAsync()).Revision);
+    }
+
+    [Fact]
+    public async Task ResourceBatchDryRunCommitAndReplayShareTheStoreTransaction()
+    {
+        await using var store = new FrozenVocabularyImportStore(FrozenVocabularySQLiteDatabase.CreateMemory());
+        var id = Guid.NewGuid();
+        var batch = JsonNode.Parse("""{"version":2,"idempotencyKey":"one","expectedRevision":0,"operations":[{"put":{"resource":"entries","value":{"id":"IDPLACEHOLDER","expression":"bank","kind":"word","language":"en"}}}]}""".Replace("IDPLACEHOLDER", id.ToString("D")))!.AsObject();
+        var request = new CliRequest { Command = "apply", ExpiresAt = CliWire.Now() + 60, Batch = batch, DryRun = true };
+        var preview = await store.ExecuteCliAsync(request);
+        Assert.Equal(0UL, preview["revision"]!.GetValue<ulong>());
+        Assert.Empty((await store.ReadAsync()).Document.Catalog);
+        var saved = await store.ExecuteCliAsync(request with { DryRun = false });
+        Assert.Equal(1UL, saved["revision"]!.GetValue<ulong>());
+        Assert.Equal(id, (await store.ReadAsync()).Document.Catalog.Single().Id);
+        var replay = await store.ExecuteCliAsync(request with { DryRun = false });
+        Assert.True(replay["replayed"]!.GetValue<bool>());
+        Assert.Equal(1UL, replay["currentRevision"]!.GetValue<ulong>());
+        batch["operations"]![0]!["put"]!["value"]!["expression"] = "other";
+        var conflict = await Assert.ThrowsAsync<CliException>(() => store.ExecuteCliAsync(request with { DryRun = false }));
+        Assert.Equal(CliErrorCode.Conflict, conflict.Code);
+        Assert.Equal(1UL, (await store.ReadAsync()).Revision);
     }
 }

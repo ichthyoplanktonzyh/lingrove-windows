@@ -37,6 +37,8 @@ public sealed class CliMailboxDirectoryTests : IDisposable
         Assert.Throws<CliException>(() => working.Read(name, expected: identity));
         working.RemoveOwned(name, identity);
         Assert.Equal(new byte[] { 1, 2 }, working.Read(name));
+        Assert.Null(working.ClaimOwned(name, requests, identity));
+        Assert.Equal(new byte[] { 1, 2 }, working.Read(name));
     }
     public void Dispose() { if (Directory.Exists(_root)) Directory.Delete(_root, true); }
 }

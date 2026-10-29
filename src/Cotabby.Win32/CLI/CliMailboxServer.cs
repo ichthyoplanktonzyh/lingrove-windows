@@ -41,8 +41,9 @@ public sealed class CliMailboxServer : IAsyncDisposable
                     bool requeued = false;
                     foreach (string name in interrupted)
                     {
-                        if (_requests.Exists(name)) { _working.Remove(name); requeued = true; }
-                        else requeued |= _working.Claim(name, _requests);
+                        var identity = _working.CaptureIdentity(name); if (identity is null) continue;
+                        if (_requests.Exists(name)) { _working.RemoveOwned(name, identity.Value); requeued = true; }
+                        else requeued |= _working.ClaimOwned(name, _requests, identity) is not null;
                     }
                     if (!requeued) throw new CliException(CliErrorCode.Io, "Cannot recover the CLI mailbox.");
                 }

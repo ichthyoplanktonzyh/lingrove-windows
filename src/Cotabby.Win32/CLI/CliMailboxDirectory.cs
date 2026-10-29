@@ -39,6 +39,8 @@ internal sealed class CliMailboxDirectory : IDisposable
         Verify(); return output.ToArray();
     }
     internal bool Exists(string name) { ValidateName(name); using var handle = _directory.OpenFile(name); return handle is not null; }
+    internal VocabularyWindowsFile.FileIdentity? CaptureIdentity(string name)
+    { ValidateName(name); using var handle = _directory.OpenFile(name); return handle is null ? null : VocabularyWindowsFile.Identity(handle); }
     internal void RemoveIfOlderThan(string name, DateTime cutoff)
     {
         ValidateName(name); using var handle = _directory.OpenFile(name, delete: true); if (handle is null) return;
@@ -77,10 +79,11 @@ internal sealed class CliMailboxDirectory : IDisposable
     }
     internal bool Claim(string name, CliMailboxDirectory target)
         => ClaimOwned(name, target) is not null;
-    internal VocabularyWindowsFile.FileIdentity? ClaimOwned(string name, CliMailboxDirectory target)
+    internal VocabularyWindowsFile.FileIdentity? ClaimOwned(string name, CliMailboxDirectory target, VocabularyWindowsFile.FileIdentity? expected = null)
     {
         ValidateName(name); using var handle = _directory.OpenFile(name, delete: true); if (handle is null) return null;
         var identity = VocabularyWindowsFile.Identity(handle);
+        if (expected is not null && identity != expected) return null;
         Verify(); target.Verify(); Rename(handle, System.IO.Path.Combine(target.Path, name)); return identity;
     }
     internal void RemoveOwned(string name, VocabularyWindowsFile.FileIdentity identity)

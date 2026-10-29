@@ -11,13 +11,43 @@ namespace Cotabby.App.Wpf.Tests;
 [Collection("WPF views")]
 public sealed class CanonicalVocabularyMediaTests(WpfDispatcher dispatcher)
 {
-    private sealed class CancelAfterWrite(IVocabularyImageStorage inner, CancellationTokenSource cancellation) : IVocabularyImageStorage
+    private sealed class CancelAfterWrite(IOwnedVocabularyImageStorage inner, CancellationTokenSource cancellation) : IOwnedVocabularyImageStorage
     {
         public VocabularyPreparedImage Prepare(ReadOnlySpan<byte> data, CancellationToken token) => inner.Prepare(data, token);
         public VocabularyPreparedImage PrepareFile(string path, CancellationToken token) => inner.PrepareFile(path, token);
         public byte[] Read(VocabularyImageReference image) => inner.Read(image);
         public bool Write(ReadOnlySpan<byte> data, VocabularyImageReference image) { var created = inner.Write(data, image); cancellation.Cancel(); return created; }
         public void Remove(VocabularyImageReference image) => inner.Remove(image);
+        public VocabularyWindowsFile.FileIdentity? WriteOwned(ReadOnlySpan<byte> data, VocabularyImageReference image) { var identity = inner.WriteOwned(data, image); cancellation.Cancel(); return identity; }
+        public VocabularyWindowsFile.FileIdentity? CaptureIdentity(VocabularyImageReference image) => inner.CaptureIdentity(image);
+        public void RemoveOwned(VocabularyImageReference image, VocabularyWindowsFile.FileIdentity identity) => inner.RemoveOwned(image, identity);
+    }
+    private sealed class ReplaceAfterWrite(IOwnedVocabularyImageStorage inner, string directory, CancellationTokenSource cancellation) : IOwnedVocabularyImageStorage
+    {
+        public VocabularyPreparedImage Prepare(ReadOnlySpan<byte> data, CancellationToken token) => inner.Prepare(data, token);
+        public VocabularyPreparedImage PrepareFile(string path, CancellationToken token) => inner.PrepareFile(path, token);
+        public byte[] Read(VocabularyImageReference image) => inner.Read(image);
+        public bool Write(ReadOnlySpan<byte> data, VocabularyImageReference image) => inner.Write(data, image);
+        public void Remove(VocabularyImageReference image) => inner.Remove(image);
+        public VocabularyWindowsFile.FileIdentity? WriteOwned(ReadOnlySpan<byte> data, VocabularyImageReference image)
+        {
+            var identity = inner.WriteOwned(data, image); string path = Path.Combine(directory, image.Filename);
+            File.Move(path, path + ".original"); File.Copy(path + ".original", path); cancellation.Cancel(); return identity;
+        }
+        public VocabularyWindowsFile.FileIdentity? CaptureIdentity(VocabularyImageReference image) => inner.CaptureIdentity(image);
+        public void RemoveOwned(VocabularyImageReference image, VocabularyWindowsFile.FileIdentity identity) => inner.RemoveOwned(image, identity);
+    }
+    private sealed class ReplaceAfterCapture(IOwnedVocabularyImageStorage inner, string directory) : IOwnedVocabularyImageStorage
+    {
+        public VocabularyPreparedImage Prepare(ReadOnlySpan<byte> data, CancellationToken token) => inner.Prepare(data, token);
+        public VocabularyPreparedImage PrepareFile(string path, CancellationToken token) => inner.PrepareFile(path, token);
+        public byte[] Read(VocabularyImageReference image) => inner.Read(image);
+        public bool Write(ReadOnlySpan<byte> data, VocabularyImageReference image) => inner.Write(data, image);
+        public void Remove(VocabularyImageReference image) => inner.Remove(image);
+        public VocabularyWindowsFile.FileIdentity? WriteOwned(ReadOnlySpan<byte> data, VocabularyImageReference image) => inner.WriteOwned(data, image);
+        public VocabularyWindowsFile.FileIdentity? CaptureIdentity(VocabularyImageReference image)
+        { var identity = inner.CaptureIdentity(image); string path = Path.Combine(directory, image.Filename); File.Move(path, path + ".original"); File.Copy(path + ".original", path); return identity; }
+        public void RemoveOwned(VocabularyImageReference image, VocabularyWindowsFile.FileIdentity identity) => inner.RemoveOwned(image, identity);
     }
     private static byte[] Input => Convert.FromBase64String(JsonDocument.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "fixtures", "parity", "vocabulary-media-transactions-v1.json"))).RootElement.GetProperty("input").GetString()!);
     private static VocabularyPreparedImage Image() { var bytes = Input; return new(new(Convert.ToHexStringLower(SHA256.HashData(bytes)), 80, 40, bytes.Length), bytes); }
@@ -111,6 +141,77 @@ public sealed class CanonicalVocabularyMediaTests(WpfDispatcher dispatcher)
             var before = await store.ReadAsync(); var image = Image();
             await Assert.ThrowsAsync<VocabularyException>(() => store.SaveTemplateAsync(Template(image.Reference), Supplied(image)));
             Assert.Equal(marker, File.ReadAllBytes(foreign)); Assert.Equal(before, await store.ReadAsync());
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    });
+    [Fact]
+    public Task ReplacedSameBytesLeafSurvivesRollback() => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "canonical-media-" + Guid.NewGuid().ToString("N"));
+        string file = Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName);
+        string media = Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalMediaDirectoryName);
+        try
+        {
+            using var cancellation = new CancellationTokenSource(); var image = Image();
+            var storage = WindowsVocabularyImageStorage.ForDirectory(media);
+            await using var store = new FrozenVocabularyImportStore(() => FrozenVocabularySQLiteDatabase.OpenFile(file), images: new ReplaceAfterWrite(storage, media, cancellation));
+            var before = await store.ReadAsync();
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => store.SaveTemplateAsync(Template(image.Reference), Supplied(image), cancellation.Token));
+            Assert.Equal(before, await store.ReadAsync());
+            Assert.Equal(image.CopyBytes(), File.ReadAllBytes(Path.Combine(media, image.Reference.Filename)));
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    });
+    [Fact]
+    public Task DeletionPinsVerifiedHandleAgainstReplacement() => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "canonical-media-" + Guid.NewGuid().ToString("N"));
+        string file = Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName);
+        string media = Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalMediaDirectoryName);
+        try
+        {
+            var image = Image(); var template = Template(image.Reference); var storage = WindowsVocabularyImageStorage.ForDirectory(media);
+            await using var store = new FrozenVocabularyImportStore(() => FrozenVocabularySQLiteDatabase.OpenFile(file), images: storage);
+            await store.SaveTemplateAsync(template, Supplied(image)); bool denied = false;
+            string path = Path.Combine(media, image.Reference.Filename);
+            storage.BeforeOwnedDelete = () => { try { File.Move(path, path + ".moved"); } catch (IOException) { denied = true; } };
+            await store.RemoveTemplateAsync(template.Id);
+            Assert.True(denied); Assert.False(File.Exists(path));
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    });
+    [Fact]
+    public Task ReplacedSameBytesLeafSurvivesPostCommitCleanup() => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "canonical-media-" + Guid.NewGuid().ToString("N"));
+        string file = Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName);
+        string media = Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalMediaDirectoryName);
+        try
+        {
+            var image = Image(); var template = Template(image.Reference); var storage = WindowsVocabularyImageStorage.ForDirectory(media);
+            await using var store = new FrozenVocabularyImportStore(() => FrozenVocabularySQLiteDatabase.OpenFile(file), images: new ReplaceAfterCapture(storage, media));
+            await store.SaveTemplateAsync(template, Supplied(image));
+            var after = await store.RemoveTemplateAsync(template.Id);
+            Assert.Empty(after.Document.ReviewTemplates!);
+            Assert.Equal(image.CopyBytes(), File.ReadAllBytes(Path.Combine(media, image.Reference.Filename)));
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    });
+    [Fact]
+    public Task CorruptExistingLeafIsNotRepairedByPathReplacement() => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "canonical-media-" + Guid.NewGuid().ToString("N"));
+        string file = Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName);
+        string media = Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalMediaDirectoryName);
+        try
+        {
+            var image = Image(); var template = Template(image.Reference);
+            await using var store = FrozenVocabularyStoreFactory.Create(file, false);
+            var before = await store.SaveTemplateAsync(template, Supplied(image));
+            string path = Path.Combine(media, image.Reference.Filename); byte[] corrupt = [7, 8, 9];
+            File.WriteAllBytes(path, corrupt);
+            await Assert.ThrowsAsync<VocabularyException>(() => store.SaveTemplateAsync(Template(image.Reference), Supplied(image)));
+            Assert.Equal(corrupt, File.ReadAllBytes(path)); Assert.Equal(before, await store.ReadAsync());
         }
         finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
     });

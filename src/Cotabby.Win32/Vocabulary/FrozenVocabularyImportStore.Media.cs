@@ -8,6 +8,7 @@ internal sealed partial class FrozenVocabularyImportStore
 {
     private const long MaximumMediaBytes = 128L * 1024 * 1024;
     private IVocabularyImageStorage ImageStorage => _images ?? throw new VocabularyException(VocabularyFailure.InvalidContent);
+    private IOwnedVocabularyImageStorage OwnedImageStorage => _images as IOwnedVocabularyImageStorage ?? throw new VocabularyException(VocabularyFailure.InvalidContent);
 
     public Task<VocabularyPreparedImage> PrepareImageAsync(ReadOnlyMemory<byte> data, CancellationToken cancellationToken = default)
     {
@@ -52,6 +53,8 @@ internal sealed partial class FrozenVocabularyImportStore
         }
         Cotabby.Core.Vocabulary.VocabularyArchiveValidation.ValidateTemplates(document.ReviewTemplates ?? []);
     }
-    private void RemoveImage(VocabularyImageReference reference)
-    { try { _images?.Remove(reference); } catch { /* Cleanup cannot undo acknowledgement or hide the original error. */ } }
+    private void RemoveOwnedImage(VocabularyImageReference reference, VocabularyWindowsFile.FileIdentity identity)
+    { try { OwnedImageStorage.RemoveOwned(reference, identity); } catch { /* Best effort; never undo a commit or mask failure. */ } }
+    private VocabularyWindowsFile.FileIdentity? CaptureCleanupIdentity(VocabularyImageReference reference)
+    { try { return OwnedImageStorage.CaptureIdentity(reference); } catch (VocabularyException) { return null; } }
 }

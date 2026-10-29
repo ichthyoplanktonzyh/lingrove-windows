@@ -15,10 +15,11 @@ namespace Cotabby.Win32.Vocabulary;
 /// while retaining a repaired pre-existing resource. The archive owns this library; future image
 /// presentation borrows archive operations. Call off the dispatcher and hold its transaction lock.
 /// </summary>
-internal sealed class WindowsVocabularyImageStorage : IVocabularyImageStorage
+internal sealed class WindowsVocabularyImageStorage : IOwnedVocabularyImageStorage
 {
     private readonly Dictionary<string, byte[]> _memory = new(StringComparer.Ordinal);
     private readonly Func<Guid> _stagingIdentity;
+    internal Action? BeforeOwnedDelete { get; set; }
     internal string? DirectoryPath { get; }
     internal WindowsVocabularyImageStorage(string? notebook) : this(notebook, Guid.NewGuid) { }
     /// <summary>Tests may force a CREATE_NEW collision without changing actual file operations.</summary>
@@ -53,6 +54,71 @@ internal sealed class WindowsVocabularyImageStorage : IVocabularyImageStorage
         if (data.Length != image.ByteCount) throw Invalid();
         byte[] bytes = data.ToArray(); WindowsVocabularyImagePreparer.Validate(bytes, image);
         return ContentOperation(() => WriteValidated(bytes, image));
+    }
+    public VocabularyWindowsFile.FileIdentity? WriteOwned(ReadOnlySpan<byte> data, VocabularyImageReference image)
+    {
+        ValidateReference(image);
+        if (DirectoryPath is null || data.Length != image.ByteCount) throw Invalid();
+        byte[] bytes = data.ToArray(); WindowsVocabularyImagePreparer.Validate(bytes, image);
+        return ContentOperation<VocabularyWindowsFile.FileIdentity?>(() =>
+        {
+            using var root = VocabularyMediaDirectory.Open(DirectoryPath, create: true);
+            using (var current = root.OpenFile(image.Filename))
+            {
+                if (current is not null)
+                {
+                    if (Matches(current, image)) return null;
+                    // A pathname replacement cannot safely repair an object that another process
+                    // can exchange before the rename. Fail closed until handle-based repair exists.
+                    throw Invalid();
+                }
+            }
+            string staging = System.IO.Path.Combine(root.Path, ".vocabulary-image-" + _stagingIdentity().ToString("N") + ".tmp");
+            string destination = System.IO.Path.Combine(root.Path, image.Filename);
+            VocabularyWindowsFile.FileIdentity identity;
+            using (var stream = new FileInfo(staging).Create(FileMode.CreateNew, FileSystemRights.FullControl,
+                FileShare.ReadWrite | FileShare.Delete, 65536, FileOptions.None, VocabularyWindowsFile.NewFileSecurity()))
+            {
+                identity = VocabularyWindowsFile.Identity(stream.SafeFileHandle);
+                bool moved = false;
+                try
+                {
+                    stream.Write(bytes); stream.Flush(flushToDisk: true); root.Verify();
+                    if (!VocabularyWindowsFile.Native.MoveFileExW(staging, destination, 8))
+                    {
+                        if (Marshal.GetLastPInvokeError() is not 80 and not 183) throw Invalid();
+                        using var winner = root.OpenFile(image.Filename) ?? throw Invalid();
+                        if (!Matches(winner, image)) throw Invalid();
+                        root.Verify(); return null;
+                    }
+                    moved = true;
+                }
+                finally { if (!moved) DeleteHandle(stream.SafeFileHandle); }
+            }
+            using var published = root.OpenFile(image.Filename) ?? throw Invalid();
+            if (VocabularyWindowsFile.Identity(published) != identity || !Matches(published, image)) throw Invalid();
+            root.Verify(); return identity;
+        });
+    }
+    public VocabularyWindowsFile.FileIdentity? CaptureIdentity(VocabularyImageReference image) => ContentOperation<VocabularyWindowsFile.FileIdentity?>(() =>
+    {
+        ValidateReference(image); if (DirectoryPath is null) throw Invalid();
+        using var root = VocabularyMediaDirectory.Open(DirectoryPath, create: false);
+        using var file = root.OpenFile(image.Filename);
+        return file is null ? null : VocabularyWindowsFile.Identity(file);
+    });
+    public void RemoveOwned(VocabularyImageReference image, VocabularyWindowsFile.FileIdentity identity) => ContentOperation(() =>
+    {
+        ValidateReference(image); if (DirectoryPath is null) throw Invalid();
+        using var root = VocabularyMediaDirectory.Open(DirectoryPath, create: false);
+        using var file = root.OpenFile(image.Filename, delete: true);
+        if (file is not null && VocabularyWindowsFile.Identity(file) == identity) { root.Verify(); BeforeOwnedDelete?.Invoke(); DeleteHandle(file); }
+        return true;
+    });
+    private static void DeleteHandle(SafeFileHandle handle)
+    {
+        int disposition = 1;
+        if (!VocabularyWindowsFile.Native.SetFileInformationByHandle(handle, 4, ref disposition, sizeof(int))) throw Invalid();
     }
     private bool WriteValidated(byte[] bytes, VocabularyImageReference image)
     {
@@ -120,8 +186,9 @@ internal sealed class WindowsVocabularyImageStorage : IVocabularyImageStorage
                 ValidateReference(image);
                 if (DirectoryPath is null) { _memory.Remove(image.Filename); return true; }
                 using var root = VocabularyMediaDirectory.Open(DirectoryPath, create: false);
-                using (var file = root.OpenFile(image.Filename)) { if (file is null) return true; }
-                root.Verify(); File.Delete(System.IO.Path.Combine(root.Path, image.Filename)); return true;
+                using var file = root.OpenFile(image.Filename, delete: true);
+                if (file is null) return true;
+                root.Verify(); DeleteHandle(file); return true;
             });
         }
         catch (VocabularyException) { }

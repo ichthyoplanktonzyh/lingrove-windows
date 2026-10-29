@@ -11,7 +11,9 @@ are reused under the database's cross-process lock.
 Review and template writes retain supplied detached images before admission. Under one exclusive
 span the Store reads the latest graph, builds its draft, validates content and the 128 MiB unique
 media limit, stages or verifies new references, checks cancellation and commits SQL. Failure rolls
-back only files created by that attempt; existing valid files and source-permitted repairs survive.
+back only files created by that attempt, identified by their actual Windows volume/file ID. Existing
+valid files survive. Corrupt existing media is rejected: replacing it safely by handle has not yet
+been implemented, so the source's repair behavior is an explicit gap.
 After SQL acknowledgement, files with no remaining filename reference are removed best-effort and
 the revision is published. A cleanup failure cannot undo an acknowledged write. The reference walk
 includes collection content, current and preserved plans of legacy review and independent cards,
@@ -27,7 +29,10 @@ metadata and are not local media files managed by this Store. No model or user n
 
 Windows isolated named-file tests cover real PNG staging, shared-reference reuse, reopen/read,
 last-reference cleanup, SQL rollback preserving reused media, cancellation after staging, private
-staging-name collision and graph/media snapshot copying. They do not establish physical UI or
+staging-name collision and graph/media snapshot copying. Identity regressions replace a leaf with
+another file containing identical bytes before rollback or cleanup; the replacement survives. A
+delete-handle test also verifies that replacement is denied between identity check and disposition.
+They do not establish physical UI or
 process-crash recovery. Native Windows ACL/reparse coverage of the reused image effect remains in
 `VocabularyImageStorageTests`.
 

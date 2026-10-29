@@ -40,7 +40,11 @@ internal sealed partial class FrozenVocabularyImportStore
         ValidateMediaContent(draft.Document);
         var existing = ImageReferences(before.Document); var references = ImageReferences(draft.Document);
         ValidateMediaBudget(references);
-        var written = new List<VocabularyImageReference>();
+        var retired = new List<(VocabularyImageReference Image, VocabularyWindowsFile.FileIdentity Identity)>();
+        var retained = references.Select(image => image.Filename).ToHashSet(StringComparer.Ordinal);
+        foreach (var image in existing.Where(image => !retained.Contains(image.Filename)))
+            if (CaptureCleanupIdentity(image) is { } identity) retired.Add((image, identity));
+        var written = new List<(VocabularyImageReference Image, VocabularyWindowsFile.FileIdentity Identity)>();
         Cotabby.Core.Vocabulary.Frozen.VocabularyDocument committed;
         ulong revision;
         try
@@ -51,7 +55,7 @@ internal sealed partial class FrozenVocabularyImportStore
                 if (supplied is not null && supplied.TryGetValue(image.Filename, out var prepared))
                 {
                     if (prepared is null) throw new VocabularyException(VocabularyFailure.InvalidContent);
-                    if (ImageStorage.Write(prepared.CopyBytes(), image)) written.Add(image);
+                    if (OwnedImageStorage.WriteOwned(prepared.CopyBytes(), image) is { } identity) written.Add((image, identity));
                 }
                 else if (!existing.Contains(image)) _ = ImageStorage.Read(image);
             }
@@ -59,9 +63,8 @@ internal sealed partial class FrozenVocabularyImportStore
             committed = CanonicalWritingPolicy.PrepareCommit(before.Document, draft.Document);
             revision = Database.Write(committed, before.Document, before.Revision, cancellationToken: cancellationToken);
         }
-        catch { foreach (var image in written) RemoveImage(image); throw; }
-        var retained = references.Select(image => image.Filename).ToHashSet(StringComparer.Ordinal);
-        foreach (var image in existing.Where(image => !retained.Contains(image.Filename))) RemoveImage(image);
+        catch { foreach (var item in written) RemoveOwnedImage(item.Image, item.Identity); throw; }
+        foreach (var item in retired) RemoveOwnedImage(item.Image, item.Identity);
         var snapshot = new FrozenVocabularyImportSnapshot(revision, committed);
         _notifications.Writer.TryWrite(snapshot);
         return snapshot;

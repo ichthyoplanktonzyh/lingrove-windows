@@ -14,6 +14,43 @@ namespace Cotabby.App.Wpf.Tests;
 [Collection("WPF views")]
 public sealed class FrozenVocabularyMeaningUiTests(WpfDispatcher dispatcher)
 {
+    [Fact]
+    public Task UsagePatternCreateEditConflictAndRemoveThroughNotebook() => dispatcher.RunAsync(async () =>
+    {
+        await using var store = new FrozenVocabularyImportStore(FrozenVocabularySQLiteDatabase.CreateMemory()); var added = await store.AddEntriesAsync([new(Expression: "hello", Example: "hello there")]);
+        var window = new FrozenVocabularyNotebookWindow(store, new WindowsVocabularyWordListReader()); window.Show(); await window.LastOperation!; window.Reveal(added.Selection); await window.LastOperation!;
+        _ = window.Dispatcher.BeginInvoke(() => { var form = Application.Current.Windows.OfType<FrozenVocabularyUsagePatternEditorWindow>().Single(); Find<TextBox>(form, "patternTemplate").Text = "hello {person}"; Find<TextBox>(form, "patternNote").Text = "Greeting"; Find<Expander>(form, "patternDetails").IsExpanded = true; Find<TextBox>(form, "patternCollocations").Text = " friend \n\n colleague "; VocabularyThemeRender.Capture(form, "usage-pattern-create", 600, 520); Find<Button>(form, "semanticFormSave").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); });
+        Find<Button>(window, "canonicalAddPattern").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); await window.LastOperation!;
+        var baseline = (await store.ReadAsync()).Document.Semantics; var pattern = baseline.Patterns.Single(); Assert.Equal(new[] { "friend", "colleague" }, pattern.Collocations); Assert.Equal("Greeting", pattern.Note);
+        var form = new FrozenVocabularyUsagePatternEditorWindow(store, baseline, pattern.SenseId, pattern); form.Show(); Find<TextBox>(form, "patternNote").Text = "Draft";
+        await store.UpdateSemanticsAsync(baseline with { Patterns = [pattern with { Region = "Concurrent" }] }, baseline); Find<Button>(form, "semanticFormSave").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); await form.LastOperation!;
+        Assert.True(form.IsVisible); Assert.Equal("Draft", Find<TextBox>(form, "patternNote").Text); Assert.NotEmpty(Find<TextBlock>(form, "semanticFormError").Text); form.Close(); await form.RetireAsync();
+        await window.Session.LoadAsync(); var current = (await store.ReadAsync()).Document.Semantics; pattern = current.Patterns.Single();
+        _ = window.Dispatcher.BeginInvoke(() => Find<Button>(Application.Current.Windows.OfType<FrozenVocabularyPatternDeleteWindow>().Single(), "patternDeleteCancel").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)));
+        Find<Button>(window, "canonicalRemovePattern").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); await window.LastOperation!; Assert.Single((await store.ReadAsync()).Document.Semantics.Patterns);
+        _ = window.Dispatcher.BeginInvoke(() => Find<Button>(Application.Current.Windows.OfType<FrozenVocabularyPatternDeleteWindow>().Single(), "patternDeleteConfirm").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)));
+        Find<Button>(window, "canonicalRemovePattern").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); await window.LastOperation!; Assert.Empty((await store.ReadAsync()).Document.Semantics.Patterns); window.Close();
+    });
+    [Fact]
+    public Task PatternEditPreservesSlotsProvenanceAndRestrictedMapping() => dispatcher.RunAsync(async () =>
+    {
+        await using var store = new FrozenVocabularyImportStore(FrozenVocabularySQLiteDatabase.CreateMemory()); var added = await store.AddEntriesAsync([new(Expression: "hello", Example: "hello there")]); var initial = await store.ReadAsync();
+        var node = new VocabularyMeaningNode(Guid.NewGuid(), [new R.VocabularyMeaningLabel("Greeting")]); var pattern = new R.VocabularyUsagePattern(added.Selection!.Value.SenseId, "hello {person}") { Slots = [new R.VocabularyPatternSlot("person")], Provenance = new R.VocabularySemanticProvenance { Origin = R.VocabularySemanticOrigin.Model, Status = R.VocabularySemanticStatus.Proposed } };
+        var mapping = new R.VocabularyMeaningMapping(node.Id, pattern.SenseId) { PatternId = pattern.Id, EvidenceIds = [initial.Document.Entries.Single().Senses.Single().Examples.Single().Id] };
+        await store.UpdateSemanticsAsync(initial.Document.Semantics with { Nodes = [node], Patterns = [pattern], Mappings = [mapping] }, initial.Document.Semantics); var baseline = (await store.ReadAsync()).Document.Semantics;
+        var form = new FrozenVocabularyUsagePatternEditorWindow(store, baseline, pattern.SenseId, pattern); form.Show(); Assert.True(Find<TextBox>(form, "patternTemplate").IsReadOnly); Find<TextBox>(form, "patternNote").Text = "revised"; Find<Button>(form, "semanticFormSave").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); await form.LastOperation!; await form.RetireAsync();
+        var saved = (await store.ReadAsync()).Document.Semantics; Assert.Equal(pattern.Id, saved.Patterns.Single().Id); Assert.Equal(pattern.Slots, saved.Patterns.Single().Slots); Assert.Equal(pattern.Provenance, saved.Patterns.Single().Provenance); Assert.Equal(mapping, saved.Mappings.Single());
+        var removed = VocabularySemanticFormPolicy.RemovePattern(saved, pattern.Id); Assert.Empty(removed.Patterns); Assert.Empty(removed.Mappings); Assert.Single(removed.Nodes);
+        await store.UpdateSemanticsAsync(removed, saved); var after = await store.ReadAsync(); Assert.Empty(after.Document.Semantics.Mappings); Assert.Single(after.Document.Entries); Assert.Equal(mapping.EvidenceIds.Single(), after.Document.Entries.Single().Senses.Single().Examples.Single().Id);
+    });
+    [Fact]
+    public Task PatternAcceptedSaveDrainsAndCancelRetainsBaseline() => dispatcher.RunAsync(async () =>
+    {
+        var held = new HeldStore(); var baseline = new VocabularySemanticIndex(); var form = new FrozenVocabularyUsagePatternEditorWindow(held, baseline, Guid.NewGuid()); form.Show();
+        Find<TextBox>(form, "patternTemplate").Text = "draft"; Find<Button>(form, "semanticFormSave").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); form.Close(); Assert.True(form.IsVisible);
+        var retire = form.RetireAsync(); Assert.False(retire.IsCompleted); held.Gate.SetResult(new(1, new())); await retire; Assert.True(form.Saved); Assert.False(form.IsVisible);
+        await using var store = new FrozenVocabularyImportStore(FrozenVocabularySQLiteDatabase.CreateMemory()); var before = await store.ReadAsync(); var cancelled = new FrozenVocabularyUsagePatternEditorWindow(store, before.Document.Semantics, Guid.NewGuid()); cancelled.Show(); Find<TextBox>(cancelled, "patternTemplate").Text = "discard"; cancelled.Close(); await cancelled.RetireAsync(); Assert.Equal(before.Document.Semantics, (await store.ReadAsync()).Document.Semantics);
+    });
     [Theory]
     [InlineData("uncited", true)]
     [InlineData("cited", true)]

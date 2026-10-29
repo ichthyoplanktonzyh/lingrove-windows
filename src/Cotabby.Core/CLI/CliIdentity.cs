@@ -21,10 +21,50 @@ public static class CliIdentity
     public static string Fingerprint(CliBatch batch)
     {
         using var stream = new MemoryStream();
-        using (var writer = new Utf8JsonWriter(stream, new JsonWriterOptions { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping })) { Write(writer, batch.CopyValue()); }
+        var canonical = batch.CopyValue(); NormalizeTypedValues(canonical); RemoveOptionalNulls(canonical, false);
+        using (var writer = new Utf8JsonWriter(stream, new JsonWriterOptions { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping })) { Write(writer, canonical); }
         // Foundation's default JSONEncoder escapes '/' even when sorting keys.
         string text = Encoding.UTF8.GetString(stream.ToArray()).Replace("/", "\\/", StringComparison.Ordinal);
         return Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(text)));
+    }
+    private static void NormalizeTypedValues(JsonObject batch)
+    {
+        static void Uuid(JsonObject value, string field)
+        {
+            if (value[field] is JsonValue token && token.TryGetValue<string>(out var text) && Guid.TryParseExact(text, "D", out var id))
+                value[field] = id.ToString("D").ToUpperInvariant();
+        }
+        foreach (var item in batch["operations"]!.AsArray())
+        {
+            var operation = item!.AsObject();
+            foreach (string name in new[] { "append", "update" }) if (operation[name] is JsonObject target) { Uuid(target, "entryID"); Uuid(target, "senseID"); }
+            if (operation["delete"] is JsonObject deletion) Uuid(deletion, "id");
+            if (operation["capture"] is JsonObject capture)
+            {
+                if (capture["meanings"] is JsonArray meanings) foreach (var value in meanings.OfType<JsonObject>()) Uuid(value, "id");
+                if (capture["entries"] is JsonArray entries) foreach (var entry in entries.OfType<JsonObject>())
+                    if (entry["senses"] is JsonArray senses) foreach (var sense in senses.OfType<JsonObject>()) Uuid(sense, "id");
+            }
+            var action = operation["add"] ?? operation["append"];
+            if (action?["content"] is JsonArray blocks) foreach (var block in blocks.OfType<JsonObject>())
+                if (block["image"] is JsonObject image && image["data"] is JsonValue data && data.TryGetValue<string>(out var text))
+                    image["data"] = Convert.ToBase64String(Convert.FromBase64String(text));
+        }
+    }
+    // Swift's synthesized Codable omits nil optional fields. Resource put values are CLIJSON,
+    // where explicit null is meaningful patch data and must remain in the fingerprint.
+    private static void RemoveOptionalNulls(JsonNode? node, bool preserveNulls)
+    {
+        if (node is JsonObject obj)
+        {
+            foreach (var name in obj.Select(pair => pair.Key).ToArray())
+            {
+                if (obj[name] is null) { if (!preserveNulls) obj.Remove(name); continue; }
+                bool preserve = preserveNulls || name == "value" && obj.ContainsKey("resource");
+                RemoveOptionalNulls(obj[name], preserve);
+            }
+        }
+        else if (node is JsonArray array) foreach (var value in array) RemoveOptionalNulls(value, preserveNulls);
     }
     private static void Write(Utf8JsonWriter writer, JsonNode? node)
     {

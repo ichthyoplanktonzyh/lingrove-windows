@@ -19,4 +19,25 @@ public sealed class CliIdentityTests
         var changed = CliInputContract.DecodeBatch(Encoding.UTF8.GetBytes("""{"version":1,"idempotencyKey":"k","operations":[{"add":{"expression":"bank","language":"en","kind":"word","meaning":"y"}}]}"""));
         Assert.Equal(CliIdentity.Fingerprint(first), CliIdentity.Fingerprint(reordered)); Assert.NotEqual(CliIdentity.Fingerprint(first), CliIdentity.Fingerprint(changed));
     }
+    [Fact]
+    public void TypedOptionalNullIsOmittedButResourcePatchNullRemainsData()
+    {
+        static CliBatch Parse(string value) => CliInputContract.DecodeBatch(Encoding.UTF8.GetBytes(value));
+        var omitted = Parse("""{"version":1,"idempotencyKey":"k","operations":[{"add":{"expression":"bank","language":"en","kind":"word","meaning":"x"}}]}""");
+        var optionalNull = Parse("""{"version":1,"idempotencyKey":"k","expectedRevision":null,"operations":[{"add":{"expression":"bank","language":"en","kind":"word","meaning":"x","examples":null,"note":null}}]}""");
+        Assert.Equal(CliIdentity.Fingerprint(omitted), CliIdentity.Fingerprint(optionalNull));
+        var patchOmitted = Parse("""{"version":2,"idempotencyKey":"k","expectedRevision":0,"operations":[{"put":{"resource":"entries","value":{"id":"00000000-0000-0000-0000-000000000001"}}}]}""");
+        var patchNull = Parse("""{"version":2,"idempotencyKey":"k","expectedRevision":0,"operations":[{"put":{"resource":"entries","value":{"id":"00000000-0000-0000-0000-000000000001","language":null}}}]}""");
+        Assert.NotEqual(CliIdentity.Fingerprint(patchOmitted), CliIdentity.Fingerprint(patchNull));
+    }
+    [Fact]
+    public void TypedUuidCasingDoesNotChangeFingerprintButRawPatchTextDoes()
+    {
+        static CliBatch Parse(string value) => CliInputContract.DecodeBatch(Encoding.UTF8.GetBytes(value));
+        string append = """{"version":1,"idempotencyKey":"k","operations":[{"append":{"entryID":"abcdefab-cdef-abcd-efab-cdefabcdefab","senseID":"abcdefab-cdef-abcd-efab-cdefabcdefac","tags":["x"]}}]}""";
+        var a = Parse(append); var b = Parse(append.Replace("abcdefab-cdef-abcd-efab-cdefabcdefab", "ABCDEFAB-CDEF-ABCD-EFAB-CDEFABCDEFAB"));
+        Assert.Equal(CliIdentity.Fingerprint(a), CliIdentity.Fingerprint(b));
+        string raw = """{"version":2,"idempotencyKey":"k","expectedRevision":0,"operations":[{"put":{"resource":"entries","value":{"id":"abcdefab-cdef-abcd-efab-cdefabcdefab"}}}]}""";
+        Assert.NotEqual(CliIdentity.Fingerprint(Parse(raw)), CliIdentity.Fingerprint(Parse(raw.Replace("abcdefab-cdef-abcd-efab-cdefabcdefab", "ABCDEFAB-CDEF-ABCD-EFAB-CDEFABCDEFAB"))));
+    }
 }

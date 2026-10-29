@@ -45,15 +45,33 @@ internal sealed class CliMailboxDirectory : IDisposable
         if (File.GetLastWriteTimeUtc(handle) < cutoff) { Verify(); if (!SetFileInformationByHandle(handle, 4, [1], 1)) throw Invalid(); }
     }
     internal void Publish(string name, ReadOnlySpan<byte> bytes)
+        => _ = PublishOwned(name, bytes);
+    internal VocabularyWindowsFile.FileIdentity PublishOwned(string name, ReadOnlySpan<byte> bytes)
     {
         ValidateName(name); if (bytes.Length > CliInputContract.MaximumBytes) throw Invalid(); Verify();
         string staging = System.IO.Path.Combine(Path, ".cli-" + Guid.NewGuid().ToString("D")); FileStream? stream = null; bool published = false;
         try
         {
             stream = new FileInfo(staging).Create(FileMode.CreateNew, FileSystemRights.FullControl, FileShare.None, 65536, FileOptions.None, VocabularyWindowsFile.NewFileSecurity());
-            stream.Write(bytes); stream.Flush(true); Verify(); Rename(stream.SafeFileHandle, System.IO.Path.Combine(Path, name)); published = true;
+            stream.Write(bytes); stream.Flush(true); var identity = VocabularyWindowsFile.Identity(stream.SafeFileHandle);
+            Verify(); Rename(stream.SafeFileHandle, System.IO.Path.Combine(Path, name)); published = true; return identity;
         }
         finally { if (stream is not null) { if (!published) _ = SetFileInformationByHandle(stream.SafeFileHandle, 4, [1], 1); stream.Dispose(); } }
+    }
+    internal byte[]? Consume(string name)
+    {
+        ValidateName(name); using var handle = _directory.OpenFile(name, delete: true); if (handle is null) return null;
+        using var stream = new FileStream(handle, FileAccess.Read);
+        if (stream.Length < 0 || stream.Length > CliInputContract.MaximumBytes) throw Invalid();
+        using var output = new MemoryStream((int)stream.Length); var buffer = new byte[65536];
+        while (true)
+        {
+            int count = stream.Read(buffer, 0, Math.Min(buffer.Length, CliInputContract.MaximumBytes + 1 - (int)output.Length));
+            if (count == 0) break; output.Write(buffer, 0, count);
+            if (output.Length > CliInputContract.MaximumBytes) throw Invalid();
+        }
+        Verify(); if (!SetFileInformationByHandle(handle, 4, [1], 1)) throw Invalid();
+        return output.ToArray();
     }
     internal bool Claim(string name, CliMailboxDirectory target)
         => ClaimOwned(name, target) is not null;

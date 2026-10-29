@@ -32,4 +32,15 @@ public sealed class CliMailboxServerTests : IAsyncLifetime
         await server.StartAsync(); await entered.Task.WaitAsync(TimeSpan.FromSeconds(10)); var stopping = server.DisposeAsync().AsTask(); Assert.False(stopping.IsCompleted);
         release.SetResult(); await stopping; Assert.True(replies.Exists(name)); Assert.False(working.Exists(name)); Assert.False(requests.Exists(name));
     }
+    [Fact]
+    public async Task ClientAndServerExchangeAnAcknowledgedRequest()
+    {
+        await using var server = new CliMailboxServer(_root, request => Task.FromResult(new CliReply { RequestId = request.Id, Ok = true, Result = new JsonObject { ["revision"] = 9 } }));
+        await server.StartAsync();
+        var request = new CliRequest { ExpiresAt = CliWire.Now() + 10 };
+        var reply = await CliMailboxClient.SendAsync(_root, request);
+        Assert.True(reply.Ok); Assert.Equal(request.Id, reply.RequestId); Assert.Equal(9, reply.Result!["revision"]!.GetValue<int>());
+        using var replies = new CliMailboxDirectory(Path.Combine(_root, "replies"), false);
+        Assert.False(replies.Exists(request.Id.ToString("D") + ".json"));
+    }
 }

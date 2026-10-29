@@ -21,4 +21,7 @@ public sealed record LearningTranslationOptions
 
     /// <summary>Configured context window (8,192-token Mac fallback), validated against the endpoint ceiling.</summary>
     public int ContextTokens { get; init; } = 8_192;
+
+    /// <summary>Endpoint-only temperature and top-p overrides captured for this destination.</summary>
+    public LearningModelSamplingOverrides EndpointSampling { get; init; } = new();
 }

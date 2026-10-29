@@ -124,6 +124,13 @@ public static class LearningTranslationRequestFactory
             estimated: estimated,
             count: measurement);
 
+        if (family is null)
+        {
+            var sampling = (frozenOptions.EndpointSampling ?? new()).EndpointOnly;
+            prompt = prompt with { Sampling = prompt.Sampling with
+            { Temperature = sampling.Temperature ?? prompt.Sampling.Temperature, TopP = sampling.TopP ?? prompt.Sampling.TopP } };
+        }
+
         return new LearningTranslationRequest(requestId, source,
             preserveOptions ? options : frozenOptions, prompt, outputTokens);
     }

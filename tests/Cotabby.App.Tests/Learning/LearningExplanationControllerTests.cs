@@ -288,6 +288,31 @@ public sealed class LearningExplanationControllerTests
     }
 
     [Fact]
+    public async Task PowerSwitchRetiresOldWorkButDormantProfileEditsDoNot()
+    {
+        var runtime = new FakeRuntime(); var clock = new Clock(); var settings = Settings();
+        settings.SetLearningPowerSwitching(LearningModelRole.Explanation, true);
+        settings.LearningExplanationBatteryProfile = LearningPowerProfile.Local("second.gguf");
+        settings.RecordLocalModelTask("second.gguf", Cotabby.Core.Models.LocalModelTask.Explanation);
+        var pending = new TaskCompletionSource<LearningExplanationResult>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var started = new TaskCompletionSource<CancellationToken>(TaskCreationOptions.RunContinuationsAsynchronously);
+        await using var owner = Owner(runtime, settings, clock, _ => new Engine((_, _, _, token) =>
+        { started.TrySetResult(token); return pending.Task; }));
+        var work = owner.Service.GenerateAsync(Input, "req_power");
+        try
+        {
+            var token = await started.Task.WaitAsync(TimeoutLimit);
+            settings.LearningExplanationBatteryProfile = LearningPowerProfile.Local("second.gguf", LearningChatTemplate.Qwen3);
+            owner.ApplySettings(settings); Assert.False(token.IsCancellationRequested);
+            settings.LearningPowerPluggedIn = false; owner.ApplySettings(settings);
+            Assert.True(token.IsCancellationRequested); pending.SetResult(Answer);
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => work.WaitAsync(TimeoutLimit));
+            Assert.Null(owner.Service.Cached(Input));
+        }
+        finally { pending.TrySetResult(Answer); }
+    }
+
+    [Fact]
     public async Task SamplerEditCancelsActiveWorkButRetainsTheAllocation()
     {
         var runtime = new FakeRuntime(); var clock = new Clock(); var settings = Settings();

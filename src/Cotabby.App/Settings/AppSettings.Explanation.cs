@@ -47,13 +47,14 @@ public sealed partial class AppSettings
 
     public LearningModelSnapshot LearningExplanationSnapshot()
     {
-        if (LearningExplanationBackend == LearningModelBackend.Endpoint) return LearningExplanationEndpointSnapshot();
-        var model = LearningExplanationLocalModel ?? "";
+        var selection = LearningExplanationActiveSelection;
+        if (selection.Backend == LearningModelBackend.Endpoint) return LearningExplanationEndpointSnapshot(selection.EndpointModel);
+        var model = selection.LocalModel;
         var generation = EffectiveLearningExplanationGenerationProfile(model);
         return new LearningModelSnapshot
         {
             LocalModel = model,
-            Template = Enum.IsDefined(LearningExplanationLocalTemplate) ? LearningExplanationLocalTemplate : LearningChatTemplate.Automatic,
+            Template = selection.Template,
             ContextWindowTokens = EffectiveLearningExplanationContextTokens(model),
             SamplingOverrides = generation.Sampling,
             MaximumOutputTokens = generation.MaximumOutputTokens,

@@ -24,7 +24,7 @@ public sealed partial class AppSettings
     public Dictionary<string, LearningGenerationProfile> LearningExplanationEndpointGenerationProfiles { get; set; } = new(CanonicalStringComparer.Instance);
     [JsonIgnore] internal int LearningExplanationCredentialRevision { get; set; }
     [JsonIgnore] public string LearningExplanationEndpointIdentity => ModelDestinationIdentity.Create("endpoint",
-        LearningExplanationEndpointModel ?? "", LearningExplanationEndpointBaseUrl ?? "");
+        LearningExplanationActiveSelection.EndpointModel, LearningExplanationEndpointBaseUrl ?? "");
 
     internal void NormalizeExplanationEndpoints()
     {
@@ -51,12 +51,12 @@ public sealed partial class AppSettings
                 MaximumOutputTokens = saved?.MaximumOutputTokens is { } output ? LearningExplanationModelPolicy.ResolveOutputTokens(output) : null };
         }
     }
-    private LearningModelSnapshot LearningExplanationEndpointSnapshot()
+    private LearningModelSnapshot LearningExplanationEndpointSnapshot(string model)
     {
         var generation = EffectiveLearningExplanationEndpointGenerationProfile;
         return new LearningModelSnapshot { Backend = LearningModelBackend.Endpoint,
             BaseUrl = FoundationText.TrimWhitespaceAndNewlines(LearningExplanationEndpointBaseUrl ?? ""),
-            EndpointModel = FoundationText.TrimWhitespaceAndNewlines(LearningExplanationEndpointModel ?? ""),
+            EndpointModel = FoundationText.TrimWhitespaceAndNewlines(model),
             CredentialRevision = LearningExplanationCredentialRevision, ContextWindowTokens = EffectiveLearningExplanationEndpointContextTokens,
             SamplingOverrides = generation.Sampling, MaximumOutputTokens = generation.MaximumOutputTokens }.ForExplanation();
     }

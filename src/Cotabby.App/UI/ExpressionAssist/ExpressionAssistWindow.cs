@@ -40,11 +40,13 @@ internal sealed class ExpressionAssistWindow : Window, IExpressionAssistPanel
     }
 
     internal void Bind(ExpressionAssistSession session) => _session = session;
+    internal ExpressionAssistView View => _view;
     nint IExpressionAssistPanel.WindowHandle => _handle;
     bool IExpressionAssistPanel.OwnsKeyboard => Volatile.Read(ref _ownsKeyboard) != 0;
     bool IExpressionAssistPanel.IsVisible => IsVisible;
     Task IExpressionAssistPanel.ShowAsync(ExpressionEditorReceipt receipt, string initialQuery)
     {
+        if (!IsVisible) _view.ResetComposition();
         _view.SetQuery(initialQuery); Show(); UpdateLayout(); LearningPanelPlacement.Position(this, _anchor);
         Activate(); _view.FocusQuery(); RefreshOwnership();
         return Dispatcher.InvokeAsync(RefreshOwnership, DispatcherPriority.Input).Task;
@@ -56,6 +58,7 @@ internal sealed class ExpressionAssistWindow : Window, IExpressionAssistPanel
     }
     void IExpressionAssistPanel.Hide(bool restoringHost)
     {
+        _view.ResetComposition();
         if (_closing) return;
         _hiding = true;
         try { Volatile.Write(ref _ownsKeyboard, 0); Hide(); }

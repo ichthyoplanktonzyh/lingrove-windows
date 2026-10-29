@@ -3,8 +3,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Input;
+using System.Windows.Threading;
 using Cotabby.App.UI.ExpressionAssist;
 using Cotabby.Core.ExpressionAssist;
+using Cotabby.Core.Focus;
 using static Cotabby.App.Wpf.Tests.LearningViewProbe;
 
 namespace Cotabby.App.Wpf.Tests;
@@ -12,6 +15,50 @@ namespace Cotabby.App.Wpf.Tests;
 [Collection("WPF views")]
 public sealed class ExpressionAssistViewTests(WpfDispatcher dispatcher)
 {
+    [Fact]
+    public Task RetiredCompositionCannotBlockOrClearTheNextInputSession() => dispatcher.RunAsync(async () =>
+    {
+        var window = new ExpressionAssistWindow(new ScreenRect(50, 50, 1, 18));
+        var panel = (IExpressionAssistPanel)window;
+        var observation = new ExpressionEditorObservation(1, "field", 1, 1, "", new(0, 0), false, true, InputCompositionState.Clear, 1);
+        var receipt = ExpressionEditorReceiptPolicy.Capture(observation, null)!;
+        try
+        {
+            await panel.ShowAsync(receipt, "");
+            var view = window.View;
+            RaiseComposition(view.QueryBox, TextCompositionManager.PreviewTextInputStartEvent);
+            Assert.True(view.IsComposing);
+            RaiseComposition(view.QueryBox, TextCompositionManager.PreviewTextInputEvent);
+            panel.Hide(false); // The old completion remains queued on the dispatcher.
+            Assert.False(view.IsComposing);
+            var showing = panel.ShowAsync(receipt, "new query");
+            RaiseComposition(view.QueryBox, TextCompositionManager.PreviewTextInputStartEvent);
+            await showing; await Dispatcher.Yield(DispatcherPriority.ApplicationIdle);
+            Assert.True(view.IsComposing); // The old completion did not clear the new preedit.
+            bool prematureCancel = false; view.Cancel += () => prematureCancel = true;
+            var composingKey = new KeyEventArgs(Keyboard.PrimaryDevice, PresentationSource.FromVisual(view.QueryBox), 0, Key.Escape)
+                { RoutedEvent = Keyboard.PreviewKeyDownEvent };
+            view.QueryBox.RaiseEvent(composingKey); Assert.False(prematureCancel);
+            panel.Hide(false);
+            await panel.ShowAsync(receipt, "new query");
+            Assert.False(view.IsComposing);
+            string? observed = null; bool cancelled = false;
+            view.QueryChanged += (text, composing) => { if (!composing) observed = text; };
+            view.Cancel += () => cancelled = true;
+            view.SetQuery("new input"); Assert.Equal("new input", observed);
+            var key = new KeyEventArgs(Keyboard.PrimaryDevice, PresentationSource.FromVisual(view.QueryBox), 0, Key.Escape)
+                { RoutedEvent = Keyboard.PreviewKeyDownEvent };
+            view.QueryBox.RaiseEvent(key);
+            Assert.True(key.Handled); Assert.True(cancelled);
+        }
+        finally { window.Close(); }
+    });
+
+    private static void RaiseComposition(TextBox target, RoutedEvent routedEvent)
+    {
+        var composition = new TextComposition(InputManager.Current, target, "");
+        target.RaiseEvent(new TextCompositionEventArgs(Keyboard.PrimaryDevice, composition) { RoutedEvent = routedEvent });
+    }
     private static IEnumerable<T> Descendants<T>(DependencyObject root) where T : DependencyObject
     {
         for (int i = 0; i < VisualTreeHelper.GetChildrenCount(root); i++)

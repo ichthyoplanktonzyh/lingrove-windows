@@ -57,6 +57,14 @@ internal sealed class ExpressionAssistView : Border
     internal void SetQuery(string query) => _query.Text = query;
     internal bool FocusQuery() => _query.Focus();
 
+    /// <summary>Retire the previous native input lifetime without publishing a synthetic edit.
+    /// Advancing the revision also makes a queued completion from that lifetime inert.</summary>
+    internal void ResetComposition()
+    {
+        ++_compositionRevision;
+        _composing = false;
+    }
+
     internal void Update(ExpressionAssistResult? result, string? message, bool loading)
     {
         _candidates = result?.Candidates ?? Array.Empty<ExpressionAssistCandidate>();

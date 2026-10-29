@@ -19,7 +19,9 @@ rejects versions other than seven. A future v7/v8 decoder must implement and tes
 wire shape and reject unsupported versions. Categories are separate from collections and evidence;
 catalog upgrades preserve retired IDs, custom children, memberships and overrides. A catalog decode
 is bounded and validates the staged index; it only reads a trusted authored catalog manifest and is
-not a notebook decoder. A failed install leaves its input untouched. SHA-256 derived IDs use network
+not a notebook decoder. Coding keys and category axis raw strings are case-sensitive; required
+arrays reject null. Malformed UTF-8, excessive nesting and invalid or numeric axes fail closed.
+A failed install leaves its input untouched. SHA-256 derived IDs use network
 byte order and the original UUID version and variant bits.
 
 Admission here is deliberately **not** a full archive gate. Lifecycle, semantic and classification

@@ -14,6 +14,49 @@ public sealed class VocabularyFrozenClassificationTests
             ? [new() { Key = "degree", English = "Degree", Chinese = "程度" }, new() { Key = "near-zero", English = "Near absence", Chinese = "接近于无", Parents = ["degree"] }]
             : [new() { Key = "degree", English = "Degree", Chinese = "程度" }]
     };
+    private const string Manifest = """
+        {"key":"test.core","version":1,"authorship":"Fixture",
+         "references":[{"title":"Reference","url":"https://example.test","role":"Fixture"}],
+         "categories":[{"key":"root","axis":"content","english":"Root","chinese":"根","definition":"","parents":[]}]}
+        """;
+
+    [Theory]
+    [InlineData("\"references\":[", "\"References\":[")]
+    [InlineData("\"categories\":[", "\"Categories\":[")]
+    [InlineData("\"axis\":\"content\"", "\"Axis\":\"content\"")]
+    [InlineData("\"parents\":[]", "\"Parents\":[]")]
+    [InlineData("\"url\":", "\"URL\":")]
+    [InlineData("\"references\":[{\"title\":\"Reference\",\"url\":\"https://example.test\",\"role\":\"Fixture\"}]", "\"references\":null")]
+    [InlineData("\"categories\":[{\"key\":\"root\",\"axis\":\"content\",\"english\":\"Root\",\"chinese\":\"根\",\"definition\":\"\",\"parents\":[]}]", "\"categories\":null")]
+    [InlineData("\"references\":[{\"title\":\"Reference\",\"url\":\"https://example.test\",\"role\":\"Fixture\"}]", "\"references\":[null]")]
+    [InlineData("\"parents\":[]", "\"parents\":[null]")]
+    [InlineData("\"axis\":\"content\"", "\"axis\":null")]
+    [InlineData("\"parents\":[]", "\"parents\":null")]
+    [InlineData("\"axis\":\"content\"", "\"axis\":\"Content\"")]
+    [InlineData("\"axis\":\"content\"", "\"axis\":\"unknown\"")]
+    [InlineData("\"axis\":\"content\"", "\"axis\":0")]
+    [InlineData(",\"parents\":[]", "")]
+    [InlineData(",\"definition\":\"\"", "")]
+    public void CatalogDecoderRejectsNonSwiftKeysNullRequiredArraysAndInvalidAxis(string original, string replacement)
+    {
+        Assert.Contains(original, Manifest);
+        var bytes = System.Text.Encoding.UTF8.GetBytes(Manifest.Replace(original, replacement, StringComparison.Ordinal));
+        Assert.Throws<VocabularyException>(() => R.VocabularyClassificationCatalog.Decode(bytes));
+    }
+
+    [Fact]
+    public void CatalogDecoderBoundsMalformedBytesAndDepthButAcceptsEmptyRequiredArrays()
+    {
+        Assert.Single(R.VocabularyClassificationCatalog.Decode(System.Text.Encoding.UTF8.GetBytes(Manifest)).Categories);
+        var empty = """{"key":"empty","version":1,"authorship":"","references":[],"categories":[]}""";
+        var catalog = R.VocabularyClassificationCatalog.Decode(System.Text.Encoding.UTF8.GetBytes(empty));
+        Assert.Empty(catalog.References); Assert.Empty(catalog.Categories);
+        Assert.Throws<VocabularyException>(() => R.VocabularyClassificationCatalog.Decode([0xff]));
+        byte[] badUtf8 = [.. "{\"key\":\""u8, 0xff, .. "\",\"version\":1,\"authorship\":\"\",\"references\":[],\"categories\":[]}"u8];
+        Assert.Throws<VocabularyException>(() => R.VocabularyClassificationCatalog.Decode(badUtf8));
+        var deep = Manifest.Replace("\"key\":\"test.core\"", "\"extra\":" + new string('[', 33) + "0" + new string(']', 33) + ",\"key\":\"test.core\"", StringComparison.Ordinal);
+        Assert.Throws<VocabularyException>(() => R.VocabularyClassificationCatalog.Decode(System.Text.Encoding.UTF8.GetBytes(deep)));
+    }
     [Fact]
     public void BundledCatalogRetainsStableMultilingualKeysAndAxes()
     {

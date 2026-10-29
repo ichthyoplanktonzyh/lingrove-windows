@@ -16,8 +16,8 @@ public sealed record VocabularyClassificationCatalog
     [JsonRequired] public required string Key { get; init; }
     [JsonRequired] public int Version { get; init; }
     [JsonRequired] public string Authorship { get; init; } = "";
-    [JsonRequired] public IReadOnlyList<VocabularyClassificationCatalogReference> References { get => _references; init => _references = CollectionValues.List(value); }
-    [JsonRequired] public IReadOnlyList<VocabularyClassificationCatalogCategory> Categories { get => _categories; init => _categories = CollectionValues.List(value); }
+    [JsonRequired] public IReadOnlyList<VocabularyClassificationCatalogReference> References { get => _references; init => _references = CollectionValues.List(value ?? throw new JsonException("Catalog references cannot be null.")); }
+    [JsonRequired] public IReadOnlyList<VocabularyClassificationCatalogCategory> Categories { get => _categories; init => _categories = CollectionValues.List(value ?? throw new JsonException("Catalog categories cannot be null.")); }
     public const int MaximumCatalogBytes = 1_048_576;
     public const string ResourceName = "Cotabby.Core.Vocabulary.Resources.VocabularyClassificationCatalog.json";
 
@@ -27,8 +27,8 @@ public sealed record VocabularyClassificationCatalog
         if (bytes.Length == 0 || bytes.Length > MaximumCatalogBytes) throw VocabularyClassificationPolicy.Invalid();
         try
         {
-            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true, MaxDepth = 32 };
-            options.Converters.Add(new JsonStringEnumConverter<VocabularyCategoryAxis>(JsonNamingPolicy.CamelCase, allowIntegerValues: false));
+            var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase, PropertyNameCaseInsensitive = false, MaxDepth = 32 };
+            options.Converters.Add(new ExactAxisConverter());
             var catalog = JsonSerializer.Deserialize<VocabularyClassificationCatalog>(bytes, options) ?? throw VocabularyClassificationPolicy.Invalid();
             if (!VocabularyClassificationPolicy.Fits(catalog.Authorship, 16_384) || catalog.References.Count > 256
                 || catalog.References.Any(x => x is null || !VocabularyClassificationPolicy.Fits(x.Title, 4_096)
@@ -38,7 +38,28 @@ public sealed record VocabularyClassificationCatalog
         }
         catch (JsonException) { throw VocabularyClassificationPolicy.Invalid(); }
         catch (ArgumentException) { throw VocabularyClassificationPolicy.Invalid(); }
-        catch (NullReferenceException) { throw VocabularyClassificationPolicy.Invalid(); }
+    }
+    // Swift Codable raw values are exact strings; System.Text.Json's stock enum converter
+    // accepts case variants, which would admit a manifest the frozen Mac decoder rejects.
+    private sealed class ExactAxisConverter : JsonConverter<VocabularyCategoryAxis>
+    {
+        public override VocabularyCategoryAxis Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            if (reader.TokenType != JsonTokenType.String) throw new JsonException();
+            return reader.GetString() switch
+            {
+                "content" => VocabularyCategoryAxis.Content,
+                "function" => VocabularyCategoryAxis.Function,
+                _ => throw new JsonException(),
+            };
+        }
+        public override void Write(Utf8JsonWriter writer, VocabularyCategoryAxis value, JsonSerializerOptions options) =>
+            writer.WriteStringValue(value switch
+            {
+                VocabularyCategoryAxis.Content => "content",
+                VocabularyCategoryAxis.Function => "function",
+                _ => throw new JsonException(),
+            });
     }
     public static VocabularyClassificationCatalog Bundled()
     {
@@ -100,5 +121,5 @@ public sealed record VocabularyClassificationCatalogCategory
     [JsonRequired] public required string English { get; init; }
     [JsonRequired] public required string Chinese { get; init; }
     [JsonRequired] public string Definition { get; init; } = "";
-    [JsonRequired] public IReadOnlyList<string> Parents { get => _parents; init => _parents = CollectionValues.List(value); }
+    [JsonRequired] public IReadOnlyList<string> Parents { get => _parents; init => _parents = CollectionValues.List(value ?? throw new JsonException("Category parents cannot be null.")); }
 }

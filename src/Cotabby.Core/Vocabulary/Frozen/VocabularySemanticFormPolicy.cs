@@ -29,4 +29,9 @@ public static class VocabularySemanticFormPolicy
         Relations = index.Relations.Where(relation => relation.SourceId != nodeId && relation.TargetId != nodeId).ToArray(),
         CueTargets = index.CueTargets.Where(target => target.NodeId != nodeId).ToArray(),
     };
+    public static VocabularySemanticIndex RemovePattern(VocabularySemanticIndex index, Guid patternId) => index with
+    {
+        Patterns = index.Patterns.Where(pattern => pattern.Id != patternId).ToArray(),
+        Mappings = index.Mappings.Where(mapping => mapping.PatternId != patternId).ToArray(),
+    };
 }

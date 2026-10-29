@@ -26,7 +26,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow
         var group = SenseButton("Group by meaning", "canonicalGroupSense", CanSemantic && _session.Snapshot!.Document.Semantics.Nodes.Count > 0);
         group.Click += (_, _) => { if (epoch == _actionSelectionEpoch) LastOperation = Track(OpenMappingAsync(null, selection.SenseId, null)); }; panel.Children.Add(group);
         panel.Children.Add(NewMeaningButton(selection));
-        var pattern = Disabled("Add usage pattern", "Usage pattern editing is not available in this notebook yet."); pattern.Margin = new Thickness(0, 0, 8, 8); panel.Children.Add(pattern);
+        var pattern = SenseButton("Add usage pattern", "canonicalAddPattern", CanSemantic); pattern.Click += (_, _) => { if (epoch == _actionSelectionEpoch) LastOperation = Track(OpenPatternAsync(selection.SenseId, null)); }; panel.Children.Add(pattern);
     }
     private void AddMeaningActions(Panel panel, F.VocabularyMeaningNode node)
     {
@@ -62,11 +62,37 @@ internal sealed partial class FrozenVocabularyNotebookWindow
             var open = SenseButton(Cotabby.Core.Vocabulary.Notebook.VocabularyMeaningLabelPolicy.Title(node, _session.PreferredLanguages), "canonicalOpenMeaning", true); open.Click += (_, _) => { ++_actionSelectionEpoch; ShowMeaning(node.Id); }; panel.Children.Add(open);
             if (mapping.Provenance.Status == R.VocabularySemanticStatus.Proposed) panel.Children.Add(Caption("Suggested grouping"));
             if (mapping.Conditions.Length > 0) panel.Children.Add(Caption(mapping.Conditions)); if (mapping.Nuance.Length > 0) panel.Children.Add(Caption(mapping.Nuance));
-            if (mapping.PatternId is { } id && snapshot.Document.Semantics.Patterns.FirstOrDefault(p => p.Id == id) is { } pattern) panel.Children.Add(Caption("Used in this wording: " + pattern.Template));
+            if (mapping.PatternId is { } id && snapshot.Document.Semantics.Patterns.FirstOrDefault(p => p.Id == id) is { } pattern) { panel.Children.Add(Caption("Used in this wording:")); AddPatternSummary(panel, pattern, false, mapping.Provenance.Status != R.VocabularySemanticStatus.Proposed); }
             AddMappingButtons(panel, mapping);
         }
         var patterns = snapshot.Document.Semantics.Patterns.Where(p => p.SenseId == selection.SenseId).ToArray();
-        if (patterns.Length > 0) { Section(panel, "Usage patterns"); foreach (var pattern in patterns) { panel.Children.Add(Paragraph(pattern.Template)); if (pattern.Note.Length > 0) panel.Children.Add(Caption(pattern.Note)); if (pattern.Provenance.Status == R.VocabularySemanticStatus.Proposed) panel.Children.Add(Caption("Suggested wording")); } }
+        var standalone = patterns.Where(p => !mappings.Any(m => m.PatternId == p.Id)).ToArray();
+        if (standalone.Length > 0) { Section(panel, "Usage patterns"); foreach (var pattern in standalone) AddPatternSummary(panel, pattern, true); }
+    }
+    private void AddPatternSummary(Panel panel, R.VocabularyUsagePattern pattern, bool standalone, bool allowEdit = true)
+    {
+        long epoch = _actionSelectionEpoch; panel.Children.Add(Paragraph(pattern.Template));
+        var details = new[] { pattern.Formality == R.VocabularyPatternFormality.Unspecified ? "" : pattern.Formality.ToString(), pattern.Medium == R.VocabularyPatternMedium.Unspecified ? "" : pattern.Medium.ToString(), pattern.Region.Trim() }.Where(s => s.Length > 0);
+        var badges = string.Join(" · ", details); if (badges.Length > 0) panel.Children.Add(Caption(badges));
+        if (pattern.Note.Length > 0) panel.Children.Add(Caption(pattern.Note)); if (pattern.Collocations.Count > 0) panel.Children.Add(Caption(string.Join(" · ", pattern.Collocations))); if (pattern.Provenance.Status == R.VocabularySemanticStatus.Proposed) panel.Children.Add(Caption("Suggested wording"));
+        var actions = new WrapPanel(); if (allowEdit) { var edit = SenseButton("Edit usage pattern", "canonicalEditPattern", CanSemantic); edit.Click += (_, _) => { if (epoch == _actionSelectionEpoch) LastOperation = Track(OpenPatternAsync(pattern.SenseId, pattern)); }; actions.Children.Add(edit); }
+        if (standalone) { var remove = SenseButton("Remove wording", "canonicalRemovePattern", CanSemantic); remove.Click += (_, _) => { if (epoch == _actionSelectionEpoch) LastOperation = Track(DeletePatternAsync(pattern.Id)); }; actions.Children.Add(remove); } panel.Children.Add(actions);
+    }
+    private async Task OpenPatternAsync(Guid senseId, R.VocabularyUsagePattern? pattern)
+    {
+        if (!CanSemantic || _store is not ICanonicalVocabularySemanticStore store || _session.Snapshot is not { } snapshot || !_session.Entries.Any(e => e.Senses.Any(s => s.Id == senseId))) return;
+        if (pattern is not null && !snapshot.Document.Semantics.Patterns.Contains(pattern)) return;
+        await OpenSemanticFormAsync(new FrozenVocabularyUsagePatternEditorWindow(store, snapshot.Document.Semantics, senseId, pattern) { Owner = this }, null);
+    }
+    private async Task DeletePatternAsync(Guid id)
+    {
+        if (!CanSemantic) return; long epoch = _actionSelectionEpoch; var done = _modalDone = new(TaskCreationOptions.RunContinuationsAsynchronously); bool confirm = false;
+        try { var dialog = new FrozenVocabularyPatternDeleteWindow { Owner = this }; _inputWindow = dialog; try { confirm = dialog.ShowDialog() == true; } finally { _inputWindow = null; } }
+        finally { _modalDone = null; done.TrySetResult(); }
+        if (confirm && CanSemantic && epoch == _actionSelectionEpoch && _session.Snapshot is { } snapshot && snapshot.Document.Semantics.Patterns.Any(p => p.Id == id))
+        { var baseline = snapshot.Document.Semantics; await MutateSemanticsAsync(VocabularySemanticFormPolicy.RemovePattern(baseline, id), baseline); }
+        if (!_retiring && _pendingShow is { } pending) { _pendingShow = null; _expanded.Add(pending.EntryId); await _session.RevealSelectionAsync(pending); }
+        if (_hideRequested && !_retiring) { _hideRequested = false; Hide(); } if (!_retiring) _session.Refresh();
     }
     private void AddMappingButtons(Panel panel, R.VocabularyMeaningMapping mapping)
     {
@@ -187,6 +213,16 @@ internal sealed partial class FrozenVocabularyNotebookWindow
         try { _session.Refresh(); await store.UpdateSemanticsAsync(edited, baseline, CancellationToken.None); if (!_retiring) await _session.LoadAsync(); }
         catch (Exception e) { if (!_retiring && epoch == _actionSelectionEpoch) _actionError = e.Message; }
         finally { _semanticBusy = false; _semanticCompletion = null; try { if (!_retiring) _session.Refresh(); } finally { done.TrySetResult(); } }
+    }
+}
+
+internal sealed class FrozenVocabularyPatternDeleteWindow : Window
+{
+    internal FrozenVocabularyPatternDeleteWindow()
+    {
+        Title = "Vocabulary"; Width = 440; SizeToContent = SizeToContent.Height; ResizeMode = ResizeMode.NoResize; ShowInTaskbar = false; WindowStartupLocation = WindowStartupLocation.CenterOwner; VocabularyNotebookTheme.Follow(this);
+        var root = new StackPanel { Margin = new Thickness(20) }; Content = root; root.Children.Add(new TextBlock { Text = "Remove this wording and its groupings?", FontSize = 18, FontWeight = FontWeights.SemiBold, TextWrapping = TextWrapping.Wrap });
+        var cancel = new Button { Name = "patternDeleteCancel", Content = "Cancel", IsCancel = true, IsDefault = true, MinWidth = 90 }; var remove = new Button { Name = "patternDeleteConfirm", Content = "Remove", MinWidth = 90 }; cancel.Click += (_, _) => DialogResult = false; remove.Click += (_, _) => DialogResult = true; root.Children.Add(VocabularyInputControls.Footer(cancel, remove));
     }
 }
 

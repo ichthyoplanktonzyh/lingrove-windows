@@ -39,6 +39,17 @@ Integration validation before independent composition review: Release solution b
 WPF reading/interface/history 99/99 and portable onboarding 2/2. A duplicate identical native
 retirement test from the backport and full source merge was removed; its assertion remains once.
 The Inference test project now includes the onboarding partial required by the reset projection.
-Final-head complete test results and CI are recorded in the PR. These are synthetic/fake tests,
+Independent composition reviews accepted `d777f57`; mailbox publication repair `4aa9be4` adds
+deterministic request/reply rename-before-handle-close regressions (15/15 independently). Only
+Windows sharing violation 32 is retried; identity, ACL and reparse failures remain rejected.
+The file logger now detaches its shared writer before closing it, including a failed flush, so
+late shutdown/restart diagnostics cannot throw by writing an already retired stream; independent
+normal, interleaved and throwing-dispose regressions passed 3/3 at `4761d1a`.
+
+Local complete Core passed 4975/4975. Running all four assemblies concurrently produced child
+startup/deadline failures and an initial UIA fake capture timeout, as well as the real publication
+race above. After that repair, sequential App passed 1252/1252 (the two original logger tests)
+and Inference passed 696/696; the added throwing-flush case also passed in the 3/3 logger run.
+Complete WPF and final-head CI results are recorded in the PR. These are synthetic/fake tests,
 not physical desktop acceptance. No real user notebook, editor, screen, clipboard, endpoint,
 model or Anki instance was used. Final native acceptance remains with the maintainer.

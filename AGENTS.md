@@ -338,7 +338,7 @@ the required checks pass. Create a scoped PR, resolve review findings, verify CI
 and merge it without asking for another approval. The primary agent coordinates shared contracts,
 integration, independent review and acceptance. The maintainer authorizes implementation delegates
 to own complete modules, including production code, configuration, tests and module documentation.
-Use `gpt-6.1-terra` with `xhigh` reasoning for implementation and review delegates unless the
+Use `gpt-6.1-terra` with `high` reasoning for implementation and review delegates unless the
 maintainer explicitly requests another setting. This supersedes the earlier root-only implementation
 and Luna read-only delegation rule. Use one isolated worktree/branch per implementation owner;
 coordinate shared-file changes through the primary agent. An author cannot be the sole reviewer of

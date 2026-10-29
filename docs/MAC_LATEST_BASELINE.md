@@ -80,7 +80,7 @@ expression while allowing attractive Windows/WPF visual design; Mac pixel identi
 
 This order follows frozen Mac ownership and dependencies. It does not authorize a replacement
 product design, new hosted transmission or automatic classification. The primary agent coordinates
-module implementation delegates using GPT-6.1 Terra xhigh, shared contracts and independent review.
+module implementation delegates using GPT-6.1 Terra high, shared contracts and independent review.
 Merge reviewed final-head green checkpoints to `main`.
 Ordinary rounds create no installer, downloadable package, release, model download or VM. Windows
 UIA/IME/insertion, ghost pixels, actual Anki, installed voices/audio and hardware/model quality still

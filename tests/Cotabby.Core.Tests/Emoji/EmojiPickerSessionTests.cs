@@ -54,6 +54,8 @@ public sealed class EmojiPickerSessionTests : IDisposable
         HasReliableSelection = true,
         IsTextWindowTruncated = false,
         FocusChangeSequence = 1,
+        Composition = InputCompositionState.Clear,
+        CompositionSequence = 1,
     };
 
     private static KeyboardEvent Key(KeyKind kind, char character = '\0', bool modifier = false) =>

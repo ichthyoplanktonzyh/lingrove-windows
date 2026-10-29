@@ -1,6 +1,7 @@
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Vocabulary.Notebook;
 using Cotabby.Core.Vocabulary.Resources;
+using F = Cotabby.Core.Vocabulary.Frozen;
 
 namespace Cotabby.Core.Tests.Vocabulary;
 
@@ -22,7 +23,7 @@ public sealed class VocabularyMeaningLabelPolicyTests
         var english = new VocabularyMeaningLabel("Postponement") { Language = LearningLanguage.English };
         var chinese = new VocabularyMeaningLabel("推迟安排") { Language = LearningLanguage.Chinese };
         var french = new VocabularyMeaningLabel("Reporter un événement") { Language = LearningLanguage.French, Preferred = false };
-        var node = new VocabularyMeaningNode(Guid.NewGuid(), [english, chinese, french]);
+        var node = new F.VocabularyMeaningNode(Guid.NewGuid(), [english, chinese, french]);
         Assert.Same(chinese, VocabularyMeaningLabelPolicy.Label(node.Labels, [LearningLanguage.Chinese, LearningLanguage.English]));
         Assert.Equal("Reporter un événement", VocabularyMeaningLabelPolicy.Title(node, [LearningLanguage.French, LearningLanguage.English]));
         Assert.Equal("推迟安排", VocabularyMeaningLabelPolicy.Title(node, [LearningLanguage.Japanese, LearningLanguage.Chinese]));
@@ -44,10 +45,10 @@ public sealed class VocabularyMeaningLabelPolicyTests
     [Fact]
     public void MixedLanguagesIncludeUnknownAndUseBorrowedCompactNames()
     {
-        var date = DateTimeOffset.UnixEpoch;
-        var english = new VocabularyEntry(Guid.NewGuid(), "bank", "bank", LearningLanguage.English,
+        var date = F.SourceDate.FromWindows(DateTimeOffset.UnixEpoch);
+        var english = new F.VocabularyEntry(Guid.NewGuid(), "bank", "bank", LearningLanguage.English,
             Cotabby.Core.Vocabulary.VocabularyEntryKind.Word, [], date, date);
-        var unknown = new VocabularyEntry(Guid.NewGuid(), "bank", "bank", null,
+        var unknown = new F.VocabularyEntry(Guid.NewGuid(), "bank", "bank", null,
             Cotabby.Core.Vocabulary.VocabularyEntryKind.Word, [], date, date);
         Assert.True(VocabularyMeaningLabelPolicy.HasMultipleLanguages([english, unknown]));
         Assert.False(VocabularyMeaningLabelPolicy.HasMultipleLanguages([english, english]));

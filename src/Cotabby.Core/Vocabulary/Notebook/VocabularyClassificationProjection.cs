@@ -1,6 +1,7 @@
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Text;
 using R = Cotabby.Core.Vocabulary.Resources;
+using F = Cotabby.Core.Vocabulary.Frozen;
 
 namespace Cotabby.Core.Vocabulary.Notebook;
 
@@ -10,7 +11,7 @@ public static class VocabularyClassificationProjection
 {
     public sealed record Row(string Id, R.VocabularyCategory Category, string Title, int Depth, bool HasChildren, int MeaningCount);
 
-    public static IReadOnlyList<Row> Rows(R.VocabularyClassificationIndex index, IReadOnlyList<R.VocabularyMeaningNode> nodes,
+    public static IReadOnlyList<Row> Rows(R.VocabularyClassificationIndex index, IReadOnlyList<F.VocabularyMeaningNode> nodes,
         IReadOnlyList<LearningLanguage> languages, IReadOnlySet<string> expanded, IVocabularyTextSearching search, string query = "")
     {
         ArgumentNullException.ThrowIfNull(search);

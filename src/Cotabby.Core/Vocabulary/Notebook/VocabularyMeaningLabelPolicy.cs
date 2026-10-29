@@ -1,5 +1,6 @@
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Vocabulary.Resources;
+using F = Cotabby.Core.Vocabulary.Frozen;
 
 namespace Cotabby.Core.Vocabulary.Notebook;
 
@@ -39,12 +40,12 @@ public static class VocabularyMeaningLabelPolicy
             ?? Preferred(labels.Where(label => label.Language == LearningLanguage.English)) ?? Preferred(labels);
     }
 
-    public static string Title(VocabularyMeaningNode node, IReadOnlyList<LearningLanguage> languages) => Label(node.Labels, languages)?.Text ?? "";
+    public static string Title(F.VocabularyMeaningNode node, IReadOnlyList<LearningLanguage> languages) => Label(node.Labels, languages)?.Text ?? "";
 
-    public static bool HasMultipleLanguages(IReadOnlyList<Resources.VocabularyEntry> entries) => entries.Select(entry => entry.Language).Distinct().Skip(1).Any();
+    public static bool HasMultipleLanguages(IReadOnlyList<F.VocabularyEntry> entries) => entries.Select(entry => entry.Language).Distinct().Skip(1).Any();
 
     /// <summary>The presentation adapter supplies localized compact language names, including unspecified.</summary>
-    public static string ExpressionTitle(Resources.VocabularyEntry entry, bool includeLanguage, Func<LearningLanguage?, string> compactLabel) =>
+    public static string ExpressionTitle(F.VocabularyEntry entry, bool includeLanguage, Func<LearningLanguage?, string> compactLabel) =>
         includeLanguage ? entry.Expression + " · " + compactLabel(entry.Language) : entry.Expression;
 
     private static VocabularyMeaningLabel? Preferred(IEnumerable<VocabularyMeaningLabel> labels)

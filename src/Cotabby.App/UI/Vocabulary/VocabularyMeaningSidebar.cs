@@ -8,6 +8,7 @@ using Cotabby.Core.Text;
 using Cotabby.Core.Vocabulary;
 using Cotabby.Core.Vocabulary.Notebook;
 using R = Cotabby.Core.Vocabulary.Resources;
+using F = Cotabby.Core.Vocabulary.Frozen;
 
 namespace Cotabby.App.UI.Vocabulary;
 
@@ -20,9 +21,9 @@ public sealed class VocabularyMeaningSidebar : UserControl
 {
     private readonly ListBox _list = new();
     private IReadOnlyList<VocabularyMeaningBrowserProjection.Item> _items = [];
-    private IReadOnlyList<R.VocabularyEntry> _entries = [];
+    private IReadOnlyList<F.VocabularyEntry> _entries = [];
     private IReadOnlyList<VocabularySelection> _unclassified = [];
-    private readonly Func<R.VocabularySense, string> _senseTitle;
+    private readonly Func<F.VocabularySense, string> _senseTitle;
     private readonly Func<LearningLanguage?, string> _languageLabel;
     private readonly string _otherLabel, _suggestedLabel;
     private VocabularyMeaningDestination? _destination;
@@ -32,7 +33,7 @@ public sealed class VocabularyMeaningSidebar : UserControl
     public event Action<VocabularyMeaningDestination>? DestinationChanged;
 
     public VocabularyMeaningSidebar(string otherExpressionsLabel, string suggestedGroupingLabel,
-        Func<R.VocabularySense, string> senseTitle, Func<LearningLanguage?, string> languageLabel)
+        Func<F.VocabularySense, string> senseTitle, Func<LearningLanguage?, string> languageLabel)
     {
         _otherLabel = otherExpressionsLabel; _suggestedLabel = suggestedGroupingLabel;
         _senseTitle = senseTitle; _languageLabel = languageLabel;
@@ -42,7 +43,7 @@ public sealed class VocabularyMeaningSidebar : UserControl
         _list.SelectionChanged += SelectionChanged; Content = _list;
     }
 
-    public void Present(IReadOnlyList<VocabularyMeaningBrowserProjection.Item> items, IReadOnlyList<R.VocabularyEntry> entries,
+    public void Present(IReadOnlyList<VocabularyMeaningBrowserProjection.Item> items, IReadOnlyList<F.VocabularyEntry> entries,
         IReadOnlyList<VocabularySelection> unclassified, VocabularyMeaningDestination? destination, bool detailed = false, double textScale = 1)
     {
         _items = Array.AsReadOnly(items.ToArray()); _entries = Array.AsReadOnly(entries.ToArray()); _unclassified = Array.AsReadOnly(unclassified.ToArray());

@@ -11,6 +11,7 @@ using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Vocabulary;
 using Cotabby.Core.Vocabulary.Notebook;
 using R = Cotabby.Core.Vocabulary.Resources;
+using F = Cotabby.Core.Vocabulary.Frozen;
 
 namespace Cotabby.App.Wpf.Tests;
 
@@ -19,10 +20,10 @@ public sealed class VocabularyMeaningSidebarViewTests(WpfDispatcher dispatcher)
 {
     private sealed class Search : IVocabularyTextSearching { public bool Contains(string field, string term) => field.Contains(term, StringComparison.OrdinalIgnoreCase); }
     private static Guid Id(int value) => Guid.Parse($"00000000-0000-0000-0000-{value:x12}");
-    private static R.VocabularyMeaningNode Node(int id, string title) => new(Id(id), [new(title)]);
+    private static F.VocabularyMeaningNode Node(int id, string title) => new(Id(id), [new(title)]);
     private static R.VocabularyCategory Category(int id, string title) => new(Id(id), R.VocabularyCategoryAxis.Content, [new(title)]);
-    private static R.VocabularyEntry Entry(int id, int sense, string word) => new(Id(id), word, word, LearningLanguage.English,
-        VocabularyEntryKind.Word, [new R.VocabularySense(Id(sense), "A meaning", DateTimeOffset.UnixEpoch, DateTimeOffset.UnixEpoch)], DateTimeOffset.UnixEpoch, DateTimeOffset.UnixEpoch);
+    private static F.VocabularyEntry Entry(int id, int sense, string word) => new(Id(id), word, word, LearningLanguage.English,
+        VocabularyEntryKind.Word, [new F.VocabularySense(Id(sense), "A meaning", new F.SourceDate(1e20), new F.SourceDate(1e20))], new F.SourceDate(1e20), new F.SourceDate(1e20));
     private static readonly VocabularyCategorySidebarLabels Labels = new("Categories", "Search categories", "All meanings", "Uncategorized meanings",
         "Content meanings", "Communicative functions", "New category", "Manage categories", "Edit category");
 

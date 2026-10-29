@@ -6,6 +6,7 @@ using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Vocabulary;
 using Cotabby.Core.Vocabulary.Notebook;
 using R = Cotabby.Core.Vocabulary.Resources;
+using F = Cotabby.Core.Vocabulary.Frozen;
 
 namespace Cotabby.App.UI.Vocabulary;
 
@@ -23,7 +24,7 @@ public sealed class VocabularyCategorySidebar : UserControl
     private readonly TextBox _query = new();
     private readonly HashSet<string> _expanded = new(StringComparer.Ordinal);
     private R.VocabularyClassificationIndex _index = new();
-    private IReadOnlyList<R.VocabularyMeaningNode> _nodes = [];
+    private IReadOnlyList<F.VocabularyMeaningNode> _nodes = [];
     private IReadOnlyList<LearningLanguage> _languages = [];
     private string _selection = "all";
     private bool _updating;
@@ -60,7 +61,7 @@ public sealed class VocabularyCategorySidebar : UserControl
         _list.SelectionChanged += OnSelectionChanged; _list.PreviewKeyDown += OnListKeyDown; root.Children.Add(_list); Content = root;
     }
 
-    public void Present(R.VocabularyClassificationIndex index, IReadOnlyList<R.VocabularyMeaningNode> nodes,
+    public void Present(R.VocabularyClassificationIndex index, IReadOnlyList<F.VocabularyMeaningNode> nodes,
         IReadOnlyList<LearningLanguage> languages, string selection, double textScale = 1)
     {
         _index = index; _nodes = Array.AsReadOnly(nodes.ToArray()); _languages = Array.AsReadOnly(languages.ToArray()); _selection = selection; _scale = textScale;

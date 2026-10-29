@@ -2,6 +2,7 @@ using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Vocabulary;
 using Cotabby.Core.Vocabulary.Notebook;
 using R = Cotabby.Core.Vocabulary.Resources;
+using F = Cotabby.Core.Vocabulary.Frozen;
 
 namespace Cotabby.Core.Tests.Vocabulary;
 
@@ -9,11 +10,11 @@ public sealed class VocabularyMeaningBrowserProjectionTests
 {
     private sealed class Search : IVocabularyTextSearching { public bool Contains(string field, string term) => field.Contains(term, StringComparison.OrdinalIgnoreCase); }
     private static readonly Search Finder = new();
-    private static readonly DateTimeOffset Now = DateTimeOffset.UnixEpoch;
+    private static readonly F.SourceDate Now = new(1e20);
     private static Guid Id(int value) => Guid.Parse($"00000000-0000-0000-0000-{value:x12}");
-    private static R.VocabularyMeaningNode Node(int id, string title) => new(Id(id), [new(title)]);
-    private static R.VocabularyEntry Entry(int id, int sense, string word, string meaning) => new(Id(id), word, word, LearningLanguage.English,
-        VocabularyEntryKind.Word, [new R.VocabularySense(Id(sense), meaning, Now, Now)], Now, Now);
+    private static F.VocabularyMeaningNode Node(int id, string title) => new(Id(id), [new(title)]);
+    private static F.VocabularyEntry Entry(int id, int sense, string word, string meaning) => new(Id(id), word, word, LearningLanguage.English,
+        VocabularyEntryKind.Word, [new F.VocabularySense(Id(sense), meaning, Now, Now)], Now, Now);
     private static readonly R.VocabularySemanticProvenance Proposed = new() { Status = R.VocabularySemanticStatus.Proposed };
 
     [Fact]
@@ -21,7 +22,7 @@ public sealed class VocabularyMeaningBrowserProjectionTests
     {
         var first = Entry(1, 2, "bank", "shore"); var second = Entry(3, 4, "bank", "institution"); var other = Entry(5, 6, "loose", "unused");
         var a = Node(10, "River"); var b = Node(11, "Finance"); var empty = Node(12, "Unlinked");
-        var index = new R.VocabularySemanticIndex { Nodes = [a, b, empty], Mappings = [new(a.Id, Id(2)), new(a.Id, Id(2)), new(b.Id, Id(4)) { Provenance = Proposed }] };
+        var index = new F.VocabularySemanticIndex { Nodes = [a, b, empty], Mappings = [new(a.Id, Id(2)), new(a.Id, Id(2)), new(b.Id, Id(4)) { Provenance = Proposed }] };
         var items = VocabularyMeaningBrowserProjection.Items(index, [first, second, other], Finder, StringComparer.Ordinal);
         Assert.Equal(new[] { "Finance", "River", "Unlinked" }, items.Select(x => x.Title));
         Assert.Equal(new VocabularySelection(Id(1), Id(2)), Assert.Single(items[1].Selections));
@@ -36,7 +37,7 @@ public sealed class VocabularyMeaningBrowserProjectionTests
     {
         var entry = Entry(1, 2, "postpone", "delay"); var node = Node(3, "Postponement");
         var cue = new R.VocabularyRetrievalCue("later please") { Id = Id(4) };
-        var index = new R.VocabularySemanticIndex { Nodes = [node], Cues = [cue],
+        var index = new F.VocabularySemanticIndex { Nodes = [node], Cues = [cue],
             CueTargets = [new(cue.Id, node.Id)], Mappings = [new(node.Id, Id(2)) { Conditions = "polite request" }],
             Patterns = [new(Id(2), "put off") { Note = "informal" }] };
         foreach (var query in new[] { "later please", "put off", "polite request", "postpone delay" })
@@ -64,6 +65,28 @@ public sealed class VocabularyMeaningBrowserProjectionTests
         Assert.Single(collapsed); Assert.True(collapsed[0].HasChildren);
         var hidden = index with { Overrides = [new(left.Id) { IsHidden = true }] };
         Assert.DoesNotContain(VocabularyClassificationProjection.Rows(hidden, [node], [], new HashSet<string>(), Finder, "Child"), row => row.Category.Id == left.Id);
+    }
+    [Fact]
+    public void FrozenCollectedEntriesExcludeUncollectedEvidenceWithoutDeletingIt()
+    {
+        var saved = Entry(1, 2, "bank", "shore"); var retained = Entry(3, 4, "bank", "institution"); var node = Node(5, "Place");
+        var document = new F.VocabularyDocument { Catalog = [saved, retained], Collections = [new F.VocabularyCollectionItem(Id(2), Now)],
+            Semantics = new F.VocabularySemanticIndex { Nodes = [node], Mappings = [new(node.Id, Id(2)), new(node.Id, Id(4))] } };
+        var item = Assert.Single(VocabularyMeaningBrowserProjection.Items(document.Semantics, document.CollectedEntries, Finder, StringComparer.Ordinal));
+        Assert.Equal(new VocabularySelection(Id(1), Id(2)), Assert.Single(item.Selections));
+        Assert.Equal(2, document.Catalog.Count); Assert.Equal(2, document.Semantics.Mappings.Count);
+        Assert.Equal(Now, document.Catalog[1].CreatedAt);
+    }
+    [Fact]
+    public void FrozenProjectionKeepsSourceDatesAndStableResourceIdentities()
+    {
+        var entry = Entry(1, 2, "bank", "shore");
+        var node = Node(3, "River") with { CreatedAt = new F.SourceDate(1e100), UpdatedAt = new F.SourceDate(-1e100) };
+        var index = new F.VocabularySemanticIndex { Nodes = [node], Mappings = [new(node.Id, entry.Senses[0].Id)] };
+        var item = Assert.Single(VocabularyMeaningBrowserProjection.Items(index, [entry], Finder, StringComparer.Ordinal));
+        Assert.Same(node, item.Node); Assert.Equal(new F.SourceDate(1e100), item.Node.CreatedAt);
+        Assert.Equal(new F.SourceDate(-1e100), item.Node.UpdatedAt); Assert.Equal(new F.SourceDate(1e20), entry.CreatedAt);
+        Assert.Equal(new VocabularySelection(entry.Id, entry.Senses[0].Id), Assert.Single(item.Selections));
     }
     [Fact]
     public void BrowserItemsOwnSelectionsAndCompareAsValues()

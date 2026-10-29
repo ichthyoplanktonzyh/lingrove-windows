@@ -2,6 +2,7 @@ using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Support;
 using Cotabby.Core.Text;
 using R = Cotabby.Core.Vocabulary.Resources;
+using F = Cotabby.Core.Vocabulary.Frozen;
 
 namespace Cotabby.Core.Vocabulary.Notebook;
 
@@ -11,10 +12,10 @@ public static class VocabularyMeaningBrowserProjection
 {
     public sealed record Item
     {
-        public Item(R.VocabularyMeaningNode node, string title, IReadOnlyList<VocabularySelection> selections, int pendingCount)
+        public Item(F.VocabularyMeaningNode node, string title, IReadOnlyList<VocabularySelection> selections, int pendingCount)
         { Node = node; Title = title; Selections = selections; PendingCount = pendingCount; }
         private IReadOnlyList<VocabularySelection> _selections = [];
-        public R.VocabularyMeaningNode Node { get; }
+        public F.VocabularyMeaningNode Node { get; }
         public Guid Id => Node.Id;
         public string Title { get; }
         public IReadOnlyList<VocabularySelection> Selections { get => _selections; init => _selections = CollectionValues.List(value); }
@@ -24,7 +25,7 @@ public static class VocabularyMeaningBrowserProjection
         public override int GetHashCode() => HashCode.Combine(Node, CollectionValues.StringHash(Title), CollectionValues.SequenceHash(Selections), PendingCount);
     }
 
-    public static IReadOnlyList<Item> Items(R.VocabularySemanticIndex index, IReadOnlyList<R.VocabularyEntry> entries,
+    public static IReadOnlyList<Item> Items(F.VocabularySemanticIndex index, IReadOnlyList<F.VocabularyEntry> entries,
         IVocabularyTextSearching search, IComparer<string> titleComparer, string query = "", R.VocabularyMeaningNodeKind? kind = null,
         bool includeEmpty = true, IReadOnlyList<LearningLanguage>? preferredLanguages = null)
     {
@@ -57,13 +58,13 @@ public static class VocabularyMeaningBrowserProjection
         return Array.AsReadOnly(result.OrderBy(item => item.Title, titleComparer).ToArray());
     }
 
-    public static IReadOnlyList<VocabularySelection> Unclassified(R.VocabularySemanticIndex index, IReadOnlyList<R.VocabularyEntry> entries)
+    public static IReadOnlyList<VocabularySelection> Unclassified(F.VocabularySemanticIndex index, IReadOnlyList<F.VocabularyEntry> entries)
     {
         var linked = index.Mappings.Where(mapping => mapping.Provenance.Status == R.VocabularySemanticStatus.Confirmed).Select(mapping => mapping.SenseId).ToHashSet();
         return Array.AsReadOnly(entries.SelectMany(entry => entry.Senses.Where(sense => !linked.Contains(sense.Id)).Select(sense => new VocabularySelection(entry.Id, sense.Id))).ToArray());
     }
 
-    public static IReadOnlyList<R.VocabularyMeaningRelation> ConfirmedRelations(R.VocabularySemanticIndex index) =>
+    public static IReadOnlyList<R.VocabularyMeaningRelation> ConfirmedRelations(F.VocabularySemanticIndex index) =>
         Array.AsReadOnly(index.Relations.Where(relation => relation.Provenance.Status == R.VocabularySemanticStatus.Confirmed).ToArray());
 
     private static bool Matches(string field, string query, IVocabularyTextSearching search)
@@ -72,7 +73,7 @@ public static class VocabularyMeaningBrowserProjection
         return term.Length == 0 || search.Contains(field, term);
     }
 
-    private static bool MatchesSense(R.VocabularyEntry entry, R.VocabularySense sense, string query, IVocabularyTextSearching search)
+    private static bool MatchesSense(F.VocabularyEntry entry, F.VocabularySense sense, string query, IVocabularyTextSearching search)
     {
         var fields = new List<string> { entry.Expression, entry.DictionaryForm, sense.Meaning, sense.Note };
         fields.AddRange(sense.Tags); fields.AddRange(sense.StandaloneMeanings.Select(m => m.Text)); fields.AddRange(sense.AlternateMeanings.Select(m => m.Text));

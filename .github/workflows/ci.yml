@@ -34,6 +34,8 @@ jobs:
           global-json-file: global.json
       - name: Restore solution
         run: dotnet restore Cotabby.sln
+      - name: Check the Windows development environment without changing it
+        run: ./scripts/check-windows-dev.ps1 -Json
       - name: Compile all projects
         run: dotnet build Cotabby.sln --configuration Release --no-restore
       - name: Test portable core and parity fixtures

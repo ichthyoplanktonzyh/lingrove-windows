@@ -43,9 +43,10 @@ been rebranded or that its data is compatible with the macOS app.
   user-authored changes.
 - Keep changes within the requested scope. Coordinate before editing a shared file another worker
   owns.
-- The latest alignment target is `06bf81fe52f22fd62e76d8ec0bfd898d3417158b`; see
+- The latest alignment target is `9290066ef7f20a50068ce820f477737fdfc2b8b0`; see
   [the latest baseline and backlog](docs/MAC_LATEST_BASELINE.md). At the beginning of each new
-  feature round, check the Mac repository's committed `main` again and record any advancement
+  feature round, check the Mac repository's committed `main` again (or fetched `origin/main` in a
+  read-only Windows reference clone) and record any advancement
   before implementing that round. Do not wait for the old stable backlog to finish first.
 - Existing modules/fixtures retain their explicit reference until upgraded individually, including
   the original `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f` and intermediate
@@ -101,6 +102,12 @@ cleanup and decide spacing only at the surviving seam; the old shared corpus ret
   must not contain typed text, prompts, selections, or credentials.
 
 ## Vocabulary and learning data
+
+The [latest resource value/projection boundary](docs/VOCABULARY_RESOURCES_CURRENT.md) lives under
+`Core/Vocabulary/Resources` and follows the current Mac catalog/evidence/interpretation/collection
+ownership. Its version-seven values are distinct from the older entry-owned runtime document.
+Do not feed them through the old SQL/backup codec or claim archive activation/migration is complete.
+Collection membership determines notebook display; raw evidence is not garbage when uncollected.
 
 Preserve the macOS vocabulary contract when implementing learning storage: entry UUIDs identify
 headwords, sense UUIDs identify meanings independently of their wording or order, and usage/example
@@ -191,6 +198,11 @@ user's authored meaning. See the vocabulary models and porting gates in the link
 compatibility with macOS is not assumed; migrations must be explicit and tested.
 
 ## Build and CI boundary
+
+For the physical Windows x64 development host, follow [the handoff guide](docs/WINDOWS_DEVELOPMENT.md).
+Use `scripts/check-windows-dev.ps1` for read-only prerequisites. Actual host acceptance is distinct
+from CI; preserve the latest source reference and do not treat the new resource value library as an
+already activated archive. The maintainer now has an Intel/AMD x64 host available for development.
 
 `global.json` pins .NET SDK `10.0.402`. The current developer checkout keeps that SDK in the ignored
 repo-local `.dotnet/` directory. On macOS, use it to run portable tests and the committed Swift

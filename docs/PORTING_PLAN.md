@@ -6,7 +6,7 @@ product pillars. The first milestone is repository foundation: documentation, bu
 and initial shared JSON behavior fixtures. It does not implement language learning.
 
 The active target is the latest committed Mac version, currently
-`06bf81fe52f22fd62e76d8ec0bfd898d3417158b`. [MAC_LATEST_BASELINE.md](MAC_LATEST_BASELINE.md) is the
+`9290066ef7f20a50068ce820f477737fdfc2b8b0`. [MAC_LATEST_BASELINE.md](MAC_LATEST_BASELINE.md) is the
 current dependency/backlog record. The phases below retain their original scoped milestone history;
 they do not freeze new work to the original or intermediate stable reference. Check committed Mac
 `main` before each feature round and adapt its existing product rather than completing an obsolete
@@ -163,8 +163,9 @@ storage stays local and no sync service is introduced.
 
 ## Platform and hardware constraints
 
-The current maintainer machine is an Apple M1 Max Mac with 32 GB RAM and no Windows desktop. A hosted
-Windows CI runner can prove compilation, portable tests and isolated compiled WPF view behavior
+The maintainer now has an Intel/AMD x64 Windows computer for primary Windows development; the Mac
+remains the product/reference environment. Use [the Windows handoff guide](WINDOWS_DEVELOPMENT.md)
+for setup and actual host acceptance. A hosted Windows CI runner can prove compilation, portable tests and isolated compiled WPF view behavior
 (see [view tests](WPF_VIEW_TESTS.md)), but cannot establish field behavior on a
 user's Windows desktop. Native x64 Windows is the primary app and inference verification target. An
 ARM Windows virtual machine on Apple silicon can expose ARM-specific compile/runtime problems, but it

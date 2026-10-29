@@ -7,7 +7,7 @@ are reference points, not a claim that every Windows behavior has been validated
 still uses Cotabby names. The current learning addition is the scoped manual read-only preview
 recorded in [LEARNING_PREVIEW.md](LEARNING_PREVIEW.md); the wider learning product remains incomplete.
 
-The current target is the latest committed Mac `06bf81fe52f22fd62e76d8ec0bfd898d3417158b`, recorded
+The current target is the latest committed Mac `9290066ef7f20a50068ce820f477737fdfc2b8b0`, recorded
 in [MAC_LATEST_BASELINE.md](MAC_LATEST_BASELINE.md). New work follows that target and checks for
 newer committed Mac work at each feature round. [MAC_STABLE_DELTA.md](MAC_STABLE_DELTA.md) retains
 the earlier `cc468b89f5c360cc7210fac4f1a8b52197870bf2` audit as history, not the current backlog.
@@ -18,6 +18,11 @@ below must not be read as a declaration of full current product parity.
 The [latest autocomplete output adaptation](AUTOCOMPLETE_OUTPUT_CURRENT.md) is an explicit module
 upgrade for newline boundaries, echo cleanup and preface truncation. Its four grouped regression
 tests supplement the unchanged historical corpus; its final-head/native limits remain separate.
+
+The [latest resource graph adaptation](VOCABULARY_RESOURCES_CURRENT.md) adds current canonical
+values, joined/collected projection and lifecycle-reference admission. It does not activate a new
+archive, migrate existing Windows data, implement full semantic validation or complete the latest
+notebook UI; those remain explicit gaps beyond the older matrix rows.
 
 ## Status meanings
 

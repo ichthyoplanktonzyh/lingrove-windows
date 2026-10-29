@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Cotabby.App.Learning;
 using Cotabby.Core.LanguageLearning;
+using Cotabby.Core.Models;
 
 namespace Cotabby.Inference.Tests.LanguageLearning;
 
@@ -14,6 +15,24 @@ public sealed class LearningModelCatalogManagerTests
 {
     private static readonly TimeSpan Timeout = TimeSpan.FromSeconds(5);
     private static readonly byte[] Payload = Encoding.ASCII.GetBytes("GGUFsynthetic-transfer-fixture");
+
+    [Fact]
+    public async Task TaskScopedDiscoveryRequiresAssignmentAndRejectsOtherCatalogTasks()
+    {
+        using var files = new TransferFiles();
+        Directory.CreateDirectory(files.Models);
+        foreach (var name in new[] { "custom.gguf", "Hy-MT2-1.8B-Q4_K_M.gguf", "Gemma-4-E4B-Q4_K_M.gguf", "mmproj-custom.gguf" })
+            await File.WriteAllBytesAsync(Path.Combine(files.Models, name), Payload);
+        await using var manager = new LearningModelCatalogManager(files.Models);
+        var assignments = new Dictionary<string, string[]>();
+        var before = await manager.GetInstalledModelsForTaskAsync(LocalModelTask.Translation, assignments);
+        Assert.Equal(new[] { "Hy-MT2-1.8B-Q4_K_M.gguf" }, before.Select(model => model.Filename));
+        Assert.True(LocalModelTaskAssignments.TryRecord("custom.gguf", LocalModelTask.Translation, assignments));
+        var after = await manager.GetInstalledModelsForTaskAsync(LocalModelTask.Translation, assignments);
+        Assert.Equal(new[] { "custom.gguf", "Hy-MT2-1.8B-Q4_K_M.gguf" }, after.Select(model => model.Filename));
+        var explanation = await manager.GetInstalledModelsForTaskAsync(LocalModelTask.Explanation, assignments);
+        Assert.Equal(new[] { "Gemma-4-E4B-Q4_K_M.gguf" }, explanation.Select(model => model.Filename));
+    }
 
     [Fact]
     public async Task VerifiedDownloadPromotesAClosedFileAndReusesAnExactExistingCopy()

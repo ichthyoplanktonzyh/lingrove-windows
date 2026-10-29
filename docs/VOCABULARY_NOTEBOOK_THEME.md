@@ -9,3 +9,17 @@ When Windows high contrast is active, the adapter maps backgrounds, text, border
 On Windows x64, `dotnet test tests/Cotabby.App.Wpf.Tests/Cotabby.App.Wpf.Tests.csproj -c Release --filter 'FullyQualifiedName~FrozenVocabularyWindowControllerTests|FullyQualifiedName~FrozenVocabularyNotebookWindowTests|FullyQualifiedName~VocabularyMeaningSidebarViewTests|FullyQualifiedName~FrozenVocabularyEntryInputIntegrationTests|FullyQualifiedName~VocabularyEntryImportViewTests|FullyQualifiedName~WindowsVocabularyWordListReaderTests'` passed 38/38, with the above optional render directory enabled. The tests include a real TreeView disclosure binding and narrow meaning-toolbar visibility in addition to existing Store, input and lifetime checks. This is an isolated style checkpoint; it does not change global AppTheme, AppHost, storage, models, endpoint behavior or unsupported product actions.
 
 The broader dotnet test tests/Cotabby.App.Wpf.Tests/Cotabby.App.Wpf.Tests.csproj -c Release --no-build passed 582/582 on the immediately preceding compiled snapshot; afterward only TreeView automation names and render-helper background composition were refined, then the 38 focused tests were rebuilt and rerun. dotnet build Cotabby.sln -c Release --no-restore passed with zero warnings and errors before the final keyboard test-only assertion.
+
+Independent review inspected the final source and representative narrow/dark/import/error/simulated
+high-contrast images and reran the focused suite 38/38. After integration with the canonical AppHost
+and review transaction boundary, Windows x64 .NET SDK 10.0.403 executed:
+
+```powershell
+dotnet build Cotabby.sln -c Release --no-restore --verbosity quiet
+dotnet test tests/Cotabby.App.Wpf.Tests/Cotabby.App.Wpf.Tests.csproj -c Release --no-build --no-restore --blame-hang-timeout 2m --verbosity minimal
+```
+
+The solution rebuilt with zero warnings/errors and the complete compiled WPF suite passed 585/585.
+The render helper fills the window's actual background before drawing its WPF content, avoiding
+transparent bitmap margins; the images use no postprocessing. These checks do not establish the
+remaining physical desktop, DPI or accessibility acceptance above.

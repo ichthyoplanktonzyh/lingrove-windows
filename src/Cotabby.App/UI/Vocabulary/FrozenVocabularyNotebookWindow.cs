@@ -16,7 +16,7 @@ using R = Cotabby.Core.Vocabulary.Resources;
 
 namespace Cotabby.App.UI.Vocabulary;
 
-/// <summary>Unactivated canonical notebook; presentation borrows the app-owned Store and reader.
+/// <summary>Canonical notebook presentation borrows the app-owned Store and reader.
 /// Only Add/Import are connected. Other commands remain disabled until their shared owners exist.</summary>
 internal sealed class FrozenVocabularyNotebookWindow : Window
 {

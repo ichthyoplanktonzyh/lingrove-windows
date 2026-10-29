@@ -67,6 +67,13 @@ public sealed class UiaFocusTracker : IFocusTracker
     }
 
     public event EventHandler<FocusedField?>? FocusChanged;
+    // Synchronous, metadata-only revocation signal for request owners. Unlike the asynchronously
+    // refreshed snapshot event, this cannot hide an intervening focus transition after a round trip.
+    internal event Action<nint>? FocusTransition;
+
+    // The expression session borrows this same MTA owner; no second global listener is created.
+    internal UiaTextEditEvidence? ExpressionCompositionOwner =>
+        OperatingSystem.IsWindowsVersionAtLeast(8, 1) ? _composition as UiaTextEditEvidence : null;
 
     public void Start()
     {
@@ -116,6 +123,8 @@ public sealed class UiaFocusTracker : IFocusTracker
             Volatile.Write(ref _current, null);
             _logger.LogInformation("UIA focus tracker stopped.");
         }
+        try { FocusTransition?.Invoke(0); }
+        catch (Exception) { _logger.LogWarning("Focus transition notification failed."); }
         if (handler is not null)
         {
             _composition?.RetireAsync(retirementEpoch);
@@ -123,23 +132,34 @@ public sealed class UiaFocusTracker : IFocusTracker
         }
     }
 
-    public FocusedField? Refresh()
+    public FocusedField? Refresh() => RefreshCore(static () => true, false);
+
+    /// <summary>Refreshes while a revocable request permit remains valid.</summary>
+    /// <remarks>The predicate must be atomic and nonblocking. It must not call UIA or synchronously
+    /// dispatch to a UI thread. Already-started provider calls cannot be interrupted.</remarks>
+    public FocusedField? RefreshGuarded(Func<bool> allowed)
+    {
+        ArgumentNullException.ThrowIfNull(allowed);
+        return RefreshCore(allowed, true);
+    }
+
+    private FocusedField? RefreshCore(Func<bool> allowed, bool bounded)
     {
         long capture, sequence;
         lock (_gate)
         {
-            if (!_running) return null;
+            if (!_running || !allowed()) return null;
             capture = Interlocked.Increment(ref _captureSequence);
             sequence = Interlocked.Read(ref _focusChangeSequence);
         }
         FocusedField? snap;
         if (_captureForTest is not null) snap = _captureForTest(sequence);
-        else TryCaptureFocused(sequence, out snap);
+        else TryCaptureFocused(sequence, allowed, bounded, out snap);
         lock (_gate)
         {
             // UIA reads cross processes and can finish after a newer focus event. Publishing
             // that old read would make an unrelated field look current to an insertion task.
-            if (!_running || sequence != Interlocked.Read(ref _focusChangeSequence)
+            if (!allowed() || !_running || sequence != Interlocked.Read(ref _focusChangeSequence)
                 || capture != Interlocked.Read(ref _captureSequence)) return null;
             if (snap is { CompositionSequence: > 0 } && _composition?.Version != snap.CompositionSequence)
                 snap = snap with { Composition = InputCompositionState.Unknown, CompositionSequence = 0 };
@@ -241,6 +261,8 @@ public sealed class UiaFocusTracker : IFocusTracker
             retirementEpoch = _composition?.Invalidate() ?? 0;
             Volatile.Write(ref _current, null);
         }
+        try { FocusTransition?.Invoke(NativeMethods.GetForegroundWindow()); }
+        catch (Exception) { _logger.LogWarning("Focus transition notification failed."); }
         _composition?.RetireAsync(retirementEpoch);
         ThreadPool.QueueUserWorkItem(_ => PublishFocusChange(eventSequence));
     }
@@ -268,12 +290,13 @@ public sealed class UiaFocusTracker : IFocusTracker
         }
     }
 
-    private bool TryCaptureFocused(long sequence, out FocusedField? snapshot)
+    private bool TryCaptureFocused(long sequence, Func<bool> allowed, bool bounded, out FocusedField? snapshot)
     {
         snapshot = null;
         AutomationElement? element;
         try
         {
+            if (!allowed()) return false;
             element = AutomationElement.FocusedElement;
         }
         catch (Exception ex)
@@ -281,12 +304,12 @@ public sealed class UiaFocusTracker : IFocusTracker
             _logger.LogDebug(ex, "AutomationElement.FocusedElement threw.");
             return false;
         }
-        if (element is null) return false;
+        if (element is null || !allowed()) return false;
 
         try
         {
-            if (!IsEditableField(element)) return false;
-            snapshot = BuildSnapshot(element, sequence);
+            if (!IsEditableField(element, allowed)) return false;
+            snapshot = BuildSnapshot(element, sequence, allowed, bounded);
             return snapshot is not null;
         }
         catch (ElementNotAvailableException) { return false; }
@@ -297,64 +320,90 @@ public sealed class UiaFocusTracker : IFocusTracker
         }
     }
 
-    private static bool IsEditableField(AutomationElement element)
+    private static bool IsEditableField(AutomationElement element, Func<bool> allowed)
     {
         try
         {
+            if (!allowed()) return false;
             var info = element.Current;
-            if (!info.IsEnabled) return false;
+            if (!allowed() || !info.IsEnabled || !allowed()) return false;
             // IsKeyboardFocusable is not checked. The Windows 11 Notepad document control reports
             // false and still accepts keystrokes.
 
             var ct = info.ControlType;
+            if (!allowed()) return false;
             if (ct != ControlType.Edit && ct != ControlType.Document && ct != ControlType.Pane)
             {
                 return false;
             }
 
             // Read-only fields get no suggestions. Not every editor exposes ValuePattern.
-            if (element.TryGetCurrentPattern(ValuePattern.Pattern, out var raw)
-                && raw is ValuePattern vp && vp.Current.IsReadOnly)
+            if (!allowed()) return false;
+            bool hasReadOnlyPattern = element.TryGetCurrentPattern(ValuePattern.Pattern, out var raw);
+            if (!allowed()) return false;
+            if (hasReadOnlyPattern && raw is ValuePattern vp && vp.Current.IsReadOnly)
             {
                 return false;
             }
 
             // Without TextPattern or ValuePattern there is no text to read.
+            if (!allowed()) return false;
             bool hasText = element.TryGetCurrentPattern(TextPattern.Pattern, out _);
+            if (!allowed()) return false;
             bool hasValue = element.TryGetCurrentPattern(ValuePattern.Pattern, out _);
-            return hasText || hasValue;
+            return allowed() && (hasText || hasValue);
         }
         catch (Exception) { return false; }
     }
 
-    private FocusedField? BuildSnapshot(AutomationElement element, long sequence)
+    private FocusedField? BuildSnapshot(AutomationElement element, long sequence, Func<bool> allowed, bool bounded)
     {
+        if (!allowed()) return null;
         var info = element.Current;
-
+        if (!allowed()) return null;
         int pid = info.ProcessId;
+        if (!allowed()) return null;
         IntPtr foreground = NativeMethods.GetForegroundWindow();
         if (foreground == IntPtr.Zero
             || NativeMethods.GetWindowThreadProcessId(foreground, out uint foregroundPid) == 0
             || foregroundPid != (uint)pid) return null;
         string procName = TryGetProcessName(pid);
+        if (!allowed()) return null;
         string label = info.Name ?? string.Empty;
+        if (!allowed()) return null;
         string helpText = info.HelpText ?? string.Empty;
-        bool isSecure = info.IsPassword
-            || SecureFieldDetector.IsSecure(label, helpText, info.LocalizedControlType);
+        if (!allowed()) return null;
+        bool isPassword = info.IsPassword;
+        if (!allowed()) return null;
+        string localizedType = isPassword ? string.Empty : info.LocalizedControlType;
+        bool isSecure = isPassword || SecureFieldDetector.IsSecure(label, helpText, localizedType);
+        if (!allowed()) return null;
 
         // Password-like controls are classified before requesting their text. They still publish
         // an ineligible snapshot so consumers can close an existing capture without reading secrets.
         string fieldId = ReadFieldId(element);
+        if (!allowed()) return null;
         var initialComposition = !isSecure && _composition is not null
-            ? _composition.Observe(pid, fieldId, sequence) : default;
+            ? _composition.Observe(pid, fieldId, sequence, allowed) : default;
+        if (!allowed()) return null;
         var (text, caretOffset, hasSelection, reliableSelection, truncatedWindow) = isSecure
             ? (string.Empty, 0, false, false, true)
-            : ReadTextAndCaret(element);
-        var caretRect = isSecure ? ScreenRect.Empty : ReadCaretRect(element);
+            : ReadTextAndCaret(pid, fieldId, allowed);
+        if (!allowed()) return null;
+        var caretRect = isSecure ? ScreenRect.Empty : ReadCaretRect(element, allowed);
+        if (!allowed()) return null;
         var fieldRect = ToScreenRect(info.BoundingRectangle);
+        if (!allowed()) return null;
         var finalComposition = !isSecure && _composition is not null
-            ? _composition.Observe(pid, fieldId, sequence) : default;
+            ? _composition.Observe(pid, fieldId, sequence, allowed) : default;
+        if (!allowed()) return null;
         finalComposition = CompositionEvidencePolicy.Reconcile(initialComposition, finalComposition);
+        var controlType = info.ControlType;
+        if (!allowed()) return null;
+        string automationId = info.AutomationId ?? string.Empty;
+        if (!allowed()) return null;
+        string className = info.ClassName ?? string.Empty;
+        if (!allowed()) return null;
 
         // UIA can lag behind foreground activation. A cross-process read which straddled that
         // transition cannot establish the destination of a future SendInput batch.
@@ -369,7 +418,7 @@ public sealed class UiaFocusTracker : IFocusTracker
             CaretRect = caretRect.IsEmpty ? fieldRect : caretRect,
             CaretIsEstimated = caretRect.IsEmpty,
             FieldRect = fieldRect,
-            IsSingleLine = FieldShape.IsSingleLine(info.ControlType == ControlType.Edit, fieldRect, caretRect),
+            IsSingleLine = FieldShape.IsSingleLine(controlType == ControlType.Edit, fieldRect, caretRect),
             IsSecure = isSecure,
             HasSelection = hasSelection,
             HasReliableSelection = reliableSelection,
@@ -380,73 +429,24 @@ public sealed class UiaFocusTracker : IFocusTracker
             FieldId = fieldId,
             Label = label,
             HelpText = helpText,
-            AutomationId = info.AutomationId ?? string.Empty,
-            ClassName = info.ClassName ?? string.Empty,
-            WindowTitle = ForegroundWindowTitle(),
+            AutomationId = automationId,
+            ClassName = className,
+            WindowTitle = bounded ? string.Empty : ForegroundWindowTitle(),
         };
     }
 
-    /// <summary>Cap of the document read when the host reports no caret.</summary>
-    private const int MaxDocumentChars = 16 * 1024;
-
-    private static (string text, int caretOffset, bool hasSelection, bool reliableSelection, bool truncatedWindow) ReadTextAndCaret(AutomationElement element)
+    private (string text, int caretOffset, bool hasSelection, bool reliableSelection, bool truncatedWindow) ReadTextAndCaret(int pid, string fieldId, Func<bool> allowed)
     {
-        // TextPattern is preferred because it gives the caret as a selection.
-        if (element.TryGetCurrentPattern(TextPattern.Pattern, out var rawText)
-            && rawText is TextPattern textPattern)
+        if (!allowed()) return (string.Empty, 0, false, false, true);
+        // Range text is read by the shared MTA native client, after rechecking identity there.
+        var selection = _composition?.ReadFocused(pid, fieldId, allowed);
+        if (selection is { } value && allowed())
         {
-            try
-            {
-                var selections = textPattern.GetSelection();
-                if (selections is not { Length: > 0 })
-                {
-                    return (textPattern.DocumentRange.GetText(MaxDocumentChars), 0, false, false, true);
-                }
-
-                var selection = selections[0];
-                // A selected embedded object can have no text. Endpoint equality, rather than
-                // the returned string length, establishes whether the selection is collapsed.
-                bool hasSelection = selection.CompareEndpoints(
-                    TextPatternRangeEndpoint.Start, selection, TextPatternRangeEndpoint.End) != 0;
-                var (before, after, truncatedWindow) = ReadAroundSelection(textPattern.DocumentRange, selection);
-                // Multiple selections cannot describe one insertion caret. Keep the text for
-                // diagnostics, but never authorize an edit from this ambiguous snapshot.
-                return (before + after, before.Length, hasSelection, selections.Length == 1, truncatedWindow);
-            }
-            catch (Exception) { /* fall through */ }
+            return (value.Text, value.Caret, value.HasSelection, value.ReliableSelection, value.Truncated);
         }
 
-        if (element.TryGetCurrentPattern(ValuePattern.Pattern, out var rawValue)
-            && rawValue is ValuePattern vp)
-        {
-            string v = vp.Current.Value ?? string.Empty;
-            if (v.Length > MaxDocumentChars) v = v[..MaxDocumentChars];
-            return (v, v.Length, false, false, true); // ValuePattern has no caret; this is not edit evidence.
-        }
-
+        // ValuePattern has neither a bounded getter nor reliable caret evidence.
         return (string.Empty, 0, false, false, true);
-    }
-
-    /// <summary>
-    /// The text before the start of the selection and the text after its end, each cut to a
-    /// window next to the caret.
-    /// </summary>
-    /// <remarks>
-    /// The ranges are built with MoveEndpointByRange only. MoveEndpointByUnit by character takes
-    /// seconds in a WPF text box, and reading up to the caret takes milliseconds.
-    /// </remarks>
-    private static (string before, string after, bool truncatedWindow) ReadAroundSelection(TextPatternRange document, TextPatternRange selection)
-    {
-        var toCaret = document.Clone();
-        toCaret.MoveEndpointByRange(TextPatternRangeEndpoint.End, selection, TextPatternRangeEndpoint.Start);
-        string before = toCaret.GetText(-1);
-
-        var fromCaret = document.Clone();
-        fromCaret.MoveEndpointByRange(TextPatternRangeEndpoint.Start, selection, TextPatternRangeEndpoint.End);
-        // Ask for one extra unit so a full window cannot masquerade as a complete suffix. Until
-        // native absolute ranges exist, omitted text on either side must make writes ineligible.
-        string after = fromCaret.GetText(FocusTextWindowPolicy.MaxCharsAfterCaret + 1);
-        return FocusTextWindowPolicy.Bound(before, after);
     }
 
     internal static string ReadFieldId(AutomationElement element)
@@ -462,16 +462,20 @@ public sealed class UiaFocusTracker : IFocusTracker
             : string.Empty;
     }
 
-    private static ScreenRect ReadCaretRect(AutomationElement element)
+    private static ScreenRect ReadCaretRect(AutomationElement element, Func<bool> allowed)
     {
+        if (!allowed()) return ScreenRect.Empty;
         if (element.TryGetCurrentPattern(TextPattern.Pattern, out var raw)
             && raw is TextPattern textPattern)
         {
             try
             {
+                if (!allowed()) return ScreenRect.Empty;
                 var sel = textPattern.GetSelection();
+                if (!allowed()) return ScreenRect.Empty;
                 if (sel is { Length: > 0 })
                 {
+                    if (!allowed()) return ScreenRect.Empty;
                     var rects = sel[0].GetBoundingRectangles();
                     if (rects.Length > 0)
                     {

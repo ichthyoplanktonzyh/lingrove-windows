@@ -15,6 +15,63 @@ public sealed class ExpressionAssistSessionTests(WpfDispatcher dispatcher)
         Assert.True(predicate());
     }
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public Task RetiredCaptureCannotActivateBeforeOrDuringPanelPreparation(bool duringPreparation) => dispatcher.RunAsync(async () =>
+    {
+        var editor = new Editor(false); var panel = new Panel();
+        if (duringPreparation) panel.BeforeShow = editor.Session.Invalidate;
+        else editor.Session.Invalidate(); // Notification occurred before UI subscription.
+        await using var session = new ExpressionAssistSession(Dispatcher.CurrentDispatcher, editor, panel,
+            (_, _) => throw new InvalidOperationException(), () => (LearningLanguage.English, LearningLanguage.Chinese));
+        session.Begin(null); await Until(() => !session.IsActive);
+        Assert.Equal(0, panel.Shows); Assert.False(panel.Visible); Assert.Equal(0, editor.Session.Writes);
+    });
+
+    [Theory]
+    [InlineData(true, true, 0)]
+    [InlineData(false, true, 1)]
+    [InlineData(false, false, 0)]
+    public Task ConsumedNativeNotificationCannotSwallowUnverifiedFeedback(bool verified, bool hostStillForeground, int expectedFailures) => dispatcher.RunAsync(async () =>
+    {
+        var editor = new Editor(false); var panel = new Panel();
+        editor.Session.InvalidateOnWrite = true; editor.Session.VerifyWrite = verified;
+        editor.Session.IsHostForeground = hostStillForeground;
+        var candidate = new ExpressionAssistCandidate("rule out", "排除", null);
+        await using var session = new ExpressionAssistSession(Dispatcher.CurrentDispatcher, editor, panel,
+            (_, _) => Task.FromResult(new ExpressionAssistResult([candidate], null)), () => (LearningLanguage.English, LearningLanguage.Chinese));
+        session.Begin(null); await Until(() => panel.Visible);
+        session.QueryChanged("排除", false); session.Submit(); await Until(() => panel.Result is not null);
+        session.Accept(candidate); await Until(() => !session.IsActive);
+        Assert.Equal(1, editor.Session.Writes); Assert.Equal(expectedFailures, panel.Failures);
+    });
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void InvalidationLatchReplaysTerminalStateAcrossSubscriptionHandoffs(bool retireFirst)
+    {
+        var latch = new ExpressionInvalidationLatch(); int calls = 0;
+        if (retireFirst) latch.Retire();
+        latch.Invalidated += () => calls++;
+        latch.Retire(); latch.Retire();
+        Assert.True(latch.IsRetired); Assert.Equal(1, calls);
+    }
+
+    [Fact]
+    public Task MissingExplanationModelShowsConfigurationMessageWithoutWriting() => dispatcher.RunAsync(async () =>
+    {
+        var editor = new Editor(false); var panel = new Panel();
+        await using var session = new ExpressionAssistSession(Dispatcher.CurrentDispatcher, editor, panel,
+            (_, _) => Task.FromException<ExpressionAssistResult>(new LearningTranslationException(LearningTranslationFailure.LocalModelNotConfigured)),
+            () => (LearningLanguage.English, LearningLanguage.Chinese));
+        session.Begin(null); await Until(() => panel.Visible);
+        session.QueryChanged("query", false); session.Submit();
+        await Until(() => panel.Message is not null);
+        Assert.Contains("AI explanation model", panel.Message); Assert.Equal(0, editor.Session.Writes);
+    });
+
     [Fact]
     public Task EditorInvalidationDiscardsLateReplyWithoutWriting() => dispatcher.RunAsync(async () =>
     {
@@ -114,26 +171,33 @@ public sealed class ExpressionAssistSessionTests(WpfDispatcher dispatcher)
     }
     private sealed class EditorSession(bool trigger) : IExpressionAssistEditorSession
     {
+        public bool Live = true;
+        public bool CanPresentPanel => Live;
+        public bool IsHostForeground { get; set; } = true;
         private readonly ExpressionEditorObservation _observation = new(1, "field", 1, 1, "??", new(2, 0), false, true, InputCompositionState.Clear, 1);
         public ExpressionEditorReceipt Receipt => ExpressionEditorReceiptPolicy.Capture(_observation, trigger ? "??" : null)!;
         public event Action? Invalidated;
-        public void Invalidate() => Invalidated?.Invoke();
+        public void Invalidate() { Live = false; Invalidated?.Invoke(); }
+        public bool InvalidateOnWrite, VerifyWrite = true;
         public int Writes; public string? Written; public bool ReturnBegun; public bool Unchanged = true;
         public bool EnterPanel() => true;
         public Task<bool> IsUnchangedAsync(CancellationToken ct) => Task.FromResult(Unchanged);
         public bool BeginReturn() { ReturnBegun = true; return true; }
-        public Task<bool> ResumeAndReplaceAsync(string text, CancellationToken ct) { Writes++; Written = text; return Task.FromResult(true); }
+        public Task<bool> ResumeAndReplaceAsync(string text, CancellationToken ct)
+        { Writes++; Written = text; if (InvalidateOnWrite) Invalidate(); return Task.FromResult(VerifyWrite); }
         public void Retire() { }
         public ValueTask DisposeAsync() => ValueTask.CompletedTask;
     }
     private sealed class Panel : IExpressionAssistPanel
     {
         public nint WindowHandle => 1; public bool OwnsKeyboard => Visible; public bool IsVisible => Visible;
-        public bool Visible; public ExpressionAssistResult? Result; public string? Unavailable;
-        public Task ShowAsync(ExpressionEditorReceipt receipt, string query) { Visible = true; return Task.CompletedTask; }
-        public void Update(ExpressionAssistResult? result, string? message, bool loading) => Result = result;
+        public bool Visible; public ExpressionAssistResult? Result; public string? Unavailable; public string? Message;
+        public Action? BeforeShow; public int Shows, Failures;
+        public Task ShowAsync(ExpressionEditorReceipt receipt, string query, Func<bool> mayActivate)
+        { BeforeShow?.Invoke(); if (mayActivate()) { Visible = true; Shows++; } return Task.CompletedTask; }
+        public void Update(ExpressionAssistResult? result, string? message, bool loading) { Result = result; Message = message; }
         public void Hide(bool restoringHost) => Visible = false;
-        public void ShowFailure(string candidate, string message) { }
+        public void ShowFailure(string candidate, string message) => Failures++;
         public void ShowUnavailable(string message) => Unavailable = message;
     }
 }

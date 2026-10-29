@@ -18,20 +18,20 @@ public sealed class ExpressionAssistViewTests(WpfDispatcher dispatcher)
     [Fact]
     public Task RetiredCompositionCannotBlockOrClearTheNextInputSession() => dispatcher.RunAsync(async () =>
     {
-        var window = new ExpressionAssistWindow(new ScreenRect(50, 50, 1, 18));
+        var window = new ExpressionAssistWindow(new ScreenRect(50, 50, 1, 18), (_, _) => { }, _ => { });
         var panel = (IExpressionAssistPanel)window;
         var observation = new ExpressionEditorObservation(1, "field", 1, 1, "", new(0, 0), false, true, InputCompositionState.Clear, 1);
         var receipt = ExpressionEditorReceiptPolicy.Capture(observation, null)!;
         try
         {
-            await panel.ShowAsync(receipt, "");
+            await panel.ShowAsync(receipt, "", static () => true);
             var view = window.View;
             RaiseComposition(view.QueryBox, TextCompositionManager.PreviewTextInputStartEvent);
             Assert.True(view.IsComposing);
             RaiseComposition(view.QueryBox, TextCompositionManager.PreviewTextInputEvent);
             panel.Hide(false); // The old completion remains queued on the dispatcher.
             Assert.False(view.IsComposing);
-            var showing = panel.ShowAsync(receipt, "new query");
+            var showing = panel.ShowAsync(receipt, "new query", static () => true);
             RaiseComposition(view.QueryBox, TextCompositionManager.PreviewTextInputStartEvent);
             await showing; await Dispatcher.Yield(DispatcherPriority.ApplicationIdle);
             Assert.True(view.IsComposing); // The old completion did not clear the new preedit.
@@ -40,7 +40,7 @@ public sealed class ExpressionAssistViewTests(WpfDispatcher dispatcher)
                 { RoutedEvent = Keyboard.PreviewKeyDownEvent };
             view.QueryBox.RaiseEvent(composingKey); Assert.False(prematureCancel);
             panel.Hide(false);
-            await panel.ShowAsync(receipt, "new query");
+            await panel.ShowAsync(receipt, "new query", static () => true);
             Assert.False(view.IsComposing);
             string? observed = null; bool cancelled = false;
             view.QueryChanged += (text, composing) => { if (!composing) observed = text; };

@@ -32,6 +32,8 @@ namespace Cotabby.App.Learning;
 /// </remarks>
 internal sealed partial class LearningPreviewController : IAsyncDisposable
 {
+    internal Func<bool>? InlineCaptureActive { get; set; }
+    internal void SuspendForInlineFeature() => CancelAndHide();
     private static readonly TimeSpan CapturePollInterval = TimeSpan.FromMilliseconds(400);
     private static readonly ILearningTranslationEngine UnavailableLocalEngine = new UnavailableLocalLearningTranslationEngine();
     private const string SecureFieldMessage = "Sentence translation is unavailable in secure fields.";
@@ -186,6 +188,8 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
             return;
         }
 
+        if (InlineCaptureActive?.Invoke() == true) { CancelAndHide(); return; }
+
         var settings = Volatile.Read(ref _settings);
         if (settings is null || !settings.TranslationEnabled)
         {
@@ -258,6 +262,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
 
     private void OnKeyEvent(object? sender, KeyEventArgs args)
     {
+        if (InlineCaptureActive?.Invoke() == true) { CancelAndHide(); return; }
         var input = args.Event;
         var settings = Volatile.Read(ref _settings);
         var focused = _focus.Current;
@@ -342,16 +347,16 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
     private async Task CaptureAndStartAsync(
         long generation, LearningRuntimeSettings settings, CaptureOrigin? origin, ScreenRect fallbackAnchor)
     {
-        if (generation < 0 || !IsCurrentIntent(generation)) return;
+        if (generation < 0 || RetireForInlineCapture(generation) || !IsCurrentIntent(generation)) return;
 
-        var attempt = await Task.Run(() => Capture(settings, origin)).ConfigureAwait(false);
-        if (!IsCurrentIntent(generation)) return;
+        var attempt = await Task.Run(() => Capture(settings, origin, generation)).ConfigureAwait(false);
+        if (RetireForInlineCapture(generation) || !IsCurrentIntent(generation)) return;
 
         if (attempt.Capture is null)
         {
             await _dispatcher.InvokeAsync(() =>
             {
-                if (!IsCurrentIntent(generation)) return;
+                if (RetireForInlineCapture(generation) || !IsCurrentIntent(generation)) return;
                 EnsureWindow().ShowCaptureFailure(attempt.ErrorMessage ?? UnsupportedFieldMessage,
                     attempt.ErrorAnchor.IsEmpty ? fallbackAnchor : attempt.ErrorAnchor);
             }, DispatcherPriority.Background);
@@ -365,7 +370,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
             ClearCacheIfBatterySaverPaused(capture.Settings);
             await _dispatcher.InvokeAsync(() =>
             {
-                if (!IsCurrentIntent(generation)) return;
+                if (RetireForInlineCapture(generation) || !IsCurrentIntent(generation)) return;
                 CancelAndHide();
                 EnsureWindow().ShowCaptureFailure(availabilityFailure, capture.Field.CaretRect);
             }, DispatcherPriority.Background);
@@ -376,7 +381,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         {
             await _dispatcher.InvokeAsync(() =>
             {
-                if (IsCurrentIntent(generation))
+                if (!RetireForInlineCapture(generation) && IsCurrentIntent(generation))
                     EnsureWindow().ShowCaptureFailure(SameLanguageMessage, capture.Field.CaretRect);
             }, DispatcherPriority.Background);
             return;
@@ -384,15 +389,15 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
 
         // A second off-thread UIA read proves the exact capture is still the current editor state
         // before the translation coordinator can hand any sentence to an engine.
-        bool isCurrent = await Task.Run(() => IsCaptureCurrent(capture)).ConfigureAwait(false);
-        if (!IsCurrentIntent(generation)) return;
+        bool isCurrent = await Task.Run(() => !RetireForInlineCapture(generation) && IsCaptureCurrent(capture)).ConfigureAwait(false);
+        if (RetireForInlineCapture(generation) || !IsCurrentIntent(generation)) return;
         if (!isCurrent)
         {
             var currentAvailabilityFailure = LearningAvailabilityFailure(capture.Settings);
             ClearCacheIfBatterySaverPaused(capture.Settings);
             await _dispatcher.InvokeAsync(() =>
             {
-                if (!IsCurrentIntent(generation)) return;
+                if (RetireForInlineCapture(generation) || !IsCurrentIntent(generation)) return;
                 CancelAndHide();
                 EnsureWindow().ShowCaptureFailure(
                     currentAvailabilityFailure ?? ChangedFieldMessage,
@@ -401,11 +406,12 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
             return;
         }
 
-        await _dispatcher.InvokeAsync(() => BeginPreview(generation, capture), DispatcherPriority.Background);
+        await _dispatcher.InvokeAsync(() => { if (!RetireForInlineCapture(generation)) BeginPreview(generation, capture); }, DispatcherPriority.Background);
     }
 
-    private CaptureAttempt Capture(LearningRuntimeSettings settings, CaptureOrigin? origin)
+    private CaptureAttempt Capture(LearningRuntimeSettings settings, CaptureOrigin? origin, long generation)
     {
+        if (RetireForInlineCapture(generation) || !IsCurrentIntent(generation)) return new CaptureAttempt(null, null, ScreenRect.Empty);
         var availabilityFailure = LearningAvailabilityFailure(settings);
         if (availabilityFailure is not null)
         {
@@ -429,6 +435,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         {
             // UIA is a cross-process call that can stall on a host. This method is only reached
             // from Task.Run, never from the low-level hook or the WPF dispatcher.
+            if (RetireForInlineCapture(generation) || !IsCurrentIntent(generation)) return new CaptureAttempt(null, null, ScreenRect.Empty);
             field = _focus.Refresh();
         }
         catch (Exception)
@@ -436,6 +443,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
             return new CaptureAttempt(null, UnsupportedFieldMessage, ScreenRect.Empty);
         }
 
+        if (RetireForInlineCapture(generation) || !IsCurrentIntent(generation)) return new CaptureAttempt(null, null, ScreenRect.Empty);
         if (field is null) return new CaptureAttempt(null, UnsupportedFieldMessage, ScreenRect.Empty);
         if (!origin.Matches(field))
             return new CaptureAttempt(null, ChangedFieldMessage, field.CaretRect);
@@ -532,7 +540,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
     }
 
     private bool IsLearningAvailable(LearningRuntimeSettings settings) =>
-        LearningAvailabilityFailure(settings) is null;
+        InlineCaptureActive?.Invoke() != true && LearningAvailabilityFailure(settings) is null;
 
     private string? SharedAvailabilityFailure(LearningRuntimeSettings settings)
     {
@@ -1113,6 +1121,18 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
     private bool IsCurrentIntent(long generation)
     {
         lock (_gate) return !_disposed && _intentActive && _intentGeneration == generation;
+    }
+
+    // An older queued worker must never retire a newer preview. Check the generation under the
+    // intent gate before withdrawing, then dispatch presentation cleanup outside that gate.
+    private bool RetireForInlineCapture(long generation)
+    {
+        if (InlineCaptureActive?.Invoke() != true) return false;
+        RetiredIntent? retired = null;
+        lock (_gate)
+            if (!_disposed && _intentActive && _intentGeneration == generation) retired = RetireIntentLocked();
+        if (retired is not null) FinishRetirement(retired);
+        return true;
     }
 
     private bool IsPendingIntent(long generation)

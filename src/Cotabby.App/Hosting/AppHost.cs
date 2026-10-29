@@ -7,6 +7,8 @@ using Cotabby.App.Overlay;
 using Cotabby.App.Settings;
 using Cotabby.App.UI;
 using Cotabby.App.Vocabulary;
+using Cotabby.App.UI.ExpressionAssist;
+using Cotabby.Win32.ExpressionAssist;
 using Cotabby.Core.Focus;
 using Cotabby.Core.Context;
 using Cotabby.Core.Input;
@@ -88,6 +90,8 @@ public sealed class AppHost : IAsyncDisposable
     internal RecommendedSetupController RecommendedSetup { get; }
     internal LearningPreviewController LearningPreview { get; }
     internal LearningExplanationController LearningExplanation { get; }
+    private readonly IAsyncDisposable? _expressionEditor;
+    private readonly ExpressionAssistApplication _expressions;
     private readonly CanonicalVocabularyFeature _notebook;
     internal CanonicalWritingViewStore Vocabulary => _notebook.Writing;
     internal AnkiReviewFeature Review { get; }
@@ -131,6 +135,7 @@ public sealed class AppHost : IAsyncDisposable
         sc.AddSingleton<IKeyboardHook, KeyboardHook>();
         sc.AddSingleton<ClipboardTextReader>();
         sc.AddSingleton<IClipboardTextWriter, ClipboardTextWriter>();
+        sc.AddSingleton<InsertionTransactionGate>();
         sc.AddSingleton<ITextInserter, SendInputTextInserter>();
         sc.AddSingleton<LlamaRuntimeManager>();
         sc.AddSingleton<ModelDownloader>();
@@ -143,7 +148,8 @@ public sealed class AppHost : IAsyncDisposable
         sc.AddSingleton<VocabularyCaptureFactory>();
         // Recognition and dictionary cards share one store. Bundle resolution checks availability;
         // resource parsing/indexing and ICU calls remain lazy and run on the service worker.
-        sc.AddSingleton<ILearningLexicalText, IcuLearningLexicalText>();
+        sc.AddSingleton<IcuLearningLexicalText>();
+        sc.AddSingleton<ILearningLexicalText>(services => services.GetRequiredService<IcuLearningLexicalText>());
         sc.AddSingleton<ILearningLexiconResourceSource>(_ =>
             BundledLearningLexiconResourceSource.FromBundleDirectory(AppContext.BaseDirectory));
         sc.AddSingleton<LearningLexiconService>();
@@ -206,6 +212,23 @@ public sealed class AppHost : IAsyncDisposable
 
         IcuWordBreaker.Install();
 
+        // One insertion gate covers completion/emoji/macros and the explicit expression edit.
+        // The panel borrows this exact focus/input owner and the existing explanation runtime.
+        var nativeFocus = (UiaFocusTracker)focus;
+        IExpressionAssistEditor expressionAdapter = new UnavailableExpressionAssistEditor();
+        if (OperatingSystem.IsWindowsVersionAtLeast(10))
+        {
+            var nativeEditor = new Win32ExpressionEditor(nativeFocus, _hook,
+                _services.GetRequiredService<InsertionTransactionGate>(), _services.GetRequiredService<ClipboardTextReader>());
+            _expressionEditor = nativeEditor;
+            expressionAdapter = new NativeExpressionAssistEditor(nativeEditor);
+        }
+        _expressions = new(overlay.Dispatcher, focus, _hook, nativeFocus.RefreshGuarded,
+            expressionAdapter,
+            (request, token) => LearningExplanation.GenerateExpressionAsync(request,
+                _services.GetRequiredService<IcuLearningLexicalText>().Lowercase, token),
+            () => { Coordinator?.InvalidateSession(); LearningPreview?.SuspendForInlineFeature(); });
+
         // Inline features subscribe to the hook first so they see each key before the coordinator.
         EmojiPicker = new EmojiPickerController(
             _hook, focus, inserter, emojiPopup, overlay.Dispatcher,
@@ -222,8 +245,8 @@ public sealed class AppHost : IAsyncDisposable
             clipboard: _services.GetRequiredService<ClipboardTextReader>());
         _suggestionApplication = new SuggestionSettingsApplication(Coordinator, _completion);
         Coordinator.EnsureLocalReady = EnsureSelectedCompletionReadyAsync;
-        Coordinator.InlineCaptureActive = () => EmojiPicker.IsCapturing || Macros.IsCapturing;
-        EmojiPicker.CanCapture = Macros.CanCapture = Coordinator.IsAvailableIn;
+        Coordinator.InlineCaptureActive = () => _expressions.IsActive || EmojiPicker.IsCapturing || Macros.IsCapturing;
+        EmojiPicker.CanCapture = Macros.CanCapture = field => !_expressions.IsActive && Coordinator.IsAvailableIn(field);
         EmojiPicker.CommitKeyFor = Macros.CommitKeyFor = Coordinator.AcceptWordKeyFor;
         Coordinator.Metrics.Restore(Settings.WordsAccepted);
         LearningPreview = new LearningPreviewController(
@@ -244,6 +267,7 @@ public sealed class AppHost : IAsyncDisposable
             clipboardWriter: _services.GetRequiredService<IClipboardTextWriter>(),
             vocabulary: Vocabulary,
             vocabularyCaptures: _services.GetRequiredService<VocabularyCaptureFactory>());
+        LearningPreview.InlineCaptureActive = () => _expressions.IsActive;
 
         SystemEvents.PowerModeChanged += OnPowerModeChanged;
         ApplySettings();
@@ -351,6 +375,7 @@ public sealed class AppHost : IAsyncDisposable
         Macros.Enabled = Settings.MacrosEnabled;
         LearningPreview.ApplySettings(Settings, _learningCredentialRevision);
         LearningExplanation.ApplySettings(Settings);
+        _expressions.ApplySettings(Settings, PowerStatus.IsBatterySaverOn);
         VocabularyWindow.SetPreferredLanguages(NotebookLabelLanguages());
         Overlay.ApplyAppearance(Settings);
         _macroPreview.ApplyAppearance(Settings);
@@ -366,7 +391,7 @@ public sealed class AppHost : IAsyncDisposable
 
     private void OnGlobalToggleKey(object? sender, KeyEventArgs args)
     {
-        if (!args.Event.IsKeyDown || args.Event.IsRepeat || !Settings.GlobalToggle.Matches(args.Event)) return;
+        if (args.Suppress || !args.Event.IsKeyDown || args.Event.IsRepeat || !Settings.GlobalToggle.Matches(args.Event)) return;
         args.Suppress = true;
         _ui.Post(_ =>
         {
@@ -523,7 +548,11 @@ public sealed class AppHost : IAsyncDisposable
         // Learning owns separate requests and retires them under its own power eligibility gate.
         LearningPreview.PowerStatusChanged();
         LearningExplanation.PowerStatusChanged();
-        _ui.Post(_ => { if (Settings.Engine == EngineKind.Local) ApplySettings(); }, null);
+        _ui.Post(_ =>
+        {
+            if (Settings.Engine == EngineKind.Local) ApplySettings();
+            else if (!_shuttingDown) _expressions.ApplySettings(Settings, PowerStatus.IsBatterySaverOn);
+        }, null);
     }
 
     /// <summary>
@@ -591,9 +620,19 @@ public sealed class AppHost : IAsyncDisposable
             try { await _completion.DisposeAsync().ConfigureAwait(false); }
             finally
             {
-                try { await LearningPreview.DisposeAsync().ConfigureAwait(false); }
+                try { await RetireExpressionAsync().ConfigureAwait(false); }
                 finally { await RetireNotebookProducersAsync().ConfigureAwait(false); }
             }
+        }
+    }
+
+    private async Task RetireExpressionAsync()
+    {
+        try { await _expressions.DisposeAsync().ConfigureAwait(false); }
+        finally
+        {
+            try { if (_expressionEditor is not null) await _expressionEditor.DisposeAsync().ConfigureAwait(false); }
+            finally { await LearningPreview.DisposeAsync().ConfigureAwait(false); }
         }
     }
 

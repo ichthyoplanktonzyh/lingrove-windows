@@ -25,6 +25,13 @@ internal sealed class KeySender : IKeyboardEditDispatcher
         return Send(target, batch, beforeSend: null);
     }
 
+    internal bool SendUnicodeEdit(FocusedField target, int deleteCount, string text, Func<bool> beforeSend)
+    {
+        ArgumentNullException.ThrowIfNull(beforeSend);
+        SyntheticKey[] batch = SyntheticKeys.Edit(HeldModifiers(), deleteCount, text).ToArray();
+        return Send(target, batch, beforeSend);
+    }
+
     public bool SendPasteEdit(FocusedField target, int deleteCount, Func<bool> clipboardIsCurrent)
     {
         ArgumentNullException.ThrowIfNull(clipboardIsCurrent);

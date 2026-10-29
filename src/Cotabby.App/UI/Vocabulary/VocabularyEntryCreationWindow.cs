@@ -1,0 +1,97 @@
+using System.ComponentModel;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+using Cotabby.App.Vocabulary;
+using Cotabby.Core.LanguageLearning;
+using Cotabby.Core.Vocabulary;
+using Cotabby.Core.Vocabulary.EntryInput;
+
+namespace Cotabby.App.UI.Vocabulary;
+
+/// <summary>Unsaved sheet draft. Only its injected shared owner may assign IDs or write.</summary>
+internal sealed class VocabularyEntryCreationWindow : Window
+{
+    private readonly IVocabularyEntryInputOwner _owner;
+    private readonly TextBox _expression = new() { Name = "vocabularyNewExpression" }, _dictionary = new(), _meaning = new() { Name = "vocabularyNewMeaning" }, _notes = new(), _tags = new();
+    private readonly ComboBox _language, _kind, _meaningLanguage;
+    private readonly StackPanel _fields = new();
+    private readonly Button _save = new() { Name = "vocabularyCreateEntry", Content = "Save", IsDefault = true, MinWidth = 90 }, _cancel = new() { Content = "Cancel", IsCancel = true, MinWidth = 90 };
+    private readonly TextBlock _failure = new() { Foreground = Brushes.Firebrick, TextWrapping = TextWrapping.Wrap };
+    private bool _saving;
+    internal VocabularyInputResult? Result { get; private set; }
+    internal Task? LastOperation { get; private set; }
+    internal VocabularyEntryCreationWindow(IVocabularyEntryInputOwner owner, LearningLanguage language = LearningLanguage.English)
+    {
+        _owner = owner; Title = "Add entry"; Width = 620; Height = 590; MinWidth = 500; MinHeight = 500; WindowStartupLocation = WindowStartupLocation.CenterOwner;
+        _language = VocabularyInputControls.Languages(true, language); _meaningLanguage = VocabularyInputControls.Languages(true, null);
+        _kind = VocabularyInputControls.Kinds();
+        Background = Brushes.White; var root = new DockPanel { Margin = new Thickness(20), Background = Brushes.White }; Content = root;
+        var title = VocabularyInputControls.Heading("Add entry"); DockPanel.SetDock(title, Dock.Top); root.Children.Add(title);
+        var footer = VocabularyInputControls.Footer(_cancel, _save); DockPanel.SetDock(footer, Dock.Bottom); root.Children.Add(footer);
+        DockPanel.SetDock(_failure, Dock.Bottom); root.Children.Add(_failure);
+        var scroll = new ScrollViewer { VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Content = _fields }; root.Children.Add(scroll);
+        _fields.Children.Add(VocabularyInputControls.Group(
+            ("Expression", _expression), ("Language", _language), ("Entry type", _kind), ("Dictionary form", _dictionary)));
+        _fields.Children.Add(VocabularyInputControls.Group(
+            ("Core meaning", _meaning), ("Meaning language", _meaningLanguage), ("Notes", _notes), ("Tags", _tags)));
+        _fields.Children.Add(VocabularyInputControls.Caption("Separate tags with commas or semicolons."));
+        _fields.Children.Add(VocabularyInputControls.Caption("Existing entries keep their content. New content is added as a separate sense."));
+        _expression.TextChanged += (_, _) => Update(); _save.Click += (_, _) => LastOperation = SaveAsync();
+        Loaded += (_, _) => _expression.Focus(); Closing += OnClosing; Update();
+    }
+    private void Update() { _fields.IsEnabled = !_saving; _cancel.IsEnabled = !_saving; _save.IsEnabled = !_saving && !string.IsNullOrWhiteSpace(_expression.Text); }
+    private void OnClosing(object? sender, CancelEventArgs e) { if (_saving) e.Cancel = true; }
+    private async Task SaveAsync()
+    {
+        if (_saving || !_save.IsEnabled) return;
+        _saving = true; _failure.Text = ""; Update();
+        try
+        {
+            var value = VocabularyEntryInputPolicy.Validated(new(_expression.Text, _dictionary.Text,
+                (LearningLanguage?)_language.SelectedValue, (VocabularyEntryKind)_kind.SelectedValue,
+                _meaning.Text, (LearningLanguage?)_meaningLanguage.SelectedValue, _notes.Text,
+                _tags.Text.Split([',', '，', ';', '；'])));
+            Result = await _owner.AddEntriesAsync(Array.AsReadOnly(new[] { value }), CancellationToken.None);
+        }
+        catch (Exception error) { _failure.Text = VocabularyInputMessages.For(error); }
+        finally { _saving = false; Update(); }
+        if (Result is not null) { Close(); }
+    }
+}
+
+internal static class VocabularyInputControls
+{
+    private sealed record Option(string Label, object? Value) { public override string ToString() => Label; }
+    internal static ComboBox Languages(bool optional, LearningLanguage? selected)
+    {
+        var box = new ComboBox { MinWidth = 130, SelectedValuePath = nameof(Option.Value), DisplayMemberPath = nameof(Option.Label) };
+        if (optional) box.Items.Add(new Option("Not specified", null));
+        foreach (var value in LearningLanguages.All) box.Items.Add(new Option(value.Name(), value));
+        box.SelectedValue = selected; if (selected is null) box.SelectedIndex = 0; return box;
+    }
+    internal static ComboBox Kinds()
+    {
+        var box = new ComboBox { MinWidth = 130, ItemsSource = Enum.GetValues<VocabularyEntryKind>(), SelectedItem = VocabularyEntryKind.Word };
+        box.SelectedValuePath = ""; return box;
+    }
+    internal static TextBlock Heading(string text) => new() { Text = text, FontSize = 18, FontWeight = FontWeights.SemiBold, Margin = new Thickness(0, 0, 0, 16) };
+    internal static TextBlock Caption(string text) => new() { Text = text, Foreground = Brushes.DimGray, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 5, 0, 8) };
+    internal static StackPanel Footer(params Button[] buttons)
+    {
+        var panel = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0, 16, 0, 0) };
+        foreach (var button in buttons) { button.Margin = new Thickness(8, 0, 0, 0); panel.Children.Add(button); } return panel;
+    }
+    internal static Border Group(params (string Label, FrameworkElement Control)[] fields)
+    {
+        var grid = new Grid(); grid.ColumnDefinitions.Add(new() { Width = new GridLength(145) }); grid.ColumnDefinitions.Add(new());
+        for (int i = 0; i < fields.Length; i++)
+        {
+            grid.RowDefinitions.Add(new() { Height = GridLength.Auto });
+            var label = new TextBlock { Text = fields[i].Label, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 5, 10, 5) };
+            Grid.SetRow(label, i); grid.Children.Add(label); var control = fields[i].Control; control.Margin = new Thickness(0, 4, 0, 4);
+            System.Windows.Automation.AutomationProperties.SetName(control, fields[i].Label); Grid.SetRow(control, i); Grid.SetColumn(control, 1); grid.Children.Add(control);
+        }
+        return new Border { BorderBrush = Brushes.LightGray, BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(5), Padding = new Thickness(14), Margin = new Thickness(0, 0, 0, 12), Child = grid };
+    }
+}

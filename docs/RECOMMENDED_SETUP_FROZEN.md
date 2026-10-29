@@ -51,8 +51,6 @@ Windows SDK 10.0.402 validation: `dotnet build Cotabby.sln --configuration Relea
 zero warnings/errors. The focused Core filter `RecommendedSetupPolicyTests|LazyCompletionReadinessTests|CompletionModelAdmissionTests`
 passed 22/22; `ModelAssignmentSettingsTests` passed 5/5; `RecommendedSetupTests` passed 6/6 on the
 WPF dispatcher. These tests do not establish native IME or physical desktop behavior.
-After importing the composition value/insertion contract, the focused Core filter
-`LazyCompletionReadinessTests|CompletionModelAdmissionTests|SuggestionCoordinator` passed 85/85.
-The full Core run against that partial contract failed 16 and passed 4,678 of 4,694 because the
-separately owned composition checkpoint's Emoji fixture updates were not yet imported. Full
-combined validation remains an integration gate.
+After merging the composition checkpoint, the full Core and portable App suites passed 4,752/4,752
+and 1,228/1,228. The focused Inference composition/model/insertion filter passed 36/36 and the WPF
+setup/composition filter passed 8/8. These checks do not establish physical IME or native model behavior.

@@ -55,8 +55,12 @@ draft saves. [Usage-pattern edits](VOCABULARY_CANONICAL_PATTERN_UI.md) retain pa
 remove restricted mappings as in the source. Show-unexplored preferences survive general reset.
 The [canonical graph](VOCABULARY_CANONICAL_GRAPH_3B.md) now shares those selections and the existing
 settings owner, including entry/sense force layout and meaning/category tree navigation.
-Image paste/drop/enlargement, full notebook explanation/dictionary rows, export/backup and
-speech remain subsequent canonical modules. An older library's checks do not activate them.
+The [entry image workflow](VOCABULARY_CANONICAL_ENTRY_EDITOR_UI.md) connects explicit paste,
+existing-file drop and enlargement through one feature-owned clipboard transfer and the same media
+Store. [Full backup/restore](VOCABULARY_CANONICAL_BACKUP.md) captures and restores the complete
+current graph and media with explicit replacement confirmation. Full notebook explanation/dictionary
+rows, learning-material export and speech remain subsequent canonical modules. An older library's
+checks do not activate them.
 
 Windows presentation uses WPF controls/system fonts, native window chrome and 96-DPI layout units.
 The [window-scoped visual adaptation](VOCABULARY_NOTEBOOK_THEME.md) follows Windows light/dark

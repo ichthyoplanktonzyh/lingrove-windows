@@ -27,11 +27,11 @@ public sealed record CliBatchPlan(F.VocabularyDocument Document, JsonArray Outco
             }
             else if (operation.Key is "add" or "append" or "update")
             {
-                outcomes.Add(CliTraditionalPlan.Apply(draft, operation.Key, input, index, key, fingerprint, revision, now, prepared));
+                outcomes.Add(CliTraditionalPlan.Apply(draft, operation.Key, input, index, key, fingerprint, revision, now, prepared, cancellationToken));
                 foreach (var pair in prepared.Where(pair => pair.Key.StartsWith(index.ToString(System.Globalization.CultureInfo.InvariantCulture) + ".", StringComparison.Ordinal))) images[pair.Value.Reference.Filename] = pair.Value;
             }
             else if (operation.Key == "capture")
-                outcomes.Add(CliCapturePlan.Apply(draft, input, now, suffix => CliIdentity.OperationId(key, fingerprint, index, suffix), index));
+                outcomes.Add(CliCapturePlan.Apply(draft, input, now, suffix => CliIdentity.OperationId(key, fingerprint, index, suffix), index, cancellationToken));
             else throw new CliException(CliErrorCode.InvalidInput, "Unknown CLI operation.");
         }
         cancellationToken.ThrowIfCancellationRequested();

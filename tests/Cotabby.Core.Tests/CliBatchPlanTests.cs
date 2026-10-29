@@ -88,4 +88,12 @@ public sealed class CliBatchPlanTests
         var error = Assert.Throws<CliException>(() => CliBatchPlan.Create(capture, saved, 1, CliIdentity.Fingerprint(capture), new F.SourceDate(2), new Dictionary<string, VocabularyPreparedImage>()));
         Assert.Equal(CliErrorCode.Conflict, error.Code); Assert.Single(saved.CollectedEntries.Single().Senses);
     }
+    [Fact]
+    public void CancelledPlanningNeverPublishesAnIntermediateGraph()
+    {
+        var batch = Decode("""{"version":1,"idempotencyKey":"cancel","operations":[{"add":{"expression":"bank","language":"en","kind":"word","meaning":"money"}}]}""");
+        var baseline = new F.VocabularyDocument(); using var cancellation = new CancellationTokenSource(); cancellation.Cancel();
+        Assert.Throws<OperationCanceledException>(() => CliBatchPlan.Create(batch, baseline, 0, CliIdentity.Fingerprint(batch), new F.SourceDate(0), new Dictionary<string, VocabularyPreparedImage>(), cancellation.Token));
+        Assert.Empty(baseline.Catalog);
+    }
 }

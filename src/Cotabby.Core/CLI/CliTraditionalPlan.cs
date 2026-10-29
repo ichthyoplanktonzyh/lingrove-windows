@@ -12,7 +12,7 @@ namespace Cotabby.Core.CLI;
 internal static class CliTraditionalPlan
 {
     internal static JsonObject Apply(CliResourceDraft draft, string kind, JsonObject input, int index, string key, string fingerprint,
-        ulong revision, F.SourceDate now, IReadOnlyDictionary<string, VocabularyPreparedImage> prepared)
+        ulong revision, F.SourceDate now, IReadOnlyDictionary<string, VocabularyPreparedImage> prepared, CancellationToken cancellationToken)
     {
         Guid Id(string suffix) => CliIdentity.OperationId(key, fingerprint, index, suffix);
         var graph = draft.RawGraph; var document = draft.Working(); var entries = document.Entries;
@@ -66,6 +66,7 @@ internal static class CliTraditionalPlan
         var rawSources = graph["sources"]!.AsArray(); var rawOccurrences = graph["occurrences"]!.AsArray(); var rawClaims = graph["interpretations"]!.AsArray();
         foreach (var (exampleNode, position) in (input["examples"] as JsonArray ?? []).Select((value, offset) => (value, offset)))
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var value = CliExamplePolicy.Create(exampleNode!.AsObject(), entry.Expression, Id("example." + position), now);
             int existing = examples.FindIndex(item => StringComparer.Ordinal.Equals(CliExamplePolicy.Key(item), CliExamplePolicy.Key(value)));
             if (existing >= 0)
@@ -98,6 +99,7 @@ internal static class CliTraditionalPlan
         var blocks = (collection.Content ?? []).ToList(); var blockIds = new List<Guid>();
         foreach (var (item, position) in (input["content"] as JsonArray ?? []).Select((value, offset) => (value, offset)))
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var block = item!.AsObject(); VocabularyBlockContent content;
             if (block["text"] is { } text)
                 content = new VocabularyBlockContent.Text(new VocabularyTextContent(CliExamplePolicy.Text(text.GetValue<string>(), 262144, true), Bold: block["bold"]?.GetValue<bool>() ?? false, Italic: block["italic"]?.GetValue<bool>() ?? false));

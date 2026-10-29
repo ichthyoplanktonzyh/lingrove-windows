@@ -14,14 +14,15 @@ internal sealed class CliCapturePlan
     private readonly JsonObject _defaults;
     private readonly F.SourceDate _now;
     private readonly Func<string, Guid> _id;
+    private readonly CancellationToken _cancellationToken;
     private readonly Dictionary<string, Guid> _nodes = new(CanonicalStringComparer.Instance);
     private readonly JsonArray _entries = [], _meanings = [];
     private int _senses, _examples, _mappings;
-    private CliCapturePlan(CliResourceDraft draft, JsonObject input, F.SourceDate now, Func<string, Guid> id)
-    { _draft = draft; _defaults = input["defaults"] as JsonObject ?? new(); _now = now; _id = id; }
-    internal static JsonObject Apply(CliResourceDraft draft, JsonObject input, F.SourceDate now, Func<string, Guid> id, int operation)
+    private CliCapturePlan(CliResourceDraft draft, JsonObject input, F.SourceDate now, Func<string, Guid> id, CancellationToken cancellationToken)
+    { _draft = draft; _defaults = input["defaults"] as JsonObject ?? new(); _now = now; _id = id; _cancellationToken = cancellationToken; }
+    internal static JsonObject Apply(CliResourceDraft draft, JsonObject input, F.SourceDate now, Func<string, Guid> id, int operation, CancellationToken cancellationToken)
     {
-        var plan = new CliCapturePlan(draft, input, now, id);
+        var plan = new CliCapturePlan(draft, input, now, id, cancellationToken);
         _ = CliExamplePolicy.Language(plan.String(plan._defaults, "language")); _ = CliExamplePolicy.Language(plan.String(plan._defaults, "meaningLanguage"));
         _ = CliExamplePolicy.Language(plan.String(plan._defaults, "translationLanguage")); _ = plan.Provenance(null);
         foreach (var (node, index) in (input["meanings"] as JsonArray ?? []).Select((value, index) => (value, index))) plan.Meaning(node!.AsObject(), $"meaning.{index}");
@@ -41,6 +42,7 @@ internal sealed class CliCapturePlan
     private static string G(Guid id) => id.ToString("D").ToUpperInvariant();
     private void Meaning(JsonObject input, string path)
     {
+        _cancellationToken.ThrowIfCancellationRequested();
         string reference = CliExamplePolicy.Text(String(input, "ref")!, 200, true);
         if (_nodes.ContainsKey(reference)) throw Invalid("Meaning refs must be unique within the capture.");
         Guid nodeId;
@@ -84,6 +86,7 @@ internal sealed class CliCapturePlan
     }
     private void Entry(JsonObject input, string path)
     {
+        _cancellationToken.ThrowIfCancellationRequested();
         string expression = CliExamplePolicy.Text(String(input, "expression")!, 32000, true);
         string? languageCode = String(input, "language") ?? String(_defaults, "language"); var language = CliExamplePolicy.Language(languageCode) ?? throw Invalid("Supply entry language or defaults.language and a supported kind.");
         string kindText = String(input, "kind") ?? "word"; if (!Enum.TryParse<VocabularyEntryKind>(kindText, true, out var kind) || !Enum.IsDefined(kind)) throw Invalid("Unknown kind.");
@@ -103,6 +106,7 @@ internal sealed class CliCapturePlan
     }
     private JsonObject Sense(JsonObject input, Guid entryId, string path)
     {
+        _cancellationToken.ThrowIfCancellationRequested();
         var current = _draft.Working(); var entry = current.Entries.First(value => value.Id == entryId); Guid senseId;
         if (String(input, "id") is { } existing)
         {
@@ -136,6 +140,7 @@ internal sealed class CliCapturePlan
         var result = new List<Guid>();
         foreach (var (raw, offset) in inputs.Select((value, index) => (value!.AsObject(), index)))
         {
+            _cancellationToken.ThrowIfCancellationRequested();
             var input = (JsonObject)raw.DeepClone();
             if (input["meaningLanguage"] is null) input["meaningLanguage"] = String(_defaults, "meaningLanguage");
             if (input["translationLanguage"] is null) input["translationLanguage"] = String(_defaults, "translationLanguage") ?? String(_defaults, "meaningLanguage");
@@ -170,6 +175,7 @@ internal sealed class CliCapturePlan
     }
     private Guid Association(JsonObject input, Guid senseId, List<Guid> evidence, string path)
     {
+        _cancellationToken.ThrowIfCancellationRequested();
         if (!_nodes.TryGetValue(String(input, "meaning")!, out var nodeId)) throw Invalid("Unknown meaning ref in association.");
         var node = _draft.Working().Semantics.Nodes.FirstOrDefault(value => value.Id == nodeId) ?? throw Invalid("Unknown meaning ref in association.");
         Guid? patternId = null; var provenance = Provenance(String(input, "status"));
@@ -190,6 +196,7 @@ internal sealed class CliCapturePlan
     }
     private void Relation(JsonObject input, string path)
     {
+        _cancellationToken.ThrowIfCancellationRequested();
         if (!_nodes.TryGetValue(String(input, "from")!, out var source) || !_nodes.TryGetValue(String(input, "to")!, out var target)) throw Invalid("Unknown meaning ref or relation kind.");
         Guid id = _id(path); PutNew("relations", id, new JsonObject { ["id"] = G(id), ["sourceID"] = G(source), ["targetID"] = G(target),
             ["kind"] = String(input, "kind"), ["note"] = String(input, "note") ?? "", ["provenance"] = Provenance(String(input, "status")) });

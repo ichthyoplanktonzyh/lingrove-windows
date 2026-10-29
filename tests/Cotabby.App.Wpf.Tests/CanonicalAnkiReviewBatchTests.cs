@@ -1,6 +1,7 @@
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using Cotabby.App.Review;
 using Cotabby.App.Settings;
 using Cotabby.App.UI.Review;
@@ -17,7 +18,9 @@ namespace Cotabby.App.Wpf.Tests;
 [Collection("WPF views")]
 public sealed class CanonicalAnkiReviewBatchTests(WpfDispatcher dispatcher)
 {
-    private sealed class Preferences : IVocabularyNotebookListPreferences { public string Density { get; set; } = "compact"; }
+    private sealed class Preferences : IVocabularyNotebookListPreferences { public string Density { get; set; } = "compact"; public bool ShowUnexplored { get; set; } }
+    private static IEnumerable<DependencyObject> Nodes(DependencyObject root) { yield return root; for (int i = 0; i < VisualTreeHelper.GetChildrenCount(root); i++) foreach (var node in Nodes(VisualTreeHelper.GetChild(root, i))) yield return node; }
+    private static T Find<T>(Window window, string name) where T : FrameworkElement { window.UpdateLayout(); return Nodes(window).OfType<T>().Single(value => value.Name == name); }
     private static async Task<(VocabularySelection Selection, Guid Card)> Add(F.ICanonicalVocabularyStore store, AnkiReviewFeature feature, string expression)
     {
         await store.AddEntriesAsync([new VocabularyEntryInput(Expression: expression, Meaning: "meaning")]);
@@ -347,6 +350,54 @@ public sealed class CanonicalAnkiReviewBatchTests(WpfDispatcher dispatcher)
             await store.SaveReviewAsync(item.Selection.EntryId, item.Selection.SenseId, unprepared with { Plan = unprepared.Plan with { Deck = "Other" } }, unprepared, item.Card);
             held.Release.SetResult(); await Finish(batch); Assert.Equal(ReviewBatchStatus.Synced, batch.Items.Single().Status);
             var saved = (await store.ReadAsync()).Document.CollectedEntries.Single().Senses[0].ReviewCards!.Single(); Assert.Equal("Other", saved.Plan.Deck); Assert.Equal("Other", saved.ActiveBinding!.Deck);
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    });
+
+    [Fact]
+    public Task NotebookMultiSelectionPersistsAcrossFiltersAndSendsSelectedCards() => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "review-batch-selection-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            await using var store = FrozenVocabularyStoreFactory.Create(Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName), false);
+            var values = new AppSettings(); var server = new SessionTestServer(); await using var feature = new AnkiReviewFeature(() => values, () => { }, null, server, new AnkiTestCredentials());
+            var first = await Add(store, feature, "first"); var second = await Add(store, feature, "second");
+            var controller = new FrozenVocabularyWindowController(store, System.Windows.Threading.Dispatcher.CurrentDispatcher, new WindowsVocabularyWordListReader(), new Preferences());
+            controller.AttachReviewFeature(feature, () => { }); controller.Show(first.Selection); var notebook = controller.Window!; if (notebook.LastOperation is { } load) await load;
+            Find<Button>(notebook, "canonicalSelectSenses").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            notebook.UpdateLayout(); Assert.Equal(2, Nodes(notebook).OfType<CheckBox>().Count()); Find<Button>(notebook, "canonicalSelectVisible").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            Assert.Contains(Nodes(notebook).OfType<TextBlock>(), text => text.Text == "2 selected");
+            Find<ComboBox>(notebook, "frozenNotebookOrganization").SelectedIndex = 1; Assert.False(Find<Button>(notebook, "canonicalPrepareSelected").IsVisible);
+            Find<Button>(notebook, "canonicalSelectSenses").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); Assert.Contains(Nodes(notebook).OfType<TextBlock>(), text => text.Text == "2 selected");
+            notebook.UpdateLayout(); var check = Nodes(notebook).OfType<CheckBox>().First(); check.IsChecked = false; check.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            Assert.Contains(Nodes(notebook).OfType<TextBlock>(), text => text.Text == "1 selected"); Find<Button>(notebook, "canonicalSelectVisible").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            Find<TextBox>(notebook, "frozenNotebookSearch").Text = "first"; Assert.Contains(Nodes(notebook).OfType<TextBlock>(), text => text.Text == "2 selected");
+            Find<Button>(notebook, "canonicalFinishSelection").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); Find<Button>(notebook, "canonicalSelectSenses").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            Assert.Contains(Nodes(notebook).OfType<TextBlock>(), text => text.Text == "2 selected"); VocabularyThemeRender.Capture(notebook, "canonical-batch-selection", 1100, 720);
+            Find<Button>(notebook, "canonicalPrepareSelected").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            for (int i = 0; i < 200 && notebook.ReviewBatchWindow is null; i++) await Task.Delay(10); var window = Assert.IsType<CanonicalAnkiReviewBatchWindow>(notebook.ReviewBatchWindow);
+            if (window.LastOperation is { } metadata) await metadata;
+            Assert.Equal(new[] { first.Selection, second.Selection }.OrderBy(s => s.SenseId.ToString("D").ToUpperInvariant(), StringComparer.Ordinal), window.Batch.Items.Select(item => item.Selection));
+            window.SendButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); if (window.LastOperation is { } started) await started; await Finish(window.Batch);
+            Assert.Equal(2, window.Batch.CompleteCount); Assert.Equal(2, server.AddCount); await controller.DisposeAsync();
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    });
+
+    [Fact]
+    public Task ThrowingCancellationStillDrainsBatchWindow() => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "review-batch-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            await using var store = FrozenVocabularyStoreFactory.Create(Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName), false);
+            var values = new AppSettings(); var client = new CanonicalAnkiReviewWindowTests.ThrowingCancellationAnki(new SessionTestServer()); await using var feature = new AnkiReviewFeature(() => values, () => { }, null, client, new AnkiTestCredentials());
+            var item = await Add(store, feature, "bank"); var batch = await CanonicalAnkiReviewBatchSession.OpenAsync(feature, store, [item.Selection]);
+            var window = new CanonicalAnkiReviewBatchWindow(batch, feature, () => { }); window.Show(); if (window.LastOperation is { } load) await load;
+            window.SendButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); await client.Entered.Task;
+            var retire = window.RetireAsync(); Assert.Same(retire, window.RetireAsync()); Assert.False(retire.IsCompleted); Assert.True(window.IsVisible); client.Release.SetResult();
+            var error = await Assert.ThrowsAnyAsync<Exception>(async () => await retire); Assert.Contains("cancel callback failure", error.ToString()); Assert.False(window.IsVisible);
         }
         finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
     });

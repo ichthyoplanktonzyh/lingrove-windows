@@ -23,7 +23,7 @@ internal sealed class CanonicalAnkiReviewBatchWindow : Window
     private ReviewOperationScope? _scope;
     private Task? _aux, _stopWork, _retirement;
     private CanonicalAnkiReviewWindow? _preparation;
-    private bool _retiring, _allowClose;
+    private bool _retiring, _allowClose, _retired;
     private string? _uiError;
     private Exception? _stopFailure;
     internal Task? LastOperation => _aux ?? _batch.Work;
@@ -49,7 +49,7 @@ internal sealed class CanonicalAnkiReviewBatchWindow : Window
         _send.Click += (_, _) => StartAux(token => StartBatchAsync(null, token));
         _apply.Click += (_, _) => _batch.StartApply(_deck.Text); _reload.Click += (_, _) => StartAux(LoadScopeAsync);
         _stop.Click += (_, _) => Stop(); _close.Click += (_, _) => Close();
-        Loaded += (_, _) => StartAux(LoadScopeAsync); Closing += OnClosing; Closed += (_, _) => { _batch.PropertyChanged -= BatchChanged; _feature.Settings.PropertyChanged -= SettingsChanged; _lifetime.Dispose(); };
+        Loaded += (_, _) => StartAux(LoadScopeAsync); Closing += OnClosing; Closed += (_, _) => RetirePresentation();
         Render();
     }
     private void SettingsChanged(object? sender, PropertyChangedEventArgs e)
@@ -137,6 +137,12 @@ internal sealed class CanonicalAnkiReviewBatchWindow : Window
         try { if (_stopWork is { } stop) await stop; } catch (Exception error) { errors.Add(error); }
         if (_stopFailure is { } stopFailure) errors.Add(stopFailure);
         try { _allowClose = true; Close(); } catch (Exception error) { errors.Add(error); }
+        try { RetirePresentation(); } catch (Exception error) { errors.Add(error); }
         if (errors.Count == 0) done.TrySetResult(); else done.TrySetException(errors);
+    }
+    private void RetirePresentation()
+    {
+        if (_retired) return; _retired = true;
+        _batch.PropertyChanged -= BatchChanged; _feature.Settings.PropertyChanged -= SettingsChanged; _lifetime.Dispose();
     }
 }

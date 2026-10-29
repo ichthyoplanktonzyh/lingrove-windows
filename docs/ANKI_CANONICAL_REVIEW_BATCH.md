@@ -25,6 +25,10 @@ sheet retains failure status. Applying a deck saves each local card plan and pre
 bound to a remote note. Close/Stop and notebook retirement join admitted work, child preparation and
 Store publication before releasing shared owners. The notebook partial accepts a captured selection
 through `OpenReviewBatch`; the Review Feature and one canonical Store remain app-owned.
+The notebook's Select senses mode exposes per-sense checkboxes, Select visible, Clear and Prepare
+selected. The selection survives filtering and leaving the mode; switching to meaning organization
+exits the mode. Prepare captures the selected sense IDs sorted by UUID spelling as in the source.
+Batch export and other notebook toolbar operations remain separately scoped.
 
 The WPF form uses the notebook palette and native window chrome. A 96-DPI light, dark and simulated
 high-contrast offscreen render is optional via `LINGROVE_TEST_RENDER_DIR`; physical desktop,

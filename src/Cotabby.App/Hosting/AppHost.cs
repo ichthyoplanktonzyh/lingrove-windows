@@ -100,6 +100,7 @@ public sealed class AppHost : IAsyncDisposable
     internal LearningPreviewController LearningPreview { get; }
     internal LearningExplanationController LearningExplanation { get; }
     internal LearningExplanationEndpointFeature ExplanationEndpoint { get; }
+    internal Cotabby.App.Dictionaries.DictionaryFeature Dictionaries { get; }
     private readonly IAsyncDisposable? _expressionEditor;
     private readonly ExpressionAssistApplication _expressions;
     private readonly Win32ReadingSelectionReader? _nativeReading;
@@ -182,6 +183,7 @@ public sealed class AppHost : IAsyncDisposable
 
         SettingsStore = _services.GetRequiredService<SettingsStore>();
         Settings = initialSettings ?? SettingsStore.Load();
+        Settings.LearningPowerPluggedIn = !PowerStatus.IsOnBattery;
         Runtime = _services.GetRequiredService<LlamaRuntimeManager>();
         Downloader = _services.GetRequiredService<ModelDownloader>();
         EndpointClient = _services.GetRequiredService<OpenAICompatibleApiClient>();
@@ -208,8 +210,10 @@ public sealed class AppHost : IAsyncDisposable
             NotebookLabelLanguages());
         _notebook.AttachGraphPreferences(new VocabularyGraphPreferences(() => Settings, () => SettingsStore.Save(Settings)));
         var notebookLexical = _services.GetRequiredService<IcuLearningLexicalText>();
+        Dictionaries = new(() => Settings, () => SettingsStore.Save(Settings), _services.GetRequiredService<ILearningDictionaryProviding>(),
+            notebookLexical.Lowercase, (text, language) => language is { } known ? notebookLexical.Words(text, known) : notebookLexical.WordsUnknown(text));
         _notebook.Window.AttachLearning(LearningExplanation.Service,
-            _services.GetRequiredService<ILearningDictionaryProviding>(), notebookLexical, notebookLexical.WordsUnknown,
+            Dictionaries.Router, notebookLexical, notebookLexical.WordsUnknown,
             () => SettingsWindow.ShowLearning(this));
         Speech = new SpeechFeature(() => Settings, () => SettingsStore.Save(Settings),
             new DpapiOpenAICompatibleCredentialStore(System.IO.Path.Combine(
@@ -305,7 +309,7 @@ public sealed class AppHost : IAsyncDisposable
             _services.GetService<ILearningLanguageDetector>(),
             batterySaverOn: () => PowerStatus.IsBatterySaverOn,
             unitRecognizer: _services.GetRequiredService<ILearningUnitRecognizing>(),
-            dictionaryProvider: _services.GetRequiredService<ILearningDictionaryProviding>(),
+            dictionaryProvider: Dictionaries.Router,
             explanationService: LearningExplanation.Service,
             explanationInputs: _services.GetRequiredService<LearningExplanationInputFactory>(),
             configureExplanation: () => SettingsWindow.ShowLearning(this),
@@ -325,7 +329,7 @@ public sealed class AppHost : IAsyncDisposable
             _reading = new ReadingApplication(overlay.Dispatcher, _hook, () => OperatingSystem.IsWindowsVersionAtLeast(8, 1) ? _readingOrigin.Current : null,
                 new NativeReadingSelectionReader(_nativeReading), (text, language) => language is { } known
                     ? lexical.Words(text, known) : lexical.WordsUnknown(text),
-                _services.GetRequiredService<ILearningDictionaryProviding>(),
+                Dictionaries.Router,
                 (input, token) => LearningExplanation.GenerateReadingLookupAsync(input, null,
                     raw => ReadingLookupPolicy.Parse(raw, input, lexical.Lowercase), token),
                 (input, basic, token) => LearningExplanation.GenerateReadingLookupAsync(input, basic,
@@ -447,6 +451,8 @@ public sealed class AppHost : IAsyncDisposable
     private void ApplySettings(bool discoveryChanged = false, bool allowCompletionLoad = true)
     {
         if (_shuttingDown) return;
+        Settings.LearningPowerPluggedIn = !PowerStatus.IsOnBattery;
+        Dictionaries.ApplySettings();
         _performance.ApplySettings(Settings);
         // An expired pause is dropped so the tray stops showing it.
         if (Settings.Pause?.IsActive(DateTimeOffset.Now) == false) Settings.Pause = null;
@@ -502,10 +508,10 @@ public sealed class AppHost : IAsyncDisposable
         SettingsApplied?.Invoke();
     }
 
-    // The current Windows interface is English. Explicit explanation language has priority;
-    // changing it updates labels only, preserving the notebook's authored languages and selection.
+    // The launch locale is frozen until restart. Explicit explanation language has priority;
+    // labels preserve the notebook's authored languages and selection.
     private IReadOnlyList<LearningLanguage> NotebookLabelLanguages() =>
-        VocabularyMeaningLabelPolicy.PreferredLanguages(Settings.LearningExplanationLanguage, ["en"]);
+        VocabularyMeaningLabelPolicy.PreferredLanguages(Settings.LearningExplanationLanguage, [Settings.InterfaceLocaleAtLaunch]);
 
     private void OnGlobalToggleKey(object? sender, KeyEventArgs args)
     {
@@ -669,12 +675,8 @@ public sealed class AppHost : IAsyncDisposable
         LearningExplanation.PowerStatusChanged();
         _ui.Post(_ =>
         {
-            if (Settings.Engine == EngineKind.Local) ApplySettings();
-            else if (!_shuttingDown)
-            {
-                _expressions.ApplySettings(Settings, PowerStatus.IsBatterySaverOn);
-                _reading?.ApplySettings(Settings, _learningCredentialRevision, PowerStatus.IsBatterySaverOn);
-            }
+            // Learning role profiles are independent of autocomplete's selected backend.
+            ApplySettings();
         }, null);
     }
 
@@ -739,6 +741,7 @@ public sealed class AppHost : IAsyncDisposable
         List<Exception> errors = [];
         async Task Run(Func<Task> retire)
         { try { await retire().ConfigureAwait(false); } catch (Exception error) { errors.Add(error); } }
+        await Run(() => Overlay.Dispatcher.InvokeAsync(() => Dictionaries.DisposeAsync().AsTask()).Task.Unwrap());
         await Run(() => LearningModels.DisposeAsync().AsTask());
         await Run(() => { EmojiPicker.Dispose(); return Task.CompletedTask; });
         await Run(() => { Macros.Dispose(); return Task.CompletedTask; });

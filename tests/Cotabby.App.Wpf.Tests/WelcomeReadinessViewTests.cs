@@ -5,11 +5,30 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Cotabby.App.UI;
 using Cotabby.Core.Onboarding;
+using Cotabby.App.Settings;
+using Cotabby.Core.LanguageLearning;
 
 namespace Cotabby.App.Wpf.Tests;
 [Collection("WPF views")]
 public sealed class WelcomeReadinessViewTests(WpfDispatcher dispatcher)
 {
+    [Fact]
+    public void ReadinessFollowsBothActivePowerSelectionsWithoutChangingManualSettings()
+    {
+        var settings = new AppSettings { LearningLocalModel = "manual-translation.gguf", LearningExplanationLocalModel = "manual-explanation.gguf",
+            LearningTranslationPowerSwitching = true, LearningExplanationPowerSwitching = true,
+            LearningTranslationBatteryProfile = LearningPowerProfile.Local("battery-translation.gguf"),
+            LearningTranslationPluggedInProfile = LearningPowerProfile.Endpoint("ac-translation"),
+            LearningExplanationBatteryProfile = LearningPowerProfile.Endpoint("battery-explanation"),
+            LearningExplanationPluggedInProfile = LearningPowerProfile.Local("ac-explanation.gguf") };
+        settings.LearningPowerPluggedIn = true;
+        var ac = WelcomeReadinessView.ActiveLearningSelections(settings);
+        Assert.Equal("ac-translation", ac.Translation.EndpointModel); Assert.Equal("ac-explanation.gguf", ac.Explanation.LocalModel);
+        settings.LearningPowerPluggedIn = false;
+        var battery = WelcomeReadinessView.ActiveLearningSelections(settings);
+        Assert.Equal("battery-translation.gguf", battery.Translation.LocalModel); Assert.Equal("battery-explanation", battery.Explanation.EndpointModel);
+        Assert.Equal("manual-translation.gguf", settings.LearningLocalModel); Assert.Equal("manual-explanation.gguf", settings.LearningExplanationLocalModel);
+    }
     [Theory]
     [InlineData("http://127.0.0.1:11434/v1", "model", true)]
     [InlineData("http://127.0.0.1:11434/v1", " ", false)]

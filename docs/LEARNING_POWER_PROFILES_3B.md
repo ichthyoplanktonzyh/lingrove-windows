@@ -7,7 +7,12 @@ This component maps committed Mac `3b53402f2cbc196b0398d133177fd80006d165b2`:
 `Lingrove/Support/Onboarding/RecommendedSetupPolicy.swift`, and
 `LingroveTests/Models/LanguageLearning/LearningModelSettingsTests.swift`. Historical fixture pins
 are not changed. This is a component handoff; AppHost power delivery and pane insertion must be
-integrated before claiming production support.
+integrated before claiming production support. AppHost now publishes the actual transient power
+source before constructing/applying learning owners, including when autocomplete uses an endpoint.
+Reading and onboarding readiness freeze both active learning selections rather than the dormant
+manual choices. Explicit endpoint selection in a power slot authorizes that slot's translation
+profile without changing the retained manual endpoint switch. Pane insertion remains a separate
+settings-module integration.
 
 Each role retains manual, battery and plugged-in choices. A choice carries backend, local filename,
 endpoint model and local instruction template; the role retains its address and credential. First

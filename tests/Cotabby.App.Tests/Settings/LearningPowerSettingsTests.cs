@@ -6,6 +6,19 @@ namespace Cotabby.App.Tests.Settings;
 public sealed class LearningPowerSettingsTests
 {
     [Fact]
+    public void ExplicitPowerEndpointDoesNotBorrowOrMutateManualEndpointEnablement()
+    {
+        var settings = new AppSettings { LearningEndpointEnabled = false, LearningTranslationPowerSwitching = true,
+            LearningTranslationBatteryProfile = LearningPowerProfile.Local("battery.gguf"),
+            LearningTranslationPluggedInProfile = LearningPowerProfile.Endpoint("explicit-ac-model") };
+        Assert.True(settings.LearningTranslationActiveEndpointEnabled);
+        Assert.False(settings.LearningEndpointEnabled);
+        settings.LearningPowerPluggedIn = false; Assert.False(settings.LearningTranslationActiveEndpointEnabled);
+        settings.LearningTranslationPowerSwitching = false; Assert.False(settings.LearningTranslationActiveEndpointEnabled);
+        settings.LearningBackend = LearningTranslationBackend.Endpoint; Assert.False(settings.LearningTranslationActiveEndpointEnabled);
+        settings.LearningEndpointEnabled = true; Assert.True(settings.LearningTranslationActiveEndpointEnabled);
+    }
+    [Fact]
     public void RetainedProfilesProtectFilesAndRegisterRoleAfterRestart()
     {
         var settings = new AppSettings { LearningTranslationBatteryProfile = LearningPowerProfile.Local("battery.gguf"),

@@ -88,14 +88,18 @@ internal sealed class WelcomeReadinessView : StackPanel
             Track(RunAsync(_testInspection!, epoch, cts)); return;
         }
         var s = _host.Settings; var voice = _host.Speech.Controller.Settings;
+        var learning = ActiveLearningSelections(s);
         var snapshot = new ReadinessSnapshot(s.Engine, s.RecommendedCompletionTarget ?? s.ActiveModelId ?? "", s.EndpointBaseUrl, s.EndpointModel,
-            s.EffectiveLearningBackend, s.LearningLocalModel, s.LearningEndpointBaseUrl, s.LearningEndpointModel,
-            s.LearningExplanationSnapshot(), voice.SelectedProvider, voice.LocalModelPath, voice.LocalProjectionPath, voice.ReferenceAudioPath,
+            learning.Translation.Backend == LearningModelBackend.Endpoint ? LearningTranslationBackend.Endpoint : LearningTranslationBackend.Local,
+            learning.Translation.LocalModel, s.LearningEndpointBaseUrl, learning.Translation.EndpointModel,
+            learning.Explanation, voice.SelectedProvider, voice.LocalModelPath, voice.LocalProjectionPath, voice.ReferenceAudioPath,
             voice.EndpointBaseUrl, voice.EndpointModel, voice.EndpointVoice,
             s.ModelAssignmentSnapshot().ToDictionary(x => x.Key, x => x.Value.ToArray(), StringComparer.Ordinal),
             CompletionFailed?.Invoke(s.RecommendedCompletionTarget ?? s.ActiveModelId ?? "") == true);
         Track(RunAsync(token => Task.Run(() => InspectAsync(snapshot, token), token), epoch, cts));
     }
+    internal static (LearningPowerProfile Translation, LearningModelSnapshot Explanation) ActiveLearningSelections(AppSettings settings) =>
+        (settings.LearningTranslationActiveSelection, settings.LearningExplanationSnapshot());
     private void Track(Task task)
     {
         _work.Add(task);

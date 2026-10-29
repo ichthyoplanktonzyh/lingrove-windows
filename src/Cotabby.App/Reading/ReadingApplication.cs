@@ -136,11 +136,12 @@ internal sealed class ReadingApplication : IAsyncDisposable
         bool enabled = settings.LearningReadingEnabled && settings.LearningTranslationEnabled;
         var explanation = settings.LearningExplanationSnapshot();
         var explanationEndpoint = Cotabby.App.Learning.LearningModelDestinationText.Endpoint(explanation);
-        var translation = settings.EffectiveLearningBackend == LearningTranslationBackend.Endpoint
-            ? new ReadingDestination("", true, settings.LearningEndpointEnabled, settings.LearningEndpointBaseUrl,
-                ModelDisplayText.Safe(settings.LearningEndpointModel))
-            : new ReadingDestination(string.IsNullOrWhiteSpace(settings.LearningLocalModel)
-                ? "Local translation model not configured" : "Local translation model: " + ModelDisplayText.Safe(settings.LearningLocalModel), false, true);
+        var translationSelection = settings.LearningTranslationActiveSelection;
+        var translation = translationSelection.Backend == LearningModelBackend.Endpoint
+            ? new ReadingDestination("", true, settings.LearningTranslationActiveEndpointEnabled, settings.LearningEndpointBaseUrl,
+                ModelDisplayText.Safe(translationSelection.EndpointModel))
+            : new ReadingDestination(string.IsNullOrWhiteSpace(translationSelection.LocalModel)
+                ? "Local translation model not configured" : "Local translation model: " + ModelDisplayText.Safe(translationSelection.LocalModel), false, true);
         var target = Enum.IsDefined(settings.LearningReadingTargetLanguage) ? settings.LearningReadingTargetLanguage : LearningLanguage.Chinese;
         var next = new Preferences(enabled, settings.LearningReadingShortcut,
             GlobalShortcut.LearningReading.Conflict(settings, settings.LearningReadingShortcut) is not null,
@@ -156,15 +157,16 @@ internal sealed class ReadingApplication : IAsyncDisposable
             ScreenEnabled = settings.LearningReadingScreenshotEnabled && settings.LearningTranslationEnabled,
             ScreenShortcut = settings.LearningReadingScreenshotShortcut,
             ScreenConflict = GlobalShortcut.ReadingScreenshot.Conflict(settings, settings.LearningReadingScreenshotShortcut) is not null,
-            TranslationModelName = settings.EffectiveLearningBackend == LearningTranslationBackend.Endpoint
-                ? ModelDisplayText.Safe(settings.LearningEndpointModel) : ModelDisplayText.Safe(settings.LearningLocalModel),
+            TranslationProfile = translationSelection,
+            TranslationModelName = translationSelection.Backend == LearningModelBackend.Endpoint
+                ? ModelDisplayText.Safe(translationSelection.EndpointModel) : ModelDisplayText.Safe(translationSelection.LocalModel),
             LookupProfile = explanation,
             LookupDestination = explanationEndpoint is not null
                 ? new("", true, true, explanationEndpoint.BaseUrl.AbsoluteUri, ModelDisplayText.Safe(explanationEndpoint.ModelName))
                 : new(Cotabby.App.Learning.LearningModelDestinationText.Explanation(explanation) + " · bundled dictionary available", false, true),
         };
         if (_preferences is { } old && old.Signature == next.Signature && old.CredentialRevision == credentialRevision
-            && old.BatterySaver == batterySaver && old.LookupProfile == next.LookupProfile) return;
+            && old.BatterySaver == batterySaver && old.LookupProfile == next.LookupProfile && old.TranslationProfile == next.TranslationProfile) return;
         Volatile.Write(ref _preferences, next); Interlocked.Increment(ref _revision); _affordance?.Invalidate(); Retire(); UpdatePointer();
     }
 
@@ -268,6 +270,7 @@ internal sealed class ReadingApplication : IAsyncDisposable
     {
         internal ReadingDestination LookupDestination { get; init; } = new("Local AI explanation model · bundled dictionary available", false, true);
         internal LearningModelSnapshot? LookupProfile { get; init; }
+        internal LearningPowerProfile? TranslationProfile { get; init; }
         internal LearningLanguage LookupLanguage { get; init; }
         internal bool PointerEnabled { get; init; }
         internal KeyBinding PointerShortcut { get; init; } = KeyBinding.Unbound;

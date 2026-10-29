@@ -1464,7 +1464,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
             var endpointBaseUrl = (settings.LearningEndpointBaseUrl ?? OpenAICompatibleEndpointConfiguration.DefaultBaseUrl).Trim();
             var cacheScope = backend == LearningTranslationBackend.Local
                 ? CreateLocalCacheScope(localConfiguration, localProfile, model)
-                : CreateEndpointCacheScope(settings.LearningEndpointEnabled, endpointBaseUrl,
+                : CreateEndpointCacheScope(settings.LearningTranslationActiveEndpointEnabled, endpointBaseUrl,
                     endpointModel, credentialRevision);
 
             return new LearningRuntimeSettings(
@@ -1472,7 +1472,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
                 settings.LearningTranslationEnabled,
                 availabilitySettings,
                 blockedApps,
-                settings.LearningEndpointEnabled,
+                settings.LearningTranslationActiveEndpointEnabled,
                 settings.LearningTranslationShortcut,
                 GlobalShortcut.LearningTranslation.Conflict(settings, settings.LearningTranslationShortcut) is not null,
                 endpointBaseUrl,

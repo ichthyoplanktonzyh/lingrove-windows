@@ -29,6 +29,10 @@ public sealed record VocabularyWordListConfiguration(bool HasHeader, IReadOnlyDi
     private IReadOnlyDictionary<VocabularyImportField, int> _columns = CollectionValues.Map(Columns ?? throw new ArgumentNullException(nameof(Columns)));
     public IReadOnlyDictionary<VocabularyImportField, int> Columns
     { get => _columns; init => _columns = CollectionValues.Map(value ?? throw new ArgumentNullException(nameof(value))); }
+    public bool Equals(VocabularyWordListConfiguration? other) => other is not null && HasHeader == other.HasHeader
+        && CollectionValues.MapEqual(Columns, other.Columns) && Language == other.Language && Kind == other.Kind
+        && MeaningLanguage == other.MeaningLanguage;
+    public override int GetHashCode() => HashCode.Combine(HasHeader, CollectionValues.MapHash(Columns), Language, Kind, MeaningLanguage);
 }
 
 /// <summary>Bounded, value-only word-list decoding and column mapping; no file handles or writes.</summary>

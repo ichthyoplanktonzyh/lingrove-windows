@@ -27,6 +27,21 @@ public sealed record VocabularyEntryInput
     public IReadOnlyList<string> Tags { get => _tags; init => _tags = CollectionValues.List(value ?? throw new ArgumentNullException(nameof(value))); }
     public string Example { get; init; }
     public string ExampleTranslation { get; init; }
+    public bool Equals(VocabularyEntryInput? other) => other is not null
+        && CollectionValues.Same(Expression, other.Expression) && CollectionValues.Same(DictionaryForm, other.DictionaryForm)
+        && Language == other.Language && Kind == other.Kind && CollectionValues.Same(Meaning, other.Meaning)
+        && MeaningLanguage == other.MeaningLanguage && CollectionValues.Same(Note, other.Note)
+        && CollectionValues.SequenceEqual(Tags, other.Tags) && CollectionValues.Same(Example, other.Example)
+        && CollectionValues.Same(ExampleTranslation, other.ExampleTranslation);
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        hash.Add(CollectionValues.StringHash(Expression)); hash.Add(CollectionValues.StringHash(DictionaryForm));
+        hash.Add(Language); hash.Add(Kind); hash.Add(CollectionValues.StringHash(Meaning)); hash.Add(MeaningLanguage);
+        hash.Add(CollectionValues.StringHash(Note)); hash.Add(CollectionValues.SequenceHash(Tags));
+        hash.Add(CollectionValues.StringHash(Example)); hash.Add(CollectionValues.StringHash(ExampleTranslation));
+        return hash.ToHashCode();
+    }
 }
 public enum VocabularyWordListError
 {

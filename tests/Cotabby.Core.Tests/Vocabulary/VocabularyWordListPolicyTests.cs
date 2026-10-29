@@ -171,4 +171,18 @@ public sealed class VocabularyWordListPolicyTests
         var invalidField = config with { Columns = new Dictionary<VocabularyImportField, int> { [VocabularyImportField.Expression] = 0, [(VocabularyImportField)100] = 0 } };
         Assert.Equal(VocabularyWordListError.Mapping, Assert.Throws<VocabularyWordListException>(() => VocabularyWordListPolicy.Inputs(table, invalidField)).Error);
     }
+    [Fact]
+    public void InputAndConfigurationCompareAsSwiftValues()
+    {
+        var first = new VocabularyEntryInput("café", Tags: ["é", "tag"]);
+        var second = new VocabularyEntryInput("cafe\u0301", Tags: ["e\u0301", "tag"]);
+        Assert.Equal(first, second); Assert.Equal(first.GetHashCode(), second.GetHashCode());
+        Assert.NotEqual(first, second with { Tags = ["tag", "e\u0301"] });
+        var a = new VocabularyWordListConfiguration(true, new Dictionary<VocabularyImportField, int>
+        { [VocabularyImportField.Expression] = 0, [VocabularyImportField.Meaning] = 1 });
+        var b = new VocabularyWordListConfiguration(true, new Dictionary<VocabularyImportField, int>
+        { [VocabularyImportField.Meaning] = 1, [VocabularyImportField.Expression] = 0 });
+        Assert.Equal(a, b); Assert.Equal(a.GetHashCode(), b.GetHashCode());
+        Assert.NotEqual(a, b with { HasHeader = false });
+    }
 }

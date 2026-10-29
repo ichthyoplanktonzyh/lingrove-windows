@@ -87,7 +87,13 @@ Usage: lingrove [--app APP_PATH] [--no-launch] [--timeout SECONDS] COMMAND
 
 Images use explicit local paths, relative to the input file (stdin: current directory).
 Writes are atomic. Retry an uncertain write with the SAME idempotencyKey and content.
+Capture generates stable IDs, resolves unique example spans and collects senses atomically.
+New meanings create distinct senses; append uses exact IDs; update needs expectedRevision.
+Resources: entries, senses, sources, occurrences, interpretations, collections, nodes,
+patterns, mappings, relations, cues, cueTargets, frameworks, categories, categoryParents,
+categoryMemberships, categoryOverrides. Framework receipts are read-only.
 Resource put/delete use batch version 2 and expectedRevision; UUIDs are caller supplied.
+--status filters interpretations: candidate, accepted, rejected. --related matches UUID fields.
 Resource timestamps are Unix seconds. Catalog/graph writes do not implicitly collect material.
 Successful requests and errors use JSON on stdout. Exit codes: 0 success, 2 input,
 3 missing ID, 4 conflict, 5 busy, 6 app unavailable, 7 IO, 8 timeout.

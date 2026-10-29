@@ -85,7 +85,7 @@ other physical input is ignored. UIA events are asynchronous and providers can b
 small race between final observation and SendInput remains and physical testing is still required.
 
 `dotnet test tests/Cotabby.App.Wpf.Tests/Cotabby.App.Wpf.Tests.csproj --configuration Release
---no-restore --filter FullyQualifiedName~ExpressionEditorSessionTests` passed 15/15 with fake native
+--no-restore --filter FullyQualifiedName~ExpressionEditorSessionTests` passed 16/16 with fake native
 effects. These do not type into or focus any user application.
 
 Expression requests use a revocable, nonblocking permit through the shared focus and retained UIA

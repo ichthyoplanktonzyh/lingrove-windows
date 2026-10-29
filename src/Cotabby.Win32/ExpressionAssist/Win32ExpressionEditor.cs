@@ -26,6 +26,7 @@ public sealed class Win32ExpressionEditor : IAsyncDisposable
     private readonly HashSet<Task> _work = [];
     private ExpressionEditorSession? _active;
     private bool _disposed;
+    private Task? _disposeTask;
 
     public Win32ExpressionEditor(UiaFocusTracker focus, IKeyboardHook keyboard, InsertionTransactionGate gate, ClipboardTextReader? clipboard = null)
     {
@@ -69,23 +70,27 @@ public sealed class Win32ExpressionEditor : IAsyncDisposable
         return null;
     }
 
-    private void Track(Task task)
+    internal void Track(Task task)
     {
         lock (_sync) _work.Add(task);
         _ = task.ContinueWith(t => { lock (_sync) _work.Remove(t); }, CancellationToken.None,
             TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
     }
 
-    public async ValueTask DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        Task[] work;
         lock (_sync)
         {
-            if (_disposed) return;
+            if (_disposeTask is not null) return new(_disposeTask);
             _disposed = true;
             if (_active is not null) { _active.Retire(); Track(_active.DisposeAsync().AsTask()); }
-            work = _work.ToArray();
+            _disposeTask = DrainAsync(_work.ToArray());
+            return new(_disposeTask);
         }
+    }
+
+    private static async Task DrainAsync(Task[] work)
+    {
         try { await Task.WhenAll(work).ConfigureAwait(false); } catch { }
     }
 }
@@ -169,7 +174,7 @@ public sealed class ExpressionEditorSession : IAsyncDisposable
             if (UiaFocusTracker.ReadFieldId(element) != first.FieldId || ct.IsCancellationRequested || !IsLive() || _effects.Foreground != host
                 || element.Current.ProcessId != first.ProcessId) return false;
             if (ct.IsCancellationRequested || !IsLive() || _effects.Foreground != host) return false;
-            long? token = _composition.Register(first.ProcessId, first.FieldId, host, _panel, Retire, ct);
+            long? token = _composition.Register(first.ProcessId, first.FieldId, host, _panel, Retire, RequestAllowed, ct);
             if (token is null) return false;
             lock (_sync)
             {

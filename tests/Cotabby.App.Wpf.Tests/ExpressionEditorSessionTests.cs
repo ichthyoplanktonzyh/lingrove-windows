@@ -14,6 +14,22 @@ namespace Cotabby.App.Wpf.Tests;
 public sealed class ExpressionEditorSessionTests
 {
     [Fact]
+    public async Task ConcurrentEditorDisposalsJoinTheSameHeldWork()
+    {
+        if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;
+        await using var fixture = new Fixture();
+        var editor = new Win32ExpressionEditor(fixture.Focus, fixture.Keyboard, fixture.Gate);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        editor.Track(release.Task);
+        Task first = editor.DisposeAsync().AsTask();
+        Task second = editor.DisposeAsync().AsTask();
+        Assert.False(first.IsCompleted);
+        Assert.False(second.IsCompleted);
+        release.SetResult();
+        await Task.WhenAll(first, second).WaitAsync(TimeSpan.FromSeconds(5));
+    }
+
+    [Fact]
     public async Task RetiredCaptureDoesNotQueryFocusedElementAfterHeldFocusReadReturns()
     {
         if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;
@@ -338,7 +354,7 @@ public sealed class ExpressionEditorSessionTests
     private sealed class FakeRetained : IExpressionRetainedEvidence
     {
         private bool _active = true;
-        public long? Register(int processId, string fieldId, nint hostWindow, nint panelWindow, Action changed, CancellationToken ct) => 1;
+        public long? Register(int processId, string fieldId, nint hostWindow, nint panelWindow, Action changed, Func<bool> allowed, CancellationToken ct) => allowed() ? 1 : null;
         public (InputCompositionState State, long Version) Observe(long token, Func<bool> panelOwnsKeyboard, CancellationToken ct) =>
             _active ? (InputCompositionState.Clear, 1) : default;
         public bool IsCurrent(long token, long version) => _active && token == 1 && version == 1;

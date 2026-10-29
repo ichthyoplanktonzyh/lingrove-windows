@@ -65,6 +65,7 @@ internal static class UiaExpressionSelectionReader
                 || left.Length > limit || selected.Length > limit || right.Length > limit
                 || left.Length + selected.Length + right.Length != full.Length
                 || !string.Equals(full, string.Concat(left, selected, right), StringComparison.Ordinal)) return null;
+            if (!Allowed()) return null;
             bool nonEmptyRange = selection.CompareEndpoints(TextPatternRangeEndpoint.Start, selection, TextPatternRangeEndpoint.End) != 0;
             if (!Allowed() || nonEmptyRange != (selected.Length > 0)) return null;
             return new(full, new(left.Length, selected.Length));

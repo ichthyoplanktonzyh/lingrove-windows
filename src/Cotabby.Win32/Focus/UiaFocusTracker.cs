@@ -425,7 +425,7 @@ public sealed class UiaFocusTracker : IFocusTracker
             HelpText = helpText,
             AutomationId = automationId,
             ClassName = className,
-            WindowTitle = ForegroundWindowTitle(),
+            WindowTitle = bounded ? string.Empty : ForegroundWindowTitle(),
         };
     }
 
@@ -455,6 +455,7 @@ public sealed class UiaFocusTracker : IFocusTracker
                 var selection = selections[0];
                 // A selected embedded object can have no text. Endpoint equality, rather than
                 // the returned string length, establishes whether the selection is collapsed.
+                if (!allowed()) return (string.Empty, 0, false, false, true);
                 bool hasSelection = selection.CompareEndpoints(
                     TextPatternRangeEndpoint.Start, selection, TextPatternRangeEndpoint.End) != 0;
                 if (!allowed()) return (string.Empty, 0, false, false, true);
@@ -535,6 +536,7 @@ public sealed class UiaFocusTracker : IFocusTracker
                 if (!allowed()) return ScreenRect.Empty;
                 if (sel is { Length: > 0 })
                 {
+                    if (!allowed()) return ScreenRect.Empty;
                     var rects = sel[0].GetBoundingRectangles();
                     if (rects.Length > 0)
                     {

@@ -24,11 +24,10 @@ arrays reject null. Malformed UTF-8, excessive nesting and invalid or numeric ax
 A failed install leaves its input untouched. SHA-256 derived IDs use network
 byte order and the original UUID version and variant bits.
 
-Admission here is deliberately **not** a full archive gate. Lifecycle, semantic and classification
-validators are separate. Full CLR representability (including all nested nullable values, enum
-casts and UTF-16), lexical/alias global identity, review/template/media validation, byte codecs,
-SQL relationships, transaction/CAS, v7/v8 durable migration and rollback remain required before
-arbitrary notebook decoding or activation. Semantic edit/merge/reconciliation/selection rules and
+The [frozen resource admission gate](VOCABULARY_ADMISSION_FROZEN.md) now composes lifecycle,
+semantic, classification, lexical identity and review/content validation after a CLR
+representability pass. Byte codecs, SQL relationships, transactions, v7/v8 durable migration and
+rollback remain required before notebook activation. Semantic edit/merge/reconciliation/selection rules and
 classification sidebar projection remain separate work; the current validator does not implement
 those operations. Loading the embedded catalog does not activate it in the application.
 

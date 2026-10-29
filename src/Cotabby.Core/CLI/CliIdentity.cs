@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Cotabby.Core.Text;
 
 namespace Cotabby.Core.CLI;
 
@@ -37,6 +38,8 @@ public static class CliIdentity
         foreach (var item in batch["operations"]!.AsArray())
         {
             var operation = item!.AsObject();
+            if (operation["put"] is JsonObject put && put["value"] is { } resource)
+                put["value"] = NormalizeResourceNumbers(resource);
             foreach (string name in new[] { "append", "update" }) if (operation[name] is JsonObject target) { Uuid(target, "entryID"); Uuid(target, "senseID"); }
             if (operation["delete"] is JsonObject deletion) Uuid(deletion, "id");
             if (operation["capture"] is JsonObject capture)
@@ -50,6 +53,22 @@ public static class CliIdentity
                 if (block["image"] is JsonObject image && image["data"] is JsonValue data && data.TryGetValue<string>(out var text))
                     image["data"] = Convert.ToBase64String(Convert.FromBase64String(text));
         }
+    }
+    private static JsonNode? NormalizeResourceNumbers(JsonNode? value)
+    {
+        if (value is JsonObject obj)
+        {
+            var copy = new JsonObject(); foreach (var pair in obj) copy[pair.Key] = NormalizeResourceNumbers(pair.Value); return copy;
+        }
+        if (value is JsonArray array) return new JsonArray(array.Select(NormalizeResourceNumbers).ToArray());
+        if (value is JsonValue scalar && scalar.TryGetValue<JsonElement>(out var number) && number.ValueKind == JsonValueKind.Number)
+        {
+            // CLIJSON attempts Int64 before Double. Foundation accepts integral decimal and
+            // exponent spellings, then JSONEncoder writes their canonical integer form.
+            try { return JsonValue.Create(FoundationJsonInteger.Read(number)); }
+            catch (JsonException) { return JsonValue.Create(number.GetDouble()); }
+        }
+        return value?.DeepClone();
     }
     // Swift's synthesized Codable omits nil optional fields. Resource put values are CLIJSON,
     // where explicit null is meaningful patch data and must remain in the fingerprint.

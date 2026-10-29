@@ -1,6 +1,6 @@
 {
   "macReference": "3b53402f2cbc196b0398d133177fd80006d165b2",
-  "provenance": "Windows-derived initial observations; native source execution is pending.",
+  "provenance": "Observed from 3b Swift in macOS CI run 40944180841; numeric and canonical range differences corrected from source.",
   "batches": [
     {
       "name": "typed-nil",
@@ -64,8 +64,8 @@
           }
         ]
       },
-      "expectedFingerprint": "dd6fcc6e49df2ec1f9d34492f27bdc31352c8d5e20374ad600c6e5d38be8a824",
-      "expectedId": "F1104D2E-1B09-5817-B5F0-063A6DAAFFE2"
+      "expectedFingerprint": "7006daab82be2b4309d4bc9041b9ebb7936481d288c7c8476f85c056741cf5e0",
+      "expectedId": "D95D7299-BA3B-5595-9A12-BF4BBAEBA678"
     },
     {
       "name": "capture-uuid",
@@ -141,7 +141,7 @@
       "name": "canonical-equivalent",
       "text": "cafe\u0301",
       "expression": "\u00E9",
-      "expected": "missing"
+      "expected": "3:2"
     }
   ]
 }

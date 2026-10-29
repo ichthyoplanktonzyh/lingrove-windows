@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json.Nodes;
+using System.Globalization;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Text;
 using Cotabby.Core.Vocabulary;
@@ -45,11 +46,12 @@ internal static class CliExamplePolicy
         }
         else
         {
-            int found = text.IndexOf(expression, StringComparison.Ordinal);
+            var comparer = CultureInfo.InvariantCulture.CompareInfo;
+            int found = comparer.IndexOf(text.AsSpan(), expression.AsSpan(), CompareOptions.None, out int length);
             if (found >= 0)
             {
-                if (text.IndexOf(expression, found + 1, StringComparison.Ordinal) >= 0) throw new CliException(CliErrorCode.InvalidInput, "Expression occurs more than once. Supply explicit UTF-16 ranges.");
-                ranges.Add(new(found, expression.Length));
+                if (comparer.IndexOf(text.AsSpan(found + 1), expression.AsSpan(), CompareOptions.None, out _) >= 0) throw new CliException(CliErrorCode.InvalidInput, "Expression occurs more than once. Supply explicit UTF-16 ranges.");
+                ranges.Add(new(found, length));
             }
         }
         var boundaries = FoundationTextRanges.Boundaries(text);

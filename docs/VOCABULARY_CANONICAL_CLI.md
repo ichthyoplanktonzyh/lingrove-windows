@@ -35,10 +35,11 @@ launcher pins the real app and CLI executable identities and forwards the native
 standard streams and exit code. The script disables delayed expansion and never overwrites a
 different file. The script's app default can be overridden by `--app`.
 
-The implementation currently preserves ordinary typed nil/UUID fingerprint canonicalization and
-literal resource patch nulls. Floating-point JSON encoding, Unicode substring matching and all
-fingerprint cases have not yet been independently run against native Swift; exact source parity
-must not be claimed until those observations are tested. Source-generated identifier collisions
+The shared 3b native corpus observes typed nil/UUIDs, literal patch nulls, integer-valued floating
+JSON, Unicode/slash encoding and several UTF-16 searches. The Windows implementation was corrected
+for the source-observed `1.0` integer encoding and canonically equivalent character range.
+Other floating-point representations and Unicode substring cases are not established by these
+bounded probes. Source-generated identifier collisions
 currently fail closed instead of adopting or overwriting an existing record. Windows' existing
 image preparer admits its documented PNG/decoder subset; native visual/desktop acceptance and
 actual app-owned startup/shutdown integration remain open. Existing historical fixture pins and
@@ -48,8 +49,9 @@ The bounded native check is `python3 scripts/verify-cli-3b-macos-parity.py --mac
 It reads `CLIProtocol.swift`, `CLICaptureModels.swift` and `VocabularyCLIPlan.swift` at 3b, keeps
 the actual Codable declarations, fingerprint and operation ID bodies, and extracts the NSString
 range calculation. A tiny NSRange wrapper supplies only the unused model container. The shared
-`fixtures/parity/cli-3b-source-v1.json` currently contains Windows-derived observations, not
-native results; it is deliberately capable of exposing disagreement on its first macOS run.
+`fixtures/parity/cli-3b-source-v1.json` records observations from macOS CI run 40944180841.
+The two mismatches observed there were fixed in Windows against the source results; a successful
+post-fix native rerun is still required.
 
 Executed in the isolated development tree: CLI Core tests, named SQLite Store dry-run/commit/
 replay and injected SQL rollback, private mailbox event/lease/recovery/client exchange, image

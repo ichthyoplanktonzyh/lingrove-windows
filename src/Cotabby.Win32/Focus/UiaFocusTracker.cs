@@ -388,7 +388,7 @@ public sealed class UiaFocusTracker : IFocusTracker
         if (!allowed()) return null;
         var (text, caretOffset, hasSelection, reliableSelection, truncatedWindow) = isSecure
             ? (string.Empty, 0, false, false, true)
-            : ReadTextAndCaret(element, allowed, bounded);
+            : ReadTextAndCaret(pid, fieldId, allowed);
         if (!allowed()) return null;
         var caretRect = isSecure ? ScreenRect.Empty : ReadCaretRect(element, allowed);
         if (!allowed()) return null;
@@ -435,85 +435,18 @@ public sealed class UiaFocusTracker : IFocusTracker
         };
     }
 
-    /// <summary>Cap of the document read when the host reports no caret.</summary>
-    private const int MaxDocumentChars = 16 * 1024;
-
-    private static (string text, int caretOffset, bool hasSelection, bool reliableSelection, bool truncatedWindow) ReadTextAndCaret(AutomationElement element, Func<bool> allowed, bool bounded)
+    private (string text, int caretOffset, bool hasSelection, bool reliableSelection, bool truncatedWindow) ReadTextAndCaret(int pid, string fieldId, Func<bool> allowed)
     {
         if (!allowed()) return (string.Empty, 0, false, false, true);
-        // TextPattern is preferred because it gives the caret as a selection.
-        if (element.TryGetCurrentPattern(TextPattern.Pattern, out var rawText)
-            && rawText is TextPattern textPattern)
+        // Range text is read by the shared MTA native client, after rechecking identity there.
+        var selection = _composition?.ReadFocused(pid, fieldId, allowed);
+        if (selection is { } value && allowed())
         {
-            try
-            {
-                if (!allowed()) return (string.Empty, 0, false, false, true);
-                var selections = textPattern.GetSelection();
-                if (!allowed()) return (string.Empty, 0, false, false, true);
-                if (selections is not { Length: > 0 })
-                {
-                    if (bounded) return (string.Empty, 0, false, false, true);
-                    var document = textPattern.DocumentRange;
-                    if (!allowed()) return (string.Empty, 0, false, false, true);
-                    return (document.GetText(MaxDocumentChars), 0, false, false, true);
-                }
-
-                var selection = selections[0];
-                // A selected embedded object can have no text. Endpoint equality, rather than
-                // the returned string length, establishes whether the selection is collapsed.
-                if (!allowed()) return (string.Empty, 0, false, false, true);
-                bool hasSelection = selection.CompareEndpoints(
-                    TextPatternRangeEndpoint.Start, selection, TextPatternRangeEndpoint.End) != 0;
-                if (!allowed()) return (string.Empty, 0, false, false, true);
-                var range = textPattern.DocumentRange;
-                if (!allowed()) return (string.Empty, 0, false, false, true);
-                var (before, after, truncatedWindow) = ReadAroundSelection(range, selection, allowed, bounded);
-                // Multiple selections cannot describe one insertion caret. Keep the text for
-                // diagnostics, but never authorize an edit from this ambiguous snapshot.
-                return (before + after, before.Length, hasSelection, selections.Length == 1, truncatedWindow);
-            }
-            catch (Exception) { /* fall through */ }
+            return (value.Text, value.Caret, value.HasSelection, value.ReliableSelection, value.Truncated);
         }
 
-        if (bounded || !allowed()) return (string.Empty, 0, false, false, true);
-        if (element.TryGetCurrentPattern(ValuePattern.Pattern, out var rawValue)
-            && rawValue is ValuePattern vp)
-        {
-            if (!allowed()) return (string.Empty, 0, false, false, true);
-            string v = vp.Current.Value ?? string.Empty;
-            if (v.Length > MaxDocumentChars) v = v[..MaxDocumentChars];
-            return (v, v.Length, false, false, true); // ValuePattern has no caret; this is not edit evidence.
-        }
-
+        // ValuePattern has neither a bounded getter nor reliable caret evidence.
         return (string.Empty, 0, false, false, true);
-    }
-
-    /// <summary>
-    /// The text before the start of the selection and the text after its end, each cut to a
-    /// window next to the caret.
-    /// </summary>
-    /// <remarks>
-    /// The ranges are built with MoveEndpointByRange only. MoveEndpointByUnit by character takes
-    /// seconds in a WPF text box, and reading up to the caret takes milliseconds.
-    /// </remarks>
-    private static (string before, string after, bool truncatedWindow) ReadAroundSelection(TextPatternRange document, TextPatternRange selection, Func<bool> allowed, bool bounded)
-    {
-        if (!allowed()) return (string.Empty, string.Empty, true);
-        var toCaret = document.Clone();
-        if (!allowed()) return (string.Empty, string.Empty, true);
-        toCaret.MoveEndpointByRange(TextPatternRangeEndpoint.End, selection, TextPatternRangeEndpoint.Start);
-        if (!allowed()) return (string.Empty, string.Empty, true);
-        string before = toCaret.GetText(bounded ? FocusTextWindowPolicy.MaxCharsBeforeCaret + 1 : -1);
-        if (!allowed()) return (string.Empty, string.Empty, true);
-
-        var fromCaret = document.Clone();
-        if (!allowed()) return (string.Empty, string.Empty, true);
-        fromCaret.MoveEndpointByRange(TextPatternRangeEndpoint.Start, selection, TextPatternRangeEndpoint.End);
-        if (!allowed()) return (string.Empty, string.Empty, true);
-        // Ask for one extra unit so a full window cannot masquerade as a complete suffix. Until
-        // native absolute ranges exist, omitted text on either side must make writes ineligible.
-        string after = fromCaret.GetText(FocusTextWindowPolicy.MaxCharsAfterCaret + 1);
-        return FocusTextWindowPolicy.Bound(before, after);
     }
 
     internal static string ReadFieldId(AutomationElement element)

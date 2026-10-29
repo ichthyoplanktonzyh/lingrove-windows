@@ -307,7 +307,7 @@ The Windows-targeting build can compile the full solution, including WPF, from m
 run the Windows test assembly or validate a Windows desktop; execute those tests on the Windows CI
 runner. This is ordinary compilation, not packaging or a release.
 
-The current `.github/workflows/ci.yml` has three validation jobs: Windows x64 restores and builds the
+The current `.github/workflows/ci.yml` has four validation jobs: Windows x64 restores and builds the
 full solution, then runs Core, portable App boundary and Inference tests, including noninteractive ICU sentence tests,
 and the compiled learning-card WPF view suite on its own STA dispatcher (see `docs/WPF_VIEW_TESTS.md`);
 macOS 26 x64 runs Core, portable App boundary tests and the committed Swift parity verifiers (currently 68) against a sparse checkout of the pinned Mac
@@ -316,6 +316,11 @@ Support, language-learning/vocabulary models/services, content-test provenance, 
 `b1e4031c70aca1be21aae2c57b138fde5fc22bb1` with .NET 9 on manual dispatch. Its initial setup run is
 recorded in the baseline note. The third ordinary job compiles the independently pinned native
 speech helper on Windows and runs model-free Git/protocol/platform checks; it produces no package.
+The fourth job independently reads the frozen vocabulary revision and executes three bounded Swift
+probes for real SQLite schema/classification migration, UUID-only row payloads and portable document
+Codable cases with typed timestamp bit patterns. Their Windows consumers run in the ordinary tests.
+These corpora do not establish complete payload/graph admission, populated-file, media or application
+compatibility; the historical 68 verifiers retain their original references and bodies.
 Current editor verification uses a separate sparse checkout at its explicit newer revision.
 The upstream baseline job does not gate ordinary PRs; its result describes that old snapshot,
 not the current .NET 10 tree.

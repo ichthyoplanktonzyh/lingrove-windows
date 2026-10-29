@@ -32,8 +32,17 @@ These source invariants and the native style bits alone do not prove focus reten
 Run on Windows after the solution build:
 
 ```powershell
-dotnet test tests/Cotabby.App.Wpf.Tests/Cotabby.App.Wpf.Tests.csproj --configuration Release --no-build --no-restore --blame-hang-timeout 2m
+./scripts/test-wpf-dev.ps1 -NoBuild -NoRestore
 ```
+
+Development worktrees share a desktop even though their test processes and STA dispatchers differ.
+Use this wrapper for every local WPF run, including filtered checks (`-Filter 'FullyQualifiedName~Name'`).
+It holds one session-local named mutex for the whole command, outside VSTest timeouts, and releases
+it after success or failure. Abandoned ownership is recoverable when a test process is stopped.
+Later module suites also include owned native UIA controls: concurrent suites can change each
+other's foreground, popup state and UIA events. The wrapper isolates those test processes from
+each other; it neither takes over a user's editor nor establishes physical host acceptance.
+The ordinary CI job has only one WPF invocation on its runner and retains its existing command.
 
 The Windows CI job runs this suite; macOS cross-compiles it but cannot execute WPF. No clipboard
 access, UI Automation, external editor, global input, model, endpoint, screenshot file, artifact

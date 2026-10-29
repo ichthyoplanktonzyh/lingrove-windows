@@ -14,3 +14,11 @@ public interface ISpeechExporting
     void Audition(SpeechExportAudio audio, Guid ownerId, LearningLanguage language);
     void Stop(Guid ownerId);
 }
+
+/// <summary>UI-context destination disclosure for an explicit speech action. The description
+/// excludes credentials and unsafe URL components. Subscribers refresh it when preferences
+/// change; implementations must not read a credential merely to describe a destination.</summary>
+public interface ISpeechDestinationDisclosure : System.ComponentModel.INotifyPropertyChanged
+{
+    string DestinationDescription { get; }
+}

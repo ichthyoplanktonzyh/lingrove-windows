@@ -21,6 +21,31 @@ namespace Cotabby.App.Tests;
 /// installed voice, recognition model, file transfer or audio device participates.</summary>
 public sealed partial class LearningSpeechControllerTests
 {
+    [Fact]
+    public async Task DestinationDisclosureUpdatesWithoutReadingCredentialsOrLeakingUrlSecrets()
+    {
+        using var ui = new BatchUiContext();
+        await ui.RunAsync(async _ =>
+        {
+            var settings = new LearningSpeechSettings(() => new AppSettings(), () => { }, new DisclosureCredentials()); var effects = new ValueEffects();
+            await using var controller = new LearningSpeechController(settings, new SpeechTelemetry((_, _, _) => { }), effects, effects, effects, effects, effects, effects,
+                _ => new Dictionary<string, double>(), StringComparer.Ordinal, Path.GetTempPath(), () => effects);
+            int changes = 0; controller.PropertyChanged += (_, _) => changes++;
+            Assert.Contains("stays on this device", controller.DestinationDescription);
+            settings.SelectProvider(LearningSpeechProviderKind.Endpoint); settings.SetEndpointBaseUrl("https://example.org/private/path"); settings.SetEndpointModel("voice/model"); settings.SetEndpointVoice("speaker");
+            Assert.Contains("https://example.org", controller.DestinationDescription); Assert.Contains("voice/model", controller.DestinationDescription);
+            Assert.DoesNotContain("private/path", controller.DestinationDescription); Assert.True(changes > 0);
+            settings.SetEndpointModel("voice?key=secret"); Assert.DoesNotContain("secret", controller.DestinationDescription);
+            settings.SetEndpointBaseUrl("https://name:secret@example.org/v1?key=secret"); Assert.DoesNotContain("secret", controller.DestinationDescription);
+            Assert.Contains("not configured", controller.DestinationDescription);
+        });
+    }
+    private sealed class DisclosureCredentials : IOpenAICompatibleCredentialStore
+    {
+        public string? ReadApiKey() => throw new InvalidOperationException("Disclosure must not read credentials.");
+        public void SaveApiKey(string? value) => throw new InvalidOperationException();
+        public void DeleteApiKey() => throw new InvalidOperationException();
+    }
     private static readonly JsonElement Corpus = JsonDocument.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "fixtures", "speech-controller-v1.json"))).RootElement.Clone();
     public static IEnumerable<object[]> Cases()
     {

@@ -47,6 +47,7 @@ public sealed class LlamaRuntimeManager : IAsyncDisposable
         await _gate.WaitAsync(ct).ConfigureAwait(false);
         try
         {
+            using var fileLease = await ModelFileOperations.AcquireAsync(path, ct).ConfigureAwait(false);
             if (!File.Exists(path))
             {
                 throw new FileNotFoundException(

@@ -51,15 +51,25 @@ public sealed class AppHost : IAsyncDisposable
     private readonly ServiceProvider _services;
     private readonly IKeyboardHook _hook;
     private readonly SuggestionEngineRouter _router;
+    private readonly CompletionModelAdmission _completion;
+    private readonly SuggestionSettingsApplication _suggestionApplication;
     private readonly SynchronizationContext _ui;
     private readonly ILogger _logger;
     private readonly GhostOverlayWindow _macroPreview;
     private readonly SymSpellCorrector _spelling;
     private readonly HttpClient _learningHttpClient;
     private int _learningCredentialRevision;
+    private int _completionCredentialRevision;
+    private bool _completionStarted;
+    private volatile bool _shuttingDown;
+    private CompletionModelSelection.PowerProfileState? _lastPowerSelection;
 
     public SuggestionCoordinator Coordinator { get; }
     public LlamaRuntimeManager Runtime { get; }
+    /// <summary>Only an admitted current model is usable or presented as ready.</summary>
+    public bool LocalModelReady => _completion.IsReady;
+    public CotabbyModel? AdmittedLocalModel => _completion.ReadAdmitted(() => Runtime.ActiveModel);
+    public long? CompletionStatusEpoch => _shuttingDown ? null : _completion.LocalSelectionEpoch;
     public ModelDownloader Downloader { get; }
     public SettingsStore SettingsStore { get; }
     public AppSettings Settings { get; private set; }
@@ -195,7 +205,8 @@ public sealed class AppHost : IAsyncDisposable
         Endpoint = new OpenAICompatibleSuggestionEngine(
             EndpointClient, EndpointCredentials, EndpointSettings,
             loggers.CreateLogger<OpenAICompatibleSuggestionEngine>());
-        _router = new SuggestionEngineRouter(_services.GetRequiredService<LlamaSuggestionEngine>(), Endpoint);
+        _completion = new CompletionModelAdmission(_services.GetRequiredService<LlamaSuggestionEngine>());
+        _router = new SuggestionEngineRouter(_completion, Endpoint);
 
         IcuWordBreaker.Install();
 
@@ -213,6 +224,7 @@ public sealed class AppHost : IAsyncDisposable
             typos: new TypoCorrectionAdvisor(
                 _spelling, new SpellingLanguageResolver(), new WindowsSpellChecker(_spelling)),
             clipboard: _services.GetRequiredService<ClipboardTextReader>());
+        _suggestionApplication = new SuggestionSettingsApplication(Coordinator, _completion);
         Coordinator.InlineCaptureActive = () => EmojiPicker.IsCapturing || Macros.IsCapturing;
         EmojiPicker.CanCapture = Macros.CanCapture = Coordinator.IsAvailableIn;
         EmojiPicker.CommitKeyFor = Macros.CommitKeyFor = Coordinator.AcceptWordKeyFor;
@@ -250,9 +262,19 @@ public sealed class AppHost : IAsyncDisposable
     /// <summary>Pushes <see cref="Settings"/> into the running app and saves them.</summary>
     public void PersistSettings()
     {
+        if (_shuttingDown) return;
         ApplySettings();
         Settings.WordsAccepted = Coordinator.Metrics.WordsAccepted;
         SettingsStore.Save(Settings);
+    }
+
+    /// <summary>Completes an already published model-file operation on the UI owner, including
+    /// during shutdown while the model manager drains accepted work.</summary>
+    internal void AcknowledgeModelMetadata(Action<AppSettings> mutate)
+    {
+        mutate(Settings);
+        if (_shuttingDown) SettingsStore.Save(Settings);
+        else PersistSettings();
     }
 
     /// <summary>Invalidates only an active learning request after its separate DPAPI key changes.</summary>
@@ -262,6 +284,13 @@ public sealed class AppHost : IAsyncDisposable
         LearningPreview.ApplySettings(Settings, _learningCredentialRevision);
     }
 
+    public void CompletionCredentialsChanged()
+    {
+        if (_shuttingDown) return;
+        _completionCredentialRevision++;
+        ApplySettings();
+    }
+
     /// <summary>Restores every preference to its default. The chosen model and onboarding state stay.</summary>
     public void ResetSettings()
     {
@@ -269,16 +298,47 @@ public sealed class AppHost : IAsyncDisposable
         PersistSettings();
     }
 
-    private void ApplySettings()
+    private void ApplySettings(bool discoveryChanged = false)
     {
+        if (_shuttingDown) return;
         // An expired pause is dropped so the tray stops showing it.
         if (Settings.Pause?.IsActive(DateTimeOffset.Now) == false) Settings.Pause = null;
 
-        Coordinator.Settings = Settings.ToSuggestionSettings();
+        var suggestionSettings = Settings.ToSuggestionSettings();
+        var endpointSettings = EndpointSettings;
+        var epoch = _completion.Epoch;
+
+        var assignments = Settings.ModelAssignmentSnapshot();
+        bool powerActive = Settings.Engine == EngineKind.Local && Settings.PowerModelSwitching;
+        bool onBattery = powerActive && PowerStatus.IsOnBattery;
+        var powerState = new CompletionModelSelection.PowerProfileState(powerActive, onBattery,
+            powerActive ? Settings.BatteryModelId ?? "" : "", powerActive ? Settings.PluggedInModelId ?? "" : "");
+        bool powerChanged = discoveryChanged || CompletionModelSelection.PowerChanged(_lastPowerSelection, powerState);
+        var power = powerChanged && powerActive ? PowerSourceModel(assignments, onBattery) : null;
+        var nextId = CompletionModelSelection.ApplyPower(_lastPowerSelection, powerState, Settings.ActiveModelId, power?.Id, discoveryChanged);
+        var desired = power is not null && nextId == power.Id ? power : ResolveMainModel(assignments);
+        // Resolve the current profile on either profile edit. Only an effective selection or
+        // eligibility change should invalidate in-flight local completion work.
+        var transition = _suggestionApplication.Apply(suggestionSettings,
+            (endpointSettings, _completionCredentialRevision), new CompletionModelSelection.SelectionIdentity(nextId, desired?.Id));
+        bool localEnabled = Settings.Engine == EngineKind.Local && Settings.Enabled;
+        // Apply withdraws once for an effective local transition. A concurrent power withdrawal
+        // advances the epoch again and must prevent this resolved snapshot from being admitted.
+        long selectionEpoch = transition.SelectionEpoch(epoch);
+        var accepted = _completion.SelectIfEpoch(selectionEpoch, localEnabled ? desired?.Id : null, localEnabled);
+        bool powerSelectionChanged = false;
+        if (accepted is not null && _completion.CommitIfEpoch(accepted.Value.Epoch, () =>
+        {
+            // Mac's power profile selects and persists the installed model; an unavailable profile
+            // leaves the last selected model alone rather than restoring a different fallback.
+            _lastPowerSelection = powerState;
+            if (Settings.ActiveModelId != nextId)
+            { Settings.ActiveModelId = nextId; powerSelectionChanged = true; }
+        }) && powerSelectionChanged) SaveAutomaticModelSelection();
         _router.UseEndpoint = Settings.Engine == EngineKind.Endpoint;
-        Endpoint.UpdateSettings(EndpointSettings);
+        if (transition.EndpointChanged) Endpoint.UpdateSettings(endpointSettings);
         // A cold local server would make the first suggestion wait for the model to load.
-        if (Settings.Engine == EngineKind.Endpoint) _ = Endpoint.PrewarmAsync();
+        if (Settings.Engine == EngineKind.Endpoint && transition.EndpointChanged) _ = Endpoint.PrewarmAsync();
         EmojiPicker.Enabled = Settings.EmojiPickerEnabled;
         EmojiPicker.PreferredSkinTone = Settings.EmojiSkinTone;
         EmojiPicker.PreferredGender = Settings.EmojiGender;
@@ -288,7 +348,7 @@ public sealed class AppHost : IAsyncDisposable
         Overlay.ApplyAppearance(Settings);
         _macroPreview.ApplyAppearance(Settings);
         LaunchAtLogin.Set(Settings.LaunchAtLogin);
-        LoadSelectedModelIfChanged();
+        if (!_completion.IsReady) LoadSelectedModelIfChanged();
         SettingsApplied?.Invoke();
     }
 
@@ -306,12 +366,22 @@ public sealed class AppHost : IAsyncDisposable
 
     public void LogError(Exception ex, string message) => _logger.LogError(ex, "{Message}", message);
 
+    // Retire publication first, then invalidate captured edits and any visible suggestion. The
+    // coordinator retains the user's enabled state, so unrelated inline features stay available.
+    private void WithdrawCompletion()
+    {
+        _completion.Withdraw();
+        Coordinator.InvalidateSession();
+    }
+
     /// <summary>Loads the selected model if it is already on disk. Never downloads.</summary>
     public async Task<bool> TryLoadCachedAsync()
     {
+        if (Settings.Engine == EngineKind.Local && Settings.Enabled) _completionStarted = true;
+        ReconcileCompletionSelection();
         var model = ResolveActiveModel();
-        if (!ModelDownloader.IsCached(model)) return false;
-        return await LoadAsync(model).ConfigureAwait(false);
+        if (model is null || !ModelDownloader.IsCached(model) || Settings.Engine != EngineKind.Local || !Settings.Enabled) return false;
+        return await PrepareModelAsync(model, allowDownload: false, null, CancellationToken.None).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -321,47 +391,106 @@ public sealed class AppHost : IAsyncDisposable
     public async Task<bool> EnsureModelReadyAsync(IProgress<ModelDownloader.Progress>? progress, CancellationToken ct)
     {
         var model = ResolveActiveModel();
-        if (!ModelDownloader.IsCached(model))
+        if (model is null || Settings.Engine != EngineKind.Local || !Settings.Enabled) return false;
+        return await PrepareModelAsync(model, allowDownload: true, progress, ct).ConfigureAwait(false);
+    }
+
+    private async Task<bool> PrepareModelAsync(CotabbyModel model, bool allowDownload, IProgress<ModelDownloader.Progress>? progress, CancellationToken ct)
+    {
+        if (_shuttingDown || _completion.Capture(model.Id) is not { } ticket) return false;
+        _completionStarted = true;
+        bool ready = await _completion.PrepareAsync(ticket, async token =>
         {
-            await Downloader.DownloadAsync(model, progress, ct).ConfigureAwait(false);
-            // The selection may have changed during a long download.
-            model = ResolveActiveModel();
-            if (!ModelDownloader.IsCached(model)) return Runtime.IsReady;
-        }
-        return await LoadAsync(model).ConfigureAwait(false);
+            if (ModelDownloader.IsCached(model)) return;
+            if (!allowDownload) throw new System.IO.FileNotFoundException("The selected model is unavailable.");
+            await Downloader.DownloadAsync(model, progress, token, () => AcknowledgeCompletionDownloadAsync(model)).ConfigureAwait(false);
+        }, () => Runtime.LoadAsync(model, ModelDownloader.LocalPath(model), CancellationToken.None),
+            () => Runtime.ActiveModel is { } active && ModelCatalog.MatchesId(model.Id, active.Id), ct).ConfigureAwait(false);
+        _ui.Post(_ =>
+        {
+            // A queued UI callback must not restore old authorization after a newer selection.
+            if (!_shuttingDown && _completion.IsCurrent(ticket) && _completion.IsReady) SettingsApplied?.Invoke();
+        }, null);
+        return ready;
     }
 
-    private async Task<bool> LoadAsync(CotabbyModel model)
+    private Task AcknowledgeCompletionDownloadAsync(CotabbyModel model)
     {
-        await Runtime.LoadAsync(model, ModelDownloader.LocalPath(model), CancellationToken.None).ConfigureAwait(false);
-        // The tray and any open window show which model is loaded.
-        _ui.Post(_ => SettingsApplied?.Invoke(), null);
-        return Runtime.IsReady;
+        var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        _ui.Post(_ =>
+        {
+            try
+            {
+                AcknowledgeModelMetadata(settings =>
+                {
+                    settings.RecordLocalModelTask(model.FileName, LocalModelTask.Completion);
+                    settings.RecordLocalModelSource(model.FileName, new Uri(model.DownloadUrl));
+                });
+                completion.TrySetResult();
+            }
+            catch (Exception error) { completion.TrySetException(error); }
+        }, null);
+        return completion.Task;
     }
 
-    private CotabbyModel ResolveActiveModel()
+    private CotabbyModel? ResolveActiveModel()
     {
-        var model = (Settings.ActiveModelId is { } id ? ModelCatalog.FindById(id) : null) ?? ModelCatalog.All[0];
-        Settings.ActiveModelId = model.Id;
-        return PowerSourceModel() ?? model;
+        var assignments = Settings.ModelAssignmentSnapshot();
+        return ResolveMainModel(assignments);
+    }
+
+    private CotabbyModel? ResolveMainModel(IReadOnlyDictionary<string, string[]> assignments) =>
+        string.IsNullOrEmpty(Settings.ActiveModelId) ? ModelCatalog.All[0] : ModelCatalog.FindById(Settings.ActiveModelId, assignments);
+
+    /// <summary>Reconcile discovery like the frozen bootstrap: keep incompatible choices, but
+    /// replace a compatible vanished choice with the first installed candidate. An explicit
+    /// transfer in progress owns its selection until it finishes.</summary>
+    internal void ReconcileCompletionSelection(IReadOnlyList<LearningInstalledModel>? discovered = null)
+    {
+        if (_shuttingDown) return;
+        var installed = discovered is null
+            ? ModelCatalog.Available(Settings.ModelAssignmentSnapshot()).Where(ModelDownloader.IsCached).ToArray()
+            : discovered.Where(value => Settings.IsLocalModelCandidate(value.Filename, LocalModelTask.Completion)).Select(value =>
+                ModelCatalog.All.FirstOrDefault(model => string.Equals(model.FileName, value.Filename, StringComparison.OrdinalIgnoreCase))
+                ?? new CotabbyModel { Id = "custom:" + value.Filename, FileName = value.Filename, DisplayName = value.DisplayName,
+                    DownloadUrl = "", ApproxSizeBytes = value.SizeBytes, ContextLength = 4096 }).ToArray();
+        string profileId = Settings.PowerModelSwitching && Settings.Engine == EngineKind.Local
+            ? (PowerStatus.IsOnBattery ? Settings.BatteryModelId : Settings.PluggedInModelId) ?? "" : "";
+        var profile = profileId.Length == 0 ? null : installed.FirstOrDefault(model => ModelCatalog.MatchesId(profileId, model.Id));
+        bool profileNeedsSelection = profile is not null && !ModelCatalog.MatchesId(Settings.ActiveModelId ?? "", profile.Id);
+        if (_completion.IsPreparing && !profileNeedsSelection) return;
+        var next = _completion.IsPreparing ? Settings.ActiveModelId : CompletionModelSelection.Reconcile(Settings.ActiveModelId, installed);
+        if (string.Equals(next, Settings.ActiveModelId, StringComparison.Ordinal) && !profileNeedsSelection) return;
+        if (Settings.Engine == EngineKind.Local && Settings.Enabled) WithdrawCompletion();
+        Settings.ActiveModelId = next;
+        ApplySettings(discoveryChanged: true);
+        SaveAutomaticModelSelection();
+    }
+
+    private void SaveAutomaticModelSelection()
+    {
+        try { SettingsStore.Save(Settings); }
+        catch (Exception error) when (error is System.IO.IOException or UnauthorizedAccessException)
+        { LogError(error, "Saving automatic model selection failed."); }
     }
 
     /// <summary>The model chosen for the current power source, when that feature is on and the file is present.</summary>
-    private CotabbyModel? PowerSourceModel()
+    private CotabbyModel? PowerSourceModel(IReadOnlyDictionary<string, string[]> assignments, bool onBattery)
     {
         if (!Settings.PowerModelSwitching) return null;
-        var id = PowerStatus.IsOnBattery ? Settings.BatteryModelId : Settings.PluggedInModelId;
-        return ModelCatalog.FindById(id) is { } model && ModelDownloader.IsCached(model) ? model : null;
+        var id = onBattery ? Settings.BatteryModelId : Settings.PluggedInModelId;
+        return ModelCatalog.FindById(id, assignments) is { } model && ModelDownloader.IsCached(model) ? model : null;
     }
 
     private void OnPowerModeChanged(object sender, PowerModeChangedEventArgs e)
     {
-        if (e.Mode != PowerModes.StatusChange) return;
-        // Power availability is a shared feature gate. Learning owns its own request/cache, but it
-        // must retire that work when the same battery-saver pause used by autocomplete becomes active.
+        if (_shuttingDown || e.Mode != PowerModes.StatusChange) return;
+        _completion.Withdraw();
+        if (!_router.UseEndpoint) Coordinator.InvalidateSession();
+        // Learning owns separate requests and retires them under its own power eligibility gate.
         LearningPreview.PowerStatusChanged();
         LearningExplanation.PowerStatusChanged();
-        _ui.Post(_ => LoadSelectedModelIfChanged(), null);
+        _ui.Post(_ => { if (Settings.Engine == EngineKind.Local) ApplySettings(); }, null);
     }
 
     /// <summary>
@@ -372,10 +501,12 @@ public sealed class AppHost : IAsyncDisposable
     {
         try
         {
-            if (Settings.Engine != EngineKind.Local || !Runtime.IsReady) return;
+            // A superseded native load can still be finishing after cancellation. Queue the new
+            // installed choice behind it even while the physical runtime is temporarily empty.
+            if (Settings.Engine != EngineKind.Local || !Settings.Enabled || (!Runtime.IsReady && !_completionStarted)) return;
             var wanted = ResolveActiveModel();
-            if (wanted.Id == Runtime.ActiveModel?.Id || !ModelDownloader.IsCached(wanted)) return;
-            await LoadAsync(wanted);
+            if (wanted is null || !ModelDownloader.IsCached(wanted)) return;
+            await PrepareModelAsync(wanted, allowDownload: false, null, CancellationToken.None);
         }
         catch (Exception ex)
         {
@@ -385,31 +516,42 @@ public sealed class AppHost : IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
+        _shuttingDown = true;
         Settings.WordsAccepted = Coordinator.Metrics.WordsAccepted;
-        SettingsStore.Save(Settings);
+        try { SettingsStore.Save(Settings); }
+        catch (Exception error) when (error is System.IO.IOException or UnauthorizedAccessException)
+        { LogError(error, "Saving settings during shutdown failed."); }
         _hook.KeyEvent -= OnGlobalToggleKey;
         SystemEvents.PowerModeChanged -= OnPowerModeChanged;
-        await LearningPreview.DisposeAsync().ConfigureAwait(false);
-        await VocabularyWindow.DisposeAsync().ConfigureAwait(false);
-        await _vocabularyClipboard.DisposeAsync().ConfigureAwait(false);
-        Vocabulary.EnrichCapture = null;
-        await LearningExplanation.DisposeAsync().ConfigureAwait(false);
-        LearningExplanation.Service.Explained -= PersistExplanation;
-        try { await Review.DisposeAsync().ConfigureAwait(false); }
+        WithdrawCompletion();
+        try
+        {
+            await _completion.DisposeAsync().ConfigureAwait(false);
+            await LearningPreview.DisposeAsync().ConfigureAwait(false);
+            await VocabularyWindow.DisposeAsync().ConfigureAwait(false);
+            await _vocabularyClipboard.DisposeAsync().ConfigureAwait(false);
+            Vocabulary.EnrichCapture = null;
+            await LearningExplanation.DisposeAsync().ConfigureAwait(false);
+            LearningExplanation.Service.Explained -= PersistExplanation;
+            try { await Review.DisposeAsync().ConfigureAwait(false); }
+            finally
+            {
+                // Review already drains all admitted actions even if cancellation/disposal reports
+                // an error. Its failure must not strand the shared notebook or skip existing cleanup.
+                await Vocabulary.DisposeAsync().ConfigureAwait(false);
+                await LearningModels.DisposeAsync().ConfigureAwait(false);
+                EmojiPicker.Dispose();
+                Macros.Dispose();
+                _spelling.Dispose();
+                await Coordinator.DisposeAsync().ConfigureAwait(false);
+                EndpointClient.Dispose();
+                _learningHttpClient.Dispose();
+                await _services.DisposeAsync().ConfigureAwait(false);
+            }
+        }
         finally
         {
-            // Review already drains all admitted actions even if cancellation/disposal reports
-            // an error. Its failure must not strand the shared notebook or skip existing cleanup.
-            await Vocabulary.DisposeAsync().ConfigureAwait(false);
-            await LearningModels.DisposeAsync().ConfigureAwait(false);
-            EmojiPicker.Dispose();
-            Macros.Dispose();
-            _spelling.Dispose();
-            await Coordinator.DisposeAsync().ConfigureAwait(false);
             await Runtime.DisposeAsync().ConfigureAwait(false);
-            EndpointClient.Dispose();
-            _learningHttpClient.Dispose();
-            await _services.DisposeAsync().ConfigureAwait(false);
         }
     }
 }

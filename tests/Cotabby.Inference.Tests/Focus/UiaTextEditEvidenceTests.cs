@@ -9,6 +9,61 @@ namespace Cotabby.Inference.Tests.Focus;
 public sealed class UiaTextEditEvidenceTests(ITestOutputHelper output)
 {
     [Fact]
+    public async Task RevokedRequestCannotContinueQueuedRetainedRegistration()
+    {
+        if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;
+        using var owner = new UiaTextEditEvidence(() => { });
+        using var release = new ManualResetEventSlim();
+        bool allowed = true;
+        int checks = 0;
+        Assert.False(owner.Execute(() => release.Wait()));
+        try
+        {
+            var register = Task.Run(() => owner.RegisterRetainedHost(123, "test-only", 1, 2, () => { },
+                CancellationToken.None, () => { Interlocked.Increment(ref checks); return Volatile.Read(ref allowed); }));
+            Assert.True(SpinWait.SpinUntil(() => owner.RetainedRegistrationPendingForTest, TimeSpan.FromMilliseconds(400)));
+            Volatile.Write(ref allowed, false);
+            release.Set();
+            Assert.Null(await register.WaitAsync(TimeSpan.FromSeconds(5)));
+            Assert.True(Volatile.Read(ref checks) > 0);
+        }
+        finally { release.Set(); }
+    }
+
+    [Fact]
+    public async Task RevokedQueuedCompositionReadDoesNotQueryNativeFocus()
+    {
+        if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;
+        using var owner = new UiaTextEditEvidence(() => { });
+        using var release = new ManualResetEventSlim();
+        bool allowed = true;
+        Assert.False(owner.Execute(() => release.Wait()));
+        try
+        {
+            var read = Task.Run(() => owner.Observe(123, "test-only", 1, () => Volatile.Read(ref allowed)));
+            Volatile.Write(ref allowed, false);
+            release.Set();
+            Assert.Equal(default, await read.WaitAsync(TimeSpan.FromSeconds(5)));
+        }
+        finally { release.Set(); }
+    }
+
+    [Fact]
+    public async Task TimedOutRetainedRegistrationIsRetiredBeforeNativeFocusQuery()
+    {
+        if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;
+        using var owner = new UiaTextEditEvidence(() => { });
+        using var release = new ManualResetEventSlim();
+        Assert.False(owner.Execute(() => release.Wait()));
+        try
+        {
+            var result = await Task.Run(() => owner.RegisterRetainedHost(123, "test-only", 1, 2, () => { }, CancellationToken.None));
+            Assert.Null(result);
+        }
+        finally { release.Set(); }
+    }
+
+    [Fact]
     public async Task NativeFactoryCreatesAutomation3OnItsMtaOwner()
     {
         if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;

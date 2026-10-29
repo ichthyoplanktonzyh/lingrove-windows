@@ -182,8 +182,9 @@ internal sealed class LearningExplanationController : IAsyncDisposable
         lock (_gate)
         {
             token.ThrowIfCancellationRequested();
-            if (_disposal is not null || !AllowedLocked() || !_modelAdmitted || _profile.Backend != LearningModelBackend.Local)
+            if (_disposal is not null || !AllowedLocked() || _profile.Backend != LearningModelBackend.Local)
                 throw new OperationCanceledException();
+            if (!_modelAdmitted) throw new LearningTranslationException(LearningTranslationFailure.LocalModelNotConfigured);
             var profile = _profile;
             var lease = ReserveInstructionLocked();
             StopIdleLocked(); _activeFacades++; _nativeMayBeResident = true;

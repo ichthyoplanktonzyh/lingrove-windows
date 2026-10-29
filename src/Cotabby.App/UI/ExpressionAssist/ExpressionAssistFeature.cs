@@ -25,6 +25,7 @@ internal sealed class ExpressionAssistFeature : IAsyncDisposable
     private readonly Func<Func<bool>, FocusedField?> _guardedRefresh;
     private readonly Func<FocusedField, (ExpressionAssistSession Session, Action Close)> _factory;
     private readonly Func<FocusedField?, ExpressionAssistFeatureSettings, bool> _shortcutConflict;
+    private readonly Func<FocusedField, bool> _fieldAvailable;
     private readonly ExpressionAssistTriggerObserver _observer = new();
     private readonly HashSet<Task> _work = [];
     private ExpressionAssistFeatureSettings _settings = new();
@@ -42,11 +43,13 @@ internal sealed class ExpressionAssistFeature : IAsyncDisposable
     internal ExpressionAssistFeature(Dispatcher dispatcher, IFocusTracker focus, IKeyboardHook input,
         Func<Func<bool>, FocusedField?> guardedRefresh,
         Func<FocusedField, (ExpressionAssistSession Session, Action Close)> factory,
-        Func<FocusedField?, ExpressionAssistFeatureSettings, bool> shortcutConflict)
+        Func<FocusedField?, ExpressionAssistFeatureSettings, bool> shortcutConflict,
+        Func<FocusedField, bool>? fieldAvailable = null)
     {
         dispatcher.VerifyAccess(); _dispatcher = dispatcher; _focus = focus; _input = input;
         _guardedRefresh = guardedRefresh ?? throw new ArgumentNullException(nameof(guardedRefresh));
         _factory = factory; _shortcutConflict = shortcutConflict;
+        _fieldAvailable = fieldAvailable ?? (static _ => true);
     }
 
     internal void Start(ExpressionAssistFeatureSettings settings)
@@ -83,6 +86,7 @@ internal sealed class ExpressionAssistFeature : IAsyncDisposable
         {
             if (!_running || _disposed || _active) return;
             settings = _settings; field = _field;
+            if (field is null || !FieldAvailable(field)) return;
             bool shortcut = settings.Enabled && settings.Available && settings.ShortcutKey != 0
                 && settings.ShortcutKey is not (0x0D or 0x1B) && settings.ShortcutModifiers != KeyModifiers.None
                 && key.VirtualKey == settings.ShortcutKey && key.Modifiers == settings.ShortcutModifiers
@@ -96,7 +100,7 @@ internal sealed class ExpressionAssistFeature : IAsyncDisposable
                 _dispatcher.BeginInvoke(() => BeginIfCurrent(null, key.VirtualKey, field, epoch));
                 return;
             }
-            if (!settings.Enabled || key.Kind is not (KeyKind.Character or KeyKind.Backspace or KeyKind.Delete or KeyKind.Enter)) return;
+            if (!settings.Enabled || !settings.Available || key.Kind is not (KeyKind.Character or KeyKind.Backspace or KeyKind.Delete or KeyKind.Enter)) return;
             epoch = Interlocked.Increment(ref _epoch);
         }
         string characters = key.Kind == KeyKind.Character && key.Character != '\0' ? key.Character.ToString() : "";
@@ -105,14 +109,26 @@ internal sealed class ExpressionAssistFeature : IAsyncDisposable
 
     private void FocusChanged(object? sender, FocusedField? field)
     {
-        long epoch;
-        lock (_gate) { if (!_running || _disposed) return; _field = field; epoch = _epoch; }
-        _dispatcher.BeginInvoke(() => Observe(field, epoch));
+        long epoch; bool changed;
+        lock (_gate)
+        {
+            if (!_running || _disposed) return;
+            changed = !_active && (_field?.ProcessId != field?.ProcessId || _field?.FieldId != field?.FieldId
+                || _field?.FocusChangeSequence != field?.FocusChangeSequence || field?.IsSecure == true);
+            _field = field;
+            epoch = changed ? Interlocked.Increment(ref _epoch) : _epoch;
+        }
+        _dispatcher.BeginInvoke(() =>
+        {
+            if (!Current(epoch)) return;
+            if (changed) { CancelProbe(); _observer.Cancel(); }
+            Observe(field, epoch);
+        });
     }
 
     private void Mutation(FocusedField? field, string characters, ExpressionAssistFeatureSettings settings, long epoch)
     {
-        if (!Current(epoch) || _session?.IsActive == true) return;
+        if (!Current(epoch) || field is null || !FieldAvailable(field) || _session?.IsActive == true) return;
         CancelProbe();
         var armed = _observer.Mutation(field, characters, settings.Trigger, Now());
         _observerEpoch = armed.Epoch;
@@ -166,7 +182,8 @@ internal sealed class ExpressionAssistFeature : IAsyncDisposable
 
     private void BeginIfCurrent(string? trigger, int? initiatingKey, FocusedField? field, long epoch)
     {
-        if (!Current(epoch) || field is null || field.IsSecure || !CompositionEvidencePolicy.IsClear(field) || _session?.IsActive == true) return;
+        if (!Current(epoch) || field is null || field.IsSecure || !FieldAvailable(field)
+            || !CompositionEvidencePolicy.IsClear(field) || _session?.IsActive == true) return;
         lock (_gate)
         {
             var current = _focus.Current;
@@ -212,6 +229,8 @@ internal sealed class ExpressionAssistFeature : IAsyncDisposable
         try { await session.DisposeAsync(); } finally { close?.Invoke(); }
     }
     private bool Current(long epoch) { lock (_gate) return _running && !_disposed && _epoch == epoch; }
+    private bool FieldAvailable(FocusedField field)
+    { try { return _fieldAvailable(field); } catch { return false; } }
     private static TimeSpan Now() => Stopwatch.GetElapsedTime(0);
     private void CancelProbe()
     {

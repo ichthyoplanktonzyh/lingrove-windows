@@ -16,6 +16,19 @@ public sealed class ExpressionAssistSessionTests(WpfDispatcher dispatcher)
     }
 
     [Fact]
+    public Task MissingExplanationModelShowsConfigurationMessageWithoutWriting() => dispatcher.RunAsync(async () =>
+    {
+        var editor = new Editor(false); var panel = new Panel();
+        await using var session = new ExpressionAssistSession(Dispatcher.CurrentDispatcher, editor, panel,
+            (_, _) => Task.FromException<ExpressionAssistResult>(new LearningTranslationException(LearningTranslationFailure.LocalModelNotConfigured)),
+            () => (LearningLanguage.English, LearningLanguage.Chinese));
+        session.Begin(null); await Until(() => panel.Visible);
+        session.QueryChanged("query", false); session.Submit();
+        await Until(() => panel.Message is not null);
+        Assert.Contains("AI explanation model", panel.Message); Assert.Equal(0, editor.Session.Writes);
+    });
+
+    [Fact]
     public Task EditorInvalidationDiscardsLateReplyWithoutWriting() => dispatcher.RunAsync(async () =>
     {
         var editor = new Editor(false); var panel = new Panel();
@@ -129,9 +142,9 @@ public sealed class ExpressionAssistSessionTests(WpfDispatcher dispatcher)
     private sealed class Panel : IExpressionAssistPanel
     {
         public nint WindowHandle => 1; public bool OwnsKeyboard => Visible; public bool IsVisible => Visible;
-        public bool Visible; public ExpressionAssistResult? Result; public string? Unavailable;
+        public bool Visible; public ExpressionAssistResult? Result; public string? Unavailable; public string? Message;
         public Task ShowAsync(ExpressionEditorReceipt receipt, string query) { Visible = true; return Task.CompletedTask; }
-        public void Update(ExpressionAssistResult? result, string? message, bool loading) => Result = result;
+        public void Update(ExpressionAssistResult? result, string? message, bool loading) { Result = result; Message = message; }
         public void Hide(bool restoringHost) => Visible = false;
         public void ShowFailure(string candidate, string message) { }
         public void ShowUnavailable(string message) => Unavailable = message;

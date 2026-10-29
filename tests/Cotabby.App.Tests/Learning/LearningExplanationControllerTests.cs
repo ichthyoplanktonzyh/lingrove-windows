@@ -19,6 +19,14 @@ public sealed class LearningExplanationControllerTests
     private static LearningExplanationInput Input => new("know", "know", LearningLanguage.English, VocabularyEntryKind.Word,
         "Let me know.", [new(7, 4)]);
     private static ExpressionAssistRequest Expression => new("排除", "We can ", ".", "", "en", "zh-Hans");
+    [Fact]
+    public async Task UnconfiguredExpressionModelReturnsAnActionableFailureWithoutRuntimeWork()
+    {
+        var runtime = new FakeRuntime();
+        await using var owner = Owner(runtime, new AppSettings(), new Clock());
+        var failure = await Assert.ThrowsAsync<LearningTranslationException>(() => owner.GenerateExpressionAsync(Expression, value => value, default));
+        Assert.Equal(LearningTranslationFailure.LocalModelNotConfigured, failure.Failure);
+    }
     private static AppSettings Settings()
     {
         var settings = new AppSettings { LearningExplanationLocalModel = "tutor.gguf", LearningExplanationLocalTemplate = LearningChatTemplate.Qwen3 };

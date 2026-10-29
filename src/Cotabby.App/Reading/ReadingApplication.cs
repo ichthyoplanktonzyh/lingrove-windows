@@ -134,6 +134,8 @@ internal sealed class ReadingApplication : IAsyncDisposable
         if (_disposed) return;
         var availability = settings.ToSuggestionSettings();
         bool enabled = settings.LearningReadingEnabled && settings.LearningTranslationEnabled;
+        var explanation = settings.LearningExplanationSnapshot();
+        var explanationEndpoint = Cotabby.App.Learning.LearningModelDestinationText.Endpoint(explanation);
         var translation = settings.EffectiveLearningBackend == LearningTranslationBackend.Endpoint
             ? new ReadingDestination("", true, settings.LearningEndpointEnabled, settings.LearningEndpointBaseUrl,
                 ModelDisplayText.Safe(settings.LearningEndpointModel))
@@ -156,12 +158,13 @@ internal sealed class ReadingApplication : IAsyncDisposable
             ScreenConflict = GlobalShortcut.ReadingScreenshot.Conflict(settings, settings.LearningReadingScreenshotShortcut) is not null,
             TranslationModelName = settings.EffectiveLearningBackend == LearningTranslationBackend.Endpoint
                 ? ModelDisplayText.Safe(settings.LearningEndpointModel) : ModelDisplayText.Safe(settings.LearningLocalModel),
-            LookupLabel = string.IsNullOrWhiteSpace(settings.LearningExplanationSnapshot().LocalModel)
-                ? "Local AI explanation model not configured · bundled dictionary available"
-                : "Local AI explanation model: " + ModelDisplayText.Safe(settings.LearningExplanationSnapshot().LocalModel)
-                    + " · bundled dictionary available",
+            LookupProfile = explanation,
+            LookupDestination = explanationEndpoint is not null
+                ? new("", true, true, explanationEndpoint.BaseUrl.AbsoluteUri, ModelDisplayText.Safe(explanationEndpoint.ModelName))
+                : new(Cotabby.App.Learning.LearningModelDestinationText.Explanation(explanation) + " · bundled dictionary available", false, true),
         };
-        if (_preferences is { } old && old.Signature == next.Signature && old.CredentialRevision == credentialRevision && old.BatterySaver == batterySaver) return;
+        if (_preferences is { } old && old.Signature == next.Signature && old.CredentialRevision == credentialRevision
+            && old.BatterySaver == batterySaver && old.LookupProfile == next.LookupProfile) return;
         Volatile.Write(ref _preferences, next); Interlocked.Increment(ref _revision); _affordance?.Invalidate(); Retire(); UpdatePointer();
     }
 
@@ -228,7 +231,7 @@ internal sealed class ReadingApplication : IAsyncDisposable
             }
             _presentation = presentation; Volatile.Write(ref _session, session);
             session.Begin(new(true, true, true, preferences.Target, preferences.Destination,
-                new(preferences.LookupLabel, false, true), revision) { Source = screen ? ReadingSourceKind.Screenshot : pointer is null ? ReadingSourceKind.Selection : ReadingSourceKind.Pointer,
+                preferences.LookupDestination, revision) { Source = screen ? ReadingSourceKind.Screenshot : pointer is null ? ReadingSourceKind.Selection : ReadingSourceKind.Pointer,
                     TranslationModelName = preferences.TranslationModelName }, key);
             Volatile.Write(ref _active, session.IsActive ? 1 : 0);
         }
@@ -263,7 +266,8 @@ internal sealed class ReadingApplication : IAsyncDisposable
         Func<ReadingSelection, LearningLanguage?, LearningLanguage, Action<string>, CancellationToken, Task<string>> Translate,
         IReadOnlyList<PerAppShortcutOverride> AppOverrides, bool IconEnabled)
     {
-        internal string LookupLabel { get; init; } = "Local AI explanation model · bundled dictionary available";
+        internal ReadingDestination LookupDestination { get; init; } = new("Local AI explanation model · bundled dictionary available", false, true);
+        internal LearningModelSnapshot? LookupProfile { get; init; }
         internal LearningLanguage LookupLanguage { get; init; }
         internal bool PointerEnabled { get; init; }
         internal KeyBinding PointerShortcut { get; init; } = KeyBinding.Unbound;

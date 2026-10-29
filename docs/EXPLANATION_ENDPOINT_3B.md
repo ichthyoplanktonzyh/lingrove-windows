@@ -10,7 +10,9 @@ identity body was also inspected at 3b before reuse. Historical fixtures are unc
 
 This checkpoint provides scoped components. AppHost owns one inert explanation HTTP/credential
 feature, but does not yet inject its generation factories into the live controller. Provider
-settings, every request's visible destination and final production activation are pending.
+settings and final production activation are pending. Writing sentence/dictionary cards, expression
+assistance and canonical notebook rows now disclose the service's immutable destination before
+generation; reading freezes the explanation destination and credential revision with its request.
 It must not be described as a working endpoint option until that composition is complete.
 
 The endpoint profile is independent of translation/completion/speech and defaults to Local.
@@ -52,3 +54,15 @@ Component validation: App explanation owner/settings 45/45; Inference endpoint/t
 84/84; serialized WPF expression/native permit/HTTP feature lifetime 48/48. Tests use synthetic
 text, fake HTTP/keys/runtime and owned receipts. No real endpoint, model, user editor, clipboard
 or notebook is used. Production activation and native host acceptance remain separate work.
+
+The presentation adapter validates destination URLs before displaying them, and never renders
+invalid URL user-info, query or fragment contents. Dormant endpoint fields are absent from local
+labels. Long destination labels live in bounded scrolling regions alongside existing controls;
+Segoe UI and the existing Windows theme remain the rendering convention. The shared service
+exposes only a credential-free immutable profile; views construct no runtime or transport.
+Explicit credential Save/Clear tests cover normalization, unchanged values, validation before key
+access, fixed failures and retirement. Normal Quit/restart now drains onboarding scans before
+AppHost. Integration compiled with zero warnings/errors. A WPF batch passed 54 checks and exposed
+an incorrect terminal-punctuation fixture in the new reading test; the corrected standalone-word
+receipt then passed 1/1, proving that a nonserialized explanation key revision retires the lookup.
+These synthetic component checks do not establish native editor or visual acceptance.

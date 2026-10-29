@@ -34,6 +34,7 @@ internal sealed class CanonicalNotebookLearningSession : IAsyncDisposable
     internal LearningDictionarySession Dictionary { get; }
     internal string? DictionaryError { get; private set; }
     internal bool IsConfigured => _service?.IsConfigured == true;
+    internal LearningModelSnapshot? Profile => _service?.Profile;
     internal Task LastDictionaryOperation { get; private set; } = Task.CompletedTask;
     internal bool IsPreparingDictionary { get { VerifyAccess(); return _pendingDictionary is not null; } }
     internal event Action? Changed;

@@ -119,7 +119,14 @@ public partial class App : Application
                 finally
                 {
                     try { _tray?.Dispose(); _tray = null; }
-                    finally { if (_host is not null) await _host.DisposeAsync(); }
+                    finally
+                    {
+                        if (_host is not null)
+                        {
+                            try { await WelcomeWindow.RetireForAsync(_host); }
+                            finally { await _host.DisposeAsync(); }
+                        }
+                    }
                 }
                 drained = true;
             }

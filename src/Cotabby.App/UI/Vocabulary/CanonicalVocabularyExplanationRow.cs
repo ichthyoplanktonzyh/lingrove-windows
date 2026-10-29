@@ -32,6 +32,7 @@ internal sealed class CanonicalVocabularyExplanationRow : StackPanel, IDisposabl
     private readonly CancellationTokenSource _presentation = new();
     private readonly CancellationToken _presentationToken;
     private readonly TextBlock _heading = new() { FontSize = 12 };
+    private readonly TextBlock _modelDestination = new() { FontSize = 11, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 5, 0, 5) };
     private readonly Button _generate = new() { Width = 28, Height = 26, Padding = new Thickness(2) };
     private readonly TextBox _meaning = Literal(true), _proposal = Literal(true), _prose = Literal(false);
     private readonly Expander _details = new() { Header = InterfaceText.Get("Details"), Margin = new Thickness(0, 8, 0, 0) };
@@ -58,7 +59,9 @@ internal sealed class CanonicalVocabularyExplanationRow : StackPanel, IDisposabl
         VocabularyNotebookTheme.Button(_generate);
         var header = new DockPanel(); DockPanel.SetDock(_generate, Dock.Right); header.Children.Add(_generate); header.Children.Add(_heading);
         var body = new StackPanel(); body.Children.Add(_proposal); body.Children.Add(_replace); body.Children.Add(_prose); _details.Content = body;
-        Children.Add(header); Children.Add(_meaning); Children.Add(_details); Children.Add(_status);
+        Children.Add(header); Children.Add(new ScrollViewer { Content = _modelDestination, MaxHeight = 72, VerticalScrollBarVisibility = ScrollBarVisibility.Auto });
+        Children.Add(_meaning); Children.Add(_details); Children.Add(_status);
+        _modelDestination.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondary");
         _heading.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondary"); _status.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondary");
         _generate.Click += OnGenerate; _replace.Click += OnReplace; session.StateChanged += OnStateChanged;
     }
@@ -88,6 +91,7 @@ internal sealed class CanonicalVocabularyExplanationRow : StackPanel, IDisposabl
         if (_disposed) return;
         if (_input != state.Input) { _input = state.Input; _details.IsExpanded = false; _adoptionError = null; }
         _displayed = state;
+        _modelDestination.Text = LearningModelDestinationText.Explanation(_owner.Profile);
         var action = LearningExplanationCardPolicy.Action(state, _owner.IsConfigured);
         _generate.Content = state.IsGenerating ? "■" : "✦"; _generate.IsEnabled = action != LearningExplanationCardAction.None;
         string label = LearningExplanationCardPolicy.Label(state, _owner.IsConfigured);

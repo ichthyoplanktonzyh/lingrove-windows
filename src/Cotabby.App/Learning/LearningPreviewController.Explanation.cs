@@ -130,7 +130,7 @@ internal sealed partial class LearningPreviewController
                 if (_explanationSession is null || !ReferenceEquals(_explanationSession.State, state)
                     || !LearningExplanationCardPolicy.SameDocument(_explanationPresentation, presentation)
                     || !CanExplainDocumentLocked(presentation, capture, intent)) return;
-                _window?.ShowExplanationState(presentation.RequestId, state, _explanationSession.IsConfigured, capture.Field.CaretRect);
+                _window?.ShowExplanationState(presentation.RequestId, state, _explanationSession.IsConfigured, capture.Field.CaretRect, _explanationSession.Profile);
             }
         }, DispatcherPriority.Background);
     }

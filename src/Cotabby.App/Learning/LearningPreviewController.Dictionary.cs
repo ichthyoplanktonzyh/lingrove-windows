@@ -107,7 +107,7 @@ internal sealed partial class LearningPreviewController
             {
                 if (!ReferenceEquals(_dictionarySession?.State, state) || !CanUseDictionaryTargetLocked(state, capture, intent)) return;
                 EnsureDictionaryWindow().ShowState(state, _dictionaryAnchor,
-                    LearningDictionaryCardPolicy.ExampleTranslation(state.Explanation?.Input, _dictionaryTranslation));
+                    LearningDictionaryCardPolicy.ExampleTranslation(state.Explanation?.Input, _dictionaryTranslation), _explanationSession?.Profile);
                 BindDictionaryVocabulary(state, capture, intent);
             }
         }, DispatcherPriority.Background);

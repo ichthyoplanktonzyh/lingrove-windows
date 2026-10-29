@@ -13,6 +13,33 @@ namespace Cotabby.App.Wpf.Tests;
 public sealed class ReadingApplicationTests(WpfDispatcher dispatcher)
 {
     [Fact]
+    public Task ExplanationCredentialChangeRetiresLookupEvenThoughItIsNotSerialized() => dispatcher.RunAsync(async () =>
+    {
+        var focus = new Focus(); var hook = new Hook(); var reader = new Reader();
+        reader.Lease.Selection = reader.Lease.Selection with { Text = "Hello", SelectionLength = 5 };
+        var entered = new TaskCompletionSource<CancellationToken>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource<ReadingLookupResult>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var app = new ReadingApplication(Dispatcher.CurrentDispatcher, hook, () => focus.Value, reader,
+            (_, _) => [new("Hello", new(0, 5))], new Dictionary(),
+            (_, token) => { entered.TrySetResult(token); return release.Task; }, (_, _, _) => throw new InvalidOperationException(),
+            () => { }, new Clipboard(), new ReadingVocabularyStoreFake(), (_, _) => [],
+            (_, _) => (_, _, _, _, _) => throw new InvalidOperationException(), () => { }, () => false);
+        var settings = new AppSettings { LearningReadingEnabled = true, LearningTranslationEnabled = true,
+            LearningExplanationBackend = LearningModelBackend.Endpoint, LearningExplanationEndpointBaseUrl = "https://owned.invalid/v1",
+            LearningExplanationEndpointModel = "instruction-model", ShortcutOverrides = [new() { ProcessName = "editor", SelectionReadingAllowed = true }] };
+        try
+        {
+            app.ApplySettings(settings, 0, false); Assert.True(hook.Emit().Suppress);
+            var token = await entered.Task.WaitAsync(TimeSpan.FromSeconds(5));
+            string serialized = System.Text.Json.JsonSerializer.Serialize(settings);
+            settings.LearningExplanationCredentialRevision++;
+            Assert.Equal(serialized, System.Text.Json.JsonSerializer.Serialize(settings));
+            app.ApplySettings(settings, 0, false); Assert.True(token.IsCancellationRequested);
+        }
+        finally { release.TrySetCanceled(); await app.DisposeAsync(); }
+    });
+
+    [Fact]
     public Task PowerWithdrawalCancelsRequestBeforeUiRetirementAndJoinsProvider() => dispatcher.RunAsync(async () =>
     {
         var focus = new Focus(); var hook = new Hook(); var reader = new Reader();

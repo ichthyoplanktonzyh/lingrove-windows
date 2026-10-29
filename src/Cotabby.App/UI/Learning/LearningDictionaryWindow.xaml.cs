@@ -39,13 +39,15 @@ public partial class LearningDictionaryWindow : Window
     internal Task FavoriteWork => FavoriteButton.LastOperation;
     private void OnReadingMeaning(object sender, RoutedEventArgs args) => ReadingMeaningRequested?.Invoke();
 
-    internal void ShowState(LearningDictionaryState state, ScreenRect anchor, LearningContextExampleTranslation? exampleTranslation = null)
+    internal void ShowState(LearningDictionaryState state, ScreenRect anchor, LearningContextExampleTranslation? exampleTranslation = null, LearningModelSnapshot? profile = null)
     {
         Dispatcher.VerifyAccess();
         if (_state?.TargetIdentity != state.TargetIdentity) FavoriteButton.Clear();
         SetSelectionTarget(state.TargetIdentity, state.Page);
         _state = state;
         _anchor = anchor;
+        ExplanationDestination.Text = LearningModelDestinationText.Explanation(profile);
+        ExplanationDestinationSection.Visibility = state.HasContextualExplanation ? Visibility.Visible : Visibility.Collapsed;
         if (state.Unit is not { } unit) { HideCard(); return; }
         TitleText.Text = state.Title;
         TitleText.FlowDirection = WordButtons.FlowDirection = state.Language == LearningLanguage.Arabic

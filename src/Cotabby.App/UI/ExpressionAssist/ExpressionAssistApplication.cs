@@ -35,6 +35,7 @@ internal sealed class ExpressionAssistApplication : IAsyncDisposable
             var window = new ExpressionAssistWindow(field.CaretRect,
                 (candidate, message) => ShowNotice(field.CaretRect, message, candidate),
                 message => ShowNotice(field.CaretRect, message, null));
+            window.View.SetDestination(Cotabby.App.Learning.LearningModelDestinationText.Explanation(Volatile.Read(ref _preferences).Model));
             var session = new ExpressionAssistSession(dispatcher, editor, window, generate, () =>
             {
                 var preferences = Volatile.Read(ref _preferences);

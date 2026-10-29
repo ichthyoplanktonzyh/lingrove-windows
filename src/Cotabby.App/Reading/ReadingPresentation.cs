@@ -140,7 +140,7 @@ internal sealed partial class ReadingPresentation : IReadingPresentation, IAsync
         catch
         {
             if (await StillCurrentAsync(revision, token) && _readingState is { } state)
-                Update(state with { Status = ReadingStatus.Error, Message = "Could not look up this meaning. Check the local AI explanation model, or use Dictionary." });
+                Update(state with { Status = ReadingStatus.Error, Message = "Could not look up this meaning. Check the AI explanation model, or use Dictionary." });
         }
         finally { _basicRunning = false; }
     }

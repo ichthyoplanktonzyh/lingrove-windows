@@ -38,12 +38,7 @@ public static class ExpressionAssistPolicy
     {
         ArgumentNullException.ThrowIfNull(query);
         ArgumentNullException.ThrowIfNull(value);
-        var boundaries = StringInfo.ParseCombiningCharacters(value);
-        if (location < 0 || length < 0 || location > value.Length || length > value.Length - location ||
-            !IsBoundary(location) || !IsBoundary(location + length)) throw new ArgumentOutOfRangeException(nameof(location));
-        var foundation = FoundationTextRanges.Boundaries(value);
-        if (length == 0 ? location < value.Length && foundation.Expand(location, location + 1).Start != location
-            : !FoundationTextRanges.IsValid(location, length, value, foundation)) throw new ArgumentOutOfRangeException(nameof(location));
+        if (!EditorTextRangePolicy.IsValid(value, location, length)) throw new ArgumentOutOfRangeException(nameof(location));
         var selected = value.Substring(location, length);
         query = FoundationText.TrimWhitespaceAndNewlines(query);
         if (query.Length == 0 || !LearningExplanationText.Fits(query, 2_000) || !LearningExplanationText.Fits(selected, 2_000))
@@ -55,7 +50,6 @@ public static class ExpressionAssistPolicy
         var right = newline < 0 ? after : after[..newline];
         return new(query, Take(left, 700, true), Take(right, 500, false), selected, target.Code(), explanation.Code());
 
-        bool IsBoundary(int offset) => offset == value.Length || Array.BinarySearch(boundaries, offset) >= 0;
     }
 
     private static string Take(string text, int count, bool suffix)

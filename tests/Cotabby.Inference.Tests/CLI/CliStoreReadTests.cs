@@ -43,4 +43,32 @@ public sealed class CliStoreReadTests
         Assert.Equal(CliErrorCode.Conflict, conflict.Code);
         Assert.Equal(1UL, (await store.ReadAsync()).Revision);
     }
+
+    [Fact]
+    public async Task ReceiptSurvivesNamedDatabaseReopen()
+    {
+        string root = Path.Combine(Path.GetTempPath(), "cli-reopen-" + Guid.NewGuid().ToString("N"));
+        VocabularyWindowsFile.CreateParentDirectory(root);
+        try
+        {
+            string path = Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName);
+            var id = Guid.NewGuid();
+            var batch = JsonNode.Parse("""{"version":2,"idempotencyKey":"reopen","expectedRevision":0,"operations":[{"put":{"resource":"entries","value":{"id":"IDPLACEHOLDER","expression":"test","kind":"word","language":"en"}}}]}""".Replace("IDPLACEHOLDER", id.ToString("D")))!.AsObject();
+            var request = new CliRequest { Command = "apply", ExpiresAt = CliWire.Now() + 60, Batch = batch };
+            await using (var store = FrozenVocabularyStoreFactory.Create(path, false))
+            {
+                var cli = Assert.IsAssignableFrom<Cotabby.Core.Vocabulary.Frozen.ICanonicalVocabularyCliStore>(store);
+                Assert.False((await cli.ExecuteCliAsync(request))["replayed"]!.GetValue<bool>());
+            }
+            await using (var store = FrozenVocabularyStoreFactory.Create(path, false))
+            {
+                var cli = Assert.IsAssignableFrom<Cotabby.Core.Vocabulary.Frozen.ICanonicalVocabularyCliStore>(store);
+                var reply = await cli.ExecuteCliAsync(request);
+                Assert.True(reply["replayed"]!.GetValue<bool>());
+                Assert.Equal(1UL, (await store.ReadAsync()).Revision);
+                Assert.Equal(id, (await store.ReadAsync()).Document.Catalog.Single().Id);
+            }
+        }
+        finally { Directory.Delete(root, true); }
+    }
 }

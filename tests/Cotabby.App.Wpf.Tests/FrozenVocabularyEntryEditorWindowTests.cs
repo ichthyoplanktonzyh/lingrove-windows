@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Input;
 using Cotabby.App.UI.Vocabulary;
 using Cotabby.Core.Vocabulary;
 using Cotabby.Core.Vocabulary.Frozen;
@@ -105,6 +106,75 @@ public sealed class FrozenVocabularyEntryEditorWindowTests(WpfDispatcher dispatc
         Find<Button>(window, "canonicalEditSave").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); await window.LastOperation!;
         Assert.False(window.Saved); Assert.True(window.IsVisible); Assert.Equal("mine", window.Draft.Senses.Single().Meaning); Assert.Contains(Descendants(window).OfType<TextBlock>(), t => t.Text.Length > 0 && t.Text.Contains("changed while", StringComparison.OrdinalIgnoreCase));
         VocabularyThemeRender.Capture(window, "canonical-edit-error", 680, 660); window.Close(); await window.RetireAsync(); Assert.Equal("theirs", (await store.ReadAsync()).Document.Entries.Single().Senses.Single().Meaning);
+    });
+    private sealed class ClipboardFixture(byte[]? bytes) : IVocabularyClipboardImageTransfer
+    {
+        internal VocabularyClipboardImageOffer Offer = new(41, true);
+        internal uint ReadSequence;
+        internal TaskCompletionSource<byte[]?>? Held;
+        public VocabularyClipboardImageOffer Capture() => Offer;
+        public Task<byte[]?> ReadAsync(uint expectedSequence, CancellationToken token = default) { ReadSequence = expectedSequence; return Held?.Task ?? Task.FromResult(bytes); }
+    }
+    [Fact]
+    public Task ExplicitPasteUsesCapturedSequenceAndPersistsMedia() => dispatcher.RunAsync(async () =>
+    {
+        string root = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "canonical-paste-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            using var json = System.Text.Json.JsonDocument.Parse(System.IO.File.ReadAllText(System.IO.Path.Combine(AppContext.BaseDirectory, "fixtures", "parity", "vocabulary-media-transactions-v1.json")));
+            var clipboard = new ClipboardFixture(Convert.FromBase64String(json.RootElement.GetProperty("input").GetString()!));
+            await using var store = FrozenVocabularyStoreFactory.Create(System.IO.Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName), false);
+            await store.AddEntriesAsync([new(Expression: "image")]); var entry = (await store.ReadAsync()).Document.Entries.Single();
+            var window = new FrozenVocabularyEntryEditorWindow(store, store, entry, entry.Senses.Single().Id, clipboard: clipboard); window.Show();
+            Assert.True(window.PasteImage()); clipboard.Offer = new(42, true);
+            await Until(() => window.Draft.Senses.Single().Content?.Count == 1 && Find<Button>(window, "canonicalEditSave").IsEnabled);
+            Assert.Equal(41u, clipboard.ReadSequence); await Until(() => Descendants(window).OfType<CanonicalVocabularyImageView>().Any(v => v.Bitmap is not null));
+            VocabularyThemeRender.Capture(window, "canonical-paste-image", 680, 660);
+            Find<Button>(window, "canonicalEditSave").RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); await window.LastOperation!; await window.RetireAsync();
+            var image = Assert.IsType<VocabularyBlockContent.Image>((await store.ReadAsync()).Document.Entries.Single().Senses.Single().Content!.Single().Content);
+            Assert.NotEmpty(await store.ReadImageAsync(image.Reference));
+            var notebook = new FrozenVocabularyNotebookWindow(store, new WindowsVocabularyWordListReader()); notebook.Show(); await notebook.LastOperation!;
+            await notebook.Session.RevealSelectionAsync(new(entry.Id, entry.Senses.Single().Id));
+            await Until(() => Descendants(notebook).OfType<CanonicalVocabularyImageView>().Any(v => v.Bitmap is not null));
+            VocabularyThemeRender.Capture(notebook, "canonical-detail-image", 1100, 720);
+            var view = Descendants(notebook).OfType<CanonicalVocabularyImageView>().Single();
+            _ = notebook.Dispatcher.BeginInvoke(() => { var preview = Application.Current.Windows.OfType<Window>().Single(x => x.Title == "Image"); Assert.Same(notebook, preview.Owner); preview.Close(); });
+            FindByLabel<Button>(view, "Enlarge image").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            await notebook.RetireAsync();
+        }
+        finally { if (System.IO.Directory.Exists(root)) System.IO.Directory.Delete(root, true); }
+    });
+    [Fact]
+    public Task ExplanationPasteCommandConsumesImageBeforeTextbox() => dispatcher.RunAsync(async () =>
+    {
+        await using var store = new FrozenVocabularyImportStore(FrozenVocabularySQLiteDatabase.CreateMemory(), () => new SourceDate(123));
+        await store.AddEntriesAsync([new(Expression: "hello")]); var entry = (await store.ReadAsync()).Document.Entries.Single();
+        var clipboard = new ClipboardFixture(null); var window = new FrozenVocabularyEntryEditorWindow(store, store, entry, entry.Senses.Single().Id, clipboard: clipboard); window.Show();
+        var add = Descendants(window).OfType<Button>().Single(b => Equals(b.Content, "Add text")); add.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        var text = FindByLabel<TextBox>(window, "Explanation text"); int fallback = 0;
+        CommandManager.AddPreviewExecutedHandler(text, (_, args) => { if (args.Command == ApplicationCommands.Paste) { fallback++; args.Handled = true; } });
+        Assert.True(ApplicationCommands.Paste.CanExecute(null, text)); ApplicationCommands.Paste.Execute(null, text);
+        await Until(() => clipboard.ReadSequence == 41); Assert.Equal(0, fallback); Assert.Single(window.Draft.Senses.Single().Content!);
+        window.Close(); await window.RetireAsync();
+    });
+    [Fact]
+    public Task InvalidPasteKeepsDraftAndShowsFixedError() => dispatcher.RunAsync(async () =>
+    {
+        await using var store = new FrozenVocabularyImportStore(FrozenVocabularySQLiteDatabase.CreateMemory(), () => new SourceDate(123));
+        await store.AddEntriesAsync([new(Expression: "hello")]); var entry = (await store.ReadAsync()).Document.Entries.Single();
+        var clipboard = new ClipboardFixture([1, 2, 3]); var window = new FrozenVocabularyEntryEditorWindow(store, store, entry, entry.Senses.Single().Id, clipboard: clipboard); window.Show();
+        Assert.True(window.PasteImage()); await Until(() => Descendants(window).OfType<TextBlock>().Any(t => t.Text == "Unable to add this image. Try a smaller image."));
+        Assert.Null(window.Draft.Senses.Single().Content); Assert.True(Find<Button>(window, "canonicalEditSave").IsEnabled); window.Close(); await window.RetireAsync();
+    });
+    [Fact]
+    public Task CancelJoinsLateClipboardWithoutPublishing() => dispatcher.RunAsync(async () =>
+    {
+        await using var store = new FrozenVocabularyImportStore(FrozenVocabularySQLiteDatabase.CreateMemory(), () => new SourceDate(123));
+        await store.AddEntriesAsync([new(Expression: "hello")]); var entry = (await store.ReadAsync()).Document.Entries.Single();
+        var clipboard = new ClipboardFixture(null) { Held = new(TaskCreationOptions.RunContinuationsAsynchronously) };
+        var window = new FrozenVocabularyEntryEditorWindow(store, store, entry, entry.Senses.Single().Id, clipboard: clipboard); window.Show();
+        Assert.True(window.PasteImage()); await Until(() => clipboard.ReadSequence == 41); window.Close(); var retirement = window.RetireAsync(); Assert.False(retirement.IsCompleted);
+        clipboard.Held.SetResult([1, 2, 3]); await retirement; Assert.Null(window.Draft.Senses.Single().Content); Assert.Null((await store.ReadAsync()).Document.Entries.Single().Senses.Single().Content);
     });
     private static async Task Until(Func<bool> predicate) { for (int i = 0; i < 100 && !predicate(); i++) await Task.Delay(10); Assert.True(predicate()); }
     private static T Find<T>(DependencyObject root, string name) where T : FrameworkElement => Descendants(root).OfType<T>().Single(x => x.Name == name);

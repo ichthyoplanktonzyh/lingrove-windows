@@ -19,10 +19,11 @@ public sealed class SendInputTextInserter : ITextInserter
     public SendInputTextInserter(
         ILogger<SendInputTextInserter> logger,
         IFocusTracker focus,
-        ClipboardTextReader? clipboardContext = null)
+        ClipboardTextReader? clipboardContext = null,
+        InsertionTransactionGate? transactionGate = null)
     {
         _logger = logger;
-        _guardedInserter = new GuardedTextInserter(new Win32InsertionBackend(focus, clipboardContext));
+        _guardedInserter = new GuardedTextInserter(new Win32InsertionBackend(focus, clipboardContext), transactionGate);
     }
 
     public async Task<bool> InsertAsync(FocusedField target, string text, CancellationToken ct)

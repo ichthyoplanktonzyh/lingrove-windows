@@ -83,4 +83,3 @@ FileHandle.standardOutput.write(try JSONSerialization.data(withJSONObject: ["sch
 
 if __name__ == '__main__':
     main()
-

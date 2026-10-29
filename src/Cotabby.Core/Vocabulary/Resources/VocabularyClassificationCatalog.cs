@@ -14,7 +14,7 @@ public sealed record VocabularyClassificationCatalog
     private IReadOnlyList<VocabularyClassificationCatalogCategory> _categories = Array.Empty<VocabularyClassificationCatalogCategory>();
     private IReadOnlyList<VocabularyClassificationCatalogReference> _references = Array.Empty<VocabularyClassificationCatalogReference>();
     [JsonRequired] public required string Key { get; init; }
-    [JsonRequired] public int Version { get; init; }
+    [JsonRequired] public long Version { get; init; }
     [JsonRequired] public string Authorship { get; init; } = "";
     [JsonRequired] public IReadOnlyList<VocabularyClassificationCatalogReference> References { get => _references; init => _references = CollectionValues.List(value ?? throw new JsonException("Catalog references cannot be null.")); }
     [JsonRequired] public IReadOnlyList<VocabularyClassificationCatalogCategory> Categories { get => _categories; init => _categories = CollectionValues.List(value ?? throw new JsonException("Catalog categories cannot be null.")); }
@@ -29,6 +29,7 @@ public sealed record VocabularyClassificationCatalog
         {
             var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase, PropertyNameCaseInsensitive = false, MaxDepth = 32 };
             options.Converters.Add(new ExactAxisConverter());
+            options.Converters.Add(new VocabularyPayloadCodec.FoundationInt64Converter());
             var catalog = JsonSerializer.Deserialize<VocabularyClassificationCatalog>(bytes, options) ?? throw VocabularyClassificationPolicy.Invalid();
             if (!VocabularyClassificationPolicy.Fits(catalog.Authorship, 16_384) || catalog.References.Count > 256
                 || catalog.References.Any(x => x is null || !VocabularyClassificationPolicy.Fits(x.Title, 4_096)
@@ -38,6 +39,8 @@ public sealed record VocabularyClassificationCatalog
         }
         catch (JsonException) { throw VocabularyClassificationPolicy.Invalid(); }
         catch (ArgumentException) { throw VocabularyClassificationPolicy.Invalid(); }
+        catch (OverflowException) { throw VocabularyClassificationPolicy.Invalid(); }
+        catch (FormatException) { throw VocabularyClassificationPolicy.Invalid(); }
     }
     // Swift Codable raw values are exact strings; System.Text.Json's stock enum converter
     // accepts case variants, which would admit a manifest the frozen Mac decoder rejects.

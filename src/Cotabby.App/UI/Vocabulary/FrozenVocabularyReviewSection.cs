@@ -1,3 +1,4 @@
+using Cotabby.App.Localization;
 using System.Windows;
 using System.Windows.Controls;
 using Cotabby.App.Review;
@@ -35,7 +36,7 @@ internal sealed class FrozenVocabularyReviewSection
     internal FrameworkElement Render(VocabularyEntry entry, VocabularySense sense)
     {
         var panel = new StackPanel(); var header = new DockPanel();
-        var add = Button("Add card", () => Open(entry.Id, sense.Id, Guid.NewGuid())); add.IsEnabled = _canAct(entry.Id, sense.Id) && !_retiring && _operation is null && _window is null && _feature.Controller.SendingSenseId is null;
+        var add = Button(InterfaceText.Get("Add card"), () => Open(entry.Id, sense.Id, Guid.NewGuid())); add.IsEnabled = _canAct(entry.Id, sense.Id) && !_retiring && _operation is null && _window is null && _feature.Controller.SendingSenseId is null;
         DockPanel.SetDock(add, Dock.Right); header.Children.Add(add);
         header.Children.Add(new TextBlock { Text = $"Review cards ({sense.ReviewCards?.Count ?? 0})", FontWeight = FontWeights.SemiBold, VerticalAlignment = VerticalAlignment.Center }); panel.Children.Add(header);
         foreach (var card in sense.ReviewCards ?? [])
@@ -44,13 +45,13 @@ internal sealed class FrozenVocabularyReviewSection
             row.Children.Add(new TextBlock { Text = name + "  ·  " + _feature.Controller.CanonicalStatus(entry, sense, card.Plan.Id), FontWeight = FontWeights.SemiBold, TextWrapping = TextWrapping.Wrap });
             if (card.Plan.Layout is { } layout) row.Children.Add(VocabularyInputControls.Caption(string.Join(" + ", layout.Front.Select(p => p.Source.Label())) + " → " + string.Join(" + ", layout.Back.Select(p => p.Source.Label()))));
             var actions = new WrapPanel(); bool enabled = _canAct(entry.Id, sense.Id) && !_retiring && _operation is null && _window is null && _feature.Controller.SendingSenseId is null;
-            var edit = Button("Edit", () => Open(entry.Id, sense.Id, card.Plan.Id)); edit.IsEnabled = enabled; actions.Children.Add(edit);
+            var edit = Button(InterfaceText.Get("Edit"), () => Open(entry.Id, sense.Id, card.Plan.Id)); edit.IsEnabled = enabled; actions.Children.Add(edit);
             if (card.ActiveBinding is { NoteId: not null } binding)
             {
-                var open = Button("View in Anki", () => Navigate(entry.Id, sense.Id, token => _feature.Controller.OpenCanonicalAsync(binding, guardToken => BindingCurrentAsync(entry.Id, sense.Id, card.Plan.Id, binding, guardToken), token))); open.IsEnabled = enabled; actions.Children.Add(open);
-                var review = Button("Review in Anki", () => Navigate(entry.Id, sense.Id, token => _feature.Controller.ReviewCanonicalDeckAsync(binding, guardToken => BindingCurrentAsync(entry.Id, sense.Id, card.Plan.Id, binding, guardToken), token))); review.IsEnabled = enabled; actions.Children.Add(review);
+                var open = Button(InterfaceText.Get("View in Anki"), () => Navigate(entry.Id, sense.Id, token => _feature.Controller.OpenCanonicalAsync(binding, guardToken => BindingCurrentAsync(entry.Id, sense.Id, card.Plan.Id, binding, guardToken), token))); open.IsEnabled = enabled; actions.Children.Add(open);
+                var review = Button(InterfaceText.Get("Review in Anki"), () => Navigate(entry.Id, sense.Id, token => _feature.Controller.ReviewCanonicalDeckAsync(binding, guardToken => BindingCurrentAsync(entry.Id, sense.Id, card.Plan.Id, binding, guardToken), token))); review.IsEnabled = enabled; actions.Children.Add(review);
             }
-            var remove = Button("Remove local card", () => { if (_canAct(entry.Id, sense.Id) && _confirm(name) && _canAct(entry.Id, sense.Id)) Start(entry.Id, sense.Id, async token => { await _store.RemoveReviewAsync(entry.Id, sense.Id, card.Plan.Id, card, token); }); }); remove.IsEnabled = enabled; actions.Children.Add(remove); row.Children.Add(actions); panel.Children.Add(row);
+            var remove = Button(InterfaceText.Get("Remove local card"), () => { if (_canAct(entry.Id, sense.Id) && _confirm(name) && _canAct(entry.Id, sense.Id)) Start(entry.Id, sense.Id, async token => { await _store.RemoveReviewAsync(entry.Id, sense.Id, card.Plan.Id, card, token); }); }); remove.IsEnabled = enabled; actions.Children.Add(remove); row.Children.Add(actions); panel.Children.Add(row);
         }
         if (_error is not null && _errorSelection == (entry.Id, sense.Id)) panel.Children.Add(VocabularyNotebookTheme.Brush(new TextBlock { Text = _error, TextWrapping = TextWrapping.Wrap }, TextBlock.ForegroundProperty, "OrangeBrush"));
         return VocabularyInputControls.Group(("", panel));

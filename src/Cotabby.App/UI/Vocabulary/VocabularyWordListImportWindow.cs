@@ -113,7 +113,7 @@ internal sealed class VocabularyWordListImportWindow : Window
             (field is VocabularyImportField.Expression or VocabularyImportField.Meaning or VocabularyImportField.Example or VocabularyImportField.ExampleTranslation ? primary : more)
                 .Add((FieldName(field), box));
         }
-        var mappings = new StackPanel(); mappings.Children.Add(VocabularyInputControls.Group(primary.ToArray())); var expander = new Expander { Header = "More columns", Content = VocabularyInputControls.Group(more.ToArray()), Margin = new Thickness(0, 0, 0, 10) }; VocabularyNotebookTheme.Brush(expander, Control.ForegroundProperty, "TextPrimary"); mappings.Children.Add(expander); _settings.Children.Add(new ScrollViewer { Content = mappings, MaxHeight = 280, VerticalScrollBarVisibility = ScrollBarVisibility.Auto });
+        var mappings = new StackPanel(); mappings.Children.Add(VocabularyInputControls.Group(primary.ToArray())); var expander = new Expander { Header = InterfaceText.Get("More columns"), Content = VocabularyInputControls.Group(more.ToArray()), Margin = new Thickness(0, 0, 0, 10) }; VocabularyNotebookTheme.Brush(expander, Control.ForegroundProperty, "TextPrimary"); mappings.Children.Add(expander); _settings.Children.Add(new ScrollViewer { Content = mappings, MaxHeight = 280, VerticalScrollBarVisibility = ScrollBarVisibility.Auto });
         header.Checked += (_, _) => { Change(c => c with { HasHeader = true }); BuildSettings(table); }; header.Unchecked += (_, _) => { Change(c => c with { HasHeader = false }); BuildSettings(table); };
     }
     private static string ColumnName(int index, VocabularyWordList table, bool header)

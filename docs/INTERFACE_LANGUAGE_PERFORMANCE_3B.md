@@ -15,7 +15,10 @@ The three byte-preserved `resources/InterfaceLanguage/*.xcstrings` are copied fr
 The 15 native-name choices and tag normalization follow the reference. The app-only choice is a
 raw nullable value in the existing Windows settings owner; unrecognized values survive until an
 explicit selection or reset. At startup `InterfaceText.Initialize` freezes the selected supported
-locale, falling back to the Windows UI locale and then English; changing the preference requires
+locale, falling back to the first supported Windows user-preferred UI language and then English;
+the Windows effect uses the bounded ordered list from [GetUserPreferredUILanguages](https://learn.microsoft.com/en-us/windows/win32/api/winnls/nf-winnls-getuserpreferreduilanguages)
+and does not change the user's language preference. A failed or empty native read falls back to the
+current UI culture. Changing the preference requires
 restart and does not apply generation settings. Only explicitly chosen UI keys are translated;
 missing Windows strings fall back to English. Settings headings/rows, initial welcome XAML and
 matching static labels in the canonical notebook and its editors use this lookup. Live bindings,
@@ -27,7 +30,8 @@ still need separate verification. Full application-wide string coverage and phys
 The Windows first-use flow adds two inert source-derived completion/learning examples, a platform-specific accessibility explanation and a separately
 versioned furthest-step resume marker because recommended and manual templates use distinct pages.
 The application startup must request resume; manually reopening starts at the welcome page. It
-still lacks the source's interactive dual-product showcase and complete readiness presentation;
+uses the source's rotating completion examples with visible-only animation and a reduced-motion
+resting frame. The fuller multi-card learning illustration and complete readiness presentation remain open;
 recommended setup itself is already separately implemented.
 
 One injected PerformanceMetricsStore serves speech and the settings pane. Tracking defaults off;
@@ -55,3 +59,19 @@ high contrast, Simplified Chinese and Arabic including narrow layout were captur
 `%TEMP%/interface-language-renders` and inspected. The helper applies the actual WPF ancestor
 transform for RTL; this is not physical desktop or assistive technology acceptance. The fixed
 examples and fake transports do not read a user editor, call a real endpoint or play audio.
+
+Known English fallback is not solely absent upstream translations. Examples of existing 3b keys
+that still need explicit wiring include Reading `Close`, `Configure model`, `Dictionary`, `Retry`;
+and the per-app/shortcut settings `Clear`, `Reset`, and `Remove`.
+Some Windows-specific wording has no exact source key, including the UIA privilege explanation,
+`Some Windows screens and messages are still available only in English.`, and
+`Helper processes and GPU counters are not included.` These need reviewed platform-specific
+translations. Matching by visible text is deliberately not applied to live notebook/editor content.
+
+The follow-up adds first-supported selection from Windows' ordered language list, the visible-only
+completion hero, and additional explicitly matched static labels. Targeted Core passed 83/83 and
+WPF passed 37/37 after the follow-up. A broader 106-test WPF run had one intermittent existing
+batch-cancellation test failure; its single-test rerun passed. The test now waits for its actual
+cancellation callback before releasing the fake, and the broader filter subsequently passed
+106/106. The native preferred-list call itself was not exercised against a real user's settings in
+these tests.

@@ -26,7 +26,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow
     {
         VocabularyNotebookTheme.Button(_backupMenu); _backupMenu.Margin = new Thickness(0, 0, 8, 8);
         VocabularyNotebookTheme.Brush(_backupError, TextBlock.ForegroundProperty, "OrangeBrush"); _backupError.Margin = new Thickness(0, 0, 8, 8);
-        var menu = new ContextMenu(); var backup = new MenuItem { Header = "Full notebook backup…", Name = "canonicalBackup" }; var restore = new MenuItem { Header = "Restore notebook…", Name = "canonicalRestore" };
+        var menu = new ContextMenu(); var backup = new MenuItem { Header = InterfaceText.Get("Full notebook backup…"), Name = "canonicalBackup" }; var restore = new MenuItem { Header = InterfaceText.Get("Restore notebook…"), Name = "canonicalRestore" };
         backup.Click += (_, _) => StartCanonicalBackup(false); restore.Click += (_, _) => StartCanonicalBackup(true); menu.Items.Add(backup); menu.Items.Add(new Separator()); menu.Items.Add(restore);
         _backupMenu.ContextMenu = menu; _backupMenu.Click += (_, _) => { if (_backupMenu.IsEnabled) { menu.PlacementTarget = _backupMenu; menu.IsOpen = true; } };
         toolbar.Children.Add(_backupMenu); toolbar.Children.Add(_backupError); UpdateCanonicalBackup();

@@ -4,6 +4,12 @@ namespace Cotabby.Core.Tests;
 
 public class InterfaceLanguagePolicyTests
 {
+    [Fact]
+    public void SystemFallbackSelectsFirstSupportedLanguageInPreferenceOrder()
+    {
+        Assert.Equal("zh-Hant", InterfaceLanguagePolicy.FirstSupported(["pt-PT", "zh-HK", "ja-JP"]));
+        Assert.Equal("en", InterfaceLanguagePolicy.FirstSupported(["zh", "xx-ZZ"]));
+    }
     [Theory]
     [InlineData("en_US", "en")]
     [InlineData("zh_CN", "zh-Hans")]

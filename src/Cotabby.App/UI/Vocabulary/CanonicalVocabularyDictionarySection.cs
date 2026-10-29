@@ -1,3 +1,4 @@
+using Cotabby.App.Localization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
@@ -39,7 +40,7 @@ internal sealed class CanonicalVocabularyDictionarySection : Expander, IDisposab
     internal CanonicalVocabularyDictionarySection(CanonicalNotebookLearningSession owner, VocabularyEntry entry, Func<bool> canAct)
     {
         _owner = owner; _entry = entry; _senseId = owner.SenseId; _canAct = canAct; _token = _presentation.Token;
-        Header = "Dictionary"; Margin = new Thickness(0, 14, 0, 0);
+        Header = InterfaceText.Get("Dictionary"); Margin = new Thickness(0, 14, 0, 0);
         var source = new TextBlock { Text = "Bundled expression dictionary · definitions in English", FontSize = 11, TextWrapping = TextWrapping.Wrap };
         source.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondary"); _attribution.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondary");
         _viewport = new ScrollViewer { Content = _definitions, VerticalScrollBarVisibility = ScrollBarVisibility.Auto, HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled, Height = 120 };

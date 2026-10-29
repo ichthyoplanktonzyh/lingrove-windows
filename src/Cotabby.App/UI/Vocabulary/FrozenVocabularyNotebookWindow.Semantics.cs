@@ -43,7 +43,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow
     private void AddMeaningCategoryLinks(Panel panel, F.VocabularyMeaningNode node)
     {
         long epoch = _actionSelectionEpoch; var index = _session.Snapshot!.Document.Classification; var ids = index.Memberships.Where(m => m.NodeId == node.Id && m.Provenance.Status == R.VocabularySemanticStatus.Confirmed).Select(m => m.CategoryId).ToHashSet(); var categories = index.Categories.Where(c => ids.Contains(c.Id) && !c.IsRetired).ToArray(); if (categories.Length == 0) return;
-        Section(panel, "Categories"); var links = new WrapPanel(); foreach (var category in categories) { var label = string.Join(" › ", Cotabby.Core.Vocabulary.Notebook.VocabularyClassificationProjection.Breadcrumb(category.Id, index).TakeLast(2).Select(c => R.VocabularyCategoryLocalizationPolicy.Resolve(R.VocabularyClassificationPolicy.Effective(c, index), [VocabularyCategoryUiLanguage.Identifier]).Name)); var link = SenseButton(label, "meaningCategoryLink", true); link.Click += (_, _) => { if (epoch == _actionSelectionEpoch) { ++_actionSelectionEpoch; _session.Destination = new(VocabularyMeaningDestinationKind.Category, CategoryId: category.Id); _session.Refresh(); } }; links.Children.Add(link); } panel.Children.Add(links);
+        Section(panel, InterfaceText.Get("Categories")); var links = new WrapPanel(); foreach (var category in categories) { var label = string.Join(" › ", Cotabby.Core.Vocabulary.Notebook.VocabularyClassificationProjection.Breadcrumb(category.Id, index).TakeLast(2).Select(c => R.VocabularyCategoryLocalizationPolicy.Resolve(R.VocabularyClassificationPolicy.Effective(c, index), [VocabularyCategoryUiLanguage.Identifier]).Name)); var link = SenseButton(label, "meaningCategoryLink", true); link.Click += (_, _) => { if (epoch == _actionSelectionEpoch) { ++_actionSelectionEpoch; _session.Destination = new(VocabularyMeaningDestinationKind.Category, CategoryId: category.Id); _session.Refresh(); } }; links.Children.Add(link); } panel.Children.Add(links);
     }
     private void CategoryDetail(StackPanel panel, R.VocabularyCategory category)
     {
@@ -54,8 +54,8 @@ internal sealed partial class FrozenVocabularyNotebookWindow
         var edit = SenseButton("Edit category", "categoryDetailEdit", CanSemantic); edit.Click += (_, _) => { if (epoch == _actionSelectionEpoch) LastOperation = Track(OpenCategoryEditorAsync(category.Id, null)); }; buttons.Children.Add(edit);
         var create = SenseButton("New category", "categoryDetailNewCategory", CanSemantic); create.Click += (_, _) => { if (epoch == _actionSelectionEpoch) LastOperation = Track(OpenCategoryEditorAsync(null, category.Id)); }; buttons.Children.Add(create); panel.Children.Add(buttons);
         var children = index.Parents.Where(x => x.ParentId == category.Id).Select(x => x.CategoryId).ToHashSet(); var visible = index.Categories.Where(x => children.Contains(x.Id) && !x.IsRetired && !index.Overrides.Any(o => o.CategoryId == x.Id && o.IsHidden)).ToArray();
-        if (visible.Length > 0) { Section(panel, "Subcategories"); var row = new WrapPanel(); foreach (var child in visible) { var name = R.VocabularyCategoryLocalizationPolicy.Resolve(R.VocabularyClassificationPolicy.Effective(child, index), [VocabularyCategoryUiLanguage.Identifier]).Name; var button = SenseButton(name, "categoryDetailChild", true); button.Click += (_, _) => { ++_actionSelectionEpoch; _session.Destination = new(VocabularyMeaningDestinationKind.Category, CategoryId: child.Id); _session.Refresh(); }; row.Children.Add(button); } panel.Children.Add(row); }
-        Section(panel, "Meaning groups"); var ids = R.VocabularyClassificationPolicy.MeaningIds(category.Id, index); var meanings = Cotabby.Core.Vocabulary.Notebook.VocabularyMeaningBrowserProjection.Items(_session.Snapshot.Document.Semantics, _session.Scoped, new Search(), StringComparer.CurrentCultureIgnoreCase, includeEmpty: true, preferredLanguages: _session.PreferredLanguages).Where(x => ids.Contains(x.Id)).ToArray(); if (meanings.Length == 0) panel.Children.Add(Caption("Unexplored"));
+        if (visible.Length > 0) { Section(panel, InterfaceText.Get("Subcategories")); var row = new WrapPanel(); foreach (var child in visible) { var name = R.VocabularyCategoryLocalizationPolicy.Resolve(R.VocabularyClassificationPolicy.Effective(child, index), [VocabularyCategoryUiLanguage.Identifier]).Name; var button = SenseButton(name, "categoryDetailChild", true); button.Click += (_, _) => { ++_actionSelectionEpoch; _session.Destination = new(VocabularyMeaningDestinationKind.Category, CategoryId: child.Id); _session.Refresh(); }; row.Children.Add(button); } panel.Children.Add(row); }
+        Section(panel, InterfaceText.Get("Meaning groups")); var ids = R.VocabularyClassificationPolicy.MeaningIds(category.Id, index); var meanings = Cotabby.Core.Vocabulary.Notebook.VocabularyMeaningBrowserProjection.Items(_session.Snapshot.Document.Semantics, _session.Scoped, new Search(), StringComparer.CurrentCultureIgnoreCase, includeEmpty: true, preferredLanguages: _session.PreferredLanguages).Where(x => ids.Contains(x.Id)).ToArray(); if (meanings.Length == 0) panel.Children.Add(Caption(InterfaceText.Get("Unexplored")));
         foreach (var item in meanings) { var button = SenseButton(item.Title, "categoryDetailMeaning", true); button.HorizontalAlignment = HorizontalAlignment.Left; button.Click += (_, _) => { ++_actionSelectionEpoch; ShowMeaning(item.Id); }; panel.Children.Add(button); }
     }
     private void AddCardSemanticActions(Panel panel, VocabularySelection selection)
@@ -74,26 +74,26 @@ internal sealed partial class FrozenVocabularyNotebookWindow
     {
         if (_session.Snapshot is not { } snapshot) return;
         var mappings = snapshot.Document.Semantics.Mappings.Where(m => m.SenseId == selection.SenseId).ToArray();
-        if (mappings.Length > 0) Section(panel, "Meaning groups");
+        if (mappings.Length > 0) Section(panel, InterfaceText.Get("Meaning groups"));
         foreach (var mapping in mappings)
         {
             var node = snapshot.Document.Semantics.Nodes.FirstOrDefault(n => n.Id == mapping.NodeId); if (node is null) continue;
             var open = SenseButton(Cotabby.Core.Vocabulary.Notebook.VocabularyMeaningLabelPolicy.Title(node, _session.PreferredLanguages), "canonicalOpenMeaning", true); open.Click += (_, _) => { ++_actionSelectionEpoch; ShowMeaning(node.Id); }; panel.Children.Add(open);
-            if (mapping.Provenance.Status == R.VocabularySemanticStatus.Proposed) panel.Children.Add(Caption("Suggested grouping"));
+            if (mapping.Provenance.Status == R.VocabularySemanticStatus.Proposed) panel.Children.Add(Caption(InterfaceText.Get("Suggested grouping")));
             if (mapping.Conditions.Length > 0) panel.Children.Add(Caption(mapping.Conditions)); if (mapping.Nuance.Length > 0) panel.Children.Add(Caption(mapping.Nuance));
             if (mapping.PatternId is { } id && snapshot.Document.Semantics.Patterns.FirstOrDefault(p => p.Id == id) is { } pattern) { panel.Children.Add(Caption("Used in this wording:")); AddPatternSummary(panel, pattern, false, mapping.Provenance.Status != R.VocabularySemanticStatus.Proposed); }
             AddMappingButtons(panel, mapping);
         }
         var patterns = snapshot.Document.Semantics.Patterns.Where(p => p.SenseId == selection.SenseId).ToArray();
         var standalone = patterns.Where(p => !mappings.Any(m => m.PatternId == p.Id)).ToArray();
-        if (standalone.Length > 0) { Section(panel, "Usage patterns"); foreach (var pattern in standalone) AddPatternSummary(panel, pattern, true); }
+        if (standalone.Length > 0) { Section(panel, InterfaceText.Get("Usage patterns")); foreach (var pattern in standalone) AddPatternSummary(panel, pattern, true); }
     }
     private void AddPatternSummary(Panel panel, R.VocabularyUsagePattern pattern, bool standalone, bool allowEdit = true)
     {
         long epoch = _actionSelectionEpoch; panel.Children.Add(Paragraph(pattern.Template));
         var details = new[] { pattern.Formality == R.VocabularyPatternFormality.Unspecified ? "" : pattern.Formality.ToString(), pattern.Medium == R.VocabularyPatternMedium.Unspecified ? "" : pattern.Medium.ToString(), pattern.Region.Trim() }.Where(s => s.Length > 0);
         var badges = string.Join(" · ", details); if (badges.Length > 0) panel.Children.Add(Caption(badges));
-        if (pattern.Note.Length > 0) panel.Children.Add(Caption(pattern.Note)); if (pattern.Collocations.Count > 0) panel.Children.Add(Caption(string.Join(" · ", pattern.Collocations))); if (pattern.Provenance.Status == R.VocabularySemanticStatus.Proposed) panel.Children.Add(Caption("Suggested wording"));
+        if (pattern.Note.Length > 0) panel.Children.Add(Caption(pattern.Note)); if (pattern.Collocations.Count > 0) panel.Children.Add(Caption(string.Join(" · ", pattern.Collocations))); if (pattern.Provenance.Status == R.VocabularySemanticStatus.Proposed) panel.Children.Add(Caption(InterfaceText.Get("Suggested wording")));
         var actions = new WrapPanel(); if (allowEdit) { var edit = SenseButton("Edit usage pattern", "canonicalEditPattern", CanSemantic); edit.Click += (_, _) => { if (epoch == _actionSelectionEpoch) LastOperation = Track(OpenPatternAsync(pattern.SenseId, pattern)); }; actions.Children.Add(edit); }
         if (standalone) { var remove = SenseButton("Remove wording", "canonicalRemovePattern", CanSemantic); remove.Click += (_, _) => { if (epoch == _actionSelectionEpoch) LastOperation = Track(DeletePatternAsync(pattern.Id)); }; actions.Children.Add(remove); } panel.Children.Add(actions);
     }

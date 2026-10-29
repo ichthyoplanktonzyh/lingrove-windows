@@ -29,4 +29,6 @@ public static class InterfaceLanguagePolicy
         if (pieces[0] == "pt") return pieces.Contains("br") ? "pt-BR" : null;
         return Supported.FirstOrDefault(x => x.Code == pieces[0]).Code;
     }
+    public static string FirstSupported(IEnumerable<string> preferred) =>
+        preferred.Select(Normalize).FirstOrDefault(code => code is not null) ?? "en";
 }

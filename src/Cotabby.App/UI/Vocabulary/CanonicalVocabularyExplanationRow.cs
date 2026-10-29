@@ -34,7 +34,7 @@ internal sealed class CanonicalVocabularyExplanationRow : StackPanel, IDisposabl
     private readonly TextBlock _heading = new() { FontSize = 12 };
     private readonly Button _generate = new() { Width = 28, Height = 26, Padding = new Thickness(2) };
     private readonly TextBox _meaning = Literal(true), _proposal = Literal(true), _prose = Literal(false);
-    private readonly Expander _details = new() { Header = "Details", Margin = new Thickness(0, 8, 0, 0) };
+    private readonly Expander _details = new() { Header = InterfaceText.Get("Details"), Margin = new Thickness(0, 8, 0, 0) };
     private readonly Button _replace = new() { Content = InterfaceText.Get("Replace contextual meaning"), HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 4, 0, 4) };
     private readonly TextBlock _status = new() { TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 6, 0, 0), FontSize = 12 };
     private LearningExplanationState? _displayed;

@@ -11,12 +11,24 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows;
 using Cotabby.App.UI.Settings;
+using Cotabby.App.UI;
+using Cotabby.App.UI.Vocabulary;
 
 namespace Cotabby.App.Wpf.Tests;
 
 [Collection("WPF views")]
 public sealed class InterfaceAndHistoryTests(WpfDispatcher dispatcher)
 {
+    [Fact]
+    public Task WelcomeDemoStopsItsTimerWhenHidden() => dispatcher.RunAsync(async () =>
+    {
+        var demo = new WelcomeCompletionDemo(); var window = new Window { Content = demo, Width = 400, Height = 140 };
+        VocabularyNotebookTheme.Follow(window); window.Show();
+        Assert.Equal(SystemParameters.ClientAreaAnimation, demo.IsAnimating);
+        if (demo.IsAnimating) await Task.Delay(2200);
+        VocabularyThemeRender.Capture(window, "welcome-completion-demo", 400, 140);
+        window.Hide(); Assert.False(demo.IsAnimating); window.Close();
+    });
     [Fact]
     public Task RestartControlRequiresAnApplicationCallbackAndInvokesItOnlyOnClick() => dispatcher.RunAsync(async () =>
     {

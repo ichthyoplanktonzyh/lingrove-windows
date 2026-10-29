@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Text.Json;
 using Cotabby.Core.Settings;
+using Cotabby.Win32.Localization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -19,8 +20,13 @@ internal static class InterfaceText
     internal static void Initialize(string? stored, string? systemLocale = null)
     {
         LaunchSelection = stored is null ? null : InterfaceLanguagePolicy.Normalize(stored) ?? stored;
-        Locale = (stored is null ? null : InterfaceLanguagePolicy.Normalize(stored))
-            ?? InterfaceLanguagePolicy.Normalize(systemLocale ?? CultureInfo.CurrentUICulture.Name) ?? "en";
+        var explicitLocale = stored is null ? null : InterfaceLanguagePolicy.Normalize(stored);
+        if (explicitLocale is not null) Locale = explicitLocale;
+        else
+        {
+            var preferred = systemLocale is null ? WindowsPreferredUiLanguages.Read() : [systemLocale];
+            Locale = InterfaceLanguagePolicy.FirstSupported(preferred.Count == 0 ? [CultureInfo.CurrentUICulture.Name] : preferred);
+        }
         var result = new Dictionary<string, string>(StringComparer.Ordinal);
         foreach (var name in new[] { "Localizable", "Learning", "Vocabulary" })
         {

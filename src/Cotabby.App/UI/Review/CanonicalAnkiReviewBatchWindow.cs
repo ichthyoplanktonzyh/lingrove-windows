@@ -43,7 +43,7 @@ internal sealed class CanonicalAnkiReviewBatchWindow : Window
     {
         _batch = batch; _feature = feature; _configure = configure; _clipboard = clipboard; Title = "Review cards"; Width = 760; Height = 740; MinWidth = 580; MinHeight = 500; WindowStartupLocation = WindowStartupLocation.CenterOwner;
         VocabularyNotebookTheme.Follow(this); var root = new DockPanel { Margin = new Thickness(22) }; Content = root;
-        var heading = VocabularyInputControls.Heading("Review cards"); DockPanel.SetDock(heading, Dock.Top); root.Children.Add(heading);
+        var heading = VocabularyInputControls.Heading(InterfaceText.Get("Review cards")); DockPanel.SetDock(heading, Dock.Top); root.Children.Add(heading);
         DockPanel.SetDock(_speechDestination, Dock.Top); root.Children.Add(_speechDestination);
         if (_feature.Controller.Speech is ISpeechDestinationDisclosure disclosure) disclosure.PropertyChanged += SpeechDestinationChanged;
         RefreshSpeechDestination();
@@ -52,7 +52,7 @@ internal sealed class CanonicalAnkiReviewBatchWindow : Window
         var form = new StackPanel(); root.Children.Add(new ScrollViewer { VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Content = form });
         form.Children.Add(VocabularyInputControls.Group(("Destination", _destination), ("", _reload), ("Deck", _deck), ("", _apply)));
         form.Children.Add(VocabularyInputControls.Caption("Leave the deck empty to keep each plan."));
-        if (_batch.EmptySenseCount > 0) form.Children.Add(VocabularyInputControls.Caption("Some selected senses have no cards. Add cards in the notebook first."));
+        if (_batch.EmptySenseCount > 0) form.Children.Add(VocabularyInputControls.Caption(InterfaceText.Get("Some selected senses have no cards. Add cards in the notebook first.")));
         form.Children.Add(_rows); form.Children.Add(_message);
         foreach (var button in new[] { _apply, _reload, _stop }) VocabularyNotebookTheme.Button(button); VocabularyNotebookTheme.Brush(_message, TextBlock.ForegroundProperty, "OrangeBrush");
         _batch.PropertyChanged += BatchChanged; _feature.Settings.PropertyChanged += SettingsChanged;
@@ -91,9 +91,9 @@ internal sealed class CanonicalAnkiReviewBatchWindow : Window
             var panel = new StackPanel(); panel.Children.Add(new TextBlock { Text = item.Expression, FontWeight = FontWeights.SemiBold, TextWrapping = TextWrapping.Wrap });
             panel.Children.Add(VocabularyInputControls.Caption(item.Meaning)); panel.Children.Add(VocabularyInputControls.Caption(item.Status.Label()));
             if (item.Message is { Length: > 0 } issue) panel.Children.Add(VocabularyInputControls.Caption(issue));
-            var actions = new WrapPanel(); var prepare = Button("Prepare", () => StartAux(token => PrepareAsync(item.Id, token))); prepare.IsEnabled = !_retiring && !_batch.Busy && _aux is null && item.Status != ReviewBatchStatus.Unavailable; actions.Children.Add(prepare);
+            var actions = new WrapPanel(); var prepare = Button(InterfaceText.Get("Prepare"), () => StartAux(token => PrepareAsync(item.Id, token))); prepare.IsEnabled = !_retiring && !_batch.Busy && _aux is null && item.Status != ReviewBatchStatus.Unavailable; actions.Children.Add(prepare);
             if (item.Status is ReviewBatchStatus.Failed or ReviewBatchStatus.Cancelled or ReviewBatchStatus.Attention)
-            { var retry = Button("Retry", () => StartAux(token => StartBatchAsync(item.Id, token))); retry.IsEnabled = !_retiring && !_batch.Busy && _aux is null && _scope is not null; actions.Children.Add(retry); }
+            { var retry = Button(InterfaceText.Get("Retry"), () => StartAux(token => StartBatchAsync(item.Id, token))); retry.IsEnabled = !_retiring && !_batch.Busy && _aux is null && _scope is not null; actions.Children.Add(retry); }
             panel.Children.Add(actions);
             var card = new Border { Child = panel, BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(9), Padding = new Thickness(14), Margin = new Thickness(0, 0, 0, 12) };
             VocabularyNotebookTheme.Brush(card, Border.BackgroundProperty, "CardBg"); VocabularyNotebookTheme.Brush(card, Border.BorderBrushProperty, "CardBorder"); _rows.Children.Add(card);

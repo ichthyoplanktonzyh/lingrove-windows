@@ -50,9 +50,7 @@ public partial class WelcomeWindow : Window
         InterfaceText.ApplyDirection(this);
         InterfaceText.TranslateInitialTree(this);
         var showcase = new TabControl { Width = 360, Margin = new Thickness(0, 20, 0, 0) };
-        string completionExample = InterfaceText.Get("Thanks for the¦ quick reply!").Replace("¦", "");
-        showcase.Items.Add(new TabItem { Header = InterfaceText.Get("Autocomplete"), Content = new TextBlock
-        { Text = completionExample + "  [Tab]", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(12) } });
+        showcase.Items.Add(new TabItem { Header = InterfaceText.Get("Autocomplete"), Content = new WelcomeCompletionDemo() });
         showcase.Items.Add(new TabItem { Header = InterfaceText.Get("Language Learning"), Content = new TextBlock
         { Text = "请随时告诉我项目的最新进展。\nPlease keep me posted on the project's progress.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(12) } });
         StepWelcome.Children.Add(showcase);
@@ -62,7 +60,7 @@ public partial class WelcomeWindow : Window
 
         var permissions = new StackPanel { VerticalAlignment = VerticalAlignment.Center, Visibility = Visibility.Collapsed };
         permissions.Children.Add(new TextBlock { Text = InterfaceText.Get("Permissions"), FontSize = 20, FontWeight = FontWeights.SemiBold });
-        permissions.Children.Add(new TextBlock { Text = "Windows accessibility access works in supported applications without a separate macOS-style permission switch. Elevated applications may require matching privileges.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 12, 0, 0) });
+        permissions.Children.Add(new TextBlock { Text = "Use Lingrove in a compatible editor. If that editor runs as an administrator, Lingrove may need the same privilege level.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 12, 0, 0) });
         permissions.Children.Add(new TextBlock { Text = "Text stays local unless you explicitly configure and use an endpoint.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 12, 0, 0) });
         ((Panel)StepWelcome.Parent).Children.Add(permissions);
         _steps = [StepWelcome, permissions, StepRecommended, StepTemplates, StepProfile, StepKeys, StepDone];

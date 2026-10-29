@@ -16,6 +16,8 @@ using Cotabby.Core.Models;
 using Cotabby.Inference.Speech;
 using Cotabby.Inference.OpenAICompatible;
 using Cotabby.Win32.Speech;
+using Cotabby.Win32.Vocabulary;
+using Cotabby.App.Vocabulary;
 using System.Net;
 using System.Net.Http;
 
@@ -391,6 +393,102 @@ public sealed class ReadingPresentationTests(WpfDispatcher dispatcher)
             FindButton(presentation.DictionaryCard, "Back to meaning").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             for (int i = 0; i < 100 && !presentation.ReadingCard.IsVisible; i++) await Task.Delay(10);
             Assert.True(presentation.ReadingCard.IsVisible); Assert.Equal(1, basicCalls);
+        }
+        finally { await presentation.DisposeAsync(); }
+    });
+    [Theory]
+    [InlineData(false)] [InlineData(true)]
+    public Task DetailsRecordKeepsUnknownSourceAcrossFavoriteOrder(bool favoriteFirst) => dispatcher.RunAsync(async () =>
+    {
+        var store = new ReadingVocabularyStoreFake();
+        var presentation = new ReadingPresentation(Dispatcher.CurrentDispatcher, new Dictionary(),
+            (_, _) => Task.FromResult(new ReadingLookupResult("river bank", "")),
+            (_, _, _) => throw new InvalidOperationException(), () => { }, new Clipboard(), store, (_, _) => [], LearningLanguage.Chinese,
+            (input, basic, target, _) => Task.FromResult(new LearningExplanationRecord(Guid.NewGuid(), target, LearningLanguage.Chinese,
+                new(basic.Meaning, "usage details"), "test-model", DateTimeOffset.UnixEpoch)));
+        var selection = new ReadingSelection(Guid.NewGuid(), "bank", 1, "field", 1, 0, 4, false, true,
+            InputCompositionState.Clear, 1, ScreenRect.Empty);
+        var route = new ReadingRoute(false, ReadingRouteReason.StandaloneUnit, "bank", true);
+        try
+        {
+            presentation.BindAuthority(selection, _ => Task.FromResult(true), default);
+            await presentation.ShowAsync(new(selection, null, LearningLanguage.Chinese, route, ReadingStatus.Lookup, "Local model", ""));
+            await presentation.LookupAsync(selection, route, null, LearningLanguage.Chinese, _ => Task.FromResult(true), default, []);
+            var favorite = Descendants(presentation.ReadingCard).OfType<VocabularyFavoriteButton>().Single();
+            await favorite.LastOperation;
+            if (favoriteFirst) { favorite.RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); await favorite.LastOperation; }
+            FindButton(presentation.ReadingCard, "Explain usage").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            for (int i = 0; i < 100 && store.Explanation is null; i++) await Task.Delay(10);
+            Assert.NotNull(store.Explanation); Assert.Null(store.Explanation.Input.Language);
+            Assert.Equal("river bank", store.Explanation.Result.Meaning);
+            Assert.Equal("usage details", store.Explanation.Result.Explanation);
+            if (!favoriteFirst) { favorite.RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); await favorite.LastOperation; }
+            Assert.NotNull(store.Saved);
+            if (!favoriteFirst) Assert.Equal(store.Explanation.Id, store.Saved.Explanation!.Id);
+        }
+        finally { await presentation.DisposeAsync(); }
+    });
+    [Theory]
+    [InlineData(false)] [InlineData(true)]
+    public Task DetailsAndFavoriteOrderPersistsInCanonicalStore(bool favoriteFirst) => dispatcher.RunAsync(async () =>
+    {
+        var database = FrozenVocabularySQLiteDatabase.CreateMemory(); await using var backend = new FrozenVocabularyImportStore(database);
+        await using var store = new CanonicalWritingViewStore(backend, new DispatcherSynchronizationContext(Dispatcher.CurrentDispatcher));
+        await store.LoadAsync(); LearningExplanationInput? savedInput = null;
+        var presentation = new ReadingPresentation(Dispatcher.CurrentDispatcher, new Dictionary(),
+            (_, _) => Task.FromResult(new ReadingLookupResult("river bank", "")),
+            (_, _, _) => throw new InvalidOperationException(), () => { }, new Clipboard(), store, (_, _) => [], LearningLanguage.Chinese,
+            (input, basic, target, _) => { savedInput = target; return Task.FromResult(new LearningExplanationRecord(Guid.NewGuid(), target,
+                LearningLanguage.Chinese, new(basic.Meaning, "usage details"), "test-model", DateTimeOffset.UnixEpoch)); });
+        var selection = new ReadingSelection(Guid.NewGuid(), "bank", 1, "field", 1, 0, 4, false, true,
+            InputCompositionState.Clear, 1, ScreenRect.Empty);
+        var route = new ReadingRoute(false, ReadingRouteReason.StandaloneUnit, "bank", true);
+        try
+        {
+            presentation.BindAuthority(selection, _ => Task.FromResult(true), default);
+            await presentation.ShowAsync(new(selection, null, LearningLanguage.Chinese, route, ReadingStatus.Lookup, "Local model", ""));
+            await presentation.LookupAsync(selection, route, null, LearningLanguage.Chinese, _ => Task.FromResult(true), default, []);
+            var favorite = Descendants(presentation.ReadingCard).OfType<VocabularyFavoriteButton>().Single(); await favorite.LastOperation;
+            if (favoriteFirst) { favorite.RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); await favorite.LastOperation; }
+            FindButton(presentation.ReadingCard, "Explain usage").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            for (int i = 0; i < 100 && !Text(presentation.ReadingCard).Any(x => x.Contains("usage details")); i++) await Task.Delay(10);
+            if (!favoriteFirst) { favorite.RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); await favorite.LastOperation; }
+            for (int i = 0; i < 100 && (savedInput is null || store.Explanation(savedInput, LearningLanguage.Chinese) is null); i++) await Task.Delay(10);
+            Assert.NotNull(savedInput); Assert.Null(savedInput.Language);
+            var record = Assert.IsType<LearningExplanationRecord>(store.Explanation(savedInput, LearningLanguage.Chinese));
+            Assert.Equal("river bank", record.Result.Meaning); Assert.Equal("usage details", record.Result.Explanation);
+        }
+        finally { await presentation.DisposeAsync(); }
+    });
+    [Fact]
+    public Task RetiredReceiptRejectsLateDetailsRecordWithoutNotification() => dispatcher.RunAsync(async () =>
+    {
+        var store = new ReadingVocabularyStoreFake(); bool live = true;
+        var pending = new TaskCompletionSource<LearningExplanationRecord>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var entered = new TaskCompletionSource<LearningExplanationInput>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var presentation = new ReadingPresentation(Dispatcher.CurrentDispatcher, new Dictionary(),
+            (_, _) => Task.FromResult(new ReadingLookupResult("river bank", "")),
+            (_, _, _) => throw new InvalidOperationException(), () => { }, new Clipboard(), store, (_, _) => [], LearningLanguage.Chinese,
+            (input, basic, target, _) =>
+            {
+                entered.SetResult(target);
+                return pending.Task;
+            });
+        var selection = new ReadingSelection(Guid.NewGuid(), "bank", 1, "field", 1, 0, 4, false, true,
+            InputCompositionState.Clear, 1, ScreenRect.Empty) { Admission = () => live };
+        var route = new ReadingRoute(false, ReadingRouteReason.StandaloneUnit, "bank", true);
+        try
+        {
+            presentation.BindAuthority(selection, _ => Task.FromResult(true), default);
+            await presentation.ShowAsync(new(selection, null, LearningLanguage.Chinese, route, ReadingStatus.Lookup, "Local model", ""));
+            await presentation.LookupAsync(selection, route, null, LearningLanguage.Chinese, _ => Task.FromResult(true), default, []);
+            FindButton(presentation.ReadingCard, "Explain usage").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            var target = await entered.Task;
+            live = false;
+            pending.SetResult(new(Guid.NewGuid(), target, LearningLanguage.Chinese, new("river bank", "late"), "test-model", DateTimeOffset.UnixEpoch));
+            await Task.Delay(100);
+            Assert.Null(store.Explanation);
+            Assert.DoesNotContain(Text(presentation.ReadingCard), text => text.Contains("late"));
         }
         finally { await presentation.DisposeAsync(); }
     });

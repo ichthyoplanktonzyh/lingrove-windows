@@ -1,5 +1,6 @@
 using System.Runtime.Versioning;
 using Cotabby.Core.Input;
+using Cotabby.Core.Focus;
 using Cotabby.Core.LanguageLearning.Reading;
 using Cotabby.Win32.Focus;
 using Cotabby.Win32.Reading;
@@ -45,20 +46,36 @@ public sealed class ReadingSelectionLeaseTests
     }
 
     [Fact]
-    public async Task RetiredDuringOptionalContextNeverPublishesTheSelection()
+    public async Task NativeRetirementWithdrawsPermissionBeforeNotification()
+    {
+        if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;
+        using var focus = new UiaFocusTracker(NullLogger<UiaFocusTracker>.Instance);
+        var evidence = new FakeEvidence { Block = false };
+        await using var lease = new Win32ReadingSelectionLease(focus, new FakeKeyboard(), evidence, 10, 42, 3, null,
+            () => 3, () => 10, _ => 42);
+        Assert.True(lease.Capture(CancellationToken.None)); Assert.True(lease.IsLive);
+        Interlocked.Exchange(ref evidence.Last!.Active, 0);
+        Assert.False(lease.IsLive);
+    }
+
+    [Fact]
+    public async Task RetiredDuringExplicitContextNeverPublishesContext()
     {
         if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;
         using var focus = new UiaFocusTracker(NullLogger<UiaFocusTracker>.Instance);
         var evidence = new FakeEvidence { Block = false, BlockContext = true, NoContext = false };
         await using var lease = new Win32ReadingSelectionLease(focus, new FakeKeyboard(), evidence, 10, 42, 3, null,
             () => 3, () => 10, _ => 42);
-        var capture = Task.Run(() => lease.Capture(CancellationToken.None));
+        Assert.True(lease.Capture(CancellationToken.None));
+        Assert.False(evidence.ContextEntered.IsSet);
+        var enrichment = lease.EnrichAsync(CancellationToken.None);
         try
         {
             Assert.True(evidence.ContextEntered.Wait(TimeSpan.FromSeconds(5)));
             var retire = Task.Run(lease.Retire); await retire.WaitAsync(TimeSpan.FromSeconds(2));
-            evidence.ContextRelease.Set(); Assert.False(await capture.WaitAsync(TimeSpan.FromSeconds(5)));
+            evidence.ContextRelease.Set(); await enrichment.WaitAsync(TimeSpan.FromSeconds(5));
             Assert.False(lease.IsLive);
+            Assert.Null(lease.Selection.Context);
         }
         finally { evidence.ContextRelease.Set(); }
     }
@@ -70,9 +87,32 @@ public sealed class ReadingSelectionLeaseTests
         var evidence = new FakeEvidence { Block = false, NoContext = false };
         await using var lease = new Win32ReadingSelectionLease(focus, new FakeKeyboard(), evidence, 10, 42, 3, null,
             () => 3, () => 10, _ => 42);
-        Assert.True(lease.Capture(CancellationToken.None)); var context = Assert.IsType<ReadingContext>(lease.Selection.Context);
+        Assert.True(lease.Capture(CancellationToken.None)); Assert.False(evidence.ContextEntered.IsSet);
+        await lease.EnrichAsync(CancellationToken.None);
+        var context = Assert.IsType<ReadingContext>(lease.Selection.Context);
         Assert.True(ReadingSelectionPolicy.ValidContext(context, lease.Selection.Text));
         Assert.Equal("selected", context.Text.Substring(context.TargetStart, context.TargetLength));
+    }
+
+    [Fact]
+    public async Task TimedOutContextIsDiscardedAndWorkerIsDrained()
+    {
+        if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;
+        using var focus = new UiaFocusTracker(NullLogger<UiaFocusTracker>.Instance);
+        var evidence = new FakeEvidence { Block = false, BlockContext = true, NoContext = false };
+        var lease = new Win32ReadingSelectionLease(focus, new FakeKeyboard(), evidence, 10, 42, 3, null,
+            () => 3, () => 10, _ => 42);
+        try
+        {
+            Assert.True(lease.Capture(CancellationToken.None));
+            var enrichment = lease.EnrichAsync(CancellationToken.None);
+            Assert.True(evidence.ContextEntered.Wait(TimeSpan.FromSeconds(5)));
+            await enrichment.WaitAsync(TimeSpan.FromSeconds(5));
+            Assert.Null(lease.Selection.Context);
+            var disposal = lease.DisposeAsync().AsTask(); Assert.False(disposal.IsCompleted);
+            evidence.ContextRelease.Set(); await disposal.WaitAsync(TimeSpan.FromSeconds(5));
+        }
+        finally { evidence.ContextRelease.Set(); await lease.DisposeAsync(); }
     }
 
     [Fact]
@@ -83,8 +123,82 @@ public sealed class ReadingSelectionLeaseTests
         var evidence = new FakeEvidence { Block = false, NoContext = true };
         await using var lease = new Win32ReadingSelectionLease(focus, new FakeKeyboard(), evidence, 10, 42, 3, null,
             () => 3, () => 10, _ => 42);
-        Assert.True(lease.Capture(CancellationToken.None)); Assert.Null(lease.Selection.Context);
+        Assert.True(lease.Capture(CancellationToken.None)); await lease.EnrichAsync(CancellationToken.None); Assert.Null(lease.Selection.Context);
         Assert.Equal("selected", lease.Selection.Text);
+    }
+    [Fact]
+    public async Task PointerReceiptUsesNativePointAndDoesNotPretendToBeSelection()
+    {
+        if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;
+        using var focus = new UiaFocusTracker(NullLogger<UiaFocusTracker>.Instance);
+        var evidence = new FakeEvidence { Block = false };
+        var frame = new Win32ReadingSelectionLease.HostFrame(0, 0, 100, 100);
+        await using var lease = new Win32ReadingSelectionLease(focus, new FakeKeyboard(), evidence, 10, 42, 3, null,
+            () => 3, () => 10, _ => 42, new System.Drawing.Point(14, 19), currentFrame: _ => frame);
+        Assert.True(lease.Capture(CancellationToken.None));
+        Assert.Equal(new System.Drawing.Point(14, 19), evidence.Pointer);
+        Assert.Equal(ReadingSourceKind.Pointer, lease.Selection.Source);
+        Assert.False(evidence.ContextEntered.IsSet); await lease.EnrichAsync(CancellationToken.None); Assert.True(evidence.ContextEntered.IsSet);
+        frame = frame with { Right = 101 }; Assert.False(lease.IsLive);
+    }
+    [Fact]
+    public async Task ScreenGuardDoesNotInventAnOccurrenceOrReadContext()
+    {
+        if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;
+        using var focus = new UiaFocusTracker(NullLogger<UiaFocusTracker>.Instance);
+        var evidence = new FakeEvidence { Block = false };
+        await using var lease = new Win32ReadingSelectionLease(focus, new FakeKeyboard(), evidence, 10, 42, 3, null,
+            () => 3, () => 10, _ => 42, screenGuard: true, currentFrame: _ => new(0, 0, 100, 100));
+        Assert.True(lease.Capture(CancellationToken.None)); Assert.True(evidence.GuardCaptured);
+        var proof = Assert.IsType<ReadingScreenGuardEvidence>(lease.ScreenGuardEvidence);
+        Assert.Equal("owned-fake", proof.FieldId); Assert.Equal(3, proof.FocusEpoch); Assert.True(proof.CompositionSequence > 0);
+        Assert.Throws<InvalidOperationException>(() => lease.Selection); Assert.False(evidence.ContextEntered.IsSet);
+        Assert.True(await lease.IsCurrentAsync(CancellationToken.None)); lease.Retire(); Assert.False(lease.IsLive); Assert.Null(lease.ScreenGuardEvidence);
+    }
+    [Fact]
+    public async Task InitiatingKeyReleaseAfterCaptureDoesNotRetireTheReceipt()
+    {
+        if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;
+        using var focus = new UiaFocusTracker(NullLogger<UiaFocusTracker>.Instance); var keyboard = new FakeKeyboard();
+        await using var lease = new Win32ReadingSelectionLease(focus, keyboard, new FakeEvidence { Block = false }, 10, 42, 3, 0x54,
+            () => 3, () => 10, _ => 42);
+        Assert.True(lease.Capture(CancellationToken.None));
+        keyboard.Emit(0x54, false); Assert.True(lease.IsLive);
+        keyboard.Emit(0x10, false); keyboard.Emit(0x11, false); keyboard.Emit(0x12, false); Assert.True(lease.IsLive);
+        keyboard.Emit(0x54, false); Assert.False(lease.IsLive);
+    }
+    [Fact]
+    public async Task PendingReceiptAcceptsOnlyItsArmedSuppressedShortcut()
+    {
+        if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;
+        using var focus = new UiaFocusTracker(NullLogger<UiaFocusTracker>.Instance); var keyboard = new FakeKeyboard();
+        await using var lease = new Win32ReadingSelectionLease(focus, keyboard, new FakeEvidence { Block = false }, 10, 42, 3, null,
+            () => 3, () => 10, _ => 42);
+        Assert.True(lease.Capture(CancellationToken.None)); lease.ArmActivationKey(0x54);
+        keyboard.Emit(0x54, true, suppressed: true); keyboard.Emit(0x54, false); Assert.True(lease.IsLive);
+        keyboard.Emit(0x54, true); Assert.False(lease.IsLive);
+    }
+    [Fact]
+    public async Task ExplicitRegionCapturesOnceAndRetirementDiscardsPixels()
+    {
+        if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;
+        using var focus = new UiaFocusTracker(NullLogger<UiaFocusTracker>.Instance);
+        var evidence = new FakeEvidence { Block = false };
+        await using var lease = new Win32ReadingSelectionLease(focus, new FakeKeyboard(), evidence, 10, 42, 3, null,
+            () => 3, () => 10, _ => 42, screenGuard: true, currentFrame: _ => new(0, 0, 100, 100));
+        Assert.True(lease.Capture(CancellationToken.None));
+        using var entered = new ManualResetEventSlim(); using var release = new ManualResetEventSlim();
+        byte[] pixels = Enumerable.Repeat((byte)42, 16 * 16 * 4).ToArray(); int calls = 0;
+        lease.CapturePixelsForTest = (_, _, _, _, permit) =>
+        { Interlocked.Increment(ref calls); entered.Set(); release.Wait(); return (new ReadingBitmap(16, 16, pixels), new ScreenRect(0, 0, 100, 100)); };
+        var capture = lease.CaptureRegionAsync(new ScreenRect(10, 10, 16, 16), CancellationToken.None);
+        try
+        {
+            Assert.True(entered.Wait(TimeSpan.FromSeconds(5)));
+            Assert.Null(await lease.CaptureRegionAsync(new ScreenRect(10, 10, 16, 16), CancellationToken.None));
+            lease.Retire(); release.Set(); Assert.Null(await capture); Assert.All(pixels, value => Assert.Equal(0, value)); Assert.Equal(1, calls);
+        }
+        finally { release.Set(); }
     }
 
     [Fact]
@@ -261,7 +375,12 @@ public sealed class ReadingSelectionLeaseTests
 
     private sealed class FakeKeyboard : IKeyboardHook
     {
-        public event EventHandler<KeyEventArgs>? KeyEvent { add { } remove { } }
+        public event EventHandler<KeyEventArgs>? KeyEvent;
+        public void Emit(int key, bool down, bool suppressed = false)
+        {
+            var args = new KeyEventArgs(new KeyboardEvent { Kind = KeyKind.Shortcut, Character = '\0', VirtualKey = key, IsKeyDown = down }) { Suppress = suppressed };
+            KeyEvent?.Invoke(this, args);
+        }
         public void Start() { }
         public void Stop() { }
         public void Dispose() { }
@@ -277,8 +396,19 @@ public sealed class ReadingSelectionLeaseTests
         public ReadingAcquisitionWindow? ReadReadingContext(UiaTextEditEvidence.ReadingLease lease, Func<bool> allowed)
         { ContextEntered.Set(); if (BlockContext) ContextRelease.Wait(); return !NoContext && allowed() ? new("The selected word.", 4, 8, ReadingBoundary.Unknown, ReadingBoundary.Unknown, ReadingContextMethod.Characters) : null; }
         public int RetireCalls;
+        public System.Drawing.Point? Pointer;
+        public bool GuardCaptured;
+        public UiaTextEditEvidence.ReadingLease? Last;
         public UiaTextEditEvidence.ReadingLease? CaptureReading(nint host, int pid, Func<bool> allowed, Action invalidated, bool ownedTest = false) =>
-            allowed() ? new(invalidated) { Text = "selected", FieldId = "owned-fake", Ready = true, ProcessId = pid, Host = host } : null;
+            allowed() ? Last = new(invalidated) { Text = "selected", FieldId = "owned-fake", Ready = true, ProcessId = pid, Host = host } : null;
+        public UiaTextEditEvidence.ReadingLease? CapturePointer(nint host, int pid, System.Drawing.Point point, Func<bool> allowed, Action invalidated)
+        { Pointer = point; return CaptureReading(host, pid, allowed, invalidated); }
+        public UiaTextEditEvidence.ReadingLease? CaptureScreenGuard(nint host, int pid, Func<bool> allowed, Action invalidated)
+        {
+            GuardCaptured = true; var lease = CaptureReading(host, pid, allowed, invalidated);
+            if (lease is not null) { lease.FieldWindow = 20; lease.FieldLeft = 0; lease.FieldTop = 0; lease.FieldRight = 100; lease.FieldBottom = 100; }
+            return lease;
+        }
         public bool IsReadingCurrent(UiaTextEditEvidence.ReadingLease lease, Func<bool> allowed)
         {
             Entered.Set(); if (Block) Release.Wait(); return allowed();

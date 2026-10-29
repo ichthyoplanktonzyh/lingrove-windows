@@ -28,6 +28,12 @@ public sealed record PerAppShortcutOverride
     public required string ProcessName { get; init; }
     public KeyBinding? AcceptWord { get; init; }
     public KeyBinding? AcceptAll { get; init; }
+    // Reading shortcuts are explicit per-app grants; an absent row grants nothing.
+    public bool SelectionReadingAllowed { get; init; }
+    public bool PointerReadingAllowed { get; init; }
+    public bool ScreenshotReadingAllowed { get; init; }
+    // Null inherits the global selection-icon setting.
+    public bool? SelectionIconEnabled { get; init; }
 }
 
 /// <summary>Resolves the effective accept bindings for the focused app.</summary>

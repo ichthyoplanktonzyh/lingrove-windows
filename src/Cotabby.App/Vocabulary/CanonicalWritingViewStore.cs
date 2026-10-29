@@ -96,7 +96,7 @@ internal sealed class CanonicalWritingViewStore : IWritingVocabularyStore, IAsyn
         }
         Notify(); return task;
     }
-    internal Task<bool> SaveExplanationAsync(LearningExplanationRecord record) => Mutation(() => _backend.SaveExplanationAsync(record));
+    public Task<bool> SaveExplanationAsync(LearningExplanationRecord record) => Mutation(() => _backend.SaveExplanationAsync(record));
     internal Task<bool> AdoptExplanationAsync(LearningExplanationRecord record, VocabularyExplanationDestination destination) =>
         Mutation(() => _backend.AdoptExplanationAsync(record, destination));
     internal LearningExplanationRecord? Explanation(LearningExplanationInput input, LearningLanguage language)

@@ -18,6 +18,13 @@ public sealed class ReadingSelectionPolicyTests
         Assert.Throws<ArgumentException>(() => ReadingSelectionPolicy.ValidateReceipt(opaque with { SelectionAnchorId = Guid.Empty }));
         Assert.Throws<ArgumentException>(() => ReadingSelectionPolicy.ValidateReceipt(selection with { SelectionStart = int.MaxValue }));
         Assert.Throws<ArgumentException>(() => ReadingSelectionPolicy.ValidateReceipt(selection with { SelectionLength = 2 }));
+        ReadingSelectionPolicy.ValidateReceipt(opaque with { Source = ReadingSourceKind.Pointer });
+        Assert.Throws<ArgumentException>(() => ReadingSelectionPolicy.ValidateReceipt(opaque with { Source = ReadingSourceKind.Screenshot }));
+        var screenshot = selection with { Source = ReadingSourceKind.Screenshot, SelectionStart = null,
+            ScreenReceipt = new(Guid.NewGuid(), new(0, 0, 100, 100), new(0, 0, 1000, 1000), new(10, 10, 20, 20)) };
+        ReadingSelectionPolicy.ValidateReceipt(screenshot);
+        Assert.Throws<ArgumentException>(() => ReadingSelectionPolicy.ValidateReceipt(screenshot with { SelectionAnchorId = Guid.NewGuid() }));
+        Assert.Throws<ArgumentException>(() => ReadingSelectionPolicy.ValidateReceipt(screenshot with { ScreenReceipt = screenshot.ScreenReceipt with { Region = new(90, 90, 20, 20) } }));
     }
 
     private static ReadingSelection Selection(string text, ReadingContext? context = null) =>

@@ -2,6 +2,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Cotabby.Core.Focus;
 using Cotabby.Core.LanguageLearning.Reading;
+using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Accessibility;
 using Native = Cotabby.Win32.Interop.NativeMethods;
@@ -11,6 +12,8 @@ namespace Cotabby.Win32.Focus;
 internal interface IReadingSelectionEvidence
 {
     UiaTextEditEvidence.ReadingLease? CaptureReading(nint host, int pid, Func<bool> allowed, Action invalidated, bool ownedTest = false);
+    UiaTextEditEvidence.ReadingLease? CapturePointer(nint host, int pid, System.Drawing.Point point, Func<bool> allowed, Action invalidated) => null;
+    UiaTextEditEvidence.ReadingLease? CaptureScreenGuard(nint host, int pid, Func<bool> allowed, Action invalidated) => null;
     bool IsReadingCurrent(UiaTextEditEvidence.ReadingLease lease, Func<bool> allowed);
     ReadingAcquisitionWindow? ReadReadingContext(UiaTextEditEvidence.ReadingLease lease, Func<bool> allowed) => null;
     void RetireReading(UiaTextEditEvidence.ReadingLease lease);
@@ -32,6 +35,10 @@ internal sealed unsafe partial class UiaTextEditEvidence : IReadingSelectionEvid
         internal string Text = "";
         internal bool Ready;
         internal bool OwnedTest;
+        internal System.Drawing.Point? Pointer;
+        internal bool ScreenGuard;
+        internal nint FieldWindow;
+        internal int FieldLeft, FieldTop, FieldRight, FieldBottom;
         internal IUIAutomationElement* Element;
         internal IUIAutomationTextEditPattern* Edit;
         internal IUIAutomationTextPattern* TextPattern;
@@ -46,10 +53,16 @@ internal sealed unsafe partial class UiaTextEditEvidence : IReadingSelectionEvid
 
     private ReadingLease? _reading;
 
-    public ReadingLease? CaptureReading(nint host, int pid, Func<bool> allowed, Action invalidated, bool ownedTest = false)
+    public ReadingLease? CaptureReading(nint host, int pid, Func<bool> allowed, Action invalidated, bool ownedTest = false) =>
+        CaptureReadingCore(host, pid, null, false, allowed, invalidated, ownedTest);
+    public ReadingLease? CapturePointer(nint host, int pid, System.Drawing.Point point, Func<bool> allowed, Action invalidated) =>
+        CaptureReadingCore(host, pid, point, false, allowed, invalidated, false);
+    public ReadingLease? CaptureScreenGuard(nint host, int pid, Func<bool> allowed, Action invalidated) =>
+        CaptureReadingCore(host, pid, null, true, allowed, invalidated, false);
+    private ReadingLease? CaptureReadingCore(nint host, int pid, System.Drawing.Point? pointer, bool screenGuard, Func<bool> allowed, Action invalidated, bool ownedTest)
     {
         if (ownedTest && (Native.GetWindowThreadProcessId(host, out uint ownerPid) == 0 || ownerPid != (uint)Environment.ProcessId || pid != Environment.ProcessId)) return null;
-        var lease = new ReadingLease(invalidated) { Host = host, ProcessId = pid, OwnedTest = ownedTest };
+        var lease = new ReadingLease(invalidated) { Host = host, ProcessId = pid, OwnedTest = ownedTest, Pointer = pointer, ScreenGuard = screenGuard };
         bool Allowed() => Volatile.Read(ref lease.Active) != 0 && allowed() && (ownedTest || Native.GetForegroundWindow() == host);
         bool ok = ExecuteTextRead(() =>
         {
@@ -66,10 +79,31 @@ internal sealed unsafe partial class UiaTextEditEvidence : IReadingSelectionEvid
                     : _automation->GetFocusedElement(&element);
                 if (elementResult.Failed || element is null || !Allowed()) return;
                 lease.Element = element; element = null;
+                if (pointer is { } point)
+                {
+                    IUIAutomationElement* hit = null;
+                    try
+                    {
+                        BOOL same = default;
+                        if (_automation->ElementFromPoint(point, &hit).Failed || hit is null || !Allowed()
+                            || _automation->CompareElements(lease.Element, hit, &same).Failed || !same || !Allowed()) return;
+                    }
+                    finally { if (hit is not null) hit->Release(); }
+                }
                 int actual = 0;
                 if (lease.Element->get_CurrentProcessId(&actual).Failed || actual != pid || !Allowed()) return;
                 lease.FieldId = RuntimeId(lease.Element) ?? "";
                 if (string.IsNullOrEmpty(lease.FieldId) || !Allowed() || !ReadingNotSecurePath(lease.Element, pid, Allowed)) return;
+                if (screenGuard)
+                {
+                    HWND fieldWindow = default; RECT bounds = default;
+                    if (lease.Element->get_CurrentNativeWindowHandle(&fieldWindow).Failed || fieldWindow.IsNull || !Allowed()
+                        || Native.GetWindowThreadProcessId((nint)fieldWindow.Value, out uint owner) == 0 || owner != (uint)pid || !Allowed()
+                        || lease.Element->get_CurrentBoundingRectangle(&bounds).Failed || !Allowed()
+                        || bounds.right <= bounds.left || bounds.bottom <= bounds.top) return;
+                    lease.FieldWindow = (nint)fieldWindow.Value;
+                    lease.FieldLeft = bounds.left; lease.FieldTop = bounds.top; lease.FieldRight = bounds.right; lease.FieldBottom = bounds.bottom;
+                }
                 Guid editId = IUIAutomationTextEditPattern.IID_Guid;
                 IUIAutomationTextEditPattern* edit = null;
                 var editResult = lease.Element->GetCurrentPatternAs(UIA_PATTERN_ID.UIA_TextEditPatternId, &editId, (void**)&edit);
@@ -98,6 +132,7 @@ internal sealed unsafe partial class UiaTextEditEvidence : IReadingSelectionEvid
                     TreeScope.TreeScope_Element, null, lease.Selection).Failed) return;
                 lease.AddedSelection = true;
                 if (!Allowed() || !ReadingClear(lease, Allowed)) return;
+                if (lease.ScreenGuard) { lease.Ready = ReadingCurrentCore(lease, Allowed); return; }
                 IUIAutomationTextRange* selected = null;
                 try
                 {
@@ -159,6 +194,7 @@ internal sealed unsafe partial class UiaTextEditEvidence : IReadingSelectionEvid
     private bool ReadingCurrentCore(ReadingLease lease, Func<bool> allowed)
     {
         IUIAutomationElement* focused = null;
+        IUIAutomationElement* hit = null;
         IUIAutomationTextRange* selected = null;
         try
         {
@@ -170,7 +206,14 @@ internal sealed unsafe partial class UiaTextEditEvidence : IReadingSelectionEvid
                 BOOL same = default;
                 if (_automation->CompareElements(lease.Element, focused, &same).Failed || !same || !allowed()) return false;
             }
+            if (lease.Pointer is { } point)
+            {
+                BOOL same = default;
+                if (_automation->ElementFromPoint(point, &hit).Failed || hit is null || !allowed()
+                    || _automation->CompareElements(lease.Element, hit, &same).Failed || !same || !allowed()) return false;
+            }
             if (!ReadingClear(lease, allowed)) return false;
+            if (lease.ScreenGuard) return allowed() && before == Interlocked.Read(ref lease.Version);
             selected = CurrentReadingRange(lease, allowed);
             if (selected is null || !allowed()) return false;
             int start = 0, end = 0;
@@ -182,7 +225,7 @@ internal sealed unsafe partial class UiaTextEditEvidence : IReadingSelectionEvid
             return allowed() && string.Equals(text, lease.Text, StringComparison.Ordinal)
                 && ReadingClear(lease, allowed) && allowed() && before == Interlocked.Read(ref lease.Version);
         }
-        finally { if (selected is not null) selected->Release(); if (focused is not null) focused->Release(); }
+        finally { if (selected is not null) selected->Release(); if (focused is not null) focused->Release(); if (hit is not null) hit->Release(); }
     }
 
     private static bool ReadingClear(ReadingLease lease, Func<bool> allowed)
@@ -199,6 +242,7 @@ internal sealed unsafe partial class UiaTextEditEvidence : IReadingSelectionEvid
 
     private static IUIAutomationTextRange* CurrentReadingRange(ReadingLease lease, Func<bool> allowed)
     {
+        if (lease.Pointer is { } point) return PointerReadingRange(lease, point, allowed);
         IUIAutomationTextRangeArray* ranges = null;
         IUIAutomationTextRange* selected = null;
         try
@@ -213,6 +257,40 @@ internal sealed unsafe partial class UiaTextEditEvidence : IReadingSelectionEvid
             var result = selected; selected = null; return result;
         }
         finally { if (selected is not null) selected->Release(); if (ranges is not null) ranges->Release(); }
+    }
+
+    private static IUIAutomationTextRange* PointerReadingRange(ReadingLease lease, System.Drawing.Point point, Func<bool> allowed)
+    {
+        IUIAutomationTextRange* range = null;
+        Windows.Win32.System.Com.SAFEARRAY* rectangles = null;
+        try
+        {
+            if (!allowed() || lease.TextPattern->RangeFromPoint(point, &range).Failed || range is null || !allowed()
+                || range->ExpandToEnclosingUnit(TextUnit.TextUnit_Word).Failed || !allowed()
+                || range->GetBoundingRectangles(&rectangles).Failed || rectangles is null || !allowed()
+                || rectangles->cDims != 1 || rectangles->cbElements != sizeof(double)) return null;
+            int lower = 0, upper = -1;
+            if (SpeechNativeMethods.SafeArrayGetLBound(rectangles, 1, &lower).Failed
+                || SpeechNativeMethods.SafeArrayGetUBound(rectangles, 1, &upper).Failed
+                || upper < lower || (long)upper - lower >= 4096 || ((long)upper - lower + 1) % 4 != 0 || !allowed()) return null;
+            void* data = null;
+            if (SpeechNativeMethods.SafeArrayAccessData(rectangles, &data).Failed || data is null) return null;
+            bool hit = false;
+            try
+            {
+                var values = new ReadOnlySpan<double>(data, (int)((long)upper - lower + 1));
+                for (int i = 0; i < values.Length; i += 4)
+                {
+                    double x = values[i], y = values[i + 1], w = values[i + 2], h = values[i + 3];
+                    if (double.IsFinite(x) && double.IsFinite(y) && double.IsFinite(w) && double.IsFinite(h) && double.IsFinite(x + w) && double.IsFinite(y + h)
+                        && w > 0 && h > 0 && point.X >= x && point.X < x + w && point.Y >= y && point.Y < y + h) { hit = true; break; }
+                }
+            }
+            finally { SpeechNativeMethods.SafeArrayUnaccessData(rectangles); }
+            if (!hit || !allowed()) return null;
+            var result = range; range = null; return result;
+        }
+        finally { if (rectangles is not null) SpeechNativeMethods.SafeArrayDestroy(rectangles); if (range is not null) range->Release(); }
     }
 
     private static string? ReadingText(IUIAutomationTextRange* range, Func<bool> allowed)

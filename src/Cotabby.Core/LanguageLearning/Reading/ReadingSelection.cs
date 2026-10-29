@@ -15,7 +15,12 @@ public sealed record ReadingSelection(Guid Id, string Text, int ProcessId, strin
     public string? SourceApplicationId { get; init; }
     /// <summary>Capture time is stable across retries and durable contextual saves.</summary>
     public DateTimeOffset CapturedAt { get; init; } = DateTimeOffset.UtcNow;
+    public ReadingSourceKind Source { get; init; } = ReadingSourceKind.Selection;
+    /// <summary>Present only for a separately verified explicit screen-region capture.</summary>
+    public ReadingScreenReceipt? ScreenReceipt { get; init; }
 }
+
+public sealed record ReadingScreenReceipt(Guid EvidenceId, ScreenRect FieldBounds, ScreenRect DisplayBounds, ScreenRect Region);
 
 public enum ReadingBoundary { Container, LayoutBlock, Sentence, Crop, Unknown, Deadline }
 public enum ReadingContextMethod { Characters, Block, Paragraph, Sentence, MarkerWindow, MarkerWalk }

@@ -205,6 +205,24 @@ internal sealed class LearningExplanationController : IAsyncDisposable
     internal Task<T> GenerateReadingLookupAsync<T>(ReadingLookupInput input, ReadingLookupResult? basic,
         Func<string, T> parse, CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(parse);
+        return GenerateReadingLookupWithProfileAsync(input, basic, (raw, _, _) => parse(raw), token);
+    }
+
+    internal Task<LearningExplanationRecord> GenerateReadingLookupDetailsAsync(ReadingLookupInput input, ReadingLookupResult basic,
+        LearningExplanationInput target, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(basic); ArgumentNullException.ThrowIfNull(target);
+        if (!LearningExplanationPolicy.IsValid(target) || target.Target != input.Target || target.Language != input.Source)
+            throw new LearningExplanationException(LearningExplanationFailure.InvalidContent);
+        return GenerateReadingLookupWithProfileAsync(input, basic, (raw, profile, language) =>
+            new LearningExplanationRecord(Guid.NewGuid(), target, language,
+                new(basic.Meaning, ReadingLookupPolicy.ParseDetails(raw)), profile.LocalModel, DateTimeOffset.UtcNow), token);
+    }
+
+    private Task<T> GenerateReadingLookupWithProfileAsync<T>(ReadingLookupInput input, ReadingLookupResult? basic,
+        Func<string, LearningModelSnapshot, LearningLanguage, T> parse, CancellationToken token)
+    {
         ArgumentNullException.ThrowIfNull(input); ArgumentNullException.ThrowIfNull(parse);
         token.ThrowIfCancellationRequested();
         lock (_gate)
@@ -224,7 +242,7 @@ internal sealed class LearningExplanationController : IAsyncDisposable
     }
 
     private async Task<T> GenerateReadingLookupCoreAsync<T>(ReadingLookupInput input, ReadingLookupResult? basic,
-        Func<string, T> parse, LearningModelSnapshot profile, LearningLanguage language, CancellationTokenSource lease, CancellationToken caller)
+        Func<string, LearningModelSnapshot, LearningLanguage, T> parse, LearningModelSnapshot profile, LearningLanguage language, CancellationTokenSource lease, CancellationToken caller)
     {
         using var registration = caller.Register(() => RetireInstruction(lease));
         try
@@ -244,7 +262,10 @@ internal sealed class LearningExplanationController : IAsyncDisposable
                 : await engine.GenerateAsync(prompt, output, 24_000, lease.Token, input.Admission).ConfigureAwait(false);
             caller.ThrowIfCancellationRequested(); CheckCurrent(profile, lease.Token);
             lock (_gate) if (_instructionLanguage != language) throw new OperationCanceledException();
-            return parse(raw);
+            var result = parse(raw, profile, language);
+            caller.ThrowIfCancellationRequested(); CheckCurrent(profile, lease.Token);
+            lock (_gate) if (_instructionLanguage != language) throw new OperationCanceledException();
+            return result;
         }
         finally { ReleaseInstruction(lease); FacadeDrained(); }
     }

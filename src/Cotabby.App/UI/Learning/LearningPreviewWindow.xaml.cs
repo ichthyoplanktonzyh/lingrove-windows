@@ -54,8 +54,8 @@ public partial class LearningPreviewWindow : Window
         // presentation as well as its Copy footer; retry still belongs to the controller capture.
         SourceSection.Visibility = state.Status == LearningPreviewStatus.Failed ? Visibility.Collapsed : Visibility.Visible;
         SourceText.Text = state.Source;
-        DirectionText.Text = state.Options is { } options
-            ? $"{options.SourceLanguage.Label()}  →  {options.TargetLanguage.Label()}"
+        DirectionText.Text = state.Options is { SourceLanguage: { } source } options
+            ? $"{source.Label()}  →  {options.TargetLanguage.Label()}"
             : "";
         DirectionText.Visibility = DirectionText.Text.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
 

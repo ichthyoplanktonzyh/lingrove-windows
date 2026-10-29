@@ -151,6 +151,7 @@ public sealed class UiaFocusCompositionTests
 
     private class FakeOwner : ICompositionEvidenceOwner
     {
+        public NativeTextRangeReader.Window? ReadFocused(int pid, string field, Func<bool> allowed) => null;
         private long _version = 1;
         public long Version => Interlocked.Read(ref _version);
         public void Change() => Interlocked.Increment(ref _version);

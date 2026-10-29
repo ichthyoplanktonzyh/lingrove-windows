@@ -1355,7 +1355,8 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
                     .Distinct()
                     .Take(2)
                     .ToArray();
-                return candidates.Length == 1 ? candidates[0] : Options.SourceLanguage;
+                return candidates.Length == 1 ? candidates[0] : Options.SourceLanguage
+                    ?? throw new InvalidOperationException("Writing preview requires a sentence segmentation language.");
             }
         }
 

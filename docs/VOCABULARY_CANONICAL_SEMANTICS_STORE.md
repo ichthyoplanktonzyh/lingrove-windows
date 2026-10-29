@@ -33,6 +33,12 @@ concurrent drafts, no-op revision, injected SQL rollback and reopen. They do not
 activate category UI or read user notebooks. No legacy data or cross-platform file migration is
 part of this checkpoint.
 
+The isolated Windows delivery branch was independently reviewed and then built with
+`dotnet build Cotabby.sln -c Release --no-restore`: zero warnings and errors. The two
+filtered commands below passed Core 5/5 and Inference 2/2 on Windows x64. These checks
+exercise the canonical transactions against isolated files; they do not activate the
+semantic/category editor or establish physical desktop acceptance.
+
 ```powershell
 dotnet test tests/Cotabby.Core.Tests/Cotabby.Core.Tests.csproj -c Release --filter 'FullyQualifiedName~FrozenVocabularySemanticDraftTests'
 dotnet test tests/Cotabby.Inference.Tests/Cotabby.Inference.Tests.csproj -c Release --filter 'FullyQualifiedName~FrozenVocabularySemanticStoreTests'

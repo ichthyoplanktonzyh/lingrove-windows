@@ -73,6 +73,9 @@ public sealed class UiaTextEditEvidenceTests(ITestOutputHelper output)
         Assert.True(result.InitializeHResult >= 0, $"CoInitializeEx: 0x{result.InitializeHResult:X8}");
         Assert.True(result.FactoryHResult is >= 0, $"CoCreateInstance: 0x{result.FactoryHResult:X8}");
         Assert.True(result.HasAutomation);
+        output.WriteLine($"ConnectionTimeout=0x{result.ConnectionTimeoutHResult:X8}; TransactionTimeout=0x{result.TransactionTimeoutHResult:X8}");
+        Assert.True(result.ConnectionTimeoutHResult is >= 0);
+        Assert.True(result.TransactionTimeoutHResult is >= 0);
     }
 
     [Fact]

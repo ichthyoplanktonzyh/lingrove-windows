@@ -56,12 +56,12 @@ public static class LearningTranslationPrompt
 
     public static Request Render(
         string source,
-        LearningLanguage sourceLanguage,
+        LearningLanguage? sourceLanguage,
         LearningLanguage targetLanguage,
         Family family,
         LearningTranslationStyle? style = null)
     {
-        if (source is null || !Enum.IsDefined(sourceLanguage) || !Enum.IsDefined(targetLanguage) ||
+        if (source is null || (sourceLanguage is { } known && !Enum.IsDefined(known)) || !Enum.IsDefined(targetLanguage) ||
             !Enum.IsDefined(family))
             throw new LearningTranslationException(LearningTranslationFailure.InvalidOptions);
         LearningTextScopePolicy.ValidateCompleteText(source);
@@ -90,7 +90,7 @@ public static class LearningTranslationPrompt
 
     public static Request Render(
         LearningTranslationInput input,
-        LearningLanguage sourceLanguage,
+        LearningLanguage? sourceLanguage,
         LearningLanguage targetLanguage,
         Family family)
     {
@@ -98,7 +98,7 @@ public static class LearningTranslationPrompt
         return Render(input.Source, sourceLanguage, targetLanguage, family, input.Style);
     }
 
-    private static string GenericPrompt(string source, LearningLanguage sourceLanguage, LearningLanguage targetLanguage) =>
+    private static string GenericPrompt(string source, LearningLanguage? sourceLanguage, LearningLanguage targetLanguage) =>
         LearningExpressionPrompt.Translation(source, sourceLanguage, targetLanguage);
 
     private static string HyMtPrompt(string source, LearningLanguage targetLanguage)
@@ -108,10 +108,13 @@ public static class LearningTranslationPrompt
             "Note that you should only output the translated result without any additional explanation:\n" + source;
     }
 
-    private static string TranslateGemmaPrompt(string source, LearningLanguage sourceLanguage, LearningLanguage targetLanguage)
+    private static string TranslateGemmaPrompt(string source, LearningLanguage? sourceLanguage, LearningLanguage targetLanguage)
     {
-        var from = TranslateGemmaLanguage(sourceLanguage);
         var to = TranslateGemmaLanguage(targetLanguage);
+        if (sourceLanguage is null)
+            return $"You are a professional translator. Translate the following text into {to.Name} ({to.Code}). Infer the source language from the text. " +
+                "Preserve meaning, names and numbers. Produce only the translation:\n\n\n" + source;
+        var from = TranslateGemmaLanguage(sourceLanguage.Value);
         return $"You are a professional {from.Name} ({from.Code}) to {to.Name} ({to.Code}) translator. " +
             $"Your goal is to accurately convey the meaning and nuances of the original {from.Name} text while adhering to {to.Name} grammar, vocabulary, and cultural sensitivities.\n" +
             $"Produce only the {to.Name} translation, without any additional explanations or commentary. " +

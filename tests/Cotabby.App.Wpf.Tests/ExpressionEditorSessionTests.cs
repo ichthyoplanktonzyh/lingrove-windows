@@ -404,7 +404,7 @@ public sealed class ExpressionEditorSessionTests
         public Action? BeforeRead;
         public readonly FakeLease Lease = new();
         public bool Activate(nint host) { Foreground = host; return true; }
-        public UiaExpressionSelectionReader.ValueSelection? Read(AutomationElement? element, Func<bool> allowed)
+        public UiaExpressionSelectionReader.ValueSelection? Read(AutomationElement? element, long token, Func<bool> allowed)
         {
             BeforeRead?.Invoke();
             return allowed() ? new(Value, Selection) : null;
@@ -433,6 +433,7 @@ public sealed class ExpressionEditorSessionTests
     }
     private sealed class FakeRetained : IExpressionRetainedEvidence
     {
+        public NativeTextRangeReader.ValueSelection? ReadRetained(long token, Func<bool> allowed) => null;
         private bool _active = true;
         public long? Register(int processId, string fieldId, nint hostWindow, nint panelWindow, Action changed, Func<bool> allowed, CancellationToken ct) => allowed() ? 1 : null;
         public (InputCompositionState State, long Version) Observe(long token, Func<bool> panelOwnsKeyboard, CancellationToken ct) =>
@@ -443,6 +444,7 @@ public sealed class ExpressionEditorSessionTests
     }
     private sealed class FakeFocusOwner : ICompositionEvidenceOwner
     {
+        public NativeTextRangeReader.Window? ReadFocused(int pid, string field, Func<bool> allowed) => null;
         public long Version => 1;
         public bool Execute(Action action) { action(); return true; }
         public (InputCompositionState State, long Version) Observe(int pid, string field, long focusEpoch, Func<bool>? allowed = null) => default;

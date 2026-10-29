@@ -39,7 +39,13 @@ drains accepted saves and image/range preparation before releasing that owner.
 
 The existing Anki connection, credential and default-deck settings retain their independent real
 client. Canonical review/card/template transactions exist at the Store boundary; review presentation
-and preparation remain unavailable. Graph, independent sense/category creation/merge/move/deletion,
+and preparation remain unavailable. The [sense/usage commands](VOCABULARY_CANONICAL_SENSE_UI.md)
+now connect New, Merge, confirmed Delete and Move to acknowledged canonical transactions. Delete
+uncollects the sense while preserving its raw evidence; Move retains the source selection.
+The [meaning and mapping editors](VOCABULARY_CANONICAL_MEANING_UI.md) now connect meaning-node
+creation/editing, sense grouping, proposal confirmation and confirmed removal through detached
+semantic baselines. Representative examples follow the frozen evidence rule without changing it.
+Graph, category and usage-pattern editing,
 image paste/drop/enlargement, full notebook explanation/dictionary rows, export/backup, review and
 speech remain subsequent canonical modules. An older library's checks do not activate them.
 

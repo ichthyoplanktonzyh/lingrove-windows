@@ -37,8 +37,9 @@ internal static class LearningDictionaryCardPolicy
         if (input is null || input.ContextKind == LearningExplanationContext.None || !LearningExplanationPolicy.IsValid(input)
             || !LearningExplanationCardPolicy.SameDocument(translation, translation)
             || input.Language != translation!.Options!.TargetLanguage
-            || !string.Equals(input.Context, translation.Result, StringComparison.Ordinal)) return null;
-        return new(translation.Source, translation.Options.SourceLanguage);
+            || !string.Equals(input.Context, translation.Result, StringComparison.Ordinal)
+            || translation.Options.SourceLanguage is not { } sourceLanguage) return null;
+        return new(translation.Source, sourceLanguage);
     }
 }
 

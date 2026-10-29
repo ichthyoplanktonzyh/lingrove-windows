@@ -9,7 +9,7 @@ public static class LearningTranslationBudget
 {
     public static LearningTranslationPrompt.Request Prompt(
         LearningTranslationInput input,
-        LearningLanguage sourceLanguage,
+        LearningLanguage? sourceLanguage,
         LearningLanguage targetLanguage,
         LearningTranslationPrompt.Family family,
         int total,

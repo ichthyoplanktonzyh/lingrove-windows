@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Threading;
 using Cotabby.App.UI.Vocabulary;
+using Cotabby.App.Review;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Vocabulary;
 using Cotabby.Core.Vocabulary.EntryInput;
@@ -19,6 +20,8 @@ internal sealed class FrozenVocabularyWindowController : IAsyncDisposable
     private readonly object _gate = new();
     private IReadOnlyList<LearningLanguage> _languages;
     private FrozenVocabularyNotebookWindow? _window;
+    private AnkiReviewFeature? _reviewFeature;
+    private Action? _configureReview;
     private Task? _retirement;
     private bool _closed;
     internal FrozenVocabularyWindowController(IVocabularyEntryImportStore store, Dispatcher dispatcher,
@@ -31,9 +34,22 @@ internal sealed class FrozenVocabularyWindowController : IAsyncDisposable
         if (!_dispatcher.CheckAccess()) { if (!_dispatcher.HasShutdownStarted) _dispatcher.BeginInvoke(() => Show(selection)); return; }
         lock (_gate) if (_closed) return;
         _window ??= new FrozenVocabularyNotebookWindow(_store, _reader, _languages, listPreferences: _preferences, hideOnClose: true);
+        if (_reviewFeature is { } review && _configureReview is { } configure) _window.AttachReviewFeature(review, configure);
         _window.Reveal(selection); _window.Show();
         if (_window.WindowState == WindowState.Minimized) _window.WindowState = WindowState.Normal;
         _window.Activate();
+    }
+    internal void AttachReviewFeature(AnkiReviewFeature feature, Action configure)
+    {
+        lock (_gate) { if (_closed) return; _reviewFeature = feature; _configureReview = configure; }
+        if (!_dispatcher.CheckAccess()) { if (!_dispatcher.HasShutdownStarted) _dispatcher.BeginInvoke(() => ApplyReview()); return; }
+        ApplyReview();
+    }
+    private void ApplyReview()
+    {
+        AnkiReviewFeature? feature; Action? configure;
+        lock (_gate) { if (_closed) return; feature = _reviewFeature; configure = _configureReview; }
+        if (feature is not null && configure is not null) _window?.AttachReviewFeature(feature, configure);
     }
     internal void SetPreferredLanguages(IReadOnlyList<LearningLanguage> languages)
     {

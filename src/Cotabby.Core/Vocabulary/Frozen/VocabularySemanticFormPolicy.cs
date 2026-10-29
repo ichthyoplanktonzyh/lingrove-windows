@@ -18,6 +18,11 @@ public static class VocabularySemanticFormPolicy
         Relation = node.Kind == VocabularyMeaningNodeKind.Concept ? VocabularyMappingRelation.ExpressesContent : VocabularyMappingRelation.RealizesFunction,
         Conditions = conditions, Nuance = nuance,
     };
+    /// <summary>Return cited evidence when present; an unrestricted, uncited mapping may show a
+    /// representative example without changing its evidence IDs.</summary>
+    public static VocabularyExample? Example(VocabularyMeaningMapping mapping, VocabularySense sense) =>
+        mapping.EvidenceIds.Count > 0 ? sense.Examples.FirstOrDefault(example => mapping.EvidenceIds.Contains(example.Id))
+        : mapping.PatternId is null ? sense.Examples.FirstOrDefault() : null;
     public static VocabularySemanticIndex RemoveNode(VocabularySemanticIndex index, Guid nodeId) => index with
     {
         Nodes = index.Nodes.Where(node => node.Id != nodeId).ToArray(), Mappings = index.Mappings.Where(mapping => mapping.NodeId != nodeId).ToArray(),

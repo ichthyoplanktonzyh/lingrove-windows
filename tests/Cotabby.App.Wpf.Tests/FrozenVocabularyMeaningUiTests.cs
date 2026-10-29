@@ -14,6 +14,25 @@ namespace Cotabby.App.Wpf.Tests;
 [Collection("WPF views")]
 public sealed class FrozenVocabularyMeaningUiTests(WpfDispatcher dispatcher)
 {
+    [Theory]
+    [InlineData("uncited", true)]
+    [InlineData("cited", true)]
+    [InlineData("restricted", false)]
+    [InlineData("uncollected-evidence", false)]
+    public Task MeaningCardShowsOnlySourceAllowedExample(string scenario, bool shown) => dispatcher.RunAsync(async () =>
+    {
+        var time = new SourceDate(100); var plan = VocabularyEntryImportPolicy.Plan([new(Expression: "bank", Meaning: "shore", Example: "river bank"), new(Expression: "bank", Meaning: "shore", Example: "bank outside")], new(), time);
+        var doc = plan.Document; var entry = doc.Entries.Single(); var sense = entry.Senses.Single(); Assert.Equal(2, sense.Examples.Count); var visible = sense.Examples[0]; var hidden = sense.Examples[1];
+        var node = new VocabularyMeaningNode(Guid.NewGuid(), [new R.VocabularyMeaningLabel("River")]); var pattern = new R.VocabularyUsagePattern(sense.Id, "bank pattern");
+        var mapping = new R.VocabularyMeaningMapping(node.Id, sense.Id) { PatternId = scenario == "restricted" ? pattern.Id : null,
+            EvidenceIds = scenario == "cited" ? [visible.Id] : scenario == "uncollected-evidence" ? [hidden.Id] : [] };
+        doc = doc with { Semantics = new() { Nodes = [node], Mappings = [mapping], Patterns = scenario == "restricted" ? [pattern] : [] },
+            Collections = doc.Collections.Select(c => c.SenseId == sense.Id ? c with { InterpretationIds = [visible.Id] } : c).ToArray() };
+        var db = FrozenVocabularySQLiteDatabase.CreateMemory(); db.Write(doc, new(), 0); await using var store = new FrozenVocabularyImportStore(db, () => time);
+        var window = new FrozenVocabularyNotebookWindow(store, new WindowsVocabularyWordListReader()); window.Show(); await window.LastOperation!;
+        window.Session.MeaningMode = true; window.Session.Destination = new(VocabularyMeaningDestinationKind.Node, node.Id); window.Session.Refresh(); window.UpdateLayout();
+        Assert.Equal(shown, Descendants(window).OfType<TextBox>().Any(t => t.IsReadOnly && t.Text == visible.Text)); Assert.Equal(mapping.EvidenceIds, (await store.ReadAsync()).Document.Semantics.Mappings.Single().EvidenceIds); window.Close();
+    });
     private sealed class HeldStore : ICanonicalVocabularySemanticStore
     {
         internal readonly TaskCompletionSource<FrozenVocabularyImportSnapshot> Gate = new(TaskCreationOptions.RunContinuationsAsynchronously); internal bool Fail;

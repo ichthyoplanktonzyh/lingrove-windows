@@ -42,3 +42,12 @@ process-crash recovery. Native Windows ACL/reparse coverage of the reused image 
 dotnet test tests/Cotabby.App.Wpf.Tests/Cotabby.App.Wpf.Tests.csproj -c Release --filter 'FullyQualifiedName~CanonicalVocabularyMediaTests|FullyQualifiedName~CanonicalWritingFavoriteViewTests'
 dotnet test tests/Cotabby.Inference.Tests/Cotabby.Inference.Tests.csproj -c Release --filter 'FullyQualifiedName~FrozenVocabularyReviewStoreTests'
 ```
+
+Independent review accepted the file-identity and post-publication failure repairs after isolated
+WPF checks passed 35/35. Final integration source `ad4407f` on Windows x64, .NET SDK 10.0.403,
+ran `dotnet build Cotabby.sln -c Release --verbosity quiet` with ordinary dependency restore:
+zero warnings/errors. (The preceding no-restore attempt had missing assets in this checkout.)
+Compiled WPF filter `CanonicalVocabularyMediaTests|VocabularyImageStorageTests|CanonicalVocabularyCompositionTests|CanonicalWritingFavoriteViewTests`
+passed 37/37; Inference filter `FrozenVocabularyReviewStoreTests|VocabularyWindowsFileTests` passed
+42/42. Both used Release, `--no-build --no-restore`, telemetry disabled and clipboard reads disabled.
+No model, endpoint or existing notebook was used. These checks do not activate canonical review UI.

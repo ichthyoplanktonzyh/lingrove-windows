@@ -167,7 +167,7 @@ public static class CanonicalWritingPolicy
         else collections[index] = next;
         return document with { Collections = collections };
     }
-    private static R.LearningExplanationInput Input(VocabularyEntry entry, VocabularySense sense, VocabularyExample? example) =>
+    internal static R.LearningExplanationInput Input(VocabularyEntry entry, VocabularySense sense, VocabularyExample? example) =>
         new(entry.Expression, entry.DictionaryForm, entry.Language, entry.Kind, example?.Text ?? entry.Expression,
             example?.Ranges ?? [new Live.VocabularyTextRange(0, entry.Expression.Length)], example is null ? R.LearningExplanationContext.None
                 : example.Completeness switch { R.VocabularyExampleCompleteness.Sentence => R.LearningExplanationContext.Sentence,

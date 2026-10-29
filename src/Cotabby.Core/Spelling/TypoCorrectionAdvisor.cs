@@ -22,6 +22,14 @@ public sealed class TypoCorrectionAdvisor(
 {
     private readonly CurrentWordSpellChecker _spellChecker = new(lexicon ?? corrector);
 
+    public string? LocalCompletion(string preceding, string trailing, string glossary, IEnumerable<string> enabledCodes)
+    {
+        if (Cotabby.Core.Text.GraphemeString.FirstOf(trailing) is { IsLetter: true } || CaretWordContext.UnfinishedWord(preceding) is not { } prefix) return null;
+        var language = resolver.Resolve(preceding, prefix, SpellingDictionaryCatalog.Languages(enabledCodes));
+        var candidates = language is { } value ? corrector.CompletionCandidates(prefix, value) : [];
+        return WordCompletionFallback.Suffix(prefix, ReferenceVocabulary.Words(preceding, trailing, glossary), candidates);
+    }
+
     /// <summary>
     /// Decides between a normal completion, a suppressed one, an offered correction and an
     /// automatic fix. A cold dictionary or an ambiguous language reports no typo.

@@ -20,4 +20,17 @@ public interface ISuggestionEngine
     /// suggest or the request was cancelled.
     /// </summary>
     Task<string> GenerateAsync(SuggestionRequest request, CancellationToken ct);
+
+    /// <summary>Optional cumulative, normalized partials for the same request. Existing engines
+    /// remain final-only; implementations stop callbacks before returning.</summary>
+    Task<string> GenerateAsync(SuggestionRequest request, Action<string>? onPartial, CancellationToken ct) =>
+        GenerateAsync(request, ct);
+}
+
+/// <summary>Explicit local-only boundary for hypothetical post-acceptance work. Implementations
+/// must never route this request to a configured endpoint.</summary>
+public interface ILocalSpeculativeSuggestionEngine
+{
+    bool CanSpeculateLocally { get; }
+    Task<string> GenerateLocalSpeculationAsync(SuggestionRequest request, CancellationToken ct);
 }

@@ -16,9 +16,10 @@ public sealed class SymSpellCorrector : ISpellingLexicon, IDisposable
     /// <summary>How many language indexes stay in memory.</summary>
     private const int CacheLimit = 2;
 
-    private sealed class CacheEntry(SymSpell symSpell)
+    private sealed class CacheEntry(SymSpell symSpell, WordPrefixIndex prefixes)
     {
         public SymSpell SymSpell { get; } = symSpell;
+        public WordPrefixIndex Prefixes { get; } = prefixes;
         public ulong LastAccessSequence { get; set; }
     }
 
@@ -61,6 +62,9 @@ public sealed class SymSpellCorrector : ISpellingLexicon, IDisposable
     public bool IsKnownWord(string word, SpellingDictionaryLanguage language) =>
         CachedEntryOrRequestLoad(language)?.SymSpell.Contains(word.ToLowerInvariant()) ?? true;
 
+    public IReadOnlyList<WordPrefixIndex.Candidate> CompletionCandidates(string prefix, SpellingDictionaryLanguage language) =>
+        CachedEntryOrRequestLoad(language)?.Prefixes.Candidates(prefix) ?? [];
+
     /// <summary>Cancels dictionary loads that are still running.</summary>
     public void Dispose()
     {
@@ -95,7 +99,9 @@ public sealed class SymSpellCorrector : ISpellingLexicon, IDisposable
 
             var symSpell = new SymSpell();
             symSpell.LoadDictionary(contents, _cancellation.Token);
-            lock (_lock) Publish(language, new CacheEntry(symSpell));
+            var prefixes = new WordPrefixIndex(contents);
+            _cancellation.Token.ThrowIfCancellationRequested();
+            lock (_lock) Publish(language, new CacheEntry(symSpell, prefixes));
             _logger.LogInformation(
                 "SymSpell loaded {Count} {Language} words for correction.", symSpell.WordCount, language.DisplayName());
         }

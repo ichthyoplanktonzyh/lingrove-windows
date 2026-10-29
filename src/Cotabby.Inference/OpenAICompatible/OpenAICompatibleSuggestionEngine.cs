@@ -48,7 +48,9 @@ public sealed class OpenAICompatibleSuggestionEngine : ISuggestionEngine
 
     public bool SpacingIsExact => false;
 
-    public async Task<string> GenerateAsync(SuggestionRequest request, CancellationToken ct)
+    public Task<string> GenerateAsync(SuggestionRequest request, CancellationToken ct) => GenerateAsync(request, null, ct);
+
+    public async Task<string> GenerateAsync(SuggestionRequest request, Action<string>? onPartial, CancellationToken ct)
     {
         var endpoint = _endpoint;
         var configuration = endpoint.Configuration
@@ -68,7 +70,12 @@ public sealed class OpenAICompatibleSuggestionEngine : ISuggestionEngine
                 _credentials.ReadApiKey(),
                 prompt,
                 new OpenAICompatibleGenerationOptions(request.MaxTokens, Temperature, TopP),
-                ct).ConfigureAwait(false);
+                ct, onPartial is null ? null : cumulative =>
+                {
+                    if (ct.IsCancellationRequested) return;
+                    var text = CompletionPipeline.Normalize(cumulative, prompt, request).Text;
+                    if (text.Length > 0) onPartial(text);
+                }).ConfigureAwait(false);
             outcome = ct.IsCancellationRequested ? ModelRequestOutcome.Cancelled : ModelRequestOutcome.Completed;
         }
         catch (OperationCanceledException)

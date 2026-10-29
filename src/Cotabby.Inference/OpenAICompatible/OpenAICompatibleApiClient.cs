@@ -94,7 +94,7 @@ public sealed class OpenAICompatibleApiClient : IDisposable
         string? apiKey,
         string prompt,
         OpenAICompatibleGenerationOptions options,
-        CancellationToken ct = default)
+        CancellationToken ct = default, Action<string>? onPartialRawText = null)
     {
         RequireModelName(configuration);
 
@@ -120,7 +120,7 @@ public sealed class OpenAICompatibleApiClient : IDisposable
             using var reader = new StreamReader(stream, Encoding.UTF8);
             var accumulated = new StringBuilder();
             var sawEvent = false;
-            while (await reader.ReadLineAsync(timeout.Token).ConfigureAwait(false) is { } line)
+            await foreach (var line in ReadBoundedLinesAsync(reader, timeout.Token).ConfigureAwait(false))
             {
                 timeout.CancelAfter(GenerationTimeout);
                 var sseEvent = OpenAICompatibleSseDecoder.Decode(line, mode);
@@ -130,7 +130,10 @@ public sealed class OpenAICompatibleApiClient : IDisposable
                         return accumulated.ToString();
                     case OpenAICompatibleSseEventKind.Text:
                         sawEvent = true;
+                        if (sseEvent.Value!.Length > 65_536 - accumulated.Length) throw OpenAICompatibleClientException.MalformedResponse();
                         accumulated.Append(sseEvent.Value);
+                        if (onPartialRawText is not null)
+                            try { onPartialRawText(accumulated.ToString()); } catch { /* Observers cannot break transport. */ }
                         break;
                     case OpenAICompatibleSseEventKind.Error:
                         throw OpenAICompatibleClientException.StreamError(sseEvent.Value!);
@@ -140,6 +143,35 @@ public sealed class OpenAICompatibleApiClient : IDisposable
             // A stream that closes without [DONE] still produced a usable answer.
             return sawEvent ? accumulated.ToString() : throw OpenAICompatibleClientException.MalformedResponse();
         }, ct).ConfigureAwait(false);
+    }
+
+    private static async IAsyncEnumerable<string> ReadBoundedLinesAsync(StreamReader reader,
+        [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken token)
+    {
+        const int maxLine = 262_144;
+        var buffer = new char[4096]; var line = new StringBuilder(); bool previousCr = false;
+        while (true)
+        {
+            int read = await reader.ReadAsync(buffer.AsMemory(), token).ConfigureAwait(false);
+            if (read == 0) break;
+            for (int i = 0; i < read; i++)
+            {
+                char next = buffer[i];
+                if (next == '\n' && previousCr) { previousCr = false; continue; }
+                previousCr = false;
+                if (next is '\r' or '\n')
+                {
+                    previousCr = next == '\r';
+                    yield return line.ToString(); line.Clear();
+                }
+                else
+                {
+                    if (line.Length == maxLine) throw OpenAICompatibleClientException.MalformedResponse();
+                    line.Append(next);
+                }
+            }
+        }
+        if (line.Length > 0) yield return line.ToString();
     }
 
     // The shared prompt is a base-model continuation that ends at the caret. Chat models tend to

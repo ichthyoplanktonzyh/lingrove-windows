@@ -66,7 +66,8 @@ internal sealed class LearningExplanationController : IAsyncDisposable
         _endpointFactory = endpointFactory; _endpointInstructionFactory = endpointInstructionFactory;
         _profile = settings.LearningExplanationSnapshot();
         _instructionLanguage = settings.ResolvedLearningExplanationLanguage;
-        Service = new(_profile, settings.ResolvedLearningExplanationLanguage, CreateEngine, _clock);
+        Service = new(_profile, settings.ResolvedLearningExplanationLanguage,
+            _ => throw new InvalidOperationException("Explanation requires an admission reservation."), _clock, ReserveExplanation);
         ApplySettings(settings);
     }
 
@@ -131,17 +132,26 @@ internal sealed class LearningExplanationController : IAsyncDisposable
         else if (_activeFacades == 0) ScheduleIdleLocked();
     }
 
-    private ILearningExplanationEngine CreateEngine(LearningModelSnapshot profile)
+    private ILearningExplanationAdmission ReserveExplanation()
     {
         lock (_gate)
         {
-            if (_disposal is not null || !AllowedLocked() || _profile != profile) throw new OperationCanceledException();
+            ObjectDisposedException.ThrowIf(_disposal is not null, this);
+            return new ExplanationAdmission(this, ReserveInstructionLocked());
+        }
+    }
+
+    private ILearningExplanationEngine CreateEngine(LearningModelSnapshot profile, CancellationTokenSource lease)
+    {
+        lock (_gate)
+        {
+            if (_disposal is not null || !AllowedLocked() || _profile != profile || lease.IsCancellationRequested || !ReferenceEquals(_currentInstruction, lease)) throw new OperationCanceledException();
             if (!_modelAdmitted) throw new LearningTranslationException(LearningTranslationFailure.LocalModelNotConfigured);
             if (profile.Backend == LearningModelBackend.Endpoint)
             {
                 var endpoint = _endpointFactory!(profile);
                 StopIdleLocked(); _activeFacades++;
-                return new OwnedFacade(this, endpoint, profile, ReserveInstructionLocked());
+                return new OwnedFacade(this, endpoint, profile, lease);
             }
             string name = profile.LocalModel;
             // This setting denotes an installed filename, never an arbitrary path. Explicitly
@@ -154,7 +164,7 @@ internal sealed class LearningExplanationController : IAsyncDisposable
                 profile.ContextWindowTokens, profile.SamplingOverrides, requiresGeneralInstructions: true);
             var inner = _engineFactory(configuration);
             StopIdleLocked(); _activeFacades++; _nativeMayBeResident = true;
-            return new OwnedFacade(this, inner, profile, ReserveInstructionLocked());
+            return new OwnedFacade(this, inner, profile, lease);
         }
     }
 
@@ -364,7 +374,6 @@ internal sealed class LearningExplanationController : IAsyncDisposable
             // to match, or an old timeout could unload a newly admitted explanation.
             if (_disposal is not null || revision != _idleRevision || _activeFacades != 0) return;
             StopIdleLocked();
-            RetireInstructionLocked();
             if (_nativeMayBeResident) ReleaseLocked();
         }
     }
@@ -446,7 +455,18 @@ internal sealed class LearningExplanationController : IAsyncDisposable
         private async Task DrainAsync()
         {
             try { await inner.DisposeAsync().ConfigureAwait(false); }
-            finally { if (_serial) owner._instructionSerial.Release(); owner.ReleaseInstruction(lease); owner.FacadeDrained(); }
+            finally { if (_serial) owner._instructionSerial.Release(); owner.FacadeDrained(); }
+        }
+    }
+
+    private sealed class ExplanationAdmission(LearningExplanationController owner, CancellationTokenSource lease) : ILearningExplanationAdmission
+    {
+        private int _disposed;
+        public CancellationToken Token => lease.Token;
+        public ILearningExplanationEngine CreateEngine(LearningModelSnapshot profile) => owner.CreateEngine(profile, lease);
+        public void Dispose()
+        {
+            if (Interlocked.Exchange(ref _disposed, 1) == 0) owner.ReleaseInstruction(lease);
         }
     }
 }

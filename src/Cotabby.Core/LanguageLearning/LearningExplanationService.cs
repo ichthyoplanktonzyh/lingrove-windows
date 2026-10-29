@@ -14,6 +14,7 @@ public sealed class LearningExplanationService : ILearningExplanationGenerating,
 {
     private readonly object _gate = new();
     private readonly Func<LearningModelSnapshot, ILearningExplanationEngine> _engineFactory;
+    private readonly Func<ILearningExplanationAdmission>? _reserveAdmission;
     private readonly TimeProvider _clock;
     private readonly Dictionary<Key, LearningExplanationRecord> _cache = [];
     private readonly Queue<Key> _cacheOrder = [];
@@ -24,12 +25,14 @@ public sealed class LearningExplanationService : ILearningExplanationGenerating,
     private Task? _disposal;
 
     public LearningExplanationService(LearningModelSnapshot profile, LearningLanguage language,
-        Func<LearningModelSnapshot, ILearningExplanationEngine> engineFactory, TimeProvider? clock = null)
+        Func<LearningModelSnapshot, ILearningExplanationEngine> engineFactory, TimeProvider? clock = null,
+        Func<ILearningExplanationAdmission>? reserveAdmission = null)
     {
         _profile = (profile ?? throw new ArgumentNullException(nameof(profile))).ForExplanation();
         _language = language;
         _engineFactory = engineFactory ?? throw new ArgumentNullException(nameof(engineFactory));
         _clock = clock ?? TimeProvider.System;
+        _reserveAdmission = reserveAdmission;
     }
 
     public event Action? Changed;
@@ -135,25 +138,33 @@ public sealed class LearningExplanationService : ILearningExplanationGenerating,
         // Preserve the Mac service's invalid-capture precedence over model configuration.
         if (input is null || !LearningExplanationPolicy.IsValid(input))
             return Task.FromException<LearningExplanationRecord>(new LearningExplanationException(LearningExplanationFailure.InvalidContent));
-        lock (_gate)
+        lock (_gate) ObjectDisposedException.ThrowIf(_disposal is not null, this);
+        // Do not hold the service lock across the app-owned reservation: the owner can retire
+        // service work while holding its own gate. Reserve synchronously before Task.Run so a
+        // delayed worker or saved lookup cannot supersede a newer instruction request.
+        var admission = _reserveAdmission?.Invoke();
+        try
         {
-            ObjectDisposedException.ThrowIf(_disposal is not null, this);
-            var lifetime = new LearningRequestLifetime();
-            var key = new Key(input, _language, _profile);
-            // Clear a WPF SynchronizationContext before saved lookup, factory, prompt and model IO.
-            var task = Task.Run(() => RunAsync(key, requestId, refresh, lifetime, cancellationToken));
-            _work.Add(lifetime, task);
-            return task;
+            lock (_gate)
+            {
+                ObjectDisposedException.ThrowIf(_disposal is not null, this);
+                var lifetime = new LearningRequestLifetime();
+                var key = new Key(input, _language, _profile);
+                var task = Task.Run(() => RunAsync(key, requestId, refresh, lifetime, cancellationToken, admission));
+                _work.Add(lifetime, task);
+                return task;
+            }
         }
+        catch { admission?.Dispose(); throw; }
     }
 
-    private async Task<LearningExplanationRecord> RunAsync(Key key, string requestId, bool refresh, LearningRequestLifetime lifetime, CancellationToken caller)
+    private async Task<LearningExplanationRecord> RunAsync(Key key, string requestId, bool refresh, LearningRequestLifetime lifetime, CancellationToken caller, ILearningExplanationAdmission? admission)
     {
         long start = 0; DateTimeOffset timestamp = default; var outcome = ModelRequestOutcome.Failed; long? usable = null;
         using var registration = caller.Register(() => _ = ObserveRetirement(lifetime.Retire()));
         void Validate()
         {
-            caller.ThrowIfCancellationRequested(); lifetime.Token.ThrowIfCancellationRequested();
+            caller.ThrowIfCancellationRequested(); lifetime.Token.ThrowIfCancellationRequested(); admission?.Token.ThrowIfCancellationRequested();
             lock (_gate)
                 if (_disposal is not null || _profile != key.Profile || _language != key.Language) throw new OperationCanceledException();
         }
@@ -172,7 +183,7 @@ public sealed class LearningExplanationService : ILearningExplanationGenerating,
             // The factory is an app-owned effect. It must enforce this role's endpoint consent
             // and metadata gate; this service's filename capability check cannot authorize IO.
             LearningExplanationResult result;
-            await using (var engine = _engineFactory(key.Profile))
+            await using (var engine = admission is null ? _engineFactory(key.Profile) : admission.CreateEngine(key.Profile))
             {
                 Validate();
                 timestamp = _clock.GetUtcNow(); start = Stopwatch.GetTimestamp();
@@ -214,6 +225,7 @@ public sealed class LearningExplanationService : ILearningExplanationGenerating,
             // Native facade disposal above drains its lease before foreign cancellation callbacks
             // are joined here. A callback may itself be waiting for that lease to become available.
             try { await lifetime.DisposeAsync().ConfigureAwait(false); } catch { }
+            admission?.Dispose();
             lock (_gate) _work.Remove(lifetime);
         }
     }

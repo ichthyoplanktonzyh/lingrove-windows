@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
@@ -40,14 +41,21 @@ internal sealed class FrozenVocabularyNotebookWindow : Window
     private readonly VocabularyCategorySidebar _categories;
     private readonly HashSet<Guid> _expanded = [];
     private readonly Func<string?> _pickFile;
-    private bool _updating;
+    private bool _updating, _started, _retiring, _allowClose, _hideRequested;
+    private readonly bool _hideOnClose;
+    private readonly IVocabularyNotebookListPreferences? _listPreferences;
+    private Window? _inputWindow;
+    private TaskCompletionSource? _modalDone;
+    private VocabularySelection? _pendingShow;
+    private readonly HashSet<Task> _operations = [];
     internal FrozenVocabularyBrowserSession Session => _session;
     internal Task? LastOperation { get; private set; }
     internal FrozenVocabularyNotebookWindow(IVocabularyEntryImportStore store, IVocabularyWordListReader reader,
-        IReadOnlyList<LearningLanguage>? preferredLanguages = null, Func<string?>? pickFile = null)
+        IReadOnlyList<LearningLanguage>? preferredLanguages = null, Func<string?>? pickFile = null, IVocabularyNotebookListPreferences? listPreferences = null, bool hideOnClose = false)
     {
-        _store = store; _reader = reader; _owner = new(store); var search = new Search();
+        _store = store; _reader = reader; _owner = new(store); _hideOnClose = hideOnClose; _listPreferences = listPreferences; var search = new Search();
         _session = new(Dispatcher, store, search) { PreferredLanguages = preferredLanguages ?? VocabularyMeaningLabelPolicy.PreferredLanguages(null, [CultureInfo.CurrentUICulture.Name]) };
+        _session.Detailed = listPreferences?.Density == "detailed";
         _pickFile = pickFile ?? (() => { var dialog = new OpenFileDialog { Filter = "Word lists (*.csv;*.txt)|*.csv;*.txt", Multiselect = false }; return dialog.ShowDialog(this) == true ? dialog.FileName : null; });
         Title = "Vocabulary notebook"; Width = 1100; Height = 720; MinWidth = 760; MinHeight = 460; Background = Brushes.White;
         var root = new DockPanel { Background = Brushes.White }; Content = root;
@@ -75,27 +83,72 @@ internal sealed class FrozenVocabularyNotebookWindow : Window
         _language.SelectionChanged += (_, _) => { if (!_updating) { _session.Language = (_language.SelectedItem as LanguageChoice)?.Value; _session.Refresh(); } };
         _tag.SelectionChanged += (_, _) => { if (!_updating) { _session.Tag = (_tag.SelectedItem as TagChoice)?.Value ?? ""; _session.Refresh(); } };
         _sort.SelectionChanged += (_, _) => { if (!_updating) { _session.NewestFirst = _sort.SelectedIndex == 0; _session.Refresh(); } };
-        _density.SelectionChanged += (_, _) => { if (!_updating) { _session.Detailed = _density.SelectedIndex == 1; _session.Refresh(); } };
+        _density.SelectionChanged += (_, _) => { if (!_updating) { _session.Detailed = _density.SelectedIndex == 1; if (_listPreferences is not null) _listPreferences.Density = _session.Detailed ? "detailed" : "compact"; _session.Refresh(); } };
         _organization.SelectionChanged += (_, _) => { if (!_updating) { ChangeOrganization(_organization.SelectedIndex == 1); } };
         _categoryToggle.Click += (_, _) => { _showCategories = !_showCategories; _session.Refresh(); };
         _add.Click += (_, _) => LastOperation = AddAsync(); _import.Click += (_, _) => LastOperation = ImportAsync();
         InputBindings.Add(new KeyBinding(new Relay(() => { if (_add.IsEnabled) LastOperation = AddAsync(); }), Key.N, ModifierKeys.Control));
         InputBindings.Add(new KeyBinding(new Relay(() => { if (_import.IsEnabled) LastOperation = ImportAsync(); }), Key.I, ModifierKeys.Control | ModifierKeys.Shift));
-        _session.Changed += Present; Loaded += (_, _) => LastOperation = _session.LoadAsync(); Closed += (_, _) => _session.Dispose(); Present();
+        _session.Changed += Present; Loaded += (_, _) => { if (!_started && !_retiring) { _started = true; LastOperation = Track(_session.LoadAsync()); } }; Closing += OnClosing; Closed += (_, _) => _session.Dispose(); Present();
     }
     internal void SetPreferredLanguages(IReadOnlyList<LearningLanguage> languages) { _session.PreferredLanguages = Array.AsReadOnly(languages.ToArray()); _session.Refresh(); }
     private static Button Disabled(string title, string tooltip) => new() { Content = title, ToolTip = tooltip, IsEnabled = false, Padding = new Thickness(10, 5, 10, 5) };
     private sealed class Relay(Action action) : ICommand { public event EventHandler? CanExecuteChanged { add { } remove { } } public bool CanExecute(object? p) => true; public void Execute(object? p) => action(); }
+    internal void Reveal(VocabularySelection? selection)
+    {
+        Dispatcher.VerifyAccess(); if (_retiring || selection is null) return;
+        if (_modalDone is not null) { _pendingShow = selection; return; }
+        _expanded.Add(selection.Value.EntryId); LastOperation = Track(_session.RevealSelectionAsync(selection));
+    }
+    private async Task Track(Task operation)
+    {
+        _operations.Add(operation); try { await operation; } finally { _operations.Remove(operation); }
+    }
+    private void OnClosing(object? sender, CancelEventArgs e)
+    {
+        if (_allowClose) return;
+        if (_hideOnClose || _retiring) { e.Cancel = true; if (!_retiring) { if (_modalDone is null) Hide(); else _hideRequested = true; } }
+    }
+    internal async Task RetireAsync()
+    {
+        Dispatcher.VerifyAccess(); if (_retiring) return; _retiring = true;
+        _add.IsEnabled = _import.IsEnabled = false;
+        if (_inputWindow is VocabularyEntryCreationWindow creation) await creation.RetireAsync();
+        else if (_inputWindow is VocabularyWordListImportWindow import) await import.RetireAsync();
+        if (_modalDone is { } modal) await modal.Task;
+        await _session.RetireAsync();
+        while (_operations.Count != 0) { var operations = _operations.ToArray(); await Task.WhenAll(operations); _operations.RemoveWhere(t => t.IsCompleted); }
+        _allowClose = true; Close();
+    }
     private async Task AddAsync()
     {
-        var window = new VocabularyEntryCreationWindow(_owner, _session.Language ?? LearningLanguage.English) { Owner = this }; window.ShowDialog();
-        if (window.Result is { } result) { _expanded.Add(result.Selection?.EntryId ?? Guid.Empty); await _session.RevealAsync(result); }
+        if (_retiring || _modalDone is not null) return;
+        var done = _modalDone = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        try
+        {
+            var window = new VocabularyEntryCreationWindow(_owner, _session.Language ?? LearningLanguage.English) { Owner = this }; _inputWindow = window;
+            window.ShowDialog(); _inputWindow = null;
+            if (!_retiring && window.Result is { } result) { _expanded.Add(result.Selection?.EntryId ?? Guid.Empty); await _session.RevealAsync(result); }
+            if (!_retiring && _pendingShow is { } selection) { _pendingShow = null; _expanded.Add(selection.EntryId); await _session.RevealSelectionAsync(selection); }
+        }
+        finally { _inputWindow = null; _modalDone = null; if (_hideRequested && !_retiring) { _hideRequested = false; Hide(); } done.TrySetResult(); }
     }
     private async Task ImportAsync()
     {
-        string? path = _pickFile(); if (path is null) return;
-        var window = new VocabularyWordListImportWindow(_owner, _reader, path, _session.Language ?? LearningLanguage.English) { Owner = this }; window.ShowDialog();
-        if (window.Result is { } result) { _expanded.Add(result.Selection?.EntryId ?? Guid.Empty); await _session.RevealAsync(result); }
+        if (_retiring || _modalDone is not null) return;
+        var done = _modalDone = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        try
+        {
+            string? path = _pickFile();
+            if (!_retiring && path is not null)
+            {
+                var window = new VocabularyWordListImportWindow(_owner, _reader, path, _session.Language ?? LearningLanguage.English) { Owner = this }; _inputWindow = window;
+                window.ShowDialog(); _inputWindow = null;
+                if (!_retiring && window.Result is { } result) { _expanded.Add(result.Selection?.EntryId ?? Guid.Empty); await _session.RevealAsync(result); }
+            }
+            if (!_retiring && _pendingShow is { } selection) { _pendingShow = null; _expanded.Add(selection.EntryId); await _session.RevealSelectionAsync(selection); }
+        }
+        finally { _inputWindow = null; _modalDone = null; if (_hideRequested && !_retiring) { _hideRequested = false; Hide(); } done.TrySetResult(); }
     }
     private void ChangeOrganization(bool meaning)
     {

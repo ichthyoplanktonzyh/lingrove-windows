@@ -21,6 +21,7 @@ internal sealed class VocabularyWordListImportWindow : Window
     private readonly TextBlock _status = new() { TextWrapping = TextWrapping.Wrap }, _failure = new() { Foreground = Brushes.Firebrick, TextWrapping = TextWrapping.Wrap };
     private readonly Button _import = new() { Name = "vocabularyConfirmImport", Content = "Import", IsDefault = true, MinWidth = 90 }, _cancel = new() { Content = "Cancel", IsCancel = true, MinWidth = 90 };
     private VocabularyWordList? _renderedTable;
+    private bool _retiring;
     internal VocabularyInputResult? Result { get; private set; }
     internal Task? LastOperation { get; private set; }
     internal VocabularyEntryImportSession Session => _session;
@@ -41,6 +42,14 @@ internal sealed class VocabularyWordListImportWindow : Window
     }
     private void OnClosing(object? sender, CancelEventArgs e)
     { if (_session.Saving) { e.Cancel = true; return; } _session.Cancel(); }
+    internal async Task RetireAsync()
+    {
+        Dispatcher.VerifyAccess(); _retiring = true; Refresh();
+        if (_session.Saving && LastOperation is { } operation) await operation;
+        if (IsVisible) Close();
+        await _session.DrainAsync();
+        if (LastOperation is { } pending) await pending;
+    }
     private async Task CommitAsync()
     {
         Result = await _session.CommitAsync();
@@ -49,8 +58,8 @@ internal sealed class VocabularyWordListImportWindow : Window
     private void Refresh()
     {
         if (_session.Table is { } table && !ReferenceEquals(table, _renderedTable)) { _renderedTable = table; BuildSettings(table); }
-        _settings.IsEnabled = !_session.Saving; _cancel.IsEnabled = !_session.Saving;
-        _import.IsEnabled = !_session.Preparing && !_session.Saving && _session.Preview?.Plan.Result.HasChanges == true;
+        _settings.IsEnabled = !_session.Saving && !_retiring; _cancel.IsEnabled = !_session.Saving && !_retiring;
+        _import.IsEnabled = !_retiring && !_session.Preparing && !_session.Saving && _session.Preview?.Plan.Result.HasChanges == true;
         _status.Text = _session.Preparing ? "Preparing preview…" : ""; _failure.Text = _session.Failure ?? "";
         _results.Children.Clear();
         if (_session.Preview is not { } preview) return;

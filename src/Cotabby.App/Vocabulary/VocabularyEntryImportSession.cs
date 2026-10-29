@@ -31,6 +31,7 @@ internal sealed class VocabularyEntryImportSession
     private readonly IVocabularyEntryInputOwner _owner;
     private readonly IVocabularyWordListReader _reader;
     private CancellationTokenSource? _work;
+    private readonly HashSet<Task> _preparations = [];
     private readonly IDisposable _subscription;
     private long _generation;
     private ulong? _latestRevision;
@@ -51,7 +52,8 @@ internal sealed class VocabularyEntryImportSession
     internal string? Failure { get; private set; }
     internal event Action? Changed;
 
-    internal async Task LoadAsync(string path, LearningLanguage language)
+    internal Task LoadAsync(string path, LearningLanguage language) => Track(LoadCoreAsync(path, language));
+    private async Task LoadCoreAsync(string path, LearningLanguage language)
     {
         Verify(); if (!Active || Saving) return;
         var (id, token) = Begin(); Table = null; Configuration = null; Notify();
@@ -64,7 +66,8 @@ internal sealed class VocabularyEntryImportSession
         }
         catch (Exception error) { Fail(id, error); }
     }
-    internal async Task RefreshAsync(VocabularyWordListConfiguration configuration)
+    internal Task RefreshAsync(VocabularyWordListConfiguration configuration) => Track(RefreshCoreAsync(configuration));
+    private async Task RefreshCoreAsync(VocabularyWordListConfiguration configuration)
     {
         Verify(); if (!Active || Saving || Table is null) return;
         var table = Table; Configuration = configuration;
@@ -108,6 +111,21 @@ internal sealed class VocabularyEntryImportSession
         Active = false; lock (_revisionGate) { _revisionRetired = true; _pendingRevision = 0; }
         _subscription.Dispose(); _generation++; _work?.Cancel(); _work?.Dispose(); _work = null;
         Preview = null; Preparing = false; Notify();
+    }
+    private async Task Track(Task operation)
+    {
+        _preparations.Add(operation);
+        try { await operation; } finally { _preparations.Remove(operation); }
+    }
+    // After cancellation no new preparation can be admitted; await even providers that return late.
+    internal async Task DrainAsync()
+    {
+        Verify(); Cancel();
+        while (_preparations.Count != 0)
+        {
+            var operations = _preparations.ToArray(); await Task.WhenAll(operations);
+            _preparations.RemoveWhere(task => task.IsCompleted);
+        }
     }
     // Worker callbacks can arrive faster than the dispatcher can run. Keep one pending operation
     // and the maximum revision; cancellation retires even a callback already copied by the Store.

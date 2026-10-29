@@ -20,6 +20,8 @@ internal sealed class FrozenVocabularyBrowserSession : IDisposable
     private FrozenVocabularyImportSnapshot? _pending;
     private bool _queued, _retired;
     private CancellationTokenSource _load = new();
+    private readonly HashSet<Task> _loads = [];
+    private long _revealGeneration;
     internal FrozenVocabularyBrowserSession(Dispatcher dispatcher, IVocabularyEntryImportStore store, IVocabularyTextSearching search)
     {
         _dispatcher = dispatcher; _store = store; _search = search; dispatcher.VerifyAccess();
@@ -68,7 +70,8 @@ internal sealed class FrozenVocabularyBrowserSession : IDisposable
     }
     internal IReadOnlyList<VocabularySelection> Unclassified => Snapshot is null || Category != "all" ? []
         : VocabularyMeaningBrowserProjection.Unclassified(Snapshot.Document.Semantics, Visible);
-    internal async Task LoadAsync()
+    internal Task LoadAsync() => TrackLoad(LoadCoreAsync());
+    private async Task LoadCoreAsync()
     {
         Verify(); try { var snapshot = await _store.ReadAsync(_load.Token); if (Active) Accept(snapshot); }
         catch (Exception error) { if (Active && error is not OperationCanceledException) { Loading = false; Failure = error.Message; Notify(); } }
@@ -76,10 +79,26 @@ internal sealed class FrozenVocabularyBrowserSession : IDisposable
     internal async Task RevealAsync(VocabularyInputResult result)
     {
         Verify(); if (!Active || result.Selection is not { } target) return;
-        await LoadAsync(); if (!Active || Failure is not null) return;
-        Query = ""; Language = null; Tag = ""; NewestFirst = true; MeaningMode = false; Category = "all";
-        Selection = Entries.Any(e => e.Id == target.EntryId && e.Senses.Any(s => s.Id == target.SenseId)) ? new(target.EntryId, target.SenseId) : null;
-        Destination = null; Notify();
+        await RevealSelectionAsync(new(target.EntryId, target.SenseId));
+    }
+    internal async Task RevealSelectionAsync(VocabularySelection? selection)
+    {
+        Verify(); if (!Active || selection is not { } target) return;
+        long generation = ++_revealGeneration;
+        Query = ""; Language = null; Tag = ""; NewestFirst = true; MeaningMode = false; Category = "all"; Destination = null; Notify();
+        await LoadAsync(); if (!Active || generation != _revealGeneration || Failure is not null) return;
+        Selection = Entries.Any(e => e.Id == target.EntryId && e.Senses.Any(s => s.Id == target.SenseId)) ? target : null;
+        Notify();
+    }
+    private async Task TrackLoad(Task operation)
+    {
+        _loads.Add(operation); try { await operation; } finally { _loads.Remove(operation); }
+    }
+    internal async Task RetireAsync()
+    {
+        Verify(); if (!Active) return; BeginRetire();
+        while (_loads.Count != 0) { var operations = _loads.ToArray(); await Task.WhenAll(operations); _loads.RemoveWhere(t => t.IsCompleted); }
+        _subscription.Dispose(); _load.Dispose();
     }
     internal void Refresh() { Verify(); Notify(); }
     private void QueueSnapshot(FrozenVocabularyImportSnapshot value)
@@ -113,9 +132,11 @@ internal sealed class FrozenVocabularyBrowserSession : IDisposable
     }
     public void Dispose()
     {
-        Verify(); if (!Active) return; Active = false;
-        lock (_gate) { _retired = true; _pending = null; }
-        _subscription.Dispose(); _load.Cancel(); _load.Dispose();
+        Verify(); if (!Active) return; BeginRetire(); _subscription.Dispose(); _load.Dispose();
+    }
+    private void BeginRetire()
+    {
+        Active = false; lock (_gate) { _retired = true; _pending = null; } _load.Cancel();
     }
     private void Verify() => _dispatcher.VerifyAccess();
     private void Notify() => Changed?.Invoke();

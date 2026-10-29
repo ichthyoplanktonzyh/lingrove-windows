@@ -57,6 +57,11 @@ internal sealed class VocabularyGraphPresentation : INotifyPropertyChanged
         if (!_expanded.Contains(target.EntryId)) { _expanded = _expanded.Append(target.EntryId).ToFrozenSet(); Changed(nameof(Expanded)); }
         if (_focusedEntry != target.EntryId) { _focusedEntry = target.EntryId; Changed(nameof(FocusedEntryId)); }
     }
+    public void RevealMeaning(Guid id, IReadOnlySet<Guid>? ancestors = null)
+    {
+        VerifyAccess(); _expanded = _expanded.Concat(ancestors ?? new HashSet<Guid>()).Append(id).ToFrozenSet(); _focusedEntry = id; Changed(nameof(Expanded)); Changed(nameof(FocusedEntryId));
+    }
+    public void RevealCategory(Guid id, IReadOnlySet<Guid>? ancestors = null) => RevealMeaning(id, ancestors);
     public void ClearFocus() { VerifyAccess(); _focusedEntry = null; Changed(nameof(FocusedEntryId)); }
     public void Collapse() { VerifyAccess(); _expanded = FrozenSet<Guid>.Empty; _focusedEntry = null; Changed(nameof(Expanded)); Changed(nameof(FocusedEntryId)); }
     public void Send(VocabularyGraphCommand command)

@@ -31,6 +31,44 @@ public sealed class LearningExplanationControllerTests
             engineFactory: factory ?? (_ => new Engine((_, _, _, _) => Task.FromResult(Answer))));
 
     [Fact]
+    public async Task ShutdownRetiresExpressionWithoutDeltasAndWaitsForNativeDrain()
+    {
+        var started = new TaskCompletionSource<CancellationToken>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var pending = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var runtime = new FakeRuntime { Generate = ct => { started.SetResult(ct); return pending.Task; } };
+        var owner = Owner(runtime, Settings(), new Clock());
+        var work = owner.GenerateExpressionAsync(Expression, value => value.ToLowerInvariant(), default);
+        try
+        {
+            var token = await started.Task.WaitAsync(TimeoutLimit);
+            var cancelled = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            using var registration = token.Register(() => cancelled.TrySetResult());
+            var shutdown = owner.DisposeAsync().AsTask();
+            await cancelled.Task.WaitAsync(TimeoutLimit);
+            Assert.False(shutdown.IsCompleted); Assert.Equal(0, runtime.Disposals);
+            pending.SetResult("{}");
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => work.WaitAsync(TimeoutLimit));
+            await shutdown.WaitAsync(TimeoutLimit); Assert.Equal(1, runtime.Disposals);
+        }
+        finally { pending.TrySetResult("{}"); await owner.DisposeAsync(); }
+    }
+
+    [Fact]
+    public async Task ShutdownSnapshotsConcurrentCompletedInstructionsUnderAdmissionLock()
+    {
+        for (int pass = 0; pass < 20; pass++)
+        {
+            var runtime = new FakeRuntime { Generate = _ => Task.FromResult("{\"candidates\":[],\"clarification\":\"?\"}") };
+            var owner = Owner(runtime, Settings(), new Clock());
+            var jobs = Enumerable.Range(0, 30).Select(_ => owner.GenerateExpressionAsync(Expression, value => value.ToLowerInvariant(), default)).ToArray();
+            var shutdown = owner.DisposeAsync().AsTask();
+            try { await Task.WhenAll(jobs).WaitAsync(TimeoutLimit); } catch (OperationCanceledException) { }
+            await shutdown.WaitAsync(TimeoutLimit);
+            Assert.Equal(1, runtime.Disposals);
+        }
+    }
+
+    [Fact]
     public async Task ExpressionAndExplanationRetireEachOtherAndShutdownDrainsRuntime()
     {
         var runtime = new FakeRuntime(); var settings = Settings();

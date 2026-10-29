@@ -276,22 +276,26 @@ internal sealed class LearningExplanationController : IAsyncDisposable
         {
             if (_disposal is not null) return new(_disposal);
             StopIdleLocked();
+            RetireInstructionLocked();
             // Close service admission now, including cache and saved lookups. Deferring this
             // call to our cleanup worker would leave a window for new non-native requests.
             var serviceDrain = Service.DisposeAsync().AsTask();
-            return new(_disposal = Task.Run(() => DisposeCoreAsync(serviceDrain, _instructionWork.ToArray())));
+            var instructions = _instructionWork.ToArray();
+            return new(_disposal = Task.Run(() => DisposeCoreAsync(serviceDrain, instructions)));
         }
     }
     private async Task DisposeCoreAsync(Task serviceDrain, Task[] instructions)
     {
         try
         {
-            await serviceDrain.ConfigureAwait(false);
+            Exception? failure = null;
+            try { await serviceDrain.ConfigureAwait(false); } catch (Exception error) { failure = error; }
             try { await Task.WhenAll(instructions).ConfigureAwait(false); } catch { }
             Task[] cleanup; lock (_gate) cleanup = _leaseCleanup.ToArray();
             try { await Task.WhenAll(cleanup).ConfigureAwait(false); } catch { }
             Task[] releases; lock (_gate) releases = _releases.ToArray();
             try { await Task.WhenAll(releases).ConfigureAwait(false); } catch { }
+            if (failure is not null) System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(failure).Throw();
         }
         finally { await _runtime.DisposeAsync().ConfigureAwait(false); }
     }

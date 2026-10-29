@@ -27,8 +27,11 @@ The selected word/phrase card requests a bounded basic pair from the local expla
 the shared instruction lease and fixed source grammar; details are a separate request bound to the
 accepted pair. The bundled dictionary searches all resource languages when language is unknown.
 The Windows translation endpoint handles translation only; lookup never silently borrows it. If the
-explanation model is unconfigured, the card offers its settings and bundled dictionary. Saving
-reading lookups to the notebook remains unconnected.
+explanation model is unconfigured, the card offers its settings and bundled dictionary. Explicit
+copy uses the shared clipboard writer with final receipt admission. Favorites use the single
+canonical Store after a fresh receipt check; an accepted lookup meaning or complete translation is
+retained. Unknown-language generated details do not yet enter the older nonnullable explanation
+record projection, so those details are not saved as explanation records.
 
 This is the manual selected-text subset, not complete reading parity. No language recognition or
 surrounding context is acquired in the current native adapter: source remains unknown and a lookup

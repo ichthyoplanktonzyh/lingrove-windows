@@ -8,6 +8,7 @@ using Cotabby.App.Reading;
 using Cotabby.Core.Focus;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.LanguageLearning.Reading;
+using Cotabby.App.UI.Vocabulary;
 
 namespace Cotabby.App.Wpf.Tests;
 
@@ -15,13 +16,155 @@ namespace Cotabby.App.Wpf.Tests;
 public sealed class ReadingPresentationTests(WpfDispatcher dispatcher)
 {
     [Fact]
+    public Task TranslationFavoriteAppearsOnlyForCompleteResultAndKeepsOriginalAndTranslation() => dispatcher.RunAsync(async () =>
+    {
+        var store = new ReadingVocabularyStoreFake();
+        var presentation = new ReadingPresentation(Dispatcher.CurrentDispatcher, new Dictionary(),
+            (_, _) => throw new InvalidOperationException(), (_, _, _) => throw new InvalidOperationException(), () => { },
+            new Clipboard(), store, (_, _) => [new(0, 12)], LearningLanguage.Chinese);
+        var selection = new ReadingSelection(Guid.NewGuid(), "Hello world!", 1, "field", 1, 0, 12, false, true,
+            InputCompositionState.Clear, 1, ScreenRect.Empty);
+        var route = new ReadingRoute(true, ReadingRouteReason.TerminalText, null, false);
+        var state = new ReadingState(selection, null, LearningLanguage.Chinese, route, ReadingStatus.Translating, "Local model", "partial", WordCount: 2);
+        try
+        {
+            presentation.BindAuthority(selection, _ => Task.FromResult(true), default); await presentation.ShowAsync(state);
+            var favorite = Descendants(presentation.ReadingCard).OfType<VocabularyFavoriteButton>().Single();
+            Assert.Equal(Visibility.Collapsed, favorite.Visibility);
+            presentation.Update(state with { Status = ReadingStatus.Ready, Text = "你好世界！" });
+            for (int i = 0; i < 100 && favorite.Visibility != Visibility.Visible; i++) await Task.Delay(10);
+            Assert.Equal(Visibility.Visible, favorite.Visibility); await favorite.LastOperation;
+            favorite.RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); await favorite.LastOperation;
+            Assert.NotNull(store.Saved); Assert.Null(store.Saved.Language); Assert.Equal("Hello world!", store.Saved.Expression);
+            Assert.Equal("你好世界！", store.Saved.Example!.Translation);
+        }
+        finally { await presentation.DisposeAsync(); }
+    });
+    [Fact]
+    public Task AcceptedFavoriteWriteFinishesDuringPresentationShutdown() => dispatcher.RunAsync(async () =>
+    {
+        var pending = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var store = new ReadingVocabularyStoreFake { PendingSave = pending };
+        var presentation = new ReadingPresentation(Dispatcher.CurrentDispatcher, new Dictionary(),
+            (_, _) => Task.FromResult(new ReadingLookupResult("河岸", "")), (_, _, _) => throw new InvalidOperationException(),
+            () => { }, new Clipboard(), store, (_, _) => [], LearningLanguage.Chinese);
+        var selection = new ReadingSelection(Guid.NewGuid(), "bank", 1, "field", 1, 0, 4, false, true,
+            InputCompositionState.Clear, 1, ScreenRect.Empty);
+        var route = new ReadingRoute(false, ReadingRouteReason.StandaloneUnit, "bank", true);
+        try
+        {
+            presentation.BindAuthority(selection, _ => Task.FromResult(true), default);
+            await presentation.ShowAsync(new(selection, null, LearningLanguage.Chinese, route, ReadingStatus.Lookup, "Local model", ""));
+            await presentation.LookupAsync(selection, route, null, LearningLanguage.Chinese, _ => Task.FromResult(true), default, []);
+            var favorite = Descendants(presentation.ReadingCard).OfType<VocabularyFavoriteButton>().Single();
+            await favorite.LastOperation; favorite.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            Assert.NotNull(store.Saved); var shutdown = presentation.DisposeAsync().AsTask(); Assert.False(shutdown.IsCompleted);
+            pending.SetResult(true); await shutdown; Assert.Equal("河岸", store.Saved.Meaning);
+        }
+        finally { pending.TrySetResult(true); await presentation.DisposeAsync(); }
+    });
+    [Fact]
+    public Task SourceAndCompletedResultCopyOnlyTheirOwnText() => dispatcher.RunAsync(async () =>
+    {
+        var clipboard = new RecordingClipboard();
+        var presentation = new ReadingPresentation(Dispatcher.CurrentDispatcher, new Dictionary(),
+            (_, _) => throw new InvalidOperationException(), (_, _, _) => throw new InvalidOperationException(), () => { },
+            clipboard, new ReadingVocabularyStoreFake(), (_, _) => [], LearningLanguage.Chinese);
+        var selection = new ReadingSelection(Guid.NewGuid(), "source", 1, "field", 1, 0, 6, false, true,
+            InputCompositionState.Clear, 1, ScreenRect.Empty);
+        presentation.BindAuthority(selection, _ => Task.FromResult(true), default);
+        try
+        {
+            await presentation.ShowAsync(new(selection, null, LearningLanguage.Chinese,
+                new(true, ReadingRouteReason.TerminalText, null, false), ReadingStatus.Ready, "Local model", "result"));
+            FindButton(presentation.ReadingCard, "Copy source").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            for (int i = 0; i < 100 && clipboard.Values.Count == 0; i++) await Task.Delay(10);
+            Assert.Equal("source", Assert.Single(clipboard.Values));
+            FindButton(presentation.ReadingCard, "Copy result").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            for (int i = 0; i < 100 && clipboard.Values.Count < 2; i++) await Task.Delay(10);
+            Assert.Equal(new[] { "source", "result" }, clipboard.Values);
+        }
+        finally { await presentation.DisposeAsync(); }
+    });
+    [Fact]
+    public Task LookupFavoritePreservesAcceptedUnknownLanguageMeaning() => dispatcher.RunAsync(async () =>
+    {
+        var store = new ReadingVocabularyStoreFake();
+        var presentation = new ReadingPresentation(Dispatcher.CurrentDispatcher, new Dictionary(),
+            (_, _) => Task.FromResult(new ReadingLookupResult("河岸", "")), (_, _, _) => throw new InvalidOperationException(),
+            () => { }, new Clipboard(), store, (_, _) => [], LearningLanguage.Chinese);
+        var selection = new ReadingSelection(Guid.NewGuid(), "bank", 1, "field", 1, 0, 4, false, true,
+            InputCompositionState.Clear, 1, ScreenRect.Empty);
+        var route = new ReadingRoute(false, ReadingRouteReason.StandaloneUnit, "bank", true);
+        try
+        {
+            presentation.BindAuthority(selection, _ => Task.FromResult(true), default);
+            await presentation.ShowAsync(new(selection, null, LearningLanguage.Chinese, route, ReadingStatus.Lookup, "Local model", ""));
+            await presentation.LookupAsync(selection, route, null, LearningLanguage.Chinese, _ => Task.FromResult(true), default, []);
+            var favorite = Descendants(presentation.ReadingCard).OfType<VocabularyFavoriteButton>().Single();
+            await favorite.LastOperation; favorite.RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); await favorite.LastOperation;
+            Assert.NotNull(store.Saved); Assert.Null(store.Saved.Language); Assert.Equal("河岸", store.Saved.Meaning);
+            Assert.Equal(LearningLanguage.Chinese, store.Saved.MeaningLanguage);
+        }
+        finally { await presentation.DisposeAsync(); }
+    });
+    [Fact]
+    public Task LookupFavoriteSavesAcceptedMeaningOnlyAfterCurrentReceiptPreflight() => dispatcher.RunAsync(async () =>
+    {
+        var store = new ReadingVocabularyStoreFake(); var gate = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        bool hold = false; int checks = 0;
+        var presentation = new ReadingPresentation(Dispatcher.CurrentDispatcher, new Dictionary(),
+            (_, _) => Task.FromResult(new ReadingLookupResult("河岸", "")), (_, _, _) => throw new InvalidOperationException(),
+            () => { }, new Clipboard(), store, (_, _) => [], LearningLanguage.Chinese);
+        var selection = new ReadingSelection(Guid.NewGuid(), "bank", 1, "field", 1, 0, 4, false, true,
+            InputCompositionState.Clear, 1, ScreenRect.Empty);
+        var route = new ReadingRoute(false, ReadingRouteReason.StandaloneUnit, "bank", true);
+        Task<bool> Current(CancellationToken _) { checks++; return hold ? gate.Task : Task.FromResult(true); }
+        try
+        {
+            presentation.BindAuthority(selection, Current, default);
+            await presentation.ShowAsync(new(selection, null, LearningLanguage.Chinese, route, ReadingStatus.Lookup, "Local model", ""));
+            await presentation.LookupAsync(selection, route, null, LearningLanguage.Chinese, Current, default, []);
+            var favorite = Descendants(presentation.ReadingCard).OfType<VocabularyFavoriteButton>().Single();
+            await favorite.LastOperation; Assert.True(favorite.IsEnabled);
+            hold = true; favorite.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            for (int i = 0; i < 100 && checks < 3; i++) await Task.Delay(10);
+            presentation.Hide(); gate.SetResult(true); await favorite.LastOperation;
+            Assert.Null(store.Saved);
+        }
+        finally { gate.TrySetResult(false); await presentation.DisposeAsync(); }
+    });
+    [Fact]
+    public Task CopyUsesCompleteResultAndRetiredReceiptCannotCommitClipboard() => dispatcher.RunAsync(async () =>
+    {
+        var clipboard = new GatedClipboard();
+        var presentation = new ReadingPresentation(Dispatcher.CurrentDispatcher, new Dictionary(),
+            (_, _) => throw new InvalidOperationException(), (_, _, _) => throw new InvalidOperationException(), () => { }, clipboard, new ReadingVocabularyStoreFake(), (_, _) => [], LearningLanguage.Chinese);
+        var selection = new ReadingSelection(Guid.NewGuid(), "source", 1, "field", 1, 0, 6, false, true,
+            InputCompositionState.Clear, 1, ScreenRect.Empty);
+        using var cancellation = new CancellationTokenSource();
+        presentation.BindAuthority(selection, _ => Task.FromResult(true), cancellation.Token);
+        var state = new ReadingState(selection, null, LearningLanguage.Chinese,
+            new(true, ReadingRouteReason.TerminalText, null, false), ReadingStatus.Ready, "Local model", "result");
+        try
+        {
+            await presentation.ShowAsync(state);
+            FindButton(presentation.ReadingCard, "Copy result").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            await clipboard.Entered.Task.WaitAsync(TimeSpan.FromSeconds(5));
+            cancellation.Cancel(); presentation.Hide(); var disposing = presentation.DisposeAsync().AsTask();
+            Assert.False(disposing.IsCompleted); clipboard.Release.Set(); await disposing;
+            Assert.Equal("result", clipboard.Payload); Assert.False(clipboard.Committed);
+        }
+        finally { clipboard.Release.Set(); }
+    });
+    [Fact]
     public Task FailedBasicCanRetryAgainstTheSameReceipt() => dispatcher.RunAsync(async () =>
     {
         int calls = 0;
         var presentation = new ReadingPresentation(Dispatcher.CurrentDispatcher, new Dictionary(),
             (_, _) => ++calls == 1 ? Task.FromException<ReadingLookupResult>(new InvalidOperationException())
                 : Task.FromResult(new ReadingLookupResult("meaning", "")),
-            (_, _, _) => throw new InvalidOperationException(), () => { });
+            (_, _, _) => throw new InvalidOperationException(), () => { }, new Clipboard(), new ReadingVocabularyStoreFake(), (_, _) => [], LearningLanguage.Chinese);
         var selection = new ReadingSelection(Guid.NewGuid(), "bank", 1, "field", 1, 0, 4, false, true,
             InputCompositionState.Clear, 1, ScreenRect.Empty);
         var route = new ReadingRoute(false, ReadingRouteReason.StandaloneUnit, "bank", true);
@@ -40,7 +183,7 @@ public sealed class ReadingPresentationTests(WpfDispatcher dispatcher)
     {
         var pending = new TaskCompletionSource<ReadingLookupResult>(TaskCreationOptions.RunContinuationsAsynchronously);
         var presentation = new ReadingPresentation(Dispatcher.CurrentDispatcher, new Dictionary(),
-            (_, _) => pending.Task, (_, _, _) => throw new InvalidOperationException(), () => { });
+            (_, _) => pending.Task, (_, _, _) => throw new InvalidOperationException(), () => { }, new Clipboard(), new ReadingVocabularyStoreFake(), (_, _) => [], LearningLanguage.Chinese);
         var selection = new ReadingSelection(Guid.NewGuid(), "bank", 1, "field", 1, 0, 4, false, true,
             InputCompositionState.Clear, 1, ScreenRect.Empty);
         var route = new ReadingRoute(false, ReadingRouteReason.StandaloneUnit, "bank", true);
@@ -57,7 +200,7 @@ public sealed class ReadingPresentationTests(WpfDispatcher dispatcher)
         var dictionary = new Dictionary(); int basicCalls = 0, detailsCalls = 0;
         var presentation = new ReadingPresentation(Dispatcher.CurrentDispatcher, dictionary,
             (input, _) => { Assert.Null(input.Source); basicCalls++; return Task.FromResult(new ReadingLookupResult("river bank", "")); },
-            (input, basic, _) => { Assert.Equal("river bank", basic.Meaning); detailsCalls++; return Task.FromResult("A noun used for a river edge."); }, () => { });
+            (input, basic, _) => { Assert.Equal("river bank", basic.Meaning); detailsCalls++; return Task.FromResult("A noun used for a river edge."); }, () => { }, new Clipboard(), new ReadingVocabularyStoreFake(), (_, _) => [], LearningLanguage.Chinese);
         var selection = new ReadingSelection(Guid.NewGuid(), "bank", 1, "field", 1, 0, 4, false, true,
             InputCompositionState.Clear, 1, ScreenRect.Empty);
         var route = new ReadingRoute(false, ReadingRouteReason.StandaloneUnit, "bank", true);
@@ -100,6 +243,20 @@ public sealed class ReadingPresentationTests(WpfDispatcher dispatcher)
     }
     private static string[] Text(DependencyObject root) => Descendants(root).OfType<TextBlock>().Select(x => x.Text).ToArray();
     private static Button FindButton(DependencyObject root, string title) => Descendants(root).OfType<Button>().Single(x => Equals(x.Content, title));
+    private sealed class Clipboard : Cotabby.Core.Context.IClipboardTextWriter
+    { public bool TryWrite(string text, Func<bool> tryCommit) => throw new InvalidOperationException(); }
+    private sealed class GatedClipboard : Cotabby.Core.Context.IClipboardTextWriter
+    {
+        public TaskCompletionSource Entered = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        public ManualResetEventSlim Release = new(); public string? Payload; public bool Committed;
+        public bool TryWrite(string text, Func<bool> tryCommit)
+        { Payload = text; Entered.TrySetResult(); Release.Wait(TimeSpan.FromSeconds(5)); return Committed = tryCommit(); }
+    }
+    private sealed class RecordingClipboard : Cotabby.Core.Context.IClipboardTextWriter
+    {
+        public System.Collections.Concurrent.ConcurrentQueue<string> Values = new();
+        public bool TryWrite(string text, Func<bool> tryCommit) { if (!tryCommit()) return false; Values.Enqueue(text); return true; }
+    }
     private sealed class Dictionary : ILearningDictionaryProviding, ILearningUnknownDictionaryProviding
     {
         public int UnknownCalls;

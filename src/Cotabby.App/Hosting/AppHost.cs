@@ -192,6 +192,7 @@ public sealed class AppHost : IAsyncDisposable
         _notebook.Window.AttachReviewFeature(Review, () => SettingsWindow.ShowReview(this));
         Vocabulary.EnrichCapture = capture =>
         {
+            if (capture.Language is null) return capture; // The older explanation projection has no unknown-language value.
             var input = LearningExplanationPolicy.Input(capture);
             try { return capture with { Explanation = LearningExplanation.Service.Cached(input) ?? LearningExplanation.Service.SavedRecord(input) }; }
             // Annotation is optional. A shutdown race must preserve the captured favorite even
@@ -281,6 +282,7 @@ public sealed class AppHost : IAsyncDisposable
             _nativeReading = new Win32ReadingSelectionReader(nativeFocus, _hook);
             _readingOrigin = new Win32ReadingOriginTracker(nativeFocus);
             var lexical = _services.GetRequiredService<IcuLearningLexicalText>();
+            var sentences = (IcuLearningEvidenceSentenceTokenizer)_services.GetRequiredService<ILearningEvidenceSentenceTokenizer>();
             _reading = new ReadingApplication(overlay.Dispatcher, _hook, () => OperatingSystem.IsWindowsVersionAtLeast(8, 1) ? _readingOrigin.Current : null,
                 new NativeReadingSelectionReader(_nativeReading), (text, language) => language is { } known
                     ? lexical.Words(text, known) : lexical.WordsUnknown(text),
@@ -289,7 +291,9 @@ public sealed class AppHost : IAsyncDisposable
                     raw => ReadingLookupPolicy.Parse(raw, input, lexical.Lowercase), token),
                 (input, basic, token) => LearningExplanation.GenerateReadingLookupAsync(input, basic,
                     ReadingLookupPolicy.ParseDetails, token),
-                () => SettingsWindow.ShowLearning(this), LearningPreview.ReadingTranslator,
+                () => SettingsWindow.ShowLearning(this), _services.GetRequiredService<IClipboardTextWriter>(), Vocabulary,
+                (text, language) => language is { } known ? sentences.Tokenize(text, known) : sentences.TokenizeUnknown(text),
+                LearningPreview.ReadingTranslator,
                 () => { Coordinator.InvalidateSession(); LearningPreview.SuspendForInlineFeature(); },
                 () => _expressions.IsActive || EmojiPicker.IsCapturing || Macros.IsCapturing);
         }

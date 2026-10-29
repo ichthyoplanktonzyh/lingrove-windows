@@ -10,6 +10,13 @@ namespace Cotabby.App.Wpf.Tests;
 public sealed class UiaReadingSelectionTests(WpfDispatcher dispatcher)
 {
     [Fact]
+    public void ReadingControlGateRejectsIntegratedTerminalAndCredentialLabels()
+    {
+        Assert.False(UiaTextEditEvidence.ReadingControlAllowed("", "", "", "xterm-helper-textarea"));
+        Assert.False(UiaTextEditEvidence.ReadingControlAllowed("Password", "", "", "RichEdit"));
+        Assert.True(UiaTextEditEvidence.ReadingControlAllowed("Article", "", "Text", "RichEdit"));
+    }
+    [Fact]
     public Task OwnedHiddenRichEditKeepsExactReadOnlyOccurrence() => dispatcher.RunAsync(async () =>
     {
         if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;

@@ -4,10 +4,12 @@ using Cotabby.App.UI.Controls;
 using Cotabby.App.UI.Settings.Panes;
 using Cotabby.Core.Input;
 using Cotabby.Core.Focus;
+using Cotabby.Core.Context;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.LanguageLearning.Reading;
 using Cotabby.Core.Suggestions;
 using Cotabby.Win32.Reading;
+using Cotabby.App.Vocabulary;
 
 namespace Cotabby.App.Reading;
 
@@ -23,6 +25,9 @@ internal sealed class ReadingApplication : IAsyncDisposable
     private readonly Func<ReadingLookupInput, CancellationToken, Task<ReadingLookupResult>> _basicLookup;
     private readonly Func<ReadingLookupInput, ReadingLookupResult, CancellationToken, Task<string>> _detailsLookup;
     private readonly Action _configure;
+    private readonly IClipboardTextWriter _clipboard;
+    private readonly IWritingVocabularyStore _vocabulary;
+    private readonly Func<string, LearningLanguage?, IReadOnlyList<LearningTextRange>> _sentences;
     private readonly Func<AppSettings, int, Func<ReadingSelection, LearningLanguage?, LearningLanguage, Action<string>, CancellationToken, Task<string>>> _translation;
     private readonly Action _beforeCapture;
     private readonly Func<bool> _otherInlineActive;
@@ -40,12 +45,14 @@ internal sealed class ReadingApplication : IAsyncDisposable
         IReadingSelectionReader reader, Func<string, LearningLanguage?, IReadOnlyList<LearningDictionaryWord>> words,
         ILearningDictionaryProviding dictionary,
         Func<ReadingLookupInput, CancellationToken, Task<ReadingLookupResult>> basicLookup,
-        Func<ReadingLookupInput, ReadingLookupResult, CancellationToken, Task<string>> detailsLookup, Action configure,
+        Func<ReadingLookupInput, ReadingLookupResult, CancellationToken, Task<string>> detailsLookup, Action configure, IClipboardTextWriter clipboard,
+        IWritingVocabularyStore vocabulary, Func<string, LearningLanguage?, IReadOnlyList<LearningTextRange>> sentences,
         Func<AppSettings, int, Func<ReadingSelection, LearningLanguage?, LearningLanguage, Action<string>, CancellationToken, Task<string>>> translation,
         Action beforeCapture, Func<bool> otherInlineActive)
     {
         _dispatcher = dispatcher; _hook = hook; _origin = origin; _reader = reader; _words = words;
-        _dictionary = dictionary; _basicLookup = basicLookup; _detailsLookup = detailsLookup; _configure = configure; _translation = translation;
+        _dictionary = dictionary; _basicLookup = basicLookup; _detailsLookup = detailsLookup; _configure = configure; _clipboard = clipboard;
+        _vocabulary = vocabulary; _sentences = sentences; _translation = translation;
         _beforeCapture = beforeCapture; _otherInlineActive = otherInlineActive;
         hook.KeyEvent += OnKey;
     }
@@ -83,6 +90,7 @@ internal sealed class ReadingApplication : IAsyncDisposable
             System.Text.Json.JsonSerializer.Serialize(settings), credentialRevision,
             _translation(settings, credentialRevision))
         {
+            LookupLanguage = settings.ResolvedLearningExplanationLanguage,
             LookupLabel = string.IsNullOrWhiteSpace(settings.LearningExplanationSnapshot().LocalModel)
                 ? "Local AI explanation model not configured · bundled dictionary available"
                 : "Local AI explanation model: " + ModelDisplayText.Safe(settings.LearningExplanationSnapshot().LocalModel)
@@ -114,7 +122,8 @@ internal sealed class ReadingApplication : IAsyncDisposable
     private void Start(Preferences preferences, int key, ReadingForeground origin, long revision)
     {
         Retire(); _beforeCapture();
-        var presentation = new ReadingPresentation(_dispatcher, _dictionary, _basicLookup, _detailsLookup, _configure);
+        var presentation = new ReadingPresentation(_dispatcher, _dictionary, _basicLookup, _detailsLookup, _configure, _clipboard,
+            _vocabulary, _sentences, preferences.LookupLanguage);
         var session = new ReadingSession(_dispatcher, new OriginReader(_reader, _origin, origin), presentation,
             _ => new(null, ReadingLanguageEvidence.Unavailable),
             (text, language) => _words(text, language).Count,
@@ -163,6 +172,7 @@ internal sealed class ReadingApplication : IAsyncDisposable
         Func<ReadingSelection, LearningLanguage?, LearningLanguage, Action<string>, CancellationToken, Task<string>> Translate)
     {
         internal string LookupLabel { get; init; } = "Local AI explanation model · bundled dictionary available";
+        internal LearningLanguage LookupLanguage { get; init; }
     }
 
     // A queued shortcut is authorized for the focus snapshot that won arbitration, not a later

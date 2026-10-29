@@ -32,9 +32,10 @@ internal sealed record ReadingSettings(bool Enabled, bool SelectionEnabled, bool
     ReadingDestination Translation, ReadingDestination Lookup, long Revision);
 internal enum ReadingStatus { Loading, Translating, Lookup, Ready, Error }
 internal sealed record ReadingState(ReadingSelection Selection, LearningLanguage? Source, LearningLanguage Target,
-    ReadingRoute Route, ReadingStatus Status, string Destination, string Text, string? Message = null);
+    ReadingRoute Route, ReadingStatus Status, string Destination, string Text, string? Message = null, int WordCount = 0);
 internal interface IReadingPresentation
 {
+    void BindAuthority(ReadingSelection selection, Func<CancellationToken, Task<bool>> current, CancellationToken token) { }
     /// <summary>Displays the destination before any provider receives selected text.</summary>
     Task ShowAsync(ReadingState state);
     void Update(ReadingState state);
@@ -111,12 +112,13 @@ internal sealed class ReadingSession : IAsyncDisposable
             var selection = capture.Selection;
             ReadingSelectionPolicy.ValidateReceipt(selection);
             if (!await capture.IsCurrentAsync(token) || !Current(revision, token)) { if (Current(revision, token)) Dismiss(); return; }
-            var (resolution, route) = await Task.Run(() =>
+            var (resolution, route, wordCount) = await Task.Run(() =>
             {
                 token.ThrowIfCancellationRequested();
                 var resolved = _resolve(selection);
                 token.ThrowIfCancellationRequested();
-                return (resolved, ReadingSelectionPolicy.Route(selection, _wordCount(selection.Text, resolved.Language)));
+                var words = _wordCount(selection.Text, resolved.Language);
+                return (resolved, ReadingSelectionPolicy.Route(selection, words), words);
             }, token);
             if (!Current(revision, token)) return;
             if (!await capture.IsCurrentAsync(token)) { if (Current(revision, token)) Dismiss(); return; }
@@ -126,13 +128,14 @@ internal sealed class ReadingSession : IAsyncDisposable
             {
                 Dismiss(); _presentation.ShowCaptureError("Configure and explicitly select a destination for this reading task."); return;
             }
+            _presentation.BindAuthority(selection, capture.IsCurrentAsync, token);
             if (route.IsTranslation && resolution.Language == settings.Target)
             {
                 await _presentation.ShowAsync(new(selection, resolution.Language, settings.Target, route, ReadingStatus.Error,
                     destinationLabel, "", "The text is already in the reading target language."));
                 return;
             }
-            var state = new ReadingState(selection, resolution.Language, settings.Target, route, ReadingStatus.Loading, destinationLabel, "");
+            var state = new ReadingState(selection, resolution.Language, settings.Target, route, ReadingStatus.Loading, destinationLabel, "", WordCount: wordCount);
             await _presentation.ShowAsync(state);
             displayed = state;
             if (!Current(revision, token)) return;

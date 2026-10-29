@@ -20,7 +20,7 @@ public sealed class ReadingApplicationTests(WpfDispatcher dispatcher)
         var pending = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
         var app = new ReadingApplication(Dispatcher.CurrentDispatcher, hook, () => focus.Value, reader,
             (_, _) => [new("Hello", new(0, 5)), new("world", new(6, 5))], new Dictionary(),
-            (_, _) => throw new InvalidOperationException(), (_, _, _) => throw new InvalidOperationException(), () => { },
+            (_, _) => throw new InvalidOperationException(), (_, _, _) => throw new InvalidOperationException(), () => { }, new Clipboard(), new ReadingVocabularyStoreFake(), (_, _) => [],
             (_, _) => (_, _, _, _, token) => { started.SetResult(token); return pending.Task; }, () => { }, () => false);
         app.ApplySettings(new AppSettings { LearningReadingEnabled = true, LearningTranslationEnabled = true }, 0, false);
         Assert.True(hook.Emit().Suppress); var token = await started.Task.WaitAsync(TimeSpan.FromSeconds(5));
@@ -35,7 +35,7 @@ public sealed class ReadingApplicationTests(WpfDispatcher dispatcher)
         reader.Lease.Selection = reader.Lease.Selection with { ProcessId = Environment.ProcessId + 2 };
         var app = new ReadingApplication(Dispatcher.CurrentDispatcher, hook, () => focus.Value, reader,
             (_, _) => [], new Dictionary(), (_, _) => throw new InvalidOperationException(),
-            (_, _, _) => throw new InvalidOperationException(), () => { },
+            (_, _, _) => throw new InvalidOperationException(), () => { }, new Clipboard(), new ReadingVocabularyStoreFake(), (_, _) => [],
             (_, _) => (_, _, _, _, _) => { calls++; return Task.FromResult("bad"); }, () => { }, () => false);
         var settings = new AppSettings { LearningReadingEnabled = true, LearningTranslationEnabled = true };
         app.ApplySettings(settings, 0, false); Assert.True(hook.Emit().Suppress);
@@ -48,7 +48,7 @@ public sealed class ReadingApplicationTests(WpfDispatcher dispatcher)
         var focus = new Focus(); var hook = new Hook(); var reader = new Reader(); int effects = 0;
         var app = new ReadingApplication(Dispatcher.CurrentDispatcher, hook, () => focus.Value, reader,
             (_, _) => [], new Dictionary(), (_, _) => throw new InvalidOperationException(),
-            (_, _, _) => throw new InvalidOperationException(), () => { },
+            (_, _, _) => throw new InvalidOperationException(), () => { }, new Clipboard(), new ReadingVocabularyStoreFake(), (_, _) => [],
             (_, _) => (_, _, _, _, _) => throw new InvalidOperationException(), () => effects++, () => false);
         var settings = new AppSettings { LearningReadingEnabled = true, LearningTranslationEnabled = true };
         app.ApplySettings(settings, 0, false); Assert.True(hook.Emit().Suppress);
@@ -64,7 +64,7 @@ public sealed class ReadingApplicationTests(WpfDispatcher dispatcher)
         var pending = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
         var app = new ReadingApplication(Dispatcher.CurrentDispatcher, hook, () => focus.Value, reader,
             (_, _) => [new("Hello", new(0, 5)), new("world", new(6, 5))], new Dictionary(),
-            (_, _) => throw new InvalidOperationException(), (_, _, _) => throw new InvalidOperationException(), () => { },
+            (_, _) => throw new InvalidOperationException(), (_, _, _) => throw new InvalidOperationException(), () => { }, new Clipboard(), new ReadingVocabularyStoreFake(), (_, _) => [],
             (_, _) => (_, source, _, _, _) => { Assert.Null(source); invoked++; return pending.Task; }, () => { }, () => false);
         var settings = new AppSettings { LearningReadingEnabled = true, LearningTranslationEnabled = true };
         app.ApplySettings(settings, 0, false);
@@ -88,7 +88,7 @@ public sealed class ReadingApplicationTests(WpfDispatcher dispatcher)
         reader.Lease.Selection = reader.Lease.Selection with { Composition = InputCompositionState.Unknown, CompositionSequence = 0 };
         var app = new ReadingApplication(Dispatcher.CurrentDispatcher, hook, () => focus.Value, reader,
             (_, _) => [], new Dictionary(), (_, _) => throw new InvalidOperationException(),
-            (_, _, _) => throw new InvalidOperationException(), () => { },
+            (_, _, _) => throw new InvalidOperationException(), () => { }, new Clipboard(), new ReadingVocabularyStoreFake(), (_, _) => [],
             (_, _) => (_, _, _, _, _) => { calls++; return Task.FromResult("bad"); }, () => { }, () => false);
         app.ApplySettings(new AppSettings { LearningReadingEnabled = true, LearningTranslationEnabled = true }, 0, false);
         Assert.True(hook.Emit().Suppress);
@@ -101,7 +101,7 @@ public sealed class ReadingApplicationTests(WpfDispatcher dispatcher)
         var focus = new Focus(); var hook = new Hook(); var reader = new Reader();
         var app = new ReadingApplication(Dispatcher.CurrentDispatcher, hook, () => focus.Value, reader,
             (_, _) => [], new Dictionary(), (_, _) => throw new InvalidOperationException(),
-            (_, _, _) => throw new InvalidOperationException(), () => { },
+            (_, _, _) => throw new InvalidOperationException(), () => { }, new Clipboard(), new ReadingVocabularyStoreFake(), (_, _) => [],
             (_, _) => (_, _, _, _, _) => throw new InvalidOperationException(), () => { }, () => false);
         app.ApplySettings(new AppSettings { LearningReadingEnabled = true, LearningTranslationEnabled = true }, 0, false);
         Assert.True(hook.Emit().Suppress); focus.Value = focus.Value with { FocusEpoch = 2 };
@@ -132,6 +132,8 @@ public sealed class ReadingApplicationTests(WpfDispatcher dispatcher)
         public Task<bool> IsCurrentAsync(CancellationToken token) => Task.FromResult(!Retired);
         public void Retire() => Retired = true; public ValueTask DisposeAsync() => ValueTask.CompletedTask;
     }
+    private sealed class Clipboard : Cotabby.Core.Context.IClipboardTextWriter
+    { public bool TryWrite(string text, Func<bool> tryCommit) => throw new InvalidOperationException(); }
     private sealed class Dictionary : ILearningDictionaryProviding
     {
         public Task<LearningDictionaryResult> LookupAsync(string query, LearningLanguage language, bool expression, CancellationToken cancellationToken = default)

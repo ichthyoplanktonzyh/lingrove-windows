@@ -18,6 +18,8 @@ public sealed class VocabularyFavoriteButton : Button
     private IWritingVocabularyStore? _store;
     private VocabularyCapture? _capture;
     private Func<bool>? _canAct;
+    private Func<Task<bool>>? _preflight;
+    private long? _preflightBinding;
     private long _binding;
     private string? _failure;
     private readonly ResourceDictionary _icons = new() { Source = new Uri("/Cotabby;component/UI/Vocabulary/VocabularyIcons.xaml", UriKind.Relative) };
@@ -30,14 +32,14 @@ public sealed class VocabularyFavoriteButton : Button
         Unloaded += (_, _) => Clear();
         AutomationProperties.SetName(this, "Save to vocabulary");
     }
-    internal void Bind(IWritingVocabularyStore store, VocabularyCapture capture, Func<bool> canAct)
+    internal void Bind(IWritingVocabularyStore store, VocabularyCapture capture, Func<bool> canAct, Func<Task<bool>>? preflight = null)
     {
         Dispatcher.VerifyAccess();
         if (!ReferenceEquals(store, _store) || capture != _capture)
         {
             Clear(); _store = store; _capture = capture; _store.Changed += Refresh;
         }
-        _canAct = canAct; Visibility = Visibility.Visible; Refresh();
+        _canAct = canAct; _preflight = preflight; Visibility = Visibility.Visible; Refresh();
         LastOperation = LoadAsync(store, _binding);
     }
     internal void Clear()
@@ -45,7 +47,7 @@ public sealed class VocabularyFavoriteButton : Button
         Dispatcher.VerifyAccess(); ++_binding;
         if (_store is not null) _store.Changed -= Refresh;
         if (ContextMenu is { } menu) menu.IsOpen = false;
-        ContextMenu = null; _store = null; _capture = null; _canAct = null; _failure = null;
+        ContextMenu = null; _store = null; _capture = null; _canAct = null; _preflight = null; _preflightBinding = null; _failure = null;
         Content = null; ToolTip = null; Visibility = Visibility.Collapsed; IsEnabled = false; FailureChanged?.Invoke(null);
         AutomationProperties.SetHelpText(this, ""); AutomationProperties.SetItemStatus(this, "");
     }
@@ -61,7 +63,7 @@ public sealed class VocabularyFavoriteButton : Button
         Dispatcher.VerifyAccess();
         if (_store is null || _capture is null) return;
         bool saved = _store.Contains(_capture), pending = _store.IsPending(_capture);
-        IsEnabled = _store.IsLoaded && !pending && Current(_binding);
+        IsEnabled = _store.IsLoaded && !pending && _preflightBinding != _binding && Current(_binding);
         Content = pending ? new ProgressBar { Width = 18, Height = 3, IsIndeterminate = true } : Icon(saved);
         ToolTip = _failure ?? (!_store.IsLoaded ? _store.ErrorMessage ?? "Loading vocabulary…" : saved ? "Saved · Show actions" : "Save to vocabulary");
         AutomationProperties.SetItemStatus(this, !_store.IsLoaded ? (_store.ErrorMessage is null ? "Loading…" : "Unavailable") : pending ? "Saving…" : saved ? "Saved" : "Not saved");
@@ -80,8 +82,8 @@ public sealed class VocabularyFavoriteButton : Button
     private void OnClick(object sender, RoutedEventArgs args)
     {
         long binding = _binding;
-        if (!Current(binding) || !_store!.IsLoaded || _store.IsPending(_capture!)) return;
-        if (!_store.Contains(_capture!)) { LastOperation = ChangeAsync(binding, remove: false); return; }
+        if (!Current(binding) || _preflightBinding == binding || !_store!.IsLoaded || _store.IsPending(_capture!)) return;
+        if (!_store.Contains(_capture!)) { LastOperation = ChangeAfterPreflightAsync(binding, remove: false); return; }
         var menu = new ContextMenu { PlacementTarget = this, Focusable = false };
         // Notebook navigation will register the source-equivalent route in its own UI slice.
         if (_store.OpenSelection is not null)
@@ -90,8 +92,21 @@ public sealed class VocabularyFavoriteButton : Button
             show.Click += (_, _) => { if (Current(binding)) _store!.Show(_capture!); }; menu.Items.Add(show);
         }
         var remove = new MenuItem { Header = "Remove this saved usage", Focusable = false };
-        remove.Click += (_, _) => { if (Current(binding)) LastOperation = ChangeAsync(binding, remove: true); };
+        remove.Click += (_, _) => { if (Current(binding)) LastOperation = ChangeAfterPreflightAsync(binding, remove: true); };
         menu.Items.Add(remove); ContextMenu = menu; menu.IsOpen = true;
+    }
+    private async Task ChangeAfterPreflightAsync(long binding, bool remove)
+    {
+        var preflight = _preflight;
+        if (preflight is not null)
+        {
+            if (_preflightBinding == binding) return;
+            _preflightBinding = binding; Refresh();
+            try { if (!await preflight()) return; }
+            catch (Exception) { return; } // A failed receipt never authorizes storage.
+            finally { if (_preflightBinding == binding) { _preflightBinding = null; Refresh(); } }
+        }
+        if (Current(binding)) await ChangeAsync(binding, remove);
     }
     private async Task ChangeAsync(long binding, bool remove)
     {

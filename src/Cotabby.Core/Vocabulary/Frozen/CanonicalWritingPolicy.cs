@@ -8,7 +8,7 @@ using L = Cotabby.Core.LanguageLearning;
 namespace Cotabby.Core.Vocabulary.Frozen;
 
 /// <summary>Detached live-writing input; adapting it never opens an older notebook or codec.</summary>
-public sealed record CanonicalWritingCapture(string Expression, string DictionaryForm, LearningLanguage Language,
+public sealed record CanonicalWritingCapture(string Expression, string DictionaryForm, LearningLanguage? Language,
     Live.VocabularyEntryKind Kind, string Meaning, LearningLanguage? MeaningLanguage, VocabularyExample? Example,
     LearningExplanationRecord? Explanation, Guid? SenseId);
 public sealed record CanonicalCaptureDraft(VocabularyDocument Document, Live.VocabularyExplanationDestination Destination);

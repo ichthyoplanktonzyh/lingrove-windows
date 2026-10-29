@@ -154,6 +154,8 @@ public sealed class CanonicalWritingFavoriteViewTests(WpfDispatcher dispatcher)
         public Task<Frozen.FrozenVocabularyImportSnapshot> UpdateSemanticsAsync(Frozen.VocabularySemanticIndex edited, Frozen.VocabularySemanticIndex baseline, CancellationToken token = default) => inner.UpdateSemanticsAsync(edited, baseline, token);
         public Task<Frozen.FrozenVocabularyImportSnapshot> UpdateClassificationAsync(Cotabby.Core.Vocabulary.Resources.VocabularyClassificationIndex edited, Cotabby.Core.Vocabulary.Resources.VocabularyClassificationIndex baseline, CancellationToken token = default) => inner.UpdateClassificationAsync(edited, baseline, token);
         public Task BackupAsync(string destination, CancellationToken token = default) => inner.BackupAsync(destination, token);
+        public Task<Cotabby.Core.Vocabulary.VocabularyExportPackage> PrepareExportAsync(IReadOnlyList<Cotabby.Core.Vocabulary.VocabularySelection> selections, Cotabby.Core.Vocabulary.VocabularyExportConfiguration configuration, CancellationToken token = default) => inner.PrepareExportAsync(selections, configuration, token);
+        public Task WriteExportAsync(Cotabby.Core.Vocabulary.VocabularyExportPackage package, string destination, CancellationToken token = default) => inner.WriteExportAsync(package, destination, token);
         public Task<Frozen.FrozenVocabularyImportSnapshot> RestoreAsync(string source, CancellationToken token = default) => inner.RestoreAsync(source, token);
         public ValueTask DisposeAsync() => ValueTask.CompletedTask;
     }

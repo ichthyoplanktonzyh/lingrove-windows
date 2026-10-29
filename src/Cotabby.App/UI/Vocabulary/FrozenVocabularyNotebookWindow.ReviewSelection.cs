@@ -15,15 +15,17 @@ internal sealed partial class FrozenVocabularyNotebookWindow
     private readonly Button _selectReview = new() { Name = "canonicalSelectSenses", Content = "Select senses", Padding = new Thickness(10, 5, 10, 5) };
     private readonly StackPanel _reviewSelectionBar = new() { Orientation = Orientation.Horizontal, Margin = new Thickness(18, 6, 18, 12) };
     private readonly TextBlock _reviewSelectionCount = new() { VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 12, 0) };
+    private readonly Button _exportSelected = new() { Name = "canonicalExportSelected", Content = "Export selected…" };
     private readonly Button _selectVisible = new() { Name = "canonicalSelectVisible", Content = "Select visible" }, _clearReview = new() { Name = "canonicalClearSelection", Content = "Clear" },
         _prepareSelected = new() { Name = "canonicalPrepareSelected", Content = "Prepare selected" }, _finishSelection = new() { Name = "canonicalFinishSelection", Content = "Done" };
     private void InitializeReviewSelection(Panel toolbar, DockPanel root)
     {
         VocabularyNotebookTheme.Button(_selectReview); _selectReview.Margin = new Thickness(0, 0, 8, 8); toolbar.Children.Add(_selectReview);
-        foreach (var button in new[] { _selectVisible, _clearReview, _prepareSelected, _finishSelection }) { VocabularyNotebookTheme.Button(button, button == _prepareSelected); button.Margin = new Thickness(0, 0, 8, 0); }
-        _reviewSelectionBar.Children.Add(_reviewSelectionCount); _reviewSelectionBar.Children.Add(_selectVisible); _reviewSelectionBar.Children.Add(_clearReview); _reviewSelectionBar.Children.Add(_prepareSelected); _reviewSelectionBar.Children.Add(_finishSelection);
+        foreach (var button in new[] { _selectVisible, _clearReview, _prepareSelected, _exportSelected, _finishSelection }) { VocabularyNotebookTheme.Button(button, button == _prepareSelected); button.Margin = new Thickness(0, 0, 8, 0); }
+        _reviewSelectionBar.Children.Add(_reviewSelectionCount); _reviewSelectionBar.Children.Add(_selectVisible); _reviewSelectionBar.Children.Add(_clearReview); _reviewSelectionBar.Children.Add(_prepareSelected); _reviewSelectionBar.Children.Add(_exportSelected); _reviewSelectionBar.Children.Add(_finishSelection);
         DockPanel.SetDock(_reviewSelectionBar, Dock.Bottom); int contentIndex = root.Children.IndexOf(_content); root.Children.Insert(contentIndex < 0 ? root.Children.Count : contentIndex, _reviewSelectionBar);
         _selectReview.Click += (_, _) => { _selectingReviewSenses = !_selectingReviewSenses; if (_selectingReviewSenses && _graphMode) SetGraphMode(false); if (_selectingReviewSenses && _session.MeaningMode) _organization.SelectedIndex = 0; _session.Refresh(); };
+        _exportSelected.Click += (_, _) => LastOperation = OpenCanonicalExportAsync();
         _finishSelection.Click += (_, _) => { _selectingReviewSenses = false; _session.Refresh(); };
         _selectVisible.Click += (_, _) => { foreach (var entry in _session.Visible) foreach (var sense in entry.Senses) _reviewSelections.Add(new(entry.Id, sense.Id)); _session.Refresh(); };
         _clearReview.Click += (_, _) => { _reviewSelections.Clear(); _session.Refresh(); };
@@ -35,7 +37,8 @@ internal sealed partial class FrozenVocabularyNotebookWindow
         _reviewSelectionBar.Visibility = _selectingReviewSenses ? Visibility.Visible : Visibility.Collapsed;
         _reviewSelectionCount.Text = $"{_reviewSelections.Count} selected"; _clearReview.IsEnabled = _reviewSelections.Count > 0;
         _prepareSelected.IsEnabled = _reviewSelections.Count > 0 && _reviewFeature is not null && !_retiring && _modalDone is null;
-        _selectVisible.IsEnabled = _session.Visible.Count > 0 && !_retiring; _selectReview.IsEnabled = !_retiring && _reviewFeature is not null;
+        _exportSelected.IsEnabled = _reviewSelections.Count > 0 && !_retiring && _modalDone is null && _store is F.ICanonicalVocabularyExportStore;
+        _selectVisible.IsEnabled = _session.Visible.Count > 0 && !_retiring; _selectReview.IsEnabled = !_retiring && (_reviewFeature is not null || _store is F.ICanonicalVocabularyExportStore);
         _selectReview.Content = _selectingReviewSenses ? "Selecting senses" : "Select senses";
     }
     private object ReviewSenseHeader(F.VocabularyEntry entry, F.VocabularySense sense, FrameworkElement label)

@@ -24,6 +24,8 @@ internal static class Fields
         HasReliableSelection = true,
         IsTextWindowTruncated = false,
         FocusChangeSequence = 1,
+        Composition = InputCompositionState.Clear,
+        CompositionSequence = 1,
     };
 }
 

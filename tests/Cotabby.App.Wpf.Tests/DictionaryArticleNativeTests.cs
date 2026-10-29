@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Cotabby.App.UI.Learning;
 using Cotabby.Core.LanguageLearning;
+using Cotabby.Win32.Vocabulary;
 using Microsoft.Web.WebView2.Wpf;
 
 namespace Cotabby.App.Wpf.Tests;
@@ -10,6 +11,66 @@ namespace Cotabby.App.Wpf.Tests;
 [Collection("WPF views")]
 public sealed class DictionaryArticleNativeTests(WpfDispatcher dispatcher)
 {
+    [Fact]
+    public Task NativeOwnedProfileWaitsForRetiredControllerInitialization() => dispatcher.RunAsync(async () =>
+    {
+        string parent = Path.Combine(Path.GetTempPath(), "lingrove-native-profile-test-" + Guid.NewGuid().ToString("N"));
+        VocabularyWindowsFile.CreateParentDirectory(parent);
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var view = new DictionaryArticleView(controllerBarrier: () => { entered.TrySetResult(); return release.Task; },
+            slots: new DictionaryArticleAdmission(), profileParent: parent);
+        var window = new Window { Width = 360, Height = 240, Content = view, ShowInTaskbar = false };
+        int loads = 0;
+        try
+        {
+            window.Show(); Task show = view.ShowAsync(new("<img src=\"late.png\">", "", "Fixture", Guid.NewGuid()),
+                (_, _) => { loads++; return Task.FromResult<DictionaryResource?>(null); }, () => true, CancellationToken.None);
+            await entered.Task.WaitAsync(TimeSpan.FromSeconds(10));
+            window.Close(); await view.DisposeAsync(); await show;
+            Assert.False(view.ProfileCleanup.IsCompleted); release.SetResult();
+            await view.ProfileCleanup.WaitAsync(TimeSpan.FromSeconds(15)); Assert.False(Directory.Exists(view.ProfilePath)); Assert.Equal(0, loads);
+        }
+        finally
+        {
+            release.TrySetResult(); if (window.IsVisible) window.Close(); await view.DisposeAsync();
+            try { Directory.Delete(parent, false); } catch (IOException) { }
+        }
+    });
+
+    [Fact]
+    public Task NativeOwnedProfileSupportsRepeatedWebViewUseAndCleanup() => dispatcher.RunAsync(async () =>
+    {
+        string parent = Path.Combine(Path.GetTempPath(), "lingrove-native-profile-test-" + Guid.NewGuid().ToString("N"));
+        VocabularyWindowsFile.CreateParentDirectory(parent);
+        var slots = new DictionaryArticleAdmission();
+        try
+        {
+            for (int index = 0; index < 3; index++)
+            {
+                var view = new DictionaryArticleView(slots: slots, profileParent: parent);
+                var window = new Window { Width = 360, Height = 240, Content = view, ShowInTaskbar = false };
+                var requested = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+                try
+                {
+                    window.Show();
+                    await view.ShowAsync(new("<p>synthetic</p><img src=\"tiny.png\">", "synthetic", "Fixture", Guid.NewGuid()),
+                        (_, _) => { requested.TrySetResult(); return Task.FromResult<DictionaryResource?>(new([137,80,78,71], "image/png")); },
+                        () => true, CancellationToken.None);
+                    var browser = Assert.Single(view.Children.OfType<WebView2CompositionControl>());
+                    Assert.True(browser.CoreWebView2 is not null, view.InitializationFailure);
+                    await requested.Task.WaitAsync(TimeSpan.FromSeconds(10));
+                    string before = Path.Combine(view.ProfilePath, "synthetic-before"), after = Path.Combine(view.ProfilePath, "synthetic-after");
+                    File.WriteAllText(before, "test"); File.Move(before, after); Assert.True(File.Exists(after));
+                    window.Close(); await view.DisposeAsync(); await view.ProfileCleanup.WaitAsync(TimeSpan.FromSeconds(15));
+                    Assert.False(Directory.Exists(view.ProfilePath));
+                }
+                finally { if (window.IsVisible) window.Close(); await view.DisposeAsync(); }
+            }
+        }
+        finally { try { Directory.Delete(parent, false); } catch (IOException) { } }
+    });
+
     // The test alone owns these synthetic folders. Production has no pathname-based cleanup.
     private static DictionaryProfileEffects TestEffects => new(path => Directory.Delete(path, true), File.GetAttributes, () => Task.Delay(250));
 
@@ -18,7 +79,7 @@ public sealed class DictionaryArticleNativeTests(WpfDispatcher dispatcher)
     {
         var slots = new DictionaryArticleAdmission();
         var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-        var view = new DictionaryArticleView(environmentBarrier: () => release.Task, slots: slots);
+        var view = new DictionaryArticleView(environmentBarrier: () => release.Task, slots: slots, profileEffects: DictionaryProfileEffects.FailClosed);
         var article = new LearningDictionaryResult.Article("fixture", "", "Fixture", Guid.NewGuid());
         string original = view.ProfilePath + "-original";
         try

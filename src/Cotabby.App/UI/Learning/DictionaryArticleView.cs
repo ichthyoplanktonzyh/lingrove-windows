@@ -3,6 +3,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using Cotabby.Core.LanguageLearning;
+using Cotabby.Win32.Dictionary;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.Wpf;
 
@@ -21,16 +22,21 @@ internal sealed class DictionaryArticleView : Grid, IAsyncDisposable
     private Action? _retryAction;
     private readonly HashSet<Task> _work = []; private readonly object _gate = new();
     private readonly CancellationTokenSource _shutdown = new();
-    private readonly string _profile; private CoreWebView2Environment? _environment; private Task? _initialization;
+    private readonly TaskCompletionSource _browserExited = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    private bool _browserStarted;
+    private string _profile; private CoreWebView2Environment? _environment; private Task? _initialization;
+    private WindowsPrivateProfileDirectory? _profileOwner;
+    private readonly string _profileParent;
     private Task? _nativePending;
     private bool _profileMayExist;
     private readonly Func<Task>? _environmentBarrier, _controllerBarrier;
     private readonly Func<string, string> _sanitize;
     private readonly DictionaryArticleAdmission _slots;
-    private readonly DictionaryProfileEffects _profileEffects;
+    private readonly DictionaryProfileEffects? _profileEffects;
     // Retired SDK operations remain rooted until they really finish and their private profile is removed.
     private static readonly object CleanupGate = new();
     private static readonly HashSet<Task> CleanupOwners = [];
+    private static readonly List<(WindowsPrivateProfileDirectory Owner, IDisposable? Admission)> FailedProfiles = [];
     internal Task ProfileCleanup { get; private set; } = Task.CompletedTask;
     internal string ProfilePath => _profile;
     private CancellationTokenSource? _targetCancel; private Target? _target; private long _epoch;
@@ -40,11 +46,13 @@ internal sealed class DictionaryArticleView : Grid, IAsyncDisposable
     internal event Action<string>? ReferenceRequested;
     internal string? InitializationFailure { get; private set; }
     internal DictionaryArticleView(Func<Task>? environmentBarrier = null, Func<Task>? controllerBarrier = null,
-        Func<string, string>? sanitize = null, DictionaryArticleAdmission? slots = null, DictionaryProfileEffects? profileEffects = null)
+        Func<string, string>? sanitize = null, DictionaryArticleAdmission? slots = null, DictionaryProfileEffects? profileEffects = null,
+        string? profileParent = null)
     {
         _environmentBarrier = environmentBarrier; _controllerBarrier = controllerBarrier;
         _sanitize = sanitize ?? DictionaryHtmlPolicy.Document; _slots = slots ?? DictionaryArticleAdmission.Shared;
-        _profileEffects = profileEffects ?? DictionaryProfileEffects.System;
+        _profileEffects = profileEffects;
+        _profileParent = profileParent ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Cotabby", "dictionary-profiles");
         _profile = Path.GetFullPath(Path.Combine(Path.GetTempPath(), "lingrove-dictionary-" + Guid.NewGuid().ToString("N")));
         ((UIElement)_view).Opacity = 0;
         _status.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondary"); Children.Add(_status); Children.Add(_view); Children.Add(_retry);
@@ -82,8 +90,16 @@ internal sealed class DictionaryArticleView : Grid, IAsyncDisposable
     }
     private async Task InitializeAsync()
     {
-        // Set before the effect: an exceptional creation may still have created the directory.
-        _profileMayExist = true; Directory.CreateDirectory(_profile);
+        if (_profileEffects is null)
+        {
+            _profileOwner = WindowsPrivateProfileDirectory.CreateWithPrivateParent(_profileParent);
+            _profile = _profileOwner.Path; _profileMayExist = true;
+        }
+        else
+        {
+            // The injected adapter is used only for isolated tests.
+            _profileMayExist = true; Directory.CreateDirectory(_profile);
+        }
         if (_environmentBarrier is not null) await AwaitNativeAsync(_environmentBarrier());
         var registration = new CoreWebView2CustomSchemeRegistration(DictionaryResourceRequestPolicy.Scheme) { HasAuthorityComponent = true };
         var options = new CoreWebView2EnvironmentOptions(customSchemeRegistrations: [registration]) { AreBrowserExtensionsEnabled = false,
@@ -92,8 +108,11 @@ internal sealed class DictionaryArticleView : Grid, IAsyncDisposable
         var environmentTask = CoreWebView2Environment.CreateAsync(null, _profile, options);
         await AwaitNativeAsync(environmentTask); _environment = await environmentTask;
         if (_disposed) return;
+        _environment.BrowserProcessExited += (_, _) => _browserExited.TrySetResult();
         if (_controllerBarrier is not null) await AwaitNativeAsync(_controllerBarrier());
         var controller = _environment.CreateCoreWebView2ControllerOptions(); controller.IsInPrivateModeEnabled = true;
+        // Ensure may start a browser before its returned task completes or is cancelled.
+        _browserStarted = true;
         await AwaitNativeAsync(_view.EnsureCoreWebView2Async(_environment, controller));
         var core = _view.CoreWebView2; var settings = core.Settings;
         settings.IsScriptEnabled = false; settings.IsWebMessageEnabled = false; settings.AreDefaultScriptDialogsEnabled = false;
@@ -186,14 +205,38 @@ internal sealed class DictionaryArticleView : Grid, IAsyncDisposable
         if (_initialization is { } initialization) try { await initialization; } catch { }
         _shutdown.Dispose();
         var pending = _nativePending;
-        ProfileCleanup = CleanupProfileAsync(pending, _profile, _admission, _profileEffects, _profileMayExist); _admission = null;
+        ProfileCleanup = CleanupProfileAsync(pending, _profile, _admission, _profileEffects, _profileMayExist, _profileOwner,
+            _browserStarted ? _browserExited.Task : null);
+        _admission = null; _profileOwner = null;
         lock (CleanupGate) CleanupOwners.Add(ProfileCleanup);
         _ = ProfileCleanup.ContinueWith(t => { _ = t.Exception; lock (CleanupGate) CleanupOwners.Remove(t); }, TaskScheduler.Default);
     }
-    private static async Task CleanupProfileAsync(Task? pending, string profile, IDisposable? admission, DictionaryProfileEffects effects, bool mayExist)
+    private static async Task CleanupProfileAsync(Task? pending, string profile, IDisposable? admission, DictionaryProfileEffects? effects, bool mayExist,
+        WindowsPrivateProfileDirectory? owner, Task? browserExited)
     {
         if (pending is not null) try { await pending.ConfigureAwait(false); } catch { }
+        if (browserExited is not null) await browserExited.ConfigureAwait(false);
         if (!mayExist) { admission?.Dispose(); return; }
+        if (owner is not null)
+        {
+            try
+            {
+                for (int attempt = 0; ; attempt++)
+                {
+                    try { await owner.DeleteOwnedAsync().ConfigureAwait(false); break; }
+                    catch (IOException) when (attempt < 39) { await Task.Delay(250).ConfigureAwait(false); }
+                    catch (UnauthorizedAccessException) when (attempt < 39) { await Task.Delay(250).ConfigureAwait(false); }
+                }
+                await owner.DisposeAsync().ConfigureAwait(false); admission?.Dispose(); return;
+            }
+            catch
+            {
+                // Keep the native identity handles and slot alive; no unsafe pathname cleanup.
+                lock (CleanupGate) FailedProfiles.Add((owner, admission));
+                throw;
+            }
+        }
+        if (effects is null) throw new InvalidOperationException("Private profile ownership is unavailable.");
         // The path is generated by this control under the system temp directory; never accept a user path.
         string parent = Path.GetFullPath(Path.GetTempPath()).TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar;
         if (profile.StartsWith(parent + "lingrove-dictionary-", StringComparison.OrdinalIgnoreCase))
@@ -244,6 +287,6 @@ internal sealed record DictionaryProfileEffects(Action<string> Delete, Func<stri
 {
     // No pathname-based recursive deletion is safe when the directory may have been replaced.
     // Retain the bounded slot and profile until an identity-safe native owner is available.
-    internal static DictionaryProfileEffects System { get; } = new(_ => throw new InvalidOperationException("Identity-safe private profile cleanup is unavailable."), File.GetAttributes,
+    internal static DictionaryProfileEffects FailClosed { get; } = new(_ => throw new InvalidOperationException("Identity-safe private profile cleanup is unavailable."), File.GetAttributes,
         () => Task.Delay(250));
 }

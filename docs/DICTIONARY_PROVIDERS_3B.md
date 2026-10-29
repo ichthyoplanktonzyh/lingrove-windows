@@ -19,7 +19,8 @@ provider is activated. Loose directory resources and automatic adjacent styleshe
 only resources in explicitly authorized MDD files are opened, preventing a reparse point from initiating
 an unvalidated remote file access.
 
-The App-hosted rich article uses WebView2 with a separate temporary in-private profile, JavaScript
+The App-hosted rich article uses WebView2 with a separate owned in-private profile under the private
+Cotabby local-data directory, JavaScript
 disabled, CSP, denied navigation and a request filter that starts with a deny response. Only a current
 book's authorized local image, stylesheet and font requests may be fulfilled. It limits each resource
 to 8 MB and each presentation to 128 requests and 32 MB. Entry links request a fresh session target;
@@ -28,26 +29,27 @@ map a local folder into the browser. Runtime absence is presented as unavailable
 instructions; the application does not install it. WebView2 runtime internals and its background
 activity are outside this adapter's request interception; independent security review and physical
 desktop verification remain required. A controlled native WebView2 component test loads a synthetic
-article and a synthetic authorized image in a dedicated temporary profile; it checks that scripting
+article and a synthetic authorized image in a dedicated isolated test profile; it checks that scripting
 and web messages are disabled. It does not establish the full browser security boundary or physical
 desktop acceptance. Environment and controller initialization have bounded managed waits. On retirement
-the control is disposed and a separately rooted cleanup owner waits for the outstanding SDK operation.
-Production does not delete a profile that may have been created: identity-safe recursive cleanup is not
-implemented. It reports an internal cleanup failure and retains the directory and admission slot. A native
-operation that never finishes retains its cleanup owner and profile. At most two article owners may be admitted;
+the control is disposed and a separately rooted cleanup owner waits for the outstanding SDK operation
+and, when controller initialization started, the WebView2 browser-process exit notification. A private
+directory owner then verifies identities and deletes by native handle; failure retains that owner, its
+handles and admission slot. A native operation or process exit that never completes retains its cleanup
+owner and profile. At most two article owners may be admitted;
 while both slots remain occupied the article shows a retry action without displaying source text. A slot
-is released only when no profile could have been created. Consequently rich articles become unavailable
-after at most two created profiles in a process; this is a production blocker, not completed parity. Cleanup
+is released only when no profile could have been created or identity-safe deletion has succeeded. Cleanup
 failure is internally observed and is not reported in the UI. Permanently pending SDK work does not fault
 and keeps its slot and profile. This bound is a Windows adapter constraint, not a Mac product rule.
 
 On the Windows development host, the focused Core suite passed 31 tests, including adversarial HTML
-and cancellation. The serialized WPF wrapper passed 28 focused tests, including synthetic MDX/MDD
+and cancellation. The serialized WPF wrapper passed 31 focused tests, including synthetic MDX/MDD
 import, local reparse refusal, cancellation and drain, settings, existing cards, WebView2 resource
 ownership and delayed environment/controller retirement. The held initialization tests inject barriers
 before SDK calls; they do not reproduce an SDK call that itself hangs. Injected cleanup effects cover
-denied access, I/O failure, path replacement and confirmed absence; only tests delete their controlled
-synthetic folders. A real directory-swap test checks that production cleanup leaves the replacement intact.
+denied access, I/O failure, path replacement and confirmed absence. The native owner has separate isolated
+directory-swap tests. A real WebView component test performs three synthetic article/resource sessions,
+including file write and rename while the SDK is active and identity-safe cleanup after browser exit.
 These are component checks, not
 user acceptance.
 

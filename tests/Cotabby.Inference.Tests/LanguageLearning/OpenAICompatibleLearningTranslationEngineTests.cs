@@ -10,6 +10,19 @@ namespace Cotabby.Inference.Tests.LanguageLearning;
 
 public sealed class OpenAICompatibleLearningTranslationEngineTests
 {
+    [Fact]
+    public async Task EndpointPlannerKeepsUnknownSourceWithoutNetworkOrCredentialReads()
+    {
+        using var handler = new LearningEndpointHandler();
+        using var http = new HttpClient(handler, disposeHandler: false);
+        var credentials = new RecordingCredentials("not-read");
+        using var engine = new OpenAICompatibleLearningTranslationEngine(Configuration("translategemma-4b"), credentials, http);
+        var options = new LearningTranslationOptions { SourceLanguage = null, TargetLanguage = LearningLanguage.Chinese,
+            ModelName = "translategemma-4b", ContextTokens = 4096 };
+        var request = await engine.PlanAsync("reading-unknown", "Some selected text.", options, CancellationToken.None).WaitAsync(TestTimeout);
+        Assert.Null(request.Options.SourceLanguage); Assert.Contains("Infer the source language", request.Prompt.Prompt);
+        Assert.Equal(0, credentials.ReadCount); Assert.Empty(handler.Requests);
+    }
     private static readonly TimeSpan TestTimeout = TimeSpan.FromSeconds(5);
 
     [Fact]

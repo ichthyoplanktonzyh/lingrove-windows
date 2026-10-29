@@ -80,7 +80,7 @@ public static class LearningTranslationRequestFactory
             throw new LearningTranslationException(LearningTranslationFailure.InvalidContextBudget);
         }
         if (options.ModelName is null || options.Style is null ||
-            !Enum.IsDefined(options.SourceLanguage) || !Enum.IsDefined(options.TargetLanguage) ||
+            (options.SourceLanguage is { } sourceLanguage && !Enum.IsDefined(sourceLanguage)) || !Enum.IsDefined(options.TargetLanguage) ||
             !Enum.IsDefined(options.Style.Register))
         {
             throw new LearningTranslationException(LearningTranslationFailure.InvalidOptions);

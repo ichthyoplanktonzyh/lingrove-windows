@@ -1,13 +1,14 @@
 # Latest Mac alignment target
 
 Windows follows the latest committed Mac implementation, rather than waiting to finish an older
-stable snapshot. Current recorded target: **`06bf81fe52f22fd62e76d8ec0bfd898d3417158b`**, committed
-on 2026-10-28 and checked on 2026-10-29. Its last change adds task-shaped vocabulary capture and
-adopts authorized agent organization by default. Mac source now lives under `Lingrove/` and tests
+stable snapshot. Current recorded target: **`9290066ef7f20a50068ce820f477737fdfc2b8b0`**, committed
+and checked on 2026-10-29. It includes the earlier task-shaped vocabulary capture and authorized
+agent organization, then the vocabulary readability/consolidated-detail update `fc8f5b02` and
+extensible semantic-classification terminology in `9290066e`. Mac source now lives under `Lingrove/` and tests
 under `LingroveTests/`; old `Cotabby/` paths remain valid only at historical revisions.
 
 The previous target was `cc468b89f5c360cc7210fac4f1a8b52197870bf2`; the original fixture reference
-is `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`. The latest target is 55 commits after the previous
+is `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`. The latest target is 57 commits after the previous
 one, including merge commits and namespace changes. That count is not a workload estimate.
 Existing Windows modules are partial adaptations at their explicitly recorded revisions. Neither
 passing old fixtures nor updating this document establishes latest product parity.
@@ -16,14 +17,14 @@ passing old fixtures nor updating this document establishes latest product parit
 
 At the beginning of each new feature round, inspect the Mac repository's committed `main`, record
 any newer target here, then read the relevant committed source and tests with `git show`. A local
-commit is still product evidence even before publication: the current target is one commit ahead
-of the last observed `origin/main`. Do not assume it is available to a remote CI checkout or push
+commit is still product evidence even before publication. The current target matches the observed
+`origin/main`; a future local-only target may not be available to a remote CI checkout. Do not push
 Mac work as a side effect. A new source verifier must establish its own reproducible availability.
 
-The Mac working tree has uncommitted UI changes. They remain owned by the Mac work and are excluded
-from this immutable reference. Do not edit, revert, stage, commit or publish them. Incorporate their
-next committed version when refreshing the target. A feature already under validation keeps its
-recorded snapshot; the next feature checks for advancement again.
+The Mac working tree is clean at this check. The UI work previously excluded from `06bf81fe` is
+now committed in `fc8f5b02` and included. Preserve any future Mac work in progress: do not edit,
+revert, stage, commit or publish it. A feature already under validation keeps its recorded snapshot;
+the next feature checks for advancement again.
 
 Preserve historical corpus inputs, expected values and hashes. An explicit module upgrade reads
 the new implementation and relevant original regressions, records changed behavior and adds only
@@ -38,7 +39,7 @@ The paths below identify actual source, not newly designed Windows features.
 
 | Area | Latest source responsibility and required Windows alignment |
 | --- | --- |
-| Independent learning resources | `Models/Vocabulary/VocabularyLifecycleModels.swift`, `VocabularyModels.swift`, `Support/Vocabulary/VocabularyNotebookProjection.swift`, `VocabularyLifecyclePolicy.swift`: canonical catalog, sources, occurrences, interpretations and personal collections are independent. `document.entries` is a joined editing adapter; the Store/notebook presents `collectedEntries`. Collection membership does not own or erase raw evidence. Windows still has the earlier entry-owned graph and needs an explicit durable adaptation before assuming the latest ownership. |
+| Independent learning resources | The [resource value/projection adaptation](VOCABULARY_RESOURCES_CURRENT.md) supplies the versioned Windows value boundary and lifecycle reference gate; archive activation/migration is still pending.  `Models/Vocabulary/VocabularyLifecycleModels.swift`, `VocabularyModels.swift`, `Support/Vocabulary/VocabularyNotebookProjection.swift`, `VocabularyLifecyclePolicy.swift`: canonical catalog, sources, occurrences, interpretations and personal collections are independent. `document.entries` is a joined editing adapter; the Store/notebook presents `collectedEntries`. Collection membership does not own or erase raw evidence. Windows still has the earlier entry-owned graph and needs an explicit durable adaptation before assuming the latest ownership. |
 | Meaning organization | `VocabularySemanticModels.swift`, `VocabularySemanticPolicy.swift`, `VocabularySemanticDatabaseProjection.swift`, `VocabularySQLiteMeaningSchema.swift`: independent multilingual meaning nodes, usage patterns, mappings, evidence and typed relations. `VocabularyMeaningBrowserProjection.swift`, `VocabularyMeaningLabelPolicy.swift` and the meaning/sidebar/detail/editing views expose the existing organization flow. Preserve node/label IDs, label language/preference, relation endpoints and provenance on mappings, relations, cues and targets. Labels have no acceptance status; interpretations do. Do not substitute lexical similarity or add an internal classifier. |
 | Durable format and media | The latest Mac uses SQLite schema 4 and portable notebook format 7. Selective JSON uses format 4 only when meaning export is enabled, the export is not an expression list and semantic nodes or patterns exist; other configurations retain versions 1–3. Read `VocabularyArchive`, database projection, CLI/resource transactions, export/backup and media ownership together. Windows SQLite schema 2/portable document 3 are older contracts. Both databases using application ID `LGVN` does not make them compatible: even `usages` has different ownership/meaning. Define and verify compatibility explicitly; never silently reinterpret or replace an existing Windows archive. |
 | Creation and import | `VocabularyEntryInput.swift`, `VocabularyEntryInputPolicy.swift`, `VocabularyImportedExamplePolicy.swift`, `VocabularyWordListPolicy.swift`, archive entry-import extension and creation/import sheets provide manual entry creation and bounded CSV/TXT mappings, previews and acknowledged commits. Preserve example ownership, translation variants and latest-snapshot re-planning. Import also collects catalog knowledge that already exists and records selected interpretation IDs, making the lifecycle/projection work a prerequisite for faithful commit behavior. Windows has no corresponding complete creation/import flow. |
@@ -48,6 +49,12 @@ The paths below identify actual source, not newly designed Windows features.
 | Reading and OCR | Read current `LearningReadingCoordinator`, `LearningReadingSourceReader`, reading context/selection values and OCR/runtime boundaries together. The latest flow uses frozen OCR context, verified AX enrichment, optional source language and explicit completeness evidence. Older autocomplete OCR and a manual writing preview do not establish this reading product. |
 | Autocomplete and model routing | The [latest output-cleanup adaptation](AUTOCOMPLETE_OUTPUT_CURRENT.md) preserves leading-newline word boundaries through prompt/prefix/label cleanup and retains preface filtering. Its own final-head validation is required. Task-specific local-model selection, assignment and runtime isolation still need the current contracts audited/adapted. Autocomplete remains equally core alongside learning. |
 | First use, language and presentation | Recommended setup, expression-assistance onboarding, current language resources, settings grouping, meaning labels and native host presentation require adaptation. Namespace/release changes do not themselves migrate Windows binary/storage identifiers or authorize release packages. |
+
+The latest `CONTEXT.md` distinguishes meaning category, classification framework, custom category
+and category membership from meaning nodes and expression senses. Categories may have multiple
+parents and nodes may belong to multiple categories. This is a terminology contract; the current
+resource declarations do not yet implement category records. Preserve those distinctions without
+inventing a Windows classification schema ahead of Mac.
 
 ## Next implementation order
 

@@ -96,6 +96,10 @@ before contributing.
 
 ## Build and test
 
+For development on a Windows x64 computer, start with the [Windows handoff guide](docs/WINDOWS_DEVELOPMENT.md)
+and run `scripts/check-windows-dev.ps1` for read-only SDK/runtime diagnostics. It includes a sibling
+read-only Mac source checkout and the first native UIA/IME/caret acceptance workflow.
+
 Use Windows 10 or 11 with the .NET 10 SDK to build and run the WPF app. On macOS, you can run the
 portable Core suite and compare the shared JSON corpus against the pinned Swift policies. This
 checkout has SDK `10.0.402` in the ignored `.dotnet/` directory, and `global.json` selects that SDK.

@@ -10,7 +10,7 @@ Windows host behavior is unverified. See [the preview port record](docs/LEARNING
 The latest committed macOS Lingrove implementation is the architecture and behavior reference for this port.
 The Windows work adapts the existing macOS work; it does not independently redesign Lingrove's product,
 interaction model, or business rules. The current target is
-`06bf81fe52f22fd62e76d8ec0bfd898d3417158b`; [the latest baseline](docs/MAC_LATEST_BASELINE.md)
+`9290066ef7f20a50068ce820f477737fdfc2b8b0`; [the latest baseline](docs/MAC_LATEST_BASELINE.md)
 records its source paths, dependency changes and refresh rule. Existing module evidence keeps its
 explicit historical revision until upgraded. Compare committed source and tests rather than a dirty
 working checkout. The project/layer map below translates existing responsibilities into C# and
@@ -31,6 +31,12 @@ architecture. A fake engine belongs in tests, while the app must use a real conf
 report that the provider is unavailable.
 
 ## Product loops
+
+The [latest independent vocabulary resources](docs/VOCABULARY_RESOURCES_CURRENT.md) provide the
+current Mac value/projection boundary in `Core/Vocabulary/Resources`. Catalog, evidence, claims and
+personal collection state have separate identities; joined entries are read/edit adapters. The
+older entry-owned runtime/codec remains explicit until the durable upgrade is implemented. Neither
+the new values nor their lifecycle gate creates another Store or establishes full archive validity.
 
 Autocomplete and language learning are equally core product capabilities. Autocomplete observes an
 editable field, forms a bounded request, gets a short continuation, paints a ghost beside the caret,

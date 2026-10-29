@@ -12,8 +12,8 @@ built from the same owner; on read/open failure it drains and disposes the candi
 never discovers or opens the previous notebook filename, and the factory does not activate AppHost.
 The first operation reads and conditionally installs the frozen bundled classification within one
 exclusive database span. Only a successful installation commits and publishes a new revision; an
-unchanged catalog does neither. The successfully decoded catalog is cached by this owner, while
-load failures remain retryable. Passing `false` skips loading the resource. The eager `OpenAsync`
+unchanged catalog does neither. A catalog is cached only after installation admission succeeds;
+load or admission failures remain retryable. Passing `false` skips loading the resource. The eager `OpenAsync`
 uses the same owner and defaults to installation as well. The pure installation policy and frozen
 source provenance are described in `VOCABULARY_CLASSIFICATION_INSTALLER_FROZEN.md`.
 

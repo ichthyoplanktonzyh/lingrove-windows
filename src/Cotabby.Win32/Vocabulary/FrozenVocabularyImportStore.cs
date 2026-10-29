@@ -9,7 +9,7 @@ using LiveRecord = Cotabby.Core.LanguageLearning.LearningExplanationRecord;
 namespace Cotabby.Win32.Vocabulary;
 
 /// <summary>Isolated candidate for the eventual single app-owned Store. It owns its database,
-/// serializes operations and emits only acknowledged revisioned snapshots. No AppHost creates it.</summary>
+/// serializes operations and emits only acknowledged revisioned snapshots.</summary>
 internal sealed class FrozenVocabularyImportStore : ICanonicalVocabularyStore
 {
     private FrozenVocabularySQLiteDatabase? _database;
@@ -88,7 +88,7 @@ internal sealed class FrozenVocabularyImportStore : ICanonicalVocabularyStore
         finally { _gate.Release(); }
     }
     // Installation and revision publication share the same exclusive database span.
-    // Only a successfully decoded catalog is cached, so a failed load can be retried.
+    // Cache only after installation admission succeeds, so an invalid catalog can be reloaded.
     private FrozenVocabularySnapshot LoadCurrent(CancellationToken cancellationToken)
     {
         if (!_installClassification) return Database.Read(cancellationToken);
@@ -96,8 +96,9 @@ internal sealed class FrozenVocabularyImportStore : ICanonicalVocabularyStore
         {
             var before = Database.Read(cancellationToken);
             cancellationToken.ThrowIfCancellationRequested();
-            var catalog = _catalog ??= _loadCatalog() ?? throw new InvalidOperationException("Catalog loader returned null.");
+            var catalog = _catalog ?? _loadCatalog() ?? throw new InvalidOperationException("Catalog loader returned null.");
             var (document, installed) = VocabularyClassificationInstaller.Install(before.Document, catalog);
+            _catalog = catalog;
             if (!installed) return before;
             cancellationToken.ThrowIfCancellationRequested();
             var committed = CanonicalWritingPolicy.PrepareCommit(before.Document, document);

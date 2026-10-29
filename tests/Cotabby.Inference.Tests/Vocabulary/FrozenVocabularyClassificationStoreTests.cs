@@ -55,6 +55,25 @@ public sealed class FrozenVocabularyClassificationStoreTests : IDisposable
     }
 
     [Fact]
+    public async Task InvalidCatalogIsNotCachedAndCanBeReplaced()
+    {
+        var valid = VocabularyClassificationCatalog.Bundled();
+        var categories = valid.Categories.ToArray();
+        categories[0] = categories[0] with { Parents = ["missing-parent"] };
+        var invalid = valid with { Categories = categories };
+        var database = FrozenVocabularySQLiteDatabase.CreateMemory();
+        int loads = 0; int notifications = 0;
+        await using var store = new FrozenVocabularyImportStore(() => database, installBundledClassification: true,
+            loadCatalog: () => ++loads == 1 ? invalid : valid);
+        using var subscription = store.Subscribe(_ => Interlocked.Increment(ref notifications));
+        await Assert.ThrowsAsync<VocabularyException>(() => store.ReadAsync());
+        Assert.Equal(0UL, database.Revision());
+        Assert.Equal(0, notifications);
+        Assert.Equal(1UL, (await store.ReadAsync()).Revision);
+        Assert.Equal(2, loads);
+    }
+
+    [Fact]
     public async Task FailedCommitRollsBackAndRetriesWithSuccessfullyLoadedCatalog()
     {
         var database = FrozenVocabularySQLiteDatabase.OpenFile(PathName);

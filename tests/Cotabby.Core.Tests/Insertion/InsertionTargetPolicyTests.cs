@@ -16,6 +16,8 @@ public class InsertionTargetPolicyTests
         Assert.False(InsertionTargetPolicy.IsCurrentTarget(expected, expected with { FocusChangeSequence = 8 }));
         Assert.False(InsertionTargetPolicy.IsCurrentTarget(expected, expected with { Text = "hello!" }));
         Assert.False(InsertionTargetPolicy.IsCurrentTarget(expected, expected with { CaretOffset = 4 }));
+        Assert.False(InsertionTargetPolicy.IsCurrentTarget(expected, expected with { CompositionSequence = 2 }));
+        Assert.False(InsertionTargetPolicy.IsCurrentTarget(expected, expected with { Composition = InputCompositionState.Composing }));
     }
 
     [Fact]
@@ -44,6 +46,9 @@ public class InsertionTargetPolicyTests
         Assert.False(InsertionTargetPolicy.IsEligibleField(field with { HasReliableSelection = false }));
         Assert.False(InsertionTargetPolicy.IsEligibleField(field with { IsTextWindowTruncated = true }));
         Assert.False(InsertionTargetPolicy.IsEligibleField(field with { FocusChangeSequence = 0 }));
+        Assert.False(InsertionTargetPolicy.IsEligibleField(field with { Composition = InputCompositionState.Unknown }));
+        Assert.False(InsertionTargetPolicy.IsEligibleField(field with { Composition = InputCompositionState.Composing }));
+        Assert.False(InsertionTargetPolicy.IsEligibleField(field with { CompositionSequence = 0 }));
         Assert.False(InsertionTargetPolicy.IsEligibleField(field with { CaretOffset = -1 }));
         Assert.False(InsertionTargetPolicy.IsEligibleField(field with { CaretOffset = field.Text.Length + 1 }));
     }
@@ -64,6 +69,8 @@ public class InsertionTargetPolicyTests
             FieldId = "uia:field",
             FocusChangeSequence = 1,
             HasReliableSelection = true,
+            Composition = InputCompositionState.Clear,
+            CompositionSequence = 1,
         };
 
         Assert.True(unknown.IsTextWindowTruncated);

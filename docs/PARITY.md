@@ -7,9 +7,10 @@ are reference points, not a claim that every Windows behavior has been validated
 still uses Cotabby names. The current learning addition is the scoped manual read-only preview
 recorded in [LEARNING_PREVIEW.md](LEARNING_PREVIEW.md); the wider learning product remains incomplete.
 
-The current target is the latest committed Mac `9290066ef7f20a50068ce820f477737fdfc2b8b0`, recorded
-in [MAC_LATEST_BASELINE.md](MAC_LATEST_BASELINE.md). New work follows that target and checks for
-newer committed Mac work at each feature round. [MAC_STABLE_DELTA.md](MAC_STABLE_DELTA.md) retains
+The campaign target is frozen at Mac `35b7fbe5c788c5524936ade1dfb7c89a3a285b04`, recorded
+in [MAC_LATEST_BASELINE.md](MAC_LATEST_BASELINE.md). New work follows that exact target until the
+maintainer explicitly advances it. Functional, interaction and UI/design acceptance follow
+[WINDOWS_ALIGNMENT.md](WINDOWS_ALIGNMENT.md). [MAC_STABLE_DELTA.md](MAC_STABLE_DELTA.md) retains
 the earlier `cc468b89f5c360cc7210fac4f1a8b52197870bf2` audit as history, not the current backlog.
 Existing corpus revisions remain fixed; [current editor annotations](VOCABULARY_EDITOR_CURRENT.md)
 are an explicit module upgrade with 182 fresh source observations. Historical baseline statuses

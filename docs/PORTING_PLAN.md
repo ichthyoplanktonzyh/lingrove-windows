@@ -5,20 +5,20 @@ focus, input, storage, and runtime constraints. Autocomplete and language learni
 product pillars. The first milestone is repository foundation: documentation, build/test-only CI,
 and initial shared JSON behavior fixtures. It does not implement language learning.
 
-The active target is the latest committed Mac version, currently
-`9290066ef7f20a50068ce820f477737fdfc2b8b0`. [MAC_LATEST_BASELINE.md](MAC_LATEST_BASELINE.md) is the
-current dependency/backlog record. The phases below retain their original scoped milestone history;
-they do not freeze new work to the original or intermediate stable reference. Check committed Mac
-`main` before each feature round and adapt its existing product rather than completing an obsolete
-UI or archive contract first.
+The maintainer froze the active target at Mac
+`35b7fbe5c788c5524936ade1dfb7c89a3a285b04` on 2026-10-29.
+[MAC_LATEST_BASELINE.md](MAC_LATEST_BASELINE.md) is the dependency/backlog record and
+[WINDOWS_ALIGNMENT.md](WINDOWS_ALIGNMENT.md) defines parallel ownership and UI/design acceptance.
+The phases below retain their original scoped milestone history. New work uses the frozen source;
+later Mac commits enter scope only after an explicit maintainer baseline decision.
 
 ## Governing rule: port, then adapt platform details
 
-**直接基于最新已提交的 macOS 成果做 Windows 适配，不重新发明产品、交互或业务架构。**
+**直接基于固定 macOS 稳定快照对齐功能、交互、UI 和视觉设计，不重新发明产品或业务架构。**
 
 The pinned Mac implementation and tests define each feature's intended behavior. For every slice:
 
-1. Check the latest committed Mac revision, record it, then read its corresponding source and
+1. Read the frozen committed Mac revision and its corresponding source and
    regression tests. Keep each historical fixture's original provenance until explicitly upgraded.
 2. Map its existing responsibilities and contracts to Windows files, preserving defaults, user
    flow, request scope, prompts, budgets, task isolation, cancellation and privacy rules.
@@ -29,6 +29,8 @@ The pinned Mac implementation and tests define each feature's intended behavior.
    replacing it with a simpler product flow or adjusting expected tests to the current Windows code.
 5. Validate the scoped port, review it independently, and merge the completed round to `main`.
    Architecture/design skills assist this adaptation; product redesign is outside the port's scope.
+6. Review the rendered UI against the frozen Mac views/resources and available reference images,
+   recording physical interaction checks and necessary Windows visual differences separately.
 
 The phases below sequence migration of existing Mac capabilities. A phase can deliver a documented
 subset, and passing its checks does not establish full feature parity. Fake engines are test inputs;

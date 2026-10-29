@@ -28,6 +28,15 @@ internal sealed partial class LearningSpeechController : INotifyPropertyChanged,
     internal SpeechTarget? ErrorTarget { get; private set; }
     internal string? PlaybackError { get; private set; }
     internal SpeechPlaybackPhase? Phase { get; private set; }
+    public bool IsDestinationAvailable
+    {
+        get
+        {
+            RequireOwner();
+            try { switch (Settings.SelectedProvider) { case LearningSpeechProviderKind.System: return true; case LearningSpeechProviderKind.Local: _ = Settings.LocalConfiguration(); return true; case LearningSpeechProviderKind.Endpoint: _ = Settings.EndpointConfiguration(); return true; default: return false; } }
+            catch { return false; }
+        }
+    }
     public string DestinationDescription
     {
         get

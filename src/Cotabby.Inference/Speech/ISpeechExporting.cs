@@ -21,4 +21,5 @@ public interface ISpeechExporting
 public interface ISpeechDestinationDisclosure : System.ComponentModel.INotifyPropertyChanged
 {
     string DestinationDescription { get; }
+    bool IsDestinationAvailable { get; }
 }

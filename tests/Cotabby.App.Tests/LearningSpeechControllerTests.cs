@@ -33,7 +33,7 @@ public sealed partial class LearningSpeechControllerTests
             int changes = 0; controller.PropertyChanged += (_, _) => changes++;
             Assert.True(controller.IsDestinationAvailable); Assert.Contains("stays on this device", controller.DestinationDescription);
             settings.SelectProvider(LearningSpeechProviderKind.Endpoint); settings.SetEndpointBaseUrl("https://example.org/private/path"); settings.SetEndpointModel("voice/model"); settings.SetEndpointVoice("speaker");
-            Assert.True(controller.IsDestinationAvailable); Assert.Contains("https://example.org", controller.DestinationDescription); Assert.Contains("voice/model", controller.DestinationDescription);
+            Assert.True(controller.IsDestinationAvailable); Assert.Contains("https://example.org", controller.DestinationDescription); Assert.Contains("voice/model", controller.DestinationDescription); Assert.Contains("speaker", controller.DestinationDescription);
             Assert.DoesNotContain("private/path", controller.DestinationDescription); Assert.True(changes > 0);
             settings.SetEndpointModel("voice?key=secret"); Assert.DoesNotContain("secret", controller.DestinationDescription);
             settings.SetEndpointBaseUrl("https://name:secret@example.org/v1?key=secret"); Assert.DoesNotContain("secret", controller.DestinationDescription);

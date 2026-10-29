@@ -11,8 +11,10 @@ integrated before claiming production support. AppHost now publishes the actual 
 source before constructing/applying learning owners, including when autocomplete uses an endpoint.
 Reading and onboarding readiness freeze both active learning selections rather than the dormant
 manual choices. Explicit endpoint selection in a power slot authorizes that slot's translation
-profile without changing the retained manual endpoint switch. Pane insertion remains a separate
-settings-module integration.
+profile without changing the retained manual endpoint switch. Both roles' controls are inserted
+in the Learning pane; manual choices are locked while switching is enabled and active destination
+parameters remain editable. Reopened endpoint maps retain canonical comparison and admit empty
+maps safely; absent nested generation values project to defaults rather than failing the editor.
 
 Each role retains manual, battery and plugged-in choices. A choice carries backend, local filename,
 endpoint model and local instruction template; the role retains its address and credential. First

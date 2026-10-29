@@ -69,14 +69,22 @@ the initial gap audit; its initial Windows gap descriptions are historical. Curr
   [full backup/restore](VOCABULARY_CANONICAL_BACKUP.md), [learning-material export](VOCABULARY_CANONICAL_EXPORT.md)
   and [manual selected-text reading](READING_SELECTION_CHECKPOINT.md), after independent review
   and all four final-head checks.
-- The next complete candidate connects [notebook explanations/dictionary](CANONICAL_NOTEBOOK_LEARNING.md),
+- #139 merged [notebook explanations/dictionary](CANONICAL_NOTEBOOK_LEARNING.md),
   [speech providers/settings/cards](SPEECH_PRODUCTION_3B.md) and
   [review audio/templates](ANKI_CANONICAL_REVIEW_AUDIO.md). Its source and actual AppHost attachment
-  are independently reviewed; final-head remote CI remains its merge gate.
-- Remaining work includes pointer/icon/context/OCR reading, CLI, interface languages, remaining
-  onboarding and shared performance/diagnostic presentation. Their owners are implementing complete
-  flows; internal checkpoints are not activated delivery. Existing older libraries retain explicit
-  references and are reused only after checking the current consumer contract.
+  were independently reviewed and all four final-head checks passed.
+- #140 merged pointer/icon/context/restricted-OCR reading, the private CLI mailbox, launch-time
+  interface languages and shared performance history. #141 preserved all 68 original Mac verifiers
+  while scheduling at most two concurrently; all four final-head checks passed for both PRs.
+- The next integrated candidate connects independent explanation endpoints and settings, both
+  learning roles' battery/AC profiles, local MDict sources and rich articles, isolated native image
+  drops, current autocomplete streaming/prediction and onboarding task readiness. Module references,
+  scoped limitations and validation are recorded in their handoffs; final-head CI remains required.
+  Physical acceptance remains the maintainer's final unified round.
+- Remaining work includes the complete Home/Welcome learning showcase, native automatic language
+  confidence, unavailable dictionary providers and the explicitly documented media/native gaps.
+  Internal components are not evidence that those flows are complete. Existing older libraries
+  retain explicit references and are reused only after checking the current consumer contract.
 
 After the maintainer's delivery adjustment, implementation owners carry each active user flow
 through its settings, entry and production adapters. Internal commits use targeted validation;

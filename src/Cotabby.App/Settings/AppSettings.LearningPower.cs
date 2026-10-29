@@ -24,9 +24,16 @@ public sealed partial class AppSettings
         FindTranslationEndpointValue(LearningTranslationEndpointContextByDestination) is { } value
             ? Math.Clamp(value, 1024, ModelContextBudget.MaximumEndpointTokens)
             : TranslationEndpointIsManual ? Math.Clamp(LearningContextTokens, 2048, ModelContextBudget.MaximumEndpointTokens) : 8192;
-    [JsonIgnore] public LearningGenerationProfile LearningTranslationActiveEndpointGeneration =>
-        FindTranslationEndpointValue(LearningTranslationEndpointGenerationByDestination) ?? new()
-        { Style = TranslationEndpointIsManual ? new LearningTranslationStyle(LearningStyleRegister, LearningCustomInstruction ?? "") : new() };
+    [JsonIgnore] public LearningGenerationProfile LearningTranslationActiveEndpointGeneration
+    {
+        get
+        {
+            var saved = FindTranslationEndpointValue(LearningTranslationEndpointGenerationByDestination);
+            return new() { Style = (saved?.Style ?? (TranslationEndpointIsManual
+                    ? new LearningTranslationStyle(LearningStyleRegister, LearningCustomInstruction ?? "") : new())).Normalized,
+                Sampling = (saved?.Sampling ?? new()).EndpointOnly, MaximumOutputTokens = saved?.MaximumOutputTokens };
+        }
+    }
     [JsonIgnore] private bool TranslationEndpointIsManual => LearningTranslationManualSelection.Backend == LearningModelBackend.Endpoint &&
         CanonicalStringComparer.Instance.Equals(LearningTranslationManualSelection.EndpointModel, LearningTranslationActiveSelection.EndpointModel);
     private T? FindTranslationEndpointValue<T>(Dictionary<string, T>? values) where T : class =>

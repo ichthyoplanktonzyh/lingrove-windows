@@ -32,6 +32,8 @@ public sealed partial class AppSettings
         LearningExplanationEndpointModel ??= "";
         LearningExplanationEndpointContextTokensByDestination = ExplanationDestinationMap(LearningExplanationEndpointContextTokensByDestination);
         LearningExplanationEndpointGenerationProfiles = ExplanationDestinationMap(LearningExplanationEndpointGenerationProfiles);
+        LearningTranslationEndpointContextByDestination = ExplanationDestinationMap(LearningTranslationEndpointContextByDestination);
+        LearningTranslationEndpointGenerationByDestination = ExplanationDestinationMap(LearningTranslationEndpointGenerationByDestination);
     }
     private static Dictionary<string, T> ExplanationDestinationMap<T>(Dictionary<string, T>? values)
     {

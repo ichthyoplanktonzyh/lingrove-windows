@@ -8,12 +8,12 @@ Reference: Mac `3b53402f2cbc196b0398d133177fd80006d165b2`,
 The existing `ModelDestinationIdentity` retains its historical verifier pin; its destination
 identity body was also inspected at 3b before reuse. Historical fixtures are unchanged.
 
-This checkpoint provides scoped components. AppHost owns one inert explanation HTTP/credential
-feature, but does not yet inject its generation factories into the live controller. Provider
-settings and final production activation are pending. Writing sentence/dictionary cards, expression
+AppHost owns one explanation HTTP/credential feature and injects its request-owned generation
+factories into the shared explanation controller. The independent provider settings and both
+learning roles' power controls are connected. Writing sentence/dictionary cards, expression
 assistance and canonical notebook rows now disclose the service's immutable destination before
 generation; reading freezes the explanation destination and credential revision with its request.
-It must not be described as a working endpoint option until that composition is complete.
+Construction remains inert; only explicit task requests or metadata actions use the selected endpoint.
 
 The endpoint profile is independent of translation/completion/speech and defaults to Local.
 It keeps per-destination context/output/sampling maps, exact model destination keys, and a
@@ -53,7 +53,7 @@ the existing explanation controller and the single canonical Store flow.
 Component validation: App explanation owner/settings 45/45; Inference endpoint/translation/API
 84/84; serialized WPF expression/native permit/HTTP feature lifetime 48/48. Tests use synthetic
 text, fake HTTP/keys/runtime and owned receipts. No real endpoint, model, user editor, clipboard
-or notebook is used. Production activation and native host acceptance remain separate work.
+or notebook is used. Live endpoint quality and native host acceptance remain separate work.
 
 The presentation adapter validates destination URLs before displaying them, and never renders
 invalid URL user-info, query or fragment contents. Dormant endpoint fields are absent from local
@@ -66,3 +66,11 @@ AppHost. Integration compiled with zero warnings/errors. A WPF batch passed 54 c
 an incorrect terminal-punctuation fixture in the new reading test; the corrected standalone-word
 receipt then passed 1/1, proving that a nonserialized explanation key revision retires the lookup.
 These synthetic component checks do not establish native editor or visual acceptance.
+
+The final shared instruction owner also reserves explanation order synchronously before any
+asynchronous saved lookup or worker scheduling. Returning from a held old lookup validates that
+same reservation and cannot cancel a newer expression or reading request. Caller cancellation is
+checked before reservation and again inside the owner's admission lock. Saved/cache hits release
+the reservation without constructing a provider. Independent Core 33/33 and App 35/35 checks cover
+held lookups, reverse worker scheduling, already-cancelled callers and cancellation while waiting
+for the lock. Historical fixture pins and expected values remain unchanged.

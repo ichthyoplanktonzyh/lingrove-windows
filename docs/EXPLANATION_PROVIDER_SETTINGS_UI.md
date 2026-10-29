@@ -24,7 +24,9 @@ endpoint selection uses the active consent projection without overwriting its ma
 The compiled WPF tests use fake credentials and metadata and exercise local privacy, explicit key
 operations, stale results, focused edit identity, destination scope, errors and rendered layout.
 They do not contact a service or load a model. WPF rendering is a component check; physical desktop,
-screen reader and full production endpoint activation remain separate acceptance work.
+screen reader and live endpoint quality remain separate acceptance work. AppHost now injects both
+request-owned endpoint factories into the single explanation controller; the settings pane does not
+construct a second controller or HTTP pool.
 The synthetic endpoint view was rendered and inspected at 450×480 logical pixels and 96 DPI;
 its narrow layout wraps the discovered-model control under the model field. The test uses a plain
 white WPF host, so it is not a full theme or physical desktop review. No matching Mac screenshot was

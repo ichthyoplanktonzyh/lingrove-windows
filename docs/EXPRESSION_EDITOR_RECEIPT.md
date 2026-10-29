@@ -85,7 +85,7 @@ other physical input is ignored. UIA events are asynchronous and providers can b
 small race between final observation and SendInput remains and physical testing is still required.
 
 `dotnet test tests/Cotabby.App.Wpf.Tests/Cotabby.App.Wpf.Tests.csproj --configuration Release
---no-restore --filter FullyQualifiedName~ExpressionEditorSessionTests` passed 21/21 with fake native
+--no-restore --filter FullyQualifiedName~ExpressionEditorSessionTests` passed 23/23 with fake native
 effects. These do not type into or focus any user application.
 
 Expression requests use a revocable, nonblocking permit through the shared focus and retained UIA
@@ -97,3 +97,5 @@ An invalidation handler may synchronously request owner disposal without waiting
 notification; other disposal callers share and await the complete drain, including that callback.
 The owner checks the captured session at publication; retirement after the session is returned is
 a normal invalidation that consumers must still handle.
+Before presenting the panel, `CanPresentPanel` checks the captured phase and original foreground
+window without UIA or activation; callers must still observe subsequent invalidation.

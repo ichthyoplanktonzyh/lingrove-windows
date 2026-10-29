@@ -1,5 +1,13 @@
 namespace Cotabby.Core.Focus;
 
+/// <summary>Host evidence about uncommitted input; absence or failure of evidence is unknown.</summary>
+public enum InputCompositionState
+{
+    Unknown = 0,
+    Composing,
+    Clear,
+}
+
 /// <summary>
 /// A snapshot of the editable field holding focus, captured at one instant. A snapshot can be
 /// stale by the time a caller acts on it, so read the field again before changing its text.
@@ -51,6 +59,15 @@ public sealed record FocusedField
     /// into edit eligibility after obtaining one actual selection/caret range.
     /// </summary>
     public bool HasReliableSelection { get; init; }
+
+    /// <summary>Current host composition evidence. Only a positive clear observation permits work.</summary>
+    public InputCompositionState Composition { get; init; }
+
+    /// <summary>
+    /// Observation epoch owned by the focus adapter. A change retires asynchronous captures even
+    /// when their field, text and caret are otherwise identical. Zero means unavailable.
+    /// </summary>
+    public long CompositionSequence { get; init; }
 
     /// <summary>
     /// True when text was trimmed to a local window or completeness is unknown. Without an

@@ -14,6 +14,18 @@ binary names, settings locations, and storage identifiers stable unless a specif
 designed and documented. Lingrove branding in documentation does not mean the Windows runtime has
 been rebranded or that its data is compatible with the macOS app.
 
+The maintainer clarified on 2026-10-29 that old-data compatibility is outside this campaign.
+Do not implement legacy Windows conversion or cross-OS binary admission as a prerequisite to
+current product work. Use the frozen canonical model in a fresh, explicitly versioned notebook
+file under the existing Cotabby data root; preserve old files without reading, converting or
+overwriting them. This does not waive current-format validation, stable record identity,
+acknowledged transactions, media integrity, privacy, or the single production Store owner.
+
+The [current-format production composition](docs/VOCABULARY_CANONICAL_APP.md) selects one canonical
+Store for writing favorites, saved explanations and the notebook's scoped browsing/create/import
+flow. Older editor/media/review/export library checks do not establish those operations in the new
+production browser. Preserve the explicit unsupported states until each canonical module is ported.
+
 ## Migration principle: adapt the frozen macOS product
 
 **本轮 Windows 版本以固定的 macOS 稳定快照为基准，对齐功能行为、信息架构（IA）、内容层级与状态表达；以美观、协调、易用为目标，允许保留 Windows/WPF 的设计特色，无需像素级复刻 Mac；不重新发明产品或业务架构。**
@@ -215,7 +227,9 @@ the [native speech helper](docs/SPEECH_NATIVE_HELPER.md) preserves the full orig
 compressed/profiled bitmap variants, virtual/pixel drops, review navigation/preparation/batch UI and other dictionary providers remain work. Do not flatten senses into
 one translation string, regenerate stable IDs during edits, or treat a generated explanation as the
 user's authored meaning. See the vocabulary models and porting gates in the linked docs. Storage
-compatibility with macOS is not assumed; migrations must be explicit and tested.
+compatibility with older Windows or macOS data is out of scope under the maintainer's current
+instruction. Any future conversion requires a separately scoped decision; current-format integrity
+and ownership remain required.
 
 ## Build and CI boundary
 

@@ -19,8 +19,10 @@ and observable outcomes. Controls, typography, icons, spacing, colors and window
 Windows/WPF's own design strengths; pixel equality and identical component geometry are not required.
 Review visual choices for beauty, clarity and consistency, and record Windows input, DPI and font
 choices. This visual freedom does not authorize a replacement product flow or business architecture.
-Runtime names, user-data destinations and identifiers retain the existing Cotabby compatibility
-boundary until an explicit migration is designed.
+Runtime names, settings and the data root retain their existing Cotabby identities. Under the
+maintainer's subsequent 2026-10-29 clarification, old-data compatibility and migration are not
+prerequisites: activate the canonical notebook using a fresh versioned filename in that root,
+preserving older files without automatic conversion or overwrite.
 
 Each handoff includes source SHA/paths, Windows mapping, functional checks, representative rendered
 Windows views/screenshots, available Mac visual references, known differences and pending native
@@ -54,8 +56,11 @@ separate from in-progress binaries.
 A publishes exact resource/Store contracts before C connects acknowledged writes. C can audit and
 implement independent UI/form policies meanwhile, without a second Store, production fake service
 or temporary persistence format. B can advance independently within the same composition rules.
-No migration experiment uses the maintainer's live notebook; isolated databases/media establish
-data retention, reopen and rollback before application activation.
+Current-format experiments use isolated databases/media to establish identities, reopen, rollback
+and media integrity. Legacy Windows conversion and cross-OS binary admission are out of scope.
+Ready canonical components should advance to production composition against a fresh versioned
+file after review and required checks; data compatibility must not keep them artificially inactive.
+AppHost must select one Store for notebook and writing capture, with no parallel legacy writer.
 
 ## Delivery and review
 

@@ -210,7 +210,7 @@ public partial class LearningPreviewWindow : Window
         ExplanationProgress.Visibility = Visibility.Collapsed;
     }
 
-    internal void BindVocabulary(VocabularyStore store, VocabularyCapture capture, string documentId, Func<bool> canAct)
+    internal void BindVocabulary(IWritingVocabularyStore store, VocabularyCapture capture, string documentId, Func<bool> canAct)
     {
         Dispatcher.VerifyAccess();
         if (!IsVisible || _displayedPreview is not { Status: LearningPreviewStatus.Ready } state || state.RequestId != documentId) return;

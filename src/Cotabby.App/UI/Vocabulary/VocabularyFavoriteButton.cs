@@ -15,7 +15,7 @@ namespace Cotabby.App.UI.Vocabulary;
 /// </summary>
 public sealed class VocabularyFavoriteButton : Button
 {
-    private VocabularyStore? _store;
+    private IWritingVocabularyStore? _store;
     private VocabularyCapture? _capture;
     private Func<bool>? _canAct;
     private long _binding;
@@ -30,7 +30,7 @@ public sealed class VocabularyFavoriteButton : Button
         Unloaded += (_, _) => Clear();
         AutomationProperties.SetName(this, "Save to vocabulary");
     }
-    internal void Bind(VocabularyStore store, VocabularyCapture capture, Func<bool> canAct)
+    internal void Bind(IWritingVocabularyStore store, VocabularyCapture capture, Func<bool> canAct)
     {
         Dispatcher.VerifyAccess();
         if (!ReferenceEquals(store, _store) || capture != _capture)
@@ -49,7 +49,7 @@ public sealed class VocabularyFavoriteButton : Button
         Content = null; ToolTip = null; Visibility = Visibility.Collapsed; IsEnabled = false; FailureChanged?.Invoke(null);
         AutomationProperties.SetHelpText(this, ""); AutomationProperties.SetItemStatus(this, "");
     }
-    private async Task LoadAsync(VocabularyStore store, long binding)
+    private async Task LoadAsync(IWritingVocabularyStore store, long binding)
     {
         try { await store.LoadAsync(); }
         catch (ObjectDisposedException) { }
@@ -61,11 +61,12 @@ public sealed class VocabularyFavoriteButton : Button
         Dispatcher.VerifyAccess();
         if (_store is null || _capture is null) return;
         bool saved = _store.Contains(_capture), pending = _store.IsPending(_capture);
-        IsEnabled = !pending && Current(_binding);
+        IsEnabled = _store.IsLoaded && !pending && Current(_binding);
         Content = pending ? new ProgressBar { Width = 18, Height = 3, IsIndeterminate = true } : Icon(saved);
-        ToolTip = _failure ?? (saved ? "Saved · Show actions" : "Save to vocabulary");
-        AutomationProperties.SetItemStatus(this, pending ? "Saving…" : saved ? "Saved" : "Not saved");
-        AutomationProperties.SetHelpText(this, _failure ?? "");
+        ToolTip = _failure ?? (!_store.IsLoaded ? _store.ErrorMessage ?? "Loading vocabulary…" : saved ? "Saved · Show actions" : "Save to vocabulary");
+        AutomationProperties.SetItemStatus(this, !_store.IsLoaded ? (_store.ErrorMessage is null ? "Loading…" : "Unavailable") : pending ? "Saving…" : saved ? "Saved" : "Not saved");
+        var detail = _failure ?? (!_store.IsLoaded ? _store.ErrorMessage : null);
+        AutomationProperties.SetHelpText(this, detail ?? ""); FailureChanged?.Invoke(detail);
     }
     private FrameworkElement Icon(bool saved)
     {
@@ -79,7 +80,7 @@ public sealed class VocabularyFavoriteButton : Button
     private void OnClick(object sender, RoutedEventArgs args)
     {
         long binding = _binding;
-        if (!Current(binding) || _store!.IsPending(_capture!)) return;
+        if (!Current(binding) || !_store!.IsLoaded || _store.IsPending(_capture!)) return;
         if (!_store.Contains(_capture!)) { LastOperation = ChangeAsync(binding, remove: false); return; }
         var menu = new ContextMenu { PlacementTarget = this, Focusable = false };
         // Notebook navigation will register the source-equivalent route in its own UI slice.

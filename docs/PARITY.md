@@ -25,6 +25,12 @@ values, joined/collected projection and lifecycle-reference admission. It does n
 archive, migrate existing Windows data, implement full semantic validation or complete the latest
 notebook UI; those remain explicit gaps beyond the older matrix rows.
 
+The [canonical application composition](VOCABULARY_CANONICAL_APP.md) now selects the current-format
+Store for the notebook and writing cards, using a fresh versioned file under the Cotabby data root.
+Its scoped browser/create/import/favorite behavior supersedes the old production notebook wiring;
+advanced canonical editing, media, review and export remain incomplete. This is an implementation
+checkpoint with scoped automated/render evidence, not full native desktop parity.
+
 ## Status meanings
 
 - **verified** — the behavior has passing automated parity evidence and, where it touches Windows

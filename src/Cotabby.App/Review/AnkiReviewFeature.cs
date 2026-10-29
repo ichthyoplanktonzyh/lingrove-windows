@@ -5,7 +5,7 @@ using Cotabby.Core.Review;
 namespace Cotabby.App.Review;
 
 /// <summary>AppHost's single review composition/lifetime owner. Construction only wires shared
-/// settings/Store and the injected independent client/key store. UI actions stay on their caller's
+/// settings, optional borrowed legacy Store and the injected independent client/key store. UI actions stay on their caller's
 /// context; shutdown closes admission, cancels requests, drains admitted actions, then disposes the
 /// HTTP owner before the notebook closes. No startup probe, key read or model load occurs here.</summary>
 internal sealed class AnkiReviewFeature : IAsyncDisposable
@@ -18,13 +18,17 @@ internal sealed class AnkiReviewFeature : IAsyncDisposable
     private readonly CancellationToken _token;
     internal AnkiReviewSettings Settings { get; }
     internal AnkiReviewController Controller { get; }
-    internal AnkiReviewFeature(Func<AppSettings> current, Action persist, VocabularyStore store,
+    internal AnkiReviewFeature(Func<AppSettings> current, Action persist, VocabularyStore? store,
         IAnkiConnecting client, IAnkiCredentialStore credentials, Func<string?>? speechConfigurationId = null, Action? activateExisting = null)
     {
         _client = client; _token = _cancellation.Token;
         Settings = new(current, persist, credentials);
         Controller = new(Settings, store, client, speechConfigurationId, activateExisting);
     }
+    /// <summary>Real connection and preference owner without a legacy notebook. Canonical review
+    /// transactions have not yet been connected; no Store is constructed or opened here.</summary>
+    internal static AnkiReviewFeature CreateConnectionSettings(Func<AppSettings> current, Action persist,
+        IAnkiConnecting client, IAnkiCredentialStore credentials) => new(current, persist, null, client, credentials);
     internal Task RunAsync(Func<CancellationToken, Task> operation)
     {
         var completion = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);

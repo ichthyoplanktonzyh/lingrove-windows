@@ -86,6 +86,7 @@
     <Compile Include="..\..\src\Cotabby.App\Vocabulary\VocabularyGraphPresentation.cs" Link="Production\VocabularyGraphPresentation.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Explanation.cs" Link="Production\AppSettings.Explanation.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.ExplanationEndpoint.cs" Link="Production\AppSettings.ExplanationEndpoint.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.LearningPower.cs" Link="Production\AppSettings.LearningPower.cs" />
     <Compile Include="..\..\src\Cotabby.App\Learning\LearningExplanationController.cs" Link="Production\LearningExplanationController.cs" />
     <Compile Include="..\..\src\Cotabby.App\Learning\LearningTextCopyController.cs" Link="Production\LearningTextCopyController.cs" />
     <Compile Include="..\..\src\Cotabby.App\Learning\LearningSelectedCopyPolicy.cs" Link="Production\LearningSelectedCopyPolicy.cs" />

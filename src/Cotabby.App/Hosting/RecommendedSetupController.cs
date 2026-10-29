@@ -63,8 +63,8 @@ internal sealed class RecommendedSetupController : IAsyncDisposable
             var s = _host.Settings;
             return !s.RecommendedSetupApplied || (s.RecommendedCompletionTarget is null && s.Engine == EngineKind.Local
                     && !s.PowerModelSwitching && string.IsNullOrEmpty(s.ActiveModelId))
-                || RecommendedSetupPolicy.NeedsLearningSelection(s.EffectiveLearningBackend == LearningTranslationBackend.Local, s.LearningLocalModel, false)
-                || RecommendedSetupPolicy.NeedsLearningSelection(true, s.LearningExplanationLocalModel, false)
+                || RecommendedSetupPolicy.NeedsLearningSelection(s.EffectiveLearningBackend == LearningTranslationBackend.Local, s.LearningLocalModel, s.LearningTranslationPowerSwitching)
+                || RecommendedSetupPolicy.NeedsLearningSelection(s.LearningExplanationBackend == LearningModelBackend.Local, s.LearningExplanationLocalModel, s.LearningExplanationPowerSwitching)
                 || !s.Enabled || s.Pause?.IsActive(DateTimeOffset.Now) == true || !s.LearningTranslationEnabled;
         }
     }
@@ -83,9 +83,9 @@ internal sealed class RecommendedSetupController : IAsyncDisposable
         if (s.Engine == EngineKind.Local && !s.PowerModelSwitching && string.IsNullOrEmpty(s.ActiveModelId)
             && string.IsNullOrEmpty(s.RecommendedCompletionTarget))
         { s.RecommendedCompletionPrevious = s.ActiveModelId; s.RecommendedCompletionTarget = Plan.Completion.Id; }
-        if (RecommendedSetupPolicy.NeedsLearningSelection(s.EffectiveLearningBackend == LearningTranslationBackend.Local, s.LearningLocalModel, false))
+        if (RecommendedSetupPolicy.NeedsLearningSelection(s.EffectiveLearningBackend == LearningTranslationBackend.Local, s.LearningLocalModel, s.LearningTranslationPowerSwitching))
         { s.LearningLocalModel = Plan.Translation.Filename; s.LearningLocalTemplate = LearningChatTemplate.Automatic; }
-        if (RecommendedSetupPolicy.NeedsLearningSelection(true, s.LearningExplanationLocalModel, false))
+        if (RecommendedSetupPolicy.NeedsLearningSelection(s.LearningExplanationBackend == LearningModelBackend.Local, s.LearningExplanationLocalModel, s.LearningExplanationPowerSwitching))
         { s.LearningExplanationLocalModel = Plan.Explanation.Filename; s.LearningExplanationLocalTemplate = LearningChatTemplate.Automatic; }
         s.Enabled = true; s.Pause = null; s.LearningTranslationEnabled = true; s.RecommendedSetupApplied = true;
         // Re-enabling an already-started cached selection must not load weights as a side effect
@@ -107,9 +107,10 @@ internal sealed class RecommendedSetupController : IAsyncDisposable
         var s = _host.Settings;
         var completionId = s.RecommendedCompletionTarget ?? (s.Engine == EngineKind.Local && !s.PowerModelSwitching ? s.ActiveModelId : null);
         var completion = ModelCatalog.All.FirstOrDefault(model => model.Id == completionId);
-        var translation = s.EffectiveLearningBackend == LearningTranslationBackend.Local
+        var translation = !s.LearningTranslationPowerSwitching && s.EffectiveLearningBackend == LearningTranslationBackend.Local
             ? LearningRuntimeCatalog.TranslationModels.FirstOrDefault(model => string.Equals(model.Filename, s.LearningLocalModel, StringComparison.OrdinalIgnoreCase)) : null;
-        var explanation = LearningRuntimeCatalog.ExplanationModels.FirstOrDefault(model => string.Equals(model.Filename, s.LearningExplanationLocalModel, StringComparison.OrdinalIgnoreCase));
+        var explanation = !s.LearningExplanationPowerSwitching && s.LearningExplanationBackend == LearningModelBackend.Local
+            ? LearningRuntimeCatalog.ExplanationModels.FirstOrDefault(model => string.Equals(model.Filename, s.LearningExplanationLocalModel, StringComparison.OrdinalIgnoreCase)) : null;
         var run = CancellationTokenSource.CreateLinkedTokenSource(_shutdown.Token); _run = run;
         _work = RunAsync(run, completion, translation, explanation); Changed?.Invoke();
     }

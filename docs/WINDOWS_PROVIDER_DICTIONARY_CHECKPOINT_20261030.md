@@ -49,6 +49,14 @@ Its full local suites ran sequentially: Core **5,046/5,046**, portable App **1,2
 The current developer SDK is 10.0.403 under the repository's 10.0.402 latest-patch policy.
 All four final-head remote jobs remain the PR merge gate; local results are not a remote CI claim.
 
+The first remote Windows run exposed a test-boundary race in the new word-completion fallback
+checks: after acceptance, the valid next prediction could already have added another engine
+request. The single-request assertion now checks the fallback before acceptance, while the final
+field assertion still verifies that only the missing suffix was inserted. This matches the
+committed Mac word-fallback and post-acceptance continuation responsibilities; it changes no
+production behavior or historical fixture expectation. Core then passed 5,046/5,046 again and
+the two focused cases passed five further runs. The updated PR head requires a fresh four-job CI run.
+
 Tests use synthetic text, fake HTTP/keys/runtime, owned files/databases and isolated native components.
 No user notebook/editor/clipboard, real provider query, model download or audio-device playback is used.
 No installer, release, downloadable package or CI build artifact is produced.

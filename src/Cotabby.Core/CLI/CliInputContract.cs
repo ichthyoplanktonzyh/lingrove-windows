@@ -64,8 +64,10 @@ public static class CliInputContract
                 case "add": case "append": case "update":
                     string[] names = kind switch { "add" => ["expression", "dictionaryForm", "language", "kind", "meaning", "meaningLanguage", "note", "tags", "examples", "content"], "append" => ["entryID", "senseID", "examples", "content", "tags"], _ => ["entryID", "senseID", "expectedRevision", "meaning", "meaningLanguage", "note", "tags"] };
                     Only(action, names); ValidateTraditional(action, kind);
+                    if (clientInput && (action.ContainsKey("content") && action["content"] is null || action.ContainsKey("examples") && action["examples"] is null))
+                        throw Invalid("Expected an array of content blocks or examples.");
                     var contents = OptionalArray(action, "content", 64); var usages = OptionalArray(action, "examples", 100); blocks += contents.Count; examples += usages.Count;
-                    foreach (var usageNode in usages) ValidateExample(usageNode);
+                    foreach (var usageNode in usages) ValidateExample(usageNode, clientInput);
                     foreach (var blockNode in contents)
                     {
                         if (blockNode is not JsonObject block) throw Invalid("Invalid content block."); Only(block, ["text", "image", "bold", "italic"]);
@@ -102,12 +104,13 @@ public static class CliInputContract
         foreach (string name in new[] { "dictionaryForm", "meaning", "meaningLanguage", "note", "language", "kind", "expression" }) if (action[name] is not null && Text(action[name]) is null) throw Invalid("Invalid field.");
         foreach (var tag in OptionalArray(action, "tags", int.MaxValue)) if (Text(tag) is null) throw Invalid("Invalid tags.");
     }
-    private static void ValidateExample(JsonNode? value)
+    private static void ValidateExample(JsonNode? value, bool clientInput)
     {
         if (value is not JsonObject item) throw Invalid("Invalid example."); Only(item, ["text", "translation", "translationLanguage", "meaning", "meaningLanguage", "completeness", "sourceKind", "ranges"]);
         if (Text(item["text"]) is null) throw Invalid("Invalid example.");
         foreach (string key in new[] { "translation", "translationLanguage", "meaning", "meaningLanguage", "completeness", "sourceKind" }) if (item[key] is not null && Text(item[key]) is null) throw Invalid("Invalid example.");
         if (Text(item["sourceKind"]) is { } source && source is not ("unspecified" or "captured" or "authored" or "generated" or "imported")) throw Invalid("Unknown example sourceKind.");
+        if (clientInput && item.ContainsKey("ranges") && item["ranges"] is null) throw Invalid("Expected ranges array.");
         foreach (var range in OptionalArray(item, "ranges", 64)) { if (range is not JsonObject pair) throw Invalid("Invalid range."); Only(pair, ["location", "length"]); if (Integer(pair["location"]) is null || Integer(pair["length"]) is null) throw Invalid("Invalid range."); }
     }
     private static void Only(JsonObject value, IReadOnlyCollection<string> names) { if (value.Any(p => !names.Contains(p.Key))) throw Invalid("Unknown fields or invalid object."); }

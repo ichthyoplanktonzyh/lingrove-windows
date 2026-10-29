@@ -24,8 +24,9 @@ public sealed class CliIdentityTests
     {
         static CliBatch Parse(string value) => CliInputContract.DecodeBatch(Encoding.UTF8.GetBytes(value));
         var omitted = Parse("""{"version":1,"idempotencyKey":"k","operations":[{"add":{"expression":"bank","language":"en","kind":"word","meaning":"x"}}]}""");
-        var optionalNull = Parse("""{"version":1,"idempotencyKey":"k","expectedRevision":null,"operations":[{"add":{"expression":"bank","language":"en","kind":"word","meaning":"x","examples":null,"note":null}}]}""");
+        var optionalNull = CliInputContract.ValidateWire(System.Text.Json.Nodes.JsonNode.Parse("""{"version":1,"idempotencyKey":"k","expectedRevision":null,"operations":[{"add":{"expression":"bank","language":"en","kind":"word","meaning":"x","examples":null,"note":null}}]}""")!.AsObject());
         Assert.Equal(CliIdentity.Fingerprint(omitted), CliIdentity.Fingerprint(optionalNull));
+        Assert.Throws<CliException>(() => Parse("""{"version":1,"idempotencyKey":"k","operations":[{"add":{"expression":"bank","language":"en","kind":"word","meaning":"x","examples":null}}]}"""));
         var patchOmitted = Parse("""{"version":2,"idempotencyKey":"k","expectedRevision":0,"operations":[{"put":{"resource":"entries","value":{"id":"00000000-0000-0000-0000-000000000001"}}}]}""");
         var patchNull = Parse("""{"version":2,"idempotencyKey":"k","expectedRevision":0,"operations":[{"put":{"resource":"entries","value":{"id":"00000000-0000-0000-0000-000000000001","language":null}}}]}""");
         Assert.NotEqual(CliIdentity.Fingerprint(patchOmitted), CliIdentity.Fingerprint(patchNull));

@@ -1,0 +1,147 @@
+{
+  "macReference": "3b53402f2cbc196b0398d133177fd80006d165b2",
+  "provenance": "Windows-derived initial observations; native source execution is pending.",
+  "batches": [
+    {
+      "name": "typed-nil",
+      "batch": {
+        "version": 1,
+        "idempotencyKey": "nil",
+        "expectedRevision": null,
+        "operations": [
+          {
+            "add": {
+              "expression": "bank",
+              "language": "en",
+              "kind": "word",
+              "meaning": "money",
+              "note": null,
+              "examples": null
+            }
+          }
+        ]
+      },
+      "expectedFingerprint": "2752bc07feb113ad39cc3fcec7b8b10e0c7e5895e79b5f888f6477977184d73d",
+      "expectedId": "B71E5F27-58D8-54E3-B7B9-7D5D12D7EA56"
+    },
+    {
+      "name": "typed-uuid",
+      "batch": {
+        "version": 1,
+        "idempotencyKey": "uuid",
+        "operations": [
+          {
+            "append": {
+              "entryID": "abcdefab-cdef-abcd-efab-cdefabcdefab",
+              "senseID": "abcdefab-cdef-abcd-efab-cdefabcdefac",
+              "tags": [
+                "x"
+              ]
+            }
+          }
+        ]
+      },
+      "expectedFingerprint": "e71108aeb8cdb33c59b5c5bdfc8dc98dba08d9a05a7b7831c846edb166169d90",
+      "expectedId": "8A949D86-1D93-54A0-80FC-4CDE6D0FFB56"
+    },
+    {
+      "name": "resource-null-numbers",
+      "batch": {
+        "version": 2,
+        "idempotencyKey": "raw",
+        "expectedRevision": 0,
+        "operations": [
+          {
+            "put": {
+              "resource": "senses",
+              "value": {
+                "id": "abcdefab-cdef-abcd-efab-cdefabcdefab",
+                "meaningLanguage": null,
+                "createdAt": 1.25,
+                "updatedAt": 1.0
+              }
+            }
+          }
+        ]
+      },
+      "expectedFingerprint": "dd6fcc6e49df2ec1f9d34492f27bdc31352c8d5e20374ad600c6e5d38be8a824",
+      "expectedId": "F1104D2E-1B09-5817-B5F0-063A6DAAFFE2"
+    },
+    {
+      "name": "capture-uuid",
+      "batch": {
+        "version": 2,
+        "idempotencyKey": "capture",
+        "operations": [
+          {
+            "capture": {
+              "meanings": [
+                {
+                  "ref": "a",
+                  "id": "abcdefab-cdef-abcd-efab-cdefabcdefab"
+                }
+              ],
+              "entries": [
+                {
+                  "expression": "x",
+                  "senses": [
+                    {
+                      "id": "abcdefab-cdef-abcd-efab-cdefabcdefac"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "expectedFingerprint": "86b58c09c8d5cad9467a815078f6800d6e83719d3da9966c67ef9f9b061b9942",
+      "expectedId": "9708B4EF-0477-5DCC-A638-F59BFE5C5AA1"
+    },
+    {
+      "name": "unicode-and-slash",
+      "batch": {
+        "version": 1,
+        "idempotencyKey": "unicode/\u5B57",
+        "operations": [
+          {
+            "add": {
+              "expression": "caf\u00E9",
+              "language": "en",
+              "kind": "word",
+              "meaning": "a/b"
+            }
+          }
+        ]
+      },
+      "expectedFingerprint": "c1de977adc6203d495fdb3376aef086b5bd2b4e708a3ddcd8748efe33d44c3be",
+      "expectedId": "0776290B-A251-5A82-8914-E533B7DBAF67"
+    }
+  ],
+  "ranges": [
+    {
+      "name": "single",
+      "text": "the bank opens",
+      "expression": "bank",
+      "expected": "4:4"
+    },
+    {
+      "name": "overlap",
+      "text": "banana",
+      "expression": "ana",
+      "expected": "ambiguous"
+    },
+    {
+      "name": "missing",
+      "text": "nothing",
+      "expression": "bank",
+      "expected": "missing"
+    },
+    {
+      "name": "canonical-equivalent",
+      "text": "cafe\u0301",
+      "expression": "\u00E9",
+      "expected": "missing"
+    }
+  ]
+}

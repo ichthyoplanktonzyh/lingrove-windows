@@ -44,6 +44,13 @@ image preparer admits its documented PNG/decoder subset; native visual/desktop a
 actual app-owned startup/shutdown integration remain open. Existing historical fixture pins and
 old Windows/macOS data are untouched.
 
+The bounded native check is `python3 scripts/verify-cli-3b-macos-parity.py --mac-repo <checkout>`.
+It reads `CLIProtocol.swift`, `CLICaptureModels.swift` and `VocabularyCLIPlan.swift` at 3b, keeps
+the actual Codable declarations, fingerprint and operation ID bodies, and extracts the NSString
+range calculation. A tiny NSRange wrapper supplies only the unused model container. The shared
+`fixtures/parity/cli-3b-source-v1.json` currently contains Windows-derived observations, not
+native results; it is deliberately capable of exposing disagreement on its first macOS run.
+
 Executed in the isolated development tree: CLI Core tests, named SQLite Store dry-run/commit/
 replay and injected SQL rollback, private mailbox event/lease/recovery/client exchange, image
 SQL rollback and retry through the WPF test lease, app/CLI Release builds, and app-output CLI

@@ -1,6 +1,6 @@
 {
   "macReference": "3b53402f2cbc196b0398d133177fd80006d165b2",
-  "provenance": "All cases except typed-integers observed from 3b Swift in macOS CI runs 40944180841 and 40945194927; typed-integers is provisional.",
+  "provenance": "Observed from 3b Swift in macOS CI runs 40944180841, 40945194927 and 40946597100.",
   "batches": [
     {
       "name": "typed-nil",

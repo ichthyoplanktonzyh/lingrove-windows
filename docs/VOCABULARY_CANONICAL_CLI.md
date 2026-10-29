@@ -36,7 +36,7 @@ standard streams and exit code. The script disables delayed expansion and never 
 different file. The script's app default can be overridden by `--app`.
 
 The shared 3b native corpus observes typed nil/UUIDs, literal patch nulls, integer-valued floating
-JSON, Unicode/slash encoding and several UTF-16 searches. The Windows implementation was corrected
+JSON, exponent numbers, Unicode/slash encoding and several UTF-16 searches. The Windows implementation was corrected
 for the source-observed `1.0` integer encoding and canonically equivalent character range.
 Other floating-point representations and Unicode substring cases are not established by these
 bounded probes. Source-generated identifier collisions
@@ -49,9 +49,9 @@ The bounded native check is `python3 scripts/verify-cli-3b-macos-parity.py --mac
 It reads `CLIProtocol.swift`, `CLICaptureModels.swift` and `VocabularyCLIPlan.swift` at 3b, keeps
 the actual Codable declarations, fingerprint and operation ID bodies, and extracts the NSString
 range calculation. A tiny NSRange wrapper supplies only the unused model container. The shared
-`fixtures/parity/cli-3b-source-v1.json` records observations from macOS CI run 40944180841.
-The two mismatches observed there were fixed in Windows against the source results; a successful
-post-fix native rerun is still required.
+`fixtures/parity/cli-3b-source-v1.json` records observations from macOS CI runs 40944180841,
+40945194927 and 40946597100. The observed mismatches were fixed against the source results and
+the post-fix native probe passed. This establishes only the corpus cases, not the whole planner.
 
 Executed in the isolated development tree: CLI Core tests, named SQLite Store dry-run/commit/
 replay and injected SQL rollback, private mailbox event/lease/recovery/client exchange, image

@@ -32,7 +32,16 @@ public sealed class SuggestionStreamingCoordinatorTests : CoordinatorHarness
         var finish = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var uiEntered = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         var uiRelease = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-        int refreshes = 0; Focus.AfterRefresh = _ => Interlocked.Increment(ref refreshes);
+        var refreshEntered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var refreshRelease = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        int refreshes = 0, holdRefresh = 0;
+        Focus.AfterRefresh = _ =>
+        {
+            Interlocked.Increment(ref refreshes);
+            if (Volatile.Read(ref holdRefresh) == 0) return;
+            refreshEntered.TrySetResult();
+            refreshRelease.Task.GetAwaiter().GetResult();
+        };
         Engine.StreamOverride = async (_, partial, _) =>
         {
             entered.TrySetResult(); await emit.Task;
@@ -44,12 +53,16 @@ public sealed class SuggestionStreamingCoordinatorTests : CoordinatorHarness
         {
             Type("hello"); await entered.Task.WaitAsync(TimeSpan.FromSeconds(5));
             BlockUiUntil(uiRelease.Task, uiEntered); await uiEntered.Task.WaitAsync(TimeSpan.FromSeconds(5));
-            int baseline = Volatile.Read(ref refreshes); emit.TrySetResult(); await emitted.Task.WaitAsync(TimeSpan.FromSeconds(5));
-            // The single worker may refresh once more after the typing-pause delay.
-            await Task.Delay(100); Assert.InRange(Volatile.Read(ref refreshes) - baseline, 0, 2);
+            int baseline = Volatile.Read(ref refreshes); Volatile.Write(ref holdRefresh, 1);
+            emit.TrySetResult(); await emitted.Task.WaitAsync(TimeSpan.FromSeconds(5));
+            await refreshEntered.Task.WaitAsync(TimeSpan.FromSeconds(5));
+            // Holding the actual refresh removes scheduler/typing-cadence timing from this
+            // assertion: a thousand deltas must share one in-flight refresh and retain the latest.
+            Assert.Equal(1, Volatile.Read(ref refreshes) - baseline);
+            Volatile.Write(ref holdRefresh, 0); refreshRelease.TrySetResult();
             uiRelease.TrySetResult(); await Shown(" world " + new string('x', 1000)); finish.TrySetResult();
         }
-        finally { uiRelease.TrySetResult(); emit.TrySetResult(); finish.TrySetResult(); }
+        finally { Volatile.Write(ref holdRefresh, 0); refreshRelease.TrySetResult(); uiRelease.TrySetResult(); emit.TrySetResult(); finish.TrySetResult(); }
     }
     [Fact]
     public async Task LocalWordEndingPrefetchIsPreparedBeforeAcceptanceAndReusedAfterIt()

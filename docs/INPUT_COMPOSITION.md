@@ -31,6 +31,9 @@ After a composition event, the focus owner asynchronously coalesces a fresh capt
 focus and notification epochs; a finalized composition can therefore publish a new clear snapshot
 without waiting for another key or focus event. Handler registration belongs to a start generation,
 so a delayed older start cannot register over or stop a newer one.
+Retirement commands carry the invalidated epoch, so an older stop cannot retire a newer
+subscription. A timed-out or overloaded observation invalidates current work without treating its
+own failure as a new composition event; later external events can start another capture.
 
 This implementation depends on the provider honoring TextEdit's reporting contract. It does not
 establish that every editor supports or correctly implements that contract. Unsupported editors
@@ -66,8 +69,9 @@ and serialized operation ordering after a bounded wait; they do not simulate a c
 provider or validate real IME events. A separate test verifies queued timed-out requests retire
 before any native field query. Physical Windows host, TSF and browser acceptance remains open.
 `dotnet test tests/Cotabby.App.Wpf.Tests/Cotabby.App.Wpf.Tests.csproj --configuration Release
---no-restore --filter FullyQualifiedName~UiaFocusCompositionTests` passed 2/2 fake-driven lifecycle
-and finalization tests without focusing or reading any desktop application.
+--no-restore --filter FullyQualifiedName~UiaFocusCompositionTests` passed 4/4 fake-driven lifecycle,
+finalization, delayed-retirement and timeout-recovery tests without focusing or reading any desktop
+application.
 The reconciliation/insertion filter passed 65 tests; the focused native callback and insertion
 adapter filter passed 10. A full `dotnet build Cotabby.sln --configuration Release --no-restore`
 passed with zero warnings/errors after the reconciliation and ordering adjustments.

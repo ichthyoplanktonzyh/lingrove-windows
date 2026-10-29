@@ -41,7 +41,7 @@ internal sealed class FrozenVocabularyWindowController : IAsyncDisposable
     }
     internal void AttachReviewFeature(AnkiReviewFeature feature, Action configure)
     {
-        lock (_gate) { if (_closed) return; _reviewFeature = feature; _configureReview = configure; }
+        lock (_gate) { if (_closed) return; if (_reviewFeature is not null && !ReferenceEquals(_reviewFeature, feature)) throw new InvalidOperationException("A review feature is already attached."); _reviewFeature = feature; _configureReview = configure; }
         if (!_dispatcher.CheckAccess()) { if (!_dispatcher.HasShutdownStarted) _dispatcher.BeginInvoke(() => ApplyReview()); return; }
         ApplyReview();
     }

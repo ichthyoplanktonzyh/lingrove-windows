@@ -258,4 +258,26 @@ public sealed class CanonicalAnkiReviewWindowTests(WpfDispatcher dispatcher)
         finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
     });
 
+    [Fact]
+    public Task ImagePresetBindsAndAllowsSelectingStableSenseBlock() => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "review-card-window-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            await using var store = FrozenVocabularyStoreFactory.Create(Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName), false);
+            await store.AddEntriesAsync([new VocabularyEntryInput(Expression: "bank", Meaning: "money")]); var snapshot = await store.ReadAsync(); var entry = snapshot.Document.Entries[0];
+            using var json = JsonDocument.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "fixtures", "parity", "vocabulary-media-transactions-v1.json")));
+            byte[] bytes = Convert.FromBase64String(json.RootElement.GetProperty("input").GetString()!); var image = new VocabularyPreparedImage(new(Convert.ToHexStringLower(SHA256.HashData(bytes)), 80, 40, bytes.Length), bytes);
+            var first = VocabularyContentBlock.Create(new VocabularyBlockContent.Image(image.Reference, "first")); var second = VocabularyContentBlock.Create(new VocabularyBlockContent.Image(image.Reference, "second"));
+            await store.UpdateEntryAsync(entry with { Senses = [entry.Senses[0] with { Content = [first, second] }] }, entry, new Dictionary<string, VocabularyPreparedImage> { [image.Reference.Filename] = image });
+            var session = await CanonicalAnkiReviewSession.OpenAsync(new AnkiReviewController(Settings(), null, new SessionTestServer()), store, entry.Id, entry.Senses[0].Id, Guid.NewGuid());
+            var window = new CanonicalAnkiReviewWindow(session, action => action(CancellationToken.None), () => { }); window.Show(); await Ready(window);
+            window.LayoutPreset.SelectedIndex = 2; await window.PreviewOperation; Assert.Equal(first.Id, session.Plan.Layout!.Front.Single().BlockId);
+            var panel = (StackPanel)((Grid)((Border)window.LayoutParts.Children[0]).Child).Children[1]; var source = panel.Children.OfType<ComboBox>().Single(); source.SelectedIndex = 2; await window.PreviewOperation;
+            Assert.Equal(second.Id, session.Plan.Layout!.Front.Single().BlockId); Click(window.SaveButton); await Ready(window); await window.RetireAsync();
+            Assert.Equal(second.Id, (await store.ReadAsync()).Document.CollectedEntries[0].Senses[0].ReviewCards!.Single().Plan.Layout!.Front.Single().BlockId);
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    });
+
 }

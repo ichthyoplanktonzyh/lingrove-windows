@@ -56,7 +56,7 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
     private IReadOnlyList<AnkiFieldConflict>? _seenConflicts;
     internal Task? LastOperation => _operation;
     internal Task PreviewOperation => _previewTask;
-    internal Guid? CardIdForTest() => _session.CardId;
+    internal Guid? CardId => _session.CardId;
 
     internal CanonicalAnkiReviewWindow(CanonicalAnkiReviewSession session, Func<Func<CancellationToken, Task>, Task> admit, Action configure)
     {

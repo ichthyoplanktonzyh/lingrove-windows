@@ -23,6 +23,7 @@ internal sealed class FrozenVocabularyReviewSection
     private Task? _operation, _retirement;
     private bool _retiring;
     private string? _error;
+    private (Guid Entry, Guid Sense)? _errorSelection;
     internal Task? LastOperation => _operation;
     internal CanonicalAnkiReviewWindow? CardWindow => _window;
     internal FrozenVocabularyReviewSection(Window owner, ICanonicalVocabularyStore store, AnkiReviewFeature feature, Action configure, Action changed, Func<string, bool>? confirm = null, Func<Guid, Guid, bool>? canAct = null)
@@ -43,44 +44,56 @@ internal sealed class FrozenVocabularyReviewSection
             var edit = Button("Edit", () => Open(entry.Id, sense.Id, card.Plan.Id)); edit.IsEnabled = enabled; actions.Children.Add(edit);
             if (card.ActiveBinding is { NoteId: not null } binding)
             {
-                var open = Button("View in Anki", () => Navigate(entry.Id, sense.Id, token => _feature.Controller.OpenCanonicalAsync(binding, token))); open.IsEnabled = enabled; actions.Children.Add(open);
-                var review = Button("Review in Anki", () => Navigate(entry.Id, sense.Id, token => _feature.Controller.ReviewCanonicalDeckAsync(binding, token))); review.IsEnabled = enabled; actions.Children.Add(review);
+                var open = Button("View in Anki", () => Navigate(entry.Id, sense.Id, token => _feature.Controller.OpenCanonicalAsync(binding, token, () => _canAct(entry.Id, sense.Id)))); open.IsEnabled = enabled; actions.Children.Add(open);
+                var review = Button("Review in Anki", () => Navigate(entry.Id, sense.Id, token => _feature.Controller.ReviewCanonicalDeckAsync(binding, token, () => _canAct(entry.Id, sense.Id)))); review.IsEnabled = enabled; actions.Children.Add(review);
             }
-            var remove = Button("Remove local card", () => { if (_canAct(entry.Id, sense.Id) && _confirm(name) && _canAct(entry.Id, sense.Id)) Start(async token => { await _store.RemoveReviewAsync(entry.Id, sense.Id, card.Plan.Id, card, token); }); }); remove.IsEnabled = enabled; actions.Children.Add(remove); row.Children.Add(actions); panel.Children.Add(row);
+            var remove = Button("Remove local card", () => { if (_canAct(entry.Id, sense.Id) && _confirm(name) && _canAct(entry.Id, sense.Id)) Start(entry.Id, sense.Id, async token => { await _store.RemoveReviewAsync(entry.Id, sense.Id, card.Plan.Id, card, token); }); }); remove.IsEnabled = enabled; actions.Children.Add(remove); row.Children.Add(actions); panel.Children.Add(row);
         }
-        if (_error is not null) panel.Children.Add(VocabularyNotebookTheme.Brush(new TextBlock { Text = _error, TextWrapping = TextWrapping.Wrap }, TextBlock.ForegroundProperty, "OrangeBrush"));
+        if (_error is not null && _errorSelection == (entry.Id, sense.Id)) panel.Children.Add(VocabularyNotebookTheme.Brush(new TextBlock { Text = _error, TextWrapping = TextWrapping.Wrap }, TextBlock.ForegroundProperty, "OrangeBrush"));
         return VocabularyInputControls.Group(("", panel));
     }
     private static Button Button(string title, Action action)
     { var button = new Button { Content = title, Margin = new Thickness(0, 0, 8, 4) }; VocabularyNotebookTheme.Button(button); button.Click += (_, _) => action(); return button; }
+    private void Notify() { try { _changed(); } catch (Exception error) { _error = error.Message; } }
     private void Open(Guid entryId, Guid senseId, Guid cardId)
     {
-        if (!_canAct(entryId, senseId)) return;
+        if (!_canAct(entryId, senseId) || _retiring || _operation is not null || _feature.Controller.SendingSenseId is not null) return;
         if (_window is not null) { _window.Activate(); return; }
-        Start(async token =>
+        var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        _operation = completion.Task; _error = null; _errorSelection = (entryId, senseId); Notify();
+        _ = Run();
+        async Task Run()
         {
-            var session = await CanonicalAnkiReviewSession.OpenAsync(_feature.Controller, _store, entryId, senseId, cardId, token);
-            if (_retiring || !_canAct(entryId, senseId)) { session.Dispose(); return; }
+            CanonicalAnkiReviewSession? session = null;
             try
             {
-                var child = new CanonicalAnkiReviewWindow(session, _feature.RunAsync, _configure) { Owner = _owner }; _window = child;
-                child.Closed += (_, _) => { if (ReferenceEquals(_window, child)) _window = null; if (!_retiring) _changed(); };
-                child.Show(); child.Activate();
+                await _feature.RunAsync(async featureToken =>
+                {
+                    using var linked = CancellationTokenSource.CreateLinkedTokenSource(featureToken, _lifetime.Token);
+                    session = await CanonicalAnkiReviewSession.OpenAsync(_feature.Controller, _store, entryId, senseId, cardId, linked.Token);
+                });
+                if (_retiring || !_canAct(entryId, senseId)) return;
+                var child = new CanonicalAnkiReviewWindow(session!, _feature.RunAsync, _configure) { Owner = _owner }; _window = child;
+                session = null; // child owns only this borrowed session, never the shared services
+                child.Closed += (_, _) => { if (ReferenceEquals(_window, child)) _window = null; if (!_retiring) Notify(); };
+                try { child.ShowDialog(); } finally { await child.RetireAsync(); }
             }
-            catch { session.Dispose(); throw; }
-        });
+            catch (OperationCanceledException) { }
+            catch (Exception error) { if (!_retiring) _error = error.Message; }
+            finally { session?.Dispose(); _operation = null; completion.TrySetResult(); if (!_retiring) Notify(); }
+        }
     }
-    private void Navigate(Guid entryId, Guid senseId, Func<CancellationToken, Task<string?>> navigate) { if (_canAct(entryId, senseId)) Start(async token => { _error = await navigate(token); }); }
-    private void Start(Func<CancellationToken, Task> action)
+    private void Navigate(Guid entryId, Guid senseId, Func<CancellationToken, Task<string?>> navigate) { if (_canAct(entryId, senseId)) Start(entryId, senseId, async token => { _error = await navigate(token); }); }
+    private void Start(Guid entryId, Guid senseId, Func<CancellationToken, Task> action)
     {
-        if (_retiring || _operation is not null) return;
-        var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously); _operation = completion.Task; _error = null; _changed();
+        if (_retiring || _operation is not null || _window is not null || _feature.Controller.SendingSenseId is not null) return;
+        var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously); _operation = completion.Task; _error = null; _errorSelection = (entryId, senseId); Notify();
         _ = Run(); async Task Run()
         {
             try { await _feature.RunAsync(async featureToken => { using var linked = CancellationTokenSource.CreateLinkedTokenSource(featureToken, _lifetime.Token); await action(linked.Token); }); }
             catch (OperationCanceledException) { }
             catch (Exception error) { if (!_retiring) _error = error.Message; }
-            finally { _operation = null; completion.TrySetResult(); if (!_retiring) _changed(); }
+            finally { _operation = null; completion.TrySetResult(); if (!_retiring) Notify(); }
         }
     }
     internal Task RetireAsync()
@@ -92,8 +105,8 @@ internal sealed class FrozenVocabularyReviewSection
     {
         _retiring = true; var errors = new List<Exception>();
         try { _lifetime.Cancel(); } catch (Exception error) { errors.Add(error); }
-        try { if (_operation is { } operation) await operation; } catch (Exception error) { errors.Add(error); }
         try { if (_window is { } child) await child.RetireAsync(); } catch (Exception error) { errors.Add(error); }
+        try { if (_operation is { } operation) await operation; } catch (Exception error) { errors.Add(error); }
         _lifetime.Dispose(); if (errors.Count == 0) completion.TrySetResult(); else completion.TrySetException(errors);
     }
 }

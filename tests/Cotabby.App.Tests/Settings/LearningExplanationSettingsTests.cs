@@ -5,6 +5,28 @@ namespace Cotabby.App.Tests.Settings;
 
 public sealed class LearningExplanationSettingsTests
 {
+    [Theory]
+    [InlineData("zh-Hans", LearningLanguage.Chinese)]
+    [InlineData("zh-Hant", LearningLanguage.TraditionalChinese)]
+    [InlineData("fr", LearningLanguage.French)]
+    [InlineData("ar", LearningLanguage.Arabic)]
+    [InlineData("pt-BR", LearningLanguage.English)]
+    [InlineData("id", LearningLanguage.English)]
+    [InlineData("tr", LearningLanguage.English)]
+    public void AppLanguageUsesActualLaunchLocalizationUntilRestart(string locale, LearningLanguage expected)
+    {
+        var settings = new AppSettings { InterfaceLocaleAtLaunch = locale, InterfaceLanguage = locale };
+        Assert.Equal(expected, settings.ResolvedLearningExplanationLanguage);
+        settings.InterfaceLanguage = "ja"; // Preference is pending; the displayed interface has not restarted.
+        Assert.Equal(expected, settings.ResolvedLearningExplanationLanguage);
+        Assert.Equal(expected, settings.ResetGeneralPreferences(0).ResolvedLearningExplanationLanguage);
+        string json = SettingsStore.Serialize(settings);
+        Assert.DoesNotContain("InterfaceLocaleAtLaunch", json);
+        Assert.Null(settings.LearningExplanationLanguage);
+        settings.LearningExplanationLanguage = LearningLanguage.German;
+        Assert.Equal(LearningLanguage.German, settings.ResolvedLearningExplanationLanguage);
+    }
+
     [Fact]
     public void OldPreferencesNeverInheritTranslationOrAutocompleteDestinations()
     {

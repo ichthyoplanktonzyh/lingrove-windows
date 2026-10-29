@@ -49,6 +49,7 @@ public sealed partial class AppSettings
         LocalModelSourcesValue = new Dictionary<string, string>(LocalModelSourcesValue ?? [], StringComparer.Ordinal),
         ShowFirstRunWelcome = ShowFirstRunWelcome,
         OnboardingProgressValue = OnboardingProgressValue,
+        InterfaceLocaleAtLaunch = InterfaceLocaleAtLaunch,
         WordsAccepted = wordsAccepted,
         VocabularyGraphSettingsValue = VocabularyGraphSettingsValue,
         VocabularyBrowserModeValue = VocabularyBrowserModeValue,

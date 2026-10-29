@@ -51,6 +51,7 @@ public partial class App : Application
         var settingsStore = new SettingsStore();
         var settings = settingsStore.Load();
         InterfaceText.Initialize(settings.InterfaceLanguage);
+        settings.InterfaceLocaleAtLaunch = InterfaceText.Locale;
         InterfaceText.RequestRestart = () => RequestShutdownAsync(restart: true);
 
         // Realizing the windows now makes the first suggestion and the first popup instant.

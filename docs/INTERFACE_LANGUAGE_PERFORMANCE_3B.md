@@ -76,3 +76,11 @@ batch-cancellation test failure; its single-test rerun passed. The test now wait
 cancellation callback before releasing the fake, and the broader filter subsequently passed
 106/106. The native preferred-list call itself was not exercised against a real user's settings in
 these tests.
+
+The explanation "App language" choice now follows the actual launch localization, matching
+`LanguageLearningSettings.swift` at 3b: an explicit explanation language wins, otherwise an exact
+LearningLanguage raw code is used, with English as fallback. Thus `pt-BR`, `id` and `tr` retain
+the original English fallback rather than inventing a different direction. The captured interface
+locale is not persisted, survives general reset, and does not change when a new interface preference
+is awaiting restart. Bootstrap captures it before constructing the explanation controller. Targeted
+settings regressions passed 13/13, including explicit override, pending restart and reset behavior.

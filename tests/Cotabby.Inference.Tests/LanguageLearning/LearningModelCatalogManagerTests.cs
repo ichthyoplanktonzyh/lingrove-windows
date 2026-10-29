@@ -203,6 +203,7 @@ public sealed class LearningModelCatalogManagerTests
         try
         {
             await body.Blocked.Task.WaitAsync(Timeout);
+            Assert.True(manager.Activity.IsDownloading(Entry(Payload).Filename));
             stopping = manager.DisposeAsync().AsTask();
             Assert.False(stopping.IsCompleted);
             await Assert.ThrowsAsync<ObjectDisposedException>(async () => await manager.GetInstalledModelsAsync());
@@ -210,6 +211,7 @@ public sealed class LearningModelCatalogManagerTests
             body.Release.TrySetResult();
             await Assert.ThrowsAnyAsync<OperationCanceledException>(() => transfer.WaitAsync(Timeout));
             await stopping.WaitAsync(Timeout);
+            Assert.False(manager.Activity.IsDownloading(Entry(Payload).Filename));
 
             Assert.Empty(Directory.GetFiles(files.Models));
             // An injected HTTP client remains owned by the caller after manager shutdown.

@@ -34,13 +34,16 @@ internal static class LearningPane
         (LearningTranslationBackend.Endpoint, "OpenAI-compatible endpoint"),
     ];
 
-    public static SettingsPane Build(Rows rows)
+    public static SettingsPane Build(Rows rows, Action<Window?>? openDictionary = null)
     {
         var context = rows.Context;
         var review = new AnkiReviewSettingsSection(context.Host.Review);
         context.Closed += review.Close;
         Button? configureSpeech = null;
         configureSpeech = Ui.Button("Configure speech…", () => context.Host.ShowSpeechSettings(Window.GetWindow(configureSpeech!)));
+        Button? configureDictionary = null;
+        configureDictionary = Ui.Button("Manage dictionaries…", () => openDictionary?.Invoke(Window.GetWindow(configureDictionary!)));
+        configureDictionary.IsEnabled = openDictionary is not null;
         var destination = Ui.Text("", "Caption");
         destination.Margin = new Thickness(0, 10, 0, 0);
         context.OnRefresh(() => UpdateDestination(context.Settings, destination));
@@ -50,6 +53,9 @@ internal static class LearningPane
             new SettingsCard("Speech",
                 rows.Labeled("Speech and pronunciation", "System voices, an independent local model, or your selected speech endpoint.", configureSpeech)
                     .Tagged("speech pronunciation voice audio rate model endpoint")),
+            new SettingsCard("Dictionary sources",
+                rows.Labeled("Local dictionaries", "Import MDict files and configure source order and languages.", configureDictionary)
+                    .Tagged("dictionary mdict mdx mdd import source")),
             new SettingsCard("Reading",
                 rows.Toggle("Read Selected Text", "Use the reading shortcut on selected text in a supported app.",
                     s => s.LearningReadingEnabled, (s, v) => s.LearningReadingEnabled = v)

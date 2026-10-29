@@ -20,6 +20,9 @@ public partial class LearningDictionaryWindow : Window
     private LearningDictionaryState? _state;
     private LearningDictionaryViewport _viewport = new();
     private ScreenRect _anchor;
+    private LearningDictionarySession? _session; private Func<bool>? _permit; private DictionaryArticleView? _article;
+    private Guid _articleRequest; private bool _updatingSources; private Task _articleShutdown = Task.CompletedTask;
+    private sealed record SourceChoice(DictionarySource Source, string Name) { public override string ToString() => Name; }
     public LearningDictionaryWindow()
     {
         InitializeComponent();
@@ -28,30 +31,46 @@ public partial class LearningDictionaryWindow : Window
         InstallSelection();
         WindowTheme.Follow(this);
         SourceInitialized += (_, _) => LearningPanelPlacement.Install(this);
+        Closed += (_, _) => { if (_article is not null) _articleShutdown = _article.DisposeAsync().AsTask(); };
     }
     public event Action<LearningDictionaryWord, Guid>? WordRequested;
     public event Action<Guid>? BackRequested;
     public event Action<Guid>? CloseRequested;
     public event Action<LearningDictionaryPage, Guid>? PageRequested;
     public event Action<Guid, LearningExplanationState>? ExplanationRequested;
+    internal event Action<DictionarySource, Guid>? SourceRequested;
+    internal event Action<string, Guid>? ReferenceRequested;
+    internal void AttachSession(LearningDictionarySession session, Func<bool> permit) { _session = session; _permit = permit; }
+    internal Task ArticleShutdown => _articleShutdown;
     internal event Action? ReadingMeaningRequested;
     internal void EnableReadingMeaning() => ReadingMeaningButton.Visibility = Visibility.Visible;
     internal Task FavoriteWork => FavoriteButton.LastOperation;
     private void OnReadingMeaning(object sender, RoutedEventArgs args) => ReadingMeaningRequested?.Invoke();
 
-    internal void ShowState(LearningDictionaryState state, ScreenRect anchor, LearningContextExampleTranslation? exampleTranslation = null)
+    internal void ShowState(LearningDictionaryState state, ScreenRect anchor, LearningContextExampleTranslation? exampleTranslation = null, LearningModelSnapshot? profile = null)
     {
         Dispatcher.VerifyAccess();
         if (_state?.TargetIdentity != state.TargetIdentity) FavoriteButton.Clear();
         SetSelectionTarget(state.TargetIdentity, state.Page);
         _state = state;
         _anchor = anchor;
+        ExplanationDestination.Text = LearningModelDestinationText.Explanation(profile);
+        ExplanationDestinationSection.Visibility = state.HasContextualExplanation ? Visibility.Visible : Visibility.Collapsed;
         if (state.Unit is not { } unit) { HideCard(); return; }
         TitleText.Text = state.Title;
+        _updatingSources = true;
+        try
+        {
+            var choices = state.AvailableSources.Select(source => new SourceChoice(source, state.SourceLabels.GetValueOrDefault(source, source.RawValue))).ToArray();
+            SourcePicker.ItemsSource = choices; SourcePicker.SelectedItem = choices.FirstOrDefault(x => x.Source == state.SelectedSource);
+            SourcePicker.Visibility = choices.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
+            if (state.SelectedSource is { } selected && state.SourceLabels.TryGetValue(selected, out var name)) SubtitleText.Text = name;
+        }
+        finally { _updatingSources = false; }
         TitleText.FlowDirection = WordButtons.FlowDirection = state.Language == LearningLanguage.Arabic
             ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
         WordSection.Visibility = unit.Kind == LearningUnitKind.Word || state.SelectedWord is not null ? Visibility.Collapsed : Visibility.Visible;
-        BackButton.Visibility = state.SelectedWord is null ? Visibility.Collapsed : Visibility.Visible;
+        BackButton.Visibility = state.SelectedWord is null && state.ReferenceQuery is null ? Visibility.Collapsed : Visibility.Visible;
         QueryText.Text = "Dictionary form: " + state.Query;
         QueryText.Visibility = state.Query.Normalize() == state.Title.Normalize() ? Visibility.Collapsed : Visibility.Visible;
         WordButtons.Children.Clear();
@@ -68,7 +87,7 @@ public partial class LearningDictionaryWindow : Window
         PresentContextual(state, exampleTranslation);
         bool contextual = state.Page == LearningDictionaryPage.Contextual;
         DefinitionContent.Visibility = contextual ? Visibility.Collapsed : Visibility.Visible;
-        if (contextual) DefinitionContent.Children.Clear();
+        if (contextual) { _article?.Retire(); _articleRequest = Guid.Empty; DefinitionContent.Children.Clear(); }
         else PresentDefinitions(state);
         MeasureBody();
         if (!IsVisible) Show();
@@ -76,7 +95,23 @@ public partial class LearningDictionaryWindow : Window
         LearningPanelPlacement.Position(this, anchor);
     }
 
-    private void PresentDefinitions(LearningDictionaryState state) => LearningDictionaryDefinitions.Populate(DefinitionContent, AttributionText, state);
+    private void PresentDefinitions(LearningDictionaryState state)
+    {
+        if (state.Result is not LearningDictionaryResult.Article article || article.ResourceLibrary is null || _session is null)
+        { _article?.Retire(); _articleRequest = Guid.Empty; LearningDictionaryDefinitions.Populate(DefinitionContent, AttributionText, state); return; }
+        if (_article is null)
+        {
+            _article = new DictionaryArticleView { Height = 200 };
+            _article.ReferenceRequested += query => { if (_state is { } current) ReferenceRequested?.Invoke(query, current.TargetIdentity); };
+        }
+        DefinitionContent.Children.Clear(); DefinitionContent.Children.Add(_article); AttributionText.Inlines.Clear();
+        if (_articleRequest == state.RequestIdentity) return; _articleRequest = state.RequestIdentity;
+        Guid request = state.RequestIdentity;
+        _ = _article.ShowAsync(article, (path, token) => _session.LoadResourceAsync(path, article.ResourceLibrary!.Value, request, token),
+            () => _state?.RequestIdentity == request && _session.State.RequestIdentity == request && (_permit?.Invoke() ?? false), CancellationToken.None);
+    }
+    private void OnSourceChanged(object sender, SelectionChangedEventArgs args)
+    { if (!_updatingSources && _state is { } state && SourcePicker.SelectedItem is SourceChoice choice) SourceRequested?.Invoke(choice.Source, state.TargetIdentity); }
 
     private void MeasureBody()
     {
@@ -86,13 +121,14 @@ public partial class LearningDictionaryWindow : Window
         string query = state.Query + ":" + state.Page;
         _viewport.Measure(BodyContent.DesiredSize.Height, query,
             resolved: state.Page == LearningDictionaryPage.Dictionary
-                && state.Status == LearningDictionaryContentStatus.Result && state.Result is LearningDictionaryResult.Entries);
+                && state.Status == LearningDictionaryContentStatus.Result && state.Result is LearningDictionaryResult.Entries or LearningDictionaryResult.Article);
         DefinitionViewport.Height = _viewport.HeightFor(query);
     }
 
     public void HideCard()
     {
         FavoriteButton.Clear();
+        _article?.Retire(); _articleRequest = Guid.Empty;
         _state = null; _viewport = new(); _contextInput = null;
         ContextualMeaning.DocumentIdentity = ContextualExampleText.DocumentIdentity =
             ContextualExampleTranslation.DocumentIdentity = ExplanationProse.DocumentIdentity = null;
@@ -105,6 +141,7 @@ public partial class LearningDictionaryWindow : Window
         ExplanationDetails.IsExpanded = false;
         Hide();
     }
+    internal void ClearVocabulary() => FavoriteButton.Clear();
     internal void BindVocabulary(IWritingVocabularyStore store, VocabularyCapture capture, Guid target, Func<bool> canAct, Func<Task<bool>>? preflight = null)
     {
         Dispatcher.VerifyAccess();

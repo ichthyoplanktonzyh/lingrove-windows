@@ -26,8 +26,10 @@ internal sealed class FrozenVocabularyEntryEditorWindow : Window
     private readonly ICanonicalVocabularyMediaStore _media;
     private readonly IVocabularyClipboardImageTransfer? _clipboard;
     private readonly StackPanel _explanation = new() { Name = "canonicalExplanationDropArea" };
+    private readonly TextBlock _imageProgress = new() { Text = InterfaceText.Get("Adding image…"), Margin = new Thickness(0, 0, 0, 8), Visibility = Visibility.Collapsed };
     private readonly List<CanonicalVocabularyImageView> _imageViews = [];
     private WindowsVocabularyFileDrop? _fileDrop;
+    private readonly CanonicalImageDropSurface _oleDrop;
     private readonly F.VocabularyEntry _baseline;
     private F.VocabularyEntry _draft;
     private readonly Guid _senseId;
@@ -38,7 +40,7 @@ internal sealed class FrozenVocabularyEntryEditorWindow : Window
     private readonly StackPanel _form = new(), _blocks = new(), _examples = new();
     private readonly TextBlock _failure = VocabularyNotebookTheme.Brush(new TextBlock { TextWrapping = TextWrapping.Wrap }, TextBlock.ForegroundProperty, "OrangeBrush");
     private readonly Button _save = new() { Name = "canonicalEditSave", Content = InterfaceText.Get("Save"), IsDefault = true, MinWidth = 90 }, _cancel = new() { Content = InterfaceText.Get("Cancel"), IsCancel = true, MinWidth = 90 }, _addText = new() { Content = InterfaceText.Get("Add text") }, _addImage = new() { Content = InterfaceText.Get("Add image") }, _addExample = new() { Content = InterfaceText.Get("Add example") }, _paste = new() { Content = InterfaceText.Get("Paste image") };
-    private bool _saving, _retiring, _allowClose, _importing, _rangesPending, _rangeFailed;
+    private bool _saving, _retiring, _allowClose, _importing, _dropReading, _rangesPending, _rangeFailed;
     private long _rangeEpoch;
     private readonly Dictionary<Guid, (Guid Id, string Text, string Expression, string Form)> _rangeInputs = [];
     private CancellationTokenSource? _rangeToken;
@@ -48,7 +50,7 @@ internal sealed class FrozenVocabularyEntryEditorWindow : Window
     internal bool Saved { get; private set; }
     private F.VocabularySense? Sense => _draft.Senses.FirstOrDefault(s => s.Id == _senseId);
 
-    internal FrozenVocabularyEntryEditorWindow(ICanonicalVocabularyEditorStore editor, ICanonicalVocabularyMediaStore media, F.VocabularyEntry entry, Guid senseId, IReadOnlyList<string>? suggestedTags = null, IVocabularyClipboardImageTransfer? clipboard = null)
+    internal FrozenVocabularyEntryEditorWindow(ICanonicalVocabularyEditorStore editor, ICanonicalVocabularyMediaStore media, F.VocabularyEntry entry, Guid senseId, IReadOnlyList<string>? suggestedTags = null, IVocabularyClipboardImageTransfer? clipboard = null, Func<IntPtr, CancellationToken, Task<WindowsVocabularyOleDropTransfer>>? dropStart = null)
     {
         _editor = editor; _media = media; _clipboard = clipboard; _baseline = entry; _draft = entry; _senseId = senseId;
         if (Sense is null) throw new ArgumentException("Selected sense is absent from the entry.", nameof(senseId));
@@ -74,6 +76,7 @@ internal sealed class FrozenVocabularyEntryEditorWindow : Window
         _form.Children.Add(_explanation); _explanation.Children.Add(VocabularyInputControls.Heading(InterfaceText.Get("Sense explanation"))); _explanation.Children.Add(_blocks);
         var blockActions = new WrapPanel(); foreach (var b in new[] { _addText, _addImage }) { VocabularyNotebookTheme.Button(b); b.Margin = new Thickness(0, 0, 8, 8); blockActions.Children.Add(b); } _explanation.Children.Add(blockActions);
         VocabularyNotebookTheme.Button(_paste); _paste.Margin = new Thickness(0, 0, 8, 8); blockActions.Children.Add(_paste); _paste.Click += (_, _) => PasteImage();
+        _oleDrop = new(bytes => BeginImport(async token => await _media.PrepareImageAsync(bytes, token)), () => _failure.Text = InterfaceText.Get("Unable to add this image. Try a smaller image."), busy => { _dropReading = busy; Update(); }, dropStart); _explanation.Children.Add(_oleDrop); _explanation.Children.Add(_imageProgress);
         CommandManager.AddPreviewCanExecuteHandler(_explanation, (_, e) => { if (e.Command == ApplicationCommands.Paste && _clipboard?.Capture().HasImage == true) { e.CanExecute = CanImport(); e.Handled = true; } });
         CommandManager.AddPreviewExecutedHandler(_explanation, (_, e) => { if (e.Command == ApplicationCommands.Paste && _clipboard?.Capture() is { HasImage: true } offer) { e.Handled = true; ImportClipboard(offer); } });
         SourceInitialized += (_, _) => AttachFileDrop(); Loaded += (_, _) => AttachFileDrop();
@@ -85,13 +88,13 @@ internal sealed class FrozenVocabularyEntryEditorWindow : Window
         _addText.Click += (_, _) => { ChangeSense(s => s with { Content = (s.Content ?? []).Append(VocabularyContentBlock.Create(new VocabularyBlockContent.Text(new()))).ToArray() }); RenderBlocks(); };
         _addImage.Click += (_, _) => { var dialog = new OpenFileDialog { Title = InterfaceText.Get("Add image"), Filter = "Images|*.png;*.jpg;*.jpeg;*.tif;*.tiff;*.bmp;*.gif;*.ico;*.webp;*.heic;*.heif", Multiselect = false }; if (dialog.ShowDialog(this) == true) ImportImage(dialog.FileName); };
         _addExample.Click += (_, _) => { ChangeSense(s => s with { Examples = s.Examples.Append(new F.VocabularyExample(Guid.NewGuid(), "", "", [], R.VocabularyExampleCompleteness.Fragment, "", SourceDate.FromWindows(DateTimeOffset.UtcNow)) { SourceKind = R.VocabularySourceKind.Authored, TranslationLanguage = s.MeaningLanguage }).ToArray() }); RenderExamples(); };
-        Closing += (_, e) => { if (_saving && !_allowClose) e.Cancel = true; }; Closed += (_, _) => { _retiring = true; _lifetime.Cancel(); _rangeToken?.Cancel(); _fileDrop?.Dispose(); _fileDrop = null; foreach (var view in _imageViews) view.Dispose(); };
+        Closing += (_, e) => { if (!_allowClose) { e.Cancel = true; if (!_saving) _ = RetireAsync(); } }; Closed += (_, _) => { _retiring = true; _lifetime.Cancel(); _rangeToken?.Cancel(); _fileDrop?.Dispose(); _fileDrop = null; foreach (var view in _imageViews) view.Dispose(); };
         RenderBlocks(); RenderExamples(); Update();
     }
     private void ChangeSense(Func<F.VocabularySense, F.VocabularySense> change) { if (_retiring || _saving) return; _draft = _draft with { Senses = _draft.Senses.Select(s => s.Id == _senseId ? change(s) : s).ToArray() }; Update(); }
     private void ChangeExample(Guid id, Func<F.VocabularyExample, F.VocabularyExample> change) => ChangeSense(s => s with { Examples = s.Examples.Select(e => e.Id == id ? change(e) : e).ToArray() });
     private void ChangeBlock(Guid id, Func<VocabularyBlockContent, VocabularyBlockContent> change) => ChangeSense(s => s with { Content = (s.Content ?? []).Select(b => b.Id == id ? b with { Content = change(b.Content) } : b).ToArray() });
-    private void Update() { bool ready = !_saving && !_retiring; _form.IsEnabled = ready; _cancel.IsEnabled = ready; _save.IsEnabled = ready && !_importing && !_rangesPending && !_rangeFailed && !string.IsNullOrWhiteSpace(_draft.Expression) && Sense is { } s && s.Examples.All(e => !string.IsNullOrWhiteSpace(e.Text)); _addText.IsEnabled = _addImage.IsEnabled = ready && !_importing && (Sense?.Content?.Count ?? 0) < VocabularyContentPolicy.MaximumBlocks; _paste.IsEnabled = _addImage.IsEnabled && _clipboard is not null; }
+    private void Update() { bool ready = !_saving && !_retiring; _form.IsEnabled = ready; _cancel.IsEnabled = ready; _save.IsEnabled = ready && !_importing && !_dropReading && !_rangesPending && !_rangeFailed && !string.IsNullOrWhiteSpace(_draft.Expression) && Sense is { } s && s.Examples.All(e => !string.IsNullOrWhiteSpace(e.Text)); _addText.IsEnabled = _addImage.IsEnabled = ready && !_importing && !_dropReading && (Sense?.Content?.Count ?? 0) < VocabularyContentPolicy.MaximumBlocks; _paste.IsEnabled = _addImage.IsEnabled && _clipboard is not null; _oleDrop.IsEnabled = _addImage.IsEnabled; _imageProgress.Visibility = _importing || _dropReading ? Visibility.Visible : Visibility.Collapsed; }
     private async Task SaveAsync()
     {
         if (!_save.IsEnabled) return; var tags = VocabularyEntryEditingPolicy.ParseTags(_tags.Text).Select(t => t.Trim().Trim('#')).Where(t => t.Length > 0).Distinct(CanonicalStringComparer.Instance).Order(CanonicalStringComparer.Instance).ToArray(); ChangeSense(s => s with { Tags = tags });
@@ -104,9 +107,21 @@ internal sealed class FrozenVocabularyEntryEditorWindow : Window
     internal Task RetireAsync() { Dispatcher.VerifyAccess(); if (_retirement is not null) return _retirement.Task; var done = _retirement = new(TaskCreationOptions.RunContinuationsAsynchronously); _ = RetireCore(done); return done.Task; }
     private async Task RetireCore(TaskCompletionSource done)
     {
-        _retiring = true; _lifetime.Cancel(); _rangeToken?.Cancel(); _fileDrop?.Dispose(); _fileDrop = null; foreach (var view in _imageViews) Track(view.RetireAsync()); Update();
-        try { if (LastOperation is { } save) await save; while (_work.Count != 0) { await Task.WhenAll(_work.ToArray()); _work.RemoveWhere(t => t.IsCompleted); } _allowClose = true; if (IsVisible) Close(); _lifetime.Dispose(); done.TrySetResult(); }
-        catch (Exception e) { done.TrySetException(e); }
+        _retiring = true; Exception? failure = null;
+        try { _lifetime.Cancel(); } catch (Exception e) { failure = e; }
+        try { _rangeToken?.Cancel(); } catch (Exception e) { failure ??= e; }
+        try { _fileDrop?.Dispose(); } catch (Exception e) { failure ??= e; } _fileDrop = null;
+        foreach (var view in _imageViews) Track(view.RetireAsync()); Update();
+        bool dropRetired = false;
+        try { await _oleDrop.RetireAsync(); dropRetired = true; } catch (Exception e) { failure ??= e; }
+        try { if (LastOperation is { } save) await save; } catch (Exception e) { failure ??= e; }
+        while (_work.Count != 0)
+        {
+            try { await Task.WhenAll(_work.ToArray()); } catch (Exception e) { failure ??= e; }
+            _work.RemoveWhere(t => t.IsCompleted);
+        }
+        try { if (dropRetired) { _allowClose = true; if (IsVisible) Close(); } _lifetime.Dispose(); } catch (Exception e) { failure ??= e; }
+        if (failure is null) done.TrySetResult(); else done.TrySetException(failure);
     }
     private void Track(Task task) { _work.Add(task); _ = Remove(task); async Task Remove(Task t) { try { await t; } finally { _work.Remove(t); } } }
     private void QueueRanges(IEnumerable<F.VocabularyExample> examples)
@@ -133,7 +148,7 @@ internal sealed class FrozenVocabularyEntryEditorWindow : Window
     }
     private void Move(Guid id, int offset) { ChangeSense(s => s with { Content = VocabularyEntryEditingPolicy.MoveBlock(s.Content, id, offset) }); RenderBlocks(); }
     private void PruneImages() { var names = VocabularyContentPolicy.Images(Sense?.Content ?? []).Select(i => i.Filename).ToHashSet(StringComparer.Ordinal); foreach (var key in _images.Keys.Where(k => !names.Contains(k)).ToArray()) _images.Remove(key); }
-    private bool CanImport() => !_retiring && !_saving && !_importing && (Sense?.Content?.Count ?? 0) < VocabularyContentPolicy.MaximumBlocks;
+    private bool CanImport() => !_retiring && !_saving && !_importing && !_dropReading && (Sense?.Content?.Count ?? 0) < VocabularyContentPolicy.MaximumBlocks;
     internal void ImportImage(string path) => BeginImport(async token => await _media.PrepareImageFileAsync(path, token));
     internal bool PasteImage() => _clipboard?.Capture() is { HasImage: true } offer && ImportClipboard(offer);
     private bool ImportClipboard(VocabularyClipboardImageOffer offer) => BeginImport(async token => { var bytes = await _clipboard!.ReadAsync(offer.Sequence, token); token.ThrowIfCancellationRequested(); return bytes is null ? null : await _media.PrepareImageAsync(bytes, token); });

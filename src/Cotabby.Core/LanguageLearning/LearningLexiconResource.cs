@@ -40,6 +40,17 @@ public interface ILearningUnknownDictionaryProviding
     Task<LearningDictionaryResult> LookupUnknownAsync(string query, bool expression,
         CancellationToken cancellationToken = default);
 }
+/// <summary>Optional shared source router. Requests carry the immutable configuration that
+/// authorized them; changes retire each card's in-flight work and cached results.</summary>
+public interface ILearningDictionaryRouter : ILearningDictionaryProviding
+{
+    DictionaryConfiguration Configuration { get; }
+    event Action<DictionaryConfiguration>? ConfigurationChanged;
+    int CountWords(string text, LearningLanguage? language);
+    Task<LearningDictionaryResult> LookupSourceAsync(string query, LearningLanguage? language, bool expression,
+        DictionarySource source, DictionaryConfiguration configuration, CancellationToken cancellationToken = default);
+    Task<DictionaryResource?> ResourceAsync(string path, Guid libraryId, DictionaryConfiguration configuration, CancellationToken cancellationToken = default);
+}
 
 /// <summary>
 /// The bundled subset of the Mac result algebra. A miss is a value, whereas an unavailable
@@ -50,6 +61,9 @@ public abstract record LearningDictionaryResult
     private LearningDictionaryResult() { }
     public static LearningDictionaryResult NotFound { get; } = new Missing();
     private sealed record Missing : LearningDictionaryResult;
+    /// <summary>Third-party HTML remains untrusted; a renderer must establish its own isolation.</summary>
+    public sealed record Article(string Html, string Text, string SourceName, Guid? ResourceLibrary = null,
+        DictionaryLanguagePair? Languages = null) : LearningDictionaryResult;
     public sealed record Entries : LearningDictionaryResult
     {
         public Entries(IReadOnlyList<LearningLexiconEntry> values) => Values = Array.AsReadOnly(values.ToArray());

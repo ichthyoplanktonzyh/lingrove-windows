@@ -73,6 +73,9 @@
                            FontSize="12" Margin="0,0,0,12" Visibility="Collapsed" />
 
                 <!-- Embedded Mac explanation: a complete older answer stays visible during refresh. -->
+                <ScrollViewer x:Name="ExplanationDestinationSection" MaxHeight="72" VerticalScrollBarVisibility="Auto" Visibility="Collapsed" Margin="0,0,0,9">
+                    <TextBlock x:Name="ExplanationDestination" TextWrapping="Wrap" FontSize="11" Foreground="{DynamicResource TextSecondary}" />
+                </ScrollViewer>
                 <StackPanel x:Name="ExplanationSection" Margin="0,0,0,12" Visibility="Collapsed">
                     <Border BorderBrush="{DynamicResource CardBorder}" BorderThickness="0,1,0,0" Margin="0,0,0,10" />
                     <ScrollViewer MaxHeight="168" VerticalScrollBarVisibility="Auto">

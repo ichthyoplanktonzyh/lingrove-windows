@@ -15,5 +15,6 @@
     <Compile Include="..\Cotabby.Win32\Vocabulary\VocabularyClipboardImageReader.cs" Link="VocabularyClipboardImageReader.cs" />
     <Compile Include="..\Cotabby.Win32\Vocabulary\VocabularyClipboardDib.cs" Link="VocabularyClipboardDib.cs" />
     <Compile Include="..\Cotabby.Win32\Vocabulary\VocabularyImageTransferProtocol.cs" Link="VocabularyImageTransferProtocol.cs" />
+    <Compile Include="..\Cotabby.Win32\Vocabulary\VocabularyOleImageReader.cs" Link="VocabularyOleImageReader.cs" />
   </ItemGroup>
 </Project>

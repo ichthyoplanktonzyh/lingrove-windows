@@ -1,4 +1,5 @@
 using System.Net;
+using System.IO;
 using System.Net.Http;
 using System.Windows.Threading;
 using Cotabby.App.Learning;
@@ -23,6 +24,41 @@ public sealed class LearningExplanationEndpointFeatureTests(WpfDispatcher dispat
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken token)
         { Calls++; return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("{\"data\":[{\"id\":\"owned-model\"}]}") }); }
     }
+    private sealed class MutableKeys : IOpenAICompatibleCredentialStore
+    {
+        internal int Reads, Saves, Deletes;
+        internal string? Value;
+        internal bool Fail;
+        public string? ReadApiKey() { Reads++; if (Fail) throw new IOException("owned-secret"); return Value; }
+        public void SaveApiKey(string? value) { Saves++; Value = value; }
+        public void DeleteApiKey() { Deletes++; Value = null; }
+    }
+
+    [Fact]
+    public Task ExplicitCredentialEditsNormalizeAndOnlyPublishRealChanges() => dispatcher.RunAsync(async () =>
+    {
+        using var handler = new Handler(); using var http = new HttpClient(handler, false); var keys = new MutableKeys();
+        var feature = new LearningExplanationEndpointFeature(Dispatcher.CurrentDispatcher, keys, http);
+        Assert.Equal(0, keys.Reads);
+        Assert.True(feature.SaveCredential("  owned-key \n")); Assert.Equal("owned-key", keys.Value);
+        Assert.False(feature.SaveCredential("owned-key")); Assert.Equal(1, keys.Saves);
+        Assert.True(feature.SaveCredential(null)); Assert.Null(keys.Value); Assert.Equal(1, keys.Deletes);
+        Assert.False(feature.SaveCredential("  ")); Assert.Equal(1, keys.Deletes);
+        int reads = keys.Reads;
+        Assert.Throws<Cotabby.Inference.LanguageLearning.LearningTranslationEndpointException>(() => feature.SaveCredential("x\0y"));
+        Assert.Equal(reads, keys.Reads); Assert.Equal(0, handler.Calls);
+        await feature.DisposeAsync();
+        Assert.Throws<ObjectDisposedException>(() => feature.SaveCredential("other")); Assert.Equal(reads, keys.Reads);
+    });
+
+    [Fact]
+    public Task CredentialFailuresDoNotExposeProviderDetails() => dispatcher.RunAsync(async () =>
+    {
+        using var handler = new Handler(); using var http = new HttpClient(handler, false); var keys = new MutableKeys { Fail = true };
+        await using var feature = new LearningExplanationEndpointFeature(Dispatcher.CurrentDispatcher, keys, http);
+        var error = Assert.Throws<Cotabby.Inference.LanguageLearning.LearningTranslationEndpointException>(() => feature.SaveCredential("new"));
+        Assert.DoesNotContain("owned-secret", error.ToString()); Assert.Equal(0, handler.Calls); Assert.Equal(0, keys.Saves);
+    });
 
     [Fact]
     public Task MetadataRetirementWaitsForTheAcceptedUiContinuation() => dispatcher.RunAsync(async () =>

@@ -24,6 +24,10 @@ internal sealed class CanonicalVocabularyDictionarySection : Expander, IDisposab
     private readonly WrapPanel _words = new();
     private readonly Button _back = new() { Content = "Back to expression", HorizontalAlignment = HorizontalAlignment.Left };
     private readonly TextBlock _query = new() { TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 7) };
+    private readonly TextBlock _source = new() { Text = "Bundled expression dictionary · definitions in English", FontSize = 11, TextWrapping = TextWrapping.Wrap };
+    private readonly ComboBox _sourcePicker = new() { Margin = new(0, 5, 0, 5), Visibility = Visibility.Collapsed };
+    private DictionaryArticleView? _article; private Guid _articleRequest; private bool _updatingSources;
+    private sealed record SourceChoice(DictionarySource Source, string Name) { public override string ToString() => Name; }
     private readonly TextBlock _attribution = new() { FontSize = 10, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 7, 0, 0) };
     private readonly ScrollViewer _viewport;
     private readonly LearningDictionaryViewport _measurement = new();
@@ -41,10 +45,10 @@ internal sealed class CanonicalVocabularyDictionarySection : Expander, IDisposab
     {
         _owner = owner; _entry = entry; _senseId = owner.SenseId; _canAct = canAct; _token = _presentation.Token;
         Header = InterfaceText.Get("Dictionary"); Margin = new Thickness(0, 14, 0, 0);
-        var source = new TextBlock { Text = "Bundled expression dictionary · definitions in English", FontSize = 11, TextWrapping = TextWrapping.Wrap };
-        source.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondary"); _attribution.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondary");
+        _source.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondary"); _attribution.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondary");
         _viewport = new ScrollViewer { Content = _definitions, VerticalScrollBarVisibility = ScrollBarVisibility.Auto, HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled, Height = 120 };
-        _body.Children.Add(source); _body.Children.Add(_query); _body.Children.Add(_back); _body.Children.Add(_words); _body.Children.Add(_viewport); _body.Children.Add(_attribution); Content = _body;
+        _body.Children.Add(_source); _body.Children.Add(_sourcePicker); _body.Children.Add(_query); _body.Children.Add(_back); _body.Children.Add(_words); _body.Children.Add(_viewport); _body.Children.Add(_attribution); Content = _body;
+        _sourcePicker.SelectionChanged += OnSourceChanged;
         Expanded += OnExpanded; Collapsed += OnCollapsed; _back.Click += OnBack;
         owner.Changed += OnOwnerChanged; owner.Dictionary.StateChanged += OnDictionaryChanged;
     }
@@ -88,9 +92,19 @@ internal sealed class CanonicalVocabularyDictionarySection : Expander, IDisposab
     private void Render(LearningDictionaryState state)
     {
         if (_disposed) return; _displayed = state; _definitions.Children.Clear(); _words.Children.Clear(); _attribution.Inlines.Clear();
+        _updatingSources = true;
+        try
+        {
+            var choices = state.AvailableSources.Select(source => new SourceChoice(source, state.SourceLabels.GetValueOrDefault(source, source.RawValue))).ToArray();
+            _sourcePicker.ItemsSource = choices; _sourcePicker.SelectedItem = choices.FirstOrDefault(x => x.Source == state.SelectedSource);
+            _sourcePicker.Visibility = choices.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
+            if (state.SelectedSource is { } selected && state.SourceLabels.TryGetValue(selected, out var name)) _source.Text = name;
+        }
+        finally { _updatingSources = false; }
         _query.Text = state.Unit is null ? _owner.DictionaryError ?? (_owner.IsPreparingDictionary ? "Looking up…" : "") : "";
         _query.Visibility = _query.Text.Length == 0 ? Visibility.Collapsed : Visibility.Visible;
-        _back.Visibility = state.SelectedWord is null ? Visibility.Collapsed : Visibility.Visible;
+        _back.Visibility = state.SelectedWord is null && state.ReferenceQuery is null ? Visibility.Collapsed : Visibility.Visible;
+        if (state.Unit is null) { _article?.Retire(); _articleRequest = Guid.Empty; }
         if (state.Unit is { } unit)
         {
             _body.FlowDirection = state.Language == LearningLanguage.Arabic ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
@@ -102,22 +116,42 @@ internal sealed class CanonicalVocabularyDictionarySection : Expander, IDisposab
                     button.Click += (_, _) => { if (Current() && IsExpanded && ReferenceEquals(state, _owner.Dictionary.State)) LastNavigation = _owner.Dictionary.SelectWordAsync(word, state.TargetIdentity); };
                     _words.Children.Add(button);
                 }
-            LearningDictionaryDefinitions.Populate(_definitions, _attribution, state);
+            if (state.Result is LearningDictionaryResult.Article { ResourceLibrary: { } library } article)
+            {
+                if (_article is null)
+                {
+                    _article = new DictionaryArticleView { Height = 200 };
+                    _article.ReferenceRequested += query => { if (Current() && IsExpanded && _displayed is { } current && ReferenceEquals(current, _owner.Dictionary.State)) LastNavigation = _owner.Dictionary.FollowReferenceAsync(query, current.TargetIdentity); };
+                }
+                _definitions.Children.Add(_article);
+                if (_articleRequest != state.RequestIdentity)
+                {
+                    _articleRequest = state.RequestIdentity; Guid request = state.RequestIdentity;
+                    _ = _article.ShowAsync(article, (path, token) => _owner.Dictionary.LoadResourceAsync(path, library, request, token),
+                        () => Current() && IsExpanded && _owner.Dictionary.State.RequestIdentity == request, _token);
+                }
+            }
+            else { _article?.Retire(); _articleRequest = Guid.Empty; LearningDictionaryDefinitions.Populate(_definitions, _attribution, state); }
         }
         double width = Math.Max(1, ActualWidth > 0 ? ActualWidth - SystemParameters.VerticalScrollBarWidth : 400);
         _definitions.Measure(new Size(width, double.PositiveInfinity));
-        _measurement.Measure(_definitions.DesiredSize.Height, state.Query, state.Status == LearningDictionaryContentStatus.Result && state.Result is LearningDictionaryResult.Entries);
+        _measurement.Measure(_definitions.DesiredSize.Height, state.Query, state.Status == LearningDictionaryContentStatus.Result && state.Result is LearningDictionaryResult.Entries or LearningDictionaryResult.Article);
         _viewport.Height = _measurement.HeightFor(state.Query);
     }
     private void OnBack(object sender, RoutedEventArgs args)
     { if (Current() && IsExpanded && _displayed is { } state && ReferenceEquals(state, _owner.Dictionary.State)) LastNavigation = _owner.Dictionary.ReturnToExpressionAsync(state.TargetIdentity); }
+    private void OnSourceChanged(object sender, SelectionChangedEventArgs args)
+    { if (!_updatingSources && Current() && IsExpanded && _displayed is { } state && ReferenceEquals(state, _owner.Dictionary.State) && _sourcePicker.SelectedItem is SourceChoice choice)
+            LastNavigation = _owner.Dictionary.SelectSourceAsync(choice.Source, state.TargetIdentity); }
     public void Dispose()
     {
         Dispatcher.VerifyAccess(); if (_disposed) return;
         bool ownsDictionary = _owner.Dictionary.State.DocumentId == CanonicalNotebookTargetPolicy.DocumentId(_entry)
             || IsExpanded && _owner.EntryId == _entry.Id && _owner.SenseId == _senseId;
         _disposed = true; _owner.Changed -= OnOwnerChanged; _owner.Dictionary.StateChanged -= OnDictionaryChanged;
-        Expanded -= OnExpanded; Collapsed -= OnCollapsed; _back.Click -= OnBack; _presentation.Cancel(); _presentation.Dispose();
+        Expanded -= OnExpanded; Collapsed -= OnCollapsed; _back.Click -= OnBack; _sourcePicker.SelectionChanged -= OnSourceChanged; _presentation.Cancel();
+        if (_article is not null) _owner.TrackDictionaryPresentation(_article.DisposeAsync().AsTask());
+        _presentation.Dispose();
         if (ownsDictionary) _owner.HideDictionary();
     }
 }

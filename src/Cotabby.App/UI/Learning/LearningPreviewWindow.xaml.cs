@@ -178,7 +178,7 @@ public partial class LearningPreviewWindow : Window
     /// This view renders plain model text, retaining the previous complete answer during refresh;
     /// it never parses markup, reads the editor or constructs a model/service.
     /// </summary>
-    internal void ShowExplanationState(string documentId, LearningExplanationState state, bool configured, ScreenRect anchor)
+    internal void ShowExplanationState(string documentId, LearningExplanationState state, bool configured, ScreenRect anchor, LearningModelSnapshot? profile = null)
     {
         Dispatcher.VerifyAccess();
         if (!IsVisible || _displayedPreview?.RequestId != documentId
@@ -188,6 +188,8 @@ public partial class LearningPreviewWindow : Window
         string label = LearningExplanationCardPolicy.Label(state, configured);
         ExplanationButton.Visibility = action == LearningExplanationCardAction.None ? Visibility.Collapsed : Visibility.Visible;
         ExplanationButton.Content = state.IsGenerating ? "■" : "✦";
+        ExplanationDestination.Text = LearningModelDestinationText.Explanation(profile);
+        ExplanationDestinationSection.Visibility = action == LearningExplanationCardAction.None ? Visibility.Collapsed : Visibility.Visible;
         ExplanationButton.ToolTip = state.ErrorMessage is not null && configured && !state.IsGenerating
             ? label + "\n" + state.ErrorMessage : label;
         System.Windows.Automation.AutomationProperties.SetName(ExplanationButton, label);
@@ -208,6 +210,8 @@ public partial class LearningPreviewWindow : Window
     private void ClearExplanation()
     {
         _displayedExplanation = null;
+        ExplanationDestinationSection.Visibility = Visibility.Collapsed;
+        ExplanationDestination.Text = "";
         ExplanationMeaning.DocumentIdentity = ExplanationText.DocumentIdentity = null;
         ExplanationButton.Visibility = Visibility.Collapsed;
         ExplanationSection.Visibility = Visibility.Collapsed;

@@ -10,6 +10,8 @@ public interface ILearningExplanationGenerating
     event Action? Changed;
     LearningLanguage Language { get; }
     bool IsConfigured { get; }
+    /// <summary>The current immutable destination, without credentials, for pre-request disclosure.</summary>
+    LearningModelSnapshot? Profile => null;
     Task<LearningExplanationRecord> GenerateAsync(LearningExplanationInput input, string requestId,
         bool refresh = false, CancellationToken cancellationToken = default);
     Task<LearningExplanationRecord?> LoadSavedAsync(LearningExplanationInput input);

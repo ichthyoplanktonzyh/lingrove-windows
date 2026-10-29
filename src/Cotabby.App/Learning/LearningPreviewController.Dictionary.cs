@@ -107,7 +107,7 @@ internal sealed partial class LearningPreviewController
             {
                 if (!ReferenceEquals(_dictionarySession?.State, state) || !CanUseDictionaryTargetLocked(state, capture, intent)) return;
                 EnsureDictionaryWindow().ShowState(state, _dictionaryAnchor,
-                    LearningDictionaryCardPolicy.ExampleTranslation(state.Explanation?.Input, _dictionaryTranslation));
+                    LearningDictionaryCardPolicy.ExampleTranslation(state.Explanation?.Input, _dictionaryTranslation), _explanationSession?.Profile);
                 BindDictionaryVocabulary(state, capture, intent);
             }
         }, DispatcherPriority.Background);
@@ -117,10 +117,17 @@ internal sealed partial class LearningPreviewController
     {
         if (_dictionaryWindow is not null) return _dictionaryWindow;
         _dictionaryWindow = new LearningDictionaryWindow();
+        _dictionaryWindow.AttachSession(_dictionarySession!, () =>
+        {
+            lock (_gate) return _dictionarySession?.State is { Unit: not null } state && _activeCapture is { } capture
+                && CanUseDictionaryTargetLocked(state, capture, _intentGeneration);
+        });
         _dictionaryWindow.WordRequested += (word, target) => NavigateDictionary(target, word);
         _dictionaryWindow.BackRequested += target => NavigateDictionary(target);
         _dictionaryWindow.CloseRequested += target => NavigateDictionary(target, close: true);
         _dictionaryWindow.PageRequested += (page, target) => NavigateDictionary(target, page: page);
+        _dictionaryWindow.SourceRequested += (source, target) => NavigateDictionary(target, source: source);
+        _dictionaryWindow.ReferenceRequested += (query, target) => NavigateDictionary(target, reference: query);
         _dictionaryWindow.ExplanationRequested += OnDictionaryExplanationRequested;
         _dictionaryWindow.SelectedCopyRequested += OnDictionarySelectedCopy;
         _dictionaryWindow.Closed += (_, _) =>
@@ -132,7 +139,7 @@ internal sealed partial class LearningPreviewController
     }
 
     private void NavigateDictionary(Guid target, LearningDictionaryWord? word = null, bool close = false,
-        LearningDictionaryPage? page = null)
+        LearningDictionaryPage? page = null, DictionarySource? source = null, string? reference = null)
     {
         CapturedSentence capture; LearningDictionaryState state; long intent; long navigation;
         lock (_gate)
@@ -146,11 +153,11 @@ internal sealed partial class LearningPreviewController
             if (_activeCapture is null || !CanUseDictionaryTargetLocked(current, _activeCapture, _intentGeneration)) return;
             capture = _activeCapture; state = current; intent = _intentGeneration;
         }
-        _ = ObserveDictionaryPresentationAsync(NavigateDictionaryAfterValidationAsync(state, capture, intent, navigation, word, page));
+        _ = ObserveDictionaryPresentationAsync(NavigateDictionaryAfterValidationAsync(state, capture, intent, navigation, word, page, source, reference));
     }
 
     private async Task NavigateDictionaryAfterValidationAsync(LearningDictionaryState state, CapturedSentence capture,
-        long intent, long navigation, LearningDictionaryWord? word, LearningDictionaryPage? page)
+        long intent, long navigation, LearningDictionaryWord? word, LearningDictionaryPage? page, DictionarySource? source, string? reference)
     {
         if (!await ValidateLearningCaptureAsync(capture, intent).ConfigureAwait(false)) return;
         await _dispatcher.InvokeAsync(() =>
@@ -158,7 +165,9 @@ internal sealed partial class LearningPreviewController
             lock (_gate)
             {
                 if (_dictionaryOpeningRevision != navigation || !CanUseDictionaryTargetLocked(state, capture, intent)) return;
-                if (page is not null) _ = _dictionarySession!.SelectPageAsync(page.Value, state.TargetIdentity);
+                if (reference is not null) _ = _dictionarySession!.FollowReferenceAsync(reference, state.TargetIdentity);
+                else if (source is not null) _ = _dictionarySession!.SelectSourceAsync(source.Value, state.TargetIdentity);
+                else if (page is not null) _ = _dictionarySession!.SelectPageAsync(page.Value, state.TargetIdentity);
                 else if (word is not null) _ = _dictionarySession!.SelectWordAsync(word, state.TargetIdentity);
                 else _ = _dictionarySession!.ReturnToExpressionAsync(state.TargetIdentity);
             }

@@ -53,6 +53,7 @@ internal sealed partial class LearningPreviewController
     }
     private void BindDictionaryVocabulary(LearningDictionaryState state, CapturedSentence capture, long intent)
     {
+        if (state.ReferenceQuery is not null) { _dictionaryWindow?.ClearVocabulary(); return; }
         if (_vocabulary is null || _dictionaryVocabularyCapture is null || state.Unit is not { } unit) return;
         VocabularyCapture? detached = _dictionaryVocabularyCapture;
         if (state.SelectedWord is { } word) detached = VocabularyCaptureFactory.FromComponent(word, unit, detached);

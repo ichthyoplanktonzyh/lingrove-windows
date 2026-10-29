@@ -14,6 +14,8 @@ public sealed partial class AppSettings
     public LearningPowerProfile? LearningExplanationBatteryProfile { get; set; }
     public LearningPowerProfile? LearningExplanationPluggedInProfile { get; set; }
     [JsonIgnore] public bool LearningPowerPluggedIn { get; set; } = true;
+    [JsonIgnore] public bool LearningTranslationActiveEndpointEnabled => LearningTranslationActiveSelection.Backend == LearningModelBackend.Endpoint
+        && (LearningTranslationPowerSwitching || LearningEndpointEnabled);
     public Dictionary<string, int> LearningTranslationEndpointContextByDestination { get; set; } = new(CanonicalStringComparer.Instance);
     public Dictionary<string, LearningGenerationProfile> LearningTranslationEndpointGenerationByDestination { get; set; } = new(CanonicalStringComparer.Instance);
     [JsonIgnore] public string LearningTranslationEndpointIdentity => ModelDestinationIdentity.Create("endpoint",

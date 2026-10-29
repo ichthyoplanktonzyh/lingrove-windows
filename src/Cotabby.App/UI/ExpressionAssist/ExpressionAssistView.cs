@@ -18,6 +18,7 @@ internal sealed class ExpressionAssistView : Border
         Padding = new Thickness(10, 8, 10, 8) };
     private readonly StackPanel _rows = new();
     private readonly TextBlock _status = new() { TextWrapping = TextWrapping.Wrap, Margin = new(2, 6, 2, 4) };
+    private readonly TextBlock _destination = new() { TextWrapping = TextWrapping.Wrap, FontSize = 11, Foreground = Brushes.DimGray };
     private readonly TextBlock _footer = new() { FontSize = 11, Foreground = Brushes.DimGray, Margin = new(2, 8, 2, 1) };
     private IReadOnlyList<ExpressionAssistCandidate> _candidates = Array.Empty<ExpressionAssistCandidate>();
     private int _selected;
@@ -40,6 +41,8 @@ internal sealed class ExpressionAssistView : Border
         var heading = new TextBlock { Text = InterfaceText.Get("Expression assistance"), FontSize = 15, FontWeight = FontWeights.SemiBold,
             Margin = new Thickness(0, 0, 0, 8) };
         body.Children.Add(heading);
+        body.Children.Add(new ScrollViewer { Content = _destination, MaxHeight = 72,
+            VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Margin = new Thickness(0, 0, 0, 8) });
         body.Children.Add(new TextBlock { Text = InterfaceText.Get("Describe an expression or concept"), Foreground = Brushes.DimGray,
             FontSize = 12, Margin = new Thickness(0, 0, 0, 4) });
         AutomationProperties.SetName(_query, "Describe an expression or concept");
@@ -56,6 +59,7 @@ internal sealed class ExpressionAssistView : Border
     }
 
     internal void SetQuery(string query) => _query.Text = query;
+    internal void SetDestination(string text) { _destination.Text = text; _destination.ToolTip = text; }
     internal bool FocusQuery() => _query.Focus();
 
     /// <summary>Retire the previous native input lifetime without publishing a synthetic edit.

@@ -68,6 +68,10 @@ public sealed class UiaFocusTracker : IFocusTracker
 
     public event EventHandler<FocusedField?>? FocusChanged;
 
+    // The expression session borrows this same MTA owner; no second global listener is created.
+    internal UiaTextEditEvidence? ExpressionCompositionOwner =>
+        OperatingSystem.IsWindowsVersionAtLeast(8, 1) ? _composition as UiaTextEditEvidence : null;
+
     public void Start()
     {
         AutomationFocusChangedEventHandler handler;

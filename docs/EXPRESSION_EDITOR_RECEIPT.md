@@ -3,6 +3,7 @@
 Reference: Mac `35b7fbe5c788c5524936ade1dfb7c89a3a285b04`,
 `Lingrove/Services/ExpressionAssist/ExpressionAssistEditor.swift`,
 `Lingrove/Support/ExpressionAssist/ExpressionAssistFocusPolicy.swift`,
+`Lingrove/Support/LanguageLearning/EditorTextRangePolicy.swift`,
 `Lingrove/App/Coordinators/InlineFeatures/ExpressionAssistCoordinator.swift`,
 `Lingrove/Services/LanguageLearning/LearningSelectionReplacement.swift`, and
 `LingroveTests/Support/ExpressionAssist/ExpressionAssistPolicyTests.swift`.
@@ -12,6 +13,10 @@ UTF-16 selection, exact explicit replacement range/source, process and field ide
 observation versions, and clear composition evidence. Value length is capped at 65,536 UTF-16
 units (at most 131,072 bytes of UTF-16 payload); truncated, secure, malformed, unsupported or
 unknown-composition inputs fail closed. The exact trigger must precede a collapsed selection.
+Shared `EditorTextRangePolicy` requires both Swift-style character boundary and existing
+Foundation-composed-range admission, including the empty-caret rule and CRLF distinction. The
+combining/emoji/ZWJ/Indic/CRLF regression cases include source-derived cases; they have not run
+through a Swift verifier on this Windows host. The existing Foundation compatibility pin is unchanged.
 Receipts are memory-only and their text must not appear in logs.
 
 `ExpressionEditorRoundTrip` describes the explicitly authorized registered panel/host path. It
@@ -30,8 +35,14 @@ no user editor, input or focus was touched.
 
 The common `InsertionTransactionGate` serializes owners but grants no permission to edit. The
 existing guarded inserter still applies its original policy; application composition must inject
-the same gate into every editing owner. A retained-host composition observation, native resume and
-single-dispatch replacement are not yet implemented or connected. UIA TextEdit is absent for some
+the same gate into every editing owner. The existing UIA MTA owner now has a separate request-owned
+retained host subscription with composition/finalization and text/selection change events,
+generation retirement, bounded waits and fresh
+field/password/process/foreground and active-composition checks. It only permits the exact host
+window or the registered current-process panel while the caller confirms panel keyboard ownership.
+It has no independent global focus listener. The expression session still must enforce panel
+lifetime, third-field revocation and before/after receipt checks; native resume and single-dispatch
+replacement are not yet implemented or connected. UIA TextEdit is absent for some
 hosts, and an unsupported host remains unavailable. No physical IME or desktop acceptance is claimed.
 
 Windows API references: [TextPattern selection](https://learn.microsoft.com/en-us/dotnet/api/system.windows.automation.textpattern.getselection),
@@ -44,3 +55,10 @@ tests/Cotabby.Core.Tests/Cotabby.Core.Tests.csproj --configuration Release --no-
 `dotnet test tests/Cotabby.App.Wpf.Tests/Cotabby.App.Wpf.Tests.csproj --configuration Release
 --no-restore --filter FullyQualifiedName~UiaExpressionSelectionReaderTests` passed 2/2. Neither
 test establishes native write behavior or physical focus/IME support.
+
+`UiaRetainedCompositionTests` exercises real registration, active-composition query, native callback
+lifetime and retirement against an owned hidden RichEdit. Setting test-only text in that control
+raised a real UIA text change and retired its receipt; the separate synthetic composition callback
+is not a real IME event. Asynchronous provider events and physical IME behavior remain unverified.
+`UiaTextEditEvidenceTests.TimedOutRetainedRegistrationIsRetiredBeforeNativeFocusQuery`
+exercises a held owner and ensures expired queued registration cannot later query the active field.

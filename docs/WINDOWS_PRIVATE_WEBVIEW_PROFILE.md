@@ -25,6 +25,8 @@ change or an unsupported filesystem operation fails closed. Some already deleted
 remain deleted; the original root identity stays held for retry, even if its name was exchanged
 during the upgrade gap. Dispose only after successful
 cleanup, or deliberately abandon the undeleted directory without claiming cleanup.
+Concurrent disposal calls join the same completion, including the in-flight cleanup and closure of
+every owned handle. An ancestor handle is registered for cleanup before validation can fail.
 
 The Windows adapter admits at most 100,000 observed entries, depth 64, 255 UTF-16 code units per
 component and 64 MiB of retained relative names. Exceeding a bound preserves the root. Ordinary

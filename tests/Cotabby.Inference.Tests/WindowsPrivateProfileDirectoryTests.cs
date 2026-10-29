@@ -7,6 +7,38 @@ public sealed class WindowsPrivateProfileDirectoryTests : IDisposable
 {
     private readonly string _parent = Path.Combine(Path.GetTempPath(), "lingrove-profile-owner-" + Guid.NewGuid().ToString("N"));
     public WindowsPrivateProfileDirectoryTests() => VocabularyWindowsFile.CreateParentDirectory(_parent);
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    public void FailedAncestorValidationClosesEveryOpenedHandleImmediately(int failIndex)
+    {
+        for (int attempt = 0; attempt < 10; attempt++)
+        {
+            var opened = new List<Microsoft.Win32.SafeHandles.SafeFileHandle>();
+            Assert.Throws<InvalidOperationException>(() => WindowsPrivateProfileDirectory.CreateForTest(_parent, (handle, index) =>
+            { opened.Add(handle); if (index == failIndex) throw new InvalidOperationException("synthetic admission failure"); }));
+            Assert.Equal(failIndex + 1, opened.Count); Assert.All(opened, handle => Assert.True(handle.IsClosed));
+        }
+    }
+    [Fact]
+    public async Task ConcurrentDisposeWaitsForCleanupAndAllOwnedHandles()
+    {
+        var profile = WindowsPrivateProfileDirectory.Create(_parent); string path = profile.Path;
+        File.WriteAllText(Path.Combine(path, "value"), "data");
+        using var entered = new ManualResetEventSlim(); using var release = new ManualResetEventSlim();
+        profile.AfterEnumeration = _ => { entered.Set(); Assert.True(release.Wait(TimeSpan.FromSeconds(10))); };
+        Task cleanup = profile.DeleteOwnedAsync();
+        try
+        {
+            Assert.True(await Task.Run(() => entered.Wait(TimeSpan.FromSeconds(10))));
+            var handles = profile.HandlesForTest;
+            Task first = profile.DisposeAsync().AsTask(), second = profile.DisposeAsync().AsTask();
+            Assert.Same(first, second); Assert.False(first.IsCompleted); Assert.False(second.IsCompleted);
+            release.Set(); await Task.WhenAll(cleanup, first, second).WaitAsync(TimeSpan.FromSeconds(10));
+            Assert.All(handles, handle => Assert.True(handle.IsClosed)); Assert.False(Directory.Exists(path));
+        }
+        finally { release.Set(); try { await profile.DisposeAsync(); } catch { } }
+    }
     [Fact]
     public async Task NestedFilesAndLinksAreRemovedWithoutFollowingTargets()
     {

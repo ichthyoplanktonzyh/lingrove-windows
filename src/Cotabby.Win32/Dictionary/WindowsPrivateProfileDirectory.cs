@@ -20,17 +20,23 @@ public sealed class WindowsPrivateProfileDirectory : IAsyncDisposable
     private readonly SafeFileHandle _identity;
     private readonly string _leaf;
     private Task? _deletion;
+    private Task? _disposal;
     private bool _deleted, _disposed;
     private readonly Dictionary<string, (ulong Low, ulong High)> _observed = new(StringComparer.OrdinalIgnoreCase);
     private long _observedNameBytes;
     internal Action<string>? AfterEnumeration { get; set; }
     internal Action? AfterPinReleased { get; set; }
+    internal IReadOnlyList<SafeFileHandle> HandlesForTest => _parents.Concat(new[] { _rootPin, _rootDelete, _identity }.OfType<SafeFileHandle>()).ToArray();
     public string Path { get; }
     private WindowsPrivateProfileDirectory(List<SafeFileHandle> parents, SafeFileHandle root, SafeFileHandle identity, string leaf, string path)
     { _parents = parents; _rootPin = root; _identity = identity; _leaf = leaf; Path = path; }
 
     /// <summary>The parent must already exist and be private. Creation does not adopt an existing leaf.</summary>
     public static WindowsPrivateProfileDirectory Create(string parent)
+        => CreateCore(parent, null);
+    internal static WindowsPrivateProfileDirectory CreateForTest(string parent, Action<SafeFileHandle, int> afterOpen)
+        => CreateCore(parent, afterOpen);
+    private static WindowsPrivateProfileDirectory CreateCore(string parent, Action<SafeFileHandle, int>? afterOpen)
     {
         string full = System.IO.Path.GetFullPath(parent); var pins = new List<SafeFileHandle>(); SafeFileHandle? root = null, identityHandle = null; bool creationHandle = false; string? createdLeaf = null;
         try
@@ -44,10 +50,10 @@ public sealed class WindowsPrivateProfileDirectory : IAsyncDisposable
             if (!canonical.StartsWith(@"\\?\", StringComparison.Ordinal) || canonical.Length < 7 || canonical[5] != ':' || canonical[6] != '\\') throw Invalid();
             VocabularyWindowsFile.CheckParentInheritance(canonical);
             var volume = VocabularyWindowsFile.Native.CreateFileW(canonical[..7], 0x80000000, 3, IntPtr.Zero, 3, 0x02000000 | 0x00200000, IntPtr.Zero);
-            Validate(volume, true, false); pins.Add(volume);
+            pins.Add(volume); afterOpen?.Invoke(volume, pins.Count - 1); Validate(volume, true, false);
             foreach (string component in canonical[7..].Split('\\', StringSplitOptions.RemoveEmptyEntries))
             {
-                var next = OpenRelative(pins[^1], component, create: false, delete: false, null); Validate(next, true, false); pins.Add(next);
+                var next = OpenRelative(pins[^1], component, create: false, delete: false, null); pins.Add(next); afterOpen?.Invoke(next, pins.Count - 1); Validate(next, true, false);
             }
             if (Identity(pins[^1]) != Identity(resolved)) throw Invalid();
             VocabularyWindowsFile.CheckParentInheritance(canonical);
@@ -226,11 +232,24 @@ public sealed class WindowsPrivateProfileDirectory : IAsyncDisposable
             return handle;
         }
     }
-    public async ValueTask DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        Task? running; lock (_gate) { if (_disposed) return; _disposed = true; running = _deletion; }
-        try { if (running is not null) await running.ConfigureAwait(false); }
-        finally { _rootDelete?.Dispose(); _rootPin?.Dispose(); _identity.Dispose(); foreach (var pin in _parents) pin.Dispose(); }
+        TaskCompletionSource done; Task? running;
+        lock (_gate)
+        {
+            if (_disposal is not null) return new(_disposal);
+            _disposed = true; running = _deletion;
+            done = new(TaskCreationOptions.RunContinuationsAsynchronously); _disposal = done.Task;
+        }
+        _ = DrainAsync(running, done); return new(done.Task);
+    }
+    private async Task DrainAsync(Task? running, TaskCompletionSource done)
+    {
+        Exception? failure = null;
+        try { if (running is not null) await running.ConfigureAwait(false); } catch (Exception error) { failure = error; }
+        foreach (var handle in new[] { _rootDelete, _rootPin, _identity }.Concat(_parents))
+            try { handle?.Dispose(); } catch (Exception error) { failure ??= error; }
+        if (failure is null) done.TrySetResult(); else done.TrySetException(failure);
     }
     private static IOException Invalid() => new("The private profile directory could not be verified or removed.");
     [StructLayout(LayoutKind.Sequential)] private struct UnicodeString { internal ushort Length, MaximumLength; internal IntPtr Buffer; }

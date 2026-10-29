@@ -24,4 +24,3 @@ notebooks outside the documented read budget are not implemented here. The in-me
 re-planning stale preview inputs, no-op revision and selection identity, concurrent serialized
 writes, failure/cancellation, ordered acknowledged publication and disposal drain; they do not
 establish native desktop acceptance or a Swift compatibility result.
-

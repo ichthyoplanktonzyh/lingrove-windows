@@ -10,7 +10,8 @@ namespace Cotabby.App.Vocabulary;
 // No implementation or notebook lifetime is owned by a sheet.
 internal interface IVocabularyEntryInputOwner
 {
-    Task<VocabularyInputPreviewResult> PreviewAsync(IReadOnlyList<VocabularyEntryInput> inputs, CancellationToken token);
+    Task<VocabularyInputPreview> PreviewAsync(VocabularyWordList table, VocabularyWordListConfiguration configuration, CancellationToken token);
+    IDisposable Subscribe(Action<ulong> changed);
     Task<VocabularyInputResult> AddEntriesAsync(IReadOnlyList<VocabularyEntryInput> inputs, CancellationToken token);
 }
 internal sealed record VocabularyInputSelection(Guid EntryId, Guid SenseId);
@@ -30,10 +31,14 @@ internal sealed class VocabularyEntryImportSession
     private readonly IVocabularyEntryInputOwner _owner;
     private readonly IVocabularyWordListReader _reader;
     private CancellationTokenSource? _work;
+    private readonly IDisposable _subscription;
     private long _generation;
     private ulong? _latestRevision;
     internal VocabularyEntryImportSession(Dispatcher dispatcher, IVocabularyEntryInputOwner owner, IVocabularyWordListReader reader)
-    { _dispatcher = dispatcher; _owner = owner; _reader = reader; dispatcher.VerifyAccess(); }
+    {
+        _dispatcher = dispatcher; _owner = owner; _reader = reader; dispatcher.VerifyAccess();
+        _subscription = owner.Subscribe(QueueRevision);
+    }
     internal VocabularyWordList? Table { get; private set; }
     internal VocabularyWordListConfiguration? Configuration { get; private set; }
     internal VocabularyInputPreview? Preview { get; private set; }
@@ -63,11 +68,10 @@ internal sealed class VocabularyEntryImportSession
         var (id, token) = Begin(); Notify();
         try
         {
-            var inputs = await Task.Run(() => VocabularyWordListPolicy.Inputs(table, configuration, token), token);
-            var result = await _owner.PreviewAsync(inputs, token);
+            var preview = await _owner.PreviewAsync(table, configuration, token);
             if (!Current(id)) return;
-            if (_latestRevision is { } revision && result.Revision < revision) { await RefreshAsync(configuration); return; }
-            Preview = new(inputs, result); Preparing = false; Notify();
+            if (_latestRevision is { } revision && preview.Plan.Revision < revision) { await RefreshAsync(configuration); return; }
+            Preview = preview; Preparing = false; Notify();
         }
         catch (Exception error) { Fail(id, error); }
     }
@@ -97,9 +101,16 @@ internal sealed class VocabularyEntryImportSession
     }
     internal void Cancel()
     {
-        Verify(); if (Saving) return;
-        Active = false; _generation++; _work?.Cancel(); _work?.Dispose(); _work = null;
+        Verify(); if (!Active || Saving) return;
+        Active = false; _subscription.Dispose(); _generation++; _work?.Cancel(); _work?.Dispose(); _work = null;
         Preview = null; Preparing = false; Notify();
+    }
+    // Store callbacks are worker-owned and may already be in flight after unsubscription.
+    private void QueueRevision(ulong revision)
+    {
+        if (_dispatcher.HasShutdownStarted || _dispatcher.HasShutdownFinished) return;
+        try { _dispatcher.BeginInvoke(() => { if (Active) _ = OwnerRevisionChangedAsync(revision); }); }
+        catch (InvalidOperationException) when (_dispatcher.HasShutdownStarted || _dispatcher.HasShutdownFinished) { }
     }
     private (long, CancellationToken) Begin()
     {
@@ -129,6 +140,7 @@ internal static class VocabularyInputMessages
         VocabularyWordListError.Kind => $"Use word, expression, pattern, or sentence as the type on line {e.Line}.",
         VocabularyWordListError.MissingExample => $"An example sentence is missing on line {e.Line}.",
         VocabularyWordListError.TranslationWithoutExample => "Add an example sentence before its translation.",
+        VocabularyWordListError.ExampleConflict => "This example belongs to another sense. Match its saved meaning or edit it in the notebook.",
         _ => "The word list could not be imported."
     };
 }

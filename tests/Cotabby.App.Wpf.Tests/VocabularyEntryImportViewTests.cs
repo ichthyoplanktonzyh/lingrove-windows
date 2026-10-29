@@ -19,7 +19,10 @@ public sealed class VocabularyEntryImportViewTests(WpfDispatcher dispatcher)
     {
         internal Func<IReadOnlyList<VocabularyEntryInput>, CancellationToken, Task<VocabularyInputPreviewResult>> Preview = (_, _) => Task.FromResult(new VocabularyInputPreviewResult(1, NewResult()));
         internal Func<IReadOnlyList<VocabularyEntryInput>, CancellationToken, Task<VocabularyInputResult>> Add = (_, _) => Task.FromResult(NewResult());
-        public Task<VocabularyInputPreviewResult> PreviewAsync(IReadOnlyList<VocabularyEntryInput> inputs, CancellationToken token) => Preview(inputs, token);
+        public async Task<VocabularyInputPreview> PreviewAsync(VocabularyWordList table, VocabularyWordListConfiguration configuration, CancellationToken token)
+        { var inputs = VocabularyWordListPolicy.Inputs(table, configuration, token); return new(inputs, await Preview(inputs, token)); }
+        public IDisposable Subscribe(Action<ulong> changed) => new EmptySubscription();
+        private sealed class EmptySubscription : IDisposable { public void Dispose() { } }
         public Task<VocabularyInputResult> AddEntriesAsync(IReadOnlyList<VocabularyEntryInput> inputs, CancellationToken token) => Add(inputs, token);
     }
     private sealed class DeferredReader : IVocabularyWordListReader

@@ -316,11 +316,11 @@ Support, language-learning/vocabulary models/services, content-test provenance, 
 `b1e4031c70aca1be21aae2c57b138fde5fc22bb1` with .NET 9 on manual dispatch. Its initial setup run is
 recorded in the baseline note. The third ordinary job compiles the independently pinned native
 speech helper on Windows and runs model-free Git/protocol/platform checks; it produces no package.
-The fourth job independently reads the frozen vocabulary revision and executes two narrow Swift
-probes for real SQLite schema/classification migration and UUID-only row payloads. Their Windows
-manifest consumers run in the ordinary Windows tests. These probes do not establish full payload,
-timestamp, graph, populated-file or application compatibility; the historical 68 verifiers retain
-their original references and bodies.
+The fourth job independently reads the frozen vocabulary revision and executes three bounded Swift
+probes for real SQLite schema/classification migration, UUID-only row payloads and portable document
+Codable cases with typed timestamp bit patterns. Their Windows consumers run in the ordinary tests.
+These corpora do not establish complete payload/graph admission, populated-file, media or application
+compatibility; the historical 68 verifiers retain their original references and bodies.
 Current editor verification uses a separate sparse checkout at its explicit newer revision.
 The upstream baseline job does not gate ordinary PRs; its result describes that old snapshot,
 not the current .NET 10 tree.

@@ -33,7 +33,27 @@ public static class ReadingVocabularyCaptureFactory
         }
         return new(text, text, source, kind, translation, target, example);
     }
-    public static VocabularyCapture Lookup(ReadingLookupInput input, ReadingLookupResult result, LearningLanguage meaningLanguage) =>
-        new(input.Target, input.Target, input.Source, input.IsWord ? VocabularyEntryKind.Word : VocabularyEntryKind.Expression,
-            result.Meaning, meaningLanguage) { AllowsExplanationEnrichment = false };
+    public static VocabularyCapture Lookup(ReadingLookupInput input, ReadingLookupResult result, LearningLanguage meaningLanguage,
+        ReadingSelection? selection = null, DateTimeOffset? capturedAt = null)
+    {
+        VocabularyExample? example = null;
+        if (input.Context is { } context)
+        {
+            if (selection is null || !ReadingSelectionPolicy.ValidContext(context, input.Target))
+                throw new ArgumentException("The contextual occurrence could not be verified.");
+            bool complete = context.Left is ReadingBoundary.Container or ReadingBoundary.Sentence
+                && context.Right is ReadingBoundary.Container or ReadingBoundary.Sentence;
+            bool cropped = context.Left is ReadingBoundary.Crop or ReadingBoundary.Deadline
+                || context.Right is ReadingBoundary.Crop or ReadingBoundary.Deadline;
+            var completeness = complete ? VocabularyExampleCompleteness.Sentence
+                : cropped ? VocabularyExampleCompleteness.Fragment : VocabularyExampleCompleteness.Unknown;
+            example = new(selection.Id, context.Text, result.SentenceTranslation,
+                [new(context.TargetStart, context.TargetLength)], completeness, result.Meaning, capturedAt ?? selection.CapturedAt,
+                translationLanguage: input.TranslationLanguage,
+                meaningLanguage: meaningLanguage, meaningOrigin: VocabularyMeaningOrigin.Ai,
+                sourceApplicationId: selection.SourceApplicationId);
+        }
+        return new(input.Target, input.Target, input.Source, input.IsWord ? VocabularyEntryKind.Word : VocabularyEntryKind.Expression,
+            result.Meaning, meaningLanguage, example) { AllowsExplanationEnrichment = false };
+    }
 }

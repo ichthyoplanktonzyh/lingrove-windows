@@ -85,7 +85,12 @@ internal sealed partial class ReadingWindow : Window, IReadingPresentation
     }
     public void Update(ReadingState state)
     {
-        _heading.Text = state.Route.IsTranslation ? "Selected text translation" : "Selected word or phrase";
+        _heading.Text = state.Selection.Source switch
+        {
+            Cotabby.Core.LanguageLearning.Reading.ReadingSourceKind.Pointer => state.Route.IsTranslation ? "Text under pointer" : "Word or phrase under pointer",
+            Cotabby.Core.LanguageLearning.Reading.ReadingSourceKind.Screenshot => state.Route.IsTranslation ? "Screen region translation" : "Word or phrase in screen region",
+            _ => state.Route.IsTranslation ? "Selected text translation" : "Selected word or phrase",
+        };
         _destination.Text = state.Destination;
         _source.Text = state.Selection.Text;
         _status.Text = state.Status switch
@@ -113,7 +118,7 @@ internal sealed partial class ReadingWindow : Window, IReadingPresentation
     internal Task FavoriteWork => _favorite.LastOperation;
     public void ShowCaptureError(string message)
     {
-        _heading.Text = "Selected text unavailable"; _source.Text = ""; _destination.Text = "";
+        _heading.Text = "Reading unavailable"; _source.Text = ""; _destination.Text = "";
         _result.Text = ""; _status.Text = message; _progress.Visibility = Visibility.Collapsed; ClearSpeech();
         Show(); UpdateLayout(); LearningPanelPlacement.Position(this, ScreenRect.Empty);
     }

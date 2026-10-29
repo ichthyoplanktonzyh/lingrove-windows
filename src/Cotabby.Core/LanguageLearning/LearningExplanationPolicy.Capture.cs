@@ -27,7 +27,7 @@ public static partial class LearningExplanationPolicy
     public static LearningExplanationInput Input(VocabularyCapture capture) => new(capture.Expression, capture.DictionaryForm,
         capture.Language, capture.Kind, capture.Example?.Text ?? capture.Expression,
         capture.Example?.Ranges ?? [new VocabularyTextRange(0, capture.Expression.Length)],
-        capture.Example is { } example ? example.Completeness == VocabularyExampleCompleteness.Sentence
-            ? LearningExplanationContext.Sentence : LearningExplanationContext.Fragment : LearningExplanationContext.None,
+        capture.Example is { } example ? example.Completeness switch { VocabularyExampleCompleteness.Sentence => LearningExplanationContext.Sentence,
+                VocabularyExampleCompleteness.Fragment => LearningExplanationContext.Fragment, VocabularyExampleCompleteness.Unknown => LearningExplanationContext.Unknown, _ => throw InvalidContent() } : LearningExplanationContext.None,
         capture.Example is null ? null : VocabularyCapturePolicy.ExampleKey(capture.Example));
 }

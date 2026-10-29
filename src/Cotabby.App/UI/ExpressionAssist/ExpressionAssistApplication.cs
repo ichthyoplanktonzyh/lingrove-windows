@@ -108,6 +108,10 @@ internal sealed class ExpressionAssistApplication : IAsyncDisposable
                 LearningTranslationShortcut = settings.LearningTranslationShortcut,
                 LearningReadingEnabled = settings.LearningReadingEnabled,
                 LearningReadingShortcut = settings.LearningReadingShortcut,
+                LearningReadingPointerEnabled = settings.LearningReadingPointerEnabled,
+                LearningReadingPointerShortcut = settings.LearningReadingPointerShortcut,
+                LearningReadingScreenshotEnabled = settings.LearningReadingScreenshotEnabled,
+                LearningReadingScreenshotShortcut = settings.LearningReadingScreenshotShortcut,
                 ShortcutOverrides = (settings.ShortcutOverrides ?? []).ToList(),
             });
 
@@ -122,6 +126,10 @@ internal sealed class ExpressionAssistApplication : IAsyncDisposable
             && Shortcuts.LearningTranslationShortcut == other.Shortcuts.LearningTranslationShortcut
             && Shortcuts.LearningReadingEnabled == other.Shortcuts.LearningReadingEnabled
             && Shortcuts.LearningReadingShortcut == other.Shortcuts.LearningReadingShortcut
+            && Shortcuts.LearningReadingPointerEnabled == other.Shortcuts.LearningReadingPointerEnabled
+            && Shortcuts.LearningReadingPointerShortcut == other.Shortcuts.LearningReadingPointerShortcut
+            && Shortcuts.LearningReadingScreenshotEnabled == other.Shortcuts.LearningReadingScreenshotEnabled
+            && Shortcuts.LearningReadingScreenshotShortcut == other.Shortcuts.LearningReadingScreenshotShortcut
             && Shortcuts.ShortcutOverrides.SequenceEqual(other.Shortcuts.ShortcutOverrides);
     }
 }

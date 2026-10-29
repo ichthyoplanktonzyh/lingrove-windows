@@ -36,6 +36,7 @@ public static class VocabularyCapturePolicy
         {
             VocabularyExampleCompleteness.Sentence => "sentence",
             VocabularyExampleCompleteness.Fragment => "fragment",
+            VocabularyExampleCompleteness.Unknown => "unknown",
             _ => throw new VocabularyContentValidationException(),
         }]);
     }

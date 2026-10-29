@@ -3,6 +3,7 @@ using Cotabby.App.Reading;
 using Cotabby.Core.Focus;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.LanguageLearning.Reading;
+using Cotabby.Core.Runtime.Metrics;
 
 namespace Cotabby.App.Wpf.Tests;
 
@@ -24,6 +25,26 @@ public sealed class ReadingSessionTests(WpfDispatcher dispatcher)
         Task.Run(() => reader.Lease.Invalidate()).GetAwaiter().GetResult();
         Assert.True(token.IsCancellationRequested); release.SetResult();
         await Until(() => !session.IsActive); Assert.Equal(0, sends);
+    });
+
+    [Fact]
+    public Task ExplicitEnrichmentFinishesBeforeProviderAndRetirementPreventsSend() => dispatcher.RunAsync(async () =>
+    {
+        var reader = new Reader(); var panel = new Panel(); int sends = 0;
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        reader.Lease.Enrich = async token => { entered.SetResult(); await release.Task; token.ThrowIfCancellationRequested(); };
+        await using var session = new ReadingSession(Dispatcher.CurrentDispatcher, reader, panel,
+            _ => new(null, ReadingLanguageEvidence.Unavailable), (_, _) => 2,
+            (_, _, _, _, _) => { sends++; return Task.FromResult("sent"); }, (_, _, _, _, _, _) => Task.CompletedTask);
+        try
+        {
+            session.Begin(Settings); await entered.Task.WaitAsync(TimeSpan.FromSeconds(5));
+            Assert.False(panel.Shown); Assert.Equal(0, sends);
+            reader.Lease.Retire(); reader.Lease.Invalidate(); release.SetResult();
+            await Until(() => !session.IsActive); Assert.Equal(0, sends);
+        }
+        finally { release.TrySetResult(); }
     });
 
     [Fact]
@@ -74,15 +95,19 @@ public sealed class ReadingSessionTests(WpfDispatcher dispatcher)
     public Task DestinationAppearsBeforeBorrowedProviderAndUnknownSourceStaysUnknown() => dispatcher.RunAsync(async () =>
     {
         var reader = new Reader(); var panel = new Panel(); LearningLanguage? observed = LearningLanguage.English;
+        var metrics = new List<PerformanceRequestObservation>();
         await using var session = new ReadingSession(Dispatcher.CurrentDispatcher, reader, panel,
             _ => new(null, ReadingLanguageEvidence.Unavailable), (_, _) => 2,
             (capture, source, target, partial, token) =>
             {
                 Assert.True(panel.Shown); Assert.Equal("Endpoint: https://example.test/v1", panel.Last!.Destination);
                 observed = source; Assert.Equal(Selection.Text, capture.Text); return Task.FromResult("你好世界！");
-            }, (_, _, _, _, _, _) => throw new InvalidOperationException());
-        session.Begin(Settings); await Until(() => panel.Last?.Status == ReadingStatus.Ready);
+            }, (_, _, _, _, _, _) => throw new InvalidOperationException(), metrics.Add);
+        session.Begin(Settings with { TranslationModelName = "configured-model" }); await Until(() => panel.Last?.Status == ReadingStatus.Ready);
         Assert.Null(observed); Assert.Equal("你好世界！", panel.Last!.Text); Assert.True(panel.Last.Route.IsTranslation);
+        var metric = Assert.Single(metrics); Assert.Equal(ModelRequestSource.Translation, metric.Source);
+        Assert.Equal(ModelRequestOutcome.Completed, metric.Outcome); Assert.Equal("configured-model", metric.ModelName);
+        Assert.DoesNotContain("Hello", metric.RequestId);
     });
 
     [Fact]
@@ -230,11 +255,13 @@ public sealed class ReadingSessionTests(WpfDispatcher dispatcher)
     {
         public bool IsLive => !Retired;
         public ReadingSelection Value = ReadingSessionTests.Selection;
+        public Func<CancellationToken, Task>? Enrich;
         public ReadingSelection Selection => Value; public bool Retired;
         public event Action? Invalidated;
         public void Invalidate() => Invalidated?.Invoke();
         public Action? SnapshotInvalidation() => Invalidated;
         public Task<bool> IsCurrentAsync(CancellationToken token) => Task.FromResult(!Retired);
+        public Task EnrichAsync(CancellationToken token) => Enrich?.Invoke(token) ?? Task.CompletedTask;
         public void Retire() => Retired = true;
         public ValueTask DisposeAsync() => ValueTask.CompletedTask;
     }

@@ -30,7 +30,11 @@ internal sealed class GlobalShortcut
         new("Read Selected Text", new KeyBinding(0x54, KeyModifiers.Alt | KeyModifiers.Shift, "Alt+Shift+T"),
             s => s.LearningReadingShortcut, (s, key) => s.LearningReadingShortcut = key);
 
-    private static readonly GlobalShortcut[] All = [AcceptWord, AcceptAll, Toggle, LearningTranslation, ExpressionAssist, LearningReading];
+    public static GlobalShortcut ReadingPointer { get; } = new("Read Text Under Pointer", new KeyBinding(0x54, KeyModifiers.Control | KeyModifiers.Shift, "Ctrl+Shift+T"),
+        s => s.LearningReadingPointerShortcut, (s, key) => s.LearningReadingPointerShortcut = key);
+    public static GlobalShortcut ReadingScreenshot { get; } = new("Read Screen Region", new KeyBinding(0x54, KeyModifiers.Control | KeyModifiers.Alt | KeyModifiers.Shift, "Ctrl+Alt+Shift+T"),
+        s => s.LearningReadingScreenshotShortcut, (s, key) => s.LearningReadingScreenshotShortcut = key);
+    private static readonly GlobalShortcut[] All = [AcceptWord, AcceptAll, Toggle, LearningTranslation, ExpressionAssist, LearningReading, ReadingPointer, ReadingScreenshot];
 
     private readonly Func<AppSettings, KeyBinding> _get;
 
@@ -71,6 +75,8 @@ internal sealed class GlobalShortcut
         var global = All.FirstOrDefault(other => other != this
             && (other != ExpressionAssist || settings.ExpressionAssistEnabled)
             && (other != LearningReading || settings.LearningReadingEnabled)
+            && (other != ReadingPointer || settings.LearningReadingPointerEnabled)
+            && (other != ReadingScreenshot || settings.LearningReadingScreenshotEnabled)
             && other.Binding(settings) is var taken
             && taken.VirtualKey == candidate.VirtualKey
             && taken.Modifiers == candidate.Modifiers);
@@ -79,7 +85,7 @@ internal sealed class GlobalShortcut
         // The learning chord is global, so it must also yield to an accept shortcut a user
         // assigned only in one app. This keeps the existing per-app recorder a visible conflict
         // boundary instead of letting the translation hook consume that app's established key.
-        if (this == LearningTranslation || this == LearningReading)
+        if (this == LearningTranslation || this == LearningReading || this == ReadingPointer || this == ReadingScreenshot)
         {
             foreach (var app in settings.ShortcutOverrides)
             {

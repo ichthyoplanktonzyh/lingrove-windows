@@ -1,6 +1,7 @@
 using System.Windows.Threading;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.LanguageLearning.Reading;
+using Cotabby.Core.Runtime.Metrics;
 
 namespace Cotabby.App.Reading;
 
@@ -12,11 +13,22 @@ internal interface IReadingSelectionLease : IAsyncDisposable
     bool IsLive { get; }
     event Action? Invalidated;
     Task<bool> IsCurrentAsync(CancellationToken token);
+    Task EnrichAsync(CancellationToken token) => Task.CompletedTask;
+    void ArmActivationKey(int virtualKey) { }
     void Retire();
 }
 internal interface IReadingSelectionReader
 {
     Task<IReadingSelectionLease?> CaptureAsync(CancellationToken token, int? initiatingVirtualKey = null);
+}
+internal interface IReadingPointerReader
+{
+    Task<IReadingSelectionLease?> CapturePointerAsync(int x, int y, CancellationToken token, int? initiatingVirtualKey = null);
+}
+internal interface IReadingPendingKeyOwner { void ArmPendingActivationKey(int virtualKey); }
+internal interface IReadingScreenReader : IReadingSelectionReader
+{
+    bool IsSelectingRegion { get; }
 }
 
 internal sealed record ReadingDestination(string Label, bool UsesEndpoint, bool Authorized, string? EndpointUrl = null, string? Model = null)
@@ -30,7 +42,11 @@ internal sealed record ReadingDestination(string Label, bool UsesEndpoint, bool 
     }
 }
 internal sealed record ReadingSettings(bool Enabled, bool SelectionEnabled, bool AppAllowed, LearningLanguage Target,
-    ReadingDestination Translation, ReadingDestination Lookup, long Revision);
+    ReadingDestination Translation, ReadingDestination Lookup, long Revision)
+{
+    internal ReadingSourceKind Source { get; init; } = ReadingSourceKind.Selection;
+    internal string TranslationModelName { get; init; } = "";
+}
 internal enum ReadingStatus { Loading, Translating, Lookup, Ready, Error }
 internal sealed record ReadingState(ReadingSelection Selection, LearningLanguage? Source, LearningLanguage Target,
     ReadingRoute Route, ReadingStatus Status, string Destination, string Text, string? Message = null, int WordCount = 0);
@@ -55,6 +71,7 @@ internal sealed class ReadingSession : IAsyncDisposable
     private readonly Func<string, LearningLanguage?, int> _wordCount;
     private readonly Func<ReadingSelection, LearningLanguage?, LearningLanguage, Action<string>, CancellationToken, Task<string>> _translate;
     private readonly Func<ReadingSelection, ReadingRoute, LearningLanguage?, LearningLanguage, Func<CancellationToken, Task<bool>>, CancellationToken, Task> _lookup;
+    private readonly Action<PerformanceRequestObservation>? _observe;
     private readonly HashSet<Task> _work = [];
     // Callback admission and registration are atomic with retirement and disposal.
     private readonly object _workGate = new();
@@ -70,12 +87,13 @@ internal sealed class ReadingSession : IAsyncDisposable
     internal ReadingSession(Dispatcher dispatcher, IReadingSelectionReader reader, IReadingPresentation presentation,
         Func<ReadingSelection, ReadingLanguageResolution> resolve, Func<string, LearningLanguage?, int> wordCount,
         Func<ReadingSelection, LearningLanguage?, LearningLanguage, Action<string>, CancellationToken, Task<string>> translate,
-        Func<ReadingSelection, ReadingRoute, LearningLanguage?, LearningLanguage, Func<CancellationToken, Task<bool>>, CancellationToken, Task> lookup)
+        Func<ReadingSelection, ReadingRoute, LearningLanguage?, LearningLanguage, Func<CancellationToken, Task<bool>>, CancellationToken, Task> lookup,
+        Action<PerformanceRequestObservation>? observe = null)
     {
         dispatcher.VerifyAccess();
         if (SynchronizationContext.Current is not DispatcherSynchronizationContext) throw new InvalidOperationException("Reading requires dispatcher ownership.");
         _dispatcher = dispatcher; _reader = reader; _presentation = presentation; _resolve = resolve; _wordCount = wordCount;
-        _translate = translate; _lookup = lookup;
+        _translate = translate; _lookup = lookup; _observe = observe;
     }
 
     internal bool IsActive => _cancel is not null;
@@ -98,7 +116,12 @@ internal sealed class ReadingSession : IAsyncDisposable
         {
             capture = await _reader.CaptureAsync(token, initiatingVirtualKey);
             if (!Current(revision, token)) return;
-            if (capture is null) { Dismiss(); _presentation.ShowCaptureError("Selected text is unavailable in this app."); return; }
+            if (capture is null) { Dismiss(); _presentation.ShowCaptureError(settings.Source switch
+                {
+                    ReadingSourceKind.Pointer => "Text under the pointer cannot be verified in this app.",
+                    ReadingSourceKind.Screenshot => "The screen region could not be verified or Windows OCR is unavailable.",
+                    _ => "Selected text is unavailable in this app.",
+                }); return; }
             _lease = capture; transferred = true;
             _invalidated = () =>
             {
@@ -111,8 +134,15 @@ internal sealed class ReadingSession : IAsyncDisposable
             capture.Invalidated += _invalidated;
             if (!Current(revision, token)) return;
             var selection = capture.Selection with { Admission = () => capture.IsLive && !token.IsCancellationRequested };
+            if (selection.Source != settings.Source) throw new ArgumentException("The reading source could not be verified.");
             ReadingSelectionPolicy.ValidateReceipt(selection);
             if (!await capture.IsCurrentAsync(token) || !Current(revision, token)) { if (Current(revision, token)) Dismiss(); return; }
+            // Context is read only after the explicit action consumes this retained occurrence.
+            await capture.EnrichAsync(token);
+            if (!Current(revision, token)) return;
+            if (!await capture.IsCurrentAsync(token)) { if (Current(revision, token)) Dismiss(); return; }
+            selection = capture.Selection with { Admission = () => capture.IsLive && !token.IsCancellationRequested };
+            ReadingSelectionPolicy.ValidateReceipt(selection);
             var (resolution, route, wordCount) = await Task.Run(() =>
             {
                 token.ThrowIfCancellationRequested();
@@ -156,12 +186,15 @@ internal sealed class ReadingSession : IAsyncDisposable
             int generationComplete = 0;
             int invalidPartial = 0;
             long partialSequence = 0;
+            long firstOutput = -1; var stopwatch = System.Diagnostics.Stopwatch.StartNew(); var startedAt = DateTimeOffset.UtcNow;
+            string requestId = Guid.NewGuid().ToString("N"); var outcome = ModelRequestOutcome.Failed; long? usable = null;
             void Partial(string text)
             {
                 string safe;
                 try { safe = SafeOutput(text); }
                 catch { Interlocked.Exchange(ref invalidPartial, 1); return; }
                 if (safe.Length == 0 || Volatile.Read(ref invalidPartial) != 0) return;
+                if (Volatile.Read(ref generationComplete) == 0) Interlocked.CompareExchange(ref firstOutput, stopwatch.ElapsedMilliseconds, -1);
                 Post(() => generationComplete == 0 && !token.IsCancellationRequested, () =>
                 {
                     var sequence = Interlocked.Increment(ref partialSequence);
@@ -179,17 +212,29 @@ internal sealed class ReadingSession : IAsyncDisposable
             try
             {
                 result = await _translate(selection, resolution.Language, settings.Target, Partial, token);
+                if (Volatile.Read(ref invalidPartial) != 0) throw new LearningTranslationException(LearningTranslationFailure.InvalidOutput);
+                result = SafeOutput(result);
+                if (result.Length == 0) throw new LearningTranslationException(LearningTranslationFailure.InvalidOutput);
+                usable = stopwatch.ElapsedMilliseconds; outcome = ModelRequestOutcome.Completed;
             }
-            finally { lock (_workGate) generationComplete = 1; }
-            if (Volatile.Read(ref invalidPartial) != 0) throw new LearningTranslationException(LearningTranslationFailure.InvalidOutput);
-            result = SafeOutput(result);
-            if (result.Length == 0) throw new LearningTranslationException(LearningTranslationFailure.InvalidOutput);
+            catch (OperationCanceledException) { outcome = ModelRequestOutcome.Cancelled; throw; }
+            finally
+            {
+                lock (_workGate) generationComplete = 1;
+                long first = Interlocked.Read(ref firstOutput);
+                try { _observe?.Invoke(new(ModelRequestSource.Translation, requestId, settings.TranslationModelName, startedAt,
+                    stopwatch.ElapsedMilliseconds, outcome, first >= 0 ? first : null, usable)); } catch { }
+            }
             if (!Current(revision, token)) return;
             if (!await capture.IsCurrentAsync(token)) { if (Current(revision, token)) Dismiss(); return; }
             if (!Current(revision, token)) return;
             _presentation.Update(state with { Status = ReadingStatus.Ready, Text = result });
         }
-        catch (OperationCanceledException) { }
+        catch (OperationCanceledException) { if (Current(revision, token)) Dismiss(); }
+        catch (ReadingOcrUnavailableException)
+        {
+            if (Current(revision, token)) { Dismiss(); _presentation.ShowCaptureError("Windows OCR is unavailable. Install a supported OCR language in Windows settings."); }
+        }
         catch
         {
             if (Current(revision, token))
@@ -198,7 +243,15 @@ internal sealed class ReadingSession : IAsyncDisposable
                 try { current = capture is not null && await capture.IsCurrentAsync(token); } catch { }
                 if (current && displayed is not null && Current(revision, token))
                     _presentation.Update(displayed with { Status = ReadingStatus.Error, Message = "Reading translation could not complete. Retry or adjust the model settings." });
-                else if (capture is null) { Dismiss(); _presentation.ShowCaptureError("Selected text is unavailable in this app."); }
+                else if (capture is null)
+                {
+                    Dismiss(); _presentation.ShowCaptureError(settings.Source switch
+                    {
+                        ReadingSourceKind.Pointer => "Text under the pointer cannot be verified in this app.",
+                        ReadingSourceKind.Screenshot => "The screen region could not be verified or Windows OCR could not complete.",
+                        _ => "Selected text is unavailable in this app.",
+                    });
+                }
                 else Dismiss();
             }
         }

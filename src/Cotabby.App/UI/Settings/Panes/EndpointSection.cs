@@ -174,6 +174,7 @@ internal sealed class EndpointSection
         try
         {
             store();
+            _context.Host.CompletionCredentialsChanged();
             _key.Clear();
             ShowKeyStatus();
         }

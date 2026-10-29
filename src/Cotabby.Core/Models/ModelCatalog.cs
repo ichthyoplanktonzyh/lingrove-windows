@@ -112,6 +112,22 @@ public static class ModelCatalog
             ? Available().FirstOrDefault(m => m.Id == id)
             : All.FirstOrDefault(m => m.Id == id);
 
+    /// <summary>Completion discovery applies the same explicit task admission as execution.</summary>
+    public static IReadOnlyList<CotabbyModel> Available(IReadOnlyDictionary<string, string[]> assignments) =>
+        CandidatesFrom(Available(), assignments);
+
+    public static IReadOnlyList<CotabbyModel> CandidatesFrom(IEnumerable<CotabbyModel> models, IReadOnlyDictionary<string, string[]> assignments) =>
+        models.Where(model => LocalModelTaskPolicy.IsCandidate(model.FileName, LocalModelTask.Completion,
+            LocalModelTaskAssignments.TasksFor(model.FileName, assignments))).ToArray();
+
+    public static CotabbyModel? FindById(string id, IReadOnlyDictionary<string, string[]> assignments) =>
+        Available(assignments).FirstOrDefault(model => MatchesId(id, model.Id));
+
+    /// <summary>Built-in IDs are stable exact identifiers; custom IDs name Windows files.</summary>
+    public static bool MatchesId(string retainedId, string candidateId) =>
+        string.Equals(retainedId, candidateId,
+            retainedId.StartsWith(CustomIdPrefix, StringComparison.Ordinal) ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
+
     private static CotabbyModel Custom(string path)
     {
         long bytes = new FileInfo(path).Length;

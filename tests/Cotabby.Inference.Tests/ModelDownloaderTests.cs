@@ -1,5 +1,6 @@
 using System.Net;
 using Cotabby.Core.Models;
+using Cotabby.Inference;
 using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Cotabby.Inference.Tests;
@@ -57,6 +58,60 @@ public sealed class ModelDownloaderTests : IDisposable
         Assert.Equal(Gguf, File.ReadAllBytes(FinalPath));
         Assert.True(ModelDownloader.IsCached(_model));
         Assert.False(File.Exists(FinalPath + ".part"));
+    }
+
+    [Fact]
+    public async Task PublishedDownloadAcknowledgesSourceBeforeReleasingDestinationDespiteCancellation()
+    {
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var metadata = new Dictionary<string, string> { [_model.FileName] = "old source" };
+        using var cancellation = new CancellationTokenSource();
+        using var client = new HttpClient(new Handler(_ => Body(HttpStatusCode.OK, Gguf)));
+        var downloader = new ModelDownloader(client, NullLogger<ModelDownloader>.Instance);
+        var work = downloader.DownloadAsync(_model, null, cancellation.Token, async () =>
+        {
+            Assert.Equal(Gguf, File.ReadAllBytes(FinalPath)); entered.SetResult(); await release.Task;
+            metadata[_model.FileName] = _model.DownloadUrl;
+        });
+        await entered.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        var next = ModelFileOperations.AcquireAsync(FinalPath, CancellationToken.None);
+        Assert.False(next.IsCompleted); cancellation.Cancel(); release.SetResult();
+        await work.WaitAsync(TimeSpan.FromSeconds(5));
+        using var lease = await next.WaitAsync(TimeSpan.FromSeconds(5));
+        Assert.Equal(_model.DownloadUrl, metadata[_model.FileName]);
+    }
+
+    [Fact]
+    public async Task ExistingOrInvalidFileNeverAcknowledgesDownloadedSource()
+    {
+        int calls = 0;
+        using var client = new HttpClient(new Handler(_ => Body(HttpStatusCode.OK, "bad"u8.ToArray())));
+        var downloader = new ModelDownloader(client, NullLogger<ModelDownloader>.Instance);
+        await Assert.ThrowsAsync<InvalidDataException>(() => downloader.DownloadAsync(_model, null, CancellationToken.None, () => { calls++; return Task.CompletedTask; }));
+        _models.Write("test.gguf", Gguf);
+        await downloader.DownloadAsync(_model, null, CancellationToken.None, () => { calls++; return Task.CompletedTask; });
+        Assert.Equal(0, calls);
+    }
+
+    [Fact]
+    public async Task CancelledDownloadCannotAcknowledgeSource()
+    {
+        int calls = 0; using var stop = new CancellationTokenSource(); stop.Cancel();
+        using var client = new HttpClient(new Handler(_ => throw new InvalidOperationException("no request expected")));
+        var downloader = new ModelDownloader(client, NullLogger<ModelDownloader>.Instance);
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => downloader.DownloadAsync(_model, null, stop.Token, () => { calls++; return Task.CompletedTask; }));
+        Assert.Equal(0, calls); Assert.False(File.Exists(FinalPath));
+    }
+
+    [Fact]
+    public async Task DestinationCollisionDoesNotOverwriteFileOrAcknowledgeSource()
+    {
+        byte[] existing = "unrecognized existing file"u8.ToArray(); _models.Write("test.gguf", existing);
+        int calls = 0; using var client = new HttpClient(new Handler(_ => Body(HttpStatusCode.OK, Gguf)));
+        var downloader = new ModelDownloader(client, NullLogger<ModelDownloader>.Instance);
+        await Assert.ThrowsAsync<IOException>(() => downloader.DownloadAsync(_model, null, CancellationToken.None, () => { calls++; return Task.CompletedTask; }));
+        Assert.Equal(existing, File.ReadAllBytes(FinalPath)); Assert.Equal(0, calls);
     }
 
     [Fact]

@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Security.Cryptography;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Models;
+using Cotabby.Inference;
 
 namespace Cotabby.App.Learning;
 
@@ -97,7 +98,7 @@ internal sealed class LearningModelCatalogManager : IAsyncDisposable
     public Task DownloadAsync(
         LearningDownloadableModel model,
         IProgress<LearningModelTransferProgress>? progress,
-        CancellationToken ct)
+        CancellationToken ct, Func<Task>? acknowledgeInstall = null)
     {
         ObjectDisposedException.ThrowIf(Volatile.Read(ref _disposed) != 0, this);
         ArgumentNullException.ThrowIfNull(model);
@@ -106,7 +107,7 @@ internal sealed class LearningModelCatalogManager : IAsyncDisposable
         // the shared model folder at a slow or removable drive, and WPF must stay responsive.
         return RunOperationAsync(async token =>
         {
-            await DownloadCoreAsync(model, progress, token).ConfigureAwait(false);
+            await DownloadCoreAsync(model, progress, token, acknowledgeInstall).ConfigureAwait(false);
             return true;
         }, ct);
     }
@@ -114,7 +115,7 @@ internal sealed class LearningModelCatalogManager : IAsyncDisposable
     private async Task DownloadCoreAsync(
         LearningDownloadableModel model,
         IProgress<LearningModelTransferProgress>? progress,
-        CancellationToken ct)
+        CancellationToken ct, Func<Task>? acknowledgeInstall)
     {
         var gate = _downloadGates.GetOrAdd(model.Filename, static _ => new SemaphoreSlim(1, 1));
         await gate.WaitAsync(ct).ConfigureAwait(false);
@@ -123,9 +124,14 @@ internal sealed class LearningModelCatalogManager : IAsyncDisposable
             var directory = ModelsDirectory;
             Directory.CreateDirectory(directory);
             var destination = Path.Combine(directory, model.Filename);
+            using var fileLease = await ModelFileOperations.AcquireAsync(destination, ct).ConfigureAwait(false);
             if (File.Exists(destination))
             {
-                if (await IsVerifiedCatalogFileAsync(destination, model, ct).ConfigureAwait(false)) return;
+                if (await IsVerifiedCatalogFileAsync(destination, model, ct).ConfigureAwait(false))
+                {
+                    if (acknowledgeInstall is not null) await acknowledgeInstall().ConfigureAwait(false);
+                    return;
+                }
                 throw new IOException("A file with this name already exists and does not match the catalog copy. Rename or remove it before downloading.");
             }
 
@@ -190,6 +196,7 @@ internal sealed class LearningModelCatalogManager : IAsyncDisposable
                     if (!await IsVerifiedCatalogFileAsync(destination, model, ct).ConfigureAwait(false)) throw;
                 }
 
+                if (acknowledgeInstall is not null) await acknowledgeInstall().ConfigureAwait(false);
                 progress?.Report(new LearningModelTransferProgress(copied, total, Completed: true));
             }
             finally
@@ -211,25 +218,27 @@ internal sealed class LearningModelCatalogManager : IAsyncDisposable
     /// </summary>
     public Task<LearningModelImportResult> ImportAsync(
         IReadOnlyList<string> sourcePaths,
-        CancellationToken ct)
+        CancellationToken ct, Func<string, Task>? acknowledgeImport = null)
     {
         ObjectDisposedException.ThrowIf(Volatile.Read(ref _disposed) != 0, this);
         ArgumentNullException.ThrowIfNull(sourcePaths);
         var detachedPaths = sourcePaths.ToArray();
-        return RunOperationAsync(token => ImportCoreAsync(detachedPaths, token), ct);
+        return RunOperationAsync(token => ImportCoreAsync(detachedPaths, token, acknowledgeImport), ct);
     }
 
     private async Task<LearningModelImportResult> ImportCoreAsync(
         IReadOnlyList<string> sourcePaths,
-        CancellationToken ct)
+        CancellationToken ct, Func<string, Task>? acknowledgeImport)
     {
         var directory = ModelsDirectory;
         Directory.CreateDirectory(directory);
-        int imported = 0, skipped = 0, failed = 0;
+        var imported = new List<string>();
+        int skipped = 0, failed = 0;
+        bool cancelled = false;
 
         foreach (var sourcePath in sourcePaths)
         {
-            ct.ThrowIfCancellationRequested();
+            if (ct.IsCancellationRequested) { cancelled = true; break; }
             var filename = Path.GetFileName(sourcePath);
             if (string.IsNullOrWhiteSpace(filename)
                 || !string.Equals(Path.GetExtension(filename), ".gguf", StringComparison.OrdinalIgnoreCase))
@@ -242,6 +251,7 @@ internal sealed class LearningModelCatalogManager : IAsyncDisposable
             var staging = Path.Combine(directory, $".learning-import-{Guid.NewGuid():N}.part");
             try
             {
+                using var fileLease = await ModelFileOperations.AcquireAsync(destination, ct).ConfigureAwait(false);
                 if (!File.Exists(sourcePath))
                 {
                     failed++;
@@ -281,19 +291,22 @@ internal sealed class LearningModelCatalogManager : IAsyncDisposable
                     await output.FlushAsync(ct).ConfigureAwait(false);
                 }
 
-                try
-                {
-                    File.Move(staging, destination, overwrite: false);
-                    imported++;
-                }
+                bool published;
+                try { File.Move(staging, destination, overwrite: false); published = true; }
                 catch (IOException) when (File.Exists(destination))
                 {
-                    skipped++;
+                    published = false; skipped++;
+                }
+                if (published)
+                {
+                    if (acknowledgeImport is not null) await acknowledgeImport(filename).ConfigureAwait(false);
+                    imported.Add(filename);
                 }
             }
             catch (OperationCanceledException) when (ct.IsCancellationRequested)
             {
-                throw;
+                cancelled = true;
+                break;
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException)
             {
@@ -307,7 +320,25 @@ internal sealed class LearningModelCatalogManager : IAsyncDisposable
             }
         }
 
-        return new LearningModelImportResult(imported, skipped, failed);
+        return new LearningModelImportResult(imported.AsReadOnly(), skipped, failed, cancelled);
+    }
+
+    /// <summary>Waits for transfers of this exact app-owned leaf, then delegates the final
+    /// recheck and unlink to the UI owner as one serialized operation.</summary>
+    public Task<bool> DeleteAsync(string filename, Func<string, Task<bool>> unlink, CancellationToken ct)
+    {
+        ArgumentNullException.ThrowIfNull(unlink);
+        if (string.IsNullOrWhiteSpace(filename) || filename.IndexOfAny(['/', '\\', ':', '\0']) >= 0
+            || !string.Equals(Path.GetFileName(filename), filename, StringComparison.Ordinal)
+            || !string.Equals(Path.GetExtension(filename), ".gguf", StringComparison.OrdinalIgnoreCase))
+            throw new ArgumentException("A model filename is required.", nameof(filename));
+        var path = Path.Combine(ModelsDirectory, filename);
+        return RunOperationAsync(async token =>
+        {
+            using var lease = await ModelFileOperations.AcquireAsync(path, token).ConfigureAwait(false);
+            token.ThrowIfCancellationRequested();
+            return await unlink(path).ConfigureAwait(false);
+        }, ct);
     }
 
     /// <summary>
@@ -431,4 +462,7 @@ internal sealed class LearningModelCatalogManager : IAsyncDisposable
 
 internal sealed record LearningInstalledModel(string Filename, string DisplayName, long SizeBytes);
 internal sealed record LearningModelTransferProgress(long BytesDownloaded, long? TotalBytes, bool Completed = false);
-internal sealed record LearningModelImportResult(int Imported, int Skipped, int Failed);
+internal sealed record LearningModelImportResult(IReadOnlyList<string> ImportedFilenames, int Skipped, int Failed, bool Cancelled)
+{
+    public int Imported => ImportedFilenames.Count;
+}

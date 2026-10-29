@@ -55,6 +55,7 @@
     <Compile Include="..\..\src\Cotabby.App\Review\AnkiReviewController.cs" Link="Production\AnkiReviewController.cs" />
     <Compile Include="..\..\src\Cotabby.App\Review\AnkiReviewController.Navigation.cs" Link="Production\AnkiReviewController.Navigation.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.cs" Link="Production\AppSettings.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.ModelAssignments.cs" Link="Production\AppSettings.ModelAssignments.cs" />
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularySQLiteConnection.cs" Link="Production\VocabularySQLiteConnection.cs" />
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularySQLiteDatabase.cs" Link="Production\VocabularySQLiteDatabase.cs" />
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularyArchive.cs" Link="Production\VocabularyArchive.cs" />

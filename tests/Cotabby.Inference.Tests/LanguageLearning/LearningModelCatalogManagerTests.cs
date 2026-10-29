@@ -4,6 +4,7 @@ using System.Text;
 using Cotabby.App.Learning;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Models;
+using Cotabby.Inference;
 
 namespace Cotabby.Inference.Tests.LanguageLearning;
 
@@ -135,6 +136,56 @@ public sealed class LearningModelCatalogManagerTests
         Assert.Equal(["valid.gguf"], installed.Select(model => model.Filename));
         Assert.Equal(Payload, await File.ReadAllBytesAsync(Path.Combine(files.Models, "valid.gguf")));
         Assert.Empty(Directory.GetFiles(files.Models, "*.part"));
+    }
+
+    [Fact]
+    public async Task ImportAcknowledgesEachPublishedFileBeforeCancellationAndReleasesItsGate()
+    {
+        using var files = new TransferFiles(); Directory.CreateDirectory(files.Sources);
+        var first = Path.Combine(files.Sources, "first.gguf"); var second = Path.Combine(files.Sources, "second.gguf");
+        await File.WriteAllBytesAsync(first, Payload); await File.WriteAllBytesAsync(second, Payload);
+        await using var manager = new LearningModelCatalogManager(files.Models);
+        using var stop = new CancellationTokenSource(); var acknowledged = new List<string>();
+        var result = await manager.ImportAsync([first, second], stop.Token, filename =>
+        { acknowledged.Add(filename); stop.Cancel(); return Task.CompletedTask; }).WaitAsync(Timeout);
+        Assert.Equal(["first.gguf"], acknowledged); Assert.Equal(acknowledged, result.ImportedFilenames);
+        Assert.True(result.Cancelled); Assert.True(File.Exists(Path.Combine(files.Models, "first.gguf")));
+        Assert.False(File.Exists(Path.Combine(files.Models, "second.gguf")));
+        using var lease = await ModelFileOperations.AcquireAsync(Path.Combine(files.Models, "FIRST.gguf"), CancellationToken.None).WaitAsync(Timeout);
+    }
+
+    [Fact]
+    public async Task DeleteWaitsForSameFileAndRechecksAfterTheWait()
+    {
+        using var files = new TransferFiles(); Directory.CreateDirectory(files.Models);
+        string path = Path.Combine(files.Models, "model.gguf"); await File.WriteAllBytesAsync(path, Payload);
+        await using var manager = new LearningModelCatalogManager(files.Models);
+        using var lease = await ModelFileOperations.AcquireAsync(path, CancellationToken.None);
+        bool protectedNow = false;
+        var deletion = manager.DeleteAsync("MODEL.gguf", target =>
+        {
+            if (protectedNow) return Task.FromResult(false);
+            File.Delete(target); return Task.FromResult(true);
+        }, CancellationToken.None);
+        protectedNow = true; Assert.False(deletion.IsCompleted); lease.Dispose();
+        Assert.False(await deletion.WaitAsync(Timeout)); Assert.True(File.Exists(path));
+        await Assert.ThrowsAsync<ArgumentException>(async () => await manager.DeleteAsync("../model.gguf", _ => Task.FromResult(true), CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task PublishedImportKeepsDestinationLeaseUntilMetadataAcknowledgement()
+    {
+        using var files = new TransferFiles(); Directory.CreateDirectory(files.Sources);
+        var source = Path.Combine(files.Sources, "model.gguf"); await File.WriteAllBytesAsync(source, Payload);
+        await using var manager = new LearningModelCatalogManager(files.Models);
+        var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var import = manager.ImportAsync([source], CancellationToken.None, async _ => { started.SetResult(); await release.Task; });
+        await started.Task.WaitAsync(Timeout);
+        var waiting = ModelFileOperations.AcquireAsync(Path.Combine(files.Models, "MODEL.gguf"), CancellationToken.None);
+        Assert.False(waiting.IsCompleted);
+        release.SetResult(); Assert.Equal(1, (await import.WaitAsync(Timeout)).Imported);
+        using var lease = await waiting.WaitAsync(Timeout);
     }
 
     [Fact]

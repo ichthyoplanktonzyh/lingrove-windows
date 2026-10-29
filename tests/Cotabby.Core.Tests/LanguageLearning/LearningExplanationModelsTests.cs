@@ -37,6 +37,34 @@ public sealed class LearningExplanationModelsTests
         Assert.DoesNotContain("local-receipt", prompt); Assert.DoesNotContain("occurrenceIdentity", prompt);
     }
 
+    [Fact]
+    public void CurrentSourceAllowsUnknownLanguageAndUnverifiedContextWithoutInventingHint()
+    {
+        // Derived from 3b LearningExplanationModels and LearningExplanationPolicy, not Swift execution.
+        var input = new LearningExplanationInput("bank", "bank", null, VocabularyEntryKind.Word,
+            "river bank", [new(6, 4)], LearningExplanationContext.Unknown, "receipt");
+        Assert.True(LearningExplanationPolicy.IsValid(input));
+        var json = JsonSerializer.Serialize(input);
+        Assert.DoesNotContain("\"language\"", json); Assert.Contains("\"contextKind\":\"unknown\"", json);
+        Assert.Equal(input, JsonSerializer.Deserialize<LearningExplanationInput>(json));
+        var prompt = LearningExplanationPolicy.CurrentPrompt(input, LearningLanguage.Chinese, 8192, 1024);
+        Assert.DoesNotContain("targetLanguage", prompt); Assert.DoesNotContain("receipt", prompt);
+        Assert.Contains("The context boundaries are unverified.", prompt);
+        Assert.Contains("\"contextCompleteness\":\"unknown\"", prompt);
+    }
+
+    [Fact]
+    public void CanonicalExplanationRetainsSourceDateBitsAcrossLiveProjection()
+    {
+        var input = new LearningExplanationInput("bank", "bank", null, VocabularyEntryKind.Word, "bank", [new(0, 4)], LearningExplanationContext.Unknown);
+        var live = new LearningExplanationRecord(Guid.NewGuid(), input, LearningLanguage.Chinese, new("meaning", "details"), "model", DateTimeOffset.UtcNow);
+        var exact = new Cotabby.Core.Vocabulary.Frozen.SourceDate(123.123456789123);
+        var stored = Cotabby.Core.Vocabulary.Frozen.CanonicalWritingPolicy.FromLive(live) with { CreatedAt = exact };
+        var projected = Cotabby.Core.Vocabulary.Frozen.CanonicalWritingPolicy.ToLive(stored);
+        Assert.Equal(exact, Cotabby.Core.Vocabulary.Frozen.CanonicalWritingPolicy.FromLive(projected).CreatedAt);
+        Assert.DoesNotContain("CanonicalCreatedAt", JsonSerializer.Serialize(projected));
+    }
+
     [Theory]
     [InlineData(0xD800)]
     [InlineData(0xDC00)]

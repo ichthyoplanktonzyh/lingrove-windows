@@ -101,7 +101,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
         _add.Click += (_, _) => LastOperation = AddAsync(); _import.Click += (_, _) => LastOperation = ImportAsync();
         InputBindings.Add(new KeyBinding(new Relay(() => { if (_add.IsEnabled) LastOperation = AddAsync(); }), Key.N, ModifierKeys.Control));
         InputBindings.Add(new KeyBinding(new Relay(() => { if (_import.IsEnabled) LastOperation = ImportAsync(); }), Key.I, ModifierKeys.Control | ModifierKeys.Shift));
-        _session.Changed += Present; Loaded += (_, _) => { if (!_started && !_retiring) { _started = true; LastOperation = Track(_session.LoadAsync()); } }; IsVisibleChanged += (_, _) => { if (IsVisible && _started && !_retiring) _session.Refresh(); }; Closing += OnClosing; Closed += (_, _) => _session.Dispose(); Present();
+        _session.Changed += Present; Loaded += (_, _) => { if (!_started && !_retiring) { _started = true; LastOperation = Track(_session.LoadAsync()); } }; IsVisibleChanged += (_, _) => { if (IsVisible && _started && !_retiring) { _session.Refresh(); _learningDictionary?.ResumeExpanded(); if (_learning is not null) _ = _learning.Resume(); } else if (!IsVisible) CancelLearning(); }; Closing += OnClosing; Closed += (_, _) => _session.Dispose(); Present();
     }
     internal void AttachClipboard(IVocabularyClipboardImageTransfer clipboard) => _clipboard = clipboard;
     internal void SetPreferredLanguages(IReadOnlyList<LearningLanguage> languages) { _session.PreferredLanguages = Array.AsReadOnly(languages.ToArray()); _session.Refresh(); }
@@ -122,7 +122,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
     {
         if (_allowClose) return;
         CancelCanonicalBackupPresentation();
-        if (!_hideOnClose && !_retiring && (_reviewSection is not null || _backupCompletion is not null || _detailImages.Count != 0)) { e.Cancel = true; _ = RetireAsync(); return; }
+        if (!_hideOnClose && !_retiring && (_reviewSection is not null || _learning is not null || _backupCompletion is not null || _detailImages.Count != 0)) { e.Cancel = true; _ = RetireAsync(); return; }
         if (_hideOnClose || _retiring) { e.Cancel = true; if (!_retiring) { if (_modalDone is null) Hide(); else _hideRequested = true; } }
     }
     internal async Task RetireAsync()
@@ -132,6 +132,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
         try { if (_canonicalExport is { } export) await export.RetireAsync(); } catch (Exception error) { retirementErrors.Add(error); }
         try { await RetireCanonicalBackupAsync(); } catch (Exception error) { retirementErrors.Add(error); }
         try { await RetireReviewAsync(); } catch (Exception error) { retirementErrors.Add(error); }
+        try { await RetireLearningAsync(); } catch (Exception error) { retirementErrors.Add(error); }
         CloseActionMenus();
         _add.IsEnabled = _import.IsEnabled = false;
         if (_inputWindow is VocabularyEntryCreationWindow creation) await creation.RetireAsync();
@@ -231,6 +232,11 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
             _add.IsEnabled = _import.IsEnabled = !_session.Loading && _session.Failure is null; _categoryToggle.Visibility = Visibility.Collapsed; _newMeaning.Visibility = _session.MeaningMode ? Visibility.Visible : Visibility.Collapsed; _newMeaning.IsEnabled = CanSemantic && _store is ICanonicalVocabularyMeaningOrganizationStore; _categories.AllowEditing = CanSemantic;
             _sort.Visibility = _density.Visibility = _graphMode ? Visibility.Collapsed : Visibility.Visible;
             foreach (var image in _detailImages) _ = Track(image.RetireAsync()); _detailImages.Clear();
+            if (_graphMode || _session.Loading || _session.Failure is not null || _session.Selection is not { } selected
+                || _session.MeaningMode && _session.Destination?.Kind != VocabularyMeaningDestinationKind.Sense
+                || _session.Entries.FirstOrDefault(e => e.Id == selected.EntryId) is not { } learningEntry
+                || learningEntry.Senses.FirstOrDefault(x => x.Id == selected.SenseId) is not { } learningSense) SelectLearning(null, null);
+            else SelectLearning(learningEntry, learningSense);
             _content.Children.Clear(); _content.ColumnDefinitions.Clear();
             if (_session.Loading) { _content.Children.Add(State("Loading vocabulary…")); return; }
             if (_session.Failure is { } failure) { _content.Children.Add(State("Could not load vocabulary\n" + failure, error: true)); return; }
@@ -348,6 +354,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
     private void SenseDetail(StackPanel panel, F.VocabularyEntry entry, F.VocabularySense sense)
     {
         Heading(panel, entry.Expression); panel.Children.Add(Caption(LanguageLabel(entry.Language) + "  ·  " + entry.Kind));
+        if (sense.SupportsGeneralExplanation) AddLearningRow(panel, entry, sense, null);
         if (SenseTitle(sense).Length > 0) panel.Children.Add(Paragraph(SenseTitle(sense), 18));
                 foreach (var meaning in sense.StandaloneMeanings.Concat(sense.AlternateMeanings)) if (meaning.Text.Length > 0) panel.Children.Add(Caption(meaning.Text + (meaning.Language is { } language ? "  ·  " + language.Name() : "")));
         if (sense.Content is { Count: > 0 })
@@ -361,7 +368,8 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
         if (sense.Tags.Count > 0) panel.Children.Add(Caption(string.Join("  ·  ", sense.Tags)));
         AddSenseMappingSection(panel, new(entry.Id, sense.Id));
         RenderReviewSection(panel, entry, sense);
-        if (sense.Examples.Count > 0) { Section(panel, "Examples"); foreach (var example in sense.Examples) { panel.Children.Add(Paragraph(example.Text)); if (example.Translation.Length > 0) panel.Children.Add(Caption(example.Translation)); foreach (var translation in example.TranslationVariants) panel.Children.Add(Caption(translation.Text)); panel.Children.Add(MoveUsageButton(entry, sense, example)); } }
+        if (sense.Examples.Count > 0) { Section(panel, "Examples"); foreach (var example in sense.Examples) { panel.Children.Add(Paragraph(example.Text)); if (example.Translation.Length > 0) panel.Children.Add(Caption(example.Translation)); foreach (var translation in example.TranslationVariants) panel.Children.Add(Caption(translation.Text)); AddLearningRow(panel, entry, sense, example); panel.Children.Add(MoveUsageButton(entry, sense, example)); } }
+        AddLearningDictionary(panel, entry, sense);
         if (_senseMutating) panel.Children.Add(Caption("Updating vocabulary…"));
         if (_actionError is { } error) panel.Children.Add(VocabularyNotebookTheme.Brush(new TextBlock { Name = "frozenSenseActionError", Text = error, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 12, 0, 0) }, TextBlock.ForegroundProperty, "OrangeBrush"));
         var actions = new WrapPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 18, 0, 0) };

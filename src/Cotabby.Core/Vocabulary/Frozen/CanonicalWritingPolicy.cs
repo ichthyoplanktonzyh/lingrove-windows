@@ -36,17 +36,19 @@ public static class CanonicalWritingPolicy
     public static R.LearningExplanationInput FromLive(L.LearningExplanationInput value) => new(value.Target, value.DictionaryForm,
         value.Language, value.Kind, value.Context, value.Ranges, value.ContextKind switch
         { L.LearningExplanationContext.Sentence => R.LearningExplanationContext.Sentence, L.LearningExplanationContext.Fragment => R.LearningExplanationContext.Fragment,
-            L.LearningExplanationContext.None => R.LearningExplanationContext.None, _ => throw Invalid() }, value.OccurrenceIdentity);
+            L.LearningExplanationContext.None => R.LearningExplanationContext.None, L.LearningExplanationContext.Unknown => R.LearningExplanationContext.Unknown, _ => throw Invalid() }, value.OccurrenceIdentity);
     public static LearningExplanationRecord FromLive(L.LearningExplanationRecord value) => new(value.Id, FromLive(value.Input), value.Language,
-        value.Result, value.Model, SourceDate.FromWindows(value.CreatedAt));
+        value.Result, value.Model, value.CanonicalCreatedAt is { } source && source.TryToWindows(out var projected, out _) && projected == value.CreatedAt
+            ? source : SourceDate.FromWindows(value.CreatedAt));
     public static L.LearningExplanationRecord ToLive(LearningExplanationRecord value)
     {
-        if (value.Input.Language is not { } language || !value.CreatedAt.TryToWindows(out var created, out _)) throw Invalid();
+        if (!value.CreatedAt.TryToWindows(out var created, out _)) throw Invalid();
+        var language = value.Input.Language;
         var input = new L.LearningExplanationInput(value.Input.Target, value.Input.DictionaryForm, language, value.Input.Kind,
             value.Input.Context, value.Input.Ranges, value.Input.ContextKind switch
             { R.LearningExplanationContext.Sentence => L.LearningExplanationContext.Sentence, R.LearningExplanationContext.Fragment => L.LearningExplanationContext.Fragment,
-                R.LearningExplanationContext.None => L.LearningExplanationContext.None, _ => throw Invalid() }, value.Input.OccurrenceIdentity);
-        return new(value.Id, input, value.Language, value.Result, value.Model, created);
+                R.LearningExplanationContext.None => L.LearningExplanationContext.None, R.LearningExplanationContext.Unknown => L.LearningExplanationContext.Unknown, _ => throw Invalid() }, value.Input.OccurrenceIdentity);
+        return new(value.Id, input, value.Language, value.Result, value.Model, created) { CanonicalCreatedAt = value.CreatedAt };
     }
     private static string EntryKey(CanonicalWritingCapture capture) => VocabularyArchiveValidation.EntryKey(new VocabularyEntry(Guid.Empty,
         capture.Expression, capture.DictionaryForm, capture.Language, capture.Kind, [], new SourceDate(0), new SourceDate(0)));

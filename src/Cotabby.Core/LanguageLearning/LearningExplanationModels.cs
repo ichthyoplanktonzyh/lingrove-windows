@@ -10,6 +10,7 @@ public enum LearningExplanationContext
 {
     [JsonStringEnumMemberName("sentence")] Sentence,
     [JsonStringEnumMemberName("fragment")] Fragment,
+    [JsonStringEnumMemberName("unknown")] Unknown,
     [JsonStringEnumMemberName("none")] None,
 }
 
@@ -21,7 +22,7 @@ public enum LearningExplanationContext
 public sealed record LearningExplanationInput
 {
     [JsonConstructor]
-    public LearningExplanationInput(string target, string dictionaryForm, LearningLanguage language,
+    public LearningExplanationInput(string target, string dictionaryForm, LearningLanguage? language,
         VocabularyEntryKind kind, string context, IReadOnlyList<VocabularyTextRange> ranges,
         LearningExplanationContext contextKind = LearningExplanationContext.Fragment, string? occurrenceIdentity = null)
     {
@@ -32,7 +33,7 @@ public sealed record LearningExplanationInput
     }
     [JsonPropertyName("target")] public string Target { get; }
     [JsonPropertyName("dictionaryForm")] public string DictionaryForm { get; }
-    [JsonPropertyName("language")] public LearningLanguage Language { get; }
+    [JsonPropertyName("language"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public LearningLanguage? Language { get; }
     [JsonPropertyName("kind")] public VocabularyEntryKind Kind { get; }
     [JsonPropertyName("context")] public string Context { get; }
     [JsonPropertyName("ranges")] public IReadOnlyList<VocabularyTextRange> Ranges { get; }

@@ -25,8 +25,10 @@ internal sealed class FrozenVocabularyWindowController : IAsyncDisposable
     private Action? _configureReview;
     private IVocabularyGraphPreferences? _graphPreferences;
     private IVocabularyClipboardImageTransfer? _clipboard;
+    private (ILearningExplanationGenerating Service, ILearningDictionaryProviding Dictionary, ILearningLexicalText Lexical,
+        Func<string, IReadOnlyList<LearningDictionaryWord>> UnknownWords, Action Configure)? _learning;
     private Task? _retirement;
-    private bool _closed;
+    private bool _closed, _learningAttached;
     internal FrozenVocabularyWindowController(IVocabularyEntryImportStore store, Dispatcher dispatcher,
         IVocabularyWordListReader reader, IVocabularyNotebookListPreferences listPreferences, IReadOnlyList<LearningLanguage>? preferredLanguages = null)
     { _store = store; _dispatcher = dispatcher; _reader = reader; _preferences = listPreferences; _languages = Array.AsReadOnly((preferredLanguages ?? []).ToArray()); }
@@ -37,6 +39,7 @@ internal sealed class FrozenVocabularyWindowController : IAsyncDisposable
         if (!_dispatcher.CheckAccess()) { if (!_dispatcher.HasShutdownStarted) _dispatcher.BeginInvoke(() => Show(selection)); return; }
         lock (_gate) if (_closed) return;
         _window ??= new FrozenVocabularyNotebookWindow(_store, _reader, _languages, listPreferences: _preferences, hideOnClose: true);
+        if (_learning is { } learning && !_learningAttached) ApplyLearning(learning);
         if (_clipboard is { } clipboard) _window.AttachClipboard(clipboard);
         if (_graphPreferences is { } graph) _window.AttachGraphPreferences(graph);
         if (_reviewFeature is { } review && _configureReview is { } configure) _window.AttachReviewFeature(review, configure);
@@ -44,6 +47,17 @@ internal sealed class FrozenVocabularyWindowController : IAsyncDisposable
         if (_window.WindowState == WindowState.Minimized) _window.WindowState = WindowState.Normal;
         _window.Activate();
     }
+    internal void AttachLearning(ILearningExplanationGenerating service, ILearningDictionaryProviding dictionary,
+        ILearningLexicalText lexical, Func<string, IReadOnlyList<LearningDictionaryWord>> unknownWords, Action configure)
+    {
+        lock (_gate) { if (_closed) return; if (_learning is not null) throw new InvalidOperationException("Learning is already attached.");
+            _learning = (service, dictionary, lexical, unknownWords, configure); }
+        if (!_dispatcher.CheckAccess()) { if (!_dispatcher.HasShutdownStarted) _dispatcher.BeginInvoke(() => { if (_learning is { } value) ApplyLearning(value); }); return; }
+        if (_learning is { } value) ApplyLearning(value);
+    }
+    private void ApplyLearning((ILearningExplanationGenerating Service, ILearningDictionaryProviding Dictionary, ILearningLexicalText Lexical,
+        Func<string, IReadOnlyList<LearningDictionaryWord>> UnknownWords, Action Configure) value)
+    { if (!_closed && !_learningAttached && _window is { } window) { window.AttachLearning(value.Service, value.Dictionary, value.Lexical, value.UnknownWords, value.Configure); _learningAttached = true; } }
     internal void AttachClipboard(IVocabularyClipboardImageTransfer clipboard)
     {
         ArgumentNullException.ThrowIfNull(clipboard); lock (_gate) { if (_closed) return; if (_clipboard is not null && !ReferenceEquals(_clipboard, clipboard)) throw new InvalidOperationException("Clipboard is already attached."); _clipboard = clipboard; }

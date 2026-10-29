@@ -38,7 +38,7 @@ public sealed class VocabularyCaptureParityTests
         AssertLiteral(projection.GetProperty("target"), input.Target);
         AssertLiteral(projection.GetProperty("dictionaryForm"), input.DictionaryForm);
         AssertLiteral(projection.GetProperty("context"), input.Context);
-        Assert.Equal(projection.GetProperty("language").GetString(), input.Language.Code());
+        Assert.Equal(projection.GetProperty("language").GetString(), input.Language?.Code());
         Assert.Equal(JsonSerializer.Deserialize<VocabularyEntryKind>(projection.GetProperty("kind").GetRawText()), input.Kind);
         Assert.Equal(JsonSerializer.Deserialize<LearningExplanationContext>(projection.GetProperty("contextKind").GetRawText()), input.ContextKind);
         Assert.Equal(projection.GetProperty("ranges").EnumerateArray().Select(range => new VocabularyTextRange(

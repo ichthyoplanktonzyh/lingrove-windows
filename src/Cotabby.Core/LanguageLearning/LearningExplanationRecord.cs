@@ -10,6 +10,10 @@ namespace Cotabby.Core.LanguageLearning;
 public sealed record LearningExplanationRecord(Guid Id, LearningExplanationInput Input,
     LearningLanguage Language, LearningExplanationResult Result, string Model, DateTimeOffset CreatedAt)
 {
+    // A canonical annotation may contain more date precision than DateTimeOffset can express.
+    // Retain that original evidence for a later canonical save without changing portable JSON.
+    [System.Text.Json.Serialization.JsonIgnore]
+    internal Cotabby.Core.Vocabulary.Frozen.SourceDate? CanonicalCreatedAt { get; init; }
     public bool Equals(LearningExplanationRecord? other) => other is not null && Id == other.Id && Input == other.Input
         && Language == other.Language && Result == other.Result && CanonicalStringComparer.Instance.Equals(Model, other.Model)
         && CreatedAt == other.CreatedAt;

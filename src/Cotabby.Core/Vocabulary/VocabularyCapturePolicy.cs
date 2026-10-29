@@ -75,7 +75,7 @@ public static class VocabularyCapturePolicy
     // Swift's closed enums cannot contain cast integers; check the same nested capture values
     // .NET callers can construct. This is not full explanation-content or notebook validation.
     private static bool SupportedRecordEnums(LearningExplanationRecord record) => record is { Input: not null, Result: not null }
-        && Enum.IsDefined(record.Language) && Enum.IsDefined(record.Input.Language) && Enum.IsDefined(record.Input.Kind)
+        && Enum.IsDefined(record.Language) && (record.Input.Language is not { } language || Enum.IsDefined(language)) && Enum.IsDefined(record.Input.Kind)
         && Enum.IsDefined(record.Input.ContextKind);
     private static string Key(IReadOnlyList<string> parts)
     {

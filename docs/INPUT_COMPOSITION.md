@@ -24,7 +24,8 @@ TextEdit pattern and successful separate composition/finalization registrations,
 composition on both sides of the bounded text read. A callback advances the receipt without reading
 its payload, and immediately invalidates the tracker's current snapshot. Focus changes, stop,
 timeouts and subscription retirement invalidate the epoch. Concurrent older captures cannot
-replace a newer one. Missing patterns, failed calls, changed observations and timed-out reads remain
+replace a newer one. Pending observations are bounded and timed-out queued work is retired before it
+can query another field. Missing patterns, failed calls, changed observations and timed-out reads remain
 Unknown. The focus owner never asks a secure element for its text or composition metadata.
 
 This implementation depends on the provider honoring TextEdit's reporting contract. It does not
@@ -58,7 +59,8 @@ zero warnings/errors. These are policy/build checks, not native IME acceptance.
 The native callback and serialized owner tests run without reading the foreground field or typing
 into any application. They exercise forced-GC callback retention, retired and post-stop callbacks,
 and serialized operation ordering after a bounded wait; they do not simulate a compliant TextEdit
-provider or validate real IME events. Physical Windows host, TSF and browser acceptance remains open.
+provider or validate real IME events. A separate test verifies queued timed-out requests retire
+before any native field query. Physical Windows host, TSF and browser acceptance remains open.
 The reconciliation/insertion filter passed 65 tests; the focused native callback and insertion
 adapter filter passed 10. A full `dotnet build Cotabby.sln --configuration Release --no-restore`
 passed with zero warnings/errors after the reconciliation and ordering adjustments.

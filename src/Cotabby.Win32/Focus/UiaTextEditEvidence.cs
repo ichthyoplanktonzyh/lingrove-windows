@@ -29,6 +29,8 @@ internal sealed unsafe class UiaTextEditEvidence : IDisposable
     private int _pid;
     private long _focusEpoch;
     private long _subscriptionEpoch;
+    private int _pendingObservations;
+    private int _retirementQueued;
     private volatile bool _disposed;
 
     public UiaTextEditEvidence(Action changed)
@@ -63,17 +65,29 @@ internal sealed unsafe class UiaTextEditEvidence : IDisposable
     public (InputCompositionState State, long Version) Observe(int pid, string field, long focusEpoch)
     {
         if (_disposed || string.IsNullOrEmpty(field)) return default;
+        if (Interlocked.Increment(ref _pendingObservations) > 16)
+        {
+            Interlocked.Decrement(ref _pendingObservations);
+            Invalidate();
+            _changed();
+            return default;
+        }
+        long requestedEpoch = Interlocked.Read(ref _epoch);
         var completion = new TaskCompletionSource<(InputCompositionState, long)>(TaskCreationOptions.RunContinuationsAsynchronously);
+        bool queued = false;
         try
         {
             _queue.Add(() =>
             {
-                try { completion.TrySetResult(ObserveCore(pid, field, focusEpoch)); }
+                try { completion.TrySetResult(requestedEpoch == Interlocked.Read(ref _epoch) ? ObserveCore(pid, field, focusEpoch) : default); }
                 catch { completion.TrySetResult(default); }
+                finally { Interlocked.Decrement(ref _pendingObservations); }
             });
+            queued = true;
             if (completion.Task.Wait(TimeSpan.FromMilliseconds(500))) return completion.Task.Result;
         }
         catch (InvalidOperationException) { }
+        finally { if (!queued) Interlocked.Decrement(ref _pendingObservations); }
         // A timed-out operation may still complete; invalidate every receipt it could publish.
         Invalidate();
         _changed();
@@ -88,9 +102,9 @@ internal sealed unsafe class UiaTextEditEvidence : IDisposable
 
     public void RetireAsync()
     {
-        if (_disposed) return;
-        try { _queue.Add(Retire); }
-        catch (InvalidOperationException) { }
+        if (_disposed || Interlocked.Exchange(ref _retirementQueued, 1) != 0) return;
+        try { _queue.Add(() => { Interlocked.Exchange(ref _retirementQueued, 0); Retire(); }); }
+        catch (InvalidOperationException) { Interlocked.Exchange(ref _retirementQueued, 0); }
     }
 
     private (InputCompositionState, long) ObserveCore(int pid, string field, long focusEpoch)

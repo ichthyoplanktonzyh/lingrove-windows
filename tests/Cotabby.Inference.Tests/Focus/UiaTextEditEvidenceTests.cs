@@ -24,6 +24,26 @@ public sealed class UiaTextEditEvidenceTests
     }
 
     [Fact]
+    public async Task TimedOutQueuedReadsAreRetiredBeforeAnyNativeFieldQuery()
+    {
+        if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;
+        using var evidence = new UiaTextEditEvidence(() => { });
+        using var release = new ManualResetEventSlim();
+        Assert.False(evidence.Execute(() => release.Wait()));
+        try
+        {
+            var reads = Enumerable.Range(0, 17).Select(_ => Task.Run(() => evidence.Observe(123, "test-only", 1))).ToArray();
+            var results = await Task.WhenAll(reads);
+            Assert.All(results, result => Assert.Equal((Cotabby.Core.Focus.InputCompositionState.Unknown, 0L), result));
+        }
+        finally
+        {
+            // Every read retires its epoch before the owner can leave the blocker.
+            release.Set();
+        }
+    }
+
+    [Fact]
     public void NativeCallbackRetainsContextAndIgnoresRetiredEpoch()
     {
         if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;

@@ -72,8 +72,9 @@ internal sealed partial class AnkiReviewController(AnkiReviewSettings settings, 
         catch (Exception error) { ModelFields = []; ConnectionMessage = error.Message; Changed(); }
     }
     internal async Task<ReviewOperationScope> OperationScopeAsync(CancellationToken cancellationToken = default)
+    { RequireNotebook(); return await OperationScopeCoreAsync(cancellationToken); }
+    private async Task<ReviewOperationScope> OperationScopeCoreAsync(CancellationToken cancellationToken)
     {
-        RequireNotebook();
         var connection = Settings.Connection(); string model = Settings.Model; var mapping = Settings.EffectiveMapping;
         string? speechId = _speechId(); string deck = Settings.Deck; bool hadSavedDeck = Settings.HasSavedDeck;
         bool recognition = Settings.DefaultRecognition, gap = Settings.DefaultGap;
@@ -89,8 +90,9 @@ internal sealed partial class AnkiReviewController(AnkiReviewSettings settings, 
         catch { return false; }
     }
     internal async Task VerifyAsync(ReviewOperationScope scope, CancellationToken cancellationToken = default)
+    { RequireNotebook(); await VerifyCoreAsync(scope, cancellationToken); }
+    private async Task VerifyCoreAsync(ReviewOperationScope scope, CancellationToken cancellationToken)
     {
-        RequireNotebook();
         if (!Matches(scope) || !Same(await ProfileAsync(scope.Connection, cancellationToken), scope.Profile) || !Matches(scope)) throw Conflict();
     }
     internal void InvalidateConnection() { Catalog = null; ModelFields = []; ConnectionMessage = null; Changed(); }
@@ -169,8 +171,10 @@ internal sealed partial class AnkiReviewController(AnkiReviewSettings settings, 
     }
     internal async Task<IReadOnlyList<string>> FieldsAsync(string model, AnkiConnection connection, bool create,
         string? expectedProfile = null, CancellationToken cancellationToken = default)
+    { if (create) RequireNotebook(); return await FieldsCoreAsync(model, connection, create, expectedProfile, cancellationToken); }
+    private async Task<IReadOnlyList<string>> FieldsCoreAsync(string model, AnkiConnection connection, bool create,
+        string? expectedProfile, CancellationToken cancellationToken, Func<Task>? beforeWrite = null)
     {
-        if (create) RequireNotebook();
         if (Same(model, ReviewLayoutPolicy.Model))
         {
             var names = Strings(await CallAsync("modelNames", Params(), connection, cancellationToken));
@@ -178,6 +182,7 @@ internal sealed partial class AnkiReviewController(AnkiReviewSettings settings, 
             {
                 if (!create) return System.Array.AsReadOnly(new[] { "LingroveID", "Front", "Back" });
                 if (expectedProfile is not null && (!Settings.Connection().Equals(connection) || !Same(await ProfileAsync(connection, cancellationToken), expectedProfile))) throw Conflict();
+                if (beforeWrite is not null) await beforeWrite();
                 _ = await CallAsync("createModel", Params(("modelName", new AnkiValue.Text(model)), ("inOrderFields", AnkiValue.List(["LingroveID", "Front", "Back"])),
                     ("css", new AnkiValue.Text(ReviewLayoutPolicy.Css)), ("isCloze", new AnkiValue.Boolean(false)),
                     ("cardTemplates", new AnkiValue.Sequence([AnkiValue.Strings(new Dictionary<string, string> { ["Name"] = "Card", ["Front"] = "{{Front}}", ["Back"] = "{{Back}}" })]))), connection, cancellationToken);
@@ -190,6 +195,7 @@ internal sealed partial class AnkiReviewController(AnkiReviewSettings settings, 
             {
                 if (!create) return ReviewFieldNames();
                 if (expectedProfile is not null && (!Settings.Connection().Equals(connection) || !Same(await ProfileAsync(connection, cancellationToken), expectedProfile))) throw Conflict();
+                if (beforeWrite is not null) await beforeWrite();
                 _ = await CallAsync("createModel", Params(("modelName", new AnkiValue.Text(model)), ("inOrderFields", AnkiValue.List(ReviewFieldNames())),
                     ("css", new AnkiValue.Text(AnkiNoteTemplate.Css)), ("isCloze", new AnkiValue.Boolean(false)),
                     ("cardTemplates", new AnkiValue.Sequence([Template("Recognition", AnkiNoteTemplate.RecognitionFront, AnkiNoteTemplate.RecognitionBack), Template("Gap", AnkiNoteTemplate.GapFront, AnkiNoteTemplate.GapBack)]))), connection, cancellationToken);
@@ -198,8 +204,9 @@ internal sealed partial class AnkiReviewController(AnkiReviewSettings settings, 
         return Strings(await CallAsync("modelFieldNames", Params(("modelName", new AnkiValue.Text(model))), connection, cancellationToken));
     }
     internal async Task<AnkiRemoteNote?> NoteAsync(long id, AnkiConnection connection, CancellationToken cancellationToken = default)
+    { RequireNotebook(); return await NoteCoreAsync(id, connection, cancellationToken); }
+    private async Task<AnkiRemoteNote?> NoteCoreAsync(long id, AnkiConnection connection, CancellationToken cancellationToken)
     {
-        RequireNotebook();
         var result = await CallAsync("notesInfo", Params(("notes", new AnkiValue.Sequence([new AnkiValue.Number(id)]))), connection, cancellationToken);
         if (result.Array is not { Count: 1 } rows || rows[0].Object is not { } row) throw Invalid();
         if (row.Count == 0) return null;
@@ -223,6 +230,10 @@ internal sealed partial class AnkiReviewController(AnkiReviewSettings settings, 
     internal void Begin(Guid id, Guid? cardId = null)
     {
         RequireNotebook();
+        BeginCore(id, cardId);
+    }
+    private void BeginCore(Guid id, Guid? cardId)
+    {
         if (SendingSenseId is not null || UpdatingTemplate) throw new AnkiReviewException("Wait for the current Anki operation to finish.");
         Guid key = cardId ?? id; SendingSenseId = id; SendingReviewId = key; _failures.Remove(key); Changed();
     }

@@ -6,6 +6,16 @@ namespace Cotabby.App.Tests.Settings;
 public sealed class ModelAssignmentSettingsTests
 {
     [Fact]
+    public void SetupReceiptAndAppliedStateRoundTripWithoutReplacingOtherProfiles()
+    {
+        var settings = new AppSettings { RecommendedSetupApplied = true, RecommendedCompletionTarget = "tabby-2-base", RecommendedCompletionPrevious = "custom:old.gguf", LearningBackend = LearningTranslationBackend.Endpoint, LearningEndpointModel = "existing" };
+        var restored = SettingsStore.Parse(SettingsStore.Serialize(settings));
+        Assert.True(restored.RecommendedSetupApplied); Assert.Equal("tabby-2-base", restored.RecommendedCompletionTarget);
+        Assert.Equal("custom:old.gguf", restored.RecommendedCompletionPrevious); Assert.Equal("existing", restored.LearningEndpointModel);
+        Assert.Equal(LearningTranslationBackend.Endpoint, restored.EffectiveLearningBackend);
+        Assert.Equal("tabby-2-base", restored.ResetGeneralPreferences(0).RecommendedCompletionTarget);
+    }
+    [Fact]
     public void ProtectionIncludesRetainedProfilesSpeechAndResidentCompletionWithoutErasingAssignments()
     {
         var settings = SettingsStore.Parse("""

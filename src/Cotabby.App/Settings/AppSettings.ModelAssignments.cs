@@ -7,6 +7,9 @@ namespace Cotabby.App.Settings;
 /// <summary>Shared file-task assignments live in the existing settings owner, independent of runtimes.</summary>
 public sealed partial class AppSettings
 {
+    public bool RecommendedSetupApplied { get; set; }
+    public string? RecommendedCompletionTarget { get; set; }
+    public string? RecommendedCompletionPrevious { get; set; }
     [JsonPropertyName("lingroveLocalModelTaskAssignments")]
     public Dictionary<string, string[]> LocalModelTaskAssignmentsValue { get; set; } = new(StringComparer.Ordinal);
     [JsonPropertyName("lingroveLocalModelSources")]

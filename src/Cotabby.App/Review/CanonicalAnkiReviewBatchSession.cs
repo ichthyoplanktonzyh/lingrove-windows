@@ -73,6 +73,13 @@ internal sealed class CanonicalAnkiReviewBatchSession : INotifyPropertyChanged
             var source = await ResolveAsync(item, linked.Token); if (source is null) { int index = Array.FindIndex(_items, value => value.Id == id); if (index >= 0) Replace(index, _items[index] with { Status = ReviewBatchStatus.Unavailable }); return; }
             _baselines[id] = (source.Value.Sense, source.Value.Entry.Expression);
             result = await CanonicalAnkiReviewSession.OpenAsync(_feature.Controller, _store, source.Value.Entry.Id, source.Value.Sense.Id, card, linked.Token);
+            var opened = Resolve(result.Snapshot, item.Selection, card);
+            if (opened is null)
+            {
+                result.Dispose(); result = null; _baselines.Remove(id);
+                int index = Array.FindIndex(_items, value => value.Id == id); if (index >= 0) Replace(index, _items[index] with { Status = ReviewBatchStatus.Unavailable });
+            }
+            else _baselines[id] = (opened.Value.Sense, opened.Value.Entry.Expression);
         });
         return result;
     }
@@ -120,6 +127,7 @@ internal sealed class CanonicalAnkiReviewBatchSession : INotifyPropertyChanged
                 token.ThrowIfCancellationRequested();
                 var source = await ResolveAsync(_items[i], token); if (source is null) { Replace(i, _items[i] with { Status = ReviewBatchStatus.Unavailable }); continue; }
                 using var session = await CanonicalAnkiReviewSession.OpenAsync(_feature.Controller, _store, source.Value.Entry.Id, source.Value.Sense.Id, _items[i].CardId, token);
+                if (Resolve(session.Snapshot, _items[i].Selection, _items[i].CardId) is null) { Replace(i, _items[i] with { Status = ReviewBatchStatus.Unavailable }); continue; }
                 await session.LoadMetadataAsync(token); token.ThrowIfCancellationRequested();
                 if (FoundationText.TrimWhitespaceAndNewlines(deck).Length > 0 && session.Binding?.NoteId is null) session.Deck = deck;
                 if (await session.SaveAsync(token))
@@ -136,6 +144,7 @@ internal sealed class CanonicalAnkiReviewBatchSession : INotifyPropertyChanged
                 for (int remaining = i; remaining < _items.Length; remaining++) Replace(remaining, _items[remaining] with { Status = ReviewBatchStatus.Cancelled, Message = null });
                 return;
             }
+            catch (Exception error) { Replace(i, _items[i] with { Status = ReviewBatchStatus.Failed, Message = error.Message }); }
         }
     }
     private async Task RunAsync(ReviewOperationScope scope, Guid? only, CancellationToken token)
@@ -145,7 +154,9 @@ internal sealed class CanonicalAnkiReviewBatchSession : INotifyPropertyChanged
         var decks = AnkiReviewController.Strings(await _feature.Controller.CallAsync("deckNames", new Dictionary<string, AnkiValue>(), scope.Connection, token));
         string defaultDeck = !scope.HadSavedDeck && !decks.Contains(scope.DefaultDeck, CanonicalStringComparer.Instance) ? decks.FirstOrDefault() ?? scope.DefaultDeck : scope.DefaultDeck;
         await _feature.Controller.CanonicalVerifyAsync(scope, token);
-        var seen = _items.Where(item => item.Status == ReviewBatchStatus.Synced && item.CardId is not null).Select(item => item.CardId!.Value).ToHashSet();
+        var seen = new HashSet<Guid>();
+        foreach (var item in _items.Where(item => item.Status == ReviewBatchStatus.Synced && item.CardId is not null))
+            if (await ResolveAsync(item, token) is not null) seen.Add(item.CardId!.Value);
         for (int i = 0; i < _items.Length; i++)
         {
             if (only is { } id && _items[i].Id != id || _items[i].Status is ReviewBatchStatus.Synced or ReviewBatchStatus.Skipped) continue;
@@ -153,14 +164,21 @@ internal sealed class CanonicalAnkiReviewBatchSession : INotifyPropertyChanged
             if (source is null) { Replace(i, _items[i] with { Status = ReviewBatchStatus.Unavailable }); continue; }
             Guid cardId = _items[i].CardId!.Value; if (!seen.Add(cardId)) { Replace(i, _items[i] with { Status = ReviewBatchStatus.Skipped }); continue; }
             await _feature.Controller.CanonicalVerifyAsync(scope, token); Replace(i, _items[i] with { Status = ReviewBatchStatus.Sending, Message = null });
-            using var session = await CanonicalAnkiReviewSession.OpenAsync(_feature.Controller, _store, source.Value.Entry.Id, source.Value.Sense.Id, cardId, token);
-            var saved = source.Value.Sense.ReviewCards!.First(card => card.Plan.Id == cardId);
-            if (saved.ActiveBinding is null && saved.Plan.Deck is null) session.Deck = defaultDeck;
-            await session.LoadMetadataAsync(token); token.ThrowIfCancellationRequested();
-            if (await session.ValidationMessageAsync(token) is { } issue) { Replace(i, _items[i] with { Status = ReviewBatchStatus.Attention, Message = issue }); continue; }
-            bool success = await session.SendAsync(expectedScope: scope, cancellationToken: token);
-            Replace(i, _items[i] with { Status = success ? ReviewBatchStatus.Synced : token.IsCancellationRequested ? ReviewBatchStatus.Cancelled : session.Conflicts.Count > 0 ? ReviewBatchStatus.Attention : ReviewBatchStatus.Failed,
-                Message = success || token.IsCancellationRequested ? null : session.Message ?? "Resolve this item's Anki field changes in preparation." });
+            try
+            {
+                using var session = await CanonicalAnkiReviewSession.OpenAsync(_feature.Controller, _store, source.Value.Entry.Id, source.Value.Sense.Id, cardId, token);
+                var opened = Resolve(session.Snapshot, _items[i].Selection, cardId);
+                if (opened is null) { Replace(i, _items[i] with { Status = ReviewBatchStatus.Unavailable }); continue; }
+                var saved = opened.Value.Sense.ReviewCards!.First(card => card.Plan.Id == cardId);
+                if (saved.ActiveBinding is null && saved.Plan.Deck is null) session.Deck = defaultDeck;
+                await session.LoadMetadataAsync(token); token.ThrowIfCancellationRequested();
+                if (await session.ValidationMessageAsync(token) is { } issue) { Replace(i, _items[i] with { Status = ReviewBatchStatus.Attention, Message = issue }); continue; }
+                bool success = await session.SendAsync(expectedScope: scope, cancellationToken: token);
+                Replace(i, _items[i] with { Status = success ? ReviewBatchStatus.Synced : token.IsCancellationRequested ? ReviewBatchStatus.Cancelled : session.Conflicts.Count > 0 ? ReviewBatchStatus.Attention : ReviewBatchStatus.Failed,
+                    Message = success || token.IsCancellationRequested ? null : session.Message ?? "Resolve this item's Anki field changes in preparation." });
+            }
+            catch (OperationCanceledException) when (token.IsCancellationRequested) { throw; }
+            catch (Exception error) { Replace(i, _items[i] with { Status = ReviewBatchStatus.Failed, Message = error.Message }); }
         }
     }
 }

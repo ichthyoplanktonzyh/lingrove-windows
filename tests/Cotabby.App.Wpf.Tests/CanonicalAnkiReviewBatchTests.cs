@@ -297,12 +297,56 @@ public sealed class CanonicalAnkiReviewBatchTests(WpfDispatcher dispatcher)
             var card = (await store.ReadAsync()).Document.CollectedEntries.Single().Senses[0].ReviewCards!.Single(); server.Delete(card.ActiveBinding!.NoteId!.Value);
             await store.SaveReviewAsync(item.Selection.EntryId, item.Selection.SenseId, card with { Plan = card.Plan with { Layout = card.Plan.Layout! with { Front = [ReviewCardPart.Create(ReviewContentSource.Meaning)] } } }, card, item.Card);
             var batch = await CanonicalAnkiReviewBatchSession.OpenAsync(feature, store, [item.Selection]); var window = new CanonicalAnkiReviewBatchWindow(batch, feature, () => { }); window.Show(); if (window.LastOperation is { } load) await load;
-            window.SendButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); if (window.LastOperation is { } start) await start; await Finish(batch); Assert.Equal(ReviewBatchStatus.Failed, batch.Items.Single().Status); Assert.Equal(1, server.AddCount);
+            window.SendButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); if (window.LastOperation is { } start) await start; await Finish(batch); Assert.Equal(ReviewBatchStatus.Failed, batch.Items.Single().Status); Assert.Equal(1, server.AddCount); VocabularyThemeRender.Capture(window, "canonical-batch-failed", 760, 740);
             var panel = (StackPanel)((Border)window.Rows.Children[0]).Child; var actions = panel.Children.OfType<WrapPanel>().Single(); actions.Children.OfType<Button>().First().RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             for (int i = 0; i < 200 && window.Preparation is null; i++) await Task.Delay(10); var child = Assert.IsType<CanonicalAnkiReviewWindow>(window.Preparation); if (child.LastOperation is { } loading) await loading;
             child.SendButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); if (child.LastOperation is { } check) await check; Assert.Equal("Re-add to Anki", child.SendButton.Content); Assert.Equal(1, server.AddCount);
             child.SendButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); if (child.LastOperation is { } send) await send; await child.RetireAsync(); if (window.LastOperation is { } refresh) await refresh;
             Assert.Equal(2, server.AddCount); Assert.Equal(ReviewBatchStatus.Synced, batch.Items.Single().Status); await window.RetireAsync();
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    });
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(2)]
+    public Task DeletedCardBetweenRowReadAndSessionOpenCannotBeRecreated(int action) => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "review-batch-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            await using var store = FrozenVocabularyStoreFactory.Create(Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName), false);
+            var values = new AppSettings(); var server = new SessionTestServer(); await using var feature = new AnkiReviewFeature(() => values, () => { }, null, server, new AnkiTestCredentials());
+            var item = await Add(store, feature, "bank"); var card = (await store.ReadAsync()).Document.CollectedEntries.Single().Senses[0].ReviewCards!.Single();
+            var held = new CanonicalAnkiReviewSessionTests.HeldStore(store); var batch = await CanonicalAnkiReviewBatchSession.OpenAsync(feature, held, [item.Selection]); var scope = await feature.Controller.CanonicalScopeAsync(CancellationToken.None); held.HoldRead = true;
+            Task? preparation = null;
+            if (action == 0) preparation = batch.PrepareAsync(batch.Items.Single().Id);
+            else if (action == 1) batch.StartApply("Other");
+            else batch.Start(scope);
+            await held.Entered.Task; await store.RemoveReviewAsync(item.Selection.EntryId, item.Selection.SenseId, item.Card, card); held.Release.SetResult();
+            if (preparation is not null) await preparation; else await Finish(batch);
+            Assert.Equal(ReviewBatchStatus.Unavailable, batch.Items.Single().Status); Assert.Empty((await store.ReadAsync()).Document.CollectedEntries.Single().Senses[0].ReviewCards!); Assert.Equal(0, server.AddCount);
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    });
+
+    [Fact]
+    public Task BatchUsesFreshPlanWhenRowChangesBeforeSessionOpens() => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "review-batch-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            await using var store = FrozenVocabularyStoreFactory.Create(Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName), false);
+            var values = new AppSettings(); var server = new SessionTestServer(); await using var feature = new AnkiReviewFeature(() => values, () => { }, null, server, new AnkiTestCredentials());
+            var item = await Add(store, feature, "bank"); var baseline = (await store.ReadAsync()).Document.CollectedEntries.Single().Senses[0].ReviewCards!.Single();
+            // Remove the explicitly saved deck to create the source's unprepared-default case.
+            var unprepared = baseline with { Plan = baseline.Plan with { Deck = null } }; await store.SaveReviewAsync(item.Selection.EntryId, item.Selection.SenseId, unprepared, baseline, item.Card);
+            var held = new CanonicalAnkiReviewSessionTests.HeldStore(store); var batch = await CanonicalAnkiReviewBatchSession.OpenAsync(feature, held, [item.Selection]); var scope = await feature.Controller.CanonicalScopeAsync(CancellationToken.None); held.HoldRead = true;
+            batch.Start(scope); await held.Entered.Task;
+            await store.SaveReviewAsync(item.Selection.EntryId, item.Selection.SenseId, unprepared with { Plan = unprepared.Plan with { Deck = "Other" } }, unprepared, item.Card);
+            held.Release.SetResult(); await Finish(batch); Assert.Equal(ReviewBatchStatus.Synced, batch.Items.Single().Status);
+            var saved = (await store.ReadAsync()).Document.CollectedEntries.Single().Senses[0].ReviewCards!.Single(); Assert.Equal("Other", saved.Plan.Deck); Assert.Equal("Other", saved.ActiveBinding!.Deck);
         }
         finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
     });

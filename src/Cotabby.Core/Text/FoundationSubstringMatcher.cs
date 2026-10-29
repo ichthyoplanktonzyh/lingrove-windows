@@ -116,7 +116,7 @@ internal sealed class FoundationSubstringMatcher(string text, string needle, Can
             // Two equal high-surrogate units may have been compared literally before their low
             // units differ. Such a temporary raw cursor is legal; Normalize rejects that isolated
             // surrogate, so keep it literal. Public entry points reject malformed captured text.
-            _buffer = value is >= 0xd800 and <= 0xdfff ? buffer.ToString() : buffer.ToString().Normalize(NormalizationForm.FormD);
+            _buffer = value is >= 0xd800 and <= 0xdfff ? buffer.ToString() : FoundationUnicodeNormalization.Normalize(buffer.ToString(), NormalizationForm.FormD);
             cancellationToken.ThrowIfCancellationRequested();
             _bufferPosition = 0; _rawEnd = end;
         }

@@ -184,7 +184,7 @@ jobs:
         run: python3 scripts/verify-vocabulary-notebook-macos-parity.py --mac-repo .mac-baseline
       - name: Verify editor draft rules against original Mac view closures
         run: python3 scripts/verify-vocabulary-editor-macos-parity.py --mac-repo .mac-baseline
-      - name: Read the current stable editor reference
+      - name: Read the versioned editor module reference
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           repository: ichthyoplanktonzyh/lingrove
@@ -200,7 +200,7 @@ jobs:
             Cotabby/Models/Review
             Cotabby/UI/Vocabulary/VocabularyEntryEditor.swift
             CotabbyTests/Support/Vocabulary/VocabularyPolicyTests.swift
-      - name: Verify current stable editor annotation and composed-range behavior
+      - name: Verify versioned editor annotation and composed-range behavior
         run: python3 scripts/verify-vocabulary-editor-current-macos-parity.py --mac-repo .mac-current-editor
       - name: Verify notebook and child sessions against the complete original Mac classes
         run: python3 scripts/verify-vocabulary-notebook-session-macos-parity.py --mac-repo .mac-baseline

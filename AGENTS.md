@@ -14,11 +14,11 @@ binary names, settings locations, and storage identifiers stable unless a specif
 designed and documented. Lingrove branding in documentation does not mean the Windows runtime has
 been rebranded or that its data is compatible with the macOS app.
 
-## Migration principle: adapt the stable macOS product
+## Migration principle: adapt the latest macOS product
 
-**Windows 版本是稳定 macOS 成果的适配与移植，不是重新发明产品、交互或业务架构。**
+**Windows 版本以最新已提交的 macOS 成果为基准做适配与移植，不是重新发明产品、交互或业务架构。**
 
-- Treat the pinned macOS implementation and its tests as the behavior reference. Read the relevant
+- Treat the latest recorded macOS implementation and its tests as the behavior reference. Read the relevant
   Mac subsystem before implementing its Windows counterpart; preserve its responsibilities, data
   contracts, defaults, user flow, prompting, budgets, cancellation, and privacy semantics.
 - Port deterministic rules and regression cases directly into C# where possible. Do not invent a
@@ -43,11 +43,16 @@ been rebranded or that its data is compatible with the macOS app.
   user-authored changes.
 - Keep changes within the requested scope. Coordinate before editing a shared file another worker
   owns.
-- The current stable alignment target is `cc468b89f5c360cc7210fac4f1a8b52197870bf2`; see
-  [the audited delta](docs/MAC_STABLE_DELTA.md). Existing modules/fixtures retain their explicit
-  initial reference `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f` until upgraded individually. Never
-  silently change a shared pin or fit old expectations to a new rule. Read committed evidence with
-  `git -C <macOS-repository> show <commit>:<path>` rather than a dirty working tree.
+- The latest alignment target is `06bf81fe52f22fd62e76d8ec0bfd898d3417158b`; see
+  [the latest baseline and backlog](docs/MAC_LATEST_BASELINE.md). At the beginning of each new
+  feature round, check the Mac repository's committed `main` again and record any advancement
+  before implementing that round. Do not wait for the old stable backlog to finish first.
+- Existing modules/fixtures retain their explicit reference until upgraded individually, including
+  the original `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f` and intermediate
+  `cc468b89f5c360cc7210fac4f1a8b52197870bf2`. Their passing checks do not establish latest parity.
+  Never silently change a shared pin or fit old expectations to a new rule. Read committed evidence
+  with `git -C <macOS-repository> show <commit>:<path>` rather than a dirty working tree. Preserve
+  Mac work in progress; do not commit, push or alter it as part of the Windows adaptation.
 
 ## Architecture and ownership
 

@@ -5,13 +5,21 @@ focus, input, storage, and runtime constraints. Autocomplete and language learni
 product pillars. The first milestone is repository foundation: documentation, build/test-only CI,
 and initial shared JSON behavior fixtures. It does not implement language learning.
 
+The active target is the latest committed Mac version, currently
+`06bf81fe52f22fd62e76d8ec0bfd898d3417158b`. [MAC_LATEST_BASELINE.md](MAC_LATEST_BASELINE.md) is the
+current dependency/backlog record. The phases below retain their original scoped milestone history;
+they do not freeze new work to the original or intermediate stable reference. Check committed Mac
+`main` before each feature round and adapt its existing product rather than completing an obsolete
+UI or archive contract first.
+
 ## Governing rule: port, then adapt platform details
 
-**基于已收敛的 macOS 成果做 Windows 适配，不重新发明产品、交互或业务架构。**
+**直接基于最新已提交的 macOS 成果做 Windows 适配，不重新发明产品、交互或业务架构。**
 
 The pinned Mac implementation and tests define each feature's intended behavior. For every slice:
 
-1. Read the corresponding Mac source and regression tests at the recorded stable revision.
+1. Check the latest committed Mac revision, record it, then read its corresponding source and
+   regression tests. Keep each historical fixture's original provenance until explicitly upgraded.
 2. Map its existing responsibilities and contracts to Windows files, preserving defaults, user
    flow, request scope, prompts, budgets, task isolation, cancellation and privacy rules.
 3. Port deterministic logic and test cases before replacing AX/AppKit/SwiftUI or Apple-specific

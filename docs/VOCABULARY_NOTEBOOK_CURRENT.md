@@ -6,6 +6,11 @@ Reference: committed Mac `cc468b89f5c360cc7210fac4f1a8b52197870bf2`,
 the existing Mac browsing flow; vocabulary identity, search policy and authored records retain
 their existing boundaries.
 
+This is an intermediate adaptation, not the latest notebook's full scope. The active target has
+advanced to [the latest Mac baseline](MAC_LATEST_BASELINE.md), which adds independent resources,
+meaning organization and newer browser controls. Follow those committed sources for subsequent
+work; do not infer latest parity from this slice's passing checks.
+
 ## Visible behavior
 
 An entry with one visible sense is directly selectable, with no extra disclosure step.

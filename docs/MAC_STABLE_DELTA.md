@@ -1,11 +1,16 @@
-# Current Mac stable alignment
+# Historical Mac stable alignment
 
-The current target is committed Mac revision **`cc468b89f5c360cc7210fac4f1a8b52197870bf2`**.
+This audit records the former target **`cc468b89f5c360cc7210fac4f1a8b52197870bf2`**.
 It is 22 commits after the initial Windows migration reference
 `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`. The working Mac application is not modified by this port.
 The original reference remains the default for existing versioned fixtures. Each module upgrade
 must explicitly name its newer revision, preserve old evidence as history, capture the actual new
 source behavior and record the remaining product/platform gaps.
+
+The maintainer has now directed Windows to follow the latest Mac implementation. The active target
+and backlog are in [MAC_LATEST_BASELINE.md](MAC_LATEST_BASELINE.md). The table below is historical
+evidence; it omits later import, expression-assistance, reading and independent meaning/resource
+changes and must not determine the next feature's source revision.
 
 This file records the audited change areas and next implementation work, not a percentage-complete
 claim. Many earlier slices supply reusable domain/runtime boundaries; that does not mean their

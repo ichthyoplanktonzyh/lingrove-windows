@@ -69,17 +69,22 @@ struct Fixture: Decodable {
     static func main() throws {
         let data = try Data(contentsOf: URL(fileURLWithPath: CommandLine.arguments[1]))
         let fixture = try JSONDecoder().decode(Fixture.self, from: data)
+        var failed = false
         for row in fixture.batches {
             let fingerprint = try SourceProbe.fingerprint(row.batch)
-            guard fingerprint == row.expectedFingerprint else { fatalError("fingerprint mismatch \(row.name): \(fingerprint)") }
             let id = SourceProbe.stableID(row.batch.idempotencyKey, fingerprint).uuidString
-            guard id == row.expectedId else { fatalError("ID mismatch \(row.name): \(id)") }
+            let encoder = JSONEncoder(); encoder.outputFormatting = [.sortedKeys]
+            let wire = String(decoding: try encoder.encode(row.batch), as: UTF8.self)
+            print("batch \(row.name) fingerprint=\(fingerprint) id=\(id) json=\(wire)")
+            if fingerprint != row.expectedFingerprint || id != row.expectedId { failed = true }
         }
         for row in fixture.ranges {
             let actual: String
             do { actual = try SourceProbe.locate(row.text, row.expression) } catch { actual = "ambiguous" }
-            guard actual == row.expected else { fatalError("range mismatch \(row.name): \(actual)") }
+            print("range \(row.name) result=\(actual)")
+            if actual != row.expected { failed = true }
         }
+        if failed { exit(1) }
         print("Verified 3b Swift CLI Codable fingerprint, operation ID and NSString range probes")
     }
 }

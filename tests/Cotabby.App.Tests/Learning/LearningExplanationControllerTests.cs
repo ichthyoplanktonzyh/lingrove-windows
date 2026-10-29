@@ -26,6 +26,77 @@ public sealed class LearningExplanationControllerTests
         LearningExplanationEndpointBaseUrl = "https://owned.invalid/v1", LearningExplanationEndpointModel = "general" };
 
     [Fact]
+    public async Task HeldSavedLookupCannotSupersedeNewerInstruction()
+    {
+        foreach (bool reading in new[] { false, true })
+        {
+            var lookupStarted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            var releaseLookup = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            var newerStarted = new TaskCompletionSource<CancellationToken>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var releaseNewer = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+            int explanationFactories = 0;
+            var runtime = new FakeRuntime();
+            await using var owner = new LearningExplanationController(runtime, EndpointSettings(), Path.GetTempPath(),
+                endpointFactory: _ => { Interlocked.Increment(ref explanationFactories); return new Engine((_, _, _, _) => Task.FromResult(Answer)); },
+                endpointInstructionFactory: _ => new EndpointInstruction(token => { newerStarted.TrySetResult(token); return releaseNewer.Task; }));
+            owner.Service.LoadPersisted = async (_, _) => { lookupStarted.TrySetResult(); await releaseLookup.Task; return null; };
+            var old = owner.Service.GenerateAsync(Input, "old");
+            try
+            {
+                await lookupStarted.Task.WaitAsync(TimeoutLimit);
+                Task newer = reading
+                    ? owner.GenerateReadingLookupAsync(new ReadingLookupInput("bank", null, LearningLanguage.Chinese, true, null) { Admission = () => true }, null, raw => raw, default)
+                    : owner.GenerateExpressionAsync(Expression with { Admission = () => true }, x => x.ToLowerInvariant(), default);
+                var token = await newerStarted.Task.WaitAsync(TimeoutLimit);
+                releaseLookup.SetResult();
+                await Assert.ThrowsAnyAsync<OperationCanceledException>(() => old.WaitAsync(TimeoutLimit));
+                Assert.False(token.IsCancellationRequested); Assert.Equal(0, explanationFactories);
+                releaseNewer.SetResult(reading ? "new" : "{\"candidates\":[{\"text\":\"rule out\",\"hint\":\"排除\"}]}");
+                await newer.WaitAsync(TimeoutLimit); Assert.Equal(0, runtime.Begins);
+            }
+            finally { releaseLookup.TrySetResult(); releaseNewer.TrySetResult("{}"); }
+        }
+    }
+
+    [Fact]
+    public async Task IdleReleaseDoesNotRetirePendingSavedHitAndShutdownDrainsIt()
+    {
+        var runtime = new FakeRuntime(); var clock = new Clock(); var settings = Settings();
+        var owner = Owner(runtime, settings, clock);
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var held = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        try
+        {
+            await owner.Service.GenerateAsync(Input, "warm", refresh: true).WaitAsync(TimeoutLimit);
+            var timer = await clock.NextTimer();
+            var saved = new LearningExplanationRecord(Guid.NewGuid(), Input, settings.ResolvedLearningExplanationLanguage, Answer, "saved", DateTimeOffset.UtcNow);
+            owner.Service.LoadPersisted = async (_, _) => { entered.TrySetResult(); await release.Task; return saved; };
+            var work = owner.Service.GenerateAsync(Input, "saved");
+            await entered.Task.WaitAsync(TimeoutLimit); timer.Fire(); Assert.Equal(1, runtime.Unloads);
+            release.SetResult(); Assert.Same(saved, await work.WaitAsync(TimeoutLimit));
+            var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            owner.Service.LoadPersisted = async (_, _) => { started.SetResult(); await held.Task; return saved; };
+            var pending = owner.Service.GenerateAsync(Input, "shutdown"); await started.Task.WaitAsync(TimeoutLimit);
+            var shutdown = owner.DisposeAsync().AsTask(); Assert.False(shutdown.IsCompleted);
+            held.SetResult(); await Assert.ThrowsAnyAsync<OperationCanceledException>(() => pending.WaitAsync(TimeoutLimit));
+            await shutdown.WaitAsync(TimeoutLimit); Assert.Equal(1, runtime.Disposals);
+        }
+        finally { release.TrySetResult(); held.TrySetResult(); await owner.DisposeAsync().AsTask().WaitAsync(TimeoutLimit); }
+    }
+
+    [Fact]
+    public async Task SavedHitReleasesReservationWithoutCreatingFacadeOrRuntime()
+    {
+        var runtime = new FakeRuntime(); int factories = 0; var settings = Settings();
+        await using var owner = Owner(runtime, settings, new Clock(), _ => { factories++; return new Engine((_, _, _, _) => Task.FromResult(Answer)); });
+        var saved = new LearningExplanationRecord(Guid.NewGuid(), Input, settings.ResolvedLearningExplanationLanguage, Answer, "saved", DateTimeOffset.UtcNow);
+        owner.Service.LoadPersisted = (_, _) => Task.FromResult<LearningExplanationRecord?>(saved);
+        Assert.Same(saved, await owner.Service.GenerateAsync(Input, "saved"));
+        Assert.Equal(0, factories); Assert.Equal(0, runtime.Begins); Assert.Equal(0, runtime.Unloads);
+    }
+
+    [Fact]
     public async Task EndpointExplanationAndLookupNeverBorrowTheLocalRuntime()
     {
         var runtime = new FakeRuntime(); var settings = EndpointSettings();

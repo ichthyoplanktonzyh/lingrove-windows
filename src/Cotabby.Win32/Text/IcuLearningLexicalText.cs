@@ -38,8 +38,16 @@ public sealed class IcuLearningLexicalText : ILearningLexicalText
 
     public IReadOnlyList<LearningDictionaryWord> Words(string value, LearningLanguage language)
     {
-        Validate(value);
         if (!Enum.IsDefined(language)) throw Invalid();
+        return WordsCore(value, language.Code().Replace('-', '_'));
+    }
+
+    /// <summary>Uses ICU's root locale when the reading language is unknown; no language is inferred.</summary>
+    public IReadOnlyList<LearningDictionaryWord> WordsUnknown(string value) => WordsCore(value, "");
+
+    private IReadOnlyList<LearningDictionaryWord> WordsCore(string value, string locale)
+    {
+        Validate(value);
         if (value.Length == 0) return Array.Empty<LearningDictionaryWord>();
         return Run<IReadOnlyList<LearningDictionaryWord>>(() =>
         {
@@ -47,7 +55,7 @@ public sealed class IcuLearningLexicalText : ILearningLexicalText
             var boundaries = StringInfo.ParseCombiningCharacters(value).ToHashSet();
             boundaries.Add(value.Length);
             int previousEnd = 0;
-            foreach (var range in _api.WordRanges(value, language.Code().Replace('-', '_')))
+            foreach (var range in _api.WordRanges(value, locale))
             {
                 if (range.Location != previousEnd || range.Length <= 0 || range.Location > value.Length
                     || range.Length > value.Length - range.Location || !boundaries.Contains(range.Location)

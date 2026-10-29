@@ -15,6 +15,7 @@ internal sealed class ExpressionAssistApplication : IAsyncDisposable
 {
     private readonly Dispatcher _dispatcher;
     private readonly ExpressionAssistFeature _feature;
+    internal Func<bool>? OtherInlineActive { get; set; }
     private Preferences _preferences = Preferences.From(new AppSettings(), false);
     private long _revision;
     private Task? _disposal;
@@ -65,7 +66,8 @@ internal sealed class ExpressionAssistApplication : IAsyncDisposable
     internal bool FieldAvailable(FocusedField field)
     {
         var preferences = Volatile.Read(ref _preferences);
-        return SuggestionAvailability.DisabledReason(preferences.Availability, DateTimeOffset.UtcNow, preferences.BatterySaverOn) is null
+        return OtherInlineActive?.Invoke() != true
+            && SuggestionAvailability.DisabledReason(preferences.Availability, DateTimeOffset.UtcNow, preferences.BatterySaverOn) is null
             && !TerminalAppDetector.IsIntegratedTerminal(field.ClassName)
             // Explicit expression assistance accepts a selection; all environment/credential gates remain.
             && SuggestionAvailability.DisabledReason(preferences.Availability, field with { HasSelection = false }) is null;
@@ -104,6 +106,8 @@ internal sealed class ExpressionAssistApplication : IAsyncDisposable
                 AcceptWord = settings.AcceptWord, AcceptAll = settings.AcceptAll, GlobalToggle = settings.GlobalToggle,
                 LearningTranslationEnabled = settings.LearningTranslationEnabled,
                 LearningTranslationShortcut = settings.LearningTranslationShortcut,
+                LearningReadingEnabled = settings.LearningReadingEnabled,
+                LearningReadingShortcut = settings.LearningReadingShortcut,
                 ShortcutOverrides = (settings.ShortcutOverrides ?? []).ToList(),
             });
 
@@ -116,6 +120,8 @@ internal sealed class ExpressionAssistApplication : IAsyncDisposable
             && Shortcuts.GlobalToggle == other.Shortcuts.GlobalToggle
             && Shortcuts.LearningTranslationEnabled == other.Shortcuts.LearningTranslationEnabled
             && Shortcuts.LearningTranslationShortcut == other.Shortcuts.LearningTranslationShortcut
+            && Shortcuts.LearningReadingEnabled == other.Shortcuts.LearningReadingEnabled
+            && Shortcuts.LearningReadingShortcut == other.Shortcuts.LearningReadingShortcut
             && Shortcuts.ShortcutOverrides.SequenceEqual(other.Shortcuts.ShortcutOverrides);
     }
 }

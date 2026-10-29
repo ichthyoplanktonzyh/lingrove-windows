@@ -20,6 +20,43 @@ namespace Cotabby.App.Wpf.Tests;
 [Collection("WPF views")]
 public sealed class CanonicalWritingFavoriteViewTests(WpfDispatcher dispatcher)
 {
+    [Fact]
+    public Task UnknownReadingCaptureRoundTripsDeduplicatesAndRemovesFromCanonicalStore() => dispatcher.RunAsync(async () =>
+    {
+        var database = FrozenVocabularySQLiteDatabase.CreateMemory(); await using var backend = new FrozenVocabularyImportStore(database);
+        await using var viewStore = new CanonicalWritingViewStore(backend, new DispatcherSynchronizationContext(Dispatcher.CurrentDispatcher));
+        int enrichmentCalls = 0;
+        viewStore.EnrichCapture = value => { enrichmentCalls++; return value with { Meaning = "wrong cached sense" }; };
+        var capture = new VocabularyCapture("bank", "bank", null, VocabularyEntryKind.Word, "河岸", LearningLanguage.Chinese)
+            { AllowsExplanationEnrichment = false };
+        await viewStore.LoadAsync(); Assert.True(await viewStore.SaveAsync(capture));
+        var first = await backend.ReadAsync(); var entry = Assert.Single(first.Document.CollectedEntries);
+        Assert.Null(entry.Language); Assert.Equal("河岸", Assert.Single(entry.Senses).Meaning);
+        Assert.Equal(0, enrichmentCalls);
+        var destination = CanonicalWritingPolicy.SavedDestination(capture, first.Document); Assert.NotNull(destination);
+        await viewStore.SaveAsync(capture);
+        var second = await backend.ReadAsync(); Assert.Single(second.Document.CollectedEntries);
+        Assert.Equal(destination, CanonicalWritingPolicy.SavedDestination(capture, second.Document));
+        Assert.True(await viewStore.RemoveAsync(capture));
+        Assert.False(viewStore.Contains(capture)); Assert.Empty((await backend.ReadAsync()).Document.CollectedEntries);
+    });
+    [Fact]
+    public Task UnknownReadingSentenceRetainsItsAcceptedTranslationAndUsageIdentity() => dispatcher.RunAsync(async () =>
+    {
+        var database = FrozenVocabularySQLiteDatabase.CreateMemory(); await using var backend = new FrozenVocabularyImportStore(database);
+        await using var viewStore = new CanonicalWritingViewStore(backend, new DispatcherSynchronizationContext(Dispatcher.CurrentDispatcher));
+        var selection = new Cotabby.Core.LanguageLearning.Reading.ReadingSelection(Guid.NewGuid(), "Hello world!", 1, "field", 1, 0, 12,
+            false, true, Cotabby.Core.Focus.InputCompositionState.Clear, 1, Cotabby.Core.Focus.ScreenRect.Empty);
+        var capture = Cotabby.Core.LanguageLearning.Reading.ReadingVocabularyCaptureFactory.Translation(selection, null,
+            LearningLanguage.Chinese, "你好世界！", 2, [new(0, 12)], DateTimeOffset.UnixEpoch);
+        await viewStore.LoadAsync(); Assert.True(await viewStore.SaveAsync(capture));
+        var saved = await backend.ReadAsync(); var entry = Assert.Single(saved.Document.CollectedEntries);
+        Assert.Null(entry.Language); var example = Assert.Single(entry.Examples);
+        Assert.Equal(capture.Example!.Id, example.Id); Assert.Equal("Hello world!", example.Text);
+        Assert.Equal("你好世界！", example.Translation); Assert.Equal(LearningLanguage.Chinese, example.TranslationLanguage);
+        await viewStore.SaveAsync(capture); var repeated = await backend.ReadAsync();
+        Assert.Equal(example.Id, Assert.Single(Assert.Single(repeated.Document.CollectedEntries).Examples).Id);
+    });
     private static VocabularyCapture Capture() => new("bank", "bank", LearningLanguage.English, VocabularyEntryKind.Word,
         Example: new(Guid.NewGuid(), "The bank.", "银行", [new(4, 4)], VocabularyExampleCompleteness.Sentence, "", DateTimeOffset.UnixEpoch));
     private static async Task Settle() => await Dispatcher.Yield(DispatcherPriority.ApplicationIdle);
@@ -117,6 +154,8 @@ public sealed class CanonicalWritingFavoriteViewTests(WpfDispatcher dispatcher)
         public Task<Frozen.FrozenVocabularyImportSnapshot> UpdateSemanticsAsync(Frozen.VocabularySemanticIndex edited, Frozen.VocabularySemanticIndex baseline, CancellationToken token = default) => inner.UpdateSemanticsAsync(edited, baseline, token);
         public Task<Frozen.FrozenVocabularyImportSnapshot> UpdateClassificationAsync(Cotabby.Core.Vocabulary.Resources.VocabularyClassificationIndex edited, Cotabby.Core.Vocabulary.Resources.VocabularyClassificationIndex baseline, CancellationToken token = default) => inner.UpdateClassificationAsync(edited, baseline, token);
         public Task BackupAsync(string destination, CancellationToken token = default) => inner.BackupAsync(destination, token);
+        public Task<Cotabby.Core.Vocabulary.VocabularyExportPackage> PrepareExportAsync(IReadOnlyList<Cotabby.Core.Vocabulary.VocabularySelection> selections, Cotabby.Core.Vocabulary.VocabularyExportConfiguration configuration, CancellationToken token = default) => inner.PrepareExportAsync(selections, configuration, token);
+        public Task WriteExportAsync(Cotabby.Core.Vocabulary.VocabularyExportPackage package, string destination, CancellationToken token = default) => inner.WriteExportAsync(package, destination, token);
         public Task<Frozen.FrozenVocabularyImportSnapshot> RestoreAsync(string source, CancellationToken token = default) => inner.RestoreAsync(source, token);
         public ValueTask DisposeAsync() => ValueTask.CompletedTask;
     }

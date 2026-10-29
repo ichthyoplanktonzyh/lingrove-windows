@@ -38,8 +38,9 @@ The [3b meaning/classification upgrade](VOCABULARY_MEANING_CLASSIFICATION_3B.md)
 [independent Anki cards](ANKI_CANONICAL_CARD_WINDOW.md) and
 [batch preparation](ANKI_CANONICAL_REVIEW_BATCH.md) now connect their scoped canonical workflows.
 The [canonical graph](VOCABULARY_CANONICAL_GRAPH_3B.md) connects entry/sense and meaning/category
-navigation to that same window and Store. The remaining media workflows, export/backup and speech
-activation remain incomplete.
+navigation to that same window and Store. [Canonical image operations](VOCABULARY_CANONICAL_ENTRY_EDITOR_UI.md)
+and [full backup/restore](VOCABULARY_CANONICAL_BACKUP.md) now use its media and transaction owner.
+Learning-material export, remaining media variants and speech activation remain incomplete.
 This is an implementation
 checkpoint with scoped automated/render evidence, not full native desktop parity.
 

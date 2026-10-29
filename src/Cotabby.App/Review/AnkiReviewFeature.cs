@@ -25,10 +25,11 @@ internal sealed class AnkiReviewFeature : IAsyncDisposable
         Settings = new(current, persist, credentials);
         Controller = new(Settings, store, client, speechConfigurationId, activateExisting);
     }
-    /// <summary>Real connection and preference owner without a legacy notebook. Canonical review
-    /// transactions have not yet been connected; no Store is constructed or opened here.</summary>
+    /// <summary>Real connection and preference owner without a legacy notebook. Canonical callers
+    /// borrow this owner; no Store is constructed or opened here.</summary>
     internal static AnkiReviewFeature CreateConnectionSettings(Func<AppSettings> current, Action persist,
-        IAnkiConnecting client, IAnkiCredentialStore credentials) => new(current, persist, null, client, credentials);
+        IAnkiConnecting client, IAnkiCredentialStore credentials, Action? activateExisting = null) =>
+        new(current, persist, null, client, credentials, activateExisting: activateExisting);
     internal Task RunAsync(Func<CancellationToken, Task> operation)
     {
         var completion = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);

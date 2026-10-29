@@ -66,7 +66,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
         var root = new DockPanel(); VocabularyNotebookTheme.Brush(root, Panel.BackgroundProperty, "WindowBg"); Content = root;
         var toolbar = new WrapPanel { Margin = new Thickness(20, 16, 20, 8), Orientation = Orientation.Horizontal };
         toolbar.Children.Add(new TextBlock { Text = "Vocabulary notebook", FontSize = 21, FontWeight = FontWeights.SemiBold, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 20, 8) });
-        InitializeGraphButton(); foreach (var button in new[] { _categoryToggle, _newMeaning, _add, _import, _graphButton, Disabled("Export", "Export is not available in this notebook yet.") })
+        InitializeGraphButton(); foreach (var button in new[] { _categoryToggle, _newMeaning, _add, _import, _graphButton })
         { VocabularyNotebookTheme.Button(button, button == _add); button.Margin = new Thickness(0, 0, 8, 8); toolbar.Children.Add(button); }
         DockPanel.SetDock(toolbar, Dock.Top); root.Children.Add(toolbar);
         var filters = new WrapPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(18, 0, 18, 6) };
@@ -77,7 +77,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
         System.Windows.Automation.AutomationProperties.SetName(_query, "Search vocabulary"); System.Windows.Automation.AutomationProperties.SetName(_language, "Language filter"); System.Windows.Automation.AutomationProperties.SetName(_tag, "Tag filter"); System.Windows.Automation.AutomationProperties.SetName(_organization, "Browse organization"); System.Windows.Automation.AutomationProperties.SetName(_sort, "Sort order"); System.Windows.Automation.AutomationProperties.SetName(_density, "List density");
         VocabularyNotebookTheme.Input(_query); _query.Tag = "Search vocabulary"; foreach (var box in new[] { _organization, _language, _tag, _sort, _density }) VocabularyNotebookTheme.Combo(box);
         foreach (var control in new FrameworkElement[] { _organization, _query, _language, _tag, _sort, _density }) { control.Margin = new Thickness(0, 0, 8, 6); filters.Children.Add(control); }
-        DockPanel.SetDock(filters, Dock.Top); root.Children.Add(filters); root.Children.Add(_content); InitializeReviewSelection(toolbar, root); InitializeCanonicalBackup(toolbar);
+        DockPanel.SetDock(filters, Dock.Top); root.Children.Add(filters); root.Children.Add(_content); InitializeReviewSelection(toolbar, root); InitializeCanonicalExport(toolbar); InitializeCanonicalBackup(toolbar);
         ScrollViewer.SetHorizontalScrollBarVisibility(_entries, ScrollBarVisibility.Disabled); VocabularyNotebookTheme.Brush(_entries, Control.BackgroundProperty, "SidebarBg"); VocabularyNotebookTheme.Brush(_entries, Control.ForegroundProperty, "TextPrimary");
         _meanings = new("Other expressions", "Suggested grouping", SenseTitle, LanguageLabel);
         _categories = new(new("Categories", "Search categories", "All meanings", "Uncategorized meanings", "Content meanings", "Communicative functions", "New category", "Manage categories", "Edit category"), search) { AllowEditing = false };
@@ -129,6 +129,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
     {
         Dispatcher.VerifyAccess(); if (_retiring) return; _retiring = true;
         var retirementErrors = new List<Exception>();
+        try { if (_canonicalExport is { } export) await export.RetireAsync(); } catch (Exception error) { retirementErrors.Add(error); }
         try { await RetireCanonicalBackupAsync(); } catch (Exception error) { retirementErrors.Add(error); }
         try { await RetireReviewAsync(); } catch (Exception error) { retirementErrors.Add(error); }
         CloseActionMenus();
@@ -219,7 +220,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
     }
     private void Present()
     {
-        if (!_session.Active || _retiring) return; UpdateReviewSelection(); UpdateCanonicalBackup(); CloseActionMenus(); _restoreEntryFocus = _entries.IsKeyboardFocusWithin; _updating = true;
+        if (!_session.Active || _retiring) return; UpdateReviewSelection(); UpdateCanonicalExport(); UpdateCanonicalBackup(); CloseActionMenus(); _restoreEntryFocus = _entries.IsKeyboardFocusWithin; _updating = true;
         try
         {
             _query.Text = _session.Query; _organization.SelectedIndex = _session.MeaningMode ? 1 : 0; _sort.SelectedIndex = _session.NewestFirst ? 0 : 1; _density.SelectedIndex = _session.Detailed ? 1 : 0;
@@ -368,7 +369,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
         VocabularyNotebookTheme.Button(edit); edit.Click += (_, _) => LastOperation = EditAsync(new(entry.Id, sense.Id)); actions.Children.Add(edit);
         AddSenseActions(actions, entry, sense);
         AddSenseSemanticActions(actions, new(entry.Id, sense.Id));
-        foreach (string text in new[] { "Export" }) { var button = Disabled(text, "This action is not available in this notebook yet."); button.Margin = new Thickness(0, 0, 8, 0); actions.Children.Add(button); } panel.Children.Add(actions);
+        var export = new Button { Content = "Export…", Margin = new Thickness(0, 0, 8, 0), IsEnabled = _store is ICanonicalVocabularyExportStore }; VocabularyNotebookTheme.Button(export); export.Click += (_, _) => LastOperation = OpenCanonicalExportAsync(new(entry.Id, sense.Id)); actions.Children.Add(export); panel.Children.Add(actions);
     }
     private void MeaningDetail(StackPanel panel, F.VocabularyMeaningNode node)
     {

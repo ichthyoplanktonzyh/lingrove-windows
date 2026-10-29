@@ -105,6 +105,9 @@ public sealed class UiaFocusTracker : IFocusTracker
         lock (_gate) { if (!_running || _startGeneration != generation) return; }
         _logger.LogInformation("UIA focus tracker started.");
         Refresh();
+        // Metadata-only consumers need an initial origin even when focus never changes after Start.
+        try { FocusTransition?.Invoke(NativeMethods.GetForegroundWindow()); }
+        catch (Exception) { _logger.LogWarning("Focus transition notification failed."); }
     }
 
     public void Stop() => Stop(null);

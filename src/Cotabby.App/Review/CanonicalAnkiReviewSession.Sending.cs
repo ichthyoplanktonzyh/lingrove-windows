@@ -77,6 +77,7 @@ internal sealed partial class CanonicalAnkiReviewSession
         if (!Same(await Controller.ProfileAsync(connection, cancellationToken), profile)) throw Conflict();
         RequireSendState();
         long noteId = await WriteAsync(remote, desired, content, profile, connection, model, cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
         if (!Same(await Controller.ProfileAsync(connection, cancellationToken), profile)) throw new AnkiReviewException("Anki did not confirm the saved fields. Retry to check the note.");
         var verified = await Controller.CanonicalNoteAsync(noteId, connection, cancellationToken);
         if (verified is null || !Same(verified.Model, model) || desired.Any(p => !Same(verified.Fields.GetValueOrDefault(p.Key), p.Value)))

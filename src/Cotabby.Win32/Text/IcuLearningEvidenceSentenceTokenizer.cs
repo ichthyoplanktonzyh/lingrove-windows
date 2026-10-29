@@ -12,12 +12,17 @@ public sealed class IcuLearningEvidenceSentenceTokenizer : ILearningEvidenceSent
 {
     public IReadOnlyList<LearningTextRange> Tokenize(string value, LearningLanguage language)
     {
-        ArgumentNullException.ThrowIfNull(value);
         if (!Enum.IsDefined(language)) throw new LearningTranslationException(LearningTranslationFailure.InvalidOptions);
+        return TokenizeCore(value, IcuLearningSentenceTokenizer.IcuLocale(language));
+    }
+    public IReadOnlyList<LearningTextRange> TokenizeUnknown(string value) => TokenizeCore(value, "");
+    private static IReadOnlyList<LearningTextRange> TokenizeCore(string value, string locale)
+    {
+        ArgumentNullException.ThrowIfNull(value);
         if (value.Length == 0) return Array.Empty<LearningTextRange>();
         try
         {
-            return NativeIcuSentenceSegmenter.Instance.SegmentIncludingSeparators(value, IcuLearningSentenceTokenizer.IcuLocale(language));
+            return NativeIcuSentenceSegmenter.Instance.SegmentIncludingSeparators(value, locale);
         }
         catch (LearningTranslationException) { throw; }
         catch (Exception error) when (error is DllNotFoundException or EntryPointNotFoundException or BadImageFormatException

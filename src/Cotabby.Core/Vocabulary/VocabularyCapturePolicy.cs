@@ -23,7 +23,7 @@ public static class VocabularyCapturePolicy
         return string.Join(" ", GraphemeString.Words(FoundationUnicodeNormalization.Normalize(text)));
     }
 
-    public static string EntryKey(VocabularyCapture capture) => Key([capture.Language.Code(), KindCode(capture.Kind), Normalized(capture.Expression)]);
+    public static string EntryKey(VocabularyCapture capture) => Key([capture.Language?.Code() ?? "und", KindCode(capture.Kind), Normalized(capture.Expression)]);
     public static string EntryKey(VocabularyEntry entry) => Key([entry.Language.Code(), KindCode(entry.Kind), Normalized(entry.Expression)]);
     public static string ExampleKey(VocabularyExample? example) => example is null ? "no-context"
         : ExampleKey(example.Text, example.Ranges, example.Completeness);
@@ -50,7 +50,7 @@ public static class VocabularyCapturePolicy
     /// </summary>
     public static void Validate(VocabularyCapture capture)
     {
-        if (capture is null || !Enum.IsDefined(capture.Language) || !Enum.IsDefined(capture.Kind)
+        if (capture is null || !ValidLanguage(capture.Language) || !Enum.IsDefined(capture.Kind)
             || !ValidLanguage(capture.MeaningLanguage)
             || !LearningExplanationText.Fits(capture.Expression, MaximumTextBytes) || Normalized(capture.Expression).Length == 0)
             throw new VocabularyContentValidationException();

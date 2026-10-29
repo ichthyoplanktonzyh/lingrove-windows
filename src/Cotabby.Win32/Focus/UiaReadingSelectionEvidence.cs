@@ -230,7 +230,7 @@ internal sealed unsafe partial class UiaTextEditEvidence : IReadingSelectionEvid
 
     private static bool ReadingNotSecure(IUIAutomationElement* element, Func<bool> allowed)
     {
-        BSTR name = default, help = default, type = default;
+        BSTR name = default, help = default, type = default, className = default;
         try
         {
             BOOL enabled = default, password = default;
@@ -239,15 +239,21 @@ internal sealed unsafe partial class UiaTextEditEvidence : IReadingSelectionEvid
             if (element->get_CurrentName(&name).Failed || !allowed() || name.Length > 4096) return false;
             if (element->get_CurrentHelpText(&help).Failed || !allowed() || help.Length > 4096) return false;
             if (element->get_CurrentLocalizedControlType(&type).Failed || !allowed() || type.Length > 4096) return false;
-            return !SecureFieldDetector.IsSecure(name.ToString(), help.ToString(), type.ToString());
+            if (element->get_CurrentClassName(&className).Failed || !allowed() || className.Length > 4096) return false;
+            return ReadingControlAllowed(name.ToString(), help.ToString(), type.ToString(), className.ToString());
         }
         finally
         {
             if (name.Value is not null) Marshal.FreeBSTR((nint)name.Value);
             if (help.Value is not null) Marshal.FreeBSTR((nint)help.Value);
             if (type.Value is not null) Marshal.FreeBSTR((nint)type.Value);
+            if (className.Value is not null) Marshal.FreeBSTR((nint)className.Value);
         }
     }
+
+    internal static bool ReadingControlAllowed(string name, string help, string type, string className) =>
+        !SecureFieldDetector.IsSecure(name, help, type)
+        && !Cotabby.Core.Focus.TerminalAppDetector.IsIntegratedTerminal(className);
 
     private bool ReadingNotSecurePath(IUIAutomationElement* element, int pid, Func<bool> allowed)
     {

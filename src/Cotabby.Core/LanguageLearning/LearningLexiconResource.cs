@@ -34,6 +34,13 @@ public interface ILearningDictionaryProviding
         CancellationToken cancellationToken = default);
 }
 
+/// <summary>Bundled lookup with no identified language searches all resource languages.</summary>
+public interface ILearningUnknownDictionaryProviding
+{
+    Task<LearningDictionaryResult> LookupUnknownAsync(string query, bool expression,
+        CancellationToken cancellationToken = default);
+}
+
 /// <summary>
 /// The bundled subset of the Mac result algebra. A miss is a value, whereas an unavailable
 /// resource throws. System articles, imported dictionaries and website results remain unported.

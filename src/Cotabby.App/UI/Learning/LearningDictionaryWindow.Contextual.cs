@@ -35,8 +35,9 @@ public partial class LearningDictionaryWindow
             DictionaryPageButton.FontWeight = contextual ? FontWeights.Normal : FontWeights.SemiBold;
             System.Windows.Automation.AutomationProperties.SetItemStatus(ContextualPageButton, contextual ? "Selected" : "");
             System.Windows.Automation.AutomationProperties.SetItemStatus(DictionaryPageButton, contextual ? "" : "Selected");
+            string sourceLabel = state.Language is { } source ? source.Label() : "Unknown language";
             SubtitleText.Text = contextual ? state.ExplanationLanguage is { } language && language != state.Language
-                ? $"{state.Language.Label()} → {language.Label()}" : state.Language.Label()
+                ? $"{sourceLabel} → {language.Label()}" : sourceLabel
                 : "Bundled expression dictionary · definitions in English";
             var action = explanation is null ? LearningExplanationCardAction.None
                 : LearningExplanationCardPolicy.Action(explanation, state.ExplanationConfigured);

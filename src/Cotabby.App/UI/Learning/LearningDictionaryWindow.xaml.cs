@@ -34,6 +34,10 @@ public partial class LearningDictionaryWindow : Window
     public event Action<Guid>? CloseRequested;
     public event Action<LearningDictionaryPage, Guid>? PageRequested;
     public event Action<Guid, LearningExplanationState>? ExplanationRequested;
+    internal event Action? ReadingMeaningRequested;
+    internal void EnableReadingMeaning() => ReadingMeaningButton.Visibility = Visibility.Visible;
+    internal Task FavoriteWork => FavoriteButton.LastOperation;
+    private void OnReadingMeaning(object sender, RoutedEventArgs args) => ReadingMeaningRequested?.Invoke();
 
     internal void ShowState(LearningDictionaryState state, ScreenRect anchor, LearningContextExampleTranslation? exampleTranslation = null)
     {
@@ -101,11 +105,11 @@ public partial class LearningDictionaryWindow : Window
         ExplanationDetails.IsExpanded = false;
         Hide();
     }
-    internal void BindVocabulary(IWritingVocabularyStore store, VocabularyCapture capture, Guid target, Func<bool> canAct)
+    internal void BindVocabulary(IWritingVocabularyStore store, VocabularyCapture capture, Guid target, Func<bool> canAct, Func<Task<bool>>? preflight = null)
     {
         Dispatcher.VerifyAccess();
         if (!IsVisible || _state?.TargetIdentity != target) return;
-        FavoriteButton.Bind(store, capture, () => IsVisible && _state?.TargetIdentity == target && canAct());
+        FavoriteButton.Bind(store, capture, () => IsVisible && _state?.TargetIdentity == target && canAct(), preflight);
     }
     private void OnClose(object sender, RoutedEventArgs args) { if (_state is { } state) CloseRequested?.Invoke(state.TargetIdentity); }
     private void OnBack(object sender, RoutedEventArgs args) { if (_state is { } state) BackRequested?.Invoke(state.TargetIdentity); }

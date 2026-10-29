@@ -82,6 +82,38 @@ public sealed class LearningPreviewInlineExclusionTests(WpfDispatcher dispatcher
 
     private static LearningPreviewController Create(Focus focus, Runtime runtime, HttpClient http) =>
         new(new Hook(), focus, Dispatcher.CurrentDispatcher, new Tokenizer(), runtime, http, new Credentials(), NullLogger<LearningPreviewController>.Instance);
+
+    [Fact]
+    public Task ReadingUsesFrozenLearningEndpointAndUnknownSourceWithFakeTransport() => dispatcher.RunAsync(async () =>
+    {
+        using var handler = new ReadingHandler(); using var http = new HttpClient(handler);
+        var runtime = new Runtime(); var controller = Create(new Focus(), runtime, http);
+        var settings = new Cotabby.App.Settings.AppSettings { LearningTranslationEnabled = true,
+            LearningBackend = Cotabby.App.Settings.LearningTranslationBackend.Endpoint, LearningEndpointEnabled = true,
+            LearningEndpointBaseUrl = "http://127.0.0.1:11434/v1", LearningEndpointModel = "translategemma-4b" };
+        var translator = controller.ReadingTranslator(settings, 0);
+        var selection = new Cotabby.Core.LanguageLearning.Reading.ReadingSelection(Guid.NewGuid(), "A sentence.", 1, "field", 1, 0, 11,
+            false, true, InputCompositionState.Clear, 1, ScreenRect.Empty);
+        try
+        {
+            var prefixes = new List<string>();
+            Assert.Equal("translated", await translator(selection, null, LearningLanguage.Chinese, prefixes.Add, default));
+            Assert.Equal(new[] { "translated" }, prefixes); Assert.Contains("Infer the source language", handler.Body);
+            Assert.Equal(0, runtime.Begins);
+        }
+        finally { await controller.DisposeAsync(); }
+    });
+
+    private sealed class ReadingHandler : HttpMessageHandler
+    {
+        public string Body = "";
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken token)
+        {
+            Body = await request.Content!.ReadAsStringAsync(token);
+            return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+            { Content = new StringContent("data: {\"choices\":[{\"delta\":{\"content\":\"translated\"},\"finish_reason\":null}]}\n\ndata: {\"choices\":[{\"delta\":{},\"finish_reason\":\"stop\"}]}\n\ndata: [DONE]\n\n") };
+        }
+    }
     private sealed class Focus : IFocusTracker
     {
         private readonly FocusedField _field = new() { ProcessId = Environment.ProcessId + 1, ProcessName = "editor", FieldId = "field",

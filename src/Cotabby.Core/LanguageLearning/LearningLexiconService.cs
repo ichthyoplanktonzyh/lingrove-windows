@@ -10,7 +10,7 @@ namespace Cotabby.Core.LanguageLearning;
 /// There is no HTTP client or system-dictionary fallback in this boundary.
 /// </summary>
 public sealed class LearningLexiconService(ILearningLexiconResourceSource source, ILearningLexicalText text)
-    : ILearningUnitRecognizing, ILearningDictionaryProviding
+    : ILearningUnitRecognizing, ILearningDictionaryProviding, ILearningUnknownDictionaryProviding
 {
     private readonly SemaphoreSlim _gate = new(1, 1);
     private readonly Dictionary<string, LearningUnitRecognizer> _indices = new(StringComparer.Ordinal);
@@ -26,7 +26,13 @@ public sealed class LearningLexiconService(ILearningLexiconResourceSource source
         }, cancellationToken);
 
     public Task<LearningDictionaryResult> LookupAsync(string query, LearningLanguage language, bool expression,
-        CancellationToken cancellationToken = default) => SerializedAsync<LearningDictionaryResult>(() =>
+        CancellationToken cancellationToken = default) => LookupCoreAsync(query, language, expression, cancellationToken);
+
+    public Task<LearningDictionaryResult> LookupUnknownAsync(string query, bool expression,
+        CancellationToken cancellationToken = default) => LookupCoreAsync(query, null, expression, cancellationToken);
+
+    private Task<LearningDictionaryResult> LookupCoreAsync(string query, LearningLanguage? language, bool expression,
+        CancellationToken cancellationToken) => SerializedAsync<LearningDictionaryResult>(() =>
         {
             if (string.IsNullOrEmpty(query) || Encoding.UTF8.GetByteCount(query) > 256
                 || !InsertionSafetyGate.IsSafeToInsert(query))
@@ -38,13 +44,13 @@ public sealed class LearningLexiconService(ILearningLexiconResourceSource source
             return entries.Length == 0 ? LearningDictionaryResult.NotFound : new LearningDictionaryResult.Entries(entries);
         }, cancellationToken);
 
-    private LearningUnitRecognizer Index(LearningLanguage language)
+    private LearningUnitRecognizer Index(LearningLanguage? language)
     {
-        if (!Enum.IsDefined(language)) throw new LearningLexicalException(LearningLexicalFailure.InvalidInput);
-        string code = language is LearningLanguage.Chinese or LearningLanguage.TraditionalChinese ? "zh" : language.Code();
+        if (language is { } known && !Enum.IsDefined(known)) throw new LearningLexicalException(LearningLexicalFailure.InvalidInput);
+        string code = language is LearningLanguage.Chinese or LearningLanguage.TraditionalChinese ? "zh" : language?.Code() ?? "und";
         if (_indices.TryGetValue(code, out var index)) return index;
         _resource ??= source.Load();
-        index = new LearningUnitRecognizer(_resource.Entries.Where(entry => entry.Language == code).ToArray(), text);
+        index = new LearningUnitRecognizer(_resource.Entries.Where(entry => language is null || entry.Language == code).ToArray(), text);
         _indices.Add(code, index);
         return index;
     }

@@ -103,21 +103,25 @@ public sealed record VocabularyExample
 /// only by notebook navigation; generated meaning never invents a destination. No live recapture,
 /// file, dictionary/provider or credential is retained. A later archive commits it transactionally.
 /// </summary>
-public sealed record VocabularyCapture(string Expression, string DictionaryForm, LearningLanguage Language,
+public sealed record VocabularyCapture(string Expression, string DictionaryForm, LearningLanguage? Language,
     VocabularyEntryKind Kind, string Meaning = "", LearningLanguage? MeaningLanguage = null,
     VocabularyExample? Example = null, LearningExplanationRecord? Explanation = null, Guid? SenseId = null)
 {
+    /// <summary>Staged lookup pairs must not be replaced by a cached target-only explanation.</summary>
+    public bool AllowsExplanationEnrichment { get; init; } = true;
     public bool Equals(VocabularyCapture? other) => other is not null && Language == other.Language && Kind == other.Kind
         && CanonicalStringComparer.Instance.Equals(Expression, other.Expression)
         && CanonicalStringComparer.Instance.Equals(DictionaryForm, other.DictionaryForm)
         && CanonicalStringComparer.Instance.Equals(Meaning, other.Meaning) && MeaningLanguage == other.MeaningLanguage
-        && Example == other.Example && Explanation == other.Explanation && SenseId == other.SenseId;
+        && Example == other.Example && Explanation == other.Explanation && SenseId == other.SenseId
+        && AllowsExplanationEnrichment == other.AllowsExplanationEnrichment;
     public override int GetHashCode()
     {
         var hash = new HashCode();
         hash.Add(Expression, CanonicalStringComparer.Instance); hash.Add(DictionaryForm, CanonicalStringComparer.Instance);
         hash.Add(Language); hash.Add(Kind); hash.Add(Meaning, CanonicalStringComparer.Instance); hash.Add(MeaningLanguage);
         hash.Add(Example); hash.Add(Explanation); hash.Add(SenseId);
+        hash.Add(AllowsExplanationEnrichment);
         return hash.ToHashCode();
     }
 }

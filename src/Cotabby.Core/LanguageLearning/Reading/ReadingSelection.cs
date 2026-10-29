@@ -6,7 +6,12 @@ namespace Cotabby.Core.LanguageLearning.Reading;
 public sealed record ReadingSelection(Guid Id, string Text, int ProcessId, string FieldId, long FocusEpoch,
     int? SelectionStart, int SelectionLength, bool IsSecure, bool IsComplete,
     InputCompositionState Composition, long CompositionSequence, ScreenRect Anchor, ReadingContext? Context = null, LearningLanguage? LanguageHint = null,
-    Guid? SelectionAnchorId = null);
+    Guid? SelectionAnchorId = null)
+{
+    /// <summary>Nonblocking request-owned admission for final reading effects.</summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public Func<bool>? Admission { get; init; }
+}
 
 public enum ReadingBoundary { Container, LayoutBlock, Sentence, Crop, Unknown, Deadline }
 public enum ReadingContextMethod { Characters, Block, Paragraph, Sentence, MarkerWindow, MarkerWalk }

@@ -32,6 +32,8 @@
                        Foreground="{DynamicResource OrangeBrush}" Visibility="Collapsed" />
             <TextBlock x:Name="SubtitleText" Text="Bundled expression dictionary · definitions in English" FontSize="11"
                        TextWrapping="Wrap" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,10" />
+            <Button x:Name="ReadingMeaningButton" Content="Back to meaning" Focusable="False" HorizontalAlignment="Left"
+                    Padding="10,5" Margin="0,0,0,8" Visibility="Collapsed" Click="OnReadingMeaning" />
             <TextBlock x:Name="QueryText" FontSize="11" TextWrapping="Wrap" Visibility="Collapsed"
                        Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,10" />
             <StackPanel x:Name="PageButtons" Orientation="Horizontal" Margin="0,0,0,10" Visibility="Collapsed">

@@ -227,12 +227,13 @@ public sealed class LearningLocalTranslationEngine :
         try
         {
             linked.Token.ThrowIfCancellationRequested();
+            if (request.Admission?.Invoke() == false) throw new OperationCanceledException();
             var result = await prepared.Operation.GenerateAsync(
                 prepared.PromptTokens,
                 prepared.Sampling,
                 request.MaxOutputTokens,
                 forwardDelta,
-                linked.Token).ConfigureAwait(false);
+                linked.Token, request.Admission).ConfigureAwait(false);
             linked.Token.ThrowIfCancellationRequested();
             return result;
         }

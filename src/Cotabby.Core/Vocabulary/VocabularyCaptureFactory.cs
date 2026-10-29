@@ -65,7 +65,8 @@ public sealed class VocabularyCaptureFactory(ILearningLexicalText lexicalText, I
             example = example with { Ranges = [range], Meaning = "", MeaningLanguage = null };
         }
         else example = null;
-        return new(word.Text, word.Text, capture.Language, VocabularyEntryKind.Word, Example: example);
+        return new(word.Text, word.Text, capture.Language, VocabularyEntryKind.Word, Example: example)
+        { AllowsExplanationEnrichment = capture.AllowsExplanationEnrichment };
     }
     private static bool Ready(LearningPreviewState presentation) => presentation.Status == LearningPreviewStatus.Ready && presentation.Options is not null;
     private int WordCount(string text, LearningLanguage language)

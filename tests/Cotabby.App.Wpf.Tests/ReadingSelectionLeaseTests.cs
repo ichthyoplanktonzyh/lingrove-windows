@@ -10,6 +10,40 @@ namespace Cotabby.App.Wpf.Tests;
 public sealed class ReadingSelectionLeaseTests
 {
     [Fact]
+    public async Task LivePermissionClosesBeforeNotificationAndOnEpochChange()
+    {
+        if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;
+        using var focus = new UiaFocusTracker(NullLogger<UiaFocusTracker>.Instance);
+        long epoch = 3;
+        await using var lease = new Win32ReadingSelectionLease(focus, new FakeKeyboard(), new FakeEvidence { Block = false }, 10, 42, 3, null,
+            () => Interlocked.Read(ref epoch), () => 10, _ => 42);
+        Assert.True(lease.Capture(CancellationToken.None));
+        using var committed = new ManualResetEventSlim(); using var release = new ManualResetEventSlim();
+        lease.RetireCommittedForTest = () => { committed.Set(); release.Wait(); };
+        var retiring = Task.Run(lease.Retire);
+        try { Assert.True(committed.Wait(TimeSpan.FromSeconds(5))); Assert.False(lease.IsLive); }
+        finally { release.Set(); await retiring; }
+        await using var next = new Win32ReadingSelectionLease(focus, new FakeKeyboard(), new FakeEvidence { Block = false }, 10, 42, 3, null,
+            () => Interlocked.Read(ref epoch), () => 10, _ => 42);
+        Assert.True(next.Capture(CancellationToken.None)); Assert.True(next.IsLive);
+        Interlocked.Exchange(ref epoch, 4); Assert.False(next.IsLive);
+    }
+
+    [Fact]
+    public async Task LivePermissionRejectsForegroundAndProcessChangesWithoutEvents()
+    {
+        if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;
+        using var focus = new UiaFocusTracker(NullLogger<UiaFocusTracker>.Instance);
+        nint foreground = 10; int pid = 42;
+        await using var lease = new Win32ReadingSelectionLease(focus, new FakeKeyboard(), new FakeEvidence { Block = false }, 10, 42, 3, null,
+            () => 3, () => foreground, _ => pid);
+        Assert.True(lease.Capture(CancellationToken.None)); Assert.True(lease.IsLive);
+        foreground = 11; Assert.False(lease.IsLive);
+        foreground = 10; pid = 43; Assert.False(lease.IsLive);
+        pid = 42; Assert.True(lease.IsLive);
+    }
+
+    [Fact]
     public async Task CompletedValidationCannotPublishAfterRetirement()
     {
         if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;

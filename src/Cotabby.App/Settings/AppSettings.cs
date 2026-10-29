@@ -118,6 +118,9 @@ public sealed partial class AppSettings
     public KeyBinding GlobalToggle { get; set; } = KeyBinding.Unbound;
     /// <summary>Explicit, manual current-sentence translation. The Mac Option+T binding maps to Alt+T on Windows.</summary>
     public KeyBinding LearningTranslationShortcut { get; set; } = new(0x54, KeyModifiers.Alt, "Alt+T");
+    public bool LearningReadingEnabled { get; set; }
+    public LearningLanguage LearningReadingTargetLanguage { get; set; } = LearningLanguage.Chinese;
+    public KeyBinding LearningReadingShortcut { get; set; } = new(0x54, KeyModifiers.Alt | KeyModifiers.Shift, "Alt+Shift+T");
     // Interaction preferences borrow the explanation profile, never the translation destination.
     public bool ExpressionAssistEnabled { get; set; }
     public string ExpressionAssistTrigger { get; set; } = "??";
@@ -140,6 +143,7 @@ public sealed partial class AppSettings
             reservations.Add((ShortcutResolver.AcceptAll(process, overrides, AcceptAll), "Accept Entire Suggestion"));
         }
         if (LearningTranslationEnabled) reservations.Add((LearningTranslationShortcut, "Translation"));
+        if (LearningReadingEnabled) reservations.Add((LearningReadingShortcut, "Selected Text Reading"));
         return Cotabby.Core.ExpressionAssist.ExpressionAssistShortcutPolicy.Conflict(candidate, reservations);
     }
 

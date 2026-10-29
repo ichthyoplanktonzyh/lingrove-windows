@@ -7,6 +7,7 @@ using Cotabby.App.Review;
 using Cotabby.App.UI.Controls;
 using Cotabby.Core.Review;
 using Cotabby.Core.Text;
+using Cotabby.Core.Vocabulary.Frozen;
 
 namespace Cotabby.App.UI.Settings.Panes;
 
@@ -23,6 +24,10 @@ internal sealed class AnkiReviewSettingsSection : StackPanel
     private readonly FrameworkElement _profileRow;
     private readonly ProgressBar _progress = new() { IsIndeterminate = true, Width = 48, Height = 3 };
     private bool _refreshing, _appeared, _closed;
+    private FrozenVocabularyImportSnapshot? _canonicalSnapshot;
+    private IDisposable? _canonicalSubscription;
+    private CancellationTokenSource? _appearanceCancellation;
+    private long _appearanceGeneration;
     private string _observedAddress;
     internal TextBox AddressBox { get; } = new TextBox().Styled("Input");
     internal PasswordBox KeyBox { get; } = new PasswordBox().Styled("PasswordInput");
@@ -80,11 +85,30 @@ internal sealed class AnkiReviewSettingsSection : StackPanel
         {
             if (_appeared) return;
             _appeared = true;
-            if (_feature.Controller.StoreOrNull is not null) _ = LoadStore();
+            if (_feature.CanonicalStore is { } canonical) StartCanonicalStore(canonical);
+            else if (_feature.Controller.StoreOrNull is not null) _ = LoadStore();
             _interaction.ReadKeyOnAppearance();
             Refresh();
         }
         else EndAppearance();
+    }
+    private void StartCanonicalStore(ICanonicalVocabularyStore store)
+    {
+        long generation = ++_appearanceGeneration; var cancellation = _appearanceCancellation = new CancellationTokenSource();
+        _canonicalSnapshot = null;
+        void Publish(FrozenVocabularyImportSnapshot snapshot)
+        {
+            if (!_appeared || _closed || generation != _appearanceGeneration) return;
+            if (_canonicalSnapshot is null || snapshot.Revision > _canonicalSnapshot.Revision) { _canonicalSnapshot = snapshot; Refresh(); }
+        }
+        _canonicalSubscription = store.Subscribe(snapshot => { if (!Dispatcher.HasShutdownStarted) _ = Dispatcher.BeginInvoke(() => Publish(snapshot)); });
+        _ = Load();
+        async Task Load()
+        {
+            try { await _feature.RunAsync(async featureToken => { using var linked = CancellationTokenSource.CreateLinkedTokenSource(featureToken, cancellation.Token); var value = await store.ReadAsync(linked.Token); Publish(value); }); }
+            catch (OperationCanceledException) { } catch (ObjectDisposedException) { }
+            catch (Exception error) { if (_appeared && generation == _appearanceGeneration) { StatusBox.Text = error.Message; } }
+        }
     }
     private async Task LoadStore()
     {
@@ -94,7 +118,9 @@ internal sealed class AnkiReviewSettingsSection : StackPanel
     private void EndAppearance()
     {
         if (!_appeared) return;
-        _interaction.SaveKey(); _appeared = false;
+        _interaction.SaveKey(); _appeared = false; ++_appearanceGeneration;
+        _canonicalSubscription?.Dispose(); _canonicalSubscription = null;
+        var cancellation = _appearanceCancellation; _appearanceCancellation = null; try { cancellation?.Cancel(); } finally { cancellation?.Dispose(); } _canonicalSnapshot = null;
         // Clear the masked control under its event guard, but retain the original @State-like
         // draft across hides. If Save and the next Read both fail, the user can still retry it.
         // Destroying that draft on hide would silently lose the source's failure recovery.
@@ -133,20 +159,24 @@ internal sealed class AnkiReviewSettingsSection : StackPanel
                 DeckPicker.SelectedItem = DeckPicker.Items.Cast<string>().First(value => CanonicalStringComparer.Instance.Equals(value, settings.Deck));
             }
             _templates.Children.Clear();
-            if (controller.StoreOrNull is not { } store)
+            if (_feature.CanonicalStore is { } canonical)
             {
-                _templates.Children.Add(new TextBlock { Text = AnkiReviewController.NotebookUnavailableMessage, TextWrapping = TextWrapping.Wrap,
-                    Foreground = System.Windows.SystemColors.GrayTextBrush, Margin = new Thickness(0, 4, 0, 4) });
-            }
-            else foreach (var template in store.ReviewTemplates)
-            {
-                var delete = new Button { Content = "Delete" }.Styled("Btn"); AutomationProperties.SetName(delete, "Delete template " + template.Name);
-                delete.Click += async (_, _) =>
+                if (_canonicalSnapshot is { } snapshot) foreach (var template in snapshot.Document.ReviewTemplates ?? []) AddTemplate(template.Name, async () =>
                 {
-                    try { await _feature.RunAsync(_ => controller.Store.RemoveTemplateAsync(template.Id)); }
-                    catch { /* Original settings uses try?: only acknowledged Store state removes the row. */ }
-                };
-                var name = Ui.Text(template.Name); name.VerticalAlignment = VerticalAlignment.Center;
+                    long generation = _appearanceGeneration;
+                    try { await _feature.RunAsync(async _ => { var acknowledged = await canonical.RemoveTemplateAsync(template.Id, CancellationToken.None); if (_appeared && !_closed && generation == _appearanceGeneration && (_canonicalSnapshot is null || acknowledged.Revision > _canonicalSnapshot.Revision)) { _canonicalSnapshot = acknowledged; Refresh(); } }); }
+                    catch (Exception error) { if (_appeared && !_closed && generation == _appearanceGeneration) StatusBox.Text = error.Message; }
+                });
+            }
+            else if (controller.StoreOrNull is { } store) foreach (var template in store.ReviewTemplates) AddTemplate(template.Name, async () =>
+            { try { await _feature.RunAsync(_ => controller.Store.RemoveTemplateAsync(template.Id)); } catch { } });
+            else _templates.Children.Add(new TextBlock { Text = AnkiReviewController.NotebookUnavailableMessage, TextWrapping = TextWrapping.Wrap,
+                    Foreground = System.Windows.SystemColors.GrayTextBrush, Margin = new Thickness(0, 4, 0, 4) });
+            void AddTemplate(string title, Func<Task> remove)
+            {
+                var delete = new Button { Content = "Delete" }.Styled("Btn"); AutomationProperties.SetName(delete, "Delete template " + title);
+                delete.Click += async (_, _) => { delete.IsEnabled = false; try { await remove(); } finally { delete.IsEnabled = true; } };
+                var name = Ui.Text(title); name.VerticalAlignment = VerticalAlignment.Center;
                 var row = new DockPanel { Margin = new(0, 3, 0, 3), LastChildFill = true };
                 DockPanel.SetDock(delete, Dock.Right); row.Children.Add(delete); row.Children.Add(name); _templates.Children.Add(row);
             }

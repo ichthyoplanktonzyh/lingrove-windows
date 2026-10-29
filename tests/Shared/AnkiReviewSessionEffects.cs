@@ -98,7 +98,7 @@ internal sealed class SessionTestSpeech : ISpeechExporting
     public bool Pause { get; set; }
     public TaskCompletionSource Entered { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
     public string ExportConfigurationId => "fixture";
-    public SpeechExportRequest ExportRequest(string text, LearningLanguage language, string? context = null) => new(text, language, SpeechExportPolicy.Digest(Encoding.UTF8.GetBytes(text)), new SpeechExportRequest.Source.System("fixture"));
+    public SpeechExportRequest ExportRequest(string text, LearningLanguage? language, string? context = null) => new(text, language ?? throw new InvalidOperationException("Missing language"), SpeechExportPolicy.Digest(Encoding.UTF8.GetBytes(text)), new SpeechExportRequest.Source.System("fixture"));
     public async Task<SpeechExportAudio> ExportAudioAsync(SpeechExportRequest request, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested(); Exports++; Entered.TrySetResult();

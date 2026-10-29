@@ -9,7 +9,7 @@ namespace Cotabby.Inference.Speech;
 public interface ISpeechExporting
 {
     string ExportConfigurationId { get; }
-    SpeechExportRequest ExportRequest(string text, LearningLanguage language, string? context = null);
+    SpeechExportRequest ExportRequest(string text, LearningLanguage? language, string? context = null);
     Task<SpeechExportAudio> ExportAudioAsync(SpeechExportRequest request, CancellationToken cancellationToken = default);
     void Audition(SpeechExportAudio audio, Guid ownerId, LearningLanguage language);
     void Stop(Guid ownerId);

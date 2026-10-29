@@ -4,6 +4,7 @@ using Cotabby.App.Review;
 using Cotabby.App.UI.Review;
 using Cotabby.Core.Vocabulary.Frozen;
 using Cotabby.Core.Review;
+using Cotabby.Win32.Vocabulary;
 
 namespace Cotabby.App.UI.Vocabulary;
 
@@ -13,6 +14,7 @@ namespace Cotabby.App.UI.Vocabulary;
 internal sealed class FrozenVocabularyReviewSection
 {
     private readonly Window _owner;
+    private readonly IVocabularyClipboardImageTransfer? _clipboard;
     private readonly ICanonicalVocabularyStore _store;
     private readonly AnkiReviewFeature _feature;
     private readonly Action _configure, _changed;
@@ -27,8 +29,8 @@ internal sealed class FrozenVocabularyReviewSection
     internal Task? LastOperation => _operation;
     internal bool IsBusy => _operation is not null || _window is not null;
     internal CanonicalAnkiReviewWindow? CardWindow => _window;
-    internal FrozenVocabularyReviewSection(Window owner, ICanonicalVocabularyStore store, AnkiReviewFeature feature, Action configure, Action changed, Func<string, bool>? confirm = null, Func<Guid, Guid, bool>? canAct = null)
-    { _owner = owner; _store = store; _feature = feature; _configure = configure; _changed = changed; _canAct = canAct ?? ((_, _) => true); _confirm = confirm ?? (name => MessageBox.Show(owner, $"Remove local card ‘{name}’?", "Remove card", MessageBoxButton.OKCancel, MessageBoxImage.Warning) == MessageBoxResult.OK); }
+    internal FrozenVocabularyReviewSection(Window owner, ICanonicalVocabularyStore store, AnkiReviewFeature feature, Action configure, Action changed, Func<string, bool>? confirm = null, Func<Guid, Guid, bool>? canAct = null, IVocabularyClipboardImageTransfer? clipboard = null)
+    { _clipboard = clipboard; _owner = owner; _store = store; _feature = feature; _configure = configure; _changed = changed; _canAct = canAct ?? ((_, _) => true); _confirm = confirm ?? (name => MessageBox.Show(owner, $"Remove local card ‘{name}’?", "Remove card", MessageBoxButton.OKCancel, MessageBoxImage.Warning) == MessageBoxResult.OK); }
 
     internal FrameworkElement Render(VocabularyEntry entry, VocabularySense sense)
     {
@@ -74,7 +76,7 @@ internal sealed class FrozenVocabularyReviewSection
                     session = await CanonicalAnkiReviewSession.OpenAsync(_feature.Controller, _store, entryId, senseId, cardId, linked.Token);
                 });
                 if (_retiring || !_canAct(entryId, senseId)) return;
-                var child = new CanonicalAnkiReviewWindow(session!, _feature.RunAsync, _configure) { Owner = _owner }; _window = child;
+                var child = new CanonicalAnkiReviewWindow(session!, _feature.RunAsync, _configure, _clipboard) { Owner = _owner }; _window = child;
                 session = null; // child owns only this borrowed session, never the shared services
                 child.Closed += (_, _) => { if (ReferenceEquals(_window, child)) _window = null; if (!_retiring) Notify(); };
                 try { child.ShowDialog(); } finally { await child.RetireAsync(); }

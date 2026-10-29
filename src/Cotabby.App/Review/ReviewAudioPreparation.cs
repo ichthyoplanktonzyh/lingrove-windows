@@ -23,9 +23,13 @@ internal sealed class ReviewAudioPreparation(ISpeechExporting? speech) : INotify
 
     public SpeechExportRequest Request(ReviewAudioKind kind, VocabularyEntry entry, ReviewCardContent content)
     {
+        return Request(kind, entry.Language, content);
+    }
+    public SpeechExportRequest Request(ReviewAudioKind kind, Cotabby.Core.LanguageLearning.LearningLanguage? language, ReviewCardContent content)
+    {
         if (Speech is null) throw new SpeechException(SpeechFailure.IncompleteConfiguration);
         return Speech.ExportRequest(kind == ReviewAudioKind.Expression ? content.Expression : content.Sentence,
-            entry.Language, content.Sentence.Length == 0 ? null : content.Sentence);
+            language, content.Sentence.Length == 0 ? null : content.Sentence);
     }
     public async Task<ReviewPreparedAudio> PrepareAsync(ReviewAudioKind kind, SpeechExportRequest request,
         bool force = false, CancellationToken cancellationToken = default)

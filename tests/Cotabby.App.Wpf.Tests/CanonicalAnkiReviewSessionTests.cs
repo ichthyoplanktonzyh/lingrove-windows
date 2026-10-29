@@ -9,6 +9,8 @@ using Cotabby.Core.Vocabulary.EntryInput;
 using Cotabby.ReviewTesting;
 using Cotabby.Win32.Vocabulary;
 using Cotabby.Core.LanguageLearning;
+using Cotabby.Core.Speech;
+using Cotabby.Inference.Speech;
 using F = Cotabby.Core.Vocabulary.Frozen;
 
 namespace Cotabby.App.Wpf.Tests;
@@ -76,6 +78,86 @@ public sealed class CanonicalAnkiReviewSessionTests(WpfDispatcher dispatcher)
         byte[] bytes = Convert.FromBase64String(json.RootElement.GetProperty("input").GetString()!);
         return new(new(Convert.ToHexStringLower(SHA256.HashData(bytes)), 80, 40, bytes.Length), bytes);
     }
+    private sealed class HeldSpeech : ISpeechExporting
+    {
+        internal string Configuration = "one"; internal readonly TaskCompletionSource Entered = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        internal readonly TaskCompletionSource<SpeechExportAudio> Release = new(TaskCreationOptions.RunContinuationsAsynchronously); internal int Auditions;
+        public string ExportConfigurationId => Configuration;
+        public SpeechExportRequest ExportRequest(string text, LearningLanguage? language, string? context = null) => new(text, language ?? throw new InvalidOperationException("Missing language"), SpeechExportPolicy.Digest(System.Text.Encoding.UTF8.GetBytes(text)), new SpeechExportRequest.Source.System("fake"));
+        public async Task<SpeechExportAudio> ExportAudioAsync(SpeechExportRequest request, CancellationToken token = default) { Entered.TrySetResult(); return await Release.Task.WaitAsync(token); }
+        public void Audition(SpeechExportAudio audio, Guid owner, LearningLanguage language) => Auditions++;
+        public void Stop(Guid owner) { }
+        internal void Complete() => Release.TrySetResult(SpeechExportPolicy.Wav(new byte[2400 * sizeof(float)], 24000));
+    }
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public Task HeldAudioNeverAuditionsOrWritesAfterDraftOrConfigurationChanges(bool configuration) => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "canonical-audio-held-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            await using var store = FrozenVocabularyStoreFactory.Create(Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName), false); var (entry, sense) = await Seed(store);
+            var speech = new HeldSpeech(); var server = new SessionTestServer(); var controller = new AnkiReviewController(Settings(), null, server, speech: speech);
+            using var session = await CanonicalAnkiReviewSession.OpenAsync(controller, store, entry, sense);
+            session.Plan = session.Plan with { AudioKinds = new HashSet<ReviewAudioKind> { ReviewAudioKind.Expression } };
+            var preparing = session.PrepareAudioAsync(ReviewAudioKind.Expression, true); await speech.Entered.Task;
+            if (configuration) speech.Configuration = "two"; else session.Plan = session.Plan with { Answer = "changed" };
+            speech.Complete(); await preparing; Assert.Equal(0, speech.Auditions); Assert.NotNull(session.Message); Assert.Empty(server.Calls);
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    });
+    [Fact]
+    public Task HeldAudioSendRejectsChangedSpeechConfigurationBeforeRemoteWrite() => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "canonical-audio-send-held-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            await using var store = FrozenVocabularyStoreFactory.Create(Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName), false); var (entry, sense) = await Seed(store);
+            var speech = new HeldSpeech(); var server = new SessionTestServer(); var controller = new AnkiReviewController(Settings(), null, server, speech: speech);
+            using var session = await CanonicalAnkiReviewSession.OpenAsync(controller, store, entry, sense);
+            session.Plan = session.Plan with { AudioKinds = new HashSet<ReviewAudioKind> { ReviewAudioKind.Expression } };
+            var send = session.SendAsync(); await speech.Entered.Task; speech.Configuration = "changed"; speech.Complete();
+            Assert.False(await send); Assert.Equal(0, server.AddCount);
+            Assert.DoesNotContain(server.Calls, call => call.GetType().GetProperty("action")!.GetValue(call)!.ToString() is "storeMediaFile" or "addNote" or "updateNoteFields");
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    });
+    [Fact]
+    public Task CancelAfterConfirmedAudioStillPersistsMediaReceipt() => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "canonical-audio-ack-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            await using var store = FrozenVocabularyStoreFactory.Create(Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName), false); var (entry, sense) = await Seed(store);
+            using var cancellation = new CancellationTokenSource(); var server = new SessionTestServer { CancelAfterMedia = cancellation.Cancel }; var speech = new SessionTestSpeech();
+            using var session = await CanonicalAnkiReviewSession.OpenAsync(new AnkiReviewController(Settings(), null, server, speech: speech), store, entry, sense);
+            session.Plan = session.Plan with { AudioKinds = new HashSet<ReviewAudioKind> { ReviewAudioKind.Expression } };
+            Assert.False(await session.SendAsync(cancellationToken: cancellation.Token)); Assert.True(cancellation.IsCancellationRequested);
+            Assert.NotNull((await store.ReadAsync()).Document.Collections[0].Review!.Plan.AudioReceipts![ReviewAudioKind.Expression]); Assert.Equal(0, server.AddCount);
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    });
+    [Fact]
+    public Task AudioReceiptPersistsBeforeLostNoteReplyAndRetryReusesMedia() => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "canonical-audio-" + Guid.NewGuid().ToString("N")); string path = Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName);
+        try
+        {
+            await using var store = FrozenVocabularyStoreFactory.Create(path, false); var (entry, sense) = await Seed(store);
+            var server = new SessionTestServer { LoseAdd = true }; var speech = new SessionTestSpeech(); var controller = new AnkiReviewController(Settings(), null, server, speech: speech);
+            using var session = await CanonicalAnkiReviewSession.OpenAsync(controller, store, entry, sense);
+            session.Plan = session.Plan with { AudioKinds = new HashSet<ReviewAudioKind> { ReviewAudioKind.Expression } };
+            Assert.False(await session.SendAsync()); Assert.Equal(1, server.AddCount); Assert.Equal(1, speech.Exports);
+            var saved = (await store.ReadAsync()).Document.Collections[0].Review!;
+            Assert.True(saved.Plan.AudioReceipts!.ContainsKey(ReviewAudioKind.Expression)); Assert.Null(saved.ActiveBinding!.NoteId);
+            Assert.True(await session.SendAsync()); Assert.Equal(1, server.AddCount); Assert.Equal(1, speech.Exports);
+            Assert.NotNull((await store.ReadAsync()).Document.Collections[0].Review!.ActiveBinding!.NoteId);
+            var actions = server.Calls.Select(value => value.GetType().GetProperty("action")!.GetValue(value)!.ToString()).ToArray();
+            Assert.True(Array.IndexOf(actions, "storeMediaFile") < Array.IndexOf(actions, "addNote")); Assert.Contains("getMediaFilesNames", actions);
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    });
     [Fact]
     public Task LostReplyRetainsPendingIdentityAndReopenDoesNotDuplicate() => dispatcher.RunAsync(async () =>
     {

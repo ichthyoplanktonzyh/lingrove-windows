@@ -21,6 +21,13 @@ public sealed class SpeechLanguageResolverTests
         Assert.Equal("f36aacd9320d73e760f2f96fd91a4d97d6dfd0b68fb3bc7d7edc96a55ccb4c93", Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(string.Join("\n", rows.Select(r => r.GetProperty("id").GetString()!).Order(StringComparer.Ordinal))))));
         return rows.Select(r => new object[] { r.GetProperty("id").GetString()!, r.Clone() }).ToArray();
     }
+    [Fact]
+    public void MissingHintRequiresConfidentPhraseOrContextEvidence()
+    {
+        Assert.Null(SpeechLanguageResolver.Resolve("hi", null, _ => new Dictionary<string, double>()));
+        Assert.Equal(LearningLanguage.English, SpeechLanguageResolver.Resolve("hi", null, _ => new Dictionary<string, double> { ["en"] = 0.9 }, "This is enough evidence"));
+        Assert.Null(SpeechLanguageResolver.Resolve("This is enough evidence", null, _ => new Dictionary<string, double> { ["xx"] = 0.9 }));
+    }
     [Theory, MemberData(nameof(Cases))]
     public void OriginalTextContextAndHintResolution(string id, JsonElement row)
     {

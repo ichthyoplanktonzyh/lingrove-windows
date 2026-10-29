@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using Cotabby.App.Review;
 using Cotabby.App.UI.Vocabulary;
 using Cotabby.Core.Review;
+using Cotabby.Win32.Vocabulary;
 
 namespace Cotabby.App.UI.Review;
 
@@ -14,6 +15,7 @@ internal sealed class CanonicalAnkiReviewBatchWindow : Window
     private readonly CanonicalAnkiReviewBatchSession _batch;
     private readonly AnkiReviewFeature _feature;
     private readonly Action _configure;
+    private readonly IVocabularyClipboardImageTransfer? _clipboard;
     private readonly CancellationTokenSource _lifetime = new();
     private readonly StackPanel _rows = new();
     private readonly TextBox _deck = new();
@@ -32,9 +34,9 @@ internal sealed class CanonicalAnkiReviewBatchWindow : Window
     internal CanonicalAnkiReviewBatchSession Batch => _batch;
     internal StackPanel Rows => _rows;
     internal TextBlock MessageText => _message;
-    internal CanonicalAnkiReviewBatchWindow(CanonicalAnkiReviewBatchSession batch, AnkiReviewFeature feature, Action configure)
+    internal CanonicalAnkiReviewBatchWindow(CanonicalAnkiReviewBatchSession batch, AnkiReviewFeature feature, Action configure, IVocabularyClipboardImageTransfer? clipboard = null)
     {
-        _batch = batch; _feature = feature; _configure = configure; Title = "Review cards"; Width = 760; Height = 740; MinWidth = 580; MinHeight = 500; WindowStartupLocation = WindowStartupLocation.CenterOwner;
+        _batch = batch; _feature = feature; _configure = configure; _clipboard = clipboard; Title = "Review cards"; Width = 760; Height = 740; MinWidth = 580; MinHeight = 500; WindowStartupLocation = WindowStartupLocation.CenterOwner;
         VocabularyNotebookTheme.Follow(this); var root = new DockPanel { Margin = new Thickness(22) }; Content = root;
         var heading = VocabularyInputControls.Heading("Review cards"); DockPanel.SetDock(heading, Dock.Top); root.Children.Add(heading);
         var footer = new DockPanel { Margin = new Thickness(0, 14, 0, 0) }; DockPanel.SetDock(footer, Dock.Bottom); root.Children.Add(footer); _count.VerticalAlignment = VerticalAlignment.Center; DockPanel.SetDock(_count, Dock.Left); footer.Children.Add(_count);
@@ -97,7 +99,7 @@ internal sealed class CanonicalAnkiReviewBatchWindow : Window
     {
         var session = await _batch.PrepareAsync(id, token); if (session is null || _retiring) { session?.Dispose(); return; }
         CanonicalAnkiReviewWindow child;
-        try { child = new CanonicalAnkiReviewWindow(session, _feature.RunAsync, _configure) { Owner = this }; }
+        try { child = new CanonicalAnkiReviewWindow(session, _feature.RunAsync, _configure, _clipboard) { Owner = this }; }
         catch { session.Dispose(); throw; }
         _preparation = child;
         try { child.ShowDialog(); } finally { await child.RetireAsync(); _preparation = null; }

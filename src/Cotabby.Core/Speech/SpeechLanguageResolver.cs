@@ -12,7 +12,7 @@ public static class SpeechLanguageResolver
 {
     public const int MaximumSampleLength = 600;
 
-    public static LearningLanguage? Resolve(string text, LearningLanguage hint,
+    public static LearningLanguage? Resolve(string text, LearningLanguage? hint,
         Func<string, IReadOnlyDictionary<string, double>> recognize, string? context = null)
     {
         if (ConfidentLanguage(text, recognize) is { } language) return LearningLanguages.FromCode(language);

@@ -12,6 +12,7 @@ namespace Cotabby.App.Review;
 internal sealed partial class CanonicalAnkiReviewSession : INotifyPropertyChanged, IDisposable
 {
     internal AnkiReviewController Controller { get; }
+    internal ReviewAudioPreparation Audio { get; }
     internal F.ICanonicalVocabularyStore Store { get; }
     internal Guid EntryId { get; }
     internal Guid SenseId { get; }
@@ -57,7 +58,7 @@ internal sealed partial class CanonicalAnkiReviewSession : INotifyPropertyChange
     internal void SelectBinding(Guid? id) { _bindingId = id; if (Binding is { } value) Deck = value.Deck; if (!Same(Model, AnkiReviewPolicy.PresetName)) Plan = Plan with { Recognition = true }; Conflicts = []; _keepRemote.Clear(); _conflictRemote = null; Changed(); }
     private CanonicalAnkiReviewSession(AnkiReviewController controller, F.ICanonicalVocabularyStore store, F.FrozenVocabularyImportSnapshot snapshot, F.VocabularyEntry entry, F.VocabularySense sense, Guid? cardId)
     {
-        Controller = controller; Store = store; _snapshot = snapshot; _context = SynchronizationContext.Current; EntryId = entry.Id; SenseId = sense.Id; CardId = cardId;
+        Controller = controller; Audio = new ReviewAudioPreparation(controller.Speech); Store = store; _snapshot = snapshot; _context = SynchronizationContext.Current; EntryId = entry.Id; SenseId = sense.Id; CardId = cardId;
         _initialDefaultDeck = controller.Settings.Deck; _initialDefaultRecognition = controller.Settings.DefaultRecognition; _initialDefaultGap = controller.Settings.DefaultGap;
         _baseline = ReviewValue(sense, cardId); var initial = _baseline?.Plan ?? CanonicalReviewCardPolicy.InitialPlan(sense);
         if (cardId is { } id && _baseline is null) initial = new ReviewPlan(id) { Name = "New card", Layout = ReviewLayoutPolicy.Preset(0), ExampleId = sense.Examples.FirstOrDefault()?.Id };
@@ -97,7 +98,7 @@ internal sealed partial class CanonicalAnkiReviewSession : INotifyPropertyChange
         if (changed && notification) Changed();
     }
     public void Dispose()
-    { lock (_snapshotGate) _retired = true; Interlocked.Exchange(ref _subscription, null)?.Dispose(); }
+    { lock (_snapshotGate) _retired = true; Interlocked.Exchange(ref _subscription, null)?.Dispose(); Audio.Discard(); }
     private static (F.VocabularyEntry Entry, F.VocabularySense Sense) Locate(F.FrozenVocabularyImportSnapshot snapshot, Guid entryId, Guid senseId)
     {
         var entry = snapshot.Document.CollectedEntries.FirstOrDefault(value => value.Id == entryId);
@@ -121,7 +122,7 @@ internal sealed partial class CanonicalAnkiReviewSession : INotifyPropertyChange
     }
     private void RequireNoAudio()
     {
-        if ((Plan.AudioKinds?.Count ?? 0) != 0 || (Plan.Layout?.AudioKinds.Count ?? 0) != 0)
+        if (((Plan.AudioKinds?.Count ?? 0) != 0 || (Plan.Layout?.AudioKinds.Count ?? 0) != 0) && Audio.Speech is null)
             throw new AnkiReviewException("Speech is not available for review audio.");
     }
     private sealed record SendState(ReviewPlan Plan, string Deck, Guid? BindingId, string Model, IReadOnlyDictionary<ReviewField, string> Mapping);
@@ -130,7 +131,7 @@ internal sealed partial class CanonicalAnkiReviewSession : INotifyPropertyChange
         && Same(Model, state.Model) && Mapping.Count == state.Mapping.Count
         && Mapping.All(pair => state.Mapping.TryGetValue(pair.Key, out var value) && Same(pair.Value, value));
     private void RequireSendState()
-    { RequireNoAudio(); if (_sendState is not { } state || !MatchesSendState(state)) throw Conflict(); }
+    { RequireNoAudio(); if (_sendState is not { } state || !MatchesSendState(state) || _sendScope is not { } scope || !Controller.Matches(scope)) throw Conflict(); }
     internal IReadOnlyDictionary<ReviewField, string> Mapping => CardId is not null ? ReviewLayoutPolicy.Mapping : Same(Model, AnkiReviewPolicy.PresetName)
         ? new ReadOnlyDictionary<ReviewField, string>(AnkiReviewPolicy.PresetMapping.Where(pair => pair.Key is not (ReviewField.ExpressionAudio or ReviewField.SentenceAudio) || AvailableFields.Count == 0 || Has(AvailableFields, FieldName(pair.Key))).ToDictionary(pair => pair.Key, pair => pair.Value))
         : Binding?.Mapping ?? Controller.Settings.EffectiveMapping;
@@ -158,6 +159,7 @@ internal sealed partial class CanonicalAnkiReviewSession : INotifyPropertyChange
             if (_baseline?.NeedsBindingChoice == true && BindingId is null || Deck.Length == 0
                 || Binding?.NoteId is null && Catalog is { } catalog && !Has(catalog.Decks, Deck)) return "Choose a deck and an Anki association.";
             var content = CanonicalReviewCardPolicy.Content(current.Entry, current.Sense, Plan);
+            ValidateAudioMapping(content);
             if (Same(Model, AnkiReviewPolicy.PresetName) && Plan.Gap && content.SenseContent.Count > 0 && !SafeGapFront && !Loading)
                 return "Update the Lingrove template before adding explanation content to gap cards.";
             var fields = AnkiReviewPolicy.Fields(content, Binding?.OriginSenseId ?? CardId ?? SenseId, Mapping, Plan.FieldOverrides);

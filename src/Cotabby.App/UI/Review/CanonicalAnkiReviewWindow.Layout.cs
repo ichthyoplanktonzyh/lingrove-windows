@@ -1,6 +1,10 @@
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Interop;
+using System.Windows.Media;
+using Cotabby.Win32.Vocabulary;
 using System.Windows.Media.Imaging;
 using Cotabby.App.UI.Vocabulary;
 using Cotabby.Core.Review;
@@ -13,6 +17,8 @@ namespace Cotabby.App.UI.Review;
 /// Send and Save template cross the shared Store's acknowledged transaction boundary.</summary>
 internal sealed partial class CanonicalAnkiReviewWindow
 {
+    private WindowsVocabularyFileDrop? _layoutDrop;
+    private readonly Dictionary<Guid, FrameworkElement> _layoutDropTargets = [];
     private readonly StackPanel _layoutPanel = new(), _parts = new();
     private readonly TextBox _cardName = new(), _templateName = new();
     private readonly ComboBox _layoutExample = new(), _applyLayout = new(), _addPart = new();
@@ -83,7 +89,7 @@ internal sealed partial class CanonicalAnkiReviewWindow
             _applyLayout.Items.Clear(); for (int i = 0; i < 4; i++) _applyLayout.Items.Add(new LayoutChoice(new[] { "Expression → meaning", "Gap → expression", "Image → expression", "Blank card" }[i], ReviewLayoutPolicy.Preset(i)));
             foreach (var template in _session.Snapshot.Document.ReviewTemplates ?? []) _applyLayout.Items.Add(new LayoutChoice(template.Name, template.Layout));
             _applyLayout.SelectedIndex = -1;
-            _parts.Children.Clear(); var values = SideParts;
+            _parts.Children.Clear(); _layoutDropTargets.Clear(); var values = SideParts;
             for (int i = 0; i < values.Count; i++)
             {
                 int index = i; var part = values[i]; var panel = new StackPanel { Margin = new Thickness(0, 0, 0, 12) }; var header = new WrapPanel();
@@ -102,7 +108,13 @@ internal sealed partial class CanonicalAnkiReviewWindow
                 {
                     var caption = new CheckBox { Content = "Show image caption", IsChecked = part.ShowCaption }; caption.Click += (_, _) => { ChangePart(part.Id, p => p with { ShowCaption = caption.IsChecked == true }); RefreshDraft(); }; panel.Children.Add(caption);
                 }
-                if (part.Source is ReviewContentSource.ExpressionAudio or ReviewContentSource.SentenceAudio) panel.Children.Add(VocabularyInputControls.Caption("Speech is unavailable. Remove this audio slot before sending."));
+                if (part.Source is ReviewContentSource.ExpressionAudio or ReviewContentSource.SentenceAudio)
+                {
+                    var kind = part.Source == ReviewContentSource.ExpressionAudio ? ReviewAudioKind.Expression : ReviewAudioKind.Sentence;
+                    panel.Children.Add(LayoutAction("Preview audio", () => Start(token => _session.PrepareAudioAsync(kind, true, token: token))));
+                    panel.Children.Add(LayoutAction("Regenerate audio", () => Start(token => _session.PrepareAudioAsync(kind, false, true, token))));
+                    if (_session.Audio.Speech is null) panel.Children.Add(VocabularyInputControls.Caption("Speech is unavailable. Remove this audio slot before sending."));
+                }
                 if (part.Source == ReviewContentSource.Custom) BuildCustomContent(panel, part);
                 _parts.Children.Add(VocabularyInputControls.Group(("", panel)));
             }
@@ -114,6 +126,8 @@ internal sealed partial class CanonicalAnkiReviewWindow
     { var values = SideParts.ToArray(); int other = index + delta; if (other < 0 || other >= values.Length) return; (values[index], values[other]) = (values[other], values[index]); SetParts(values); RenderLayout(); RefreshDraft(); }
     private void BuildCustomContent(StackPanel panel, ReviewCardPart part)
     {
+        _layoutDropTargets[part.Id] = panel;
+        CommandManager.AddPreviewExecutedHandler(panel, (_, e) => { if (e.Command == ApplicationCommands.Paste && PasteLayoutImage(part.Id)) e.Handled = true; });
         foreach (var block in part.Content)
         {
             var tools = new WrapPanel(); int index = part.Content.ToList().FindIndex(b => b.Id == block.Id);
@@ -132,7 +146,9 @@ internal sealed partial class CanonicalAnkiReviewWindow
                 var caption = new TextBox { Text = image.Caption }; VocabularyNotebookTheme.Input(caption); caption.TextChanged += (_, _) => { if (!_updating) ChangeBlock(part.Id, block.Id, b => b with { Content = ((VocabularyBlockContent.Image)b.Content) with { Caption = caption.Text } }); }; panel.Children.Add(caption);
             }
         }
-        var add = new WrapPanel(); var textButton = LayoutAction("Add text", () => { ChangePart(part.Id, p => p with { Content = p.Content.Append(VocabularyContentBlock.Create(new VocabularyBlockContent.Text(new()))).ToArray() }); RenderLayout(); RefreshDraft(); }); textButton.IsEnabled = part.Content.Count < VocabularyContentPolicy.MaximumBlocks; add.Children.Add(textButton);
+        var add = new WrapPanel();
+        var textButton = LayoutAction("Add text", () => { ChangePart(part.Id, p => p with { Content = p.Content.Append(VocabularyContentBlock.Create(new VocabularyBlockContent.Text(new()))).ToArray() }); RenderLayout(); RefreshDraft(); }); textButton.IsEnabled = part.Content.Count < VocabularyContentPolicy.MaximumBlocks; add.Children.Add(textButton);
+        var paste = LayoutAction("Paste image", () => PasteLayoutImage(part.Id)); paste.IsEnabled = _clipboard is not null && part.Content.Count < VocabularyContentPolicy.MaximumBlocks; add.Children.Add(paste);
         var imageButton = LayoutAction("Add image", () => { var dialog = new OpenFileDialog { Title = "Add image", Filter = "Images|*.png;*.jpg;*.jpeg;*.tif;*.tiff;*.bmp;*.gif;*.ico;*.webp;*.heic;*.heif", Multiselect = false }; if (dialog.ShowDialog(this) == true) ImportLayoutImage(part.Id, dialog.FileName); }); imageButton.IsEnabled = part.Content.Count < VocabularyContentPolicy.MaximumBlocks; add.Children.Add(imageButton); panel.Children.Add(add);
     }
     private void MoveBlock(Guid partId, Guid blockId, int delta)
@@ -141,7 +157,31 @@ internal sealed partial class CanonicalAnkiReviewWindow
     }
     internal void ImportLayoutImage(Guid partId, string path)
     {
-        Start(async token => { var prepared = await _session.Store.PrepareImageFileAsync(path, token); var images = new Dictionary<string, VocabularyPreparedImage>(_session.ImportedImages, StringComparer.Ordinal) { [prepared.Reference.Filename] = prepared }; _session.ImportedImages = images; ChangePart(partId, p => p with { Content = p.Content.Append(VocabularyContentBlock.Create(new VocabularyBlockContent.Image(prepared.Reference))).ToArray() }); RenderLayout(); RefreshDraft(); });
+        Start(async token => { var prepared = await _session.Store.PrepareImageFileAsync(path, token); AddPreparedLayoutImage(partId, prepared); });
+    }
+    internal bool PasteLayoutImage(Guid partId)
+    {
+        if (_closing || _operation is not null || _clipboard?.Capture() is not { HasImage: true } offer || !SideParts.Any(p => p.Id == partId && p.Content.Count < VocabularyContentPolicy.MaximumBlocks)) return false;
+        Start(async token =>
+        {
+            var bytes = await _clipboard.ReadAsync(offer.Sequence, token); token.ThrowIfCancellationRequested(); if (bytes is null) return;
+            var prepared = await _session.Store.PrepareImageAsync(bytes, token); AddPreparedLayoutImage(partId, prepared);
+        }); return true;
+    }
+    private void AddPreparedLayoutImage(Guid partId, VocabularyPreparedImage prepared)
+    {
+        var images = new Dictionary<string, VocabularyPreparedImage>(_session.ImportedImages, StringComparer.Ordinal) { [prepared.Reference.Filename] = prepared }; _session.ImportedImages = images;
+        ChangePart(partId, p => p with { Content = p.Content.Append(VocabularyContentBlock.Create(new VocabularyBlockContent.Image(prepared.Reference))).ToArray() }); RenderLayout(); RefreshDraft();
+    }
+    private void AttachLayoutFileDrop()
+    {
+        if (_closing || _layoutDrop is not null || HwndSource.FromVisual(this) is not HwndSource source) return;
+        _layoutDrop = new(source, (path, point) =>
+        {
+            if (_closing || _operation is not null || !IsVisible || source.CompositionTarget is null || source.RootVisual is not Visual root) return;
+            foreach (var (id, area) in _layoutDropTargets) if (VocabularyEntryEditorWindow.ContainsDropPoint(area, root, point, source.CompositionTarget.TransformFromDevice)
+                && SideParts.Any(p => p.Id == id && p.Content.Count < VocabularyContentPolicy.MaximumBlocks)) { ImportLayoutImage(id, path); break; }
+        });
     }
     private async Task PresentLayoutAsync(long version, CancellationToken token)
     {
@@ -153,7 +193,7 @@ internal sealed partial class CanonicalAnkiReviewWindow
         foreach (var part in (_side.SelectedIndex == 1 ? content?.Back : content?.Front) ?? [])
         {
             if (part is ReviewResolvedPart.Text text) _preview.Children.Add(new TextBlock { Text = text.Value, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 4) });
-            else if (part is ReviewResolvedPart.Audio) _preview.Children.Add(VocabularyInputControls.Caption("Audio unavailable"));
+            else if (part is ReviewResolvedPart.Audio audio) _preview.Children.Add(VocabularyInputControls.Caption("🔊 " + audio.Kind.Label()));
             else if (part is ReviewResolvedPart.Blocks blocks) foreach (var block in blocks.Values)
             {
                 if (block.Content is VocabularyBlockContent.Text textBlock) _preview.Children.Add(new TextBlock { Text = (textBlock.Value.Style == VocabularyTextStyle.Bullet ? "• " : "") + textBlock.Value.Text, TextWrapping = TextWrapping.Wrap, FontSize = textBlock.Value.Style == VocabularyTextStyle.Heading ? 17 : 13, FontWeight = textBlock.Value.Bold ? FontWeights.Bold : FontWeights.Normal, FontStyle = textBlock.Value.Italic ? FontStyles.Italic : FontStyles.Normal });

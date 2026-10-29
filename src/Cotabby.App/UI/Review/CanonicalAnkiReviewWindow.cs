@@ -14,7 +14,7 @@ namespace Cotabby.App.UI.Review;
 /// <summary>A window-local preparation draft. All asynchronous work is admitted by the app's
 /// shared review feature; closing cancels presentation work and drains accepted work before the
 /// borrowed session is retired. This window owns neither the Store nor the controller.</summary>
-internal sealed class CanonicalAnkiReviewWindow : Window
+internal sealed partial class CanonicalAnkiReviewWindow : Window
 {
     private sealed record Option(string Label, Guid? Id) { public override string ToString() => Label; }
     private sealed record PlanOption(string Label, ReviewPlan Plan) { public override string ToString() => Label; }
@@ -36,6 +36,7 @@ internal sealed class CanonicalAnkiReviewWindow : Window
     internal Button ClearAudioButton => _clearAudio;
     internal TextBox AnswerBox => _answer;
     internal TextBlock StateText => _state;
+    internal TextBlock ValidationText => _validation;
     internal StackPanel ConflictsPanel => _conflicts;
     internal StackPanel PreviewPanel => _preview;
     internal ComboBox SideBox => _side;
@@ -52,14 +53,15 @@ internal sealed class CanonicalAnkiReviewWindow : Window
     private bool _updating, _closing, _allowClose, _started, _retired;
     private long _previewVersion;
         private ulong _seenRevision;
-    private string? _loadedAddress, _windowError;
+    private string? _loadedAddress, _windowError, _windowNotice;
     private IReadOnlyList<AnkiFieldConflict>? _seenConflicts;
     internal Task? LastOperation => _operation;
     internal Task PreviewOperation => _previewTask;
+    internal Guid? CardId => _session.CardId;
 
     internal CanonicalAnkiReviewWindow(CanonicalAnkiReviewSession session, Func<Func<CancellationToken, Task>, Task> admit, Action configure)
     {
-        if (session.CardId is not null || session.Plan.Layout is not null) throw new NotSupportedException("Custom review card layout preparation is not available yet.");
+        if (session.CardId is null && session.Plan.Layout is not null) throw new NotSupportedException("Custom review card layout preparation is not available yet.");
         _session = session; _admit = admit; _configure = configure;
         Title = "Prepare review"; Width = 720; Height = 760; MinWidth = 560; MinHeight = 500; WindowStartupLocation = WindowStartupLocation.CenterOwner;
         VocabularyNotebookTheme.Follow(this);
@@ -68,18 +70,25 @@ internal sealed class CanonicalAnkiReviewWindow : Window
         var footer = VocabularyInputControls.Footer(_settings, _cancel, _save, _send); DockPanel.SetDock(footer, Dock.Bottom); root.Children.Add(footer);
         var deckControl = new StackPanel(); deckControl.Children.Add(_deck); deckControl.Children.Add(_deckText); VocabularyNotebookTheme.Input(_deckText); VocabularyNotebookTheme.Combo(_deck);
         var scroll = new ScrollViewer { VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Content = _form }; root.Children.Add(scroll);
-        _form.Children.Add(VocabularyInputControls.Group(("Destination", _destination), ("Association", _binding), ("Deck", deckControl), ("", _reload)));
-        _form.Children.Add(VocabularyInputControls.Group(("Review example", _example), ("Preserved plan", _preserved), ("Review answer", _answer), ("", _recognition), ("", _gap), ("", _notes), ("", _senseContent), ("", _explanation), ("", _resetFields), ("", _clearAudio), ("", _updateTemplate)));
+        var destination = VocabularyInputControls.Group(("Destination", _destination), ("Association", _binding), ("Deck", deckControl), ("", _reload));
+        _side.ItemsSource = new[] { "Front", "Back" }; _side.SelectedIndex = 0;
+        if (session.CardId is not null) { BuildLayoutControls(); _form.Children.Add(_layoutPanel); _form.Children.Add(destination); }
+        else
+        {
+            _form.Children.Add(destination);
+            _form.Children.Add(VocabularyInputControls.Group(("Review example", _example), ("Preserved plan", _preserved), ("Review answer", _answer), ("", _recognition), ("", _gap), ("", _notes), ("", _senseContent), ("", _explanation), ("", _resetFields), ("", _clearAudio), ("", _updateTemplate)));
+        }
         _form.Children.Add(VocabularyInputControls.Caption("Review audio is unavailable. Remove any requested audio before sending."));
         _cardType.ItemsSource = new[] { "Recognition card", "Gap card" }; _cardType.SelectedIndex = 0;
-        _side.ItemsSource = new[] { "Front", "Back" }; _side.SelectedIndex = 0;
-        _form.Children.Add(VocabularyInputControls.Heading("Card preview")); _form.Children.Add(VocabularyInputControls.Group(("Card type", _cardType), ("Side", _side))); _form.Children.Add(_preview);
+        _form.Children.Add(VocabularyInputControls.Heading("Card preview"));
+        if (session.CardId is null) _form.Children.Add(VocabularyInputControls.Group(("Card type", _cardType), ("Side", _side)));
+        _form.Children.Add(_preview);
         _form.Children.Add(_conflicts); _form.Children.Add(_validation); _form.Children.Add(_state);
         VocabularyNotebookTheme.Brush(_state, TextBlock.ForegroundProperty, "OrangeBrush");
         foreach (var button in new[] { _reload, _clearAudio, _resetFields, _updateTemplate }) VocabularyNotebookTheme.Button(button);
         _binding.SelectionChanged += (_, _) => { if (_updating) return; _session.SelectBinding((_binding.SelectedItem as Option)?.Id); _choices.Clear(); Start(LoadAsync); };
         _example.SelectionChanged += (_, _) => { if (_updating) return; var id = (_example.SelectedItem as Option)?.Id; var p = _session.Plan; var audio = p.AudioKinds?.Where(k => id is not null || k != ReviewAudioKind.Sentence).ToHashSet(); var (entry, sense) = Current(); var example = sense.Examples.FirstOrDefault(e => e.Id == id); bool canGap = example is not null && ReviewCardPolicy.Gap(example.Text, example.Ranges, entry.Kind) is not null; _session.Plan = p with { ExampleId = id, Gap = p.Gap && canGap, FieldOverrides = new Dictionary<string, string>(), AudioKinds = audio }; Fill(); RefreshDraft(); };
-        _cardType.SelectionChanged += (_, _) => { if (!_updating) RefreshDraft(); }; _side.SelectionChanged += (_, _) => { if (!_updating) RefreshDraft(); };
+        _cardType.SelectionChanged += (_, _) => { if (!_updating) RefreshDraft(); }; _side.SelectionChanged += (_, _) => { if (!_updating) { if (_session.CardId is not null) RenderLayout(); RefreshDraft(); } };
         _preserved.SelectionChanged += (_, _) => { if (!_updating && _preserved.SelectedItem is PlanOption plan) { if (plan.Plan.Layout is not null) { _state.Text = "Custom review layouts are not available yet."; return; } _session.RestorePlan(plan.Plan); _previewVersion++; Fill(); RefreshDraft(); } };
         _answer.TextChanged += (_, _) => { if (!_updating) { _session.Plan = _session.Plan with { Answer = _answer.Text }; RefreshDraft(); } };
         _deckText.TextChanged += (_, _) => { if (!_updating) { _session.Deck = _deckText.Text; RefreshDraft(); } };
@@ -127,7 +136,7 @@ internal sealed class CanonicalAnkiReviewWindow : Window
         _updating = true;
         try
         {
-            var (entry, sense) = Current(); var p = _session.Plan; var review = sense.Review;
+            var (entry, sense) = Current(); var p = _session.Plan; var review = _session.CardId is { } cardId ? sense.ReviewCards?.FirstOrDefault(r => r.Plan.Id == cardId) : sense.Review;
             _binding.Items.Clear(); _binding.Items.Add(new Option(review?.Bindings.Count > 0 ? "Choose…" : "New association", null));
             foreach (var b in review?.Bindings ?? []) _binding.Items.Add(new Option($"{b.Profile} · {(b.NoteId?.ToString() ?? "Ready to send")}", b.Id));
             _binding.SelectedItem = _binding.Items.Cast<Option>().FirstOrDefault(o => o.Id == _session.BindingId);
@@ -143,7 +152,8 @@ internal sealed class CanonicalAnkiReviewWindow : Window
             _resetFields.Visibility = p.FieldOverrides.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
             _clearAudio.Visibility = (p.AudioKinds?.Count ?? 0) > 0 ? Visibility.Visible : Visibility.Collapsed;
             _updateTemplate.Visibility = _session.Model == AnkiReviewPolicy.PresetName && !_session.CurrentPresetTemplate && !_session.Loading ? Visibility.Visible : Visibility.Collapsed;
-            _state.Text = _windowError ?? _session.Message ?? ""; _send.Content = _session.MissingNote ? "Re-add to Anki" : _session.Binding?.NoteId is null ? "Add to Anki" : "Update Anki";
+            if (_session.CardId is not null) RenderLayout();
+            _state.Text = _windowError ?? _session.Message ?? _windowNotice ?? ""; _send.Content = _session.MissingNote ? "Re-add to Anki" : _session.Binding?.NoteId is null ? "Add to Anki" : "Update Anki";
             if (!ReferenceEquals(_seenConflicts, _session.Conflicts)) { _choices.Clear(); _seenConflicts = _session.Conflicts; }
             _conflicts.Children.Clear(); foreach (var conflict in _session.Conflicts)
             {
@@ -189,7 +199,8 @@ internal sealed class CanonicalAnkiReviewWindow : Window
     }
     private async Task PresentAsync(CancellationToken token)
     {
-        long version = _previewVersion; string? validation = await _session.ValidationMessageAsync(token); ReviewCardContent? content = null; try { content = await _session.ContentAsync(token); } catch (AnkiReviewException error) { validation ??= error.Message; }
+        long version = _previewVersion; if (_session.CardId is not null) { await PresentLayoutAsync(version, token); return; }
+        string? validation = await _session.ValidationMessageAsync(token); ReviewCardContent? content = null; try { content = await _session.ContentAsync(token); } catch (AnkiReviewException error) { validation ??= error.Message; }
         if (version != _previewVersion || _closing) return;
         _validation.Text = validation ?? (_loadedAddress == _session.Controller.Settings.Address ? "" : "Refresh the Anki connection before sending."); _preview.Children.Clear(); if (content is null) { UpdateEnabled(); return; }
         void Line(string label, string value) { if (value.Length != 0) _preview.Children.Add(new TextBlock { Text = label + ": " + value, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 3, 0, 3) }); }
@@ -224,7 +235,7 @@ internal sealed class CanonicalAnkiReviewWindow : Window
     private void Start(Func<CancellationToken, Task> action)
     {
         if (_closing || _operation is not null) return;
-        _windowError = null; var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously); _operation = completion.Task; UpdateEnabled();
+        _windowError = null; _windowNotice = null; var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously); _operation = completion.Task; UpdateEnabled();
         _ = Run(); async Task Run()
         {
             try { await _admit(async featureToken => { using var linked = CancellationTokenSource.CreateLinkedTokenSource(featureToken, _lifetime.Token); await action(linked.Token); }); }

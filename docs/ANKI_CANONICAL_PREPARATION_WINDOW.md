@@ -1,4 +1,4 @@
-# Canonical review preparation window (unconnected)
+# Canonical review preparation window
 
 Reference: `35b7fbe5c788c5524936ade1dfb7c89a3a285b04`,
 `Lingrove/UI/Vocabulary/VocabularyReviewSheet.swift`,
@@ -15,12 +15,11 @@ retires, and only then calls configure. Save and Send dismiss only after their t
 session result. Cancel does not write the draft. Session receipt and retry behavior remain in
 `ANKI_CANONICAL_REVIEW_SESSION.md`.
 
-This component handles **only the source's default, non-card-ID preparation** and rejects a
-card-ID or layout on entry. Preserved custom layouts also remain unavailable. Frozen current
-notebook `ReviewSection` and batch entry points use independent card IDs; **this component is
-not a current notebook entry point and must not be connected there**. The independent card
-layout/preset/template editor, current review navigation and batch UI are separate work.
-AppHost and notebook integration are unchanged.
+This component supports the source's default preparation and the independent card-ID layout
+editor described in [the canonical card window](ANKI_CANONICAL_CARD_WINDOW.md). The current
+notebook's ReviewSection uses independent card IDs; it never substitutes a default plan. AppHost
+must attach the existing Feature to the notebook controller before that section can operate.
+Batch review remains unavailable.
 
 The form shows the normalized local endpoint, loaded profile, note model, association and deck;
 provides example, answer and source inclusion choices, preserved default plans, template upgrade,
@@ -29,7 +28,7 @@ model or mapping requires another metadata read before sending. Audio preparatio
 an existing default-plan audio request is visible and can be explicitly removed, with no silent
 removal by Send. The backend rejects audio before remote mutation. Images already in the selected
 sense are read from the shared Store for the native preview and uploaded by the session. There is
-no WebBrowser, clipboard, image-import effect or background send in this window.
+no WebBrowser or background send. The card layout editor supports explicit file-image import; clipboard paste and image drops remain unavailable there.
 
 Native WPF preview adapts the known preset's front/back and recognition/gap hierarchy with literal
 text and Store-loaded images. For custom remote templates, unrecognized template versions or

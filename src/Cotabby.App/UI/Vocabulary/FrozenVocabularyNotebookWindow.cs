@@ -113,11 +113,13 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
     private void OnClosing(object? sender, CancelEventArgs e)
     {
         if (_allowClose) return;
+        if (!_hideOnClose && !_retiring && _reviewSection is not null) { e.Cancel = true; _ = RetireAsync(); return; }
         if (_hideOnClose || _retiring) { e.Cancel = true; if (!_retiring) { if (_modalDone is null) Hide(); else _hideRequested = true; } }
     }
     internal async Task RetireAsync()
     {
         Dispatcher.VerifyAccess(); if (_retiring) return; _retiring = true;
+        Exception? reviewFailure = null; try { await RetireReviewAsync(); } catch (Exception error) { reviewFailure = error; }
         CloseActionMenus();
         _add.IsEnabled = _import.IsEnabled = false;
         if (_inputWindow is VocabularyEntryCreationWindow creation) await creation.RetireAsync();
@@ -133,7 +135,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
         if (_semanticCompletion is { } semantic) await semantic.Task;
         await _session.RetireAsync();
         while (_operations.Count != 0) { var operations = _operations.ToArray(); await Task.WhenAll(operations); _operations.RemoveWhere(t => t.IsCompleted); }
-        _allowClose = true; Close();
+        _allowClose = true; Close(); if (reviewFailure is not null) throw reviewFailure;
     }
     private async Task AddAsync()
     {
@@ -339,6 +341,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
         if (sense.Note.Length > 0) { Section(panel, "Notes"); panel.Children.Add(Paragraph(sense.Note)); }
         if (sense.Tags.Count > 0) panel.Children.Add(Caption(string.Join("  ·  ", sense.Tags)));
         AddSenseMappingSection(panel, new(entry.Id, sense.Id));
+        RenderReviewSection(panel, entry, sense);
         if (sense.Examples.Count > 0) { Section(panel, "Examples"); foreach (var example in sense.Examples) { panel.Children.Add(Paragraph(example.Text)); if (example.Translation.Length > 0) panel.Children.Add(Caption(example.Translation)); foreach (var translation in example.TranslationVariants) panel.Children.Add(Caption(translation.Text)); panel.Children.Add(MoveUsageButton(entry, sense, example)); } }
         if (_senseMutating) panel.Children.Add(Caption("Updating vocabulary…"));
         if (_actionError is { } error) panel.Children.Add(VocabularyNotebookTheme.Brush(new TextBlock { Name = "frozenSenseActionError", Text = error, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 12, 0, 0) }, TextBlock.ForegroundProperty, "OrangeBrush"));
@@ -347,7 +350,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
         VocabularyNotebookTheme.Button(edit); edit.Click += (_, _) => LastOperation = EditAsync(new(entry.Id, sense.Id)); actions.Children.Add(edit);
         AddSenseActions(actions, entry, sense);
         AddSenseSemanticActions(actions, new(entry.Id, sense.Id));
-        foreach (string text in new[] { "Review", "Export" }) { var button = Disabled(text, "This action is not available in this notebook yet."); button.Margin = new Thickness(0, 0, 8, 0); actions.Children.Add(button); } panel.Children.Add(actions);
+        foreach (string text in new[] { "Export" }) { var button = Disabled(text, "This action is not available in this notebook yet."); button.Margin = new Thickness(0, 0, 8, 0); actions.Children.Add(button); } panel.Children.Add(actions);
     }
     private void MeaningDetail(StackPanel panel, F.VocabularyMeaningNode node)
     {

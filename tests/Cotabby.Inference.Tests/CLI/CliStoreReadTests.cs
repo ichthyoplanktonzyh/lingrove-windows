@@ -83,4 +83,39 @@ public sealed class CliStoreReadTests
         Assert.True((await store.ExecuteCliAsync(request))["replayed"]!.GetValue<bool>());
         Assert.Equal(1UL, (await store.ReadAsync()).Revision);
     }
+    [Fact]
+    public async Task CaptureDryRunAndAcknowledgedRetryKeepSemanticAndRawGraph()
+    {
+        await using var store = new FrozenVocabularyImportStore(FrozenVocabularySQLiteDatabase.CreateMemory());
+        var capture = """{"version":1,"idempotencyKey":"capture","defaults":{"language":"en","status":"proposed"},"meanings":[{"ref":"delay","title":"delay"}],"entries":[{"expression":"defer","senses":[{"meaning":"delay","examples":[{"text":"we defer it"}],"associations":[{"meaning":"delay"}]}]}]}""";
+        var batch = CliInputContract.DecodeCapture(System.Text.Encoding.UTF8.GetBytes(capture));
+        var request = new CliRequest { Command = "apply", ExpiresAt = CliWire.Now() + 60, Batch = batch.CopyValue(), DryRun = true };
+        var preview = await store.ExecuteCliAsync(request); Assert.Equal(0UL, preview["revision"]!.GetValue<ulong>()); Assert.Empty((await store.ReadAsync()).Document.Catalog);
+        var saved = await store.ExecuteCliAsync(request with { DryRun = false }); Assert.Equal(1UL, saved["revision"]!.GetValue<ulong>());
+        var snapshot = await store.ReadAsync(); Assert.Single(snapshot.Document.Sources); Assert.Single(snapshot.Document.Semantics.Mappings);
+        Assert.Equal(Cotabby.Core.Vocabulary.Resources.VocabularySemanticStatus.Proposed, snapshot.Document.Semantics.Nodes.Single().Provenance.Status);
+        Assert.True((await store.ExecuteCliAsync(request with { DryRun = false }))["replayed"]!.GetValue<bool>());
+        Assert.Equal(1UL, (await store.ReadAsync()).Revision);
+    }
+    [Fact]
+    public async Task SqlFailureLeavesGraphAndReceiptUncommitted()
+    {
+        string root = Path.Combine(Path.GetTempPath(), "cli-rollback-" + Guid.NewGuid().ToString("N")); VocabularyWindowsFile.CreateParentDirectory(root);
+        try
+        {
+            string path = Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName);
+            await using var store = FrozenVocabularyStoreFactory.Create(path, false); _ = await store.ReadAsync();
+            using var connection = VocabularySQLiteConnection.OpenNamed(path);
+            connection.Execute("CREATE TRIGGER cli_abort BEFORE UPDATE ON state BEGIN SELECT RAISE(ABORT,'injected'); END");
+            var batch = JsonNode.Parse("""{"version":1,"idempotencyKey":"rollback","operations":[{"add":{"expression":"bank","language":"en","kind":"word","meaning":"money"}}]}""")!.AsObject();
+            var request = new CliRequest { Command = "apply", ExpiresAt = CliWire.Now() + 60, Batch = batch };
+            var cli = Assert.IsAssignableFrom<Cotabby.Core.Vocabulary.Frozen.ICanonicalVocabularyCliStore>(store);
+            await Assert.ThrowsAnyAsync<Exception>(() => cli.ExecuteCliAsync(request));
+            var after = await store.ReadAsync(); Assert.Equal(0UL, after.Revision); Assert.Empty(after.Document.Catalog);
+            connection.Execute("DROP TRIGGER cli_abort");
+            Assert.False((await cli.ExecuteCliAsync(request))["replayed"]!.GetValue<bool>());
+            Assert.Equal(1UL, (await store.ReadAsync()).Revision);
+        }
+        finally { Directory.Delete(root, true); }
+    }
 }

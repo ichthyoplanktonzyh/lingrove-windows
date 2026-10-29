@@ -5,7 +5,7 @@ using F = Cotabby.Core.Vocabulary.Frozen;
 namespace Cotabby.Core.CLI;
 
 /// <summary>Uncommitted transaction-scoped batch plan; all raw records remain detached and the
-/// final graph is admitted once after all operations. This checkpoint does not yet support capture.</summary>
+/// final graph is admitted once after all operations.</summary>
 public sealed record CliBatchPlan(F.VocabularyDocument Document, JsonArray Outcomes, IReadOnlyDictionary<string, VocabularyPreparedImage> Images)
 {
     public static CliBatchPlan Create(CliBatch batch, F.VocabularyDocument baseline, ulong revision, string fingerprint,
@@ -30,7 +30,9 @@ public sealed record CliBatchPlan(F.VocabularyDocument Document, JsonArray Outco
                 outcomes.Add(CliTraditionalPlan.Apply(draft, operation.Key, input, index, key, fingerprint, revision, now, prepared));
                 foreach (var pair in prepared.Where(pair => pair.Key.StartsWith(index.ToString(System.Globalization.CultureInfo.InvariantCulture) + ".", StringComparison.Ordinal))) images[pair.Value.Reference.Filename] = pair.Value;
             }
-            else throw new CliException(CliErrorCode.Unavailable, "CLI capture planning is not yet available.");
+            else if (operation.Key == "capture")
+                outcomes.Add(CliCapturePlan.Apply(draft, input, now, suffix => CliIdentity.OperationId(key, fingerprint, index, suffix), index));
+            else throw new CliException(CliErrorCode.InvalidInput, "Unknown CLI operation.");
         }
         cancellationToken.ThrowIfCancellationRequested();
         return new(draft.Finish(), outcomes, images);

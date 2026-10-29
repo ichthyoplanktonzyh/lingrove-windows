@@ -26,6 +26,8 @@ internal static class CliTraditionalPlan
             var candidate = new F.VocabularyEntry(Id("entry"), expression, dictionary, language, entryKind, [], now, now);
             entry = entries.FirstOrDefault(value => F.VocabularyArchiveValidation.EntryKey(value) == F.VocabularyArchiveValidation.EntryKey(candidate)) ?? candidate;
             createdEntry = entry == candidate;
+            if (createdEntry && entries.Any(value => value.Id == entry.Id) || entries.SelectMany(value => value.Senses).Any(value => value.Id == Id("sense")))
+                throw new CliException(CliErrorCode.Conflict, "Generated entry or sense identity already exists.");
             sense = new F.VocabularySense(Id("sense"), CliExamplePolicy.Text(input["meaning"]!.GetValue<string>(), 32000, true), now, now)
             { MeaningLanguage = CliExamplePolicy.Language(input["meaningLanguage"]?.GetValue<string>()), MeaningOrigin = VocabularyMeaningOrigin.User };
         }

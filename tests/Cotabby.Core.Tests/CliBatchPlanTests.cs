@@ -36,4 +36,28 @@ public sealed class CliBatchPlanTests
         Assert.Equal(occurrence, result.Document.Occurrences.Single().Id);
         Assert.Equal("bank", result.Document.CollectedEntries.Single().Expression);
     }
+    [Fact]
+    public void CaptureKeepsProposedGraphClaimsAndRawUnknownEvidence()
+    {
+        var batch = CliInputContract.DecodeCapture(Encoding.UTF8.GetBytes("""{"version":1,"idempotencyKey":"capture","defaults":{"language":"en","status":"proposed"},"meanings":[{"ref":"delay","title":"delay","cues":["later"]}],"entries":[{"expression":"defer","senses":[{"meaning":"delay","examples":[{"text":"we defer it","completeness":"unknown"}],"associations":[{"meaning":"delay","usage":"defer + noun"}]}]}]}"""));
+        var result = CliBatchPlan.Create(batch, new F.VocabularyDocument(), 0, CliIdentity.Fingerprint(batch), new F.SourceDate(10.25), new Dictionary<string, VocabularyPreparedImage>());
+        Assert.Equal(R.VocabularySemanticStatus.Proposed, result.Document.Semantics.Nodes.Single().Provenance.Status);
+        Assert.Equal(R.VocabularySemanticStatus.Proposed, result.Document.Semantics.Mappings.Single().Provenance.Status);
+        Assert.Equal(R.VocabularySemanticStatus.Proposed, result.Document.Semantics.Patterns.Single().Provenance.Status);
+        Assert.Equal(R.VocabularyExampleCompleteness.Unknown, result.Document.Interpretations.Single().Completeness);
+        Assert.Equal(result.Document.Interpretations.Single().Id, result.Document.Collections.Single().InterpretationIds.Single());
+        Assert.Equal(10.25, result.Document.Sources.Single().EncounteredAt.ReferenceSeconds);
+    }
+    [Theory]
+    [InlineData("""{"defaults":{"language":"en"},"entries":[{"expression":"bank","senses":[{"meaning":"money","associations":[{"meaning":"missing"}]}]}]}""")]
+    [InlineData("""{"defaults":{"language":"en"},"meanings":[{"ref":"x","title":"A"},{"ref":"x","title":"B"}],"entries":[{"expression":"bank","senses":[{"meaning":"money"}]}]}""")]
+    [InlineData("""{"defaults":{"language":"en"},"entries":[{"expression":"bank","senses":[{"meaning":"money","examples":[{"text":"bank bank"}]}]}]}""")]
+    [InlineData("""{"defaults":{"language":"en"},"meanings":[{"ref":"x","title":"A"}],"relations":[{"from":"x","to":"x","kind":"narrower"}],"entries":[{"expression":"bank","senses":[{"meaning":"money"}]}]}""")]
+    public void InvalidCaptureDoesNotChangeBaseline(string material)
+    {
+        var json = System.Text.Json.Nodes.JsonNode.Parse(material)!.AsObject(); json["version"] = 1; json["idempotencyKey"] = "invalid";
+        var batch = CliInputContract.DecodeCapture(Encoding.UTF8.GetBytes(json.ToJsonString())); var baseline = new F.VocabularyDocument();
+        Assert.Throws<CliException>(() => CliBatchPlan.Create(batch, baseline, 0, CliIdentity.Fingerprint(batch), new F.SourceDate(0), new Dictionary<string, VocabularyPreparedImage>()));
+        Assert.Empty(baseline.Catalog); Assert.Empty(baseline.Sources);
+    }
 }

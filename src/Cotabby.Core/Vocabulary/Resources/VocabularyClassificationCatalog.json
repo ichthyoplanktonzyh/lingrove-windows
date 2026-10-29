@@ -1,0 +1,2527 @@
+{
+  "key": "lingrove.core",
+  "version": 1,
+  "authorship": "Original Lingrove category names and organization. No external lexicon or category text is imported.",
+  "references": [
+    {
+      "title": "USAS",
+      "url": "https://ucrel.lancs.ac.uk/usas/",
+      "role": "Reference for broad semantic field coverage, not a reproduced tagset."
+    },
+    {
+      "title": "CEFR",
+      "url": "https://www.coe.int/en/web/common-european-framework-reference-languages",
+      "role": "Reference for separating communicative functions from content."
+    }
+  ],
+  "categories": [
+    {
+      "key": "content.general",
+      "axis": "content",
+      "english": "Existence and relations",
+      "chinese": "存在与关系",
+      "definition": "",
+      "parents": []
+    },
+    {
+      "key": "content.general.existence",
+      "axis": "content",
+      "english": "Existence",
+      "chinese": "存在",
+      "definition": "",
+      "parents": [
+        "content.general"
+      ]
+    },
+    {
+      "key": "content.general.identity",
+      "axis": "content",
+      "english": "Identity",
+      "chinese": "身份与同一",
+      "definition": "",
+      "parents": [
+        "content.general"
+      ]
+    },
+    {
+      "key": "content.general.similarity",
+      "axis": "content",
+      "english": "Similarity and difference",
+      "chinese": "相似与差异",
+      "definition": "",
+      "parents": [
+        "content.general"
+      ]
+    },
+    {
+      "key": "content.general.part",
+      "axis": "content",
+      "english": "Parts and wholes",
+      "chinese": "部分与整体",
+      "definition": "",
+      "parents": [
+        "content.general"
+      ]
+    },
+    {
+      "key": "content.general.connection",
+      "axis": "content",
+      "english": "Connection and separation",
+      "chinese": "联系与分离",
+      "definition": "",
+      "parents": [
+        "content.general"
+      ]
+    },
+    {
+      "key": "content.general.cause",
+      "axis": "content",
+      "english": "Causes",
+      "chinese": "原因",
+      "definition": "",
+      "parents": [
+        "content.general"
+      ]
+    },
+    {
+      "key": "content.general.effect",
+      "axis": "content",
+      "english": "Effects",
+      "chinese": "结果",
+      "definition": "",
+      "parents": [
+        "content.general"
+      ]
+    },
+    {
+      "key": "content.general.condition",
+      "axis": "content",
+      "english": "Conditions",
+      "chinese": "条件",
+      "definition": "",
+      "parents": [
+        "content.general"
+      ]
+    },
+    {
+      "key": "content.general.possibility",
+      "axis": "content",
+      "english": "Possibility",
+      "chinese": "可能与不可能",
+      "definition": "",
+      "parents": [
+        "content.general"
+      ]
+    },
+    {
+      "key": "content.general.change",
+      "axis": "content",
+      "english": "Change and continuity",
+      "chinese": "变化与保持",
+      "definition": "",
+      "parents": [
+        "content.general"
+      ]
+    },
+    {
+      "key": "content.quantity",
+      "axis": "content",
+      "english": "Quantity and measurement",
+      "chinese": "数量与计量",
+      "definition": "",
+      "parents": []
+    },
+    {
+      "key": "content.quantity.number",
+      "axis": "content",
+      "english": "Number",
+      "chinese": "数目",
+      "definition": "",
+      "parents": [
+        "content.quantity"
+      ]
+    },
+    {
+      "key": "content.quantity.amount",
+      "axis": "content",
+      "english": "Amount",
+      "chinese": "多少",
+      "definition": "",
+      "parents": [
+        "content.quantity"
+      ]
+    },
+    {
+      "key": "content.quantity.whole",
+      "axis": "content",
+      "english": "All and some",
+      "chinese": "全部与部分",
+      "definition": "",
+      "parents": [
+        "content.quantity"
+      ]
+    },
+    {
+      "key": "content.quantity.none",
+      "axis": "content",
+      "english": "Presence and absence",
+      "chinese": "有无",
+      "definition": "",
+      "parents": [
+        "content.quantity"
+      ]
+    },
+    {
+      "key": "content.quantity.proportion",
+      "axis": "content",
+      "english": "Proportion",
+      "chinese": "比例",
+      "definition": "",
+      "parents": [
+        "content.quantity"
+      ]
+    },
+    {
+      "key": "content.quantity.increase",
+      "axis": "content",
+      "english": "Increase",
+      "chinese": "增加",
+      "definition": "",
+      "parents": [
+        "content.quantity"
+      ]
+    },
+    {
+      "key": "content.quantity.decrease",
+      "axis": "content",
+      "english": "Decrease",
+      "chinese": "减少",
+      "definition": "",
+      "parents": [
+        "content.quantity"
+      ]
+    },
+    {
+      "key": "content.quantity.enough",
+      "axis": "content",
+      "english": "Sufficiency",
+      "chinese": "充足与不足",
+      "definition": "",
+      "parents": [
+        "content.quantity"
+      ]
+    },
+    {
+      "key": "content.quantity.comparison",
+      "axis": "content",
+      "english": "Comparing quantities",
+      "chinese": "数量比较",
+      "definition": "",
+      "parents": [
+        "content.quantity"
+      ]
+    },
+    {
+      "key": "content.quantity.measurement",
+      "axis": "content",
+      "english": "Measurement and units",
+      "chinese": "测量与单位",
+      "definition": "",
+      "parents": [
+        "content.quantity"
+      ]
+    },
+    {
+      "key": "content.degree",
+      "axis": "content",
+      "english": "Degree and thresholds",
+      "chinese": "程度与边界",
+      "definition": "",
+      "parents": []
+    },
+    {
+      "key": "content.degree.intensity",
+      "axis": "content",
+      "english": "Intensity",
+      "chinese": "强弱",
+      "definition": "",
+      "parents": [
+        "content.degree"
+      ]
+    },
+    {
+      "key": "content.degree.high",
+      "axis": "content",
+      "english": "High degree",
+      "chinese": "很高的程度",
+      "definition": "",
+      "parents": [
+        "content.degree"
+      ]
+    },
+    {
+      "key": "content.degree.low",
+      "axis": "content",
+      "english": "Low degree",
+      "chinese": "较低的程度",
+      "definition": "",
+      "parents": [
+        "content.degree"
+      ]
+    },
+    {
+      "key": "content.degree.near-zero",
+      "axis": "content",
+      "english": "Near absence",
+      "chinese": "接近于无",
+      "definition": "",
+      "parents": [
+        "content.degree"
+      ]
+    },
+    {
+      "key": "content.degree.threshold",
+      "axis": "content",
+      "english": "Just reaching a threshold",
+      "chinese": "刚好达到边界",
+      "definition": "",
+      "parents": [
+        "content.degree"
+      ]
+    },
+    {
+      "key": "content.degree.excess",
+      "axis": "content",
+      "english": "Excess",
+      "chinese": "过度",
+      "definition": "",
+      "parents": [
+        "content.degree"
+      ]
+    },
+    {
+      "key": "content.degree.moderation",
+      "axis": "content",
+      "english": "Moderation",
+      "chinese": "适度",
+      "definition": "",
+      "parents": [
+        "content.degree"
+      ]
+    },
+    {
+      "key": "content.degree.approximation",
+      "axis": "content",
+      "english": "Approximation and precision",
+      "chinese": "大约与精确",
+      "definition": "",
+      "parents": [
+        "content.degree"
+      ]
+    },
+    {
+      "key": "content.degree.limit",
+      "axis": "content",
+      "english": "Upper and lower limits",
+      "chinese": "上限与下限",
+      "definition": "",
+      "parents": [
+        "content.degree"
+      ]
+    },
+    {
+      "key": "content.degree.gradation",
+      "axis": "content",
+      "english": "Gradation",
+      "chinese": "程度递进",
+      "definition": "",
+      "parents": [
+        "content.degree"
+      ]
+    },
+    {
+      "key": "content.time",
+      "axis": "content",
+      "english": "Time and progression",
+      "chinese": "时间与进程",
+      "definition": "",
+      "parents": []
+    },
+    {
+      "key": "content.time.point",
+      "axis": "content",
+      "english": "Points in time",
+      "chinese": "时间点",
+      "definition": "",
+      "parents": [
+        "content.time"
+      ]
+    },
+    {
+      "key": "content.time.duration",
+      "axis": "content",
+      "english": "Duration",
+      "chinese": "持续时间",
+      "definition": "",
+      "parents": [
+        "content.time"
+      ]
+    },
+    {
+      "key": "content.time.frequency",
+      "axis": "content",
+      "english": "Frequency",
+      "chinese": "频率",
+      "definition": "",
+      "parents": [
+        "content.time"
+      ]
+    },
+    {
+      "key": "content.time.order",
+      "axis": "content",
+      "english": "Sequence",
+      "chinese": "先后顺序",
+      "definition": "",
+      "parents": [
+        "content.time"
+      ]
+    },
+    {
+      "key": "content.time.past",
+      "axis": "content",
+      "english": "Past and retrospection",
+      "chinese": "过去与回顾",
+      "definition": "",
+      "parents": [
+        "content.time"
+      ]
+    },
+    {
+      "key": "content.time.future",
+      "axis": "content",
+      "english": "Future and anticipation",
+      "chinese": "将来与预期",
+      "definition": "",
+      "parents": [
+        "content.time"
+      ]
+    },
+    {
+      "key": "content.time.timing",
+      "axis": "content",
+      "english": "Adjusting timing",
+      "chinese": "调整活动时间",
+      "definition": "",
+      "parents": [
+        "content.time"
+      ]
+    },
+    {
+      "key": "content.time.speed",
+      "axis": "content",
+      "english": "Speed",
+      "chinese": "快慢",
+      "definition": "",
+      "parents": [
+        "content.time"
+      ]
+    },
+    {
+      "key": "content.time.phase",
+      "axis": "content",
+      "english": "Beginning and ending",
+      "chinese": "开始与结束",
+      "definition": "",
+      "parents": [
+        "content.time"
+      ]
+    },
+    {
+      "key": "content.time.simultaneity",
+      "axis": "content",
+      "english": "Simultaneity and overlap",
+      "chinese": "同时与重叠",
+      "definition": "",
+      "parents": [
+        "content.time"
+      ]
+    },
+    {
+      "key": "content.space",
+      "axis": "content",
+      "english": "Space and location",
+      "chinese": "空间与位置",
+      "definition": "",
+      "parents": []
+    },
+    {
+      "key": "content.space.location",
+      "axis": "content",
+      "english": "Location",
+      "chinese": "位置",
+      "definition": "",
+      "parents": [
+        "content.space"
+      ]
+    },
+    {
+      "key": "content.space.distance",
+      "axis": "content",
+      "english": "Distance",
+      "chinese": "远近",
+      "definition": "",
+      "parents": [
+        "content.space"
+      ]
+    },
+    {
+      "key": "content.space.direction",
+      "axis": "content",
+      "english": "Direction",
+      "chinese": "方向",
+      "definition": "",
+      "parents": [
+        "content.space"
+      ]
+    },
+    {
+      "key": "content.space.inside",
+      "axis": "content",
+      "english": "Inside and outside",
+      "chinese": "内外",
+      "definition": "",
+      "parents": [
+        "content.space"
+      ]
+    },
+    {
+      "key": "content.space.above",
+      "axis": "content",
+      "english": "Above and below",
+      "chinese": "上下",
+      "definition": "",
+      "parents": [
+        "content.space"
+      ]
+    },
+    {
+      "key": "content.space.front",
+      "axis": "content",
+      "english": "Front and back",
+      "chinese": "前后",
+      "definition": "",
+      "parents": [
+        "content.space"
+      ]
+    },
+    {
+      "key": "content.space.boundary",
+      "axis": "content",
+      "english": "Boundaries and edges",
+      "chinese": "边界与边缘",
+      "definition": "",
+      "parents": [
+        "content.space"
+      ]
+    },
+    {
+      "key": "content.space.area",
+      "axis": "content",
+      "english": "Area and extent",
+      "chinese": "区域与范围",
+      "definition": "",
+      "parents": [
+        "content.space"
+      ]
+    },
+    {
+      "key": "content.space.shape",
+      "axis": "content",
+      "english": "Shape",
+      "chinese": "形状",
+      "definition": "",
+      "parents": [
+        "content.space"
+      ]
+    },
+    {
+      "key": "content.space.arrangement",
+      "axis": "content",
+      "english": "Arrangement and distribution",
+      "chinese": "排列与分布",
+      "definition": "",
+      "parents": [
+        "content.space"
+      ]
+    },
+    {
+      "key": "content.motion",
+      "axis": "content",
+      "english": "Movement and paths",
+      "chinese": "移动与路径",
+      "definition": "",
+      "parents": []
+    },
+    {
+      "key": "content.motion.departure",
+      "axis": "content",
+      "english": "Departure",
+      "chinese": "离开",
+      "definition": "",
+      "parents": [
+        "content.motion"
+      ]
+    },
+    {
+      "key": "content.motion.arrival",
+      "axis": "content",
+      "english": "Arrival",
+      "chinese": "到达",
+      "definition": "",
+      "parents": [
+        "content.motion"
+      ]
+    },
+    {
+      "key": "content.motion.approach",
+      "axis": "content",
+      "english": "Approach and retreat",
+      "chinese": "接近与远离",
+      "definition": "",
+      "parents": [
+        "content.motion"
+      ]
+    },
+    {
+      "key": "content.motion.entry",
+      "axis": "content",
+      "english": "Entry and exit",
+      "chinese": "进入与退出",
+      "definition": "",
+      "parents": [
+        "content.motion"
+      ]
+    },
+    {
+      "key": "content.motion.path",
+      "axis": "content",
+      "english": "Paths",
+      "chinese": "路径",
+      "definition": "",
+      "parents": [
+        "content.motion"
+      ]
+    },
+    {
+      "key": "content.motion.transport",
+      "axis": "content",
+      "english": "Transportation",
+      "chinese": "运送",
+      "definition": "",
+      "parents": [
+        "content.motion"
+      ]
+    },
+    {
+      "key": "content.motion.direction-change",
+      "axis": "content",
+      "english": "Changing direction",
+      "chinese": "转向",
+      "definition": "",
+      "parents": [
+        "content.motion"
+      ]
+    },
+    {
+      "key": "content.motion.stop",
+      "axis": "content",
+      "english": "Stopping and staying",
+      "chinese": "停止与停留",
+      "definition": "",
+      "parents": [
+        "content.motion"
+      ]
+    },
+    {
+      "key": "content.motion.follow",
+      "axis": "content",
+      "english": "Following and leading",
+      "chinese": "跟随与带领",
+      "definition": "",
+      "parents": [
+        "content.motion"
+      ]
+    },
+    {
+      "key": "content.motion.travel",
+      "axis": "content",
+      "english": "Travel and migration",
+      "chinese": "旅行与迁移",
+      "definition": "",
+      "parents": [
+        "content.motion"
+      ]
+    },
+    {
+      "key": "content.perception",
+      "axis": "content",
+      "english": "Perception and visibility",
+      "chinese": "感知与可见性",
+      "definition": "",
+      "parents": []
+    },
+    {
+      "key": "content.perception.sight",
+      "axis": "content",
+      "english": "Seeing and observing",
+      "chinese": "看见与观察",
+      "definition": "",
+      "parents": [
+        "content.perception"
+      ]
+    },
+    {
+      "key": "content.perception.hearing",
+      "axis": "content",
+      "english": "Hearing and listening",
+      "chinese": "听见与聆听",
+      "definition": "",
+      "parents": [
+        "content.perception"
+      ]
+    },
+    {
+      "key": "content.perception.touch",
+      "axis": "content",
+      "english": "Touch",
+      "chinese": "触觉",
+      "definition": "",
+      "parents": [
+        "content.perception"
+      ]
+    },
+    {
+      "key": "content.perception.smell",
+      "axis": "content",
+      "english": "Smell",
+      "chinese": "气味",
+      "definition": "",
+      "parents": [
+        "content.perception"
+      ]
+    },
+    {
+      "key": "content.perception.taste",
+      "axis": "content",
+      "english": "Taste",
+      "chinese": "味觉",
+      "definition": "",
+      "parents": [
+        "content.perception"
+      ]
+    },
+    {
+      "key": "content.perception.visibility",
+      "axis": "content",
+      "english": "Clarity and perceptibility",
+      "chinese": "清晰与难以察觉",
+      "definition": "",
+      "parents": [
+        "content.perception"
+      ]
+    },
+    {
+      "key": "content.perception.attention",
+      "axis": "content",
+      "english": "Attention and inattention",
+      "chinese": "注意与忽略",
+      "definition": "",
+      "parents": [
+        "content.perception"
+      ]
+    },
+    {
+      "key": "content.perception.color",
+      "axis": "content",
+      "english": "Color and light",
+      "chinese": "颜色与明暗",
+      "definition": "",
+      "parents": [
+        "content.perception"
+      ]
+    },
+    {
+      "key": "content.perception.sound",
+      "axis": "content",
+      "english": "Sound and silence",
+      "chinese": "声音与安静",
+      "definition": "",
+      "parents": [
+        "content.perception"
+      ]
+    },
+    {
+      "key": "content.perception.appearance",
+      "axis": "content",
+      "english": "Appearance and impression",
+      "chinese": "外观与印象",
+      "definition": "",
+      "parents": [
+        "content.perception"
+      ]
+    },
+    {
+      "key": "content.body",
+      "axis": "content",
+      "english": "Body and health",
+      "chinese": "身体与健康",
+      "definition": "",
+      "parents": []
+    },
+    {
+      "key": "content.body.anatomy",
+      "axis": "content",
+      "english": "Body parts",
+      "chinese": "身体部位",
+      "definition": "",
+      "parents": [
+        "content.body"
+      ]
+    },
+    {
+      "key": "content.body.movement",
+      "axis": "content",
+      "english": "Bodily movement",
+      "chinese": "身体动作",
+      "definition": "",
+      "parents": [
+        "content.body"
+      ]
+    },
+    {
+      "key": "content.body.health",
+      "axis": "content",
+      "english": "Health and illness",
+      "chinese": "健康与疾病",
+      "definition": "",
+      "parents": [
+        "content.body"
+      ]
+    },
+    {
+      "key": "content.body.pain",
+      "axis": "content",
+      "english": "Pain and discomfort",
+      "chinese": "疼痛与不适",
+      "definition": "",
+      "parents": [
+        "content.body"
+      ]
+    },
+    {
+      "key": "content.body.energy",
+      "axis": "content",
+      "english": "Energy and fatigue",
+      "chinese": "精力与疲劳",
+      "definition": "",
+      "parents": [
+        "content.body"
+      ]
+    },
+    {
+      "key": "content.body.sleep",
+      "axis": "content",
+      "english": "Sleep and wakefulness",
+      "chinese": "睡眠与清醒",
+      "definition": "",
+      "parents": [
+        "content.body"
+      ]
+    },
+    {
+      "key": "content.body.life",
+      "axis": "content",
+      "english": "Birth and death",
+      "chinese": "出生与死亡",
+      "definition": "",
+      "parents": [
+        "content.body"
+      ]
+    },
+    {
+      "key": "content.body.care",
+      "axis": "content",
+      "english": "Treatment and care",
+      "chinese": "治疗与照护",
+      "definition": "",
+      "parents": [
+        "content.body"
+      ]
+    },
+    {
+      "key": "content.body.ability",
+      "axis": "content",
+      "english": "Physical ability",
+      "chinese": "身体能力",
+      "definition": "",
+      "parents": [
+        "content.body"
+      ]
+    },
+    {
+      "key": "content.body.hygiene",
+      "axis": "content",
+      "english": "Cleanliness and hygiene",
+      "chinese": "清洁与卫生",
+      "definition": "",
+      "parents": [
+        "content.body"
+      ]
+    },
+    {
+      "key": "content.emotion",
+      "axis": "content",
+      "english": "Emotions and feelings",
+      "chinese": "情绪与感受",
+      "definition": "",
+      "parents": []
+    },
+    {
+      "key": "content.emotion.joy",
+      "axis": "content",
+      "english": "Joy and satisfaction",
+      "chinese": "快乐与满足",
+      "definition": "",
+      "parents": [
+        "content.emotion"
+      ]
+    },
+    {
+      "key": "content.emotion.sadness",
+      "axis": "content",
+      "english": "Sadness and loss",
+      "chinese": "悲伤与失落",
+      "definition": "",
+      "parents": [
+        "content.emotion"
+      ]
+    },
+    {
+      "key": "content.emotion.fear",
+      "axis": "content",
+      "english": "Fear and worry",
+      "chinese": "恐惧与担忧",
+      "definition": "",
+      "parents": [
+        "content.emotion"
+      ]
+    },
+    {
+      "key": "content.emotion.anger",
+      "axis": "content",
+      "english": "Anger and displeasure",
+      "chinese": "愤怒与不满",
+      "definition": "",
+      "parents": [
+        "content.emotion"
+      ]
+    },
+    {
+      "key": "content.emotion.surprise",
+      "axis": "content",
+      "english": "Surprise",
+      "chinese": "惊讶",
+      "definition": "",
+      "parents": [
+        "content.emotion"
+      ]
+    },
+    {
+      "key": "content.emotion.hope",
+      "axis": "content",
+      "english": "Hope and disappointment",
+      "chinese": "希望与失望",
+      "definition": "",
+      "parents": [
+        "content.emotion"
+      ]
+    },
+    {
+      "key": "content.emotion.affection",
+      "axis": "content",
+      "english": "Affection and dislike",
+      "chinese": "喜爱与厌恶",
+      "definition": "",
+      "parents": [
+        "content.emotion"
+      ]
+    },
+    {
+      "key": "content.emotion.calm",
+      "axis": "content",
+      "english": "Calm and tension",
+      "chinese": "平静与紧张",
+      "definition": "",
+      "parents": [
+        "content.emotion"
+      ]
+    },
+    {
+      "key": "content.emotion.shame",
+      "axis": "content",
+      "english": "Shame and pride",
+      "chinese": "羞愧与自豪",
+      "definition": "",
+      "parents": [
+        "content.emotion"
+      ]
+    },
+    {
+      "key": "content.emotion.empathy",
+      "axis": "content",
+      "english": "Sympathy and empathy",
+      "chinese": "同情与共情",
+      "definition": "",
+      "parents": [
+        "content.emotion"
+      ]
+    },
+    {
+      "key": "content.cognition",
+      "axis": "content",
+      "english": "Thought and knowledge",
+      "chinese": "思考与知识",
+      "definition": "",
+      "parents": []
+    },
+    {
+      "key": "content.cognition.knowledge",
+      "axis": "content",
+      "english": "Knowledge and ignorance",
+      "chinese": "知道与不了解",
+      "definition": "",
+      "parents": [
+        "content.cognition"
+      ]
+    },
+    {
+      "key": "content.cognition.belief",
+      "axis": "content",
+      "english": "Belief and doubt",
+      "chinese": "相信与怀疑",
+      "definition": "",
+      "parents": [
+        "content.cognition"
+      ]
+    },
+    {
+      "key": "content.cognition.certainty",
+      "axis": "content",
+      "english": "Certainty and uncertainty",
+      "chinese": "确定与不确定",
+      "definition": "",
+      "parents": [
+        "content.cognition"
+      ]
+    },
+    {
+      "key": "content.cognition.memory",
+      "axis": "content",
+      "english": "Remembering and forgetting",
+      "chinese": "记住与遗忘",
+      "definition": "",
+      "parents": [
+        "content.cognition"
+      ]
+    },
+    {
+      "key": "content.cognition.understanding",
+      "axis": "content",
+      "english": "Understanding and misunderstanding",
+      "chinese": "理解与误解",
+      "definition": "",
+      "parents": [
+        "content.cognition"
+      ]
+    },
+    {
+      "key": "content.cognition.reasoning",
+      "axis": "content",
+      "english": "Reasoning and judgment",
+      "chinese": "推理与判断",
+      "definition": "",
+      "parents": [
+        "content.cognition"
+      ]
+    },
+    {
+      "key": "content.cognition.learning",
+      "axis": "content",
+      "english": "Learning and discovery",
+      "chinese": "学习与发现",
+      "definition": "",
+      "parents": [
+        "content.cognition"
+      ]
+    },
+    {
+      "key": "content.cognition.imagination",
+      "axis": "content",
+      "english": "Imagination",
+      "chinese": "想象",
+      "definition": "",
+      "parents": [
+        "content.cognition"
+      ]
+    },
+    {
+      "key": "content.cognition.expectation",
+      "axis": "content",
+      "english": "Expectation and surprise",
+      "chinese": "预期与意外",
+      "definition": "",
+      "parents": [
+        "content.cognition"
+      ]
+    },
+    {
+      "key": "content.cognition.awareness",
+      "axis": "content",
+      "english": "Awareness and unawareness",
+      "chinese": "意识到与未察觉",
+      "definition": "",
+      "parents": [
+        "content.cognition"
+      ]
+    },
+    {
+      "key": "content.agency",
+      "axis": "content",
+      "english": "Intention and action",
+      "chinese": "意图与行动",
+      "definition": "",
+      "parents": []
+    },
+    {
+      "key": "content.agency.intention",
+      "axis": "content",
+      "english": "Intention and willingness",
+      "chinese": "打算与意愿",
+      "definition": "",
+      "parents": [
+        "content.agency"
+      ]
+    },
+    {
+      "key": "content.agency.goal",
+      "axis": "content",
+      "english": "Goals and purposes",
+      "chinese": "目标与目的",
+      "definition": "",
+      "parents": [
+        "content.agency"
+      ]
+    },
+    {
+      "key": "content.agency.decision",
+      "axis": "content",
+      "english": "Choices and decisions",
+      "chinese": "选择与决定",
+      "definition": "",
+      "parents": [
+        "content.agency"
+      ]
+    },
+    {
+      "key": "content.agency.effort",
+      "axis": "content",
+      "english": "Effort and attempts",
+      "chinese": "努力与尝试",
+      "definition": "",
+      "parents": [
+        "content.agency"
+      ]
+    },
+    {
+      "key": "content.agency.ability",
+      "axis": "content",
+      "english": "Ability and limits",
+      "chinese": "能力与限制",
+      "definition": "",
+      "parents": [
+        "content.agency"
+      ]
+    },
+    {
+      "key": "content.agency.control",
+      "axis": "content",
+      "english": "Control and autonomy",
+      "chinese": "控制与自主",
+      "definition": "",
+      "parents": [
+        "content.agency"
+      ]
+    },
+    {
+      "key": "content.agency.success",
+      "axis": "content",
+      "english": "Success and failure",
+      "chinese": "成功与失败",
+      "definition": "",
+      "parents": [
+        "content.agency"
+      ]
+    },
+    {
+      "key": "content.agency.necessity",
+      "axis": "content",
+      "english": "Necessity and optionality",
+      "chinese": "必要与可选",
+      "definition": "",
+      "parents": [
+        "content.agency"
+      ]
+    },
+    {
+      "key": "content.agency.habit",
+      "axis": "content",
+      "english": "Habits and routines",
+      "chinese": "习惯与惯例",
+      "definition": "",
+      "parents": [
+        "content.agency"
+      ]
+    },
+    {
+      "key": "content.agency.preparation",
+      "axis": "content",
+      "english": "Preparation and planning",
+      "chinese": "准备与计划",
+      "definition": "",
+      "parents": [
+        "content.agency"
+      ]
+    },
+    {
+      "key": "content.interaction",
+      "axis": "content",
+      "english": "Interpersonal relations",
+      "chinese": "人际关系",
+      "definition": "",
+      "parents": []
+    },
+    {
+      "key": "content.interaction.meeting",
+      "axis": "content",
+      "english": "Meeting and acquaintance",
+      "chinese": "相遇与认识",
+      "definition": "",
+      "parents": [
+        "content.interaction"
+      ]
+    },
+    {
+      "key": "content.interaction.cooperation",
+      "axis": "content",
+      "english": "Cooperation",
+      "chinese": "合作",
+      "definition": "",
+      "parents": [
+        "content.interaction"
+      ]
+    },
+    {
+      "key": "content.interaction.conflict",
+      "axis": "content",
+      "english": "Conflict and competition",
+      "chinese": "冲突与竞争",
+      "definition": "",
+      "parents": [
+        "content.interaction"
+      ]
+    },
+    {
+      "key": "content.interaction.help",
+      "axis": "content",
+      "english": "Help and support",
+      "chinese": "帮助与支持",
+      "definition": "",
+      "parents": [
+        "content.interaction"
+      ]
+    },
+    {
+      "key": "content.interaction.trust",
+      "axis": "content",
+      "english": "Trust and reliance",
+      "chinese": "信任与依赖",
+      "definition": "",
+      "parents": [
+        "content.interaction"
+      ]
+    },
+    {
+      "key": "content.interaction.influence",
+      "axis": "content",
+      "english": "Influence and persuasion",
+      "chinese": "影响与说服",
+      "definition": "",
+      "parents": [
+        "content.interaction"
+      ]
+    },
+    {
+      "key": "content.interaction.family",
+      "axis": "content",
+      "english": "Family and kinship",
+      "chinese": "家庭与亲属",
+      "definition": "",
+      "parents": [
+        "content.interaction"
+      ]
+    },
+    {
+      "key": "content.interaction.friendship",
+      "axis": "content",
+      "english": "Friendship and companionship",
+      "chinese": "友谊与陪伴",
+      "definition": "",
+      "parents": [
+        "content.interaction"
+      ]
+    },
+    {
+      "key": "content.interaction.respect",
+      "axis": "content",
+      "english": "Respect and disregard",
+      "chinese": "尊重与轻视",
+      "definition": "",
+      "parents": [
+        "content.interaction"
+      ]
+    },
+    {
+      "key": "content.interaction.reciprocity",
+      "axis": "content",
+      "english": "Reciprocity and return",
+      "chinese": "互惠与回报",
+      "definition": "",
+      "parents": [
+        "content.interaction"
+      ]
+    },
+    {
+      "key": "content.society",
+      "axis": "content",
+      "english": "Society and institutions",
+      "chinese": "社会与制度",
+      "definition": "",
+      "parents": []
+    },
+    {
+      "key": "content.society.community",
+      "axis": "content",
+      "english": "Groups and communities",
+      "chinese": "群体与社区",
+      "definition": "",
+      "parents": [
+        "content.society"
+      ]
+    },
+    {
+      "key": "content.society.authority",
+      "axis": "content",
+      "english": "Power and authority",
+      "chinese": "权力与权威",
+      "definition": "",
+      "parents": [
+        "content.society"
+      ]
+    },
+    {
+      "key": "content.society.law",
+      "axis": "content",
+      "english": "Law and rules",
+      "chinese": "法律与规则",
+      "definition": "",
+      "parents": [
+        "content.society"
+      ]
+    },
+    {
+      "key": "content.society.rights",
+      "axis": "content",
+      "english": "Rights and duties",
+      "chinese": "权利与义务",
+      "definition": "",
+      "parents": [
+        "content.society"
+      ]
+    },
+    {
+      "key": "content.society.justice",
+      "axis": "content",
+      "english": "Fairness and injustice",
+      "chinese": "公平与不公",
+      "definition": "",
+      "parents": [
+        "content.society"
+      ]
+    },
+    {
+      "key": "content.society.safety",
+      "axis": "content",
+      "english": "Safety and danger",
+      "chinese": "安全与危险",
+      "definition": "",
+      "parents": [
+        "content.society"
+      ]
+    },
+    {
+      "key": "content.society.education",
+      "axis": "content",
+      "english": "Education and schooling",
+      "chinese": "教育与学校",
+      "definition": "",
+      "parents": [
+        "content.society"
+      ]
+    },
+    {
+      "key": "content.society.government",
+      "axis": "content",
+      "english": "Government and public affairs",
+      "chinese": "治理与公共事务",
+      "definition": "",
+      "parents": [
+        "content.society"
+      ]
+    },
+    {
+      "key": "content.society.tradition",
+      "axis": "content",
+      "english": "Customs and traditions",
+      "chinese": "习俗与传统",
+      "definition": "",
+      "parents": [
+        "content.society"
+      ]
+    },
+    {
+      "key": "content.society.inclusion",
+      "axis": "content",
+      "english": "Inclusion and exclusion",
+      "chinese": "包容与排斥",
+      "definition": "",
+      "parents": [
+        "content.society"
+      ]
+    },
+    {
+      "key": "content.work",
+      "axis": "content",
+      "english": "Work and activities",
+      "chinese": "工作与活动",
+      "definition": "",
+      "parents": []
+    },
+    {
+      "key": "content.work.employment",
+      "axis": "content",
+      "english": "Work and employment",
+      "chinese": "职业与雇佣",
+      "definition": "",
+      "parents": [
+        "content.work"
+      ]
+    },
+    {
+      "key": "content.work.task",
+      "axis": "content",
+      "english": "Tasks and responsibilities",
+      "chinese": "任务与职责",
+      "definition": "",
+      "parents": [
+        "content.work"
+      ]
+    },
+    {
+      "key": "content.work.process",
+      "axis": "content",
+      "english": "Processes and steps",
+      "chinese": "流程与步骤",
+      "definition": "",
+      "parents": [
+        "content.work"
+      ]
+    },
+    {
+      "key": "content.work.progress",
+      "axis": "content",
+      "english": "Progress and stagnation",
+      "chinese": "进展与停滞",
+      "definition": "",
+      "parents": [
+        "content.work"
+      ]
+    },
+    {
+      "key": "content.work.production",
+      "axis": "content",
+      "english": "Production and making",
+      "chinese": "生产与制作",
+      "definition": "",
+      "parents": [
+        "content.work"
+      ]
+    },
+    {
+      "key": "content.work.management",
+      "axis": "content",
+      "english": "Organization and management",
+      "chinese": "组织与管理",
+      "definition": "",
+      "parents": [
+        "content.work"
+      ]
+    },
+    {
+      "key": "content.work.service",
+      "axis": "content",
+      "english": "Service and delivery",
+      "chinese": "服务与交付",
+      "definition": "",
+      "parents": [
+        "content.work"
+      ]
+    },
+    {
+      "key": "content.work.skill",
+      "axis": "content",
+      "english": "Skill and experience",
+      "chinese": "技能与经验",
+      "definition": "",
+      "parents": [
+        "content.work"
+      ]
+    },
+    {
+      "key": "content.work.performance",
+      "axis": "content",
+      "english": "Performance and efficiency",
+      "chinese": "表现与效率",
+      "definition": "",
+      "parents": [
+        "content.work"
+      ]
+    },
+    {
+      "key": "content.work.leisure",
+      "axis": "content",
+      "english": "Rest and leisure",
+      "chinese": "休息与娱乐",
+      "definition": "",
+      "parents": [
+        "content.work"
+      ]
+    },
+    {
+      "key": "content.economy",
+      "axis": "content",
+      "english": "Economy and property",
+      "chinese": "经济与财产",
+      "definition": "",
+      "parents": []
+    },
+    {
+      "key": "content.economy.ownership",
+      "axis": "content",
+      "english": "Ownership and possession",
+      "chinese": "拥有与归属",
+      "definition": "",
+      "parents": [
+        "content.economy"
+      ]
+    },
+    {
+      "key": "content.economy.exchange",
+      "axis": "content",
+      "english": "Exchange and trade",
+      "chinese": "交换与交易",
+      "definition": "",
+      "parents": [
+        "content.economy"
+      ]
+    },
+    {
+      "key": "content.economy.purchase",
+      "axis": "content",
+      "english": "Buying and selling",
+      "chinese": "购买与出售",
+      "definition": "",
+      "parents": [
+        "content.economy"
+      ]
+    },
+    {
+      "key": "content.economy.price",
+      "axis": "content",
+      "english": "Price and value",
+      "chinese": "价格与价值",
+      "definition": "",
+      "parents": [
+        "content.economy"
+      ]
+    },
+    {
+      "key": "content.economy.payment",
+      "axis": "content",
+      "english": "Payment and charges",
+      "chinese": "支付与收费",
+      "definition": "",
+      "parents": [
+        "content.economy"
+      ]
+    },
+    {
+      "key": "content.economy.finance",
+      "axis": "content",
+      "english": "Saving and lending",
+      "chinese": "储蓄与借贷",
+      "definition": "",
+      "parents": [
+        "content.economy"
+      ]
+    },
+    {
+      "key": "content.economy.wealth",
+      "axis": "content",
+      "english": "Wealth and poverty",
+      "chinese": "财富与贫困",
+      "definition": "",
+      "parents": [
+        "content.economy"
+      ]
+    },
+    {
+      "key": "content.economy.income",
+      "axis": "content",
+      "english": "Income and expenditure",
+      "chinese": "收入与支出",
+      "definition": "",
+      "parents": [
+        "content.economy"
+      ]
+    },
+    {
+      "key": "content.economy.allocation",
+      "axis": "content",
+      "english": "Allocation and sharing",
+      "chinese": "分配与共享",
+      "definition": "",
+      "parents": [
+        "content.economy"
+      ]
+    },
+    {
+      "key": "content.economy.loss",
+      "axis": "content",
+      "english": "Gains and losses",
+      "chinese": "获得与损失",
+      "definition": "",
+      "parents": [
+        "content.economy"
+      ]
+    },
+    {
+      "key": "content.objects",
+      "axis": "content",
+      "english": "Objects and materials",
+      "chinese": "物体与材料",
+      "definition": "",
+      "parents": []
+    },
+    {
+      "key": "content.objects.substance",
+      "axis": "content",
+      "english": "Substances and materials",
+      "chinese": "物质与材料",
+      "definition": "",
+      "parents": [
+        "content.objects"
+      ]
+    },
+    {
+      "key": "content.objects.size",
+      "axis": "content",
+      "english": "Size",
+      "chinese": "尺寸与大小",
+      "definition": "",
+      "parents": [
+        "content.objects"
+      ]
+    },
+    {
+      "key": "content.objects.weight",
+      "axis": "content",
+      "english": "Weight",
+      "chinese": "重量",
+      "definition": "",
+      "parents": [
+        "content.objects"
+      ]
+    },
+    {
+      "key": "content.objects.texture",
+      "axis": "content",
+      "english": "Texture and surfaces",
+      "chinese": "质地与表面",
+      "definition": "",
+      "parents": [
+        "content.objects"
+      ]
+    },
+    {
+      "key": "content.objects.temperature",
+      "axis": "content",
+      "english": "Temperature",
+      "chinese": "温度与冷热",
+      "definition": "",
+      "parents": [
+        "content.objects"
+      ]
+    },
+    {
+      "key": "content.objects.condition",
+      "axis": "content",
+      "english": "Condition and damage",
+      "chinese": "完好与损坏",
+      "definition": "",
+      "parents": [
+        "content.objects"
+      ]
+    },
+    {
+      "key": "content.objects.tools",
+      "axis": "content",
+      "english": "Tools and instruments",
+      "chinese": "工具与器械",
+      "definition": "",
+      "parents": [
+        "content.objects"
+      ]
+    },
+    {
+      "key": "content.objects.containers",
+      "axis": "content",
+      "english": "Containers and contents",
+      "chinese": "容器与装载",
+      "definition": "",
+      "parents": [
+        "content.objects"
+      ]
+    },
+    {
+      "key": "content.objects.building",
+      "axis": "content",
+      "english": "Buildings and shelter",
+      "chinese": "建筑与住所",
+      "definition": "",
+      "parents": [
+        "content.objects"
+      ]
+    },
+    {
+      "key": "content.objects.technology",
+      "axis": "content",
+      "english": "Technology and equipment",
+      "chinese": "技术与设备",
+      "definition": "",
+      "parents": [
+        "content.objects"
+      ]
+    },
+    {
+      "key": "content.nature",
+      "axis": "content",
+      "english": "Nature and environment",
+      "chinese": "自然与环境",
+      "definition": "",
+      "parents": []
+    },
+    {
+      "key": "content.nature.land",
+      "axis": "content",
+      "english": "Land and terrain",
+      "chinese": "土地与地貌",
+      "definition": "",
+      "parents": [
+        "content.nature"
+      ]
+    },
+    {
+      "key": "content.nature.water",
+      "axis": "content",
+      "english": "Water and shores",
+      "chinese": "水域与水岸",
+      "definition": "",
+      "parents": [
+        "content.nature"
+      ]
+    },
+    {
+      "key": "content.nature.weather",
+      "axis": "content",
+      "english": "Weather and climate",
+      "chinese": "天气与气候",
+      "definition": "",
+      "parents": [
+        "content.nature"
+      ]
+    },
+    {
+      "key": "content.nature.plants",
+      "axis": "content",
+      "english": "Plants and growth",
+      "chinese": "植物与生长",
+      "definition": "",
+      "parents": [
+        "content.nature"
+      ]
+    },
+    {
+      "key": "content.nature.animals",
+      "axis": "content",
+      "english": "Animals",
+      "chinese": "动物",
+      "definition": "",
+      "parents": [
+        "content.nature"
+      ]
+    },
+    {
+      "key": "content.nature.environment",
+      "axis": "content",
+      "english": "Environment and ecology",
+      "chinese": "环境与生态",
+      "definition": "",
+      "parents": [
+        "content.nature"
+      ]
+    },
+    {
+      "key": "content.nature.energy",
+      "axis": "content",
+      "english": "Energy and resources",
+      "chinese": "能源与资源",
+      "definition": "",
+      "parents": [
+        "content.nature"
+      ]
+    },
+    {
+      "key": "content.nature.sky",
+      "axis": "content",
+      "english": "Sky and celestial bodies",
+      "chinese": "天空与天体",
+      "definition": "",
+      "parents": [
+        "content.nature"
+      ]
+    },
+    {
+      "key": "content.nature.disaster",
+      "axis": "content",
+      "english": "Disasters and natural forces",
+      "chinese": "灾害与自然力量",
+      "definition": "",
+      "parents": [
+        "content.nature"
+      ]
+    },
+    {
+      "key": "content.nature.seasons",
+      "axis": "content",
+      "english": "Seasons and natural cycles",
+      "chinese": "季节与自然周期",
+      "definition": "",
+      "parents": [
+        "content.nature"
+      ]
+    },
+    {
+      "key": "content.food",
+      "axis": "content",
+      "english": "Food and daily life",
+      "chinese": "饮食与生活",
+      "definition": "",
+      "parents": []
+    },
+    {
+      "key": "content.food.eating",
+      "axis": "content",
+      "english": "Eating and drinking",
+      "chinese": "进食与饮水",
+      "definition": "",
+      "parents": [
+        "content.food"
+      ]
+    },
+    {
+      "key": "content.food.hunger",
+      "axis": "content",
+      "english": "Hunger and thirst",
+      "chinese": "饥饿与口渴",
+      "definition": "",
+      "parents": [
+        "content.food"
+      ]
+    },
+    {
+      "key": "content.food.ingredients",
+      "axis": "content",
+      "english": "Ingredients",
+      "chinese": "食材",
+      "definition": "",
+      "parents": [
+        "content.food"
+      ]
+    },
+    {
+      "key": "content.food.cooking",
+      "axis": "content",
+      "english": "Cooking and food preparation",
+      "chinese": "烹饪与准备食物",
+      "definition": "",
+      "parents": [
+        "content.food"
+      ]
+    },
+    {
+      "key": "content.food.meals",
+      "axis": "content",
+      "english": "Meals and dining",
+      "chinese": "餐食与用餐",
+      "definition": "",
+      "parents": [
+        "content.food"
+      ]
+    },
+    {
+      "key": "content.food.flavor",
+      "axis": "content",
+      "english": "Flavor and mouthfeel",
+      "chinese": "风味与口感",
+      "definition": "",
+      "parents": [
+        "content.food"
+      ]
+    },
+    {
+      "key": "content.food.clothing",
+      "axis": "content",
+      "english": "Clothing and dressing",
+      "chinese": "衣着与穿戴",
+      "definition": "",
+      "parents": [
+        "content.food"
+      ]
+    },
+    {
+      "key": "content.food.home",
+      "axis": "content",
+      "english": "Home and household tasks",
+      "chinese": "居住与家务",
+      "definition": "",
+      "parents": [
+        "content.food"
+      ]
+    },
+    {
+      "key": "content.food.shopping",
+      "axis": "content",
+      "english": "Shopping and daily goods",
+      "chinese": "购物与日用品",
+      "definition": "",
+      "parents": [
+        "content.food"
+      ]
+    },
+    {
+      "key": "content.food.routine",
+      "axis": "content",
+      "english": "Daily routines",
+      "chinese": "日常起居",
+      "definition": "",
+      "parents": [
+        "content.food"
+      ]
+    },
+    {
+      "key": "content.communication",
+      "axis": "content",
+      "english": "Information and expression",
+      "chinese": "信息与表达",
+      "definition": "",
+      "parents": []
+    },
+    {
+      "key": "content.communication.speech",
+      "axis": "content",
+      "english": "Speech and conversation",
+      "chinese": "说话与交谈",
+      "definition": "",
+      "parents": [
+        "content.communication"
+      ]
+    },
+    {
+      "key": "content.communication.writing",
+      "axis": "content",
+      "english": "Writing and texts",
+      "chinese": "书写与文本",
+      "definition": "",
+      "parents": [
+        "content.communication"
+      ]
+    },
+    {
+      "key": "content.communication.message",
+      "axis": "content",
+      "english": "Messages and content",
+      "chinese": "消息与内容",
+      "definition": "",
+      "parents": [
+        "content.communication"
+      ]
+    },
+    {
+      "key": "content.communication.truth",
+      "axis": "content",
+      "english": "Truth and falsehood",
+      "chinese": "真实与虚假",
+      "definition": "",
+      "parents": [
+        "content.communication"
+      ]
+    },
+    {
+      "key": "content.communication.evidence",
+      "axis": "content",
+      "english": "Evidence and grounds",
+      "chinese": "证据与依据",
+      "definition": "",
+      "parents": [
+        "content.communication"
+      ]
+    },
+    {
+      "key": "content.communication.meaning",
+      "axis": "content",
+      "english": "Meaning and reference",
+      "chinese": "含义与指代",
+      "definition": "",
+      "parents": [
+        "content.communication"
+      ]
+    },
+    {
+      "key": "content.communication.explanation",
+      "axis": "content",
+      "english": "Explanation",
+      "chinese": "解释与说明",
+      "definition": "",
+      "parents": [
+        "content.communication"
+      ]
+    },
+    {
+      "key": "content.communication.language",
+      "axis": "content",
+      "english": "Language and translation",
+      "chinese": "语言与翻译",
+      "definition": "",
+      "parents": [
+        "content.communication"
+      ]
+    },
+    {
+      "key": "content.communication.media",
+      "axis": "content",
+      "english": "Media and transmission",
+      "chinese": "传播与媒介",
+      "definition": "",
+      "parents": [
+        "content.communication"
+      ]
+    },
+    {
+      "key": "content.communication.secrecy",
+      "axis": "content",
+      "english": "Disclosure and secrecy",
+      "chinese": "公开与保密",
+      "definition": "",
+      "parents": [
+        "content.communication"
+      ]
+    },
+    {
+      "key": "content.arts",
+      "axis": "content",
+      "english": "Culture and aesthetics",
+      "chinese": "文化与审美",
+      "definition": "",
+      "parents": []
+    },
+    {
+      "key": "content.arts.beauty",
+      "axis": "content",
+      "english": "Beauty and appeal",
+      "chinese": "美感与吸引力",
+      "definition": "",
+      "parents": [
+        "content.arts"
+      ]
+    },
+    {
+      "key": "content.arts.art",
+      "axis": "content",
+      "english": "Art and creation",
+      "chinese": "艺术与创作",
+      "definition": "",
+      "parents": [
+        "content.arts"
+      ]
+    },
+    {
+      "key": "content.arts.music",
+      "axis": "content",
+      "english": "Music and rhythm",
+      "chinese": "音乐与节奏",
+      "definition": "",
+      "parents": [
+        "content.arts"
+      ]
+    },
+    {
+      "key": "content.arts.story",
+      "axis": "content",
+      "english": "Stories and narrative",
+      "chinese": "故事与叙述",
+      "definition": "",
+      "parents": [
+        "content.arts"
+      ]
+    },
+    {
+      "key": "content.arts.humor",
+      "axis": "content",
+      "english": "Humor and seriousness",
+      "chinese": "幽默与严肃",
+      "definition": "",
+      "parents": [
+        "content.arts"
+      ]
+    },
+    {
+      "key": "content.arts.play",
+      "axis": "content",
+      "english": "Games and performance",
+      "chinese": "游戏与表演",
+      "definition": "",
+      "parents": [
+        "content.arts"
+      ]
+    },
+    {
+      "key": "content.arts.heritage",
+      "axis": "content",
+      "english": "Culture and heritage",
+      "chinese": "文化与传承",
+      "definition": "",
+      "parents": [
+        "content.arts"
+      ]
+    },
+    {
+      "key": "content.arts.belief-system",
+      "axis": "content",
+      "english": "Beliefs and rituals",
+      "chinese": "信仰与仪式",
+      "definition": "",
+      "parents": [
+        "content.arts"
+      ]
+    },
+    {
+      "key": "content.arts.style",
+      "axis": "content",
+      "english": "Style and taste",
+      "chinese": "风格与品味",
+      "definition": "",
+      "parents": [
+        "content.arts"
+      ]
+    },
+    {
+      "key": "content.arts.originality",
+      "axis": "content",
+      "english": "Originality and imitation",
+      "chinese": "创新与模仿",
+      "definition": "",
+      "parents": [
+        "content.arts"
+      ]
+    },
+    {
+      "key": "function.information",
+      "axis": "function",
+      "english": "Exchanging information",
+      "chinese": "交换信息",
+      "definition": "",
+      "parents": []
+    },
+    {
+      "key": "function.information.state",
+      "axis": "function",
+      "english": "Stating and informing",
+      "chinese": "陈述与告知",
+      "definition": "",
+      "parents": [
+        "function.information"
+      ]
+    },
+    {
+      "key": "function.information.ask",
+      "axis": "function",
+      "english": "Asking for information",
+      "chinese": "询问信息",
+      "definition": "",
+      "parents": [
+        "function.information"
+      ]
+    },
+    {
+      "key": "function.information.confirm",
+      "axis": "function",
+      "english": "Checking and confirming",
+      "chinese": "核实与确认",
+      "definition": "",
+      "parents": [
+        "function.information"
+      ]
+    },
+    {
+      "key": "function.information.explain",
+      "axis": "function",
+      "english": "Explaining and clarifying",
+      "chinese": "解释与澄清",
+      "definition": "",
+      "parents": [
+        "function.information"
+      ]
+    },
+    {
+      "key": "function.information.correct",
+      "axis": "function",
+      "english": "Correcting information",
+      "chinese": "纠正信息",
+      "definition": "",
+      "parents": [
+        "function.information"
+      ]
+    },
+    {
+      "key": "function.attitude",
+      "axis": "function",
+      "english": "Expressing attitudes",
+      "chinese": "表达态度",
+      "definition": "",
+      "parents": []
+    },
+    {
+      "key": "function.attitude.agree",
+      "axis": "function",
+      "english": "Agreement",
+      "chinese": "赞同与认可",
+      "definition": "",
+      "parents": [
+        "function.attitude"
+      ]
+    },
+    {
+      "key": "function.attitude.disagree",
+      "axis": "function",
+      "english": "Disagreement and denial",
+      "chinese": "反对与否认",
+      "definition": "",
+      "parents": [
+        "function.attitude"
+      ]
+    },
+    {
+      "key": "function.attitude.evaluate",
+      "axis": "function",
+      "english": "Evaluating",
+      "chinese": "评价与判断",
+      "definition": "",
+      "parents": [
+        "function.attitude"
+      ]
+    },
+    {
+      "key": "function.attitude.prefer",
+      "axis": "function",
+      "english": "Expressing preferences",
+      "chinese": "表达偏好",
+      "definition": "",
+      "parents": [
+        "function.attitude"
+      ]
+    },
+    {
+      "key": "function.attitude.doubt",
+      "axis": "function",
+      "english": "Expressing certainty and doubt",
+      "chinese": "表达把握与怀疑",
+      "definition": "",
+      "parents": [
+        "function.attitude"
+      ]
+    },
+    {
+      "key": "function.influence",
+      "axis": "function",
+      "english": "Influencing action",
+      "chinese": "推动行动",
+      "definition": "",
+      "parents": []
+    },
+    {
+      "key": "function.influence.request",
+      "axis": "function",
+      "english": "Requests",
+      "chinese": "请求",
+      "definition": "",
+      "parents": [
+        "function.influence"
+      ]
+    },
+    {
+      "key": "function.influence.suggest",
+      "axis": "function",
+      "english": "Suggestions and advice",
+      "chinese": "建议与劝告",
+      "definition": "",
+      "parents": [
+        "function.influence"
+      ]
+    },
+    {
+      "key": "function.influence.offer",
+      "axis": "function",
+      "english": "Offers and invitations",
+      "chinese": "提议与邀请",
+      "definition": "",
+      "parents": [
+        "function.influence"
+      ]
+    },
+    {
+      "key": "function.influence.permit",
+      "axis": "function",
+      "english": "Permission and prohibition",
+      "chinese": "允许与禁止",
+      "definition": "",
+      "parents": [
+        "function.influence"
+      ]
+    },
+    {
+      "key": "function.influence.refuse",
+      "axis": "function",
+      "english": "Acceptance and refusal",
+      "chinese": "接受与拒绝",
+      "definition": "",
+      "parents": [
+        "function.influence"
+      ]
+    },
+    {
+      "key": "function.social",
+      "axis": "function",
+      "english": "Social contact",
+      "chinese": "建立社交联系",
+      "definition": "",
+      "parents": []
+    },
+    {
+      "key": "function.social.greet",
+      "axis": "function",
+      "english": "Greetings and leave-taking",
+      "chinese": "问候与告别",
+      "definition": "",
+      "parents": [
+        "function.social"
+      ]
+    },
+    {
+      "key": "function.social.introduce",
+      "axis": "function",
+      "english": "Introductions and address",
+      "chinese": "介绍与称呼",
+      "definition": "",
+      "parents": [
+        "function.social"
+      ]
+    },
+    {
+      "key": "function.social.thank",
+      "axis": "function",
+      "english": "Thanks and responses",
+      "chinese": "感谢与回应",
+      "definition": "",
+      "parents": [
+        "function.social"
+      ]
+    },
+    {
+      "key": "function.social.apologize",
+      "axis": "function",
+      "english": "Apology and forgiveness",
+      "chinese": "道歉与谅解",
+      "definition": "",
+      "parents": [
+        "function.social"
+      ]
+    },
+    {
+      "key": "function.social.congratulate",
+      "axis": "function",
+      "english": "Congratulations and sympathy",
+      "chinese": "祝贺与慰问",
+      "definition": "",
+      "parents": [
+        "function.social"
+      ]
+    },
+    {
+      "key": "function.discourse",
+      "axis": "function",
+      "english": "Organizing discourse",
+      "chinese": "组织话语",
+      "definition": "",
+      "parents": []
+    },
+    {
+      "key": "function.discourse.open",
+      "axis": "function",
+      "english": "Opening and closing topics",
+      "chinese": "开启与结束话题",
+      "definition": "",
+      "parents": [
+        "function.discourse"
+      ]
+    },
+    {
+      "key": "function.discourse.sequence",
+      "axis": "function",
+      "english": "Sequencing and connecting",
+      "chinese": "排序与衔接",
+      "definition": "",
+      "parents": [
+        "function.discourse"
+      ]
+    },
+    {
+      "key": "function.discourse.contrast",
+      "axis": "function",
+      "english": "Contrast and concession",
+      "chinese": "对比与转折",
+      "definition": "",
+      "parents": [
+        "function.discourse"
+      ]
+    },
+    {
+      "key": "function.discourse.emphasize",
+      "axis": "function",
+      "english": "Emphasis and summary",
+      "chinese": "强调与概括",
+      "definition": "",
+      "parents": [
+        "function.discourse"
+      ]
+    },
+    {
+      "key": "function.discourse.turn",
+      "axis": "function",
+      "english": "Turn-taking and interruption",
+      "chinese": "轮次与插话",
+      "definition": "",
+      "parents": [
+        "function.discourse"
+      ]
+    },
+    {
+      "key": "function.repair",
+      "axis": "function",
+      "english": "Repairing communication",
+      "chinese": "修复交流",
+      "definition": "",
+      "parents": []
+    },
+    {
+      "key": "function.repair.repeat",
+      "axis": "function",
+      "english": "Requesting repetition",
+      "chinese": "请求重复",
+      "definition": "",
+      "parents": [
+        "function.repair"
+      ]
+    },
+    {
+      "key": "function.repair.rephrase",
+      "axis": "function",
+      "english": "Rephrasing",
+      "chinese": "换种说法",
+      "definition": "",
+      "parents": [
+        "function.repair"
+      ]
+    },
+    {
+      "key": "function.repair.check",
+      "axis": "function",
+      "english": "Checking understanding",
+      "chinese": "确认理解",
+      "definition": "",
+      "parents": [
+        "function.repair"
+      ]
+    },
+    {
+      "key": "function.repair.clarify",
+      "axis": "function",
+      "english": "Requesting clarification",
+      "chinese": "请求澄清",
+      "definition": "",
+      "parents": [
+        "function.repair"
+      ]
+    },
+    {
+      "key": "function.repair.signal",
+      "axis": "function",
+      "english": "Signaling communication problems",
+      "chinese": "指出交流障碍",
+      "definition": "",
+      "parents": [
+        "function.repair"
+      ]
+    }
+  ]
+}

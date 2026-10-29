@@ -70,6 +70,8 @@ public sealed class UiaFocusTracker : IFocusTracker
     // Synchronous, metadata-only revocation signal for request owners. Unlike the asynchronously
     // refreshed snapshot event, this cannot hide an intervening focus transition after a round trip.
     internal event Action<nint>? FocusTransition;
+    // Read-only selection leases borrow this existing focus epoch without requiring an editable snapshot.
+    internal long ActiveFocusEpoch => Volatile.Read(ref _running) ? Interlocked.Read(ref _focusChangeSequence) : 0;
 
     // The expression session borrows this same MTA owner; no second global listener is created.
     internal UiaTextEditEvidence? ExpressionCompositionOwner =>

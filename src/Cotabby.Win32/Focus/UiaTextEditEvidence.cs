@@ -39,7 +39,7 @@ internal readonly record struct UiaOwnedElementResult(int ElementHResult, string
 // Owns all native TextEdit subscriptions on one MTA. COM retains each callback until its last
 // native reference is released; callbacks carry only an epoch, never inspect the event payload.
 [SupportedOSPlatform("windows8.1")]
-internal sealed unsafe class UiaTextEditEvidence : ICompositionEvidenceOwner, IExpressionRetainedEvidence
+internal sealed unsafe partial class UiaTextEditEvidence : ICompositionEvidenceOwner, IExpressionRetainedEvidence
 {
     private readonly BlockingCollection<Action> _queue = new();
     private readonly Thread _thread;
@@ -375,7 +375,7 @@ internal sealed unsafe class UiaTextEditEvidence : ICompositionEvidenceOwner, IE
             && version > 0 && version == Interlocked.Read(ref saved.Version);
     }
 
-    internal Task DrainRetainedAsync()
+    public Task DrainRetainedAsync()
     {
         var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         try { _queue.Add(() => completion.TrySetResult()); }
@@ -894,7 +894,7 @@ internal sealed unsafe class UiaTextEditEvidence : ICompositionEvidenceOwner, IE
         }
         finally
         {
-            if (_automation is not null) { RetireRetainedCore(); Retire(); _automation->Release(); _automation = null; }
+            if (_automation is not null) { RetireReadingCore(); RetireRetainedCore(); Retire(); _automation->Release(); _automation = null; }
             if (init.Succeeded) SpeechNativeMethods.CoUninitialize();
         }
     }
@@ -916,12 +916,14 @@ internal sealed unsafe class UiaTextEditEvidence : ICompositionEvidenceOwner, IE
         private readonly UiaTextEditEvidence _owner;
         private readonly long _epoch;
         private readonly bool _retained;
-        private Callback(UiaTextEditEvidence owner, long epoch, bool retained) { _owner = owner; _epoch = epoch; _retained = retained; }
+        private readonly Action? _reading;
+        private Callback(UiaTextEditEvidence owner, long epoch, bool retained, Action? reading = null) { _owner = owner; _epoch = epoch; _retained = retained; _reading = reading; }
         public static IUIAutomationTextEditTextChangedEventHandler* Create(UiaTextEditEvidence owner, long epoch) => CreateCore(owner, epoch, false);
         public static IUIAutomationTextEditTextChangedEventHandler* CreateRetained(UiaTextEditEvidence owner, long epoch) => CreateCore(owner, epoch, true);
-        private static IUIAutomationTextEditTextChangedEventHandler* CreateCore(UiaTextEditEvidence owner, long epoch, bool retained)
+        public static IUIAutomationTextEditTextChangedEventHandler* CreateReading(UiaTextEditEvidence owner, Action reading) => CreateCore(owner, 0, false, reading);
+        private static IUIAutomationTextEditTextChangedEventHandler* CreateCore(UiaTextEditEvidence owner, long epoch, bool retained, Action? reading = null)
         {
-            IntPtr unknown = CallbackWrappers.Instance.GetOrCreateComInterfaceForObject(new Callback(owner, epoch, retained), CreateComInterfaceFlags.None);
+            IntPtr unknown = CallbackWrappers.Instance.GetOrCreateComInterfaceForObject(new Callback(owner, epoch, retained, reading), CreateComInterfaceFlags.None);
             try
             {
                 Guid iid = IUIAutomationTextEditTextChangedEventHandler.IID_Guid;
@@ -932,7 +934,7 @@ internal sealed unsafe class UiaTextEditEvidence : ICompositionEvidenceOwner, IE
         }
         public HRESULT HandleTextEditTextChangedEvent(IUIAutomationElement* sender, TextEditChangeType type, SAFEARRAY* payload)
         {
-            if (_retained) _owner.OnRetainedChanged(_epoch); else _owner.OnChanged(_epoch);
+            if (_reading is not null) _reading(); else if (_retained) _owner.OnRetainedChanged(_epoch); else _owner.OnChanged(_epoch);
             return (HRESULT)0;
         }
     }
@@ -941,10 +943,15 @@ internal sealed unsafe class UiaTextEditEvidence : ICompositionEvidenceOwner, IE
     {
         private readonly UiaTextEditEvidence _owner;
         private readonly long _token;
-        private RetainedEventCallback(UiaTextEditEvidence owner, long token) { _owner = owner; _token = token; }
+        private readonly Action? _reading;
+        private RetainedEventCallback(UiaTextEditEvidence owner, long token, Action? reading = null) { _owner = owner; _token = token; _reading = reading; }
         public static IUIAutomationEventHandler* Create(UiaTextEditEvidence owner, long token)
+            => CreateCore(owner, token, null);
+        public static IUIAutomationEventHandler* CreateReading(UiaTextEditEvidence owner, Action reading)
+            => CreateCore(owner, 0, reading);
+        private static IUIAutomationEventHandler* CreateCore(UiaTextEditEvidence owner, long token, Action? reading)
         {
-            IntPtr unknown = CallbackWrappers.Instance.GetOrCreateComInterfaceForObject(new RetainedEventCallback(owner, token), CreateComInterfaceFlags.None);
+            IntPtr unknown = CallbackWrappers.Instance.GetOrCreateComInterfaceForObject(new RetainedEventCallback(owner, token, reading), CreateComInterfaceFlags.None);
             try
             {
                 Guid iid = IUIAutomationEventHandler.IID_Guid;
@@ -955,7 +962,7 @@ internal sealed unsafe class UiaTextEditEvidence : ICompositionEvidenceOwner, IE
         }
         public HRESULT HandleAutomationEvent(IUIAutomationElement* sender, UIA_EVENT_ID eventId)
         {
-            _owner.OnRetainedChanged(_token);
+            if (_reading is not null) _reading(); else _owner.OnRetainedChanged(_token);
             return (HRESULT)0;
         }
     }

@@ -36,7 +36,32 @@ is complete; repairing an actual build/CI blocker is still required.
 ## Frozen product contracts and Windows gaps
 
 The committed Mac `SOURCE_LAYOUT.md`, `ARCHITECTURE.md` and `CLI.md` are the responsibility maps.
-The paths below identify actual source, not newly designed Windows features.
+The paths below identify actual source, not newly designed Windows features. The table preserves
+the initial gap audit; its initial Windows gap descriptions are historical. Current delivery is:
+
+- Main contains [task/model assignment](MODEL_MANAGEMENT_FROZEN.md),
+  [recommended setup](RECOMMENDED_SETUP_FROZEN.md), the single current-format
+  [canonical notebook owner](VOCABULARY_CANONICAL_APP.md), creation/import/favorites,
+  [entry editing and file images](VOCABULARY_CANONICAL_ENTRY_EDITOR_UI.md),
+  [sense commands](VOCABULARY_CANONICAL_SENSE_UI.md), and the limited
+  [expression-assistance application](EXPRESSION_ASSIST_APPLICATION.md).
+- Main also contains [semantic/classification transactions](VOCABULARY_CANONICAL_SEMANTICS_STORE.md),
+  [canonical Anki sessions](ANKI_CANONICAL_REVIEW_SESSION.md), and
+  [unknown-source translation planning](READING_TRANSLATION_UNKNOWN_SOURCE.md).
+  The latter two are prerequisites, not activated Anki or reading UI.
+- [Meaning/mapping editors](VOCABULARY_CANONICAL_MEANING_UI.md) await final candidate CI.
+  Complete category management, independent Anki card preparation and selected-text reading are
+  the active user-flow deliveries. Their internal components are reviewed before production
+  integration; an unconnected component does not complete its feature.
+- Remaining frozen scope includes usage-pattern editing, the canonical notebook's remaining
+  graph/media/explanation/dictionary/export/backup workflows, review batch UI, pointer/icon/OCR
+  reading, CLI, remaining onboarding/localization and speech activation. Existing older libraries
+  retain their references and are reused only after checking the frozen consumer contract.
+
+After the maintainer's delivery adjustment, implementation owners carry each active user flow
+through its settings, entry and production adapters. Internal commits use targeted validation;
+independent review and required CI gate the complete candidate. Physical host acceptance belongs
+to the maintainer using the [Windows host checklist](WINDOWS_HOST_ACCEPTANCE.md).
 
 | Area | Latest source responsibility and required Windows alignment |
 | --- | --- |

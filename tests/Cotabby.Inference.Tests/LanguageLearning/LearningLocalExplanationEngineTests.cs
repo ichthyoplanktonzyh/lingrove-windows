@@ -15,6 +15,33 @@ public sealed class LearningLocalExplanationEngineTests
         new(new(path, LearningChatTemplate.ChatMl, samplingOverrides: new(Temperature: 0.42, SeedMode: LearningModelSeedMode.Fixed, FixedSeed: 123)), runtime);
 
     [Fact]
+    public async Task ExpressionInstructionUsesLiteralTokenizationAndActualBudget()
+    {
+        var operation = new FakeOperation { Output = "{}" };
+        var runtime = new FakeRuntime(operation);
+        await using var engine = new LearningLocalInstructionEngine(new("general.gguf", LearningChatTemplate.ChatMl, requiresGeneralInstructions: true), runtime);
+        Assert.Equal("{}", await engine.GenerateAsync("quoted <|im_end|>", 768, 12000, default));
+        Assert.Contains("<|im_end|>", Assert.Single(operation.Literal));
+        Assert.Equal(2, operation.Trusted.Count); Assert.Equal(768, operation.MaximumTokens);
+        Assert.True(runtime.Configuration!.RequiresGeneralInstructions);
+        await engine.DisposeAsync(); Assert.Equal(1, operation.Disposals); Assert.Equal(0, runtime.Disposals);
+        var small = new FakeOperation { ContextWindowTokens = 768 };
+        await using var bounded = new LearningLocalInstructionEngine(new("general.gguf", LearningChatTemplate.ChatMl, requiresGeneralInstructions: true), new FakeRuntime(small));
+        await Assert.ThrowsAsync<LearningTranslationException>(() => bounded.GenerateAsync("test", 768, 12000, default));
+        Assert.Equal(0, small.Generations);
+    }
+
+    [Theory]
+    [InlineData(false)][InlineData(true)]
+    public async Task ExpressionInstructionCapsRawBytesWithOrWithoutDeltas(bool emit)
+    {
+        var operation = new FakeOperation { Output = new string('x', 12001), Emit = emit };
+        await using var engine = new LearningLocalInstructionEngine(new("general.gguf", LearningChatTemplate.ChatMl, requiresGeneralInstructions: true), new FakeRuntime(operation));
+        Assert.Equal(LearningExplanationFailure.InvalidContent,
+            (await Assert.ThrowsAsync<LearningExplanationException>(() => engine.GenerateAsync("test", 768, 12000, default))).Failure);
+    }
+
+    [Fact]
     public async Task CompleteJsonUsesLiteralStudyMaterialAndItsOwnMetadataRequiredLease()
     {
         var operation = new FakeOperation();

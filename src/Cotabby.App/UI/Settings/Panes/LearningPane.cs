@@ -73,7 +73,7 @@ internal static class LearningPane
                     s => s.LearningReadingTargetLanguage, (s, v) => s.LearningReadingTargetLanguage = v),
                 rows.Labeled("Reading Shortcuts and Apps", "Allow each reading source for an app and configure its shortcut in Shortcuts.",
                     Ui.Button("Configure shortcuts and apps", () => context.Navigate(ShortcutsPane.Build(rows)))),
-                Rows.Note("Reading uses the translation provider or local AI explanation model below. The destination appears before each request. The bundled dictionary is also available. Windows OCR requires a supported language installed in Windows settings.")),
+                Rows.Note("Reading uses the translation or AI explanation provider below. The destination appears before each request. The bundled dictionary is also available. Windows OCR requires a supported language installed in Windows settings.")),
             new SettingsCard("Anki review",
                 new SettingsRow("Anki review", "Connection, default deck and saved card templates", review)
                     .Tagged("anki review ankiConnect address API key connection deck note type templates")),
@@ -89,7 +89,7 @@ internal static class LearningPane
                 rows.Labeled("Expression Shortcut", "Configure a shortcut in Shortcuts.",
                     Ui.Button("Configure shortcut", () => context.Navigate(ShortcutsPane.Build(rows))))
                     .Tagged("expression assistance shortcut keybind"),
-                Rows.Note("Uses the local AI explanation model below. Your description, selection and bounded neighboring text stay local; the translation endpoint is not used.")),
+                Rows.Note("Uses the independent AI explanation provider below. The configured destination is shown before a request; the translation endpoint is not used.")),
             new SettingsCard("Manual sentence preview",
                 rows.Toggle("Enable Sentence Translation",
                     "The configured shortcut reads the complete current sentence from a supported field and opens a read-only preview.",
@@ -97,8 +97,9 @@ internal static class LearningPane
                     .Tagged("language learning translation sentence preview manual writing current field"),
                 rows.Combo("Translation Provider",
                     "Local uses a separate learning model runtime. Endpoint sends only after the learning endpoint is explicitly enabled.",
-                    Backends, s => s.EffectiveLearningBackend, (s, v) => s.LearningBackend = v)
-                    .Tagged("translation provider local GGUF model endpoint network learning"),
+                    Backends, s => ActiveTranslationBackend(s), (s, v) => { if (!s.LearningTranslationPowerSwitching) s.LearningBackend = v; })
+                    .Tagged("translation provider local GGUF model endpoint network learning")
+                    .EnabledWhen(s => !s.LearningTranslationPowerSwitching),
                 SourceLanguages(rows),
                 rows.Combo("Target Language", "The language requested from the translator.", Languages,
                     s => s.LearningTargetLanguage, (s, v) => s.LearningTargetLanguage = v)
@@ -106,34 +107,55 @@ internal static class LearningPane
                 TranslationStyle(rows)),
             new SettingsCard("Local learning model",
                 Rows.Custom(new LearningLocalModels(context)))
-                .VisibleWhen(s => s.EffectiveLearningBackend == LearningTranslationBackend.Local),
+                .VisibleWhen(s => ActiveTranslationBackend(s) == LearningTranslationBackend.Local),
+            new SettingsCard("Translation power profiles", Rows.Custom(new LearningPowerControls(context, LearningModelRole.Translation))),
             new SettingsCard("AI explanation model",
                 rows.Combo<LearningLanguage?>("Explanation Language", "The language used for meanings and teaching explanations.",
                     new (LearningLanguage? Value, string Label)[] { (null, "App language") }
                         .Concat(Languages.Select(choice => ((LearningLanguage?)choice.Value, choice.Label))).ToArray(),
                     s => s.LearningExplanationLanguage, (s, v) => s.LearningExplanationLanguage = v)
                     .Tagged("AI explanation language tutor meaning"),
-                Rows.Custom(new LearningLocalModels(context, LearningModelRole.Explanation))),
+                Rows.Custom(new LearningExplanationProviderSettings(context))),
             new SettingsCard("Learning endpoint",
                 rows.Toggle("Allow the Learning Endpoint",
-                    "This separate consent sends a manually requested sentence and its selected translation style to the destination below. It sends no surrounding editor text. Selecting Local never uses this endpoint.",
-                    s => s.LearningEndpointEnabled, (s, v) => s.LearningEndpointEnabled = v)
-                    .Tagged("endpoint send network cloud privacy remote allow opt in translation"),
+                    "This separate consent sends a manually requested sentence and its selected translation style. A power profile that explicitly selects Endpoint authorizes that profile. Selecting Local never uses this endpoint.",
+                    s => s.LearningTranslationActiveEndpointEnabled, (s, v) => { if (!s.LearningTranslationPowerSwitching) s.LearningEndpointEnabled = v; })
+                    .Tagged("endpoint send network cloud privacy remote allow opt in translation")
+                    .EnabledWhen(s => !s.LearningTranslationPowerSwitching),
                 rows.Text("Server URL", "OpenAI-compatible endpoint used only for learning translations.",
                     OpenAICompatibleEndpointConfiguration.DefaultBaseUrl,
                     s => s.LearningEndpointBaseUrl, (s, v) => s.LearningEndpointBaseUrl = v.Trim())
                     .Tagged("endpoint url host ollama local network server"),
                 rows.Text("Model", "Model identifier configured on the learning endpoint.", "Enter model identifier",
-                    s => s.LearningEndpointModel, (s, v) => s.LearningEndpointModel = v.Trim())
-                    .Tagged("endpoint model identifier"),
-                rows.Number("Context Tokens", "Context budget frozen into each translation request.",
-                    2_048, ModelContextBudget.MaximumEndpointTokens,
-                    s => s.LearningContextTokens, (s, v) => s.LearningContextTokens = v)
-                    .Tagged("context length tokens budget model"),
+                    s => s.LearningTranslationActiveSelection.EndpointModel, (s, v) => { if (!s.LearningTranslationPowerSwitching) s.LearningEndpointModel = v.Trim(); })
+                    .Tagged("endpoint model identifier").EnabledWhen(s => !s.LearningTranslationPowerSwitching),
+                TranslationEndpointContext(rows),
                 Credentials(context),
                 Rows.Custom(destination))
-                .VisibleWhen(s => s.EffectiveLearningBackend == LearningTranslationBackend.Endpoint),
+                .VisibleWhen(s => ActiveTranslationBackend(s) == LearningTranslationBackend.Endpoint),
         ]);
+    }
+
+    private static LearningTranslationBackend ActiveTranslationBackend(AppSettings settings) =>
+        settings.LearningTranslationActiveSelection.Backend == LearningModelBackend.Endpoint ? LearningTranslationBackend.Endpoint : LearningTranslationBackend.Local;
+
+    private static SettingsRow TranslationEndpointContext(Rows rows)
+    {
+        var context = rows.Context; var box = new TextBox { Width = 90 }.Styled("Input"); string? identity = null;
+        box.GotKeyboardFocus += (_, _) => identity = context.Settings.LearningTranslationEndpointIdentity;
+        box.OnCommit(value =>
+        {
+            if (identity is not null && ActiveTranslationBackend(context.Settings) == LearningTranslationBackend.Endpoint
+                && identity == context.Settings.LearningTranslationEndpointIdentity && int.TryParse(value, out int tokens))
+            {
+                int bounded = Math.Clamp(tokens, 1024, ModelContextBudget.MaximumEndpointTokens);
+                context.Change(settings => { settings.LearningTranslationEndpointContextByDestination[identity] = bounded;
+                    if (!settings.LearningTranslationPowerSwitching) settings.LearningContextTokens = bounded; });
+            }
+            identity = box.IsKeyboardFocusWithin ? context.Settings.LearningTranslationEndpointIdentity : null;
+        });
+        context.OnRefresh(() => { if (!box.IsKeyboardFocusWithin) box.Text = context.Settings.LearningTranslationActiveEndpointContext.ToString(System.Globalization.CultureInfo.CurrentCulture); });
+        return rows.Labeled("Context Tokens", "Context budget for the active translation destination.", box).Tagged("context length tokens budget model");
     }
 
     private static SettingsRow ExpressionTrigger(Rows rows)
@@ -167,18 +189,20 @@ internal static class LearningPane
         var register = new ComboBox { ItemsSource = Registers.Select(choice => choice.Label).ToArray() }
             .Styled("Combo");
         var instruction = new TextBox { Width = 240, Tag = "Describe the register" }.Styled("Input");
-        var editBackend = context.Settings.EffectiveLearningBackend;
-        var editLocalModel = context.Settings.LearningLocalModel;
+        var editBackend = ActiveTranslationBackend(context.Settings);
+        var editLocalModel = context.Settings.LearningTranslationActiveSelection.LocalModel;
+        var editIdentity = TranslationStyleIdentity(context.Settings);
         void CaptureEditTarget()
         {
-            editBackend = context.Settings.EffectiveLearningBackend;
-            editLocalModel = context.Settings.LearningLocalModel;
+            editBackend = ActiveTranslationBackend(context.Settings);
+            editLocalModel = context.Settings.LearningTranslationActiveSelection.LocalModel;
+            editIdentity = TranslationStyleIdentity(context.Settings);
         }
         void SaveRegister(int selected)
         {
             if (selected < 0 || selected >= Registers.Length) return;
             var current = ReadStyle(context.Settings, editBackend, editLocalModel);
-            WriteStyle(context, current with { Register = Registers[selected].Value }, editBackend, editLocalModel);
+            WriteStyle(context, current with { Register = Registers[selected].Value }, editBackend, editLocalModel, editIdentity);
         }
 
         register.GotKeyboardFocus += (_, _) => CaptureEditTarget();
@@ -188,26 +212,26 @@ internal static class LearningPane
         instruction.OnCommit(text =>
         {
             var current = ReadStyle(context.Settings, editBackend, editLocalModel);
-            WriteStyle(context, current with { CustomInstruction = text }, editBackend, editLocalModel);
+            WriteStyle(context, current with { CustomInstruction = text }, editBackend, editLocalModel, editIdentity);
         });
         context.OnRefresh(() =>
         {
-            var backend = context.Settings.EffectiveLearningBackend;
-            var model = context.Settings.LearningLocalModel;
+            var backend = ActiveTranslationBackend(context.Settings);
+            var model = context.Settings.LearningTranslationActiveSelection.LocalModel;
             var style = ReadStyle(context.Settings, backend, model);
             register.SelectedIndex = Array.FindIndex(Registers, choice => choice.Value == style.Register);
             if (!instruction.IsKeyboardFocused) instruction.Text = style.CustomInstruction;
             instruction.Visibility = style.Register == LearningTranslationRegister.Custom
                 ? Visibility.Visible
                 : Visibility.Collapsed;
-            bool localNeedsModel = context.Settings.EffectiveLearningBackend == LearningTranslationBackend.Local
-                && string.IsNullOrWhiteSpace(context.Settings.LearningLocalModel);
+            bool localNeedsModel = backend == LearningTranslationBackend.Local && string.IsNullOrWhiteSpace(model);
             register.IsEnabled = !localNeedsModel;
             instruction.IsEnabled = !localNeedsModel;
             if (!instruction.IsKeyboardFocused && !register.IsKeyboardFocused)
             {
                 editBackend = backend;
                 editLocalModel = model;
+                editIdentity = TranslationStyleIdentity(context.Settings);
             }
         });
 
@@ -215,9 +239,12 @@ internal static class LearningPane
         return rows.Stacked("Translation Style",
                 "Choose a bounded register preference. Local settings follow the selected learning model; endpoint settings remain independent.", editor)
             .Tagged("natural formal conversational custom register tone style instruction")
-            .EnabledWhen(settings => settings.EffectiveLearningBackend == LearningTranslationBackend.Endpoint
-                || !string.IsNullOrWhiteSpace(settings.LearningLocalModel));
+            .EnabledWhen(settings => ActiveTranslationBackend(settings) == LearningTranslationBackend.Endpoint
+                || !string.IsNullOrWhiteSpace(settings.LearningTranslationActiveSelection.LocalModel));
     }
+
+    private static string TranslationStyleIdentity(AppSettings settings) => ActiveTranslationBackend(settings) == LearningTranslationBackend.Endpoint
+        ? settings.LearningTranslationEndpointIdentity : ModelDestinationIdentity.Create("local", settings.LearningTranslationActiveSelection.LocalModel);
 
     private static LearningTranslationStyle ReadStyle(
         AppSettings settings, LearningTranslationBackend backend, string localModel)
@@ -228,25 +255,24 @@ internal static class LearningPane
         }
 
         if (backend == LearningTranslationBackend.Local) return new LearningTranslationStyle();
-        var register = Enum.IsDefined(settings.LearningStyleRegister)
-            ? settings.LearningStyleRegister
-            : LearningTranslationRegister.Natural;
-        return new LearningTranslationStyle(register, settings.LearningCustomInstruction ?? string.Empty).Normalized;
+        return settings.LearningTranslationActiveEndpointGeneration.Style.Normalized;
     }
 
     private static void WriteStyle(
         SettingsContext context,
         LearningTranslationStyle style,
         LearningTranslationBackend backend,
-        string localModel)
+        string localModel, string identity)
     {
+        if (identity != TranslationStyleIdentity(context.Settings) || backend != ActiveTranslationBackend(context.Settings)) return;
         var normalized = style.Normalized;
         if (backend == LearningTranslationBackend.Endpoint)
         {
             context.Change(settings =>
             {
-                settings.LearningStyleRegister = normalized.Register;
-                settings.LearningCustomInstruction = normalized.CustomInstruction;
+                var profile = settings.LearningTranslationActiveEndpointGeneration;
+                settings.LearningTranslationEndpointGenerationByDestination[identity] = profile with { Style = normalized };
+                if (!settings.LearningTranslationPowerSwitching) { settings.LearningStyleRegister = normalized.Register; settings.LearningCustomInstruction = normalized.CustomInstruction; }
             });
             return;
         }
@@ -337,7 +363,7 @@ internal static class LearningPane
         var clear = Ui.Button("Clear", () => StoreKey(context, key, status, save: false));
         context.OnRefresh(() =>
         {
-            if (context.Settings.EffectiveLearningBackend == LearningTranslationBackend.Endpoint)
+            if (ActiveTranslationBackend(context.Settings) == LearningTranslationBackend.Endpoint)
                 ShowKeyStatus(context, status);
             else
                 status.Text = "The separate endpoint credential is not read or used while Local is selected.";
@@ -386,11 +412,11 @@ internal static class LearningPane
         {
             var configuration = new OpenAICompatibleEndpointConfiguration(
                 settings.LearningEndpointBaseUrl,
-                settings.LearningEndpointModel,
+                settings.LearningTranslationActiveSelection.EndpointModel,
                 OpenAICompatibleApiMode.ChatCompletions);
             if (configuration.ModelName.Length == 0)
             {
-                    destination.Text = settings.LearningEndpointEnabled
+                    destination.Text = settings.LearningTranslationActiveEndpointEnabled
                     ? $"Learning requests will use {configuration.BaseUrl}; enter a model before translating. The captured sentence and selected style are sent."
                     : $"If enabled, the captured sentence and selected style will be sent to {configuration.BaseUrl}.";
             }
@@ -405,7 +431,7 @@ internal static class LearningPane
                 destination.Text = $"Learning destination: {configuration.BaseUrl} · {configuration.ModelName}. The captured sentence and selected style are sent. {scope}";
             }
 
-            if (settings.LearningEndpointEnabled)
+            if (settings.LearningTranslationActiveEndpointEnabled)
             {
                 destination.Text += " The endpoint is opted in for manual sentence requests.";
             }

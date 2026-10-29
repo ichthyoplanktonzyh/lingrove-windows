@@ -23,7 +23,7 @@ public sealed record VocabularyClassificationIndex
 }
 
 public enum VocabularyCategoryAxis { Content, Function }
-public sealed record VocabularyClassificationFramework(Guid Id, string Key, int Version)
+public sealed record VocabularyClassificationFramework(Guid Id, string Key, long Version)
 {
     public bool Equals(VocabularyClassificationFramework? other) => other is not null && Id == other.Id && CollectionValues.Same(Key, other.Key) && Version == other.Version;
     public override int GetHashCode() => HashCode.Combine(Id, CollectionValues.StringHash(Key), Version);

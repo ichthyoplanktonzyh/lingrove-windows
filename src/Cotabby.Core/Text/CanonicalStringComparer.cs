@@ -36,7 +36,7 @@ public sealed class CanonicalStringComparer : IEqualityComparer<string>, ICompar
     private static string? Key(string? value) => Key(value, out _);
     private static string? Key(string? value, out bool valid)
     {
-        try { var key = value?.Normalize(NormalizationForm.FormC); valid = true; return key; }
+        try { var key = value is null ? null : FoundationUnicodeNormalization.Normalize(value); valid = true; return key; }
         catch (ArgumentException) { valid = false; return value; }
     }
 }

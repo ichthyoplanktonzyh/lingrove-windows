@@ -44,6 +44,19 @@ public sealed class VocabularyFrozenClassificationTests
         Assert.Throws<VocabularyException>(() => R.VocabularyClassificationCatalog.Decode(bytes));
     }
 
+    [Theory]
+    [InlineData("1.0", 1L)]
+    [InlineData("2147483648", 2147483648L)]
+    [InlineData("2147483648.0", 2147483648L)]
+    public void CatalogVersionRetainsSwiftInt64AndFoundationIntegralNumberSpellings(string spelling, long expected)
+    {
+        string json = "{\"key\":\"test\",\"version\":" + spelling + ",\"authorship\":\"\",\"references\":[],\"categories\":[]}";
+        var catalog = R.VocabularyClassificationCatalog.Decode(System.Text.Encoding.UTF8.GetBytes(json));
+        Assert.Equal(expected, catalog.Version);
+        var (index, installed) = catalog.Install(new(), []); Assert.True(installed);
+        Assert.Equal(expected, Assert.Single(index.Frameworks).Version);
+        Assert.False(catalog.Install(index, []).Installed);
+    }
     [Fact]
     public void CatalogDecoderBoundsMalformedBytesAndDepthButAcceptsEmptyRequiredArrays()
     {

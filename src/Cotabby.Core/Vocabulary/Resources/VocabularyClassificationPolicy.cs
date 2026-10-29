@@ -21,7 +21,7 @@ public static class VocabularyClassificationPolicy
             Labels(category.Labels); Text(category.Definition); Provenance(category.Provenance);
             if (category.FrameworkId is { } frameworkId)
             {
-                if (!frameworks.ContainsKey(frameworkId) || !Fits(category.Key, 200) || category.Key!.Length == 0 || !categoryKeys.Add((frameworkId, category.Key.Normalize()))) throw Invalid();
+                if (!frameworks.ContainsKey(frameworkId) || !Fits(category.Key, 200) || category.Key!.Length == 0 || !categoryKeys.Add((frameworkId, FoundationUnicodeNormalization.Normalize(category.Key)))) throw Invalid();
             }
             else if (category.Key is not null || category.IsRetired) throw Invalid();
         }

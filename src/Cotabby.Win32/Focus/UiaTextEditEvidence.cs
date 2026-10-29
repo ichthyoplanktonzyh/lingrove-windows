@@ -19,6 +19,11 @@ internal interface ICompositionEvidenceOwner : IDisposable
     void RetireAsync(long expectedEpoch);
 }
 
+internal readonly record struct UiaBootstrapResult(int InitializeHResult, int? FactoryHResult, bool HasAutomation);
+internal readonly record struct UiaOwnedElementResult(int ElementHResult, string? RuntimeId, int? PatternHResult,
+    bool HasTextEditPattern, int? CompositionRegistrationHResult, int? FinalizedRegistrationHResult,
+    int? CompositionRemovalHResult, int? FinalizedRemovalHResult);
+
 // Owns all native TextEdit subscriptions on one MTA. COM retains each callback until its last
 // native reference is released; callbacks carry only an epoch, never inspect the event payload.
 [SupportedOSPlatform("windows8.1")]
@@ -28,6 +33,7 @@ internal sealed unsafe class UiaTextEditEvidence : ICompositionEvidenceOwner
     private readonly Thread _thread;
     private readonly Action _changed;
     private readonly Action _failed;
+    private readonly TaskCompletionSource<UiaBootstrapResult> _bootstrap = new(TaskCreationOptions.RunContinuationsAsynchronously);
     private long _version = 1;
     private long _epoch;
     private IUIAutomation3* _automation;
@@ -54,6 +60,63 @@ internal sealed unsafe class UiaTextEditEvidence : ICompositionEvidenceOwner
     }
 
     public long Version => Interlocked.Read(ref _version);
+
+    internal Task<UiaBootstrapResult> BootstrapForTest => _bootstrap.Task;
+
+    // This diagnostic is deliberately limited to a handle owned by this process. It never asks
+    // UIA for the focused element and does not read text or authorize a composition receipt.
+    internal Task<UiaOwnedElementResult> ProbeOwnedHandleForTest(nint handle)
+    {
+        var result = new TaskCompletionSource<UiaOwnedElementResult>(TaskCreationOptions.RunContinuationsAsynchronously);
+        if (handle == 0 || Cotabby.Win32.Interop.NativeMethods.GetWindowThreadProcessId(handle, out uint pid) == 0 || pid != (uint)Environment.ProcessId)
+        {
+            result.SetException(new ArgumentException("An owned window handle is required.", nameof(handle)));
+            return result.Task;
+        }
+        try
+        {
+            _queue.Add(() =>
+            {
+                try { result.TrySetResult(ProbeOwnedHandleCore(handle)); }
+                catch (Exception ex) { result.TrySetException(ex); }
+            });
+        }
+        catch (InvalidOperationException ex) { result.TrySetException(ex); }
+        return result.Task;
+    }
+
+    private UiaOwnedElementResult ProbeOwnedHandleCore(nint handle)
+    {
+        if (_automation is null) return new(unchecked((int)0x80004005), null, null, false, null, null, null, null);
+        IUIAutomationElement* element = null;
+        IUnknown* pattern = null;
+        IUIAutomationTextEditTextChangedEventHandler* composition = null;
+        IUIAutomationTextEditTextChangedEventHandler* finalized = null;
+        try
+        {
+            HRESULT hr = _automation->ElementFromHandle(new Windows.Win32.Foundation.HWND(handle), &element);
+            if (hr.Failed || element is null) return new((int)hr, null, null, false, null, null, null, null);
+            string? runtimeId = RuntimeId(element);
+            HRESULT patternHr = element->GetCurrentPattern(UIA_PATTERN_ID.UIA_TextEditPatternId, &pattern);
+            composition = Callback.Create(this, long.MinValue);
+            finalized = Callback.Create(this, long.MinValue);
+            HRESULT addComposition = _automation->AddTextEditTextChangedEventHandler(element, TreeScope.TreeScope_Element,
+                TextEditChangeType.TextEditChangeType_Composition, null, composition);
+            HRESULT addFinalized = _automation->AddTextEditTextChangedEventHandler(element, TreeScope.TreeScope_Element,
+                TextEditChangeType.TextEditChangeType_CompositionFinalized, null, finalized);
+            int? removeComposition = addComposition.Succeeded ? (int)_automation->RemoveTextEditTextChangedEventHandler(element, composition) : null;
+            int? removeFinalized = addFinalized.Succeeded ? (int)_automation->RemoveTextEditTextChangedEventHandler(element, finalized) : null;
+            return new((int)hr, runtimeId, (int)patternHr, pattern is not null,
+                (int)addComposition, (int)addFinalized, removeComposition, removeFinalized);
+        }
+        finally
+        {
+            if (pattern is not null) pattern->Release();
+            if (composition is not null) composition->Release();
+            if (finalized is not null) finalized->Release();
+            if (element is not null) element->Release();
+        }
+    }
 
     // Narrow seam for model-free native callback lifetime tests; no host text is accessed.
     internal nint CreateCallbackForTest() => (nint)Callback.Create(this, Interlocked.Read(ref _epoch));
@@ -248,14 +311,18 @@ internal sealed unsafe class UiaTextEditEvidence : ICompositionEvidenceOwner
         HRESULT init = SpeechNativeMethods.CoInitializeEx(null, COINIT.COINIT_MULTITHREADED);
         try
         {
+            int? factoryResult = null;
             if (init.Succeeded)
             {
-                Guid clsid = new("FF48DBA4-60EF-4201-AA87-54103EEF594E"); // CUIAutomation
+                Guid clsid = new("E22AD333-B25F-460C-83D0-0581107395C9"); // CUIAutomation8
                 Guid iid = IUIAutomation3.IID_Guid;
                 IUIAutomation3* automation = null;
-                if (SpeechNativeMethods.CoCreateInstance(&clsid, null, CLSCTX.CLSCTX_INPROC_SERVER, &iid, (void**)&automation).Succeeded)
+                HRESULT factory = SpeechNativeMethods.CoCreateInstance(&clsid, null, CLSCTX.CLSCTX_INPROC_SERVER, &iid, (void**)&automation);
+                factoryResult = (int)factory;
+                if (factory.Succeeded)
                     _automation = automation;
             }
+            _bootstrap.TrySetResult(new((int)init, factoryResult, _automation is not null));
             foreach (Action action in _queue.GetConsumingEnumerable()) action();
         }
         finally

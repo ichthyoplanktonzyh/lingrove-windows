@@ -72,6 +72,31 @@ before any native field query. Physical Windows host, TSF and browser acceptance
 --no-restore --filter FullyQualifiedName~UiaFocusCompositionTests` passed 4/4 fake-driven lifecycle,
 finalization, delayed-retirement and timeout-recovery tests without focusing or reading any desktop
 application.
+
+## Native bootstrap and owned-window probe
+
+On Windows 10 x64 build 19045 with .NET SDK 10.0.403, the original `CUIAutomation` CLSID with
+`IID_IUIAutomation3` returned `0x80004002` (`E_NOINTERFACE`), so the producer could never provide
+clear evidence on this host. The adapter now requests that interface from the documented
+[`CUIAutomation8` class](https://learn.microsoft.com/en-us/previous-versions/windows/desktop/legacy/hh448746%28v%3Dvs.85%29);
+the MTA owner observed `CoInitializeEx = 0x00000001` and `CoCreateInstance = 0x00000000`, with a
+non-null `IUIAutomation3`. Failure still leaves composition Unknown. The older class and newer class
+may use different proxy providers, as Microsoft documents; no equivalence across hosts is assumed.
+
+An owned, hidden WPF HWND was examined through
+[`ElementFromHandle`](https://learn.microsoft.com/en-us/windows/win32/winauto/uiauto-obtainingelements)
+without taking focus or querying the foreground field. Its native runtime ID agreed with the managed
+`AutomationElement.GetRuntimeId` formatting; the IDs are opaque comparisons, not durable identities.
+The actual HRESULTs were `0x00000000` for element lookup, pattern lookup and separate composition and
+finalization handler registration and removal. The HWND itself returned **no TextEdit pattern**:
+successful event registration alone does not prove provider support, receipt delivery, or Clear.
+These checks do not establish real editor, IME, TSF, inline prediction or insertion behavior.
+
+Executed `dotnet test tests/Cotabby.Inference.Tests/Cotabby.Inference.Tests.csproj --configuration
+Release --no-restore --filter FullyQualifiedName~NativeFactoryCreatesAutomation3OnItsMtaOwner
+--logger 'console;verbosity=detailed'` (1/1) and `dotnet test
+tests/Cotabby.App.Wpf.Tests/Cotabby.App.Wpf.Tests.csproj --configuration Release --no-restore
+--filter FullyQualifiedName~UiaOwnedBootstrapTests --logger 'console;verbosity=detailed'` (1/1).
 The reconciliation/insertion filter passed 65 tests; the focused native callback and insertion
 adapter filter passed 10. A full `dotnet build Cotabby.sln --configuration Release --no-restore`
 passed with zero warnings/errors after the reconciliation and ordering adjustments.

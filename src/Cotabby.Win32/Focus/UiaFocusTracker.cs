@@ -449,7 +449,7 @@ public sealed class UiaFocusTracker : IFocusTracker
         return FocusTextWindowPolicy.Bound(before, after);
     }
 
-    private static string ReadFieldId(AutomationElement element)
+    internal static string ReadFieldId(AutomationElement element)
     {
         int[]? runtimeId = null;
         try { runtimeId = element.GetRuntimeId(); }

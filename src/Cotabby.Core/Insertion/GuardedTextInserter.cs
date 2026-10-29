@@ -14,11 +14,12 @@ namespace Cotabby.Core.Insertion;
 public sealed class GuardedTextInserter : ITextInserter
 {
     private readonly ITextInsertionBackend _backend;
-    private readonly SemaphoreSlim _transactionGate = new(1, 1);
+    private readonly InsertionTransactionGate _transactionGate;
 
-    public GuardedTextInserter(ITextInsertionBackend backend)
+    public GuardedTextInserter(ITextInsertionBackend backend, InsertionTransactionGate? transactionGate = null)
     {
         _backend = backend ?? throw new ArgumentNullException(nameof(backend));
+        _transactionGate = transactionGate ?? new InsertionTransactionGate();
     }
 
     /// <inheritdoc />
@@ -36,16 +37,23 @@ public sealed class GuardedTextInserter : ITextInserter
         bool isReplacement,
         CancellationToken ct)
     {
-        bool enteredGate = false;
+        try
+        {
+            return await _transactionGate.RunAsync(
+                token => ExecuteUnderGateAsync(target, deleteUtf16Count, text, isReplacement, token), ct).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) { return false; }
+    }
+
+    private async Task<bool> ExecuteUnderGateAsync(
+        FocusedField target, int deleteUtf16Count, string text, bool isReplacement, CancellationToken ct)
+    {
         bool succeeded = false;
         bool pasteMayHaveBeenDispatched = false;
         IClipboardPasteLease? lease = null;
 
         try
         {
-            await _transactionGate.WaitAsync(ct).ConfigureAwait(false);
-            enteredGate = true;
-
             bool validEdit = isReplacement
                 ? InsertionTargetPolicy.IsValidReplacement(target, deleteUtf16Count, text)
                 : InsertionTargetPolicy.IsEligibleField(target) && InsertionTargetPolicy.IsValidInsertionText(text);
@@ -130,7 +138,6 @@ public sealed class GuardedTextInserter : ITextInserter
                 }
             }
 
-            if (enteredGate) _transactionGate.Release();
         }
 
         return succeeded;

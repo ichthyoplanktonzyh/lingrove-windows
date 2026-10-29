@@ -10,6 +10,33 @@ namespace Cotabby.App.Wpf.Tests;
 public sealed class UiaFocusCompositionTests
 {
     [Fact]
+    public async Task GuardedRefreshDoesNotPublishWhenPermissionIsRevokedDuringRead()
+    {
+        using var owner = new FakeOwner();
+        using var entered = new ManualResetEventSlim();
+        using var release = new ManualResetEventSlim();
+        bool hold = false;
+        bool allowed = true;
+        using var tracker = new UiaFocusTracker(NullLogger<UiaFocusTracker>.Instance, owner, _ => { }, _ => { }, sequence =>
+        {
+            if (Volatile.Read(ref hold)) { entered.Set(); release.Wait(); }
+            return Field(sequence, InputCompositionState.Clear, owner.Version);
+        });
+        tracker.Start();
+        var original = tracker.Current;
+        Volatile.Write(ref hold, true);
+        Task<FocusedField?> read = Task.Run(() => tracker.RefreshGuarded(() => Volatile.Read(ref allowed)));
+        try
+        {
+            Assert.True(entered.Wait(TimeSpan.FromSeconds(5)));
+            Volatile.Write(ref allowed, false);
+        }
+        finally { release.Set(); }
+        Assert.Null(await read.WaitAsync(TimeSpan.FromSeconds(5)));
+        Assert.Same(original, tracker.Current);
+    }
+
+    [Fact]
     public async Task DelayedOldStopCannotRetireNewStartReceipt()
     {
         using var owner = new DelayedRetireOwner();
@@ -128,7 +155,7 @@ public sealed class UiaFocusCompositionTests
         public long Version => Interlocked.Read(ref _version);
         public void Change() => Interlocked.Increment(ref _version);
         public virtual bool Execute(Action action) { action(); return true; }
-        public (InputCompositionState State, long Version) Observe(int pid, string field, long focusEpoch) => default;
+        public (InputCompositionState State, long Version) Observe(int pid, string field, long focusEpoch, Func<bool>? allowed = null) => default;
         public virtual long Invalidate() { Change(); return Version; }
         public virtual void RetireAsync(long expectedEpoch) { }
         public virtual void Dispose() { }

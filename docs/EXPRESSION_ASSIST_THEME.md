@@ -13,8 +13,9 @@ contrast; it unsubscribes its system preference observer on close. The existing 
 the same palette and owns its existing high-contrast overrides. The Segoe UI Variable/Segoe UI
 surface uses dynamic card, text and input colors; the selected candidate has a visible outline.
 The destination disclosure has a bounded, independently scrollable area and tooltip. The
-candidate list also scrolls within a bounded area, keeping keyboard selection visible without
-scrolling the disclosure away. An outer scroll area accommodates short work areas. No endpoint,
+candidate list also scrolls within a bounded area. An outer scroll area accommodates the anchor
+monitor's work area, with physical pixels converted using that monitor's effective DPI; keyboard
+navigation scrolls both areas as needed to reveal the selected row. No endpoint,
 editor, clipboard or model activity is required to render these controls.
 
 Local Windows checks: `scripts/test-wpf-dev.ps1 -Filter 'FullyQualifiedName~ExpressionAssist' -NoRestore`.

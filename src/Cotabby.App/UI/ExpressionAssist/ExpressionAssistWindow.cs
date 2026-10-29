@@ -44,6 +44,7 @@ internal sealed class ExpressionAssistWindow : Window, IExpressionAssistPanel
         Closed += (_, _) => SystemEvents.UserPreferenceChanged -= Changed;
         Content = _view;
         _handle = new WindowInteropHelper(this).EnsureHandle();
+        DpiChanged += (_, _) => { ApplyAnchorHeight(); if (IsVisible) { UpdateLayout(); LearningPanelPlacement.Position(this, _anchor); } };
         Activated += (_, _) => RefreshOwnership();
         Deactivated += (_, _) => { RefreshOwnership(); if (!_hiding && !_closing) _session?.FocusLost(); };
         _view.QueryBox.GotKeyboardFocus += (_, _) => RefreshOwnership();
@@ -67,6 +68,7 @@ internal sealed class ExpressionAssistWindow : Window, IExpressionAssistPanel
     }
 
     internal void Bind(ExpressionAssistSession session) => _session = session;
+    private void ApplyAnchorHeight() => MaxHeight = LearningPanelPlacement.WorkAreaHeightDip(this, _anchor);
     internal ExpressionAssistView View => _view;
     nint IExpressionAssistPanel.WindowHandle => _handle;
     bool IExpressionAssistPanel.OwnsKeyboard => Volatile.Read(ref _ownsKeyboard) != 0;
@@ -75,7 +77,7 @@ internal sealed class ExpressionAssistWindow : Window, IExpressionAssistPanel
     {
         if (!mayActivate()) return Task.CompletedTask;
         if (!IsVisible) _view.ResetComposition();
-        _view.SetQuery(initialQuery); Show(); UpdateLayout(); LearningPanelPlacement.Position(this, _anchor);
+        ApplyAnchorHeight(); _view.SetQuery(initialQuery); Show(); UpdateLayout(); LearningPanelPlacement.Position(this, _anchor);
         if (!mayActivate()) { ((IExpressionAssistPanel)this).Hide(false); return Task.CompletedTask; }
         Activate(); _view.FocusQuery(); RefreshOwnership();
         return Dispatcher.InvokeAsync(RefreshOwnership, DispatcherPriority.Input).Task;

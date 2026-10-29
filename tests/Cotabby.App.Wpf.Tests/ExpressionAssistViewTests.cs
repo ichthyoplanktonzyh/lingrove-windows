@@ -6,6 +6,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Input;
 using System.Windows.Threading;
 using Cotabby.App.UI.ExpressionAssist;
+using Cotabby.App.UI.Learning;
 using Cotabby.Core.ExpressionAssist;
 using Cotabby.Core.Focus;
 using static Cotabby.App.Wpf.Tests.LearningViewProbe;
@@ -53,6 +54,53 @@ public sealed class ExpressionAssistViewTests(WpfDispatcher dispatcher)
         }
         finally { window.Close(); }
     });
+
+    [Fact]
+    public Task ShortWorkAreaKeepsKeyboardSelectedCandidateVisible() => dispatcher.RunAsync(async () =>
+    {
+        var window = new ExpressionAssistWindow(new ScreenRect(50, 50, 1, 18), (_, _) => { }, _ => { });
+        try
+        {
+            window.MaxHeight = 310;
+            var view = window.View;
+            view.SetDestination("AI explanation endpoint: https://example.invalid/" + new string('p', 300));
+            view.Update(new ExpressionAssistResult(Enumerable.Range(0, 7).Select(i =>
+                new ExpressionAssistCandidate("candidate " + i, "description", null)).ToArray(), null), null, false);
+            window.Show(); window.UpdateLayout();
+            for (int i = 0; i < 6; i++)
+            {
+                var key = new KeyEventArgs(Keyboard.PrimaryDevice, PresentationSource.FromVisual(view.QueryBox), 0, Key.Down) { RoutedEvent = Keyboard.PreviewKeyDownEvent };
+                view.QueryBox.RaiseEvent(key); Assert.True(key.Handled);
+                await Dispatcher.Yield(DispatcherPriority.ApplicationIdle);
+            }
+            window.UpdateLayout();
+            var selected = Descendants<Button>(view).Last();
+            var scrolls = Descendants<ScrollViewer>(view).ToArray();
+            var inner = Assert.Single(scrolls, s => s.MaxHeight == 210);
+            var outer = Assert.IsType<ScrollViewer>(view.Child);
+            foreach (var scroll in new[] { inner, outer })
+            {
+                var point = selected.TranslatePoint(new Point(), scroll);
+                Assert.True(point.Y >= -1 && point.Y + selected.ActualHeight <= scroll.ViewportHeight + 1,
+                    $"selected candidate {point.Y}..{point.Y + selected.ActualHeight}, viewport {scroll.ViewportHeight}");
+            }
+            Assert.True(window.ActualHeight <= 310);
+            if (Environment.GetEnvironmentVariable("LINGROVE_TEST_RENDER_DIR") is { Length: > 0 } dir)
+            {
+                Directory.CreateDirectory(dir); var bitmap = new RenderTargetBitmap((int)Math.Ceiling(view.ActualWidth), (int)Math.Ceiling(view.ActualHeight), 96, 96, PixelFormats.Pbgra32);
+                bitmap.Render(view); var encoder = new PngBitmapEncoder(); encoder.Frames.Add(BitmapFrame.Create(bitmap));
+                using var output = File.Create(Path.Combine(dir, "expression-theme-short-selected.png")); encoder.Save(output);
+            }
+        }
+        finally { window.Close(); }
+    });
+
+    [Fact]
+    public void WorkAreaLimitUsesAnchorMonitorPixelsAndDpi()
+    {
+        Assert.Equal(296, LearningPanelPlacement.WorkAreaHeightDip(500, 800, 96));
+        Assert.Equal(296, LearningPanelPlacement.WorkAreaHeightDip(500, 948, 144));
+    }
 
     [Fact]
     public Task ThemedDestinationAndCandidatesStayBounded() => dispatcher.RunAsync(() =>

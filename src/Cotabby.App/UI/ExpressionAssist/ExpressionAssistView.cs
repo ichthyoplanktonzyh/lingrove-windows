@@ -20,6 +20,8 @@ internal sealed class ExpressionAssistView : Border
     private readonly StackPanel _rows = new();
     private readonly ScrollViewer _candidateScroll = new() { MaxHeight = 210,
         VerticalScrollBarVisibility = ScrollBarVisibility.Auto, HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled };
+    private readonly ScrollViewer _outerScroll = new() { VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+        HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled };
     private readonly TextBlock _status = new() { TextWrapping = TextWrapping.Wrap, Margin = new(2, 6, 2, 4) };
     private readonly TextBlock _destination = new() { TextWrapping = TextWrapping.Wrap, FontSize = 11 };
     private readonly TextBlock _footer = new() { FontSize = 11, Margin = new(2, 8, 2, 1) };
@@ -41,9 +43,7 @@ internal sealed class ExpressionAssistView : Border
         SetResourceReference(BackgroundProperty, "CardBg"); SetResourceReference(BorderBrushProperty, "CardBorder"); BorderThickness = new Thickness(1);
         SetResourceReference(TextElement.ForegroundProperty, "TextPrimary");
         CornerRadius = new CornerRadius(10);
-        var body = new StackPanel(); Child = new ScrollViewer { Content = body,
-            MaxHeight = Math.Max(160, SystemParameters.WorkArea.Height - 40),
-            VerticalScrollBarVisibility = ScrollBarVisibility.Auto, HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled };
+        var body = new StackPanel(); _outerScroll.Content = body; Child = _outerScroll;
         var heading = new TextBlock { Text = InterfaceText.Get("Expression assistance"), FontSize = 15, FontWeight = FontWeights.SemiBold,
             Margin = new Thickness(0, 0, 0, 8) };
         heading.SetResourceReference(TextBlock.ForegroundProperty, "TextPrimary");
@@ -91,10 +91,10 @@ internal sealed class ExpressionAssistView : Border
         _status.Text = loading ? "Finding expressions…" : message ?? "";
         _status.Visibility = string.IsNullOrEmpty(_status.Text) ? Visibility.Collapsed : Visibility.Visible;
         _status.SetResourceReference(TextBlock.ForegroundProperty, loading ? "TextSecondary" : "TextPrimary");
-        RefreshRows();
+        RefreshRows(false);
     }
 
-    private void RefreshRows()
+    private void RefreshRows(bool navigate)
     {
         _rows.Children.Clear();
         for (int i = 0; i < _candidates.Count; i++)
@@ -128,6 +128,14 @@ internal sealed class ExpressionAssistView : Border
                     if (top < _candidateScroll.VerticalOffset) _candidateScroll.ScrollToVerticalOffset(top);
                     else if (top + button.ActualHeight > _candidateScroll.VerticalOffset + _candidateScroll.ViewportHeight)
                         _candidateScroll.ScrollToVerticalOffset(top + button.ActualHeight - _candidateScroll.ViewportHeight);
+                    if (navigate)
+                    {
+                        _candidateScroll.UpdateLayout();
+                        double visibleTop = button.TranslatePoint(new Point(), _outerScroll).Y;
+                        if (visibleTop < 0) _outerScroll.ScrollToVerticalOffset(_outerScroll.VerticalOffset + visibleTop);
+                        else if (visibleTop + button.ActualHeight > _outerScroll.ViewportHeight)
+                            _outerScroll.ScrollToVerticalOffset(_outerScroll.VerticalOffset + visibleTop + button.ActualHeight - _outerScroll.ViewportHeight);
+                    }
                 });
         }
         _footer.Text = _candidates.Count > 1 ? "↑↓ Select    Enter / Tab Insert    Esc Cancel"
@@ -176,7 +184,7 @@ internal sealed class ExpressionAssistView : Border
         else if (e.Key is Key.Up or Key.Down && _candidates.Count > 0)
         {
             _selected = (_selected + (e.Key == Key.Down ? 1 : -1) + _candidates.Count) % _candidates.Count;
-            RefreshRows(); e.Handled = true;
+            RefreshRows(true); e.Handled = true;
         }
     }
 }

@@ -59,14 +59,16 @@ meaning-node and mapping edits. Category management and usage-pattern editing re
   user-authored changes.
 - Keep changes within the requested scope. Coordinate before editing a shared file another worker
   owns.
-- The maintainer froze this alignment campaign at Mac
-  `35b7fbe5c788c5524936ade1dfb7c89a3a285b04` on 2026-10-29; see
-  [the frozen baseline and backlog](docs/MAC_LATEST_BASELINE.md) and
+- The maintainer authorized alignment with the latest Mac functionality on 2026-10-29. The
+  currently resolved target is `3b53402f2cbc196b0398d133177fd80006d165b2`, advancing the earlier
+  `35b7fbe5c788c5524936ade1dfb7c89a3a285b04` snapshot; see
+  [the committed baseline and backlog](docs/MAC_LATEST_BASELINE.md) and
   [the team and UI acceptance contract](docs/WINDOWS_ALIGNMENT.md). Read that exact committed
-  snapshot for every new module. Do not chase or incorporate subsequent Mac commits unless the
-  maintainer explicitly advances the campaign baseline.
+  snapshot for every new module. Inspect and record a later committed target before adopting
+  further Mac changes; do not silently move a module or fixture reference.
 - Existing modules/fixtures retain their explicit reference until upgraded individually, including
-  the original `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f` and intermediate
+  `35b7fbe5c788c5524936ade1dfb7c89a3a285b04`, the original
+  `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f` and intermediate
   `cc468b89f5c360cc7210fac4f1a8b52197870bf2`. Their passing checks do not establish latest parity.
   Never silently change a shared pin or fit old expectations to a new rule. Read committed evidence
   with `git -C <macOS-repository> show <commit>:<path>` rather than a dirty working tree. Preserve

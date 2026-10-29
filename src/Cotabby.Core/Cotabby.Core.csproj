@@ -16,6 +16,8 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\Emoji\emoji.json" />
     <EmbeddedResource Include="Resources\Foundation\editor-text-data-v1.json" />
+    <EmbeddedResource Include="Vocabulary/Resources/VocabularyClassificationCatalog.json"
+                      LogicalName="Cotabby.Core.Vocabulary.Resources.VocabularyClassificationCatalog.json" />
     <Content Include="Resources\Foundation\NOTICE.md;Resources\Foundation\LICENSE.*.txt" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="Resources\Spelling\**" Exclude="Resources\Spelling\.gitattributes" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>

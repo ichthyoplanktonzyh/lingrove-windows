@@ -49,3 +49,7 @@ effects still have a short check-to-call race. A write's consumption notificatio
 its pending verified/unverified outcome; failure feedback is shown only while the original host
 window remains foreground. Settings/quit cancellation still retires the whole operation directly.
 The tray preview and delayed capture also yield to expression input before reads or presentation.
+The recovery notice is owned by this application adapter, remains nonactivating, and is replaced
+or closed on new sessions, relevant settings and shutdown. Full Copy reports success then closes
+its own notice after 900 ms. As in the frozen environment's `learningAvailability` closure,
+integrated terminals remain excluded even when autocomplete is allowed there.

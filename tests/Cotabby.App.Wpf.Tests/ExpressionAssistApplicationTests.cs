@@ -11,6 +11,23 @@ namespace Cotabby.App.Wpf.Tests;
 [Collection("WPF views")]
 public sealed class ExpressionAssistApplicationTests(WpfDispatcher dispatcher)
 {
+    [Fact]
+    public Task NoticesAreReplacedAndClosedOnRelevantSettingsOrShutdown() => dispatcher.RunAsync(async () =>
+    {
+        var app = new ExpressionAssistApplication(Dispatcher.CurrentDispatcher, new Focus(), new Hook(),
+            _ => throw new InvalidOperationException(), new UnavailableExpressionAssistEditor(),
+            (_, _) => throw new InvalidOperationException(), () => { });
+        var settings = new AppSettings(); app.ApplySettings(settings, false);
+        app.ShowNotice(ScreenRect.Empty, "First", null);
+        var first = app.Notice!; Assert.True(first.IsVisible); Assert.False(first.IsActive);
+        app.ShowNotice(ScreenRect.Empty, "Second", null);
+        var second = app.Notice!; Assert.False(first.IsVisible); Assert.True(second.IsVisible);
+        settings.LearningTargetLanguage = Cotabby.Core.LanguageLearning.LearningLanguage.French;
+        app.ApplySettings(settings, false); Assert.False(second.IsVisible); Assert.Null(app.Notice);
+        app.ShowNotice(ScreenRect.Empty, "Last", null); var last = app.Notice!;
+        await app.DisposeAsync(); Assert.False(last.IsVisible); Assert.Null(app.Notice);
+        app.ShowNotice(ScreenRect.Empty, "Too late", null); Assert.Null(app.Notice);
+    });
     private static FocusedField Field => new()
     {
         ProcessId = Environment.ProcessId + 1, ProcessName = "editor", FieldId = "field", Text = "word??",
@@ -33,6 +50,8 @@ public sealed class ExpressionAssistApplicationTests(WpfDispatcher dispatcher)
         Assert.True(app.FieldAvailable(Field));
         app.ApplySettings(settings, false); Assert.False(app.FieldAvailable(Field));
         settings.BlockedApps.Clear(); app.ApplySettings(settings, false);
+        settings.SuggestInIntegratedTerminals = true; app.ApplySettings(settings, false);
+        Assert.False(app.FieldAvailable(Field with { ClassName = "xterm-helper-textarea" }));
         Assert.False(app.FieldAvailable(Field with { IsSecure = true }));
         Assert.False(app.FieldAvailable(Field with { ProcessId = Environment.ProcessId }));
         Assert.False(app.FieldAvailable(Field with { ProcessName = "powershell" }));

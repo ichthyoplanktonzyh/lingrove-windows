@@ -65,7 +65,7 @@ internal sealed class ExpressionAssistNoticeWindow : Window
             text.CopyRequested += (_, args) => { args.Handled = true; if (IsVisible && args.Lease.IsCurrent) CopyText(args.Lease.Text, false); };
             text.SetResourceReference(TextBlock.ForegroundProperty, "TextPrimary"); AutomationProperties.SetName(text, "Candidate: " + candidate); body.Children.Add(text);
         }
-        _copiedTimer.Tick += (_, _) => { _copiedTimer.Stop(); if (_copyButton is not null) { _copyButton.Content = "Copy"; _copyButton.IsEnabled = true; } };
+        _copiedTimer.Tick += (_, _) => { _copiedTimer.Stop(); if (!_closed) Close(); };
     }
     private Button Button(string text, string name)
     {

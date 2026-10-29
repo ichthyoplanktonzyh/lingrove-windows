@@ -18,6 +18,8 @@ internal sealed class ExpressionAssistApplication : IAsyncDisposable
     private Preferences _preferences = Preferences.From(new AppSettings(), false);
     private long _revision;
     private Task? _disposal;
+    private ExpressionAssistNoticeWindow? _notice;
+    internal ExpressionAssistNoticeWindow? Notice => _notice;
 
     internal ExpressionAssistApplication(Dispatcher dispatcher, IFocusTracker focus, IKeyboardHook hook,
         Func<Func<bool>, FocusedField?> guardedRefresh, IExpressionAssistEditor editor,
@@ -27,8 +29,11 @@ internal sealed class ExpressionAssistApplication : IAsyncDisposable
         dispatcher.VerifyAccess(); _dispatcher = dispatcher;
         _feature = new(dispatcher, focus, hook, guardedRefresh, field =>
         {
+            CloseNotice();
             beforePresent();
-            var window = new ExpressionAssistWindow(field.CaretRect);
+            var window = new ExpressionAssistWindow(field.CaretRect,
+                (candidate, message) => ShowNotice(field.CaretRect, message, candidate),
+                message => ShowNotice(field.CaretRect, message, null));
             var session = new ExpressionAssistSession(dispatcher, editor, window, generate, () =>
             {
                 var preferences = Volatile.Read(ref _preferences);
@@ -51,6 +56,7 @@ internal sealed class ExpressionAssistApplication : IAsyncDisposable
         if (_disposal is not null) return;
         var next = Preferences.From(settings, batterySaverOn);
         if (_revision != 0 && _preferences.SameInteraction(next)) return;
+        CloseNotice();
         Volatile.Write(ref _preferences, next);
         _feature.SettingsChanged(new(next.Enabled, next.Trigger, next.Shortcut.VirtualKey,
             next.Shortcut.Modifiers, next.Availability.Enabled, ++_revision));
@@ -60,6 +66,7 @@ internal sealed class ExpressionAssistApplication : IAsyncDisposable
     {
         var preferences = Volatile.Read(ref _preferences);
         return SuggestionAvailability.DisabledReason(preferences.Availability, DateTimeOffset.UtcNow, preferences.BatterySaverOn) is null
+            && !TerminalAppDetector.IsIntegratedTerminal(field.ClassName)
             // Explicit expression assistance accepts a selection; all environment/credential gates remain.
             && SuggestionAvailability.DisabledReason(preferences.Availability, field with { HasSelection = false }) is null;
     }
@@ -68,8 +75,20 @@ internal sealed class ExpressionAssistApplication : IAsyncDisposable
     {
         if (!_dispatcher.CheckAccess())
             return new(_dispatcher.InvokeAsync(() => DisposeAsync().AsTask()).Task.Unwrap());
-        return new(_disposal ??= _feature.DisposeAsync().AsTask());
+        if (_disposal is null) { CloseNotice(); _disposal = _feature.DisposeAsync().AsTask(); }
+        return new(_disposal);
     }
+
+    internal void ShowNotice(ScreenRect anchor, string message, string? candidate)
+    {
+        _dispatcher.VerifyAccess();
+        if (_disposal is not null) return;
+        CloseNotice();
+        var window = _notice = new ExpressionAssistNoticeWindow(message, candidate);
+        window.Closed += (_, _) => { if (ReferenceEquals(_notice, window)) _notice = null; };
+        window.ShowAt(anchor);
+    }
+    private void CloseNotice() { var window = _notice; _notice = null; window?.Close(); }
 
     private sealed record Preferences(bool Enabled, string Trigger, KeyBinding Shortcut,
         LearningLanguage Target, LearningLanguage Explanation, LearningModelSnapshot Model,
@@ -92,7 +111,6 @@ internal sealed class ExpressionAssistApplication : IAsyncDisposable
             && Shortcut == other.Shortcut && Target == other.Target && Explanation == other.Explanation && Model == other.Model
             && Availability.Enabled == other.Availability.Enabled && Availability.Pause == other.Availability.Pause
             && Availability.PauseOnBatterySaver == other.Availability.PauseOnBatterySaver && BatterySaverOn == other.BatterySaverOn
-            && Availability.SuggestInIntegratedTerminals == other.Availability.SuggestInIntegratedTerminals
             && Availability.BlockedApps.SetEquals(other.Availability.BlockedApps)
             && Shortcuts.AcceptWord == other.Shortcuts.AcceptWord && Shortcuts.AcceptAll == other.Shortcuts.AcceptAll
             && Shortcuts.GlobalToggle == other.Shortcuts.GlobalToggle

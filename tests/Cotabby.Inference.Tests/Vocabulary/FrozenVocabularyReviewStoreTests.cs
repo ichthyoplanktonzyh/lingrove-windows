@@ -81,7 +81,7 @@ public sealed class FrozenVocabularyReviewStoreTests : IDisposable
         var after = await store.ReadAsync(); Assert.Equal(baseline, after); Assert.Equal(0, notifications);
     }
     [Fact]
-    public async Task TextOnlyBoundaryRejectsImageChangesAndSuppliedMedia()
+    public async Task MissingImageIsRejectedAndUnreferencedSuppliedMediaIsIgnored()
     {
         await using var store = FrozenVocabularyStoreFactory.Create(FileName, false); var (entry, sense) = await Seed(store);
         var before = await store.ReadAsync();
@@ -92,11 +92,12 @@ public sealed class FrozenVocabularyReviewStoreTests : IDisposable
         var template = new ReviewLayoutTemplate(Guid.NewGuid(), "Image", layout);
         await Assert.ThrowsAsync<VocabularyException>(() => store.SaveTemplateAsync(template));
         var supplied = new Dictionary<string, VocabularyPreparedImage> { [image.Filename] = new(image, [1, 2, 3]) };
-        await Assert.ThrowsAsync<VocabularyException>(() => store.SaveReviewAsync(entry, sense, Card(Guid.NewGuid()), null, importedImages: supplied));
         Assert.Equal(before, await store.ReadAsync());
+        var saved = await store.SaveReviewAsync(entry, sense, Card(Guid.NewGuid()), null, importedImages: supplied);
+        Assert.Equal(before.Revision + 1, saved.Revision);
     }
     [Fact]
-    public async Task ExistingLastImageReferenceCannotBeRemovedWithoutMediaOwner()
+    public async Task RemovingLastImageReferenceCommitsEvenWhenFileWasAlreadyMissing()
     {
         var image = new VocabularyImageReference(new string('a', 64), 1, 1, 20);
         var block = new VocabularyContentBlock(Guid.NewGuid(), new VocabularyBlockContent.Image(image));
@@ -109,8 +110,9 @@ public sealed class FrozenVocabularyReviewStoreTests : IDisposable
         }
         await using var store = FrozenVocabularyStoreFactory.Create(FileName, false);
         var baseline = await store.ReadAsync();
-        await Assert.ThrowsAsync<VocabularyException>(() => store.RemoveTemplateAsync(template.Id));
-        Assert.Equal(baseline, await store.ReadAsync());
+        var removed = await store.RemoveTemplateAsync(template.Id);
+        Assert.Equal(baseline.Revision + 1, removed.Revision);
+        Assert.Empty(removed.Document.ReviewTemplates!);
     }
     public void Dispose() => Directory.Delete(_root, recursive: true);
 }

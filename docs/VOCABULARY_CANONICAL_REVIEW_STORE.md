@@ -13,7 +13,7 @@ commit is returned and cannot be revoked by cancellation. Missing-template remov
 Lazy classification installation may itself commit when the first operation loads the Store; it is a
 separate acknowledged installation even if the following review edit fails.
 
-This checkpoint is deliberately text-only relative to Mac: nonempty supplied image maps are rejected,
+This historical text-only checkpoint was extended by VOCABULARY_CANONICAL_REVIEW_MEDIA.md. Its original limitation was: nonempty supplied image maps are rejected,
 and any change to the set of image references across content, all current and preserved review
 layouts and templates is rejected. Removing the last reference also requires the missing media owner.
 Unchanged references are left alone and are not evidence of media-file admission. No staging, file

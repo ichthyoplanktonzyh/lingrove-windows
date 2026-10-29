@@ -9,13 +9,15 @@ namespace Cotabby.Win32.Vocabulary;
 public static class FrozenVocabularyStoreFactory
 {
     public const string CanonicalFileName = "vocabulary-v8.sqlite";
+    public const string CanonicalMediaDirectoryName = "media-v8";
     /// <summary>Create one inert owner; no directory or database is opened before an admitted operation.</summary>
     public static ICanonicalVocabularyStore Create(string path, bool installBundledClassification = true)
     {
         if (!string.Equals(Path.GetFileName(path), CanonicalFileName, StringComparison.OrdinalIgnoreCase))
             throw new VocabularyException(VocabularyFailure.InvalidContent);
         string retained = VocabularyWindowsFile.FullPath(path);
-        return new FrozenVocabularyImportStore(() => FrozenVocabularySQLiteDatabase.OpenFile(retained), installBundledClassification: installBundledClassification);
+        var images = WindowsVocabularyImageStorage.ForDirectory(Path.Combine(Path.GetDirectoryName(retained)!, CanonicalMediaDirectoryName));
+        return new FrozenVocabularyImportStore(() => FrozenVocabularySQLiteDatabase.OpenFile(retained), installBundledClassification: installBundledClassification, images: images);
     }
     /// <summary>Eager convenience for explicitly requested open; failures dispose the candidate owner.</summary>
     public static async Task<ICanonicalVocabularyStore> OpenAsync(string path, CancellationToken cancellationToken = default, bool installBundledClassification = true)

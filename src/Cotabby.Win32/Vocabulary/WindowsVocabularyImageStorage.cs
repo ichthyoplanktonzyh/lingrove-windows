@@ -9,7 +9,8 @@ namespace Cotabby.Win32.Vocabulary;
 /// <summary>
 /// Mac VocabularyImageStorage's synchronous media owner. The archive will serialize this instance
 /// with its database: null notebook means isolated memory, otherwise bytes live beside it in
-/// &lt;database filename&gt;.media. Construction and preparation create no directory or file. A write
+/// &lt;database filename&gt;.media for the legacy archive, or an explicit canonical media directory.
+/// Construction and preparation create no directory or file. A write
 /// returns true only for new media, letting a failed metadata transaction remove its own additions
 /// while retaining a repaired pre-existing resource. The archive owns this library; future image
 /// presentation borrows archive operations. Call off the dispatcher and hold its transaction lock.
@@ -23,6 +24,10 @@ internal sealed class WindowsVocabularyImageStorage : IVocabularyImageStorage
     /// <summary>Tests may force a CREATE_NEW collision without changing actual file operations.</summary>
     internal WindowsVocabularyImageStorage(string? notebook, Func<Guid> stagingIdentity)
     { DirectoryPath = notebook is null ? null : VocabularyWindowsFile.FullPath(notebook) + ".media"; _stagingIdentity = stagingIdentity; }
+    internal static WindowsVocabularyImageStorage ForDirectory(string directory) => new(directory, Guid.NewGuid, true);
+    internal static WindowsVocabularyImageStorage ForDirectory(string directory, Func<Guid> stagingIdentity) => new(directory, stagingIdentity, true);
+    private WindowsVocabularyImageStorage(string directory, Func<Guid> stagingIdentity, bool explicitDirectory)
+    { DirectoryPath = VocabularyWindowsFile.FullPath(directory); _stagingIdentity = stagingIdentity; }
 
     public VocabularyPreparedImage Prepare(ReadOnlySpan<byte> data, CancellationToken cancellationToken) => WindowsVocabularyImagePreparer.Prepare(data, cancellationToken);
     public VocabularyPreparedImage PrepareFile(string path, CancellationToken cancellationToken) =>

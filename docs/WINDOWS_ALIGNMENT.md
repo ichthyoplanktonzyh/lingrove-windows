@@ -33,6 +33,13 @@ review. Test counts and successful XAML builds do not replace visible or desktop
 
 ## Team and file ownership
 
+On 2026-10-30 the maintainer ended delegation and required the primary agent to perform all further
+code work alone. The primary has interrupted every active delegate and preserved their committed
+and uncommitted work. Do not spawn, resume or assign subagents, including review agents, unless the
+maintainer explicitly changes this instruction. The team table below records the earlier campaign,
+not the current execution model. Further work uses direct source review and executable validation
+by the primary, retaining the existing required CI and final physical acceptance boundaries.
+
 The primary agent orchestrates three implementation delegates, all using `gpt-6.1-terra` with
 `high` reasoning for subsequent dispatches, as clarified by the maintainer on 2026-10-29. Existing
 running assignments may finish their checkpoint before the next dispatch adopts this setting.
@@ -76,9 +83,9 @@ handed to the maintainer, rather than blocking development on interim desktop au
    stable identity and single-owner data/runtime contracts.
 3. Run appropriate narrow checks and a Release build. Broaden checks when changes or unresolved
    concerns require them. Keep historical fixture expectations and pins intact.
-4. Obtain independent review from another delegate/primary; an author is not the sole reviewer.
-   Subsequent delegates use Terra high under the current maintainer instruction. Reviewers report
-   findings; the implementation owner repairs them.
+4. Preserve independent review already recorded for earlier modules. Under the maintainer's later
+   solo-work instruction, the primary reviews further edits against committed Mac contracts and
+   meaningful tests without assigning another agent. Do not represent that as independent review.
 5. Integrate acknowledged checkpoints, run final-head required CI, then merge scoped PRs under the
    existing maintainer authorization. Missing remote authentication does not prevent isolated local
    work, but no push/PR/merge is claimed without successful remote evidence.

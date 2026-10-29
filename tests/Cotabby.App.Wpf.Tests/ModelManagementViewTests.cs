@@ -37,6 +37,25 @@ public sealed class ModelManagementViewTests(WpfDispatcher dispatcher)
         Assert.Equal("Downloading 20%", current.Text);
         store.Set("MODEL.gguf", "Download failed");
         Assert.Equal("Download failed", current.Text); Assert.Equal("Downloading 20%", previous.Text);
+        store.Start("model.gguf");
+        Assert.Equal(ModelTransferStatusStore.Starting, current.Text);
+        store.BeginView(); var reopened = new TextBlock(); store.Bind("Model.gguf", reopened, "Not installed");
+        Assert.Equal(ModelTransferStatusStore.Starting, reopened.Text);
+    });
+
+    [Fact]
+    public Task PowerPickerMatchesTheSameIdsAsRuntimeResolution() => dispatcher.Run(() =>
+    {
+        var builtin = ModelCatalog.All[0];
+        var custom = new CotabbyModel { Id = "custom:model.gguf", DisplayName = "model", FileName = "model.gguf", DownloadUrl = "", ApproxSizeBytes = 1, ContextLength = 4096 };
+        var models = new[] { builtin, custom };
+        var wrongCaseBuiltin = EnginePane.PowerChoices(models, "TABBY-2-MINI");
+        Assert.False(Assert.Single(wrongCaseBuiltin, item => item.Id == "TABBY-2-MINI").Selectable);
+        Assert.True(Assert.Single(wrongCaseBuiltin, item => item.Id == builtin.Id).Selectable);
+        var customCase = EnginePane.PowerChoices(models, "custom:MODEL.gguf");
+        Assert.True(Assert.Single(customCase, item => item.Id == "custom:MODEL.gguf").Selectable);
+        var wrongPrefix = EnginePane.PowerChoices(models, "CUSTOM:model.gguf");
+        Assert.False(Assert.Single(wrongPrefix, item => item.Id == "CUSTOM:model.gguf").Selectable);
     });
 
     [Fact]

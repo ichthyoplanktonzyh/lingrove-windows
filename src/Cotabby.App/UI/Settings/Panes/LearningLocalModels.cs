@@ -308,6 +308,7 @@ internal sealed class LearningLocalModels : StackPanel
         using var transfer = new CancellationTokenSource();
         _activeTransfer = transfer;
         _busy = true;
+        _transferStatuses.Start(model.Filename);
         UpdateControls();
         var progress = new Progress<LearningModelTransferProgress>(update =>
         {

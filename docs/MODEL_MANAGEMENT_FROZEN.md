@@ -29,14 +29,16 @@ endpoint profiles stay unchanged. No weights are loaded by opening the settings 
   recommendations reuse the current transfer owner and expose Get/cancel; imported files use the
   existing GGUF validation/staging path. Completion retains the existing inline Download Models
   owner rather than duplicating a transfer or prewarming when the manager opens. Learning transfer
-  status belongs to the longer-lived settings control and rebinds if the manager closes and reopens.
+  status belongs to the longer-lived settings control and rebinds if the manager closes and reopens;
+  retry immediately replaces any previous failure or cancellation with a starting state.
 - `UI/Settings/Panes/Engine/EngineAndModelPaneView+Power.swift`: the completion power pickers use
   task-admitted models and retain an unavailable/incompatible persisted choice as a disabled label.
   Their discovery runs off the UI thread and rejects older scan completions. The tray's model list
   and click handler also apply candidate admission before changing the selected ID. Listing successes
   and errors are gated by the same per-view scan epoch. Retained filename/source presentation is
   bounded and controls are removed without changing stored identities; known catalog entries use
-  the frozen display aliases.
+  the frozen display aliases. Power choices use the same exact built-in and Windows case-insensitive
+  custom ID comparison as the completion catalog resolver.
 
 `AppHost` owns completion runtime selection. Its synchronous invalidation/async stale-load guard is
 an independent coordinated integration requirement: a filtered UI cannot stop an already loaded

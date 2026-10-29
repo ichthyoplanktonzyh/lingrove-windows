@@ -56,6 +56,7 @@ internal sealed class ModelScanLifetime
 /// <summary>Transfer state survives disposal of a manager view; only current labels receive updates.</summary>
 internal sealed class ModelTransferStatusStore
 {
+    internal const string Starting = "Starting download…";
     private readonly Dictionary<string, string> _statuses = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, TextBlock> _labels = new(StringComparer.OrdinalIgnoreCase);
     internal void BeginView() => _labels.Clear();
@@ -69,4 +70,5 @@ internal sealed class ModelTransferStatusStore
         _statuses[filename] = text;
         if (_labels.TryGetValue(filename, out var label)) label.Text = text;
     }
+    internal void Start(string filename) => Set(filename, Starting);
 }

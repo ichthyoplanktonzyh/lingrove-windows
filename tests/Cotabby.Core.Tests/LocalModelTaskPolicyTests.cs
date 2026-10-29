@@ -93,6 +93,15 @@ public class LocalModelTaskPolicyTests
     }
 
     [Fact]
+    public void CompletionModelIdsRespectCatalogAndWindowsCustomIdentity()
+    {
+        Assert.True(ModelCatalog.MatchesId("tabby-2-mini", "tabby-2-mini"));
+        Assert.False(ModelCatalog.MatchesId("TABBY-2-MINI", "tabby-2-mini"));
+        Assert.True(ModelCatalog.MatchesId("custom:MODEL.gguf", "custom:model.gguf"));
+        Assert.False(ModelCatalog.MatchesId("CUSTOM:model.gguf", "custom:model.gguf"));
+    }
+
+    [Fact]
     public void UsageProtectsCurrentAndFutureSelectionsAcrossTasks()
     {
         var names = ModelUsagePolicy.ProtectedFilenames("current.gguf", ["battery.gguf", "", null],

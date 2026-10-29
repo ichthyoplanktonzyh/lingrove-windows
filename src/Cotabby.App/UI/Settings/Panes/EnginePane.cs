@@ -102,15 +102,7 @@ internal static class EnginePane
             try { models = await System.Threading.Tasks.Task.Run(() => ModelCatalog.Available(assignments)); }
             catch (Exception) { models = []; }
             if (closed || current != generation) return;
-            var choices = new List<PowerChoice> { new("", "Keep current model", true) };
-            choices.AddRange(models.Select(model => new PowerChoice(string.Equals(model.Id, selected, StringComparison.OrdinalIgnoreCase) ? selected : model.Id,
-                ModelDisplayText.Safe(model.DisplayName), true)));
-            if (selected.Length > 0 && !choices.Any(choice => choice.Id == selected))
-            {
-                var filename = AppSettings.CompletionFilenameForId(selected) ?? selected;
-                var label = ModelDisplayText.Unavailable(filename, LocalModelTask.Completion);
-                choices.Add(new(selected, label, false));
-            }
+            var choices = PowerChoices(models, selected);
             updating = true;
             try { combo.ItemsSource = choices; combo.SelectedValue = selected; }
             finally { updating = false; }
@@ -119,5 +111,17 @@ internal static class EnginePane
         context.Closed += () => { closed = true; generation++; };
         return combo;
     }
-    private sealed record PowerChoice(string Id, string Label, bool Selectable);
+    internal static IReadOnlyList<PowerChoice> PowerChoices(IReadOnlyList<CotabbyModel> models, string selected)
+    {
+        var choices = new List<PowerChoice> { new("", "Keep current model", true) };
+        choices.AddRange(models.Select(model => new PowerChoice(ModelCatalog.MatchesId(selected, model.Id) ? selected : model.Id,
+            ModelDisplayText.Safe(model.DisplayName), true)));
+        if (selected.Length > 0 && !choices.Any(choice => choice.Id == selected))
+        {
+            var filename = AppSettings.CompletionFilenameForId(selected) ?? selected;
+            choices.Add(new(selected, ModelDisplayText.Unavailable(filename, LocalModelTask.Completion), false));
+        }
+        return choices;
+    }
+    internal sealed record PowerChoice(string Id, string Label, bool Selectable);
 }

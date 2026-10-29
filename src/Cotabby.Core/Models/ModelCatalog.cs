@@ -121,8 +121,12 @@ public static class ModelCatalog
             LocalModelTaskAssignments.TasksFor(model.FileName, assignments))).ToArray();
 
     public static CotabbyModel? FindById(string id, IReadOnlyDictionary<string, string[]> assignments) =>
-        Available(assignments).FirstOrDefault(model => string.Equals(model.Id, id,
-            id.StartsWith(CustomIdPrefix, StringComparison.Ordinal) ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal));
+        Available(assignments).FirstOrDefault(model => MatchesId(id, model.Id));
+
+    /// <summary>Built-in IDs are stable exact identifiers; custom IDs name Windows files.</summary>
+    public static bool MatchesId(string retainedId, string candidateId) =>
+        string.Equals(retainedId, candidateId,
+            retainedId.StartsWith(CustomIdPrefix, StringComparison.Ordinal) ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
 
     private static CotabbyModel Custom(string path)
     {

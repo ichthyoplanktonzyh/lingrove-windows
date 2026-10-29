@@ -59,8 +59,10 @@ public partial class LearningPreviewWindow : Window
     internal void RetireExample()
     {
         if (!_embeddedExample) throw new InvalidOperationException();
-        FavoriteButton.Clear(); _displayedPreview = null; ClearExplanation(); ClearCopyActions();
+        FavoriteButton.Clear(); _displayedPreview = null; _previousTranslation = null; _canReplace = _isCommitting = false;
+        ReplacementReason.Text = ""; ClearExplanation(); ClearCopyActions();
         SourceText.Text = DirectionText.Text = ErrorText.Text = string.Empty; ResultText.Inlines.Clear();
+        ApplyPresentation();
     }
 
     public event Action? RetryRequested;
@@ -88,6 +90,10 @@ public partial class LearningPreviewWindow : Window
     {
         bool error = _displayedPreview is null || _displayedPreview.Status is LearningPreviewStatus.Failed or LearningPreviewStatus.Cancelled;
         bool ready = _displayedPreview is { Status: LearningPreviewStatus.Ready, Result: not null };
+        if (!error && _displayedPreview?.Options is { } options)
+            TitleText.Text = _expanded ? "Sentence translation" : options.TargetLanguage.Label().Split(" (", 2)[0];
+        StatusText.Visibility = _expanded || error ? Visibility.Visible : Visibility.Collapsed;
+        ResultLabel.Visibility = _expanded ? Visibility.Visible : Visibility.Collapsed;
         SourceSection.Visibility = !error && _expanded ? Visibility.Visible : Visibility.Collapsed;
         DirectionText.Visibility = !error && _expanded && DirectionText.Text.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
         PreviousTranslation.Text = _previousTranslation ?? "";

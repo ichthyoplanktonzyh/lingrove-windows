@@ -18,6 +18,8 @@ public sealed class LearningPreviewEmbeddedExampleTests(WpfDispatcher dispatcher
         var state = new LearningPreviewState { RequestId = "one", Source = "你好", Result = "Hello", Status = LearningPreviewStatus.Ready, Options = new() };
         window.ShowState(state, new ScreenRect(0, 0, 1, 1), false); window.ShowExpanded(false); window.ShowPreviousTranslation("Previous sentence");
         Assert.Equal(Visibility.Collapsed, ((FrameworkElement)window.FindName("SourceSection")).Visibility);
+        Assert.Equal("English", ((TextBlock)window.FindName("TitleText")).Text);
+        Assert.Equal(Visibility.Collapsed, ((FrameworkElement)window.FindName("ResultLabel")).Visibility);
         Assert.Equal(Visibility.Visible, ((FrameworkElement)window.FindName("PreviousTranslation")).Visibility);
         Assert.False(replace.IsEnabled); expand.RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); Assert.Equal("one", expanded);
         window.ShowExpanded(true); Assert.Equal(Visibility.Visible, ((FrameworkElement)window.FindName("SourceSection")).Visibility);

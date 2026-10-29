@@ -403,7 +403,7 @@ public sealed class AppHost : IAsyncDisposable
         {
             if (ModelDownloader.IsCached(model)) return;
             if (!allowDownload) throw new System.IO.FileNotFoundException("The selected model is unavailable.");
-            await Downloader.DownloadAsync(model, progress, token).ConfigureAwait(false);
+            await Downloader.DownloadAsync(model, progress, token, () => AcknowledgeCompletionDownloadAsync(model)).ConfigureAwait(false);
         }, () => Runtime.LoadAsync(model, ModelDownloader.LocalPath(model), CancellationToken.None),
             () => Runtime.ActiveModel is { } active && ModelCatalog.MatchesId(model.Id, active.Id), ct).ConfigureAwait(false);
         _ui.Post(_ =>
@@ -412,6 +412,25 @@ public sealed class AppHost : IAsyncDisposable
             if (!_shuttingDown && _completion.IsCurrent(ticket) && _completion.IsReady) SettingsApplied?.Invoke();
         }, null);
         return ready;
+    }
+
+    private Task AcknowledgeCompletionDownloadAsync(CotabbyModel model)
+    {
+        var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        _ui.Post(_ =>
+        {
+            try
+            {
+                AcknowledgeModelMetadata(settings =>
+                {
+                    settings.RecordLocalModelTask(model.FileName, LocalModelTask.Completion);
+                    settings.RecordLocalModelSource(model.FileName, new Uri(model.DownloadUrl));
+                });
+                completion.TrySetResult();
+            }
+            catch (Exception error) { completion.TrySetException(error); }
+        }, null);
+        return completion.Task;
     }
 
     private CotabbyModel? ResolveActiveModel()

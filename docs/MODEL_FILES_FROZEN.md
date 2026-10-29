@@ -13,7 +13,8 @@ Windows offers multi-file GGUF import for completion and learning. A compatible 
 assigned to the task; copying validates the GGUF signature, streams to a unique sibling stage,
 and publishes without replacing a collision. The file service acknowledges each successful import's
 source removal before releasing the destination lease, including a partially cancelled import.
-Catalog downloads acknowledge their source under the same lease. An inaccessible, malformed or
+Completion and learning catalog downloads acknowledge their source under the same lease after
+successful publication, independently of a later selection change. An inaccessible, malformed or
 colliding source is not replaced. Windows requires a signature on discovery, unlike Mac's filename
 discovery. Assignments survive deletion, and an explicit missing selection remains represented.
 
@@ -36,7 +37,7 @@ download or load weights.
 
 Validation on Windows x64, SDK 10.0.402: `dotnet build Cotabby.sln --configuration Release`
 passed with no warnings or errors. The focused `LearningModelCatalogManagerTests|ModelDownloaderTests`
-Inference filter passed 21/21; `ModelAssignmentSettingsTests` passed 4/4; and
+Inference filter passed 25/25; `ModelAssignmentSettingsTests` passed 4/4; and
 `ModelManagementViewTests` passed 8/8 with the synthetic render enabled. The latter includes a
 temporary regular-file deletion, locked-file refusal and path-traversal rejection; it does not
 establish physical Shell interaction or external filesystem-race behavior.

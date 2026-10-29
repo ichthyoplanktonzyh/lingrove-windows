@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Encodings.Web;
 using Cotabby.Core.LanguageLearning;
+using Cotabby.Core.Text;
 
 namespace Cotabby.Core.ExpressionAssist;
 
@@ -52,29 +53,30 @@ public static class ExpressionAssistPrompt
 
     public static ExpressionAssistResult Parse(string raw, ExpressionAssistRequest request)
     {
-        if (Encoding.UTF8.GetByteCount(raw) > 12_000) throw Invalid();
+        if (!LearningExplanationText.Fits(raw, 12_000)) throw Invalid();
         try
         {
-            using var doc = JsonDocument.Parse(raw.Trim());
+            using var doc = JsonDocument.Parse(FoundationText.TrimWhitespaceAndNewlines(raw));
             var root = doc.RootElement;
             var array = root.GetProperty("candidates");
             if (array.ValueKind != JsonValueKind.Array || array.GetArrayLength() > 3) throw Invalid();
             var result = new List<ExpressionAssistCandidate>();
-            var unique = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var unique = new HashSet<string>(CanonicalStringComparer.Instance);
             foreach (var item in array.EnumerateArray())
             {
                 var text = item.GetProperty("text").GetString() ?? throw Invalid();
                 var hint = item.GetProperty("hint").GetString() ?? throw Invalid();
                 var form = item.TryGetProperty("dictionaryForm", out var f) && f.ValueKind != JsonValueKind.Null ? f.GetString() : null;
-                var normalized = text.Trim();
-                if (normalized.Length == 0 || Encoding.UTF8.GetByteCount(text) > 1_500 ||
-                    text.Any(c => char.IsControl(c) || c is '\u2028' or '\u2029') ||
-                    new StringInfo(hint).LengthInTextElements > 160 || Encoding.UTF8.GetByteCount(form ?? "") > 1_500 ||
-                    (new StringInfo(request.LeftContext).LengthInTextElements >= 12 && text.StartsWith(request.LeftContext, StringComparison.Ordinal)) ||
-                    (new StringInfo(request.RightContext).LengthInTextElements >= 12 && text.EndsWith(request.RightContext, StringComparison.Ordinal))) throw Invalid();
-                if (unique.Add(normalized)) result.Add(new(text, hint, form));
+                var normalized = FoundationText.TrimWhitespaceAndNewlines(text);
+                if (normalized.Length == 0 || !LearningExplanationText.Fits(text, 1_500) ||
+                    text.EnumerateRunes().Any(r => ScalarSets.IsControl(r) || ScalarSets.IsNewline(r)) ||
+                    new StringInfo(hint).LengthInTextElements > 160 || !LearningExplanationText.Fits(form ?? "", 1_500) ||
+                    (new GraphemeString(request.LeftContext).Count >= 12 && CanonicalEdge(text, request.LeftContext, false)) ||
+                    (new GraphemeString(request.RightContext).Count >= 12 && CanonicalEdge(text, request.RightContext, true))) throw Invalid();
+                if (unique.Add(normalized.ToLowerInvariant())) result.Add(new(text, hint, form));
             }
-            var clarification = root.TryGetProperty("clarification", out var c) && c.ValueKind != JsonValueKind.Null ? c.GetString()?.Trim() : null;
+            var clarification = root.TryGetProperty("clarification", out var c) && c.ValueKind != JsonValueKind.Null ? c.GetString() : null;
+            if (clarification is not null) clarification = FoundationText.TrimWhitespaceAndNewlines(clarification);
             if (new StringInfo(clarification ?? "").LengthInTextElements > 240 || (result.Count == 0 && string.IsNullOrEmpty(clarification))) throw Invalid();
             return new(result.AsReadOnly(), clarification);
         }
@@ -83,4 +85,9 @@ public static class ExpressionAssistPrompt
     }
 
     private static ArgumentException Invalid() => new("The model did not return usable expression candidates. Adjust the description and retry.");
+    private static bool CanonicalEdge(string text, string edge, bool suffix)
+    {
+        var actual = new GraphemeString(text); int count = new GraphemeString(edge).Count;
+        return actual.Count >= count && CanonicalStringComparer.Instance.Equals(suffix ? actual.Suffix(count) : actual.Prefix(count), edge);
+    }
 }

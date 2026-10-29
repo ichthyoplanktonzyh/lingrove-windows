@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Text;
 using Cotabby.Core.LanguageLearning;
+using Cotabby.Core.Text;
 
 namespace Cotabby.Core.ExpressionAssist;
 
@@ -15,8 +16,8 @@ public static class ExpressionAssistPolicy
     public static string? TriggerError(string trigger)
     {
         ArgumentNullException.ThrowIfNull(trigger);
-        var elements = StringInfo.ParseCombiningCharacters(trigger);
-        if (elements.Length is < 2 or > 8 || trigger.EnumerateRunes().Any(r => !IsSymbolOrPunctuation(r)))
+        var elements = new GraphemeString(trigger);
+        if (elements.Count is < 2 or > 8 || elements.Any(g => !g.IsSymbol && !g.IsPunctuation))
             return "Use 2–8 punctuation marks or symbols without spaces.";
         if (trigger.StartsWith(':') || trigger.StartsWith('/'))
             return "Choose a trigger that does not start with : or /; those open emoji and macros.";
@@ -26,7 +27,9 @@ public static class ExpressionAssistPolicy
     public static string? MatchedTrigger(string beforeCaret, string configured)
     {
         if (TriggerError(configured) is not null) return null;
-        if (beforeCaret.EndsWith(configured, StringComparison.Ordinal)) return configured;
+        var suffix = new GraphemeString(beforeCaret);
+        var configuredLength = new GraphemeString(configured).Count;
+        if (suffix.Count >= configuredLength && CanonicalStringComparer.Instance.Equals(suffix.Suffix(configuredLength), configured)) return configured;
         return configured == "??" && beforeCaret.EndsWith("？？", StringComparison.Ordinal) ? "？？" : null;
     }
 
@@ -38,9 +41,12 @@ public static class ExpressionAssistPolicy
         var boundaries = StringInfo.ParseCombiningCharacters(value);
         if (location < 0 || length < 0 || location > value.Length || length > value.Length - location ||
             !IsBoundary(location) || !IsBoundary(location + length)) throw new ArgumentOutOfRangeException(nameof(location));
+        var foundation = FoundationTextRanges.Boundaries(value);
+        if (length == 0 ? location < value.Length && foundation.Expand(location, location + 1).Start != location
+            : !FoundationTextRanges.IsValid(location, length, value, foundation)) throw new ArgumentOutOfRangeException(nameof(location));
         var selected = value.Substring(location, length);
-        query = query.Trim();
-        if (query.Length == 0 || Encoding.UTF8.GetByteCount(query) > 2_000 || Encoding.UTF8.GetByteCount(selected) > 2_000)
+        query = FoundationText.TrimWhitespaceAndNewlines(query);
+        if (query.Length == 0 || !LearningExplanationText.Fits(query, 2_000) || !LearningExplanationText.Fits(selected, 2_000))
             throw new ArgumentException("Keep the expression description and selection under 2 KB each.");
         var before = value[..location];
         var after = value[(location + length)..];
@@ -59,9 +65,4 @@ public static class ExpressionAssistPolicy
         return suffix ? text[starts[starts.Length - count]..] : text[..starts[count]];
     }
 
-    private static bool IsSymbolOrPunctuation(Rune rune) => Rune.GetUnicodeCategory(rune) is
-        UnicodeCategory.ConnectorPunctuation or UnicodeCategory.DashPunctuation or UnicodeCategory.OpenPunctuation or
-        UnicodeCategory.ClosePunctuation or UnicodeCategory.InitialQuotePunctuation or UnicodeCategory.FinalQuotePunctuation or
-        UnicodeCategory.OtherPunctuation or UnicodeCategory.MathSymbol or UnicodeCategory.CurrencySymbol or
-        UnicodeCategory.ModifierSymbol or UnicodeCategory.OtherSymbol;
 }

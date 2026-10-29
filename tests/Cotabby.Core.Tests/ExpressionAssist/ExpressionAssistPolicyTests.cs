@@ -17,6 +17,25 @@ public sealed class ExpressionAssistPolicyTests
     public void RejectsInvalidOrReservedTriggers(string trigger) => Assert.NotNull(ExpressionAssistPolicy.TriggerError(trigger));
 
     [Fact]
+    public void CharacterClassificationAndFoundationTrimmingPreserveSourceSemantics()
+    {
+        Assert.Null(ExpressionAssistPolicy.TriggerError("✌️✌️"));
+        Assert.Null(ExpressionAssistPolicy.TriggerError("?\u0301?\u0301"));
+        var request = ExpressionAssistPolicy.Request("\u200B意图\u200B", "a??b", 1, 2, LearningLanguage.English, LearningLanguage.Chinese);
+        Assert.Equal("意图", request.Query);
+        Assert.Throws<ArgumentOutOfRangeException>(() => ExpressionAssistPolicy.Request("x", "e\u0301", 0, 1, LearningLanguage.English, LearningLanguage.Chinese));
+    }
+
+    [Fact]
+    public void CanonicalDuplicateAndFormatControlsFollowFoundation()
+    {
+        var request = ExpressionAssistPolicy.Request("x", "??", 0, 2, LearningLanguage.English, LearningLanguage.Chinese);
+        var result = ExpressionAssistPrompt.Parse("{\"candidates\":[{\"text\":\"é\",\"hint\":\"one\"},{\"text\":\"e\\u0301\",\"hint\":\"two\"}]}", request);
+        Assert.Single(result.Candidates);
+        Assert.Throws<ArgumentException>(() => ExpressionAssistPrompt.Parse("{\"candidates\":[{\"text\":\"a\\u202Eb\",\"hint\":\"x\"}]}", request));
+    }
+
+    [Fact]
     public void RequestContainsOnlyNearestParagraphAndWholeBoundedGraphemes()
     {
         var value = "PRIVATE\n" + string.Concat(Enumerable.Repeat("😀", 1000)) + "??" + new string('界', 900) + "\nUNRELATED";

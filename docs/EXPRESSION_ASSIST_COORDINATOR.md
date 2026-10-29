@@ -26,6 +26,8 @@ drains. The native editor still performs the independent capture, freshness and 
 The host must inject a guarded refresh adapter which checks the supplied permit before each
 native read phase and before publication. Queued work checks the same permit before entering it;
 there is no fallback to an unguarded refresh. An already-started native call is joined on shutdown.
+The permit uses only atomic state and cancellation reads: native may call it while holding its own
+locks, so it never acquires the feature lock, synchronizes with the UI or invokes foreign code.
 
 This is an unactivated adapter. AppHost/settings composition, native editor bridge, physical
 keyboard/IME/editor acceptance, shortcut conflicts across real applications, and native placement

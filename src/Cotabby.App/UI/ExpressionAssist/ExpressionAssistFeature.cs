@@ -56,7 +56,7 @@ internal sealed class ExpressionAssistFeature : IAsyncDisposable
         {
             ObjectDisposedException.ThrowIf(_disposed, this);
             if (_running) return;
-            _settings = settings; _field = _focus.Current; _running = true; ++_epoch;
+            _settings = settings; _field = _focus.Current; Interlocked.Increment(ref _epoch); Volatile.Write(ref _running, true);
             _focus.FocusChanged += FocusChanged; _input.KeyEvent += KeyEvent;
         }
     }
@@ -67,7 +67,7 @@ internal sealed class ExpressionAssistFeature : IAsyncDisposable
         lock (_gate)
         {
             if (_disposed || _settings == settings) return;
-            _settings = settings; ++_epoch;
+            _settings = settings; Interlocked.Increment(ref _epoch);
         }
         CancelProbe(); _observer.Cancel(); _session?.Invalidate();
     }
@@ -92,12 +92,12 @@ internal sealed class ExpressionAssistFeature : IAsyncDisposable
             {
                 args.Suppress = true;
                 if (key.IsRepeat) return;
-                epoch = ++_epoch;
+                epoch = Interlocked.Increment(ref _epoch);
                 _dispatcher.BeginInvoke(() => BeginIfCurrent(null, key.VirtualKey, field, epoch));
                 return;
             }
             if (!settings.Enabled || key.Kind is not (KeyKind.Character or KeyKind.Backspace or KeyKind.Delete or KeyKind.Enter)) return;
-            epoch = ++_epoch;
+            epoch = Interlocked.Increment(ref _epoch);
         }
         string characters = key.Kind == KeyKind.Character && key.Character != '\0' ? key.Character.ToString() : "";
         _dispatcher.BeginInvoke(() => Mutation(field, characters, settings, epoch));
@@ -129,7 +129,9 @@ internal sealed class ExpressionAssistFeature : IAsyncDisposable
             {
                 source.Token.ThrowIfCancellationRequested();
                 if (!Current(epoch) || _session?.IsActive == true) return;
-                bool Permit() => Current(epoch) && !source.IsCancellationRequested;
+                // Native calls this under its own locks: do not acquire our gate or invoke UI here.
+                bool Permit() => Volatile.Read(ref _running) && !Volatile.Read(ref _disposed)
+                    && Interlocked.Read(ref _epoch) == epoch && !source.IsCancellationRequested;
                 var field = await Task.Run(() => Permit() ? _guardedRefresh(Permit) : null);
                 if (!Current(epoch) || source.IsCancellationRequested) return;
                 // Refresh publishes Current but does not necessarily raise FocusChanged. Admit
@@ -173,7 +175,7 @@ internal sealed class ExpressionAssistFeature : IAsyncDisposable
                 || !CompositionEvidencePolicy.IsSameReceipt(field, _field) || current is null || current.IsSecure
                 || current.ProcessId != field.ProcessId || current.FieldId != field.FieldId
                 || current.FocusChangeSequence != field.FocusChangeSequence || !CompositionEvidencePolicy.IsSameReceipt(field, current)) return;
-            ++_epoch; _active = true;
+            Interlocked.Increment(ref _epoch); _active = true;
         }
         CancelProbe(); _observer.Cancel();
         ExpressionAssistSession session; Action close;
@@ -231,7 +233,7 @@ internal sealed class ExpressionAssistFeature : IAsyncDisposable
         if (_disposal is not null) return new(_disposal);
         lock (_gate)
         {
-            _disposed = true; _running = false; ++_epoch;
+            Volatile.Write(ref _disposed, true); Volatile.Write(ref _running, false); Interlocked.Increment(ref _epoch);
             _focus.FocusChanged -= FocusChanged; _input.KeyEvent -= KeyEvent;
         }
         CancelProbe(); _observer.Cancel();

@@ -148,12 +148,26 @@ public sealed class ReadingSelectionLeaseTests
         using var focus = new UiaFocusTracker(NullLogger<UiaFocusTracker>.Instance);
         var evidence = new FakeEvidence { Block = false };
         await using var lease = new Win32ReadingSelectionLease(focus, new FakeKeyboard(), evidence, 10, 42, 3, null,
-            () => 3, () => 10, _ => 42, screenGuard: true, currentFrame: _ => new(0, 0, 100, 100));
+            () => 3, () => 10, _ => 42, screenGuard: true, currentFrame: _ => new(0, 0, 100, 100), isChild: (_, _) => true);
         Assert.True(lease.Capture(CancellationToken.None)); Assert.True(evidence.GuardCaptured);
         var proof = Assert.IsType<ReadingScreenGuardEvidence>(lease.ScreenGuardEvidence);
         Assert.Equal("owned-fake", proof.FieldId); Assert.Equal(3, proof.FocusEpoch); Assert.True(proof.CompositionSequence > 0);
         Assert.Throws<InvalidOperationException>(() => lease.Selection); Assert.False(evidence.ContextEntered.IsSet);
         Assert.True(await lease.IsCurrentAsync(CancellationToken.None)); lease.Retire(); Assert.False(lease.IsLive); Assert.Null(lease.ScreenGuardEvidence);
+    }
+    [Fact]
+    public async Task SameProcessUnrelatedOrReparentedFieldCannotAuthorizeScreenCapture()
+    {
+        if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;
+        using var focus = new UiaFocusTracker(NullLogger<UiaFocusTracker>.Instance); bool child = false;
+        await using var unrelated = new Win32ReadingSelectionLease(focus, new FakeKeyboard(), new FakeEvidence { Block = false }, 10, 42, 3, null,
+            () => 3, () => 10, _ => 42, screenGuard: true, currentFrame: _ => new(0, 0, 100, 100), isChild: (_, _) => child);
+        Assert.False(unrelated.Capture(CancellationToken.None)); Assert.False(unrelated.IsLive);
+        child = true;
+        await using var related = new Win32ReadingSelectionLease(focus, new FakeKeyboard(), new FakeEvidence { Block = false }, 10, 42, 3, null,
+            () => 3, () => 10, _ => 42, screenGuard: true, currentFrame: _ => new(0, 0, 100, 100), isChild: (_, _) => child);
+        Assert.True(related.Capture(CancellationToken.None)); Assert.True(related.IsLive);
+        child = false; Assert.False(related.IsLive); Assert.Null(related.ScreenGuardEvidence);
     }
     [Fact]
     public async Task InitiatingKeyReleaseAfterCaptureDoesNotRetireTheReceipt()
@@ -185,7 +199,7 @@ public sealed class ReadingSelectionLeaseTests
         using var focus = new UiaFocusTracker(NullLogger<UiaFocusTracker>.Instance);
         var evidence = new FakeEvidence { Block = false };
         await using var lease = new Win32ReadingSelectionLease(focus, new FakeKeyboard(), evidence, 10, 42, 3, null,
-            () => 3, () => 10, _ => 42, screenGuard: true, currentFrame: _ => new(0, 0, 100, 100));
+            () => 3, () => 10, _ => 42, screenGuard: true, currentFrame: _ => new(0, 0, 100, 100), isChild: (_, _) => true);
         Assert.True(lease.Capture(CancellationToken.None));
         using var entered = new ManualResetEventSlim(); using var release = new ManualResetEventSlim();
         byte[] pixels = Enumerable.Repeat((byte)42, 16 * 16 * 4).ToArray(); int calls = 0;
@@ -199,6 +213,23 @@ public sealed class ReadingSelectionLeaseTests
             lease.Retire(); release.Set(); Assert.Null(await capture); Assert.All(pixels, value => Assert.Equal(0, value)); Assert.Equal(1, calls);
         }
         finally { release.Set(); }
+    }
+    [Fact]
+    public async Task ExceptionAfterPixelAllocationStillClearsUntransferredBuffer()
+    {
+        if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;
+        using var focus = new UiaFocusTracker(NullLogger<UiaFocusTracker>.Instance); int fail = 0;
+        var evidence = new FakeEvidence { Block = false };
+        await using var lease = new Win32ReadingSelectionLease(focus, new FakeKeyboard(), evidence, 10, 42, 3, null,
+            () => 3, () => 10, _ => 42, screenGuard: true,
+            currentFrame: _ => Volatile.Read(ref fail) != 0 ? throw new InvalidOperationException("frame failure") : new(0, 0, 100, 100),
+            isChild: (_, _) => true);
+        Assert.True(lease.Capture(CancellationToken.None));
+        byte[] pixels = Enumerable.Repeat((byte)42, 16 * 16 * 4).ToArray();
+        lease.CapturePixelsForTest = (_, _, _, _, _) => { Volatile.Write(ref fail, 1); return (new ReadingBitmap(16, 16, pixels), new ScreenRect(0, 0, 100, 100)); };
+        await Assert.ThrowsAsync<InvalidOperationException>(() => lease.CaptureRegionAsync(new ScreenRect(10, 10, 16, 16), CancellationToken.None));
+        Assert.All(pixels, value => Assert.Equal(0, value));
+        Volatile.Write(ref fail, 0);
     }
 
     [Fact]

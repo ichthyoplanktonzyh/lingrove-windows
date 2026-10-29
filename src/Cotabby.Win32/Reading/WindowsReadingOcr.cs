@@ -1,5 +1,6 @@
 using System.Runtime.Versioning;
 using System.Text;
+using System.Runtime.InteropServices.WindowsRuntime;
 using Cotabby.Core.LanguageLearning.Reading;
 using Windows.Graphics.Imaging;
 using Windows.Media.Ocr;
@@ -24,12 +25,14 @@ public sealed class WindowsReadingOcr : IReadingOcr
         catch (Exception error) when (error is not OperationCanceledException and not ReadingOcrUnavailableException) { throw new ReadingOcrUnavailableException(); }
         if ((uint)bitmap.Width > OcrEngine.MaxImageDimension || (uint)bitmap.Height > OcrEngine.MaxImageDimension)
             throw new ArgumentException("The selected screen region is too large for Windows OCR.");
-        using var writer = new DataWriter(); writer.WriteBytes(bitmap.Bgra); var buffer = writer.DetachBuffer();
-        using var image = SoftwareBitmap.CreateCopyFromBuffer(buffer, BitmapPixelFormat.Bgra8, bitmap.Width, bitmap.Height, BitmapAlphaMode.Ignore);
-        cancellationToken.ThrowIfCancellationRequested();
-        var work = engine.RecognizeAsync(image).AsTask();
+        var buffer = new Windows.Storage.Streams.Buffer((uint)bitmap.Bgra.Length) { Length = (uint)bitmap.Bgra.Length };
+        SoftwareBitmap? image = null; Task<OcrResult>? work = null;
         try
         {
+            using (var stream = buffer.AsStream()) stream.Write(bitmap.Bgra);
+            image = SoftwareBitmap.CreateCopyFromBuffer(buffer, BitmapPixelFormat.Bgra8, bitmap.Width, bitmap.Height, BitmapAlphaMode.Ignore);
+            cancellationToken.ThrowIfCancellationRequested();
+            work = engine.RecognizeAsync(image).AsTask();
             var result = await work.WaitAsync(cancellationToken).ConfigureAwait(false);
             cancellationToken.ThrowIfCancellationRequested();
             var lines = new List<ReadingOcrLine>(); int bytes = 0, wordBytes = 0, words = 0;
@@ -54,6 +57,30 @@ public sealed class WindowsReadingOcr : IReadingOcr
             }
             return lines;
         }
-        finally { try { await work.ConfigureAwait(false); } catch { } }
+        finally
+        {
+            try
+            {
+                // The input buffer and bitmap are our copies. OCR's own provider-owned
+                // memory is outside this process boundary and cannot be cleared by this adapter.
+                await FinishAndClearAsync(work, buffer, image, bitmap.Bgra.Length).ConfigureAwait(false);
+            }
+            finally { image?.Dispose(); }
+        }
+    }
+
+    internal static async Task FinishAndClearAsync(Task? work, IBuffer buffer, SoftwareBitmap? image, int length)
+    {
+        if (work is not null) try { await work.ConfigureAwait(false); } catch { }
+        ClearOwnedBuffers(buffer, image, length);
+    }
+
+    internal static void ClearOwnedBuffers(IBuffer buffer, SoftwareBitmap? image, int length)
+    {
+        using var stream = buffer.AsStream(); stream.Position = 0;
+        byte[] zeros = new byte[Math.Min(length, 65536)];
+        int remaining = length;
+        while (remaining > 0) { int count = Math.Min(remaining, zeros.Length); stream.Write(zeros, 0, count); remaining -= count; }
+        image?.CopyFromBuffer(buffer);
     }
 }

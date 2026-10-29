@@ -12,13 +12,15 @@ public sealed class ReadingScreenReaderTests(WpfDispatcher dispatcher)
     [Fact]
     public Task ExplicitRegionCarriesItsOwnProofAndClearsPixels() => dispatcher.RunAsync(async () =>
     {
-        var guard = new Guard(); var ocr = new Ocr(); var observations = new List<PerformanceRequestObservation>();
+        var guard = new Guard(); var observations = new List<PerformanceRequestObservation>();
+        var now = DateTimeOffset.UnixEpoch; var ocr = new Ocr { OnRecognize = () => now = now.AddMinutes(10) };
         var reader = new NativeReadingScreenReader((_, _) => Task.FromResult<IReadingScreenGuard?>(guard),
-            (_, _) => Task.FromResult<ScreenRect?>(new(10, 10, 16, 16)), ocr, observations.Add);
+            (_, _) => { now = now.AddMinutes(10); return Task.FromResult<ScreenRect?>(new(10, 10, 16, 16)); }, ocr, observations.Add, () => now);
         var lease = await reader.CaptureAsync(default);
         Assert.NotNull(lease); Assert.Equal(ReadingSourceKind.Screenshot, lease.Selection.Source);
         Assert.Null(lease.Selection.SelectionStart); Assert.Null(lease.Selection.SelectionAnchorId);
         Assert.NotNull(lease.Selection.ScreenReceipt); Assert.Equal("Hello.", lease.Selection.Text);
+        Assert.Equal(DateTimeOffset.UnixEpoch, lease.Selection.CapturedAt);
         Assert.Equal(1, guard.Captures); Assert.Equal(1, ocr.Calls); Assert.All(guard.Pixels, x => Assert.Equal(0, x));
         var metric = Assert.Single(observations); Assert.Equal(ModelRequestSource.Ocr, metric.Source); Assert.Equal(ModelRequestOutcome.Completed, metric.Outcome);
         Assert.Equal("Windows OCR", metric.ModelName); Assert.DoesNotContain("Hello", metric.RequestId);
@@ -59,9 +61,10 @@ public sealed class ReadingScreenReaderTests(WpfDispatcher dispatcher)
     {
         public int Calls; public TaskCompletionSource Entered = new(TaskCreationOptions.RunContinuationsAsynchronously);
         public TaskCompletionSource? Gate;
+        public Action? OnRecognize;
         public async Task<IReadOnlyList<ReadingOcrLine>> RecognizeAsync(ReadingBitmap bitmap, CancellationToken token)
         {
-            Calls++; Entered.TrySetResult(); if (Gate is not null) await Gate.Task;
+            Calls++; OnRecognize?.Invoke(); Entered.TrySetResult(); if (Gate is not null) await Gate.Task;
             return [new("Hello.", [new("Hello.", new(0, 0, 10, 10))])];
         }
     }

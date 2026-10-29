@@ -23,12 +23,14 @@ internal sealed class NativeReadingScreenReader : IReadingScreenReader
     private readonly Func<ScreenRect, CancellationToken, Task<ScreenRect?>> _pick;
     private readonly IReadingOcr _ocr;
     private readonly Action<PerformanceRequestObservation>? _observe;
+    private readonly Func<DateTimeOffset> _clock;
     internal NativeReadingScreenReader(Win32ReadingSelectionReader owner, IReadingOcr ocr, Action<PerformanceRequestObservation>? observe = null)
         : this(async (token, key) => { var lease = await owner.CaptureScreenGuardAsync(token, key); return lease is null ? null : new Guard(lease); },
             async (bounds, token) => { using var picker = new ReadingRegionPicker(bounds); return await picker.SelectAsync(token); }, ocr, observe) { }
     internal NativeReadingScreenReader(Func<CancellationToken, int?, Task<IReadingScreenGuard?>> acquire,
-        Func<ScreenRect, CancellationToken, Task<ScreenRect?>> pick, IReadingOcr ocr, Action<PerformanceRequestObservation>? observe = null)
-    { _acquire = acquire; _pick = pick; _ocr = ocr; _observe = observe; }
+        Func<ScreenRect, CancellationToken, Task<ScreenRect?>> pick, IReadingOcr ocr, Action<PerformanceRequestObservation>? observe = null,
+        Func<DateTimeOffset>? clock = null)
+    { _acquire = acquire; _pick = pick; _ocr = ocr; _observe = observe; _clock = clock ?? (() => DateTimeOffset.UtcNow); }
     private int _selecting;
     public bool IsSelectingRegion => Volatile.Read(ref _selecting) != 0;
     public async Task<IReadingSelectionLease?> CaptureAsync(CancellationToken token, int? initiatingVirtualKey = null)
@@ -45,6 +47,7 @@ internal sealed class NativeReadingScreenReader : IReadingScreenReader
             guard = await _acquire(request.Token, initiatingVirtualKey);
             if (guard is null || guard.Evidence is not { } proof) return null;
             if (!guard.IsLive || !await guard.IsCurrentAsync(request.Token)) throw new OperationCanceledException();
+            var capturedAt = _clock();
             guard.Invalidated += Invalidated;
             if (!guard.IsLive || request.IsCancellationRequested) throw new OperationCanceledException();
             ScreenRect? region;
@@ -81,7 +84,7 @@ internal sealed class NativeReadingScreenReader : IReadingScreenReader
                 {
                     Source = ReadingSourceKind.Screenshot,
                     ScreenReceipt = new(Guid.NewGuid(), proof.FieldBounds, pixels.DisplayBounds, region.Value),
-                    CapturedAt = DateTimeOffset.UtcNow,
+                    CapturedAt = capturedAt,
                 };
                 ReadingSelectionPolicy.ValidateReceipt(selection);
                 guard.Invalidated -= Invalidated; transferred = true; return new ScreenLease(guard, selection);

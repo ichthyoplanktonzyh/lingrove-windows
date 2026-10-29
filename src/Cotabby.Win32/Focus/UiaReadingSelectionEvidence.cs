@@ -23,6 +23,7 @@ internal interface IReadingSelectionEvidence
 // This slot is independent of expression editing. Native references never leave the MTA owner.
 internal sealed unsafe partial class UiaTextEditEvidence : IReadingSelectionEvidence
 {
+    [DllImport("user32.dll")] private static extern bool IsChild(nint parent, nint child);
     internal sealed class ReadingLease
     {
         internal readonly Guid Anchor = Guid.NewGuid();
@@ -99,6 +100,7 @@ internal sealed unsafe partial class UiaTextEditEvidence : IReadingSelectionEvid
                     HWND fieldWindow = default; RECT bounds = default;
                     if (lease.Element->get_CurrentNativeWindowHandle(&fieldWindow).Failed || fieldWindow.IsNull || !Allowed()
                         || Native.GetWindowThreadProcessId((nint)fieldWindow.Value, out uint owner) == 0 || owner != (uint)pid || !Allowed()
+                        || ((nint)fieldWindow.Value != host && !IsChild(host, (nint)fieldWindow.Value)) || !Allowed()
                         || lease.Element->get_CurrentBoundingRectangle(&bounds).Failed || !Allowed()
                         || bounds.right <= bounds.left || bounds.bottom <= bounds.top) return;
                     lease.FieldWindow = (nint)fieldWindow.Value;
@@ -213,7 +215,14 @@ internal sealed unsafe partial class UiaTextEditEvidence : IReadingSelectionEvid
                     || _automation->CompareElements(lease.Element, hit, &same).Failed || !same || !allowed()) return false;
             }
             if (!ReadingClear(lease, allowed)) return false;
-            if (lease.ScreenGuard) return allowed() && before == Interlocked.Read(ref lease.Version);
+            if (lease.ScreenGuard)
+            {
+                HWND fieldWindow = default; RECT bounds = default;
+                if (lease.Element->get_CurrentNativeWindowHandle(&fieldWindow).Failed || (nint)fieldWindow.Value != lease.FieldWindow || !allowed()
+                    || lease.Element->get_CurrentBoundingRectangle(&bounds).Failed || !allowed()
+                    || bounds.left != lease.FieldLeft || bounds.top != lease.FieldTop || bounds.right != lease.FieldRight || bounds.bottom != lease.FieldBottom) return false;
+                return allowed() && before == Interlocked.Read(ref lease.Version);
+            }
             selected = CurrentReadingRange(lease, allowed);
             if (selected is null || !allowed()) return false;
             int start = 0, end = 0;

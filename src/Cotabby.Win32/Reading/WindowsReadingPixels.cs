@@ -29,9 +29,10 @@ internal static class WindowsReadingPixels
     [DllImport("gdi32.dll")] private static extern nint SelectObject(nint dc, nint item);
     [DllImport("gdi32.dll")] private static extern bool DeleteObject(nint item);
     [DllImport("gdi32.dll")] private static extern bool BitBlt(nint destination, int x, int y, int width, int height, nint source, int sx, int sy, uint operation);
+    [DllImport("gdi32.dll")] private static extern bool GdiFlush();
     [DllImport("dwmapi.dll")] private static extern int DwmFlush();
 
-    internal static (ReadingBitmap Bitmap, ScreenRect Display)? Capture(nint host, nint fieldWindow, ScreenRect field, ScreenRect region, Func<bool> permit)
+    internal static unsafe (ReadingBitmap Bitmap, ScreenRect Display)? Capture(nint host, nint fieldWindow, ScreenRect field, ScreenRect region, Func<bool> permit)
     {
         if (!permit() || !IntegralRect(region, out var crop) || DwmFlush() < 0 || !permit()) return null;
         var monitor = MonitorFromRect(in crop, 2); var info = new MonitorInfo { Size = (uint)Marshal.SizeOf<MonitorInfo>() };
@@ -40,13 +41,13 @@ internal static class WindowsReadingPixels
         if (!ReadingRegionPolicy.Contains(field, display, region) || !Unobscured(host, fieldWindow, crop, permit)) return null;
         int width = crop.Right - crop.Left, height = crop.Bottom - crop.Top;
         var bitmapInfo = new BitmapInfo { Header = new BitmapInfoHeader { Size = (uint)Marshal.SizeOf<BitmapInfoHeader>(), Width = width, Height = -height, Planes = 1, BitCount = 32 } };
-        nint screen = 0, memory = 0, bitmap = 0, previous = 0; byte[]? pixels = null;
+        nint screen = 0, memory = 0, bitmap = 0, previous = 0, bits = 0; byte[]? pixels = null;
         try
         {
             if (!permit() || (screen = GetDC(0)) == 0 || !permit() || (memory = CreateCompatibleDC(screen)) == 0 || !permit()) return null;
-            bitmap = CreateDIBSection(screen, in bitmapInfo, 0, out nint bits, 0, 0);
+            bitmap = CreateDIBSection(screen, in bitmapInfo, 0, out bits, 0, 0);
             if (bitmap == 0 || bits == 0 || !permit() || (previous = SelectObject(memory, bitmap)) == 0 || previous == -1 || !permit()) return null;
-            if (!BitBlt(memory, 0, 0, width, height, screen, crop.Left, crop.Top, 0x40CC0020) || !permit()) return null;
+            if (!BitBlt(memory, 0, 0, width, height, screen, crop.Left, crop.Top, 0x40CC0020) || !GdiFlush() || !permit()) return null;
             pixels = new byte[checked(width * height * 4)]; Marshal.Copy(bits, pixels, 0, pixels.Length);
             if (!permit() || !Unobscured(host, fieldWindow, crop, permit)) return null;
             var result = new ReadingBitmap(width, height, pixels); pixels = null; return (result, display);
@@ -55,9 +56,13 @@ internal static class WindowsReadingPixels
         {
             if (pixels is not null) Array.Clear(pixels);
             if (previous != 0 && previous != -1 && memory != 0) SelectObject(memory, previous);
+            if (bits != 0) GdiFlush();
+            if (bits != 0) ClearDib(bits, checked(width * height * 4));
             if (bitmap != 0) DeleteObject(bitmap); if (memory != 0) DeleteDC(memory); if (screen != 0) ReleaseDC(0, screen);
         }
     }
+    internal static unsafe void ClearDib(nint bits, int length) =>
+        System.Security.Cryptography.CryptographicOperations.ZeroMemory(new Span<byte>((void*)bits, length));
 
     private static bool IntegralRect(ScreenRect region, out Rect result)
     {
@@ -73,8 +78,8 @@ internal static class WindowsReadingPixels
     private static bool Valid(Rect value) => value.Right > value.Left && value.Bottom > value.Top;
     private static bool Unobscured(nint host, nint field, Rect crop, Func<bool> permit)
     {
-        if (host == 0 || field == 0 || !IsWindowVisible(host) || !IsWindowVisible(field) || !permit()) return false;
-        bool safe = true, foundHost = false;
+        if (host == 0 || field == 0 || (field != host && !IsChild(host, field)) || !IsWindowVisible(host) || !IsWindowVisible(field) || !permit()) return false;
+        bool safe = true, foundHost = false, foundField = field == host;
         EnumProc top = (window, _) =>
         {
             try
@@ -94,13 +99,16 @@ internal static class WindowsReadingPixels
             try
             {
                 if (!permit()) { safe = false; return false; }
-                if (window == field || IsChild(window, field) || !IsWindowVisible(window)) return true;
+                if (window == field) { foundField = true; return true; }
+                if (IsChild(window, field) || !IsWindowVisible(window)) return true;
                 if (!GetWindowRect(window, out var rect) || !Valid(rect) || Overlap(rect, crop)) { safe = false; return false; }
                 return true;
             }
             catch { safe = false; return false; }
         };
         if (!EnumChildWindows(host, child, 0) && safe) return false;
-        return safe && permit();
+        return safe && AcceptObservedField(host, field, foundField, IsChild) && permit();
     }
+    internal static bool AcceptObservedField(nint host, nint field, bool foundField, Func<nint, nint, bool> isChild) =>
+        host != 0 && field != 0 && foundField && (field == host || isChild(host, field));
 }

@@ -122,9 +122,11 @@ public sealed class Win32ReadingSelectionLease : IAsyncDisposable
     internal readonly record struct HostFrame(int Left, int Top, int Right, int Bottom);
     [StructLayout(LayoutKind.Sequential)] private struct NativeRect { public int Left, Top, Right, Bottom; }
     [DllImport("user32.dll")] [return: MarshalAs(UnmanagedType.Bool)] private static extern bool GetWindowRect(nint window, out NativeRect rect);
+    [DllImport("user32.dll")] [return: MarshalAs(UnmanagedType.Bool)] private static extern bool IsChild(nint parent, nint child);
     private static HostFrame? WindowFrame(nint window) => GetWindowRect(window, out var rect)
         && rect.Right > rect.Left && rect.Bottom > rect.Top ? new(rect.Left, rect.Top, rect.Right, rect.Bottom) : null;
     private readonly Func<nint, HostFrame?> _currentFrame;
+    private readonly Func<nint, nint, bool> _isChild;
     private readonly HostFrame? _initialFrame;
     private readonly object _gate = new();
     private readonly HashSet<Task> _work = [];
@@ -148,17 +150,18 @@ public sealed class Win32ReadingSelectionLease : IAsyncDisposable
         && _foreground() == _host && _windowProcess(_host) == _pid
         && ((_pointer is null && !_screenGuard) || (_initialFrame is { } frame && _currentFrame(_host) == frame))
         && (Volatile.Read(ref _capturing) != 0 || (Volatile.Read(ref _native) is { } native && Volatile.Read(ref native.Active) != 0
-            && (!_screenGuard || (native.FieldWindow != 0 && _windowProcess(native.FieldWindow) == _pid
+            && (!_screenGuard || (native.FieldWindow != 0 && (native.FieldWindow == _host || _isChild(_host, native.FieldWindow)) && _windowProcess(native.FieldWindow) == _pid
                 && _currentFrame(native.FieldWindow) == new HostFrame(native.FieldLeft, native.FieldTop, native.FieldRight, native.FieldBottom)))));
 
     internal Win32ReadingSelectionLease(UiaFocusTracker focus, IKeyboardHook keyboard, IReadingSelectionEvidence owner,
         nint host, int pid, long epoch, int? initialKey, Func<long>? currentEpoch = null,
         Func<nint>? foreground = null, Func<nint, int>? windowProcess = null, System.Drawing.Point? pointer = null, bool screenGuard = false,
-        Func<nint, HostFrame?>? currentFrame = null)
+        Func<nint, HostFrame?>? currentFrame = null, Func<nint, nint, bool>? isChild = null)
     {
         _focus = focus; _keyboard = keyboard; _owner = owner; _host = host; _pid = pid; _epoch = epoch; _initialKey = initialKey; _pointer = pointer; _screenGuard = screenGuard;
         _currentEpoch = currentEpoch ?? (() => _focus.ActiveFocusEpoch);
         _currentFrame = currentFrame ?? WindowFrame;
+        _isChild = isChild ?? IsChild;
         _initialFrame = pointer is not null || screenGuard ? _currentFrame(host) : null;
         _foreground = foreground ?? (() => Native.GetForegroundWindow());
         _windowProcess = windowProcess ?? (hwnd => Native.GetWindowThreadProcessId(hwnd, out uint process) == 0 ? 0 : (int)process);
@@ -283,19 +286,22 @@ public sealed class Win32ReadingSelectionLease : IAsyncDisposable
             task = Task.Run(() => (CapturePixelsForTest ?? WindowsReadingPixels.Capture)(_host, native.FieldWindow, proof.FieldBounds, region, Permit));
             Track(task);
         }
+        (ReadingBitmap Bitmap, ScreenRect Display)? result = null; bool transferred = false;
         try
         {
-            var result = await task.WaitAsync(TimeSpan.FromSeconds(2), ct).ConfigureAwait(false);
+            result = await task.WaitAsync(TimeSpan.FromSeconds(2), ct).ConfigureAwait(false);
             if (result is null) return null;
             if (!ReadingRegionPolicy.Contains(ScreenGuardEvidence?.FieldBounds ?? ScreenRect.Empty, result.Value.Display, region)
-                || !Allowed(ct) || !await IsCurrentAsync(ct).ConfigureAwait(false) || !Allowed(ct)) { Array.Clear(result.Value.Bitmap.Bgra); return null; }
-            return new(result.Value.Bitmap, result.Value.Display);
+                || !Allowed(ct) || !await IsCurrentAsync(ct).ConfigureAwait(false) || !Allowed(ct)) return null;
+            var accepted = new ReadingScreenPixels(result.Value.Bitmap, result.Value.Display);
+            transferred = true; return accepted;
         }
         catch (Exception error) when (error is OperationCanceledException or TimeoutException)
         {
-            lock (_gate) Track(DiscardPixelsAsync(task));
+            if (result is null) lock (_gate) Track(DiscardPixelsAsync(task));
             return null;
         }
+        finally { if (!transferred && result is { } pixels) Array.Clear(pixels.Bitmap.Bgra); }
     }
     private static async Task DiscardPixelsAsync(Task<(ReadingBitmap Bitmap, ScreenRect Display)?> task)
     { try { if (await task.ConfigureAwait(false) is { } pixels) Array.Clear(pixels.Bitmap.Bgra); } catch { } }

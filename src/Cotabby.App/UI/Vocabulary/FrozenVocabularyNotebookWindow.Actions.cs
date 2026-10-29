@@ -34,7 +34,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow
           </ControlTemplate></Setter.Value></Setter>
         </Style>
         """);
-    private bool CanSenseAct(VocabularySelection source, long epoch) => !_retiring && !_senseMutating && _modalDone is null && IsVisible
+    private bool CanSenseAct(VocabularySelection source, long epoch) => !_retiring && !_senseMutating && !_semanticBusy && _modalDone is null && IsVisible
         && _store is ICanonicalVocabularySenseStore && _session.Selection == source && epoch == _actionSelectionEpoch;
     private void AddSenseActions(Panel panel, F.VocabularyEntry entry, F.VocabularySense sense)
     {

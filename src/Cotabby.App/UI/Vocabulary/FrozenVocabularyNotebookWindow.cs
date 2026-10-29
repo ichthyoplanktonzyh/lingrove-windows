@@ -35,6 +35,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
     private readonly ComboBox _sort = new() { Name = "frozenNotebookSort", MinWidth = 115 }, _density = new() { Name = "frozenNotebookDensity", MinWidth = 100 };
     private readonly Grid _content = new();
     private readonly Button _categoryToggle = new() { Name = "frozenToggleCategories", Content = "Categories", Padding = new Thickness(10, 5, 10, 5) };
+    private readonly Button _newMeaning = new() { Name = "canonicalToolbarNewMeaning", Content = "New meaning", Padding = new Thickness(10, 5, 10, 5) };
     private bool _showCategories = true, _restoreEntryFocus;
     private readonly TreeView _entries = new() { Name = "frozenNotebookEntries", BorderThickness = new Thickness(0) };
     private readonly VocabularyMeaningSidebar _meanings;
@@ -61,7 +62,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
         var root = new DockPanel(); VocabularyNotebookTheme.Brush(root, Panel.BackgroundProperty, "WindowBg"); Content = root;
         var toolbar = new WrapPanel { Margin = new Thickness(20, 16, 20, 8), Orientation = Orientation.Horizontal };
         toolbar.Children.Add(new TextBlock { Text = "Vocabulary notebook", FontSize = 21, FontWeight = FontWeights.SemiBold, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 20, 8) });
-        foreach (var button in new[] { _categoryToggle, _add, _import, Disabled("Graph", "Graph view is not available in this notebook yet."), Disabled("Review", "Review is not available in this notebook yet."), Disabled("Export", "Export is not available in this notebook yet.") })
+        foreach (var button in new[] { _categoryToggle, _newMeaning, _add, _import, Disabled("Graph", "Graph view is not available in this notebook yet."), Disabled("Review", "Review is not available in this notebook yet."), Disabled("Export", "Export is not available in this notebook yet.") })
         { VocabularyNotebookTheme.Button(button, button == _add); button.Margin = new Thickness(0, 0, 8, 8); toolbar.Children.Add(button); }
         DockPanel.SetDock(toolbar, Dock.Top); root.Children.Add(toolbar);
         var filters = new WrapPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(18, 0, 18, 6) };
@@ -86,6 +87,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
         _density.SelectionChanged += (_, _) => { if (!_updating) { _session.Detailed = _density.SelectedIndex == 1; if (_listPreferences is not null) _listPreferences.Density = _session.Detailed ? "detailed" : "compact"; _session.Refresh(); } };
         _organization.SelectionChanged += (_, _) => { if (!_updating) { ChangeOrganization(_organization.SelectedIndex == 1); } };
         _categoryToggle.Click += (_, _) => { _showCategories = !_showCategories; _session.Refresh(); };
+        _newMeaning.Click += (_, _) => LastOperation = Track(OpenMeaningAsync(null, null));
         _add.Click += (_, _) => LastOperation = AddAsync(); _import.Click += (_, _) => LastOperation = ImportAsync();
         InputBindings.Add(new KeyBinding(new Relay(() => { if (_add.IsEnabled) LastOperation = AddAsync(); }), Key.N, ModifierKeys.Control));
         InputBindings.Add(new KeyBinding(new Relay(() => { if (_import.IsEnabled) LastOperation = ImportAsync(); }), Key.I, ModifierKeys.Control | ModifierKeys.Shift));
@@ -119,8 +121,11 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
         else if (_inputWindow is VocabularyWordListImportWindow import) await import.RetireAsync();
         else if (_inputWindow is FrozenVocabularyEntryEditorWindow editor) await editor.RetireAsync();
         else if (_inputWindow is FrozenVocabularyDeleteSenseWindow confirmation) confirmation.Close();
+        else if (_inputWindow is FrozenVocabularySemanticFormWindow semanticForm) await semanticForm.RetireAsync();
+        else if (_inputWindow is FrozenVocabularySemanticDeleteWindow semanticConfirmation) semanticConfirmation.Close();
         if (_modalDone is { } modal) await modal.Task;
         if (_senseCompletion is { } sense) await sense.Task;
+        if (_semanticCompletion is { } semantic) await semantic.Task;
         await _session.RetireAsync();
         while (_operations.Count != 0) { var operations = _operations.ToArray(); await Task.WhenAll(operations); _operations.RemoveWhere(t => t.IsCompleted); }
         _allowClose = true; Close();
@@ -200,7 +205,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
             var tags = _session.Entries.SelectMany(e => e.Senses).SelectMany(s => s.Tags).Distinct().Order(StringComparer.CurrentCultureIgnoreCase).ToArray();
             if (_session.Tag.Length > 0 && !tags.Contains(_session.Tag)) _session.Tag = "";
             _tag.Items.Clear(); _tag.Items.Add(new TagChoice("All tags", "")); foreach (var tag in tags) _tag.Items.Add(new TagChoice(tag, tag)); _tag.SelectedItem = _tag.Items.Cast<TagChoice>().First(x => x.Value == _session.Tag);
-            _add.IsEnabled = _import.IsEnabled = !_session.Loading && _session.Failure is null; _categoryToggle.Visibility = _session.MeaningMode ? Visibility.Visible : Visibility.Collapsed;
+            _add.IsEnabled = _import.IsEnabled = !_session.Loading && _session.Failure is null; _categoryToggle.Visibility = _newMeaning.Visibility = _session.MeaningMode ? Visibility.Visible : Visibility.Collapsed; _newMeaning.IsEnabled = CanSemantic;
             _content.Children.Clear(); _content.ColumnDefinitions.Clear();
             if (_session.Loading) { _content.Children.Add(State("Loading vocabulary…")); return; }
             if (_session.Failure is { } failure) { _content.Children.Add(State("Could not load vocabulary\n" + failure, error: true)); return; }
@@ -285,12 +290,12 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
         if (_session.MeaningMode && _session.Destination is { Kind: VocabularyMeaningDestinationKind.Node, NodeId: { } nodeId } && _session.Snapshot!.Document.Semantics.Nodes.FirstOrDefault(n => n.Id == nodeId) is { } node)
             MeaningDetail(panel, node);
         else if (_session.MeaningMode && _session.Destination is { Kind: VocabularyMeaningDestinationKind.Unclassified })
-        { Heading(panel, "Other expressions"); foreach (var selection in _session.Unclassified) AddSenseCard(panel, selection); }
+        { Heading(panel, "Other expressions"); panel.Children.Add(NewMeaningButton()); foreach (var selection in _session.Unclassified) AddSenseCard(panel, selection); }
         else if ((!_session.MeaningMode || _session.Destination?.Kind == VocabularyMeaningDestinationKind.Sense) && _session.Selection is { } selected && _session.Entries.FirstOrDefault(e => e.Id == selected.EntryId) is { } entry && entry.Senses.FirstOrDefault(s => s.Id == selected.SenseId) is { } sense)
         { if (_session.MeaningMode) Breadcrumb(panel); SenseDetail(panel, entry, sense); }
         else if (_session.MeaningMode)
         {
-            Heading(panel, "Browse by meaning"); panel.Children.Add(Disabled("New meaning", "Meaning editing is not available in this notebook yet."));
+            Heading(panel, "Browse by meaning"); panel.Children.Add(NewMeaningButton());
             if (_session.Unclassified.Count > 0) { var button = new Button { Content = $"Other expressions ({_session.Unclassified.Count})", HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 10, 0, 0) }; VocabularyNotebookTheme.Button(button); button.Click += (_, _) => { ++_actionSelectionEpoch; _session.Destination = new(VocabularyMeaningDestinationKind.Unclassified); _session.Refresh(); }; panel.Children.Add(button); }
         }
         else panel.Children.Add(State("Select an expression"));
@@ -328,13 +333,15 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
         }
         if (sense.Note.Length > 0) { Section(panel, "Notes"); panel.Children.Add(Paragraph(sense.Note)); }
         if (sense.Tags.Count > 0) panel.Children.Add(Caption(string.Join("  ·  ", sense.Tags)));
+        AddSenseMappingSection(panel, new(entry.Id, sense.Id));
         if (sense.Examples.Count > 0) { Section(panel, "Examples"); foreach (var example in sense.Examples) { panel.Children.Add(Paragraph(example.Text)); if (example.Translation.Length > 0) panel.Children.Add(Caption(example.Translation)); foreach (var translation in example.TranslationVariants) panel.Children.Add(Caption(translation.Text)); panel.Children.Add(MoveUsageButton(entry, sense, example)); } }
         if (_senseMutating) panel.Children.Add(Caption("Updating vocabulary…"));
         if (_actionError is { } error) panel.Children.Add(VocabularyNotebookTheme.Brush(new TextBlock { Name = "frozenSenseActionError", Text = error, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 12, 0, 0) }, TextBlock.ForegroundProperty, "OrangeBrush"));
         var actions = new WrapPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 18, 0, 0) };
-        var edit = new Button { Name = "frozenNotebookEdit", Content = "Edit", IsEnabled = !_senseMutating && _store is ICanonicalVocabularyEditorStore && _store is ICanonicalVocabularyMediaStore, Margin = new Thickness(0, 0, 8, 0) };
+        var edit = new Button { Name = "frozenNotebookEdit", Content = "Edit", IsEnabled = !_senseMutating && !_semanticBusy && _store is ICanonicalVocabularyEditorStore && _store is ICanonicalVocabularyMediaStore, Margin = new Thickness(0, 0, 8, 0) };
         VocabularyNotebookTheme.Button(edit); edit.Click += (_, _) => LastOperation = EditAsync(new(entry.Id, sense.Id)); actions.Children.Add(edit);
         AddSenseActions(actions, entry, sense);
+        AddSenseSemanticActions(actions, new(entry.Id, sense.Id));
         foreach (string text in new[] { "Review", "Export" }) { var button = Disabled(text, "This action is not available in this notebook yet."); button.Margin = new Thickness(0, 0, 8, 0); actions.Children.Add(button); } panel.Children.Add(actions);
     }
     private void MeaningDetail(StackPanel panel, F.VocabularyMeaningNode node)
@@ -346,7 +353,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
         var categoryNames = doc.Classification.Categories.Where(c => categoryIds.Contains(c.Id) && !c.IsRetired && !doc.Classification.Overrides.Any(o => o.CategoryId == c.Id && o.IsHidden))
             .Select(c => R.VocabularyClassificationPolicy.Title(c, doc.Classification, _session.PreferredLanguages)).ToArray();
         if (categoryNames.Length > 0) { Section(panel, "Categories"); panel.Children.Add(Caption(string.Join("  ·  ", categoryNames))); }
-        Section(panel, "My expressions"); var ids = doc.Semantics.Mappings.Where(m => m.NodeId == node.Id).Select(m => m.SenseId).ToHashSet();
+        Section(panel, "My expressions"); AddMeaningActions(panel, node); var ids = doc.Semantics.Mappings.Where(m => m.NodeId == node.Id).Select(m => m.SenseId).ToHashSet();
         var matches = _session.Scoped.SelectMany(e => e.Senses.Where(s => ids.Contains(s.Id)).Select(s => new VocabularySelection(e.Id, s.Id))).ToArray();
         if (matches.Length == 0) panel.Children.Add(Caption("No matching expressions")); else foreach (var selection in matches) AddSenseCard(panel, selection);
         var relations = VocabularyMeaningBrowserProjection.ConfirmedRelations(doc.Semantics).Where(r => r.SourceId == node.Id || r.TargetId == node.Id).ToArray();
@@ -354,13 +361,14 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
         var cueIds = doc.Semantics.CueTargets.Where(x => x.NodeId == node.Id && x.Provenance.Status == R.VocabularySemanticStatus.Confirmed).Select(x => x.CueId).ToHashSet();
         var cues = doc.Semantics.Cues.Where(x => cueIds.Contains(x.Id)).Select(x => x.Text).ToArray();
         if (node.Provenance.Source.Length > 0 || node.Roles.Count > 0 || cues.Length > 0) { Section(panel, "Details"); if (cues.Length > 0) panel.Children.Add(Caption(string.Join(" · ", cues))); foreach (var role in node.Roles) panel.Children.Add(Caption(role.Name + "  " + role.Description)); if (node.Provenance.Source.Length > 0) panel.Children.Add(Caption(node.Provenance.Source)); }
-        panel.Children.Add(Disabled("Edit meaning", "Meaning editing is not available in this notebook yet."));
+        if (_actionError is { } error) panel.Children.Add(VocabularyNotebookTheme.Brush(new TextBlock { Name = "canonicalSemanticError", Text = error, TextWrapping = TextWrapping.Wrap }, TextBlock.ForegroundProperty, "OrangeBrush"));
     }
     private void AddSenseCard(StackPanel panel, VocabularySelection selection)
     {
         var entry = _session.Entries.FirstOrDefault(e => e.Id == selection.EntryId); var sense = entry?.Senses.FirstOrDefault(s => s.Id == selection.SenseId); if (entry is null || sense is null) return;
         var button = new Button { Content = entry.Expression + "  ·  " + SenseTitle(sense) + "  ·  " + LanguageLabel(entry.Language), HorizontalContentAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 4, 0, 4), Padding = new Thickness(12), Tag = selection };
                 VocabularyNotebookTheme.CardButton(button); button.Click += (_, _) => SelectSense(sense.Id, _session.Destination?.NodeId); panel.Children.Add(button);
+        AddCardSemanticActions(panel, selection);
         if (_session.Destination?.NodeId is { } node && _session.Snapshot is { } snapshot)
         {
             foreach (var mapping in snapshot.Document.Semantics.Mappings.Where(m => m.NodeId == node && m.SenseId == sense.Id))

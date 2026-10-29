@@ -43,7 +43,8 @@ report that the provider is unavailable.
 
 The [current-format notebook composition](docs/VOCABULARY_CANONICAL_APP.md) is owned once by
 `AppHost` through `CanonicalVocabularyFeature`. Its lazy backend is shared by writing favorites,
-saved explanations and the canonical browser/create/import window. It uses a fresh versioned file;
+saved explanations and the canonical browser/create/import/edit window. Its sense commands and
+meaning-node/mapping forms borrow acknowledged transactions from that same owner. It uses a fresh versioned file;
 the older notebook/media/review libraries described below are not a parallel production archive.
 Their remaining canonical adaptations stay explicit in the composition record.
 

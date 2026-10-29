@@ -67,7 +67,7 @@ public sealed class LearningExplanationInputFactory(ILearningLexicalText lexical
             unit.Query, language, kind.Value, null);
     }
 
-    private static LearningExplanationInput Input(string target, string form, LearningLanguage language,
+    private static LearningExplanationInput Input(string target, string form, LearningLanguage? language,
         VocabularyEntryKind kind, Evidence? evidence) => new(target, form, language, kind, evidence?.Text ?? target,
             evidence?.Ranges ?? [new VocabularyTextRange(0, target.Length)], evidence?.Scope ?? LearningExplanationContext.None,
             evidence is null ? null : Receipt(evidence));

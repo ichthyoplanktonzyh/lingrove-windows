@@ -31,21 +31,24 @@ desktop verification remain required. A controlled native WebView2 component tes
 article and a synthetic authorized image in a dedicated temporary profile; it checks that scripting
 and web messages are disabled. It does not establish the full browser security boundary or physical
 desktop acceptance. Environment and controller initialization have bounded managed waits. On retirement
-the control is disposed and a separately rooted cleanup owner waits for the outstanding SDK operation
-before attempting private-profile removal; a native operation that never finishes retains that cleanup
-owner and profile. Removal retries report failure through the cleanup task. SDK process lifetime and
-this deferred cleanup remain subject to independent review. At most two article owners may be admitted;
+the control is disposed and a separately rooted cleanup owner waits for the outstanding SDK operation.
+Production does not delete a profile that may have been created: identity-safe recursive cleanup is not
+implemented. It reports an internal cleanup failure and retains the directory and admission slot. A native
+operation that never finishes retains its cleanup owner and profile. At most two article owners may be admitted;
 while both slots remain occupied the article shows a retry action without displaying source text. A slot
-is released only after successful private-profile cleanup. A cleanup failure remains internally observed
-and retains its slot; it is not reported in the UI. Permanently pending SDK work does not fault and keeps
-its slot and profile. This bound is a Windows adapter constraint, not a Mac product rule.
+is released only when no profile could have been created. Consequently rich articles become unavailable
+after at most two created profiles in a process; this is a production blocker, not completed parity. Cleanup
+failure is internally observed and is not reported in the UI. Permanently pending SDK work does not fault
+and keeps its slot and profile. This bound is a Windows adapter constraint, not a Mac product rule.
 
 On the Windows development host, the focused Core suite passed 31 tests, including adversarial HTML
 and cancellation. The serialized WPF wrapper passed 28 focused tests, including synthetic MDX/MDD
 import, local reparse refusal, cancellation and drain, settings, existing cards, WebView2 resource
 ownership and delayed environment/controller retirement. The held initialization tests inject barriers
 before SDK calls; they do not reproduce an SDK call that itself hangs. Injected cleanup effects cover
-denied access, I/O failure, path replacement and confirmed absence. These are component checks, not
+denied access, I/O failure, path replacement and confirmed absence; only tests delete their controlled
+synthetic folders. A real directory-swap test checks that production cleanup leaves the replacement intact.
+These are component checks, not
 user acceptance.
 
 At the 3b reference, `LanguageLearningSettings.resetToDefaults()` calls `LearningDictionarySettings.reset()`,

@@ -57,6 +57,13 @@ committed Mac word-fallback and post-acceptance continuation responsibilities; i
 production behavior or historical fixture expectation. Core then passed 5,046/5,046 again and
 the two focused cases passed five further runs. The updated PR head requires a fresh four-job CI run.
 
+A subsequent Windows run exposed another timing assertion in the streaming coalescer test. A
+typing-cadence wait can legitimately re-read focus more than twice on different scheduler clocks.
+The test now holds the actual refresh with an explicit barrier, asserts exactly one in-flight
+refresh during the thousand-delta burst, and then verifies the latest text after releasing both
+refresh and UI. This changes no production logic. At the isolated PR base, Core passed 5,046/5,046
+and all 17 streaming cases passed five consecutive runs; the final revised head still requires CI.
+
 Tests use synthetic text, fake HTTP/keys/runtime, owned files/databases and isolated native components.
 No user notebook/editor/clipboard, real provider query, model download or audio-device playback is used.
 No installer, release, downloadable package or CI build artifact is produced.

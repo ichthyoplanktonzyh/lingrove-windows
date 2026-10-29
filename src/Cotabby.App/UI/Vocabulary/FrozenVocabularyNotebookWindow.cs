@@ -234,7 +234,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
             _add.IsEnabled = _import.IsEnabled = !_session.Loading && _session.Failure is null; _categoryToggle.Visibility = Visibility.Collapsed; _newMeaning.Visibility = _session.MeaningMode ? Visibility.Visible : Visibility.Collapsed; _newMeaning.IsEnabled = CanSemantic && _store is ICanonicalVocabularyMeaningOrganizationStore; _categories.AllowEditing = CanSemantic;
             _sort.Visibility = _density.Visibility = _graphMode ? Visibility.Collapsed : Visibility.Visible;
             foreach (var image in _detailImages) _ = Track(image.RetireAsync()); _detailImages.Clear();
-            if (_graphMode || _session.Loading || _session.Failure is not null || _session.Selection is not { } selected
+            if (_session.Loading || _session.Failure is not null || _session.Selection is not { } selected
                 || _session.MeaningMode && _session.Destination?.Kind != VocabularyMeaningDestinationKind.Sense
                 || _session.Entries.FirstOrDefault(e => e.Id == selected.EntryId) is not { } learningEntry
                 || learningEntry.Senses.FirstOrDefault(x => x.Id == selected.SenseId) is not { } learningSense) SelectLearning(null, null);

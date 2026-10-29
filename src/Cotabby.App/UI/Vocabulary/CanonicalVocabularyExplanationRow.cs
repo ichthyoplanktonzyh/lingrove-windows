@@ -41,7 +41,7 @@ internal sealed class CanonicalVocabularyExplanationRow : StackPanel, IDisposabl
     private VocabularyExplanationDestination _destination;
     private string _authoredMeaning = "";
     private LearningLanguage? _authoredLanguage;
-    private bool _alwaysAuthored, _adopting;
+    private bool _standalone, _alwaysAuthored, _adopting;
     private volatile bool _disposed;
     private string? _adoptionError;
     internal LearningExplanationSession Session => _session;
@@ -67,7 +67,8 @@ internal sealed class CanonicalVocabularyExplanationRow : StackPanel, IDisposabl
         _destination = new(entry.Id, sense.Id, example?.Id);
         _authoredMeaning = example?.Meaning ?? sense.Meaning;
         _authoredLanguage = example is null ? sense.MeaningLanguage : example.MeaningLanguage;
-        _alwaysAuthored = example is null || (example.MeaningOrigin == VocabularyMeaningOrigin.User);
+        _standalone = example is null;
+        _alwaysAuthored = example?.MeaningOrigin == VocabularyMeaningOrigin.User;
         _heading.Text = example is null ? "General meaning" : "Meaning in this context";
         Render(_session.State);
     }
@@ -91,7 +92,7 @@ internal sealed class CanonicalVocabularyExplanationRow : StackPanel, IDisposabl
         string label = LearningExplanationCardPolicy.Label(state, _owner.IsConfigured);
         _generate.ToolTip = state.ErrorMessage is not null && _owner.IsConfigured && !state.IsGenerating ? label + "\n" + state.ErrorMessage : label;
         System.Windows.Automation.AutomationProperties.SetName(_generate, label);
-        string? supplied = _alwaysAuthored || state.Record is null ? _authoredMeaning : null;
+        string? supplied = !_standalone && (_alwaysAuthored || state.Record is null) ? _authoredMeaning : null;
         Set(_meaning, supplied ?? state.Record?.Result.Meaning ?? "", supplied is null ? state.Record?.Language : _authoredLanguage);
         var record = state.Record;
         _details.Visibility = record is null ? Visibility.Collapsed : Visibility.Visible;

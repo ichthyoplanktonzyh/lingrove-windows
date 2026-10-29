@@ -70,6 +70,66 @@ public sealed class CanonicalNotebookLearningTests(WpfDispatcher dispatcher)
         }
         finally { await window.RetireAsync(); }
     });
+    [Fact]
+    public Task GraphSenseStartsLearningAndCloseRetiresGenerationAndDictionary() => dispatcher.RunAsync(async () =>
+    {
+        await using var store = new FrozenVocabularyImportStore(FrozenVocabularySQLiteDatabase.CreateMemory());
+        var added = await store.AddEntriesAsync([new VocabularyEntryInput(Expression: "bank", Language: null, Meaning: "shore", Example: "river bank")]);
+        var service = new GatedService(); var dictionary = new Dictionary();
+        var window = new FrozenVocabularyNotebookWindow(store, new WindowsVocabularyWordListReader());
+        window.AttachLearning(service, dictionary, new Text(), _ => [], () => { }); window.AttachGraphPreferences(new GraphPreferences());
+        try
+        {
+            window.Show(); await window.LastOperation!;
+            FindButton(window, "canonicalGraphMode").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            await Until(() => window.CanonicalGraphView is { IsVisible: true } graph && graph.Canvas.Positions.Count > 0);
+            var canvas = window.CanonicalGraphView!.Canvas; var selection = added.Selection!.Value;
+            canvas.Activate(VocabularyGraphNodeId.Headword(selection.EntryId));
+            await Until(() => canvas.Positions.ContainsKey(VocabularyGraphNodeId.Sense(selection)));
+            canvas.Activate(VocabularyGraphNodeId.Sense(selection)); window.UpdateLayout();
+            var row = Descendants(window).OfType<CanonicalVocabularyExplanationRow>().Single(x => x.Session.State.Input?.Context == "river bank");
+            Descendants(row).OfType<Button>().Single(b => Equals(b.Content, "✦")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            var input = await service.Entered.Task.WaitAsync(TimeSpan.FromSeconds(5));
+            var dictionaryView = Descendants(window).OfType<CanonicalVocabularyDictionarySection>().Single(); dictionaryView.IsExpanded = true;
+            await dictionaryView.LastLookup; Assert.Equal(1, dictionary.UnknownCalls); Assert.True(row.Session.State.IsGenerating);
+            FindButton(window, "canonicalGraphCloseDetail").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            Assert.False(row.Session.State.IsGenerating); Assert.Null(window.Session.Selection);
+            service.Release.TrySetResult(new(Guid.NewGuid(), input, LearningLanguage.Chinese, new("late", "details"), "fake", DateTimeOffset.UtcNow));
+            await row.LastGeneration.WaitAsync(TimeSpan.FromSeconds(5)); Assert.Null(row.Session.State.Record);
+            window.UpdateLayout(); Assert.Empty(Descendants(window).OfType<CanonicalVocabularyDictionarySection>());
+        }
+        finally { service.Release.TrySetCanceled(); await window.RetireAsync(); }
+    });
+
+    [Fact]
+    public Task StandaloneShowsGeneratedMeaningWithoutRepeatingAuthoredOrOfferingReplacement() => dispatcher.RunAsync(async () =>
+    {
+        await using var store = new FrozenVocabularyImportStore(FrozenVocabularySQLiteDatabase.CreateMemory());
+        var added = await store.AddEntriesAsync([new VocabularyEntryInput(Expression: "bank", Language: null, Meaning: "authored")]);
+        var service = new Service(store); var window = new FrozenVocabularyNotebookWindow(store, new WindowsVocabularyWordListReader());
+        window.AttachLearning(service, new Dictionary(), new Text(), _ => [], () => { });
+        try
+        {
+            window.Show(); await window.LastOperation!; window.Reveal(added.Selection); await window.LastOperation!; window.UpdateLayout();
+            var row = Descendants(window).OfType<CanonicalVocabularyExplanationRow>().Single();
+            Assert.DoesNotContain(Descendants(row).OfType<TextBox>(), x => x.Text == "authored");
+            Descendants(row).OfType<Button>().Single(b => Equals(b.Content, "✦")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            await row.LastGeneration; await Until(() => row.Session.State.Record is not null); window.UpdateLayout();
+            Assert.Contains(Descendants(row).OfType<TextBox>(), x => x.Text == "generated" && x.Visibility == Visibility.Visible);
+            Assert.DoesNotContain(Descendants(row).OfType<Button>(), x => Equals(x.Content, "Replace contextual meaning") && x.Visibility == Visibility.Visible);
+        }
+        finally { await window.RetireAsync(); }
+    });
+    private sealed class GraphPreferences : IVocabularyGraphPreferences
+    {
+        public string BrowserMode { get; set; } = "list"; private byte[]? _data;
+        public byte[]? ReadSettings() => _data; public void WriteSettings(ReadOnlySpan<byte> data) => _data = data.ToArray();
+    }
+    private static Button FindButton(DependencyObject root, string name)
+    { if (root is Window window) window.UpdateLayout(); return Descendants(root).OfType<Button>().Single(x => x.Name == name); }
+    private static async Task Until(Func<bool> condition)
+    { for (int i = 0; i < 500 && !condition(); i++) await Task.Delay(10); Assert.True(condition()); }
+
     private static IEnumerable<DependencyObject> Descendants(DependencyObject root)
     {
         yield return root; for (int i = 0; i < VisualTreeHelper.GetChildrenCount(root); i++)

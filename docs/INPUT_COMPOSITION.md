@@ -92,6 +92,29 @@ finalization handler registration and removal. The HWND itself returned **no Tex
 successful event registration alone does not prove provider support, receipt delivery, or Clear.
 These checks do not establish real editor, IME, TSF, inline prediction or insertion behavior.
 
+An additional model-free owned-control check on the same Windows 10 x64 build 19045 host compared
+actual editor controls. A hidden parent owned native `EDIT` and `RICHEDIT50W` child HWNDs and a WPF
+child source containing a StackPanel and a real TextBox automation descendant; no window was shown
+or activated. Managed and native runtime-ID formatting matched for all three. The UIA element and
+pattern lookup HRESULTs were `0x00000000` in every case, but the EDIT and WPF TextBox returned null
+TextEdit pattern pointers, so their composition evidence remains Unknown. RichEdit returned a
+non-null TextEdit pattern; `GetActiveComposition` returned `0x00000000` and a null range for that
+unfocused test control. Composition and finalized event registrations and removals returned
+`0x00000000` for each control. This is a point-in-time API capability observation, not proof of
+event delivery, actual typing or IME handling. A successful event registration is not proof of
+TextEdit support; physical application acceptance remains open.
+
+The native descendant lookup walks at most 64 elements below the owned WPF source; it compares
+opaque runtime IDs and reads no field text. The owned RichEdit library and all child HWNDs are
+released after the MTA owner is joined. This does not read the user's active field or change focus.
+`dotnet test tests/Cotabby.App.Wpf.Tests/Cotabby.App.Wpf.Tests.csproj --configuration Release
+--no-restore --filter FullyQualifiedName~UiaOwnedEditorCapabilityTests --logger
+'console;verbosity=detailed'` passed 1/1 on this host.
+
+Reference APIs: [creating Rich Edit controls](https://learn.microsoft.com/en-us/windows/win32/controls/create-rich-edit-controls),
+[TextEdit provider requirements](https://learn.microsoft.com/en-us/windows/win32/winauto/textedit-control-pattern),
+and [GetActiveComposition](https://learn.microsoft.com/en-us/windows/win32/api/uiautomationclient/nf-uiautomationclient-iuiautomationtexteditpattern-getactivecomposition).
+
 Executed `dotnet test tests/Cotabby.Inference.Tests/Cotabby.Inference.Tests.csproj --configuration
 Release --no-restore --filter FullyQualifiedName~NativeFactoryCreatesAutomation3OnItsMtaOwner
 --logger 'console;verbosity=detailed'` (1/1) and `dotnet test

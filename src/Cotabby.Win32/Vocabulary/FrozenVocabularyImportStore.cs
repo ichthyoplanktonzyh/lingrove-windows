@@ -1,12 +1,15 @@
 using System.Threading.Channels;
 using Cotabby.Core.Vocabulary.EntryInput;
 using Cotabby.Core.Vocabulary.Frozen;
+using Cotabby.Core.LanguageLearning;
+using Cotabby.Core.Vocabulary;
+using LiveRecord = Cotabby.Core.LanguageLearning.LearningExplanationRecord;
 
 namespace Cotabby.Win32.Vocabulary;
 
 /// <summary>Isolated candidate for the eventual single app-owned Store. It owns its database,
 /// serializes operations and emits only acknowledged revisioned snapshots. No AppHost creates it.</summary>
-internal sealed class FrozenVocabularyImportStore : IVocabularyEntryImportStore, IAsyncDisposable
+internal sealed class FrozenVocabularyImportStore : ICanonicalVocabularyStore
 {
     private readonly FrozenVocabularySQLiteDatabase _database;
     private readonly Func<SourceDate> _now;
@@ -16,7 +19,9 @@ internal sealed class FrozenVocabularyImportStore : IVocabularyEntryImportStore,
     private readonly Channel<FrozenVocabularyImportSnapshot> _notifications = Channel.CreateBounded<FrozenVocabularyImportSnapshot>(new BoundedChannelOptions(1) { SingleReader = true, FullMode = BoundedChannelFullMode.DropOldest });
     private readonly Task _notificationWorker;
     private long _nextListener;
-    private bool _disposed;
+    private bool _closing;
+    private readonly HashSet<Task> _work = [];
+    private Task? _disposal;
     internal FrozenVocabularyImportStore(FrozenVocabularySQLiteDatabase database, Func<SourceDate>? now = null)
     {
         _database = database; _now = now ?? (() => SourceDate.FromWindows(DateTimeOffset.UtcNow));
@@ -36,7 +41,7 @@ internal sealed class FrozenVocabularyImportStore : IVocabularyEntryImportStore,
         ArgumentNullException.ThrowIfNull(changed);
         lock (_listenersGate)
         {
-            if (_disposed) throw new ObjectDisposedException(nameof(FrozenVocabularyImportStore));
+            if (_closing) throw new ObjectDisposedException(nameof(FrozenVocabularyImportStore));
             long id = ++_nextListener; _listeners.Add(id, changed); return new Subscription(this, id);
         }
     }
@@ -49,14 +54,21 @@ internal sealed class FrozenVocabularyImportStore : IVocabularyEntryImportStore,
             if (owner is not null) lock (owner._listenersGate) owner._listeners.Remove(id);
         }
     }
-    private async Task<T> Run<T>(Func<T> work, CancellationToken cancellationToken)
+    private Task<T> Run<T>(Func<T> work, CancellationToken cancellationToken)
+    {
+        lock (_listenersGate)
+        {
+            if (_closing) return Task.FromException<T>(new ObjectDisposedException(nameof(FrozenVocabularyImportStore)));
+            var task = RunAccepted(work, cancellationToken); _work.Add(task);
+            _ = task.ContinueWith(done => { lock (_listenersGate) _work.Remove(done); }, CancellationToken.None,
+                TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+            return task;
+        }
+    }
+    private async Task<T> RunAccepted<T>(Func<T> work, CancellationToken cancellationToken)
     {
         await _gate.WaitAsync(cancellationToken).ConfigureAwait(false);
-        try
-        {
-            lock (_listenersGate) if (_disposed) throw new ObjectDisposedException(nameof(FrozenVocabularyImportStore));
-            return await Task.Run(work, CancellationToken.None).ConfigureAwait(false);
-        }
+        try { return await Task.Run(work, CancellationToken.None).ConfigureAwait(false); }
         finally { _gate.Release(); }
     }
     public Task<FrozenVocabularyImportSnapshot> ReadAsync(CancellationToken cancellationToken = default) => Run(() =>
@@ -80,23 +92,74 @@ internal sealed class FrozenVocabularyImportStore : IVocabularyEntryImportStore,
             var before = _database.Read(cancellationToken);
             var plan = VocabularyEntryImportPolicy.Plan(retained, before.Document, _now(), cancellationToken);
             cancellationToken.ThrowIfCancellationRequested();
-            ulong revision = plan.Result.HasChanges ? _database.Write(plan.Document, before.Document, before.Revision, cancellationToken: cancellationToken) : before.Revision;
-            var committed = plan.Result.HasChanges ? plan.Document : before.Document;
+            var committed = plan.Result.HasChanges ? CanonicalWritingPolicy.PrepareCommit(before.Document, plan.Document) : before.Document;
+            ulong revision = plan.Result.HasChanges ? _database.Write(committed, before.Document, before.Revision, cancellationToken: cancellationToken) : before.Revision;
             // Enqueue only after commit. A successful commit must not be reported as cancelled.
             _notifications.Writer.TryWrite(new(revision, committed));
             return plan.Result;
         }), cancellationToken);
     }
-    public async ValueTask DisposeAsync()
+    public Task<CanonicalWritingReceipt> SaveCaptureAsync(VocabularyCapture capture, CancellationToken cancellationToken = default)
     {
-        await _gate.WaitAsync().ConfigureAwait(false);
-        try
+        var adapted = CanonicalWritingPolicy.FromLive(capture);
+        return Run(() => _database.Access(true, () =>
         {
-            bool close;
-            lock (_listenersGate) { close = !_disposed; _disposed = true; }
-            if (close) { _database.Dispose(); _notifications.Writer.TryComplete(); }
+            cancellationToken.ThrowIfCancellationRequested(); var before = _database.Read(cancellationToken);
+            var draft = CanonicalWritingPolicy.Save(adapted, before.Document, _now());
+            cancellationToken.ThrowIfCancellationRequested();
+            var committed = CanonicalWritingPolicy.PrepareCommit(before.Document, draft.Document);
+            ulong revision = _database.Write(committed, before.Document, before.Revision, cancellationToken: cancellationToken);
+            _notifications.Writer.TryWrite(new(revision, committed));
+            return new CanonicalWritingReceipt(revision, true, draft.Destination);
+        }), cancellationToken);
+    }
+    public Task<CanonicalWritingReceipt> RemoveCaptureAsync(VocabularyCapture capture, CancellationToken cancellationToken = default)
+    {
+        var adapted = CanonicalWritingPolicy.FromLive(capture);
+        return Mutate(document => (CanonicalWritingPolicy.Remove(adapted, document), (VocabularyExplanationDestination?)null), cancellationToken);
+    }
+    public Task<LiveRecord?> FindExplanationAsync(LearningExplanationInput input, LearningLanguage language, CancellationToken cancellationToken = default) => Run(() =>
+    {
+        var snapshot = _database.Read(cancellationToken);
+        return CanonicalWritingPolicy.FindExplanation(input, language, snapshot.Document);
+    }, cancellationToken);
+    public Task<CanonicalWritingReceipt> SaveExplanationAsync(LiveRecord record, CancellationToken cancellationToken = default)
+    {
+        if (!LearningExplanationPolicy.IsValid(record.Input) || !LearningExplanationPolicy.IsValid(record.Result))
+            return Mutate(_ => (null, null), cancellationToken);
+        var adapted = CanonicalWritingPolicy.FromLive(record);
+        return Mutate(document => (CanonicalWritingPolicy.SaveExplanation(adapted, document), null), cancellationToken);
+    }
+    public Task<CanonicalWritingReceipt> AdoptExplanationAsync(LiveRecord record, VocabularyExplanationDestination destination, CancellationToken cancellationToken = default)
+    {
+        if (!LearningExplanationPolicy.IsValid(record.Input) || !LearningExplanationPolicy.IsValid(record.Result))
+            return Mutate(_ => (null, null), cancellationToken);
+        var adapted = CanonicalWritingPolicy.FromLive(record);
+        return Mutate(document => (CanonicalWritingPolicy.Adopt(adapted, destination, document), destination), cancellationToken);
+    }
+    private Task<CanonicalWritingReceipt> Mutate(Func<Cotabby.Core.Vocabulary.Frozen.VocabularyDocument, (Cotabby.Core.Vocabulary.Frozen.VocabularyDocument? Document, VocabularyExplanationDestination? Destination)> mutation,
+        CancellationToken cancellationToken) => Run(() => _database.Access(true, () =>
+    {
+        cancellationToken.ThrowIfCancellationRequested(); var before = _database.Read(cancellationToken);
+        var next = mutation(before.Document); cancellationToken.ThrowIfCancellationRequested();
+        if (next.Document is null) return new CanonicalWritingReceipt(before.Revision, false);
+        var committed = CanonicalWritingPolicy.PrepareCommit(before.Document, next.Document);
+        ulong revision = _database.Write(committed, before.Document, before.Revision, cancellationToken: cancellationToken);
+        _notifications.Writer.TryWrite(new(revision, committed));
+        return new CanonicalWritingReceipt(revision, true, next.Destination);
+    }), cancellationToken);
+    public ValueTask DisposeAsync()
+    {
+        lock (_listenersGate)
+        {
+            _closing = true;
+            return new(_disposal ??= Drain(_work.ToArray()));
         }
-        finally { _gate.Release(); }
+    }
+    private async Task Drain(Task[] accepted)
+    {
+        try { await Task.WhenAll(accepted).ConfigureAwait(false); } catch { /* Individual callers observe their own errors. */ }
+        _database.Dispose(); _notifications.Writer.TryComplete();
         await _notificationWorker.ConfigureAwait(false);
         lock (_listenersGate) _listeners.Clear();
     }

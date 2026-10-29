@@ -95,7 +95,7 @@ public static partial class VocabularyArchiveValidation
     }
     private static bool ValidRecords(IReadOnlyList<LearningExplanationRecord> records, LearningExplanationInput expected, int max) =>
         records.Count <= max && records.All(record => ValidInput(record.Input) && LearningExplanationPolicy.IsValid(record.Result) && record.Input == expected);
-    private static bool ValidInput(LearningExplanationInput input)
+    internal static bool ValidInput(LearningExplanationInput input)
     {
         if (!Fits(input.Target, 32_000) || FoundationText.TrimWhitespaceAndNewlines(input.Target).Length == 0
             || !Fits(input.DictionaryForm, 32_000) || !Fits(input.Context, ModelContextBudget.MaximumTextBytes)

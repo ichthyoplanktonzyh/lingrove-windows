@@ -41,6 +41,7 @@ public sealed class LearningExplanationService : ILearningExplanationGenerating,
     public Func<LearningExplanationInput, LearningLanguage, Task<LearningExplanationRecord?>>? LoadPersisted { get; set; }
     public Func<LearningExplanationInput, LearningLanguage, LearningExplanationRecord?>? LookupSaved { get; set; }
     public LearningLanguage Language { get { lock (_gate) return _language; } }
+    public LearningModelSnapshot Profile { get { lock (_gate) return _profile; } }
     public bool IsConfigured { get { lock (_gate) return Configured(_profile); } }
 
     /// <summary>

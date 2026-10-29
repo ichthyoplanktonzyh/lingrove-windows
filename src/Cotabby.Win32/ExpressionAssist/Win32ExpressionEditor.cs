@@ -144,6 +144,9 @@ public sealed class ExpressionEditorSession : IAsyncDisposable
     private bool _panelFocusEvent;
     private int _retiredFlag;
     private int _capturedFlag;
+    private int _panelRequestFlag;
+    internal Func<nint, int> WindowProcessForTest { get; init; } = window =>
+        NativeMethods.GetWindowThreadProcessId(window, out uint pid) != 0 ? (int)pid : 0;
     private nint _host;
     private AutomationElement? _element;
     private long _retainedToken;
@@ -195,6 +198,24 @@ public sealed class ExpressionEditorSession : IAsyncDisposable
     public bool CanPresentPanel => IsPublishable && _host != 0 && _effects.Foreground == _host && IsPublishable;
     /// <summary>Metadata-only feedback gate, also usable after a one-shot edit retires the receipt.</summary>
     public bool IsHostForeground => _host != 0 && _effects.Foreground == _host;
+    /// <summary>Final instruction admission uses only direct receipt state and Win32 metadata.
+    /// It never waits on UIA, a dispatcher or a session lock before a prompt/HTTP send.</summary>
+    public bool CanTransmitRequest
+    {
+        get
+        {
+            try
+            {
+                var receipt = _receipt;
+                return receipt is not null && IsLive() && Volatile.Read(ref _panelRequestFlag) != 0
+                    && PanelOwnsInput() && WindowProcessForTest(_host) == receipt.Original.ProcessId
+                    && WindowProcessForTest(_panel) == Environment.ProcessId
+                    && _composition.IsCurrent(_retainedToken, receipt.Original.CompositionSequence)
+                    && IsLive() && Volatile.Read(ref _panelRequestFlag) != 0 && PanelOwnsInput();
+            }
+            catch { return false; }
+        }
+    }
 
     internal bool Capture(string? trigger, CancellationToken ct)
     {
@@ -258,6 +279,7 @@ public sealed class ExpressionEditorSession : IAsyncDisposable
             { Retire(); return false; }
             Volatile.Write(ref _capturedFlag, 0);
             _phase = Phase.Panel;
+            Volatile.Write(ref _panelRequestFlag, 1);
             return true;
         }
     }
@@ -300,6 +322,7 @@ public sealed class ExpressionEditorSession : IAsyncDisposable
             if (_phase != Phase.Panel || !PanelOwnsInput() || _roundTrip?.BeginReturn(_panel, Environment.ProcessId, true) != true)
             { Retire(); return false; }
             _phase = Phase.Returning;
+            Volatile.Write(ref _panelRequestFlag, 0);
         }
         if (_effects.Foreground != _panel || !_effects.Activate(_host)) { Retire(); return false; }
         return true;
@@ -537,6 +560,7 @@ public sealed class ExpressionEditorSession : IAsyncDisposable
     public void Retire()
     {
         Interlocked.Exchange(ref _retiredFlag, 1);
+        Volatile.Write(ref _panelRequestFlag, 0);
         bool notify;
         lock (_sync)
         {

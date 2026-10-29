@@ -6,7 +6,7 @@ using LLama.Native;
 namespace Cotabby.Inference.LanguageLearning.Local;
 
 /// <summary>One bounded instruction request borrowing the explanation owner's existing runtime.</summary>
-public sealed class LearningLocalInstructionEngine : IAsyncDisposable
+public sealed class LearningLocalInstructionEngine : ILearningInstructionEngine
 {
     private readonly LearningLocalModelConfiguration _configuration;
     private readonly ILearningLocalRuntime _runtime;

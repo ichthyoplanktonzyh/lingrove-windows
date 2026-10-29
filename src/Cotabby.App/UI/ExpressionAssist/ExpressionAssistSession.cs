@@ -10,6 +10,7 @@ internal interface IExpressionAssistEditorSession : IAsyncDisposable
 {
     ExpressionEditorReceipt Receipt { get; }
     bool CanPresentPanel { get; }
+    bool CanTransmitRequest => false;
     bool IsHostForeground { get; }
     event Action? Invalidated;
     bool EnterPanel();
@@ -134,7 +135,7 @@ internal sealed class ExpressionAssistSession : IAsyncDisposable
 
     private void Request(bool immediate)
     {
-        ++_revision; CancelAndDispose(_requestCancellation); _requestCancellation = null;
+        Interlocked.Increment(ref _revision); CancelAndDispose(_requestCancellation); _requestCancellation = null;
         _result = null;
         _panel.Update(null, null, false);
         if (_capture is null || _committing || _acquiring || _composing || !_panel.OwnsKeyboard || string.IsNullOrWhiteSpace(_query)) return;
@@ -154,6 +155,8 @@ internal sealed class ExpressionAssistSession : IAsyncDisposable
             var request = ExpressionAssistPolicy.Request(query, receipt.Original.Value, receipt.ReplacementRange.Start,
                 receipt.ReplacementRange.Length, languages.Target, languages.Explanation);
             if (receipt.IsTrigger) request = request with { SelectedText = "" };
+            request = request with { Admission = () => !token.IsCancellationRequested
+                && Interlocked.Read(ref _revision) == revision && capture.CanTransmitRequest };
             _panel.Update(null, null, true);
             var result = await _generate(request, token);
             if (!Current(capture, revision, token)) return;
@@ -178,7 +181,7 @@ internal sealed class ExpressionAssistSession : IAsyncDisposable
         if (_capture is not { } capture || _committing || _composing || _acquiring || !_panel.OwnsKeyboard) return;
         var replacement = text ?? (capture.Receipt.IsTrigger ? "" : null);
         if (replacement is null) { Invalidate(); return; }
-        _committing = true; ++_revision; CancelAndDispose(_requestCancellation); _requestCancellation = null;
+        _committing = true; Interlocked.Increment(ref _revision); CancelAndDispose(_requestCancellation); _requestCancellation = null;
         if (!capture.BeginReturn())
         {
             Invalidate();
@@ -204,7 +207,7 @@ internal sealed class ExpressionAssistSession : IAsyncDisposable
 
     internal void Invalidate()
     {
-        Verify(); ++_revision;
+        Verify(); Interlocked.Increment(ref _revision);
         CancelAndDispose(_requestCancellation); _requestCancellation = null;
         bool wasActive = _sessionCancellation is not null;
         CancelAndDispose(_sessionCancellation); _sessionCancellation = null;

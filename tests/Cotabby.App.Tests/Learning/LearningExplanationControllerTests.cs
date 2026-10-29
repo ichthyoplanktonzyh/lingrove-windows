@@ -16,6 +16,66 @@ namespace Cotabby.App.Tests.Learning;
 /// <summary>Actual non-WPF app owner with deterministic timers and effects; never loads a model.</summary>
 public sealed class LearningExplanationControllerTests
 {
+    private sealed class EndpointInstruction(Func<CancellationToken, Task<string>> generate) : ILearningInstructionEngine
+    {
+        public Task<string> GenerateAsync(string prompt, int output, int maximumBytes, CancellationToken token, Func<bool>? admission = null)
+        { token.ThrowIfCancellationRequested(); if (admission?.Invoke() == false) throw new OperationCanceledException(); return generate(token); }
+        public ValueTask DisposeAsync() => ValueTask.CompletedTask;
+    }
+    private static AppSettings EndpointSettings() => new() { LearningExplanationBackend = LearningModelBackend.Endpoint,
+        LearningExplanationEndpointBaseUrl = "https://owned.invalid/v1", LearningExplanationEndpointModel = "general" };
+
+    [Fact]
+    public async Task EndpointExplanationAndLookupNeverBorrowTheLocalRuntime()
+    {
+        var runtime = new FakeRuntime(); var settings = EndpointSettings();
+        await using var owner = new LearningExplanationController(runtime, settings, Path.GetTempPath(),
+            endpointFactory: _ => new Engine((_, _, _, _) => Task.FromResult(Answer)),
+            endpointInstructionFactory: _ => new EndpointInstruction(_ => Task.FromResult("lookup")));
+        var record = await owner.Service.GenerateAsync(Input, "owned"); Assert.Equal("general", record.Model);
+        var input = new ReadingLookupInput("bank", LearningLanguage.English, LearningLanguage.Chinese, true, null) { Admission = () => true };
+        Assert.Equal("lookup", await owner.GenerateReadingLookupAsync(input, null, raw => raw, default));
+        Assert.Equal(0, runtime.Begins); Assert.Equal(LocalRuntimeResidency.Released, owner.Residency);
+    }
+
+    [Fact]
+    public async Task EndpointEditorInstructionsRequireAnExplicitFinalPermit()
+    {
+        var runtime = new FakeRuntime(); int facades = 0;
+        await using var owner = new LearningExplanationController(runtime, EndpointSettings(), Path.GetTempPath(),
+            endpointFactory: _ => new Engine((_, _, _, _) => Task.FromResult(Answer)),
+            endpointInstructionFactory: _ => { facades++; return new EndpointInstruction(_ => Task.FromResult("unused")); });
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => owner.GenerateExpressionAsync(Expression, value => value, default));
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => owner.GenerateReadingLookupAsync(
+            new("bank", LearningLanguage.English, LearningLanguage.Chinese, true, null), null, raw => raw, default));
+        Assert.Equal(0, facades); Assert.Equal(0, runtime.Begins);
+    }
+
+    [Fact]
+    public async Task LatestInstructionWaitsForThePreviousExplanationFacadeToDrain()
+    {
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var disposing = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var disposed = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        int instructions = 0;
+        var owner = new LearningExplanationController(new FakeRuntime(), EndpointSettings(), Path.GetTempPath(),
+            endpointFactory: _ => new Engine(async (_, _, _, _) => { entered.TrySetResult(); await release.Task; return Answer; },
+                async () => { disposing.TrySetResult(); await disposed.Task; }),
+            endpointInstructionFactory: _ => { Interlocked.Increment(ref instructions); return new EndpointInstruction(_ => Task.FromResult("new")); });
+        try
+        {
+            var old = owner.Service.GenerateAsync(Input, "old"); await entered.Task.WaitAsync(TimeoutLimit);
+            var input = new ReadingLookupInput("bank", null, LearningLanguage.Chinese, true, null) { Admission = () => true };
+            var next = owner.GenerateReadingLookupAsync(input, null, raw => raw, default);
+            Assert.Equal(0, Volatile.Read(ref instructions)); release.TrySetResult();
+            await disposing.Task.WaitAsync(TimeoutLimit); Assert.Equal(0, Volatile.Read(ref instructions));
+            disposed.TrySetResult(); Assert.Equal("new", await next.WaitAsync(TimeoutLimit));
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => old); Assert.Equal(1, instructions);
+        }
+        finally { release.TrySetResult(); disposed.TrySetResult(); await owner.DisposeAsync(); }
+    }
+
     [Fact]
     public async Task UnknownReadingLookupUsesConstrainedSharedOwnerAndRetiresOnLanguageChange()
     {
@@ -110,6 +170,8 @@ public sealed class LearningExplanationControllerTests
         var firstResult = new TaskCompletionSource<LearningExplanationResult>(TaskCreationOptions.RunContinuationsAsynchronously);
         var expressionStarted = new TaskCompletionSource<CancellationToken>(TaskCreationOptions.RunContinuationsAsynchronously);
         var expressionResult = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var finalStarted = new TaskCompletionSource<CancellationToken>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var finalResult = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
         runtime.Generate = ct => { expressionStarted.TrySetResult(ct); return expressionResult.Task; };
         int calls = 0;
         var owner = Owner(runtime, settings, new Clock(), _ => new Engine((_, _, _, ct) =>
@@ -119,22 +181,30 @@ public sealed class LearningExplanationControllerTests
             var first = owner.Service.GenerateAsync(Input, "first", refresh: true);
             var firstToken = await firstStarted.Task.WaitAsync(TimeoutLimit);
             var expression = owner.GenerateExpressionAsync(Expression, value => value.ToLowerInvariant(), CancellationToken.None);
+            // The 3b controller waits for the old generation AND facade drain before the
+            // next instruction starts. Keep both fakes noncooperative to prove that ordering.
+            Assert.True(firstToken.IsCancellationRequested); Assert.False(expressionStarted.Task.IsCompleted);
+            firstResult.SetResult(Answer);
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => first.WaitAsync(TimeoutLimit));
             var expressionToken = await expressionStarted.Task.WaitAsync(TimeoutLimit);
             var expressionRetired = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
             using var expressionRegistration = expressionToken.Register(() => expressionRetired.TrySetResult());
-            Assert.True(firstToken.IsCancellationRequested);
-            firstResult.SetResult(Answer);
-            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => first.WaitAsync(TimeoutLimit));
             var second = owner.Service.GenerateAsync(Input, "second", refresh: true);
-            await second.WaitAsync(TimeoutLimit);
             await expressionRetired.Task.WaitAsync(TimeoutLimit);
-            var shutdown = owner.DisposeAsync().AsTask();
-            Assert.False(shutdown.IsCompleted); Assert.Equal(0, runtime.Disposals);
+            Assert.False(second.IsCompleted);
             expressionResult.SetResult("{\"candidates\":[{\"text\":\"rule out\",\"hint\":\"排除\"}]}");
             await Assert.ThrowsAnyAsync<OperationCanceledException>(() => expression.WaitAsync(TimeoutLimit));
+            await second.WaitAsync(TimeoutLimit);
+            runtime.Generate = ct => { finalStarted.TrySetResult(ct); return finalResult.Task; };
+            var final = owner.GenerateExpressionAsync(Expression, value => value.ToLowerInvariant(), default);
+            var finalToken = await finalStarted.Task.WaitAsync(TimeoutLimit);
+            var shutdown = owner.DisposeAsync().AsTask();
+            Assert.True(finalToken.IsCancellationRequested); Assert.False(shutdown.IsCompleted); Assert.Equal(0, runtime.Disposals);
+            finalResult.SetResult("{}");
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => final.WaitAsync(TimeoutLimit));
             await shutdown.WaitAsync(TimeoutLimit); Assert.Equal(1, runtime.Disposals);
         }
-        finally { firstResult.TrySetResult(Answer); expressionResult.TrySetResult("{}"); await owner.DisposeAsync(); }
+        finally { firstResult.TrySetResult(Answer); expressionResult.TrySetResult("{}"); finalResult.TrySetResult("{}"); await owner.DisposeAsync(); }
     }
 
     [Fact]

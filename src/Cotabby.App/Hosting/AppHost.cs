@@ -99,6 +99,7 @@ public sealed class AppHost : IAsyncDisposable
     internal RecommendedSetupController RecommendedSetup { get; }
     internal LearningPreviewController LearningPreview { get; }
     internal LearningExplanationController LearningExplanation { get; }
+    internal LearningExplanationEndpointFeature ExplanationEndpoint { get; }
     private readonly IAsyncDisposable? _expressionEditor;
     private readonly ExpressionAssistApplication _expressions;
     private readonly Win32ReadingSelectionReader? _nativeReading;
@@ -193,6 +194,8 @@ public sealed class AppHost : IAsyncDisposable
         PerformanceHistory = new(() => Settings, () => SettingsStore.Save(Settings),
             (error, count) => _logger.LogWarning(error, "Saving request history failed ({Count} records).", count));
         _performance = new(overlay.Dispatcher, PerformanceHistory, Settings.PerformanceTrackingEnabled);
+        ExplanationEndpoint = new(overlay.Dispatcher, new DpapiOpenAICompatibleCredentialStore(System.IO.Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Cotabby", "explanation-endpoint-credential.bin")));
         // Explanation is a third independent native owner. Construction is inert; only an
         // explicit request through its service can load weights, and shutdown drains it first.
         LearningExplanation = new LearningExplanationController(
@@ -424,6 +427,13 @@ public sealed class AppHost : IAsyncDisposable
     {
         if (_shuttingDown) return;
         _completionCredentialRevision++;
+        ApplySettings();
+    }
+
+    internal void ExplanationCredentialsChanged()
+    {
+        Overlay.Dispatcher.VerifyAccess(); if (_shuttingDown) return;
+        Settings.LearningExplanationCredentialRevision++;
         ApplySettings();
     }
 
@@ -800,7 +810,7 @@ public sealed class AppHost : IAsyncDisposable
         {
             Vocabulary.OpenSelection = null;
             Vocabulary.EnrichCapture = null;
-            try { await LearningExplanation.DisposeAsync().ConfigureAwait(false); }
+            try { await RetireExplanationAsync().ConfigureAwait(false); }
             finally
             {
                 LearningExplanation.Service.Explained -= PersistExplanation;
@@ -812,5 +822,11 @@ public sealed class AppHost : IAsyncDisposable
                 }
             }
         }
+    }
+
+    private async Task RetireExplanationAsync()
+    {
+        try { await LearningExplanation.DisposeAsync().ConfigureAwait(false); }
+        finally { await ExplanationEndpoint.DisposeAsync().ConfigureAwait(false); }
     }
 }

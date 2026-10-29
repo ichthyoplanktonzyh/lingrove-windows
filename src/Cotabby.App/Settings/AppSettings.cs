@@ -426,6 +426,7 @@ public sealed class SettingsStore
         settings.ExpressionAssistTrigger ??= "??";
         settings.LearningExplanationLocalContextTokensByModel = CaseInsensitiveModelMap(settings.LearningExplanationLocalContextTokensByModel);
         settings.LearningExplanationLocalGenerationProfiles = CaseInsensitiveModelMap(settings.LearningExplanationLocalGenerationProfiles);
+        settings.NormalizeExplanationEndpoints();
         if (!Enum.IsDefined(settings.LearningExplanationLocalTemplate))
             settings.LearningExplanationLocalTemplate = LearningChatTemplate.Automatic;
         if (!Enum.IsDefined(settings.LearningLocalTemplate))

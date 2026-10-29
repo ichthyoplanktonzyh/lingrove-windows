@@ -26,6 +26,41 @@ public sealed class LearningExplanationControllerTests
         LearningExplanationEndpointBaseUrl = "https://owned.invalid/v1", LearningExplanationEndpointModel = "general" };
 
     [Fact]
+    public async Task CancelledExplanationNeverRetiresNewerInstructionEvenAfterWaitingForOwnerLock()
+    {
+        var started = new TaskCompletionSource<CancellationToken>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+        await using var owner = new LearningExplanationController(new FakeRuntime(), EndpointSettings(), Path.GetTempPath(),
+            endpointFactory: _ => new Engine((_, _, _, _) => Task.FromResult(Answer)),
+            endpointInstructionFactory: _ => new EndpointInstruction(token => { started.TrySetResult(token); return release.Task; }));
+        var newer = owner.GenerateReadingLookupAsync(new ReadingLookupInput("bank", null, LearningLanguage.Chinese, true, null)
+            { Admission = () => true }, null, raw => raw, default);
+        try
+        {
+            var token = await started.Task.WaitAsync(TimeoutLimit);
+            using var cancelled = new CancellationTokenSource(); cancelled.Cancel();
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => owner.Service.GenerateAsync(Input, "cancelled", cancellationToken: cancelled.Token));
+            Assert.False(token.IsCancellationRequested);
+
+            var gate = typeof(LearningExplanationController).GetField("_gate", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!.GetValue(owner)!;
+            using var waiting = new CancellationTokenSource(); using var entered = new ManualResetEventSlim();
+            var result = new TaskCompletionSource<Task<LearningExplanationRecord>>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var worker = new Thread(() => { entered.Set(); try { result.SetResult(owner.Service.GenerateAsync(Input, "waiting", cancellationToken: waiting.Token)); } catch (Exception error) { result.SetException(error); } });
+            lock (gate)
+            {
+                worker.Start(); Assert.True(entered.Wait(TimeoutLimit));
+                Assert.True(SpinWait.SpinUntil(() => (worker.ThreadState & ThreadState.WaitSleepJoin) != 0, TimeoutLimit));
+                waiting.Cancel();
+            }
+            var old = await result.Task.WaitAsync(TimeoutLimit);
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => old.WaitAsync(TimeoutLimit));
+            Assert.False(token.IsCancellationRequested);
+            release.SetResult("new"); Assert.Equal("new", await newer.WaitAsync(TimeoutLimit));
+        }
+        finally { release.TrySetResult("new"); }
+    }
+
+    [Fact]
     public async Task HeldSavedLookupCannotSupersedeNewerInstruction()
     {
         foreach (bool reading in new[] { false, true })
@@ -269,7 +304,10 @@ public sealed class LearningExplanationControllerTests
             runtime.Generate = ct => { finalStarted.TrySetResult(ct); return finalResult.Task; };
             var final = owner.GenerateExpressionAsync(Expression, value => value.ToLowerInvariant(), default);
             var finalToken = await finalStarted.Task.WaitAsync(TimeoutLimit);
+            var finalRetired = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            using var finalRegistration = finalToken.Register(() => finalRetired.TrySetResult());
             var shutdown = owner.DisposeAsync().AsTask();
+            await finalRetired.Task.WaitAsync(TimeoutLimit);
             Assert.True(finalToken.IsCancellationRequested); Assert.False(shutdown.IsCompleted); Assert.Equal(0, runtime.Disposals);
             finalResult.SetResult("{}");
             await Assert.ThrowsAnyAsync<OperationCanceledException>(() => final.WaitAsync(TimeoutLimit));

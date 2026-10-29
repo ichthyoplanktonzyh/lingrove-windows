@@ -132,11 +132,12 @@ internal sealed class LearningExplanationController : IAsyncDisposable
         else if (_activeFacades == 0) ScheduleIdleLocked();
     }
 
-    private ILearningExplanationAdmission ReserveExplanation()
+    private ILearningExplanationAdmission ReserveExplanation(CancellationToken caller)
     {
         lock (_gate)
         {
             ObjectDisposedException.ThrowIf(_disposal is not null, this);
+            caller.ThrowIfCancellationRequested();
             return new ExplanationAdmission(this, ReserveInstructionLocked());
         }
     }

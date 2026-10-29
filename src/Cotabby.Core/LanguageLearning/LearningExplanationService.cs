@@ -14,7 +14,7 @@ public sealed class LearningExplanationService : ILearningExplanationGenerating,
 {
     private readonly object _gate = new();
     private readonly Func<LearningModelSnapshot, ILearningExplanationEngine> _engineFactory;
-    private readonly Func<ILearningExplanationAdmission>? _reserveAdmission;
+    private readonly Func<CancellationToken, ILearningExplanationAdmission>? _reserveAdmission;
     private readonly TimeProvider _clock;
     private readonly Dictionary<Key, LearningExplanationRecord> _cache = [];
     private readonly Queue<Key> _cacheOrder = [];
@@ -26,7 +26,7 @@ public sealed class LearningExplanationService : ILearningExplanationGenerating,
 
     public LearningExplanationService(LearningModelSnapshot profile, LearningLanguage language,
         Func<LearningModelSnapshot, ILearningExplanationEngine> engineFactory, TimeProvider? clock = null,
-        Func<ILearningExplanationAdmission>? reserveAdmission = null)
+        Func<CancellationToken, ILearningExplanationAdmission>? reserveAdmission = null)
     {
         _profile = (profile ?? throw new ArgumentNullException(nameof(profile))).ForExplanation();
         _language = language;
@@ -138,11 +138,15 @@ public sealed class LearningExplanationService : ILearningExplanationGenerating,
         // Preserve the Mac service's invalid-capture precedence over model configuration.
         if (input is null || !LearningExplanationPolicy.IsValid(input))
             return Task.FromException<LearningExplanationRecord>(new LearningExplanationException(LearningExplanationFailure.InvalidContent));
+        if (cancellationToken.IsCancellationRequested) return Task.FromCanceled<LearningExplanationRecord>(cancellationToken);
         lock (_gate) ObjectDisposedException.ThrowIf(_disposal is not null, this);
         // Do not hold the service lock across the app-owned reservation: the owner can retire
         // service work while holding its own gate. Reserve synchronously before Task.Run so a
         // delayed worker or saved lookup cannot supersede a newer instruction request.
-        var admission = _reserveAdmission?.Invoke();
+        ILearningExplanationAdmission? admission;
+        try { admission = _reserveAdmission?.Invoke(cancellationToken); }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        { return Task.FromCanceled<LearningExplanationRecord>(cancellationToken); }
         try
         {
             lock (_gate)
@@ -225,8 +229,9 @@ public sealed class LearningExplanationService : ILearningExplanationGenerating,
             // Native facade disposal above drains its lease before foreign cancellation callbacks
             // are joined here. A callback may itself be waiting for that lease to become available.
             try { await lifetime.DisposeAsync().ConfigureAwait(false); } catch { }
-            admission?.Dispose();
-            lock (_gate) _work.Remove(lifetime);
+            try { admission?.Dispose(); }
+            catch (Exception error) { throw FixedFailure(error); }
+            finally { lock (_gate) _work.Remove(lifetime); }
         }
     }
 

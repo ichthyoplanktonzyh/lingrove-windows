@@ -2,6 +2,7 @@ using System.Text.Json.Nodes;
 using Cotabby.Core.CLI;
 using Cotabby.Core.Vocabulary;
 using Cotabby.Core.Vocabulary.Frozen;
+using F = Cotabby.Core.Vocabulary.Frozen;
 
 namespace Cotabby.Win32.Vocabulary;
 
@@ -35,8 +36,7 @@ internal sealed partial class FrozenVocabularyImportStore : ICanonicalVocabulary
     private static string throwIfResourceNeeded(string command) => command is "resourceList" or "resourceGet"
         ? throw new CliException(CliErrorCode.InvalidInput, "A resource is required.") : "";
 
-    // This internal checkpoint admits only resource operations. No client or production listener
-    // is activated until the full add/append/update/capture and media planner is implemented.
+    // No production listener is activated until capture and the complete CLI lifecycle are ready.
     private JsonObject ApplyCliResources(CliRequest request, FrozenVocabularySnapshot before, CancellationToken cancellationToken)
     {
         var batch = CliInputContract.ValidateWire(request.Batch ?? throw new CliException(CliErrorCode.InvalidInput, "The apply command needs a batch."));
@@ -51,24 +51,26 @@ internal sealed partial class FrozenVocabularyImportStore : ICanonicalVocabulary
         if (value["expectedRevision"] is { } expected && expected.GetValue<long>() != (long)before.Revision)
             throw new CliException(CliErrorCode.Conflict, "Notebook revision changed. Read resources again before writing.");
         if (!request.DryRun && before.Revision >= long.MaxValue) throw new CliException(CliErrorCode.Conflict, "Notebook revision cannot advance.");
-        var draft = new CliResourceDraft(before.Document, _now()); var outcomes = new JsonArray();
+        var prepared = new Dictionary<string, VocabularyPreparedImage>(StringComparer.Ordinal);
         var operations = value["operations"]!.AsArray();
         for (int index = 0; index < operations.Count; index++)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            var operation = operations[index]!.AsObject().Single();
-            if (operation.Key is not ("put" or "delete")) throw new CliException(CliErrorCode.Unavailable, "This CLI operation is not yet available.");
-            var input = operation.Value!.AsObject(); var resource = input["resource"]!.GetValue<string>();
-            var id = operation.Key == "put" ? draft.Put(resource, input["value"]!.AsObject()) : Guid.Parse(input["id"]!.GetValue<string>());
-            if (operation.Key == "delete") draft.Delete(resource, id);
-            outcomes.Add(new JsonObject { ["operation"] = index, ["resource"] = resource, ["id"] = id.ToString("D").ToUpperInvariant(), ["action"] = operation.Key });
+            var operation = operations[index]!.AsObject(); var action = operation["add"] ?? operation["append"];
+            if (action?["content"] is not JsonArray blocks) continue;
+            for (int position = 0; position < blocks.Count; position++)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                if (blocks[position]?["image"] is not JsonObject image) continue;
+                if (image["path"] is not null || image["data"] is null) throw new CliException(CliErrorCode.InvalidInput, "Images must be supplied as bytes by the CLI.");
+                prepared[$"{index}.{position}"] = ImageStorage.Prepare(Convert.FromBase64String(image["data"]!.GetValue<string>()), cancellationToken);
+            }
         }
-        var candidate = draft.Finish(); ValidateMediaContent(candidate);
+        var plan = CliBatchPlan.Create(batch, before.Document, before.Revision, fingerprint, _now(), prepared, cancellationToken);
+        var candidate = plan.Document; ValidateMediaContent(candidate);
         var existing = ImageReferences(before.Document); var references = ImageReferences(candidate); ValidateMediaBudget(references);
-        foreach (var image in references.Where(image => !existing.Contains(image))) _ = ImageStorage.Read(image);
         cancellationToken.ThrowIfCancellationRequested();
         if (request.ExpiresAt <= CliWire.Now()) throw new CliException(CliErrorCode.Timeout, "Request expired before commit.");
-        var result = new JsonObject { ["revision"] = before.Revision + (request.DryRun ? 0UL : 1UL), ["dryRun"] = request.DryRun, ["replayed"] = false, ["operations"] = outcomes };
+        var result = new JsonObject { ["revision"] = before.Revision + (request.DryRun ? 0UL : 1UL), ["dryRun"] = request.DryRun, ["replayed"] = false, ["operations"] = plan.Outcomes };
         if (request.DryRun) return result;
         var retained = references.Select(image => image.Filename).ToHashSet(StringComparer.Ordinal);
         var retired = new List<(VocabularyImageReference Image, VocabularyWindowsFile.FileIdentity Identity)>();
@@ -76,8 +78,25 @@ internal sealed partial class FrozenVocabularyImportStore : ICanonicalVocabulary
             if (CaptureCleanupIdentity(image) is { } identity) retired.Add((image, identity));
         cancellationToken.ThrowIfCancellationRequested();
         if (request.ExpiresAt <= CliWire.Now()) throw new CliException(CliErrorCode.Timeout, "Request expired before commit.");
-        var committed = CanonicalWritingPolicy.PrepareCommit(before.Document, candidate);
-        var revision = Database.Write(committed, before.Document, before.Revision, new VocabularySQLiteReceipt(key, fingerprint, CliWire.Encode(result)), cancellationToken);
+        var written = new List<(VocabularyImageReference Image, VocabularyWindowsFile.FileIdentity Identity)>();
+        F.VocabularyDocument committed; ulong revision;
+        try
+        {
+            foreach (var image in references)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                if (plan.Images.TryGetValue(image.Filename, out var supplied))
+                {
+                    if (OwnedImageStorage.WriteOwned(supplied.CopyBytes(), image) is { } identity) written.Add((image, identity));
+                }
+                else if (!existing.Contains(image)) _ = ImageStorage.Read(image);
+            }
+            cancellationToken.ThrowIfCancellationRequested();
+            if (request.ExpiresAt <= CliWire.Now()) throw new CliException(CliErrorCode.Timeout, "Request expired before commit.");
+            committed = CanonicalWritingPolicy.PrepareCommit(before.Document, candidate);
+            revision = Database.Write(committed, before.Document, before.Revision, new VocabularySQLiteReceipt(key, fingerprint, CliWire.Encode(result)), cancellationToken);
+        }
+        catch { foreach (var item in written) RemoveOwnedImage(item.Image, item.Identity); throw; }
         foreach (var item in retired) RemoveOwnedImage(item.Image, item.Identity);
         _notifications.Writer.TryWrite(new(revision, committed));
         return result;

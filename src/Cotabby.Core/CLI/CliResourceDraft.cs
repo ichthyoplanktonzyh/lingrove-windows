@@ -14,6 +14,29 @@ public sealed class CliResourceDraft
     private const double UnixOffset = 978307200;
     public CliResourceDraft(F.VocabularyDocument document, F.SourceDate now)
     { _graph = JsonNode.Parse(F.VocabularyDocumentCodec.Encode(document))!.AsObject(); _now = now; }
+    private sealed record WorkingWire(long SchemaVersion, IReadOnlyList<F.VocabularyEntry> Catalog,
+        IReadOnlyList<F.VocabularySourceSnapshot> Sources, IReadOnlyList<R.VocabularySourceOccurrence> Occurrences,
+        IReadOnlyList<F.VocabularyInterpretation> Interpretations, IReadOnlyList<F.VocabularyCollectionItem> Collections,
+        IReadOnlyList<Cotabby.Core.Review.ReviewLayoutTemplate>? ReviewTemplates, F.VocabularySemanticIndex Semantics,
+        R.VocabularyClassificationIndex Classification);
+    // Intermediate resource operations can temporarily have unresolved references. This is
+    // a query view only: graph admission remains deferred until Finish, and callers must update
+    // raw entities explicitly instead of replacing a projected graph and losing evidence.
+    internal F.VocabularyDocument Working()
+    {
+        var wire = VocabularyPayloadCodec.DecodePortableValue<WorkingWire>(System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(_graph));
+        return new F.VocabularyDocument { SchemaVersion = wire.SchemaVersion, Catalog = wire.Catalog, Sources = wire.Sources,
+            Occurrences = wire.Occurrences, Interpretations = wire.Interpretations, Collections = wire.Collections,
+            ReviewTemplates = wire.ReviewTemplates, Semantics = wire.Semantics, Classification = wire.Classification };
+    }
+    internal JsonObject RawGraph => _graph;
+    internal static JsonObject RawValue<T>(T value) => JsonNode.Parse(VocabularyPayloadCodec.EncodePortableValue(value))!.AsObject();
+    internal static void UpsertRaw(JsonArray values, string field, Guid id, JsonObject value)
+    {
+        for (int i = 0; i < values.Count; i++)
+            if (Guid.TryParse(values[i]?[field]?.GetValue<string>(), out var candidate) && candidate == id) { values[i] = value; return; }
+        values.Add(value);
+    }
     private static CliException Invalid(string message) => new(CliErrorCode.InvalidInput, message);
     private JsonArray ArrayFor(string resource) => resource switch
     {

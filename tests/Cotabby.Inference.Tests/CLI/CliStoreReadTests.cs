@@ -71,4 +71,16 @@ public sealed class CliStoreReadTests
         }
         finally { Directory.Delete(root, true); }
     }
+    [Fact]
+    public async Task TraditionalWriteUsesSameStoreAndReplaysAcknowledgement()
+    {
+        await using var store = new FrozenVocabularyImportStore(FrozenVocabularySQLiteDatabase.CreateMemory());
+        var input = JsonNode.Parse("""{"version":1,"idempotencyKey":"traditional","operations":[{"add":{"expression":"bank","language":"en","kind":"word","meaning":"money","examples":[{"text":"bank opens","completeness":"unknown"}]}}]}""")!.AsObject();
+        var request = new CliRequest { Command = "apply", ExpiresAt = CliWire.Now() + 60, Batch = input };
+        var reply = await store.ExecuteCliAsync(request); Assert.Equal(1UL, reply["revision"]!.GetValue<ulong>());
+        var snapshot = await store.ReadAsync(); Assert.Equal("bank", snapshot.Document.CollectedEntries.Single().Expression);
+        Assert.Equal(Cotabby.Core.Vocabulary.Resources.VocabularyExampleCompleteness.Unknown, snapshot.Document.Interpretations.Single().Completeness);
+        Assert.True((await store.ExecuteCliAsync(request))["replayed"]!.GetValue<bool>());
+        Assert.Equal(1UL, (await store.ReadAsync()).Revision);
+    }
 }

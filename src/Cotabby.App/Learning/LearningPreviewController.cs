@@ -95,7 +95,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         LearningExplanationInputFactory? explanationInputs = null,
         Action? configureExplanation = null,
         IClipboardTextWriter? clipboardWriter = null,
-        Vocabulary.VocabularyStore? vocabulary = null,
+        Vocabulary.IWritingVocabularyStore? vocabulary = null,
         Cotabby.Core.Vocabulary.VocabularyCaptureFactory? vocabularyCaptures = null)
     {
         _hook = hook;

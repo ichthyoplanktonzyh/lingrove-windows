@@ -21,6 +21,7 @@ namespace Cotabby.App.UI;
 /// </summary>
 public partial class WelcomeWindow : Window
 {
+    private static readonly HashSet<WelcomeWindow> OpenWindows = [];
     private readonly AppHost _host;
     private readonly FrameworkElement[] _steps;
     private readonly (Border Card, Border Badge)[] _templates;
@@ -30,6 +31,8 @@ public partial class WelcomeWindow : Window
     private string _templateModelId;
     private bool _templateChosen, _recommendedRoute = true;
     private readonly bool _resumeFirstRun;
+    private readonly WelcomeReadinessView _readiness;
+    private bool _retired, _retiring;
 
     // Background model preparation. The sequence number lets a run that was superseded,
     // because the user went back and picked another starting point, drop its late results.
@@ -47,6 +50,13 @@ public partial class WelcomeWindow : Window
     {
         _host = host; _resumeFirstRun = resumeFirstRun;
         InitializeComponent();
+        OpenWindows.Add(this);
+        _readiness = new WelcomeReadinessView(host);
+        _readiness.CompletionFailed = id => _modelError is not null && _lastEnsureFor == id;
+        ReadinessHost.Content = _readiness;
+        _readiness.IsVisibleChanged += (_, _) => _readiness.VisibilityChanged();
+        Activated += (_, _) => _readiness.Refresh();
+        Closing += OnRetiring;
         InterfaceText.ApplyDirection(this);
         InterfaceText.TranslateInitialTree(this);
         var showcase = new TabControl { Width = 360, Margin = new Thickness(0, 20, 0, 0) };
@@ -55,7 +65,7 @@ public partial class WelcomeWindow : Window
         { Text = "请随时告诉我项目的最新进展。\nPlease keep me posted on the project's progress.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(12) } });
         StepWelcome.Children.Add(showcase);
         _host.SettingsApplied += HostSettingsApplied;
-        Closed += (_, _) => { _host.SettingsApplied -= HostSettingsApplied; _statusGate.Invalidate(); _modelCts?.Cancel(); };
+        Closed += (_, _) => { OpenWindows.Remove(this); _host.SettingsApplied -= HostSettingsApplied; _statusGate.Invalidate(); _modelCts?.Cancel(); };
         WindowTheme.Follow(this);
 
         var permissions = new StackPanel { VerticalAlignment = VerticalAlignment.Center, Visibility = Visibility.Collapsed };
@@ -96,6 +106,25 @@ public partial class WelcomeWindow : Window
     }
 
     public static void ShowFor(AppHost host, bool resumeFirstRun = false) => new WelcomeWindow(host, resumeFirstRun).Show();
+
+    internal static async Task RetireForAsync(AppHost host)
+    {
+        var windows = OpenWindows.Where(window => ReferenceEquals(window._host, host)).ToArray();
+        foreach (var window in windows) { window.IsEnabled = false; window._retiring = true; }
+        await Task.WhenAll(windows.Select(window => window._readiness.RetireAsync()));
+        foreach (var window in windows) if (!window._retired) { window._retired = true; window.Close(); }
+    }
+
+    private async void OnRetiring(object? sender, System.ComponentModel.CancelEventArgs e)
+    {
+        if (_retired) return;
+        e.Cancel = true; IsEnabled = false;
+        if (_retiring) return;
+        _retiring = true;
+        await _readiness.RetireAsync();
+        if (_retired) return;
+        _retired = true; Close();
+    }
 
     // ---------- Step navigation ----------
 
@@ -304,6 +333,7 @@ public partial class WelcomeWindow : Window
 
     private void UpdateModelStatusUi()
     {
+        _readiness.Refresh();
         bool ready = _modelReadyFor is not null;
         bool busy = !ready && _modelError is null && _ensureBusy;
         DoneSpinner.Visibility = busy ? Visibility.Visible : Visibility.Collapsed;

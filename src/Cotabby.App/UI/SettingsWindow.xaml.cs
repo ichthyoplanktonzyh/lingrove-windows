@@ -70,6 +70,20 @@ public partial class SettingsWindow : Window
         if (index >= 0) _instance.NavList.SelectedIndex = index;
     }
 
+    internal static void ShowReadinessTask(AppHost host, ReadinessTask task)
+    {
+        if (task == ReadinessTask.Completion) ShowOrFocus(host); else ShowLearning(host);
+        var window = _instance!;
+        window.SearchBox.Clear();
+        string paneTitle = task == ReadinessTask.Completion ? "Engine & Model" : "Learning";
+        int index = window._panes.FindIndex(view => view.Pane.Title == paneTitle);
+        if (index < 0) return;
+        window.NavList.SelectedIndex = index;
+        string cardTitle = task switch { ReadinessTask.Completion => "Engine", ReadinessTask.Translation => "Manual sentence preview", _ => "AI explanation model" };
+        var row = window._panes[index].Pane.Cards.FirstOrDefault(card => card.Header == cardTitle)?.Rows.FirstOrDefault();
+        if (row is not null) window.Dispatcher.BeginInvoke(() => row.View.BringIntoView(), DispatcherPriority.Loaded);
+    }
+
     /// <summary>Uses the same shared Learning pane and its existing scroll navigation. No
     /// second review window, controller or credential reader is created for this route.</summary>
     internal static void ShowReview(AppHost host)

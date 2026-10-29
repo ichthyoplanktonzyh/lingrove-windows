@@ -75,9 +75,11 @@ public sealed class ModelDownloaderTests : IDisposable
             metadata[_model.FileName] = _model.DownloadUrl;
         });
         await entered.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        Assert.True(downloader.Activity.IsDownloading(_model.FileName));
         var next = ModelFileOperations.AcquireAsync(FinalPath, CancellationToken.None);
         Assert.False(next.IsCompleted); cancellation.Cancel(); release.SetResult();
         await work.WaitAsync(TimeSpan.FromSeconds(5));
+        Assert.False(downloader.Activity.IsDownloading(_model.FileName));
         using var lease = await next.WaitAsync(TimeSpan.FromSeconds(5));
         Assert.Equal(_model.DownloadUrl, metadata[_model.FileName]);
     }

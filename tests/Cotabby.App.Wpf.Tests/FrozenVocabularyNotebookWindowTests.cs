@@ -64,8 +64,8 @@ public sealed class FrozenVocabularyNotebookWindowTests(WpfDispatcher dispatcher
         window.SetPreferredLanguages([LearningLanguage.English]); window.UpdateLayout();
         Assert.Equal(node.Id, window.Session.Destination!.NodeId); Assert.Contains(Descendants(window).OfType<TextBlock>(), t => t.Text == "River edge");
         window.SetPreferredLanguages([LearningLanguage.Chinese]); window.UpdateLayout();
-        Assert.False(FindByAutomation<Button>(window, "vocabularyNewCategory").IsEnabled); Assert.False(FindByAutomation<Button>(window, "vocabularyManageCategories").IsEnabled);
-        Assert.False(((MenuItem)categoryRow.ContextMenu.Items[0]).IsEnabled);
+        Assert.True(FindByAutomation<Button>(window, "vocabularyNewCategory").IsEnabled); Assert.True(FindByAutomation<Button>(window, "vocabularyManageCategories").IsEnabled);
+        Assert.True(((MenuItem)categoryRow.ContextMenu.Items[0]).IsEnabled);
         Render(window, "frozen-meaning.png");
         window.Width = 760; window.Height = 500; window.UpdateLayout();
         Assert.True(Find<Button>(window, "frozenNotebookAdd").IsVisible); Assert.True(Find<Button>(window, "frozenNotebookImport").IsVisible);

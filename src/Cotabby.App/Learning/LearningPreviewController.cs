@@ -1411,6 +1411,8 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
             LearningLocalModelConfiguration? localConfiguration = null;
             if (backend == LearningTranslationBackend.Local
                 && localModel.Length > 0
+                && settings.IsLocalModelCandidate(localModel, LocalModelTask.Translation)
+                && LocalModelTaskPolicy.PermitsTemplate(settings.LearningLocalTemplate, LocalModelTask.Translation)
                 && string.Equals(Path.GetFileName(localModel), localModel, StringComparison.Ordinal)
                 && string.Equals(Path.GetExtension(localModel), ".gguf", StringComparison.OrdinalIgnoreCase))
             {

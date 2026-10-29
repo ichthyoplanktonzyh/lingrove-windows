@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using Cotabby.App.Hosting;
 using Cotabby.App.Settings;
 using Cotabby.App.UI;
+using Cotabby.App.UI.Settings.Panes;
 using Cotabby.Core.Models;
 using Cotabby.Core.Suggestions;
 using Cotabby.Inference;
@@ -24,6 +25,9 @@ public sealed class TrayController : IDisposable
     private readonly MenuItem _modelMenu = new() { Header = "Model" };
     private readonly MenuItem _lengthMenu = new() { Header = "Completion length" };
     private string? _statusOverride;
+    private readonly CompletionStatusGate _statusGate = new();
+    private CompletionStatusGate.Token? _statusToken;
+    private bool _disposed;
 
     public TrayController(AppHost host)
     {
@@ -86,10 +90,16 @@ public sealed class TrayController : IDisposable
     }
 
     /// <summary>Shows a transient status such as a load failure. Null returns to the normal status.</summary>
-    public void SetStatus(string? text) => Application.Current.Dispatcher.Invoke(() =>
+    public CompletionStatusGate.Token? BeginCompletionStatus(string text)
     {
-        _statusOverride = text;
-        Refresh();
+        if (_disposed || _host.CompletionStatusEpoch is not { } epoch) return null;
+        var token = _statusGate.Begin(epoch); _statusToken = token; _statusOverride = text; Refresh(); return token;
+    }
+
+    public void PublishCompletionStatus(CompletionStatusGate.Token token, string? text) => Application.Current.Dispatcher.Invoke(() =>
+    {
+        if (_disposed || !_statusGate.IsCurrent(token, _host.CompletionStatusEpoch)) return;
+        _statusToken = text is null ? null : token; _statusOverride = text; Refresh();
     });
 
     private void Update(Action<AppSettings> change)
@@ -101,6 +111,8 @@ public sealed class TrayController : IDisposable
     private void Refresh()
     {
         var settings = _host.Settings;
+        if (_statusToken is { } token && !_statusGate.IsCurrent(token, _host.CompletionStatusEpoch))
+        { _statusToken = null; _statusOverride = null; }
         var now = DateTimeOffset.Now;
         bool paused = settings.Pause?.IsActive(now) == true;
 
@@ -108,9 +120,9 @@ public sealed class TrayController : IDisposable
             ?? (!settings.Enabled ? "Cotabby is off"
                 : paused ? settings.Pause!.StatusText(now)
                 : settings.Engine == EngineKind.Endpoint ? $"Endpoint · {settings.EndpointModel}"
-                : _host.Runtime.ActiveModel is { } active ? $"Ready · {active.DisplayName}"
+                : _host.AdmittedLocalModel is { } active ? $"Ready · {ModelDisplayText.Name(active.FileName)}"
                 : "No model loaded");
-        _tray.ToolTipText = $"Cotabby · {_statusItem.Header}";
+        _tray.ToolTipText = ModelDisplayText.Safe($"Cotabby · {_statusItem.Header}", maximumUtf16: 120);
 
         long words = _host.Coordinator.Metrics.WordsAccepted;
         _wordCountItem.Header = $"{words:N0} words completed";
@@ -121,9 +133,9 @@ public sealed class TrayController : IDisposable
         _resumeItem.Visibility = settings.Enabled && paused ? Visibility.Visible : Visibility.Collapsed;
         // Rebuilt each time so a model dropped into the folder shows up without a restart.
         _modelMenu.Items.Clear();
-        foreach (var model in ModelCatalog.Available())
+        foreach (var model in ModelCatalog.Available(settings.ModelAssignmentSnapshot()))
         {
-            var item = new MenuItem { Header = model.DisplayName, ToolTip = model.Subtitle, Tag = model.Id };
+            var item = new MenuItem { Header = ModelDisplayText.Name(model.FileName), ToolTip = model.Subtitle, Tag = model.Id };
             item.Click += (_, _) => _ = SwitchModelAsync(model.Id);
             _modelMenu.Items.Add(item);
         }
@@ -138,24 +150,25 @@ public sealed class TrayController : IDisposable
 
     private async Task SwitchModelAsync(string id)
     {
+        if (ModelCatalog.FindById(id, _host.Settings.ModelAssignmentSnapshot()) is not { } selected) return;
         Update(s => s.ActiveModelId = id);
-        if (ModelCatalog.FindById(id) is { } model && !ModelDownloader.IsCached(model))
+        if (!ModelDownloader.IsCached(selected))
         {
             // Downloads are several GB, so they start from Settings where progress is visible.
             SettingsWindow.ShowOrFocus(_host);
             return;
         }
-        SetStatus("Loading model…");
+        if (BeginCompletionStatus("Loading model…") is not { } status) return;
         try
         {
-            await _host.EnsureModelReadyAsync(null, CancellationToken.None);
-            SetStatus(null);
+            bool ready = await _host.EnsureModelReadyAsync(null, CancellationToken.None);
+            PublishCompletionStatus(status, ready ? null : "The selected model is unavailable.");
         }
         catch (Exception ex)
         {
-            SetStatus("Model load failed: " + ex.Message);
+            PublishCompletionStatus(status, "Model load failed: " + ModelDisplayText.Safe(ex.Message));
         }
     }
 
-    public void Dispose() => _tray.Dispose();
+    public void Dispose() { _disposed = true; _statusGate.Invalidate(); _host.SettingsApplied -= Refresh; _tray.Dispose(); }
 }

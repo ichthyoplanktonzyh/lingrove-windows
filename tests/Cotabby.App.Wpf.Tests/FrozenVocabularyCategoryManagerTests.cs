@@ -15,6 +15,45 @@ namespace Cotabby.App.Wpf.Tests;
 [Collection("WPF views")]
 public sealed class FrozenVocabularyCategoryManagerTests(WpfDispatcher dispatcher)
 {
+    private sealed class ReadRaceStore(IVocabularyEntryImportStore inner) : IVocabularyEntryImportStore
+    {
+        internal readonly TaskCompletionSource<FrozenVocabularyImportSnapshot> ReadResult = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        internal Action<FrozenVocabularyImportSnapshot>? Changed;
+        internal CancellationToken ReadToken;
+        internal int Unsubscribed;
+        public Task<FrozenVocabularyImportSnapshot> ReadAsync(CancellationToken token = default) { Assert.NotNull(Changed); ReadToken = token; return ReadResult.Task; }
+        public IDisposable Subscribe(Action<FrozenVocabularyImportSnapshot> changed) { Changed = changed; return new Subscription(this); }
+        private sealed class Subscription(ReadRaceStore owner) : IDisposable { public void Dispose() { owner.Unsubscribed++; } }
+        public Task<FrozenVocabularyImportPreview> PreviewWordListAsync(VocabularyWordList table, VocabularyWordListConfiguration config, CancellationToken token = default) => inner.PreviewWordListAsync(table, config, token);
+        public Task<VocabularyEntryImportResult> AddEntriesAsync(IReadOnlyList<VocabularyEntryInput> inputs, CancellationToken token = default) => inner.AddEntriesAsync(inputs, token);
+    }
+    [Fact]
+    public Task ManagerReadCoversCommitBeforeSubscriptionAndOlderReadCannotRegressNotification() => dispatcher.RunAsync(async () =>
+    {
+        await using var store = new FrozenVocabularyImportStore(FrozenVocabularySQLiteDatabase.CreateMemory()); var initial = await store.ReadAsync();
+        var first = new R.VocabularyCategory(Guid.NewGuid(), R.VocabularyCategoryAxis.Content, [new R.VocabularyMeaningLabel("First")]);
+        var middle = await store.UpdateClassificationAsync(initial.Document.Classification with { Categories = [first] }, initial.Document.Classification);
+        var second = new R.VocabularyCategory(Guid.NewGuid(), R.VocabularyCategoryAxis.Content, [new R.VocabularyMeaningLabel("Second")]);
+        var latest = await store.UpdateClassificationAsync(middle.Document.Classification with { Categories = [first, second] }, middle.Document.Classification);
+        var firstRead = new ReadRaceStore(store); var firstManager = new FrozenVocabularyCategoryManagerWindow(store, firstRead, initial, []); firstManager.Show();
+        firstRead.ReadResult.SetResult(middle); await Until(() => Descendants(firstManager).OfType<Button>().Any(b => Equals(b.Content, "First")));
+        firstManager.Close(); await firstManager.RetireAsync();
+        var race = new ReadRaceStore(store); var manager = new FrozenVocabularyCategoryManagerWindow(store, race, initial, []); manager.Show();
+        race.Changed!(latest); await Until(() => Descendants(manager).OfType<Button>().Any(b => Equals(b.Content, "Second")));
+        race.ReadResult.SetResult(middle); await Task.Yield(); manager.UpdateLayout();
+        Assert.NotNull(Row(manager, "Second")); manager.Close(); await manager.RetireAsync(); Assert.Equal(1, race.Unsubscribed);
+    });
+    [Fact]
+    public Task ManagerRetirementCancelsAndJoinsIgnoringCancellationReadWithoutLatePublish() => dispatcher.RunAsync(async () =>
+    {
+        await using var store = new FrozenVocabularyImportStore(FrozenVocabularySQLiteDatabase.CreateMemory()); var initial = await store.ReadAsync();
+        var category = new R.VocabularyCategory(Guid.NewGuid(), R.VocabularyCategoryAxis.Content, [new R.VocabularyMeaningLabel("Late")]);
+        var latest = await store.UpdateClassificationAsync(initial.Document.Classification with { Categories = [category] }, initial.Document.Classification);
+        var race = new ReadRaceStore(store); var manager = new FrozenVocabularyCategoryManagerWindow(store, race, initial, []); manager.Show();
+        var retirement = manager.RetireAsync(); Assert.True(race.ReadToken.IsCancellationRequested); Assert.False(retirement.IsCompleted); Assert.Equal(0, race.Unsubscribed);
+        race.Changed!(latest); race.ReadResult.SetResult(latest); await retirement;
+        Assert.Equal(1, race.Unsubscribed); Assert.DoesNotContain(Descendants(manager).OfType<Button>(), b => Equals(b.Content, "Late"));
+    });
     private sealed class HeldStore(IVocabularyEntryImportStore reader, ICanonicalVocabularySemanticStore store) : IVocabularyEntryImportStore, ICanonicalVocabularySemanticStore
     {
         internal readonly TaskCompletionSource Written = new(TaskCreationOptions.RunContinuationsAsynchronously), Gate = new(TaskCreationOptions.RunContinuationsAsynchronously); internal int Unsubscribed; internal bool Fail;

@@ -29,6 +29,8 @@ internal sealed class FrozenVocabularyCategoryManagerWindow : Window
     private readonly IReadOnlyList<LearningLanguage> _languages;
     private readonly IDisposable _subscription;
     private readonly object _gate = new();
+    private readonly CancellationTokenSource _readCancellation = new();
+    private readonly Task _initialRead;
     private FrozenVocabularyImportSnapshot? _pending;
     private bool _queued, _retiring, _allowClose, _busy;
     private FrozenVocabularyImportSnapshot _snapshot;
@@ -50,6 +52,7 @@ internal sealed class FrozenVocabularyCategoryManagerWindow : Window
         _list.ItemTemplate = RowTemplate(); VirtualizingPanel.SetIsVirtualizing(_list, true); VirtualizingPanel.SetVirtualizationMode(_list, VirtualizationMode.Recycling); VocabularyNotebookTheme.Brush(_list, Control.BackgroundProperty, "CardBg"); VocabularyNotebookTheme.Brush(_list, Control.ForegroundProperty, "TextPrimary"); VocabularyNotebookTheme.Brush(_list, Control.BorderBrushProperty, "CardBorder"); System.Windows.Automation.AutomationProperties.SetName(_list, "Categories"); root.Children.Add(_list);
         _search.TextChanged += (_, _) => Render(); _done.Click += (_, _) => Close(); Closing += OnClosing; Closed += (_, _) => BeginRetire();
         _subscription = reader.Subscribe(QueueSnapshot); Render();
+        _initialRead = ReadCurrentAsync(reader);
     }
     private DataTemplate RowTemplate()
     {
@@ -70,6 +73,12 @@ internal sealed class FrozenVocabularyCategoryManagerWindow : Window
         _list.ItemsSource = index.Categories.Where(c => !c.IsRetired).Select(c => new Row(c, R.VocabularyClassificationPolicy.Title(c, index, _languages), !index.Overrides.Any(o => o.CategoryId == c.Id && o.IsHidden)))
             .Where(row => CultureInfo.CurrentCulture.CompareInfo.IndexOf(row.Title, _search.Text, CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace) >= 0).ToArray();
         _list.IsEnabled = _search.IsEnabled = _done.IsEnabled = !_busy && _childDone is null;
+    }
+    private async Task ReadCurrentAsync(IVocabularyEntryImportStore reader)
+    {
+        try { var current = await reader.ReadAsync(_readCancellation.Token); if (!_retiring) Accept(current); }
+        catch (OperationCanceledException) when (_readCancellation.IsCancellationRequested) { }
+        catch (Exception error) { if (!_retiring) _error.Text = error.Message; }
     }
     private void QueueSnapshot(FrozenVocabularyImportSnapshot value)
     {
@@ -120,7 +129,7 @@ internal sealed class FrozenVocabularyCategoryManagerWindow : Window
         finally { _busy = false; _mutation = null; try { Render(); } finally { completion.TrySetResult(); } }
     }
     private void OnClosing(object? sender, CancelEventArgs e) { if (!_allowClose && (_busy || _childDone is not null || _retiring)) e.Cancel = true; }
-    private void BeginRetire() { lock (_gate) { _retiring = true; _pending = null; } }
+    private void BeginRetire() { lock (_gate) { _retiring = true; _pending = null; } _readCancellation.Cancel(); }
     internal Task RetireAsync()
     {
         Dispatcher.VerifyAccess(); if (_retirement is not null) return _retirement.Task; var done = _retirement = new(TaskCreationOptions.RunContinuationsAsynchronously); _ = Finish(done); return done.Task;
@@ -128,7 +137,7 @@ internal sealed class FrozenVocabularyCategoryManagerWindow : Window
     private async Task Finish(TaskCompletionSource done)
     {
         BeginRetire();
-        try { if (_child is FrozenVocabularyCategoryEditorWindow editor) await editor.RetireAsync(); else _child?.Close(); if (_childDone is { } child) await child.Task; if (_mutation is { } mutation) await mutation; _subscription.Dispose(); _allowClose = true; if (IsVisible) Close(); done.TrySetResult(); }
+        try { if (_child is FrozenVocabularyCategoryEditorWindow editor) await editor.RetireAsync(); else _child?.Close(); if (_childDone is { } child) await child.Task; if (_mutation is { } mutation) await mutation; await _initialRead; _subscription.Dispose(); _allowClose = true; if (IsVisible) Close(); _readCancellation.Dispose(); done.TrySetResult(); }
         catch (Exception e) { done.TrySetException(e); }
     }
 }

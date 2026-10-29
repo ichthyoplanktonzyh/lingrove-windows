@@ -64,3 +64,12 @@ tree also passed full Core 4814/4814, portable App 1242/1242 and noninteractive 
 that broader tree includes the separately scoped canonical entry editor. A process-test-only marker
 publication race was repaired and its five Windows process checks rerun before the full Inference
 pass. These checks and independent source review do not establish the native acceptance above.
+
+The initial Server 2022 CI heads aborted inside managed `RawTextRange_GetText` in the hidden owned
+TextBox check. The independently reviewed native-reader repair now routes focus and expression
+text through the existing MTA owner. Integrated local checks rebuilt with zero warnings/errors,
+passed owned reader/session/composition WPF 33/33 and focus/key Inference 12/12. This is a candidate
+repair pending fresh final-head Server CI, not a confirmed diagnosis of the old native crash.
+Ordinary prefixes longer than 65,536 UTF-16 units and expression full values over that limit are
+explicitly unsupported. The native record documents timeouts, disabled ValuePattern fallback and
+the remaining provider/physical acceptance limits.

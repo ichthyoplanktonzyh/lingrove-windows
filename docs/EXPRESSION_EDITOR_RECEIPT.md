@@ -99,3 +99,20 @@ The owner checks the captured session at publication; retirement after the sessi
 a normal invalidation that consumers must still handle.
 Before presenting the panel, `CanPresentPanel` checks the captured phase and original foreground
 window without UIA or activation; callers must still observe subsequent invalidation.
+
+The focused-window and complete-selection readers now use SDK-generated native TextPattern ranges
+on the existing TextEdit MTA owner, avoiding the managed `TextPatternRange.GetText` path that
+crashed on Windows Server 2022 CI. The cause of that crash remains unconfirmed. Native HRESULTs,
+BSTRs and range references are handled on that owner; reads check the request permit between
+provider calls. The owner sets connection and transaction timeouts to 500 ms and is unavailable
+if either setting fails. These timeouts cannot guarantee interruption of a provider call already
+in progress; owner shutdown still joins it. Microsoft's [UIA threading guidance](https://learn.microsoft.com/en-us/windows/win32/winauto/uiauto-threading)
+and [bounded GetText contract](https://learn.microsoft.com/en-us/windows/win32/api/uiautomationclient/nf-uiautomationclient-iuiautomationtextrange-gettext)
+describe the native boundaries.
+
+Expression captures reject full values over 65,536 UTF-16 units. Ordinary focus reads retain the
+14,000/512 caret window when the prefix is at most 65,536 UTF-16 units; longer prefixes are
+unsupported and fail closed rather than treating a truncated leading prefix as caret context.
+ValuePattern-only controls no longer supply an unbounded fallback value. A hidden owned WPF long
+range required roughly 26 seconds for a character endpoint move, so that scan is not used in
+production. Server 2022 CI and physical host/IME acceptance remain separate verification.

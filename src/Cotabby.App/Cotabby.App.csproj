@@ -43,10 +43,10 @@
 
   <ItemGroup>
     <!-- The explicit user-installed command borrows these app-local CLI sidecars. -->
-    <Content Include="..\Cotabby.Cli\bin\$(Configuration)\net10.0-windows\$(RuntimeIdentifier)\lingrove.exe" Link="lingrove.exe" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="..\Cotabby.Cli\bin\$(Configuration)\net10.0-windows\$(RuntimeIdentifier)\lingrove.dll" Link="lingrove.dll" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="..\Cotabby.Cli\bin\$(Configuration)\net10.0-windows\$(RuntimeIdentifier)\lingrove.deps.json" Link="lingrove.deps.json" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="..\Cotabby.Cli\bin\$(Configuration)\net10.0-windows\$(RuntimeIdentifier)\lingrove.runtimeconfig.json" Link="lingrove.runtimeconfig.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\Cotabby.Cli\bin\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\lingrove.exe" Link="lingrove.exe" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\Cotabby.Cli\bin\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\lingrove.dll" Link="lingrove.dll" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\Cotabby.Cli\bin\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\lingrove.deps.json" Link="lingrove.deps.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\Cotabby.Cli\bin\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\lingrove.runtimeconfig.json" Link="lingrove.runtimeconfig.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

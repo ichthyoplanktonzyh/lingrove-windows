@@ -38,15 +38,22 @@ preview and persistence use the Store's identity-bound media transaction. Closin
 drains accepted saves and image/range preparation before releasing that owner.
 
 The existing Anki connection, credential and default-deck settings retain their independent real
-client. Canonical review/card/template transactions exist at the Store boundary; review presentation
-and preparation remain unavailable. The [sense/usage commands](VOCABULARY_CANONICAL_SENSE_UI.md)
+client. AppHost now attaches that same Feature to the notebook's
+[independent card editor](ANKI_CANONICAL_CARD_WINDOW.md) and
+[batch review](ANKI_CANONICAL_REVIEW_BATCH.md). New/Edit/confirmed local Remove, explicit sends,
+conflicts, missing-note recreation and receipts all use the same canonical Store. Window and batch
+operations drain before the Feature/client and Store close. Audio and native Anki activation retain
+their explicit gaps. The [sense/usage commands](VOCABULARY_CANONICAL_SENSE_UI.md)
 now connect New, Merge, confirmed Delete and Move to acknowledged canonical transactions. Delete
 uncollects the sense while preserving its raw evidence; Move retains the source selection.
 The [meaning and mapping editors](VOCABULARY_CANONICAL_MEANING_UI.md) now connect meaning-node
 creation/editing, sense grouping, proposal confirmation and confirmed removal through detached
 semantic baselines. Representative examples follow the frozen evidence rule without changing it.
-Graph, category and usage-pattern editing,
-image paste/drop/enlargement, full notebook explanation/dictionary rows, export/backup, review and
+The [latest 3b meaning/classification workflow](VOCABULARY_MEANING_CLASSIFICATION_3B.md) now
+uses the attributed v4 catalog, locale-specific guidance, one outline and atomic meaning/category
+draft saves. [Usage-pattern edits](VOCABULARY_CANONICAL_PATTERN_UI.md) retain pattern identity and
+remove restricted mappings as in the source. Show-unexplored preferences survive general reset.
+Graph, image paste/drop/enlargement, full notebook explanation/dictionary rows, export/backup and
 speech remain subsequent canonical modules. An older library's checks do not activate them.
 
 Windows presentation uses WPF controls/system fonts, native window chrome and 96-DPI layout units.

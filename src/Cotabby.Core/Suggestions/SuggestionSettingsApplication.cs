@@ -7,7 +7,12 @@ public sealed class SuggestionSettingsApplication(SuggestionCoordinator coordina
     private SuggestionSettings? _previous;
     private object? _endpointIdentity, _localIdentity;
 
-    public readonly record struct Result(bool CoordinatorChanged, bool EndpointChanged, bool LocalChanged);
+    public readonly record struct Result(bool CoordinatorChanged, bool EndpointChanged, bool LocalChanged)
+    {
+        // Apply performs exactly one local withdrawal when LocalChanged is true. Callers use the
+        // resulting epoch for compare-and-select, detecting intervening power notifications.
+        public long SelectionEpoch(long priorEpoch) => priorEpoch + (LocalChanged ? 1 : 0);
+    }
 
     public Result Apply(SuggestionSettings settings, object? endpointIdentity, object? localIdentity)
     {
@@ -24,9 +29,6 @@ public sealed class SuggestionSettingsApplication(SuggestionCoordinator coordina
         _previous = settings; _endpointIdentity = endpointIdentity; _localIdentity = localIdentity;
         return new(coordinatorChanged, endpointChanged, localChanged && (wasLocal || isLocal));
     }
-
-    /// <summary>Record an in-memory power selection already committed during this application.</summary>
-    public void UpdateLocalIdentity(object? localIdentity) => _localIdentity = localIdentity;
 
     private static bool Equivalent(SuggestionSettings left, SuggestionSettings right)
     {

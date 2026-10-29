@@ -43,7 +43,8 @@ public sealed class CompletionModelAdmissionTests
         Assert.Equal("manual", CompletionModelSelection.ApplyPower(ac, battery, "manual", null));
         Assert.Equal("manual", CompletionModelSelection.ApplyPower(battery, new(false, false, "", ""), "manual", null));
         Assert.Equal("AC", CompletionModelSelection.ApplyPower(ac, ac, "manual", "AC", discoveryChanged: true));
-        Assert.Equal("AC", CompletionModelSelection.ApplyPower(ac, ac with { BatteryModelId = "NEW" }, "manual", "AC"));
+        Assert.Equal("manual", CompletionModelSelection.ApplyPower(ac, ac with { BatteryModelId = "NEW" }, "manual", "AC"));
+        Assert.Equal("NEW", CompletionModelSelection.ApplyPower(ac, ac with { PluggedInModelId = "NEW" }, "manual", "NEW"));
     }
 
     [Fact]

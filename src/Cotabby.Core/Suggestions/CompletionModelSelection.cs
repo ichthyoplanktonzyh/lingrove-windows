@@ -11,6 +11,14 @@ public static class CompletionModelSelection
     {
         public string ModelId => OnBattery ? BatteryModelId : PluggedInModelId;
     }
+    /// <summary>Inactive profile edits do not select a model or retire current completion work.</summary>
+    public static bool PowerChanged(PowerProfileState? previous, PowerProfileState next) =>
+        previous is null || previous.Value.Active != next.Active || next.Active &&
+        (previous.Value.OnBattery != next.OnBattery || previous.Value.ModelId != next.ModelId);
+
+    /// <summary>The resolved model and retained ID together define local admission identity.</summary>
+    public readonly record struct SelectionIdentity(string? SelectedId, string? ResolvedId);
+
     private static readonly string[] Preferred = ["tabby-2-base", "tabby-2-mini", "tabby-2-nano", "tabby-2-pro"];
 
     /// <summary>Mac's preferred installed models precede alphabetically ordered custom files.</summary>
@@ -34,6 +42,6 @@ public static class CompletionModelSelection
     /// <summary>A changed power profile selects its installed model; unchanged, empty or
     /// unavailable profiles preserve the current explicit selection.</summary>
     public static string? ApplyPower(PowerProfileState? previous, PowerProfileState next, string? selectedId, string? installedProfileId, bool discoveryChanged = false) =>
-        (discoveryChanged || previous != next) && next.Active && next.ModelId.Length > 0 && installedProfileId is not null
+        (discoveryChanged || PowerChanged(previous, next)) && next.Active && next.ModelId.Length > 0 && installedProfileId is not null
             ? installedProfileId : selectedId;
 }

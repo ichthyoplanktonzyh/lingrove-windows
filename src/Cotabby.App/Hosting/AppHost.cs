@@ -297,20 +297,26 @@ public sealed class AppHost : IAsyncDisposable
 
         var suggestionSettings = Settings.ToSuggestionSettings();
         var endpointSettings = EndpointSettings;
-        var transition = _suggestionApplication.Apply(suggestionSettings,
-            (endpointSettings, _completionCredentialRevision), LocalIdentity());
         var epoch = _completion.Epoch;
+
         var assignments = Settings.ModelAssignmentSnapshot();
         bool powerActive = Settings.Engine == EngineKind.Local && Settings.PowerModelSwitching;
         bool onBattery = powerActive && PowerStatus.IsOnBattery;
         var powerState = new CompletionModelSelection.PowerProfileState(powerActive, onBattery,
             powerActive ? Settings.BatteryModelId ?? "" : "", powerActive ? Settings.PluggedInModelId ?? "" : "");
-        bool powerChanged = discoveryChanged || _lastPowerSelection != powerState;
+        bool powerChanged = discoveryChanged || CompletionModelSelection.PowerChanged(_lastPowerSelection, powerState);
         var power = powerChanged && powerActive ? PowerSourceModel(assignments, onBattery) : null;
         var nextId = CompletionModelSelection.ApplyPower(_lastPowerSelection, powerState, Settings.ActiveModelId, power?.Id, discoveryChanged);
         var desired = power is not null && nextId == power.Id ? power : ResolveMainModel(assignments);
+        // Resolve the effective current profile before invalidating: changing the inactive profile
+        // must not cancel a request or replace a later manual selection.
+        var transition = _suggestionApplication.Apply(suggestionSettings,
+            (endpointSettings, _completionCredentialRevision), new CompletionModelSelection.SelectionIdentity(nextId, desired?.Id));
         bool localEnabled = Settings.Engine == EngineKind.Local && Settings.Enabled;
-        var accepted = _completion.SelectIfEpoch(epoch, localEnabled ? desired?.Id : null, localEnabled);
+        // Apply withdraws once for an effective local transition. A concurrent power withdrawal
+        // advances the epoch again and must prevent this resolved snapshot from being admitted.
+        long selectionEpoch = transition.SelectionEpoch(epoch);
+        var accepted = _completion.SelectIfEpoch(selectionEpoch, localEnabled ? desired?.Id : null, localEnabled);
         bool powerSelectionChanged = false;
         if (accepted is not null && _completion.CommitIfEpoch(accepted.Value.Epoch, () =>
         {
@@ -320,7 +326,6 @@ public sealed class AppHost : IAsyncDisposable
             if (Settings.ActiveModelId != nextId)
             { Settings.ActiveModelId = nextId; powerSelectionChanged = true; }
         }) && powerSelectionChanged) SaveAutomaticModelSelection();
-        _suggestionApplication.UpdateLocalIdentity(LocalIdentity());
         _router.UseEndpoint = Settings.Engine == EngineKind.Endpoint;
         if (transition.EndpointChanged) Endpoint.UpdateSettings(endpointSettings);
         // A cold local server would make the first suggestion wait for the model to load.
@@ -358,22 +363,6 @@ public sealed class AppHost : IAsyncDisposable
     {
         _completion.Withdraw();
         Coordinator.InvalidateSession();
-    }
-
-    private sealed record LocalSelectionIdentity(string? ActiveId, bool ActiveEligible, bool PowerEnabled, bool OnBattery,
-        string? BatteryId, bool BatteryEligible, string? PluggedId, bool PluggedEligible);
-    private LocalSelectionIdentity LocalIdentity()
-    {
-        bool Eligible(string? id)
-        {
-            if (string.IsNullOrEmpty(id)) return true;
-            return AppSettings.CompletionFilenameForId(id) is { } filename
-                && Settings.IsLocalModelCandidate(filename, LocalModelTask.Completion);
-        }
-        bool power = Settings.PowerModelSwitching;
-        return new(Settings.ActiveModelId, Eligible(Settings.ActiveModelId), power, power && PowerStatus.IsOnBattery,
-            power ? Settings.BatteryModelId : null, power && Eligible(Settings.BatteryModelId),
-            power ? Settings.PluggedInModelId : null, power && Eligible(Settings.PluggedInModelId));
     }
 
     /// <summary>Loads the selected model if it is already on disk. Never downloads.</summary>

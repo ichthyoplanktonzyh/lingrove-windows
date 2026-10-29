@@ -46,4 +46,39 @@ public sealed class SuggestionSettingsApplicationTests : CoordinatorHarness
         Assert.True(application.Apply(settings, "endpoint", "local-B").CoordinatorChanged);
         Assert.False(local.IsReady);
     }
+    [Fact]
+    public async Task InactivePowerProfileEditKeepsInFlightWorkAndActiveProfileChangeRetiresIt()
+    {
+        await using var local = new CompletionModelAdmission(Engine);
+        var application = new SuggestionSettingsApplication(Coordinator, local);
+        var settings = Coordinator.Settings with { UsesEndpoint = false, Enabled = true };
+        var ac = new CompletionModelSelection.PowerProfileState(true, false, "BATTERY", "AC");
+        var inactiveEdit = ac with { BatteryModelId = "NEW-BATTERY" };
+        var selected = CompletionModelSelection.ApplyPower(ac, inactiveEdit, "manual", "AC");
+        Assert.Equal("manual", selected);
+        var identity = new CompletionModelSelection.SelectionIdentity(selected, selected);
+        application.Apply(settings, "endpoint", identity);
+        var ticket = local.Select(selected, true);
+        Assert.True(await local.PrepareAsync(ticket, _ => Task.CompletedTask, () => Task.CompletedTask, () => true, CancellationToken.None));
+        await RunOnUiAsync(() => { });
+        var started = new TaskCompletionSource<CancellationToken>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var finish = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+        Engine.GenerateOverride = (_, ct) => { started.TrySetResult(ct); return finish.Task; };
+        Type("hello"); var token = await started.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        var inactive = application.Apply(settings, "endpoint", new CompletionModelSelection.SelectionIdentity(selected, selected));
+        Assert.False(inactive.CoordinatorChanged); Assert.False(token.IsCancellationRequested); Assert.True(local.IsReady);
+        var activeEdit = inactiveEdit with { PluggedInModelId = "NEW-AC" };
+        var next = CompletionModelSelection.ApplyPower(inactiveEdit, activeEdit, selected, "NEW-AC");
+        Assert.Equal("NEW-AC", next);
+        long before = local.Epoch;
+        var changed = application.Apply(settings, "endpoint", new CompletionModelSelection.SelectionIdentity(next, next));
+        Assert.True(changed.CoordinatorChanged);
+        Assert.NotNull(local.SelectIfEpoch(changed.SelectionEpoch(before), next, true));
+        long beforeRace = local.Epoch;
+        var race = application.Apply(settings, "endpoint", new CompletionModelSelection.SelectionIdentity("other", "other"));
+        local.Withdraw(); // A power notification arrives after resolution and before admission.
+        Assert.Null(local.SelectIfEpoch(race.SelectionEpoch(beforeRace), "other", true));
+        await RunOnUiAsync(() => { }); Assert.True(token.IsCancellationRequested); Assert.False(local.IsReady);
+        finish.SetResult(" stale"); await StaysHidden();
+    }
 }

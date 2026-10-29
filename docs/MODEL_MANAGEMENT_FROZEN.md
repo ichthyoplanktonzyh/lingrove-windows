@@ -61,7 +61,7 @@ The existing Windows cache adapter checks the GGUF signature before considering 
 the Mac locator's filename-only discovery differs for malformed files.
 On an explicit power transition an installed profile becomes the current selected model; missing
 profiles retain the current selection, and a later manual selection remains until the next profile,
-power or model-discovery event reapplies an available profile. Windows power profiles currently
+power or model-discovery event reapplies an available profile. Editing the inactive profile neither reapplies the active profile nor retires an in-flight completion. Windows power profiles currently
 choose local models only; the Mac endpoint and Apple Intelligence profile choices remain open.
 Settings construction stays
 inert; the existing app startup or explicit Get initiates preparation. A manager refresh does not

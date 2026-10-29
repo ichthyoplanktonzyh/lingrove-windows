@@ -160,6 +160,7 @@ internal sealed class FrozenVocabularySQLiteDatabase : IDisposable
         cancellationToken.ThrowIfCancellationRequested();
         Cotabby.Core.Vocabulary.Frozen.VocabularyArchiveValidation.Validate(next);
         var oldRows = VocabularyDatabaseProjection.Rows(previous); var newRows = VocabularyDatabaseProjection.Rows(next);
+        EnsureReadBudget(newRows.Values, VocabularyDocumentCodec.MaximumDocumentBytes, cancellationToken);
         var changed = newRows.Values.Where(row => !oldRows.TryGetValue(row.Key, out var old) || old != row).ToArray();
         var removed = oldRows.Values.Where(row => !newRows.ContainsKey(row.Key)).ToArray();
         long before = _connection.TotalChanges;
@@ -199,6 +200,25 @@ internal sealed class FrozenVocabularySQLiteDatabase : IDisposable
         LastWrittenRows = writtenRows;
         return revision;
     });
+    // A successful write must not create a snapshot the same adapter cannot reopen.
+    internal static void EnsureReadBudget(IEnumerable<VocabularyDatabaseRecord> rows, long maximumBytes, CancellationToken cancellationToken = default)
+    {
+        long remaining = Math.Min(maximumBytes, VocabularyDocumentCodec.MaximumDocumentBytes);
+        void Account(long amount)
+        {
+            if (amount < 0 || amount > remaining) throw new VocabularyException(VocabularyFailure.OversizedArchive);
+            remaining -= amount;
+        }
+        foreach (var row in rows)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            Account(256 + (4 + row.Extra.Count) * 16);
+            Account(System.Text.Encoding.UTF8.GetByteCount(row.Id));
+            if (row.ParentId is { } parent) Account(System.Text.Encoding.UTF8.GetByteCount(parent));
+            foreach (var extra in row.Extra) if (extra is not null) Account(System.Text.Encoding.UTF8.GetByteCount(extra));
+            Account(VocabularyDatabasePayloadCodec.Encode(row).Length);
+        }
+    }
     private void Upsert(VocabularyDatabaseRecord row)
     {
         string[] columns = ["id", "parent_id", "position", "payload", .. row.Table.ExtraColumns()];

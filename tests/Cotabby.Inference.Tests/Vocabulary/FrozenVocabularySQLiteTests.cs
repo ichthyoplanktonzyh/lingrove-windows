@@ -184,6 +184,9 @@ public sealed class FrozenVocabularySQLiteTests : IDisposable
     {
         using var db = FrozenVocabularySQLiteDatabase.CreateMemory();
         var source = RichGraph(); db.Write(source, new(), 0);
+        var rows = F.VocabularyDatabaseProjection.Rows(source);
+        var writeError = Assert.Throws<VocabularyException>(() => FrozenVocabularySQLiteDatabase.EnsureReadBudget(rows.Values, 512));
+        Assert.Equal(VocabularyFailure.OversizedArchive, writeError.Failure);
         var error = Assert.Throws<VocabularyException>(() => db.Read(maximumBytes: 512));
         Assert.Equal(VocabularyFailure.OversizedArchive, error.Failure);
         Assert.Equal(1UL, db.Revision()); Assert.Equal(source, db.Read().Document);

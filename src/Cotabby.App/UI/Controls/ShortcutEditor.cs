@@ -98,6 +98,7 @@ internal sealed class ShortcutEditor : StackPanel
     private readonly KeyRecorder _recorder;
     private readonly Button _reset;
     private readonly Button _clear;
+    private readonly TextBlock? _conflict;
 
     /// <param name="shortcut">The shortcut to edit.</param>
     /// <param name="settings">Reads the live settings, which a reset replaces.</param>
@@ -114,9 +115,26 @@ internal sealed class ShortcutEditor : StackPanel
         _clear = Ui.Button("Clear", () => change(s => shortcut.Set(s, KeyBinding.Unbound)));
         _reset.Margin = _clear.Margin = new Thickness(8, 0, 0, 0);
 
-        Children.Add(_recorder);
-        Children.Add(_reset);
-        Children.Add(_clear);
+        if (shortcut == GlobalShortcut.ExpressionAssist)
+        {
+            Orientation = Orientation.Vertical;
+            Children.Add(new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Children = { _recorder, _reset, _clear },
+            });
+            _conflict = Ui.Text("", "Caption");
+            _conflict.MaxWidth = 300;
+            _conflict.TextWrapping = TextWrapping.Wrap;
+            _conflict.Margin = new Thickness(0, 6, 0, 0);
+            Children.Add(_conflict);
+        }
+        else
+        {
+            Children.Add(_recorder);
+            Children.Add(_reset);
+            Children.Add(_clear);
+        }
     }
 
     /// <summary>Shows the current binding. Call once after construction and after every settings change.</summary>
@@ -130,6 +148,13 @@ internal sealed class ShortcutEditor : StackPanel
         _recorder.IsEnabled = editable;
         _reset.Visibility = Shown(editable && _shortcut.Default.IsBound && binding != _shortcut.Default);
         _clear.Visibility = Shown(editable && binding.IsBound);
+        if (_conflict is not null)
+        {
+            var reason = _shortcut.Conflict(settings, binding);
+            _conflict.Text = reason is null ? "" : reason.StartsWith("Use a shortcut", StringComparison.Ordinal)
+                ? reason : $"This shortcut conflicts with {reason}. Choose a different key combination.";
+            _conflict.Visibility = Shown(reason is not null);
+        }
     }
 
     private static Visibility Shown(bool visible) => visible ? Visibility.Visible : Visibility.Collapsed;

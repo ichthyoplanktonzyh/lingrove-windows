@@ -51,6 +51,12 @@ legacy guard and helper extraction; they do not establish canonical source parit
 The new source is also compiled into portable App tests. No network request, user notebook, model or
 release is used by the tests.
 
+The review repairs were independently accepted after WPF 34/34 and Core 2/2 checks. On the
+combined Windows integration, the Release solution built with zero warnings or errors; the
+canonical material/form Core filter passed 6/6, review/meaning WPF filter passed 45/45, and
+the documented historical portable controller/session/feature/settings filter passed 252/252.
+The latter checks preserve the connection-only guard; they do not activate the canonical window.
+
 ```powershell
 dotnet test tests/Cotabby.Core.Tests/Cotabby.Core.Tests.csproj -c Release --filter 'FullyQualifiedName~CanonicalReviewCardPolicyTests'
 dotnet test tests/Cotabby.App.Wpf.Tests/Cotabby.App.Wpf.Tests.csproj -c Release --filter 'FullyQualifiedName~CanonicalAnkiReviewSessionTests|FullyQualifiedName~AnkiReviewSessionNativeTests|FullyQualifiedName~AnkiReviewSettingsViewTests'

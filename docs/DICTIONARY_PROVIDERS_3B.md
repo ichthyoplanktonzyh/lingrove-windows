@@ -63,10 +63,12 @@ At the 3b reference, `LanguageLearningSettings.resetToDefaults()` calls `Learnin
 which publishes an empty catalog and default source preferences. The application-wide Windows reset
 must clear `learningDictionaryCatalog.3b`; this removes references only, not the original local files.
 
-The application composition must construct one `DictionaryFeature` with the existing bundled
-provider and ICU lowercase/word segmentation and pass its router to writing, reading and notebook
-sessions; it must call `ApplySettings` on settings changes and join `DisposeAsync` during shutdown.
-The settings pane receives `ShowSettings` as its callback. This module does not itself modify AppHost.
+AppHost constructs one `DictionaryFeature` with the existing bundled provider and ICU lowercase/word
+segmentation and passes its router to writing, reading and notebook sessions. It calls `ApplySettings`
+on changes and joins `DisposeAsync` after the borrowing sessions have retired. The settings pane
+receives `ShowSettings` as its callback. A real isolated WebView test holds a child file lock through
+the first native sharing failure, releases it, then verifies retry, safe deletion and both recovered
+admission slots. This does not establish cleanup after unknown permanently pending SDK work.
 The window uses WPF conventions rather than pixel matching. Broader runtime rendering, screen-reader,
 keyboard, real dictionary compatibility and physical desktop acceptance remain unverified. Tests use
 synthetic local fixtures, do not read user dictionaries, do not contact providers and do not download

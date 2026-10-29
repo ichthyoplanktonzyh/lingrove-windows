@@ -6,6 +6,21 @@ namespace Cotabby.App.Tests.Settings;
 public sealed class LearningPowerSettingsTests
 {
     [Fact]
+    public void ReopenedDestinationMapsRemainEditableAndCanonical()
+    {
+        var empty = SettingsStore.Parse("{\"LearningTranslationEndpointContextByDestination\":null,\"LearningTranslationEndpointGenerationByDestination\":null}");
+        empty.LearningTranslationEndpointContextByDestination["owned"] = 4096;
+        empty.LearningTranslationEndpointGenerationByDestination["owned"] = new();
+        var settings = new AppSettings { LearningBackend = LearningTranslationBackend.Endpoint, LearningEndpointModel = "café" };
+        settings.LearningTranslationEndpointContextByDestination[settings.LearningTranslationEndpointIdentity] = 6000;
+        settings.LearningTranslationEndpointGenerationByDestination[settings.LearningTranslationEndpointIdentity] = new() { Style = null!, Sampling = null! };
+        var reopened = SettingsStore.Parse(SettingsStore.Serialize(settings)); reopened.LearningEndpointModel = "cafe\u0301";
+        Assert.True(reopened.LearningTranslationEndpointContextByDestination.ContainsKey(reopened.LearningTranslationEndpointIdentity));
+        Assert.Equal(6000, reopened.LearningTranslationActiveEndpointContext);
+        Assert.NotNull(reopened.LearningTranslationActiveEndpointGeneration.Style);
+        Assert.NotNull(reopened.LearningTranslationActiveEndpointGeneration.Sampling);
+    }
+    [Fact]
     public void ExplicitPowerEndpointDoesNotBorrowOrMutateManualEndpointEnablement()
     {
         var settings = new AppSettings { LearningEndpointEnabled = false, LearningTranslationPowerSwitching = true,

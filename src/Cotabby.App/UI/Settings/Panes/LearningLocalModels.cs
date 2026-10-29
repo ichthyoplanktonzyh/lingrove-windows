@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using Microsoft.Win32;
 using Cotabby.App.Learning;
+using Cotabby.App.Settings;
 using Cotabby.App.UI.Controls;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Models;
@@ -95,10 +96,18 @@ internal sealed class LearningLocalModels : StackPanel
         RefreshInstalledAsync();
     }
 
-    private string SelectedModel => _role == LearningModelRole.Translation
-        ? _context.Settings.LearningLocalModel : _context.Settings.LearningExplanationLocalModel;
-    private LearningChatTemplate SelectedTemplate => _role == LearningModelRole.Translation
-        ? _context.Settings.LearningLocalTemplate : _context.Settings.LearningExplanationLocalTemplate;
+    private LearningPowerProfile ActiveSelection => _role == LearningModelRole.Translation
+        ? _context.Settings.LearningTranslationActiveSelection : _context.Settings.LearningExplanationActiveSelection;
+    private bool PowerSwitching => _role == LearningModelRole.Translation
+        ? _context.Settings.LearningTranslationPowerSwitching : _context.Settings.LearningExplanationPowerSwitching;
+    private string SelectedModel => ActiveSelection.LocalModel;
+    private LearningChatTemplate SelectedTemplate => ActiveSelection.Template;
+    internal static bool CanCommitLocal(AppSettings settings, LearningModelRole role, string expected)
+    {
+        var active = role == LearningModelRole.Translation ? settings.LearningTranslationActiveSelection : settings.LearningExplanationActiveSelection;
+        return expected.Length > 0 && active.Backend == LearningModelBackend.Local
+            && string.Equals(expected, active.LocalModel, StringComparison.OrdinalIgnoreCase);
+    }
     private IReadOnlyList<LearningDownloadableModel> Catalog => LearningRuntimeCatalog.ModelsFor(_role);
     private LocalModelTask ModelTask => _role == LearningModelRole.Translation ? LocalModelTask.Translation : LocalModelTask.Explanation;
 
@@ -190,8 +199,8 @@ internal sealed class LearningLocalModels : StackPanel
                 _outputTokens.Text = LearningExplanationModelPolicy.ResolveOutputTokens(
                     settings.EffectiveLearningExplanationGenerationProfile(modelName).MaximumOutputTokens).ToString(System.Globalization.CultureInfo.CurrentCulture);
 
-            _installed.IsEnabled = !_busy;
-            _template.IsEnabled = !_busy;
+            _installed.IsEnabled = !_busy && !PowerSwitching;
+            _template.IsEnabled = !_busy && !PowerSwitching;
             _contextTokens.IsEnabled = !_busy;
             _outputTokens.IsEnabled = !_busy && !string.IsNullOrEmpty(modelName);
             _cancelTransfer.IsEnabled = _busy;
@@ -221,7 +230,7 @@ internal sealed class LearningLocalModels : StackPanel
 
     private void OnInstalledSelectionChanged(object sender, SelectionChangedEventArgs args)
     {
-        if (_refreshing || _installed.SelectedValue is not string filename
+        if (_refreshing || PowerSwitching || _installed.SelectedValue is not string filename
             || string.Equals(filename, SelectedModel, StringComparison.Ordinal)) return;
         _context.Change(settings =>
         {
@@ -232,7 +241,7 @@ internal sealed class LearningLocalModels : StackPanel
 
     private void OnTemplateSelectionChanged(object sender, SelectionChangedEventArgs args)
     {
-        if (_refreshing || _template.SelectedValue is not LearningChatTemplate template
+        if (_refreshing || PowerSwitching || _template.SelectedValue is not LearningChatTemplate template
             || template == SelectedTemplate) return;
         _context.Change(settings =>
         {
@@ -250,7 +259,7 @@ internal sealed class LearningLocalModels : StackPanel
         }
 
         var filename = _contextModelBeingEdited;
-        if (string.IsNullOrEmpty(filename))
+        if (!CanCommitLocal(_context.Settings, _role, filename))
         {
             UpdateControls();
             return;
@@ -274,7 +283,7 @@ internal sealed class LearningLocalModels : StackPanel
 
     private void CommitOutputTokens(string text)
     {
-        if (_refreshing || string.IsNullOrEmpty(_outputModelBeingEdited) || !int.TryParse(text, out int tokens))
+        if (_refreshing || !CanCommitLocal(_context.Settings, _role, _outputModelBeingEdited) || !int.TryParse(text, out int tokens))
         { UpdateControls(); return; }
         var filename = _outputModelBeingEdited;
         var profile = _context.Settings.EffectiveLearningExplanationGenerationProfile(filename);

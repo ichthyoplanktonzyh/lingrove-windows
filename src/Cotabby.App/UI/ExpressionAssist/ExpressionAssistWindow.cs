@@ -6,6 +6,7 @@ using System.Windows.Threading;
 using Cotabby.Core.ExpressionAssist;
 using Cotabby.Core.Focus;
 using Cotabby.App.UI.Learning;
+using Microsoft.Win32;
 
 namespace Cotabby.App.UI.ExpressionAssist;
 
@@ -30,8 +31,20 @@ internal sealed class ExpressionAssistWindow : Window, IExpressionAssistPanel
         SizeToContent = SizeToContent.WidthAndHeight; Background = Brushes.Transparent; AllowsTransparency = true;
         Topmost = true; WindowStartupLocation = WindowStartupLocation.Manual;
         ShowActivated = false;
+        FontFamily = new FontFamily("Segoe UI Variable, Segoe UI"); FontSize = 13;
+        Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("/Cotabby;component/UI/Theme.xaml", UriKind.Relative) });
+        WindowTheme.Follow(this); ApplyContrast();
+        void Changed(object sender, UserPreferenceChangedEventArgs e)
+        {
+            if (Dispatcher.HasShutdownStarted || Dispatcher.HasShutdownFinished) return;
+            try { Dispatcher.BeginInvoke(() => { if (!_closing) ApplyContrast(); }, DispatcherPriority.Loaded); }
+            catch (InvalidOperationException) when (Dispatcher.HasShutdownStarted || Dispatcher.HasShutdownFinished) { }
+        }
+        SystemEvents.UserPreferenceChanged += Changed;
+        Closed += (_, _) => SystemEvents.UserPreferenceChanged -= Changed;
         Content = _view;
         _handle = new WindowInteropHelper(this).EnsureHandle();
+        DpiChanged += (_, _) => { ApplyAnchorHeight(); if (IsVisible) { UpdateLayout(); LearningPanelPlacement.Position(this, _anchor); } };
         Activated += (_, _) => RefreshOwnership();
         Deactivated += (_, _) => { RefreshOwnership(); if (!_hiding && !_closing) _session?.FocusLost(); };
         _view.QueryBox.GotKeyboardFocus += (_, _) => RefreshOwnership();
@@ -43,7 +56,19 @@ internal sealed class ExpressionAssistWindow : Window, IExpressionAssistPanel
         Closed += (_, _) => { _closing = true; Volatile.Write(ref _ownsKeyboard, 0); _session?.Invalidate(); };
     }
 
+    private void ApplyContrast()
+    {
+        bool high = SystemParameters.HighContrast;
+        Resources["ExpressionSelected"] = high ? SystemColors.WindowBrush : (Brush)FindResource("KeycapBg");
+        Resources["ExpressionSelectedBorder"] = high ? SystemColors.HighlightBrush : (Brush)FindResource("AccentBrush");
+        if (!high) return;
+        Resources["CardBg"] = SystemColors.WindowBrush; Resources["CardBorder"] = SystemColors.WindowTextBrush;
+        Resources["TextPrimary"] = SystemColors.WindowTextBrush; Resources["TextSecondary"] = SystemColors.WindowTextBrush;
+        Resources["InputBg"] = SystemColors.WindowBrush; Resources["KeycapBg"] = SystemColors.WindowBrush;
+    }
+
     internal void Bind(ExpressionAssistSession session) => _session = session;
+    private void ApplyAnchorHeight() => MaxHeight = LearningPanelPlacement.WorkAreaHeightDip(this, _anchor);
     internal ExpressionAssistView View => _view;
     nint IExpressionAssistPanel.WindowHandle => _handle;
     bool IExpressionAssistPanel.OwnsKeyboard => Volatile.Read(ref _ownsKeyboard) != 0;
@@ -52,7 +77,7 @@ internal sealed class ExpressionAssistWindow : Window, IExpressionAssistPanel
     {
         if (!mayActivate()) return Task.CompletedTask;
         if (!IsVisible) _view.ResetComposition();
-        _view.SetQuery(initialQuery); Show(); UpdateLayout(); LearningPanelPlacement.Position(this, _anchor);
+        ApplyAnchorHeight(); _view.SetQuery(initialQuery); Show(); UpdateLayout(); LearningPanelPlacement.Position(this, _anchor);
         if (!mayActivate()) { ((IExpressionAssistPanel)this).Hide(false); return Task.CompletedTask; }
         Activate(); _view.FocusQuery(); RefreshOwnership();
         return Dispatcher.InvokeAsync(RefreshOwnership, DispatcherPriority.Input).Task;

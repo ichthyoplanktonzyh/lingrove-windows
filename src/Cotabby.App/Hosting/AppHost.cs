@@ -202,7 +202,9 @@ public sealed class AppHost : IAsyncDisposable
         // explicit request through its service can load weights, and shutdown drains it first.
         LearningExplanation = new LearningExplanationController(
             new LearningLocalRuntime(loggers.CreateLogger<LearningLocalRuntime>(), loggers), Settings,
-            ModelCatalog.DefaultLocalDirectory(), batterySaverOn: () => PowerStatus.IsBatterySaverOn);
+            ModelCatalog.DefaultLocalDirectory(), batterySaverOn: () => PowerStatus.IsBatterySaverOn,
+            endpointFactory: ExplanationEndpoint.ExplanationEngine,
+            endpointInstructionFactory: ExplanationEndpoint.InstructionEngine);
         // One notebook owner is shared by every card/window. Construction does no IO; saved
         // explanation lookup or a user action loads it lazily. Saving never starts generation.
         _notebook = new CanonicalVocabularyFeature(CanonicalVocabularyFeature.DefaultPath, ui, overlay.Dispatcher,

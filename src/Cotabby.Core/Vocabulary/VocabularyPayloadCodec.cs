@@ -277,7 +277,7 @@ public static class VocabularyPayloadCodec
         }
         public override void Write(Utf8JsonWriter writer, byte[] value, JsonSerializerOptions options) => writer.WriteBase64StringValue(value);
     }
-    private sealed class FoundationInt64Converter : JsonConverter<long>
+    internal sealed class FoundationInt64Converter : JsonConverter<long>
     {
         public override long Read(ref Utf8JsonReader reader, Type type, JsonSerializerOptions options)
         {

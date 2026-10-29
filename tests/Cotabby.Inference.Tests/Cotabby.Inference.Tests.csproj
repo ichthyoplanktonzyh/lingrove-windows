@@ -30,6 +30,7 @@
     <!-- Exercise the real persisted settings without starting the WPF application or touching
          the user's settings directory. This file depends only on Core and Inference contracts. -->
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.cs" Link="AppSettings\AppSettings.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.ModelAssignments.cs" Link="AppSettings\AppSettings.ModelAssignments.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Review.cs" Link="Production\AppSettings.Review.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Speech.cs" Link="Production\AppSettings.Speech.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Metrics.cs" Link="Production\AppSettings.Metrics.cs" />

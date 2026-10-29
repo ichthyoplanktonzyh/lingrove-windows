@@ -42,6 +42,8 @@ public sealed partial class AppSettings
     public AppSettings ResetGeneralPreferences(long wordsAccepted) => new()
     {
         ActiveModelId = ActiveModelId,
+        LocalModelTaskAssignmentsValue = ModelAssignmentSnapshot().ToDictionary(x => x.Key, x => x.Value.ToArray(), StringComparer.Ordinal),
+        LocalModelSourcesValue = new Dictionary<string, string>(LocalModelSourcesValue ?? [], StringComparer.Ordinal),
         ShowFirstRunWelcome = ShowFirstRunWelcome,
         WordsAccepted = wordsAccepted,
         VocabularyGraphSettingsValue = VocabularyGraphSettingsValue,
@@ -385,6 +387,7 @@ public sealed class SettingsStore
             settings.LearningExplanationLocalTemplate = LearningChatTemplate.Automatic;
         if (!Enum.IsDefined(settings.LearningLocalTemplate))
             settings.LearningLocalTemplate = LearningChatTemplate.Automatic;
+        settings.NormalizeModelAssignmentsAndRegisterLegacy();
 
         if (!root.ContainsKey(nameof(AppSettings.LearningSourceLanguages)))
         {

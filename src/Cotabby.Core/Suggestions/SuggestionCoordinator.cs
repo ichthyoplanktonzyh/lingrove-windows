@@ -161,6 +161,13 @@ public sealed class SuggestionCoordinator : IAsyncDisposable
         }
     }
 
+    /// <summary>Withdraw queued edits synchronously and retire visible/in-flight work on the UI owner.</summary>
+    public void InvalidateSession()
+    {
+        _pendingEdits.Invalidate();
+        Post(() => { if (!_disposed) CancelSession("model changed"); });
+    }
+
     public void Start()
     {
         ObjectDisposedException.ThrowIf(_disposed, this);

@@ -31,7 +31,8 @@ internal sealed class LearningLocalModels : StackPanel
     private readonly TextBox _outputTokens = new() { Width = 78, TextAlignment = TextAlignment.Right };
     private readonly TextBlock _installedStatus = Ui.Text("", "Caption");
     private readonly Button _cancelTransfer;
-    private readonly StackPanel _catalog = new();
+    private StackPanel _catalog = new();
+    private ModelManagementWindow? _managerWindow;
     private readonly CancellationTokenSource _lifetime = new();
     private LearningInstalledModel[] _models = [];
     private CancellationTokenSource? _activeTransfer;
@@ -39,7 +40,8 @@ internal sealed class LearningLocalModels : StackPanel
     private string _outputModelBeingEdited = string.Empty;
     private bool _refreshing;
     private bool _busy;
-    private int _refreshGeneration;
+    private readonly ModelScanLifetime _scan = new();
+    private readonly ModelTransferStatusStore _transferStatuses = new();
 
     public LearningLocalModels(SettingsContext context, LearningModelRole role = LearningModelRole.Translation)
     {
@@ -72,11 +74,7 @@ internal sealed class LearningLocalModels : StackPanel
         }
         Children.Add(Ui.Across(_installedStatus, _cancelTransfer));
 
-        var folderActions = Ui.Across(
-            Ui.Button("Open Models Folder", OpenModelsFolder),
-            Ui.Button("Add Your Own .gguf", ImportModels));
-        folderActions.Margin = new Thickness(0, 8, 0, 4);
-        Children.Add(folderActions);
+        Children.Add(Ui.Button("Manage models", OpenModelManager));
 
         var deferredNote = Ui.Text(
             role == LearningModelRole.Translation
@@ -86,12 +84,6 @@ internal sealed class LearningLocalModels : StackPanel
         deferredNote.TextWrapping = TextWrapping.Wrap;
         deferredNote.Margin = new Thickness(0, 4, 0, 8);
         Children.Add(deferredNote);
-
-        var catalogHeading = Ui.Text("Recommended models", "RowLabel");
-        catalogHeading.Margin = new Thickness(0, 10, 0, 4);
-        Children.Add(catalogHeading);
-        Children.Add(_catalog);
-        BuildCatalog();
 
         _installed.SelectionChanged += OnInstalledSelectionChanged;
         _template.SelectionChanged += OnTemplateSelectionChanged;
@@ -107,6 +99,19 @@ internal sealed class LearningLocalModels : StackPanel
     private LearningChatTemplate SelectedTemplate => _role == LearningModelRole.Translation
         ? _context.Settings.LearningLocalTemplate : _context.Settings.LearningExplanationLocalTemplate;
     private IReadOnlyList<LearningDownloadableModel> Catalog => LearningRuntimeCatalog.ModelsFor(_role);
+    private LocalModelTask ModelTask => _role == LearningModelRole.Translation ? LocalModelTask.Translation : LocalModelTask.Explanation;
+
+    private void OpenModelManager()
+    {
+        if (_managerWindow is not null) { _managerWindow.Activate(); return; }
+        _catalog = new StackPanel(); BuildCatalog(); UpdateCatalogActions();
+        var window = new ModelManagementWindow(_context, ModelTask, _catalog, ImportModels, RefreshInstalledAsync, CancelActiveTransfer)
+        { Owner = Window.GetWindow(this) };
+        _managerWindow = window;
+        window.SetTransferBusy(_busy);
+        window.Closed += (_, _) => { _managerWindow = null; _transferStatuses.BeginView(); };
+        window.ShowDialog();
+    }
 
     private static FrameworkElement SettingLine(string title, params FrameworkElement[] controls)
     {
@@ -127,11 +132,13 @@ internal sealed class LearningLocalModels : StackPanel
     private void BuildCatalog()
     {
         _catalog.Children.Clear();
+        _transferStatuses.BeginView();
         foreach (var model in Catalog)
         {
-            var status = Ui.Text($"{model.ApproximateSizeInGigabytes:0.00} GB", "Caption");
+            var status = Ui.Text("", "Caption");
+            _transferStatuses.Bind(model.Filename, status, $"{model.ApproximateSizeInGigabytes:0.00} GB");
             status.TextWrapping = TextWrapping.Wrap;
-            var get = Ui.Button("Get", () => _ = DownloadModelAsync(model, status));
+            var get = Ui.Button("Get", () => _ = DownloadModelAsync(model));
             var title = new TextBlock { Text = model.DisplayName, FontWeight = FontWeights.SemiBold };
             var description = Ui.Text(model.Recommendation ?? model.Filename, "Caption");
             description.TextWrapping = TextWrapping.Wrap;
@@ -164,10 +171,11 @@ internal sealed class LearningLocalModels : StackPanel
             if (!string.IsNullOrEmpty(modelName)
                 && !_models.Any(model => string.Equals(model.Filename, modelName, StringComparison.OrdinalIgnoreCase)))
             {
-                _installed.Items.Add(Choice(modelName, $"{modelName} (file unavailable)"));
+                _installed.Items.Add(new ModelChoice(modelName, ModelDisplayText.Unavailable(modelName, ModelTask), false));
             }
             foreach (var model in _models)
-                _installed.Items.Add(Choice(model.Filename, $"{model.DisplayName} · {model.SizeBytes / 1_000_000_000d:0.0} GB"));
+                _installed.Items.Add(Choice(string.Equals(model.Filename, modelName, StringComparison.OrdinalIgnoreCase) ? modelName : model.Filename,
+                    $"{ModelDisplayText.Name(model.Filename)} · {model.SizeBytes / 1_000_000_000d:0.0} GB"));
             _installed.SelectedValue = modelName;
             _template.SelectedValue = Enum.IsDefined(SelectedTemplate)
                 ? SelectedTemplate
@@ -186,6 +194,7 @@ internal sealed class LearningLocalModels : StackPanel
             _contextTokens.IsEnabled = !_busy;
             _outputTokens.IsEnabled = !_busy && !string.IsNullOrEmpty(modelName);
             _cancelTransfer.IsEnabled = _busy;
+            _managerWindow?.SetTransferBusy(_busy);
             UpdateCatalogActions();
         }
         finally
@@ -279,57 +288,55 @@ internal sealed class LearningLocalModels : StackPanel
     private async void RefreshInstalledAsync()
     {
         if (_lifetime.IsCancellationRequested) return;
-        int generation = Interlocked.Increment(ref _refreshGeneration);
-        try
+        var assignments = _context.Settings.ModelAssignmentSnapshot();
+        await _scan.RunAsync(() => _context.Host.LearningModels.GetInstalledModelsForTaskAsync(ModelTask, assignments, _lifetime.Token), models =>
         {
-            var models = await _context.Host.LearningModels.GetInstalledModelsAsync(_lifetime.Token);
-            if (_lifetime.IsCancellationRequested || generation != Volatile.Read(ref _refreshGeneration)) return;
             _models = models.ToArray();
             UpdateControls();
             _installedStatus.Text = $"{_models.Length} installed GGUF model(s). Weights load only on request.";
-        }
-        catch (OperationCanceledException) when (_lifetime.IsCancellationRequested)
-        {
-        }
-        catch (Exception)
-        {
-            if (!_lifetime.IsCancellationRequested)
-                _installedStatus.Text = "The installed learning models could not be listed.";
-        }
+        }, () => _installedStatus.Text = "The installed learning models could not be listed.", _lifetime.Token);
     }
 
-    private async Task DownloadModelAsync(LearningDownloadableModel model, TextBlock status)
+    private void SetTransferStatus(LearningDownloadableModel model, string text)
+    {
+        _transferStatuses.Set(model.Filename, text);
+    }
+
+    private async Task DownloadModelAsync(LearningDownloadableModel model)
     {
         if (_busy || _lifetime.IsCancellationRequested) return;
         using var transfer = new CancellationTokenSource();
         _activeTransfer = transfer;
         _busy = true;
+        _transferStatuses.Start(model.Filename);
         UpdateControls();
         var progress = new Progress<LearningModelTransferProgress>(update =>
         {
             if (_lifetime.IsCancellationRequested || !ReferenceEquals(_activeTransfer, transfer)) return;
-            status.Text = update.Completed
+            SetTransferStatus(model, update.Completed
                 ? "Installed and checksum verified."
                 : update.TotalBytes is > 0
                     ? $"Downloading · {update.BytesDownloaded * 100 / update.TotalBytes.Value}%"
-                    : $"Downloading · {update.BytesDownloaded / 1_000_000:N0} MB";
+                    : $"Downloading · {update.BytesDownloaded / 1_000_000:N0} MB");
         });
 
         try
         {
             await _context.Host.LearningModels.DownloadAsync(model, progress, transfer.Token);
             if (_lifetime.IsCancellationRequested) return;
-            status.Text = "Installed and checksum verified.";
+            _context.Change(settings => { settings.RecordLocalModelTask(model.Filename, ModelTask); settings.RecordLocalModelSource(model.Filename, model.DownloadUrl); });
+            SetTransferStatus(model, "Installed and checksum verified.");
             RefreshInstalledAsync();
+            _managerWindow?.Refresh();
         }
         catch (OperationCanceledException) when (transfer.IsCancellationRequested)
         {
-            if (!_lifetime.IsCancellationRequested) status.Text = "Download cancelled.";
+            if (!_lifetime.IsCancellationRequested) SetTransferStatus(model, "Download cancelled.");
         }
         catch (Exception)
         {
             if (!_lifetime.IsCancellationRequested)
-                status.Text = "The model could not be downloaded or verified. Retry after checking the connection and free disk space.";
+                SetTransferStatus(model, "The model could not be downloaded or verified. Retry after checking the connection and free disk space.");
         }
         finally
         {
@@ -349,13 +356,20 @@ internal sealed class LearningLocalModels : StackPanel
             Multiselect = true,
             CheckFileExists = true,
         };
-        if (dialog.ShowDialog() != true) return;
+        if (dialog.ShowDialog(_managerWindow) != true) return;
         _ = ImportModelsAsync(dialog.FileNames);
     }
 
     private async Task ImportModelsAsync(string[] files)
     {
         if (_busy || _lifetime.IsCancellationRequested) return;
+        var accepted = files.Where(path => LocalModelTaskPolicy.Supports(Path.GetFileName(path), ModelTask)).ToArray();
+        if (accepted.Length == 0)
+        {
+            _installedStatus.Text = "This model is not compatible with this task. Choose another model.";
+            _managerWindow?.Report(_installedStatus.Text); return;
+        }
+        _context.Change(settings => { foreach (var path in accepted) settings.RecordLocalModelTask(Path.GetFileName(path), ModelTask); });
         using var transfer = new CancellationTokenSource();
         _activeTransfer = transfer;
         _busy = true;
@@ -363,18 +377,20 @@ internal sealed class LearningLocalModels : StackPanel
         UpdateControls();
         try
         {
-            var result = await _context.Host.LearningModels.ImportAsync(files, transfer.Token);
+            var result = await _context.Host.LearningModels.ImportAsync(accepted, transfer.Token);
             if (_lifetime.IsCancellationRequested) return;
-            _installedStatus.Text = $"Imported {result.Imported}; skipped {result.Skipped}; failed {result.Failed}.";
+            _installedStatus.Text = $"Imported {result.Imported}; skipped {result.Skipped}; failed {result.Failed}; incompatible {files.Length - accepted.Length}.";
+            _managerWindow?.Report(_installedStatus.Text);
             RefreshInstalledAsync();
+            _managerWindow?.Refresh();
         }
         catch (OperationCanceledException) when (transfer.IsCancellationRequested)
         {
-            if (!_lifetime.IsCancellationRequested) _installedStatus.Text = "Import cancelled.";
+            if (!_lifetime.IsCancellationRequested) { _installedStatus.Text = "Import cancelled."; _managerWindow?.Report(_installedStatus.Text); }
         }
         catch (Exception)
         {
-            if (!_lifetime.IsCancellationRequested) _installedStatus.Text = "The selected model files could not be imported.";
+            if (!_lifetime.IsCancellationRequested) { _installedStatus.Text = "The selected model files could not be imported."; _managerWindow?.Report(_installedStatus.Text); }
         }
         finally
         {
@@ -384,25 +400,9 @@ internal sealed class LearningLocalModels : StackPanel
         }
     }
 
-    private async void OpenModelsFolder()
-    {
-        try
-        {
-            var directory = _context.Host.LearningModels.ModelsDirectory;
-            var token = _lifetime.Token;
-            await Task.Run(() => Directory.CreateDirectory(directory), token);
-            if (!_lifetime.IsCancellationRequested) Ui.OpenPath(directory);
-        }
-        catch (OperationCanceledException) when (_lifetime.IsCancellationRequested) { }
-        catch (Exception)
-        {
-            if (!_lifetime.IsCancellationRequested)
-                _installedStatus.Text = "Could not open the models folder.";
-        }
-    }
-
     private void CancelTransfers()
     {
+        _scan.Close();
         CancelActiveTransfer();
         try { _lifetime.Cancel(); }
         catch (ObjectDisposedException) { }

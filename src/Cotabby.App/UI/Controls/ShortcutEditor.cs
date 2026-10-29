@@ -22,7 +22,11 @@ internal sealed class GlobalShortcut
         new("Translate Current Sentence", new KeyBinding(0x54, KeyModifiers.Alt, "Alt+T"),
             s => s.LearningTranslationShortcut, (s, key) => s.LearningTranslationShortcut = key);
 
-    private static readonly GlobalShortcut[] All = [AcceptWord, AcceptAll, Toggle, LearningTranslation];
+    public static GlobalShortcut ExpressionAssist { get; } =
+        new("Open Expression Assistance", KeyBinding.Unbound,
+            s => s.ExpressionAssistShortcut, (s, key) => s.ExpressionAssistShortcut = key);
+
+    private static readonly GlobalShortcut[] All = [AcceptWord, AcceptAll, Toggle, LearningTranslation, ExpressionAssist];
 
     private readonly Func<AppSettings, KeyBinding> _get;
 
@@ -58,8 +62,10 @@ internal sealed class GlobalShortcut
     public string? Conflict(AppSettings settings, KeyBinding candidate)
     {
         if (!candidate.IsBound) return null;
+        if (this == ExpressionAssist) return settings.ExpressionAssistShortcutConflict(candidate);
 
         var global = All.FirstOrDefault(other => other != this
+            && (other != ExpressionAssist || settings.ExpressionAssistEnabled)
             && other.Binding(settings) is var taken
             && taken.VirtualKey == candidate.VirtualKey
             && taken.Modifiers == candidate.Modifiers);

@@ -78,10 +78,13 @@ public sealed class CanonicalAnkiReviewSessionTests(WpfDispatcher dispatcher)
         byte[] bytes = Convert.FromBase64String(json.RootElement.GetProperty("input").GetString()!);
         return new(new(Convert.ToHexStringLower(SHA256.HashData(bytes)), 80, 40, bytes.Length), bytes);
     }
-    private sealed class HeldSpeech : ISpeechExporting
+    private sealed class HeldSpeech : ISpeechExporting, ISpeechDestinationDisclosure
     {
         internal string Configuration = "one"; internal readonly TaskCompletionSource Entered = new(TaskCreationOptions.RunContinuationsAsynchronously);
         internal readonly TaskCompletionSource<SpeechExportAudio> Release = new(TaskCreationOptions.RunContinuationsAsynchronously); internal int Auditions;
+        public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged { add { } remove { } }
+        public string DestinationDescription => "Test speech endpoint: https://speech.example · model: example";
+        public bool IsDestinationAvailable => true;
         public string ExportConfigurationId => Configuration;
         public SpeechExportRequest ExportRequest(string text, LearningLanguage? language, string? context = null) => new(text, language ?? throw new InvalidOperationException("Missing language"), SpeechExportPolicy.Digest(System.Text.Encoding.UTF8.GetBytes(text)), new SpeechExportRequest.Source.System("fake"));
         public async Task<SpeechExportAudio> ExportAudioAsync(SpeechExportRequest request, CancellationToken token = default) { Entered.TrySetResult(); return await Release.Task.WaitAsync(token); }
@@ -100,6 +103,7 @@ public sealed class CanonicalAnkiReviewSessionTests(WpfDispatcher dispatcher)
             await using var store = FrozenVocabularyStoreFactory.Create(Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName), false); var (entry, sense) = await Seed(store);
             var speech = new HeldSpeech(); var server = new SessionTestServer(); var controller = new AnkiReviewController(Settings(), null, server, speech: speech);
             using var session = await CanonicalAnkiReviewSession.OpenAsync(controller, store, entry, sense);
+            session.PresentAudioDisclosure(ReviewSpeechDisclosure.Capture(speech));
             session.Plan = session.Plan with { AudioKinds = new HashSet<ReviewAudioKind> { ReviewAudioKind.Expression } };
             var preparing = session.PrepareAudioAsync(ReviewAudioKind.Expression, true); await speech.Entered.Task;
             if (configuration) speech.Configuration = "two"; else session.Plan = session.Plan with { Answer = "changed" };
@@ -116,6 +120,7 @@ public sealed class CanonicalAnkiReviewSessionTests(WpfDispatcher dispatcher)
             await using var store = FrozenVocabularyStoreFactory.Create(Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName), false); var (entry, sense) = await Seed(store);
             var speech = new HeldSpeech(); var server = new SessionTestServer(); var controller = new AnkiReviewController(Settings(), null, server, speech: speech);
             using var session = await CanonicalAnkiReviewSession.OpenAsync(controller, store, entry, sense);
+            session.PresentAudioDisclosure(ReviewSpeechDisclosure.Capture(speech));
             session.Plan = session.Plan with { AudioKinds = new HashSet<ReviewAudioKind> { ReviewAudioKind.Expression } };
             var send = session.SendAsync(); await speech.Entered.Task; speech.Configuration = "changed"; speech.Complete();
             Assert.False(await send); Assert.Equal(0, server.AddCount);
@@ -132,6 +137,7 @@ public sealed class CanonicalAnkiReviewSessionTests(WpfDispatcher dispatcher)
             await using var store = FrozenVocabularyStoreFactory.Create(Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName), false); var (entry, sense) = await Seed(store);
             using var cancellation = new CancellationTokenSource(); var server = new SessionTestServer { CancelAfterMedia = cancellation.Cancel }; var speech = new SessionTestSpeech();
             using var session = await CanonicalAnkiReviewSession.OpenAsync(new AnkiReviewController(Settings(), null, server, speech: speech), store, entry, sense);
+            session.PresentAudioDisclosure(ReviewSpeechDisclosure.Capture(speech));
             session.Plan = session.Plan with { AudioKinds = new HashSet<ReviewAudioKind> { ReviewAudioKind.Expression } };
             Assert.False(await session.SendAsync(cancellationToken: cancellation.Token)); Assert.True(cancellation.IsCancellationRequested);
             Assert.NotNull((await store.ReadAsync()).Document.Collections[0].Review!.Plan.AudioReceipts![ReviewAudioKind.Expression]); Assert.Equal(0, server.AddCount);
@@ -147,6 +153,7 @@ public sealed class CanonicalAnkiReviewSessionTests(WpfDispatcher dispatcher)
             await using var store = FrozenVocabularyStoreFactory.Create(path, false); var (entry, sense) = await Seed(store);
             var server = new SessionTestServer { LoseAdd = true }; var speech = new SessionTestSpeech(); var controller = new AnkiReviewController(Settings(), null, server, speech: speech);
             using var session = await CanonicalAnkiReviewSession.OpenAsync(controller, store, entry, sense);
+            session.PresentAudioDisclosure(ReviewSpeechDisclosure.Capture(speech));
             session.Plan = session.Plan with { AudioKinds = new HashSet<ReviewAudioKind> { ReviewAudioKind.Expression } };
             Assert.False(await session.SendAsync()); Assert.Equal(1, server.AddCount); Assert.Equal(1, speech.Exports);
             var saved = (await store.ReadAsync()).Document.Collections[0].Review!;

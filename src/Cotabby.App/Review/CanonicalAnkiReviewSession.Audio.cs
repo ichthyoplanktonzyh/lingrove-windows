@@ -2,13 +2,38 @@ using System.Text;
 using Cotabby.Core.Review;
 using Cotabby.Core.Speech;
 using Cotabby.Core.Vocabulary;
+using Cotabby.Inference.Speech;
 
 namespace Cotabby.App.Review;
+
+/// <summary>What an active Review surface actually disclosed for this exact speech configuration.</summary>
+internal sealed record ReviewSpeechDisclosure(string Configuration, string Destination)
+{
+    internal static ReviewSpeechDisclosure? Capture(ISpeechExporting? speech)
+    {
+        try
+        {
+            if (speech is not ISpeechDestinationDisclosure { IsDestinationAvailable: true } disclosure) return null;
+            string destination = disclosure.DestinationDescription;
+            return string.IsNullOrWhiteSpace(destination) ? null : new(speech.ExportConfigurationId, destination);
+        }
+        catch { return null; }
+    }
+    internal bool Matches(ISpeechExporting? speech) => this == Capture(speech);
+}
 
 /// <summary>Sheet-owned audio borrows the shared controller. Every asynchronous boundary keeps
 /// the draft, speech configuration and destination current before a remote write or receipt.</summary>
 internal sealed partial class CanonicalAnkiReviewSession
 {
+    private ReviewSpeechDisclosure? _presentedSpeech;
+    private ReviewSpeechDisclosure? _sendSpeech;
+    internal void PresentAudioDisclosure(ReviewSpeechDisclosure? value) => _presentedSpeech = value;
+    private void RequireAudioDisclosure()
+    {
+        if (_presentedSpeech is not { } shown || !shown.Matches(Audio.Speech))
+            throw new AnkiReviewException("Speech destination is unavailable or changed. Review the speech settings before continuing.");
+    }
     private void ValidateAudioMapping(ReviewCardContent content)
     {
         RequireNoAudio();
@@ -19,23 +44,25 @@ internal sealed partial class CanonicalAnkiReviewSession
     }
     internal async Task PrepareAudioAsync(ReviewAudioKind kind, bool audition, bool force = false, CancellationToken token = default)
     {
+        Message = null; Changed();
         try
         {
-            var captured = CaptureSendState(); var configuration = Audio.Speech?.ExportConfigurationId;
+            RequireAudioDisclosure(); var shown = _presentedSpeech; var captured = CaptureSendState(); var configuration = Audio.Speech?.ExportConfigurationId;
             var current = await CurrentAsync(token); var content = CanonicalReviewCardPolicy.Content(current.Entry, current.Sense, captured.Plan);
-            var request = Audio.Request(kind, current.Entry.Language, content);
+            RequireAudioDisclosure(); var request = Audio.Request(kind, current.Entry.Language, content);
             if (force && MatchesSendState(captured))
             {
                 var receipts = new Dictionary<ReviewAudioKind, ReviewAudioReceipt>(Plan.AudioReceipts ?? new Dictionary<ReviewAudioKind, ReviewAudioReceipt>()); receipts.Remove(kind);
                 Plan = Plan with { AudioReceipts = receipts }; captured = CaptureSendState();
             }
-            var result = await Audio.PrepareAsync(kind, request, force, token);
+            RequireAudioDisclosure(); var result = await Audio.PrepareAsync(kind, request, force, token, () =>
+            { RequireAudioDisclosure(); if (!Equals(shown, _presentedSpeech) || !MatchesSendState(captured) || configuration != Audio.Speech?.ExportConfigurationId) throw Conflict(); });
             token.ThrowIfCancellationRequested();
-            if (!MatchesSendState(captured) || configuration != Audio.Speech?.ExportConfigurationId) throw Conflict();
+            if (!Equals(shown, _presentedSpeech) || !MatchesSendState(captured) || configuration != Audio.Speech?.ExportConfigurationId) throw Conflict();
             var latest = await CurrentAsync(token);
-            if (!MatchesSendState(captured) || configuration != Audio.Speech?.ExportConfigurationId || ReviewValue(latest.Sense, CardId) != _baseline
+            if (!Equals(shown, _presentedSpeech) || !MatchesSendState(captured) || configuration != Audio.Speech?.ExportConfigurationId || ReviewValue(latest.Sense, CardId) != _baseline
                 || !Equals(CanonicalReviewCardPolicy.Content(latest.Entry, latest.Sense, captured.Plan), content)) throw Conflict();
-            if (audition) Audio.Speech!.Audition(result.Audio, Audio.OwnerId, request.Language);
+            RequireAudioDisclosure(); if (audition) Audio.Speech!.Audition(result.Audio, Audio.OwnerId, request.Language);
         }
         catch (Exception error) { if (error is not OperationCanceledException) { Message = error.Message; Changed(); } }
     }
@@ -46,7 +73,7 @@ internal sealed partial class CanonicalAnkiReviewSession
         {
             if (Plan.AudioKinds?.Contains(kind) != true) continue;
             var current = await CurrentAsync(token); await ValidateCurrentAsync(content, connection, token);
-            var request = Audio.Request(kind, current.Entry.Language, content);
+            RequireAudioDisclosure(); var request = Audio.Request(kind, current.Entry.Language, content);
             ReviewAudioReceipt? receipt = Plan.AudioReceipts?.GetValueOrDefault(kind);
             bool reuse = false;
             if (receipt is not null && Same(receipt.Fingerprint, request.Fingerprint) && Same(receipt.Endpoint, connection.Endpoint) && Same(receipt.Profile, profile))
@@ -56,7 +83,7 @@ internal sealed partial class CanonicalAnkiReviewSession
             }
             if (!reuse)
             {
-                var prepared = await Audio.PrepareAsync(kind, request, cancellationToken: token);
+                RequireAudioDisclosure(); var prepared = await Audio.PrepareAsync(kind, request, cancellationToken: token, beforeExport: () => { RequireAudioDisclosure(); RequireSendState(); });
                 await ValidateCurrentAsync(content, connection, token);
                 if (!Same(await Controller.ProfileAsync(connection, token), profile)) throw Conflict();
                 await ValidateCurrentAsync(content, connection, token);

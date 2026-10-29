@@ -124,6 +124,7 @@ internal sealed partial class CanonicalAnkiReviewSession : INotifyPropertyChange
     {
         if (((Plan.AudioKinds?.Count ?? 0) != 0 || (Plan.Layout?.AudioKinds.Count ?? 0) != 0) && Audio.Speech is null)
             throw new AnkiReviewException("Speech is not available for review audio.");
+        if ((Plan.AudioKinds?.Count ?? 0) != 0 || (Plan.Layout?.AudioKinds.Count ?? 0) != 0) RequireAudioDisclosure();
     }
     private sealed record SendState(ReviewPlan Plan, string Deck, Guid? BindingId, string Model, IReadOnlyDictionary<ReviewField, string> Mapping);
     private SendState CaptureSendState() => new(Plan, Deck, BindingId, Model, Mapping);
@@ -131,7 +132,8 @@ internal sealed partial class CanonicalAnkiReviewSession : INotifyPropertyChange
         && Same(Model, state.Model) && Mapping.Count == state.Mapping.Count
         && Mapping.All(pair => state.Mapping.TryGetValue(pair.Key, out var value) && Same(pair.Value, value));
     private void RequireSendState()
-    { RequireNoAudio(); if (_sendState is not { } state || !MatchesSendState(state) || _sendScope is not { } scope || !Controller.Matches(scope)) throw Conflict(); }
+    { RequireNoAudio(); if (_sendState is not { } state || !MatchesSendState(state) || _sendScope is not { } scope || !Controller.Matches(scope)
+            || ((Plan.AudioKinds?.Count ?? 0) != 0 && !Equals(_sendSpeech, _presentedSpeech))) throw Conflict(); }
     internal IReadOnlyDictionary<ReviewField, string> Mapping => CardId is not null ? ReviewLayoutPolicy.Mapping : Same(Model, AnkiReviewPolicy.PresetName)
         ? new ReadOnlyDictionary<ReviewField, string>(AnkiReviewPolicy.PresetMapping.Where(pair => pair.Key is not (ReviewField.ExpressionAudio or ReviewField.SentenceAudio) || AvailableFields.Count == 0 || Has(AvailableFields, FieldName(pair.Key))).ToDictionary(pair => pair.Key, pair => pair.Value))
         : Binding?.Mapping ?? Controller.Settings.EffectiveMapping;

@@ -15,6 +15,8 @@ internal sealed class CanonicalAnkiReviewBatchSession : INotifyPropertyChanged
     private readonly F.ICanonicalVocabularyStore _store;
     private readonly Dictionary<Guid, (F.VocabularySense Sense, string Expression)> _baselines = [];
     private ReviewBatchItem[] _items;
+    private ReviewSpeechDisclosure? _presentedSpeech;
+    internal void PresentAudioDisclosure(ReviewSpeechDisclosure? value) => _presentedSpeech = value;
     private CancellationTokenSource? _cancellation, _activeCancellation;
     internal IReadOnlyList<ReviewBatchItem> Items => Array.AsReadOnly(_items);
     internal int EmptySenseCount { get; }
@@ -96,7 +98,7 @@ internal sealed class CanonicalAnkiReviewBatchSession : INotifyPropertyChanged
                 Status = _feature.Controller.CanonicalStatus(source.Value.Entry, source.Value.Sense, card.Plan.Id) == "Synced" ? ReviewBatchStatus.Synced : ReviewBatchStatus.Ready, Message = null });
         });
     }
-    internal void Start(ReviewOperationScope scope, Guid? only = null) => StartOwned(token => RunAsync(scope, only, token));
+    internal void Start(ReviewOperationScope scope, Guid? only = null) { var shown = _presentedSpeech; StartOwned(token => RunAsync(scope, only, shown, token)); }
     internal void StartApply(string deck) => StartOwned(token => ApplyAsync(deck, token));
     private void StartOwned(Func<CancellationToken, Task> action)
     {
@@ -157,7 +159,7 @@ internal sealed class CanonicalAnkiReviewBatchSession : INotifyPropertyChanged
             catch (Exception error) { Replace(i, _items[i] with { Status = ReviewBatchStatus.Failed, Message = error.Message }); }
         }
     }
-    private async Task RunAsync(ReviewOperationScope scope, Guid? only, CancellationToken token)
+    private async Task RunAsync(ReviewOperationScope scope, Guid? only, ReviewSpeechDisclosure? shown, CancellationToken token)
     {
         Message = null; Changed();
         await _feature.Controller.CanonicalVerifyAsync(scope, token);
@@ -177,6 +179,7 @@ internal sealed class CanonicalAnkiReviewBatchSession : INotifyPropertyChanged
             try
             {
                 using var session = await CanonicalAnkiReviewSession.OpenAsync(_feature.Controller, _store, source.Value.Entry.Id, source.Value.Sense.Id, cardId, token);
+                session.PresentAudioDisclosure(shown);
                 var opened = Resolve(session.Snapshot, _items[i].Selection, cardId);
                 if (opened is null) { Replace(i, _items[i] with { Status = ReviewBatchStatus.Unavailable }); continue; }
                 var saved = opened.Value.Sense.ReviewCards!.First(card => card.Plan.Id == cardId);

@@ -32,7 +32,7 @@ internal sealed class ReviewAudioPreparation(ISpeechExporting? speech) : INotify
             language, content.Sentence.Length == 0 ? null : content.Sentence);
     }
     public async Task<ReviewPreparedAudio> PrepareAsync(ReviewAudioKind kind, SpeechExportRequest request,
-        bool force = false, CancellationToken cancellationToken = default)
+        bool force = false, CancellationToken cancellationToken = default, Action? beforeExport = null)
     {
         // Reuse precedes both the busy guard and cancellation in the original sheet owner.
         // Another slot's generation does not prevent borrowing a matching cached recording.
@@ -42,6 +42,7 @@ internal sealed class ReviewAudioPreparation(ISpeechExporting? speech) : INotify
         try
         {
             if (Speech is null) throw new SpeechException(SpeechFailure.IncompleteConfiguration);
+            beforeExport?.Invoke();
             var audio = await Speech.ExportAudioAsync(request, cancellationToken);
             cancellationToken.ThrowIfCancellationRequested();
             var result = new ReviewPreparedAudio(request.Fingerprint, audio);

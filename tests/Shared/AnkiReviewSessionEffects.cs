@@ -92,8 +92,11 @@ internal sealed class SessionTestServer : IAnkiConnecting
 /// <summary>The original in-memory exporter effect: each request produces its numbered Float32
 /// sample, encoded by the real export policy. Pausing is caller-cancellable and emits no file.
 /// It supplies no plan, media-reuse or fingerprint policy beyond the original fake text digest.</summary>
-internal sealed class SessionTestSpeech : ISpeechExporting
+internal sealed class SessionTestSpeech : ISpeechExporting, ISpeechDestinationDisclosure
 {
+    public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged { add { } remove { } }
+    public string DestinationDescription => "System voice · audio stays on this device.";
+    public bool IsDestinationAvailable => true;
     public int Exports { get; private set; }
     public bool Pause { get; set; }
     public TaskCompletionSource Entered { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);

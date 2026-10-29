@@ -48,11 +48,11 @@ internal sealed class VocabularyMediaDirectory : IDisposable
     /// regular private files, so an access failure or a link is never treated as a missing image.
     /// Returned handles belong to the caller and deny deletion until the verification/read ends.
     /// </summary>
-    internal SafeFileHandle? OpenFile(string filename)
+    internal SafeFileHandle? OpenFile(string filename, bool delete = false)
     {
         Verify();
         var handle = VocabularyWindowsFile.Native.CreateFileW(System.IO.Path.Combine(Path, filename),
-            VocabularyWindowsFile.Native.Read, VocabularyWindowsFile.Native.ShareReadWrite, IntPtr.Zero,
+            VocabularyWindowsFile.Native.Read | (delete ? VocabularyWindowsFile.Native.Delete : 0), VocabularyWindowsFile.Native.ShareReadWrite, IntPtr.Zero,
             VocabularyWindowsFile.Native.OpenExisting, VocabularyWindowsFile.Native.OpenReparsePoint | VocabularyWindowsFile.Native.BackupSemantics, IntPtr.Zero);
         if (handle.IsInvalid)
         {

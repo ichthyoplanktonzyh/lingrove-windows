@@ -4,7 +4,7 @@ using Cotabby.Core.Vocabulary;
 namespace Cotabby.Core.Vocabulary.Frozen;
 
 /// <summary>Review transactions borrowed from the single canonical owner. Returned snapshots
-/// acknowledge committed revisions; image mutations are not yet supported by this boundary.</summary>
+/// acknowledge committed revisions; supplied images join the owner's media transaction.</summary>
 public interface ICanonicalVocabularyReviewStore
 {
     Task<FrozenVocabularyImportSnapshot> SaveReviewAsync(Guid entryId, Guid senseId, VocabularyReview value, VocabularyReview? expected,

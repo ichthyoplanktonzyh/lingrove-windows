@@ -15,7 +15,7 @@ internal sealed class CanonicalAnkiReviewBatchSession : INotifyPropertyChanged
     private readonly F.ICanonicalVocabularyStore _store;
     private readonly Dictionary<Guid, (F.VocabularySense Sense, string Expression)> _baselines = [];
     private ReviewBatchItem[] _items;
-    private CancellationTokenSource? _cancellation;
+    private CancellationTokenSource? _cancellation, _activeCancellation;
     internal IReadOnlyList<ReviewBatchItem> Items => Array.AsReadOnly(_items);
     internal int EmptySenseCount { get; }
     internal int CompleteCount => _items.Count(item => item.Status == ReviewBatchStatus.Synced);
@@ -106,12 +106,20 @@ internal sealed class CanonicalAnkiReviewBatchSession : INotifyPropertyChanged
         async Task Execute()
         {
             await start.Task;
-            try { await _feature.RunAsync(async featureToken => { using var linked = CancellationTokenSource.CreateLinkedTokenSource(featureToken, cancellation.Token); await action(linked.Token); }); }
+            try { await _feature.RunAsync(async featureToken => { using var linked = CancellationTokenSource.CreateLinkedTokenSource(featureToken, cancellation.Token); _activeCancellation = linked; try { await action(linked.Token); } finally { _activeCancellation = null; } }); }
             catch (Exception error) { FailOutstanding(error); }
             finally { cancellation.Dispose(); _cancellation = null; Work = null; Busy = false; Changed(); }
         }
     }
-    internal Task StopAsync() => _cancellation?.CancelAsync() ?? Task.CompletedTask;
+    internal Task StopAsync()
+    {
+        // CancelAsync marks its own token immediately but linked registrations run later.
+        // Mark the active token itself before returning so a just-resumed remote call cannot
+        // race ahead of propagation and report a not-yet-verified note as successful.
+        var active = _activeCancellation?.CancelAsync() ?? Task.CompletedTask;
+        var owner = _cancellation?.CancelAsync() ?? Task.CompletedTask;
+        return Task.WhenAll(active, owner);
+    }
     private void FailOutstanding(Exception error)
     {
         Message = error is OperationCanceledException ? null : error.Message; Changed();

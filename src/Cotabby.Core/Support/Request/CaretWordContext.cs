@@ -68,7 +68,8 @@ public static class CaretWordContext
 
     // Upstream keeps this list apart from the CJK test in CompletionSeamGuard and the acceptance
     // list in SuggestionSessionReconciler. This one adds Thai and Lao and leaves out compatibility forms.
-    private static bool IsUnspacedScript(Rune scalar) => scalar.Value
+    // Normalization shares this exact script set when it flattens a model's leading newline.
+    internal static bool IsUnspacedScript(Rune scalar) => scalar.Value
         is (>= 0x0E00 and <= 0x0EFF) or (>= 0x3040 and <= 0x30FF) or (>= 0x3400 and <= 0x9FFF)
         or (>= 0xAC00 and <= 0xD7AF) or (>= 0x20000 and <= 0x3134F);
 }

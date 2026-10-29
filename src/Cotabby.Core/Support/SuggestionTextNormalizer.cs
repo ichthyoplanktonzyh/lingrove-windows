@@ -104,7 +104,7 @@ public static partial class SuggestionTextNormalizer
     /// specific cause.
     /// </summary>
     public static SuggestionNormalizationResult NormalizeDetailed(
-        string rawSuggestion, SuggestionNormalizationRequest request)
+        string rawSuggestion, SuggestionNormalizationRequest request, IReadOnlyList<string>? promptEchoCandidates = null)
     {
         bool rawHadContent = !ScalarSets.IsBlank(rawSuggestion);
         string normalized = rawSuggestion.Replace("\r", string.Empty);
@@ -113,7 +113,9 @@ public static partial class SuggestionTextNormalizer
         // (a hallucinated new turn) is truncated.
         normalized = ControlTokenMarkers.Sanitize(normalized);
         normalized = StripThinkBlocks(normalized);
-        normalized = StripPromptEcho(normalized, request);
+        var promptCleanup = StripPromptEcho(normalized, request, promptEchoCandidates);
+        normalized = promptCleanup.Text;
+        bool removedLeadingNewline = promptCleanup.RemovedLeadingNewline || LeadingWhitespaceContainsNewline(normalized);
         normalized = ScalarSets.Trim(normalized, IsControlOrNewline);
 
         // Small models often emit leading newlines before the continuation. They are trimmed before
@@ -122,8 +124,11 @@ public static partial class SuggestionTextNormalizer
 
         // Stripping a leading run of known labels also runs before the single-line collapse, so a
         // model that stacks label lines still surfaces the real continuation.
-        normalized = StripLeadingScaffoldingLabels(normalized);
+        var scaffoldingCleanup = StripLeadingScaffoldingLabels(normalized);
+        normalized = scaffoldingCleanup.Text;
+        removedLeadingNewline |= scaffoldingCleanup.RemovedLeadingNewline || LeadingWhitespaceContainsNewline(normalized);
         normalized = ScalarSets.Trim(normalized, ScalarSets.IsNewline);
+        normalized = PromptPrefaceEchoFilter.Truncated(normalized);
 
         if (request.IsMultiLineEnabled)
         {
@@ -136,11 +141,15 @@ public static partial class SuggestionTextNormalizer
         }
         else
         {
-            // Only the immediate continuation line is surfaced.
-            int start = 0;
-            while (start < normalized.Length && normalized[start] == '\n') start++;
-            int end = normalized.IndexOf('\n', start);
-            if (start < normalized.Length) normalized = end < 0 ? normalized[start..] : normalized[start..end];
+            // Newline formatting may contain ordinary spaces. Preserve those spaces when no
+            // newline was removed; otherwise the surviving seam decides the one needed boundary.
+            if (removedLeadingNewline)
+            {
+                var text = new GraphemeString(normalized);
+                normalized = normalized[text.Offset(text.PrefixLength(g => g.IsWhitespace))..];
+            }
+            int end = normalized.IndexOf('\n');
+            if (end >= 0) normalized = normalized[..end];
         }
 
         // A completion that starts by repeating text already after the caret is unusable. Showing
@@ -155,6 +164,17 @@ public static partial class SuggestionTextNormalizer
         string beforeEchoStrip = normalized;
         normalized = StripEchoPrefix(normalized, request.PrecedingText);
         bool collapsedByEcho = beforeEchoStrip.Length > 0 && normalized.Length == 0;
+
+        // A removed newline committed a new word, but only at the seam that remains after echo
+        // cleanup. An echoed "sched" followed by "ule" still continues the same word. Reuse the
+        // caret's script rule and the overlay's punctuation rule instead of inventing spacing here.
+        if (removedLeadingNewline && !request.IsMultiLineEnabled
+            && GraphemeString.FirstOf(normalized) is { } first && (first.IsLetter || first.IsNumber)
+            && GraphemeString.LastOf(request.PrecedingText) is { } last
+            && !first.ToString().EnumerateRunes().Any(CaretWordContext.IsUnspacedScript)
+            && !last.ToString().EnumerateRunes().Any(CaretWordContext.IsUnspacedScript)
+            && GhostSpaceBoundary.NeedsLeadingSpace(normalized, request.PrecedingText))
+            normalized = " " + normalized;
 
         // Space management runs after echo suppression because stripping echoed words can expose a
         // leading space. When the preceding text already ends with whitespace that space is dropped.
@@ -192,20 +212,61 @@ public static partial class SuggestionTextNormalizer
         _ => CompletionSuppressionReason.CopiesPrecedingText,
     };
 
-    /// <summary>Removes an echoed prompt, then an echoed caret prefix, from the front of the output.</summary>
-    private static string StripPromptEcho(string text, SuggestionNormalizationRequest request)
+    /// <summary>Removes prompt/prefix echoes while retaining only the surviving seam's newline.
+    /// Backend-specific prompt candidates borrow the same rule; this creates no backend state.</summary>
+    private static (string Text, bool RemovedLeadingNewline) StripPromptEcho(string text,
+        SuggestionNormalizationRequest request, IReadOnlyList<string>? promptEchoCandidates)
     {
         string normalized = text;
-        if (request.Prompt.Length > 0 && normalized.StartsWith(request.Prompt, StringComparison.Ordinal))
+        bool removedLeadingNewline = false;
+        for (int index = -1; index < (promptEchoCandidates?.Count ?? 0); index++)
         {
-            normalized = ScalarSets.Trim(normalized[request.Prompt.Length..], IsControlOrNewline);
+            string prompt = index < 0 ? request.Prompt : promptEchoCandidates![index];
+            if (prompt.Length == 0 || !normalized.StartsWith(prompt, StringComparison.Ordinal)) continue;
+            normalized = normalized[prompt.Length..];
+            removedLeadingNewline = LeadingWhitespaceContainsNewline(normalized);
+            normalized = removedLeadingNewline && !request.IsMultiLineEnabled
+                ? StripLeadingFormatting(normalized, request.PrefixText)
+                : ScalarSets.Trim(normalized, IsControlOrNewline);
         }
         if (request.PrefixText.Length > 0 && normalized.StartsWith(request.PrefixText, StringComparison.Ordinal))
         {
             normalized = normalized[request.PrefixText.Length..];
+            // This newline belonged before the echoed prefix. The caller examines the newly
+            // exposed suffix again, so a boundary after the prefix is still retained.
+            removedLeadingNewline = false;
         }
-        return normalized;
+        return (normalized, removedLeadingNewline);
     }
+
+    private static bool LeadingWhitespaceContainsNewline(string text)
+    {
+        foreach (var scalar in text.EnumerateRunes())
+        {
+            if (!IsLeadingFormatting(scalar)) return false;
+            if (ScalarSets.IsNewline(scalar)) return true;
+        }
+        return false;
+    }
+
+    /// <summary>Check for the complete echoed prefix before each formatting character is removed.
+    /// Its own indentation can be meaningful; dropping it would hide a mid-word echo.</summary>
+    private static string StripLeadingFormatting(string text, string prefix)
+    {
+        var graphemes = new GraphemeString(text); int index = 0;
+        while (index < graphemes.Count)
+        {
+            if (prefix.Length > 0 && text.AsSpan(graphemes.Offset(index)).StartsWith(prefix, StringComparison.Ordinal)) break;
+            bool formatting = true;
+            foreach (var scalar in graphemes[index].Span.EnumerateRunes())
+                if (!IsLeadingFormatting(scalar)) { formatting = false; break; }
+            if (!formatting) break;
+            index++;
+        }
+        return text[graphemes.Offset(index)..];
+    }
+
+    private static bool IsLeadingFormatting(Rune scalar) => ScalarSets.IsControl(scalar) || ScalarSets.IsWhitespaceOrNewline(scalar);
 
     /// <summary>
     /// Names the most specific cause of an empty outcome at the safety gate, which rejects empty,
@@ -271,9 +332,10 @@ public static partial class SuggestionTextNormalizer
     /// Removes a leading run of known scaffolding labels, whether each sits on its own line or inline
     /// before the continuation. A label appearing later in the text is left alone.
     /// </summary>
-    private static string StripLeadingScaffoldingLabels(string text)
+    private static (string Text, bool RemovedLeadingNewline) StripLeadingScaffoldingLabels(string text)
     {
         string working = text;
+        bool removedLeadingNewline = false;
         while (true)
         {
             // Leading whitespace is dropped only when a label actually matches.
@@ -281,7 +343,8 @@ public static partial class SuggestionTextNormalizer
             string leading = working[graphemes.Offset(graphemes.PrefixLength(g => g.IsWhitespace))..];
             string? label = LabelsByLengthDescending.FirstOrDefault(
                 candidate => leading.StartsWith(candidate, StringComparison.OrdinalIgnoreCase));
-            if (label is null) return working;
+            if (label is null) return (working, removedLeadingNewline);
+            removedLeadingNewline |= LeadingWhitespaceContainsNewline(working);
             working = leading[label.Length..];
         }
     }

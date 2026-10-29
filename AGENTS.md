@@ -77,6 +77,10 @@ Explain subsystem ownership and data flow in type/file comments when introducing
 boundary. Put a rule in Core when it is deterministic; put effects in Win32 or Inference; keep App
 coordinators focused on sequencing, cancellation, and current UI state.
 
+The [latest autocomplete output module](docs/AUTOCOMPLETE_OUTPUT_CURRENT.md) explicitly upgrades
+normalization to the latest recorded Mac target. Preserve newline evidence through prompt/prefix
+cleanup and decide spacing only at the surviving seam; the old shared corpus retains its own pin.
+
 ## Safety and privacy invariants
 
 - Local inference is the default. No text, clipboard contents, screenshot, OCR, or notebook data may

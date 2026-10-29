@@ -35,10 +35,10 @@
                             Padding="0" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource TextSecondary}" Click="OnExpandClick" ToolTip="Collapse" />
                     <Button x:Name="ReplaceButton" DockPanel.Dock="Right" Content="⇄" Width="28" Height="28" Focusable="False"
                             Padding="0" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource TextSecondary}" Click="OnReplaceClick" ToolTip="Replace" IsEnabled="False" />
-                    <vocabulary:VocabularyFavoriteButton x:Name="FavoriteButton" DockPanel.Dock="Right" />
-                    <Button x:Name="ExplanationButton" DockPanel.Dock="Right" Content="✦" Width="28" Height="28" Focusable="False"
+                    <Border x:Name="FavoriteContainer" DockPanel.Dock="Right"><vocabulary:VocabularyFavoriteButton x:Name="FavoriteButton" /></Border>
+                    <Border x:Name="ExplanationContainer" DockPanel.Dock="Right"><Button x:Name="ExplanationButton" Content="✦" Width="28" Height="28" Focusable="False"
                             Padding="0" FontSize="16" Background="Transparent" BorderThickness="0"
-                            Foreground="{DynamicResource AccentBrush}" Click="OnExplanationClick" Visibility="Collapsed" />
+                            Foreground="{DynamicResource AccentBrush}" Click="OnExplanationClick" Visibility="Collapsed" /></Border>
                     <TextBlock x:Name="TitleText" Text="Sentence translation" FontSize="15" FontWeight="SemiBold"
                                Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center" />
                 </DockPanel>

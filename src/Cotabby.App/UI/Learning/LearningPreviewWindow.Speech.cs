@@ -20,6 +20,11 @@ public partial class LearningPreviewWindow
         Closed += (_, _) => { StopSpeech(); speech.PropertyChanged -= SpeechChanged; _speech = null; };
         UpdateSpeech();
     }
+    internal void RetireExampleSpeech()
+    {
+        if (!_embeddedExample || _speech is not { } speech) return;
+        StopSpeech(); speech.PropertyChanged -= SpeechChanged; _speech = null; UpdateSpeech();
+    }
     private void SpeechChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs args) => UpdateSpeech();
     private void StopSpeech() => _speech?.Stop(_speechOwner);
     private void ReconcileSpeech(LearningPreviewState old, LearningPreviewState next)

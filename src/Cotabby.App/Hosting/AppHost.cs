@@ -169,7 +169,8 @@ public sealed class AppHost : IAsyncDisposable
             () => SettingsWindow.ShowLearning(this), _vocabularyClipboard,
             // Notebook preferences share the existing settings owner, but do not re-apply engine
             // or generation settings when only graph appearance/browser mode changes.
-            new VocabularyGraphPreferences(() => Settings, () => SettingsStore.Save(Settings)));
+            new VocabularyGraphPreferences(() => Settings, () => SettingsStore.Save(Settings)),
+            new VocabularyNotebookListPreferences(() => Settings, () => SettingsStore.Save(Settings)));
         Vocabulary.EnrichCapture = capture =>
         {
             var input = LearningExplanationPolicy.Input(capture);

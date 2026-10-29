@@ -9,6 +9,11 @@ and selects the requested sense, including a merged sense's alias after a cold a
 
 Reference: `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`.
 
+The [current stable sidebar](VOCABULARY_NOTEBOOK_CURRENT.md) separately upgrades presentation to
+`cc468b89f5c360cc7210fac4f1a8b52197870bf2`: directly selectable singleton rows, exact multi-sense
+selection through header expansion/collapse, and persisted compact/detailed density. The original
+policy/fixture pin below remains unchanged.
+
 | Mac responsibility | Windows mapping |
 | --- | --- |
 | `UI/Vocabulary/VocabularyNotebookView.swift`: list projection, global selection, literal detail/highlight | `Core/Vocabulary/VocabularyNotebookPolicy.cs`, `App/UI/Vocabulary/VocabularyNotebookWindow.xaml(.cs)`, `VocabularyBrowserRows.cs` |

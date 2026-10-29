@@ -9,17 +9,40 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries><ResourceDictionary Source="../Theme.xaml" /></ResourceDictionary.MergedDictionaries>
             <BooleanToVisibilityConverter x:Key="BatchVisibility" />
-            <HierarchicalDataTemplate DataType="{x:Type local:VocabularyEntryRow}" ItemsSource="{Binding Senses}">
-                <TextBlock Text="{Binding Expression}" FontWeight="SemiBold" FontSize="14" TextWrapping="Wrap" MaxWidth="330" />
+            <HierarchicalDataTemplate DataType="{x:Type local:VocabularyEntryRow}" ItemsSource="{Binding Children}">
+                <Border Background="Transparent" Padding="0,3" MaxWidth="330" MouseLeftButtonDown="OnEntryHeaderMouseDown" ContextMenuOpening="OnSenseExportMenuOpening">
+                    <Border.ContextMenu><ContextMenu Opened="OnSenseExportMenuOpened" Closed="OnSenseExportMenuClosed"><MenuItem Header="Export this sense…" Click="OnExportSingle" /></ContextMenu></Border.ContextMenu>
+                    <StackPanel>
+                        <DockPanel Height="21" LastChildFill="True">
+                            <CheckBox DockPanel.Dock="Left" IsChecked="{Binding SingleSense.IsBatchSelected, Mode=TwoWay}" IsEnabled="{Binding SingleSense.BatchEnabled}"
+                                      Visibility="{Binding ShowBatchCheckbox, Converter={StaticResource BatchVisibility}}" AutomationProperties.Name="{Binding SingleSense.BatchLabel}" Margin="0,0,6,0" VerticalAlignment="Center" />
+                            <TextBlock DockPanel.Dock="Right" Text="{Binding SenseCount}" FontSize="10" Foreground="{DynamicResource AccentBrush}" Margin="5,0,0,0" VerticalAlignment="Center" />
+                            <TextBlock DockPanel.Dock="Right" Text="{Binding LanguageLabel}" FontSize="10" Foreground="{DynamicResource TextSecondary}" Margin="5,0,0,0" MaxWidth="70" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                            <TextBlock DockPanel.Dock="Left" Text="{Binding Expression}" FontWeight="SemiBold" FontSize="14" MaxWidth="210" MaxHeight="21" TextTrimming="CharacterEllipsis" VerticalAlignment="Center">
+                                <TextBlock.Style><Style TargetType="TextBlock"><Setter Property="Foreground" Value="{DynamicResource TextPrimary}" /><Style.Triggers><DataTrigger Binding="{Binding IsEntrySelected}" Value="True"><Setter Property="Foreground" Value="{DynamicResource AccentBrush}" /></DataTrigger></Style.Triggers></Style></TextBlock.Style>
+                            </TextBlock>
+                            <TextBlock Text="{Binding SingleSense.Title}" FontSize="11" Foreground="{DynamicResource TextSecondary}" Margin="6,0,0,0" MaxHeight="21" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"
+                                       Visibility="{Binding ShowInlineMeaning, Converter={StaticResource BatchVisibility}}" />
+                        </DockPanel>
+                        <TextBlock Text="{Binding DetailedMeaning}" FontSize="12" Height="18" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource TextSecondary}"
+                                   Visibility="{Binding ShowDetailedMeaning, Converter={StaticResource BatchVisibility}}" />
+                        <TextBlock Text="{Binding Snippet}" FontSize="11" Height="16" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource TextSecondary}"
+                                   Visibility="{Binding HasSnippet, Converter={StaticResource BatchVisibility}}" />
+                    </StackPanel>
+                </Border>
             </HierarchicalDataTemplate>
             <DataTemplate DataType="{x:Type local:VocabularySenseRow}">
                 <StackPanel Margin="0,4" MaxWidth="320" ContextMenuOpening="OnSenseExportMenuOpening">
                     <StackPanel.ContextMenu><ContextMenu Opened="OnSenseExportMenuOpened" Closed="OnSenseExportMenuClosed"><MenuItem Header="Export this sense…" Click="OnExportSingle" /></ContextMenu></StackPanel.ContextMenu>
                     <CheckBox IsChecked="{Binding IsBatchSelected, Mode=TwoWay}" IsEnabled="{Binding BatchEnabled}"
                               Visibility="{Binding Selecting, Converter={StaticResource BatchVisibility}}" AutomationProperties.Name="{Binding BatchLabel}" Margin="0,0,0,4" />
-                    <TextBlock Text="{Binding Title}" TextWrapping="Wrap" MaxHeight="40" TextTrimming="CharacterEllipsis" />
-                    <TextBlock Text="{Binding UsageCount}" FontSize="11" Foreground="{DynamicResource TextSecondary}" Margin="0,3,0,0" />
-                    <TextBlock Text="{Binding Example}" FontSize="11" Foreground="{DynamicResource TextSecondary}" TextTrimming="CharacterEllipsis" MaxWidth="300" />
+                    <DockPanel Height="20">
+                        <TextBlock DockPanel.Dock="Left" Text="{Binding Number}" FontWeight="Bold" FontSize="10" Width="20" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondary}" />
+                        <TextBlock DockPanel.Dock="Right" Text="{Binding UsageNumber}" FontSize="10" Margin="5,0,0,0" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondary}" />
+                        <TextBlock Text="{Binding Title}" FontSize="12" MaxHeight="20" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                    </DockPanel>
+                    <TextBlock Text="{Binding Snippet}" FontSize="11" Height="16" Foreground="{DynamicResource TextSecondary}" TextTrimming="CharacterEllipsis" MaxWidth="300" Margin="20,0,0,0"
+                               Visibility="{Binding HasSnippet, Converter={StaticResource BatchVisibility}}" />
                 </StackPanel>
             </DataTemplate>
             <Style TargetType="TreeViewItem">
@@ -38,11 +61,6 @@
             <TextBox x:Name="SearchText" Width="230" Padding="7,5" Margin="0,0,8,0" TextChanged="OnFiltersChanged" Style="{StaticResource Input}" Tag="Search vocabulary"
                      AutomationProperties.Name="Search vocabulary" Background="{DynamicResource InputBg}"
                      Foreground="{DynamicResource TextPrimary}" BorderBrush="{DynamicResource CardBorder}" />
-            <ComboBox x:Name="LanguageFilter" Width="160" Margin="0,0,8,0" SelectionChanged="OnFiltersChanged" Style="{StaticResource Combo}"
-                      DisplayMemberPath="Label" SelectedValuePath="Value" AutomationProperties.Name="Language" />
-            <ComboBox x:Name="TagFilter" Width="130" Margin="0,0,8,0" SelectionChanged="OnFiltersChanged" Style="{StaticResource Combo}"
-                      DisplayMemberPath="Label" SelectedValuePath="Value" AutomationProperties.Name="Tags" />
-            <Button x:Name="SortButton" Content="Newest first" Padding="10,4" Click="OnSort" />
             <ToggleButton x:Name="SelectSensesButton" Content="Select senses" Padding="10,4" Margin="8,0,0,0" Checked="OnSelectSenses" Unchecked="OnSelectSenses" />
             <Button x:Name="SelectVisibleButton" Content="Select visible" Padding="10,4" Margin="8,0,0,0" Visibility="Collapsed" Click="OnSelectVisible" IsEnabled="False" />
             <Button x:Name="ExportSelectedButton" Content="Export selected…" Padding="10,4" Margin="8,0,0,0" Visibility="Collapsed" Click="OnExportSelected" IsEnabled="False" />
@@ -56,14 +74,24 @@
         </DockPanel>
         <Grid>
             <Grid.ColumnDefinitions><ColumnDefinition x:Name="BrowserColumn" Width="290" MinWidth="230" MaxWidth="420" /><ColumnDefinition x:Name="DividerColumn" Width="5" /><ColumnDefinition x:Name="DetailColumn" Width="*" MinWidth="300" /></Grid.ColumnDefinitions>
-            <Grid Grid.Column="0" Background="{DynamicResource SidebarBg}">
+            <DockPanel Grid.Column="0" Background="{DynamicResource SidebarBg}">
+                <WrapPanel DockPanel.Dock="Top" Margin="8,6">
+                    <ComboBox x:Name="LanguageFilter" Width="112" Margin="0,0,5,4" SelectionChanged="OnFiltersChanged" Style="{StaticResource Combo}"
+                              DisplayMemberPath="Label" SelectedValuePath="Value" AutomationProperties.Name="Language" />
+                    <ComboBox x:Name="TagFilter" Width="100" Margin="0,0,5,4" SelectionChanged="OnFiltersChanged" Style="{StaticResource Combo}"
+                              DisplayMemberPath="Label" SelectedValuePath="Value" AutomationProperties.Name="Tags" />
+                    <Button x:Name="ListDensityButton" Content="Compact list" Padding="7,3" Margin="0,0,5,0" Click="OnListDensity" AutomationProperties.Name="Vocabulary list density" />
+                    <Button x:Name="SortButton" Content="Newest first" Padding="7,3" Click="OnSort" />
+                </WrapPanel>
+                <Grid>
                 <TreeView x:Name="EntriesTree" Background="Transparent" BorderThickness="0" Padding="8"
-                          SelectedItemChanged="OnSelectedItemChanged" VirtualizingStackPanel.IsVirtualizing="True"
+                          SelectedItemChanged="OnSelectedItemChanged" PreviewKeyDown="OnEntryKeyDown" VirtualizingStackPanel.IsVirtualizing="True"
                           VirtualizingStackPanel.VirtualizationMode="Recycling" ScrollViewer.CanContentScroll="True" />
                 <TextBlock x:Name="EmptyText" Text="No saved expressions" TextWrapping="Wrap" Margin="24"
                            Foreground="{DynamicResource TextSecondary}" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" />
                 <Grid x:Name="GraphHost" Visibility="Collapsed" />
-            </Grid>
+                </Grid>
+            </DockPanel>
             <GridSplitter x:Name="DetailDivider" Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="{DynamicResource CardBorder}" />
             <DockPanel x:Name="DetailsPane" Grid.Column="2">
                 <WrapPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Right" Margin="12,8">

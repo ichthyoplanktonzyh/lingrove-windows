@@ -54,6 +54,7 @@ public partial class VocabularyNotebookWindow
         try { ListModeButton.IsChecked = !IsGraphMode; GraphModeButton.IsChecked = IsGraphMode; }
         finally { _presenting = presenting; }
         EntriesTree.Visibility = IsGraphMode ? Visibility.Collapsed : Visibility.Visible;
+        PresentListDensity();
         SortButton.Visibility = IsGraphMode ? Visibility.Collapsed : Visibility.Visible;
         GraphHost.Visibility = _graphView.Visibility = IsGraphMode ? Visibility.Visible : Visibility.Collapsed;
         EmptyText.Visibility = IsGraphMode || _graphEntries.Count != 0 ? Visibility.Collapsed : Visibility.Visible;

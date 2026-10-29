@@ -157,6 +157,10 @@ public sealed class VocabularyGraphNotebookTests(WpfDispatcher dispatcher)
             view.Canvas.Activate(Head(1)); await Until(() => view.Canvas.Positions.Count == 4); Assert.Null(window.Selection);
             view.Canvas.Activate(VocabularyGraphNodeId.Sense(OtherBank)); Assert.Equal(OtherBank, window.Selection);
             Assert.Equal("bank", Assert.IsType<TextBox>(Find<StackPanel>(window, "DetailContent").Children[0]).Text);
+            Mode(window, false); await Refresh(window);
+            var revealed = Find<TreeView>(window, "EntriesTree").Items.OfType<VocabularyEntryRow>().Single(row => row.EntryId == Id(1));
+            Assert.True(revealed.IsExpanded); Assert.True(revealed.Senses.Single(row => row.Selection == OtherBank).IsSelected);
+            Mode(window, true); await Cooled(view);
             view.Canvas.Activate(Head(1)); await Until(() => view.Canvas.Positions.Count == 2); Assert.Null(window.Selection);
             Assert.Empty(view.Presentation.Expanded); Assert.Equal(Visibility.Collapsed, Find<DockPanel>(window, "DetailsPane").Visibility);
         }

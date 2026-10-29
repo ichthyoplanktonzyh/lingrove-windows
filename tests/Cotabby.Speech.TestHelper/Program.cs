@@ -7,7 +7,10 @@ using System.Text.Json;
 // protocol mutations are explicit test effects; this executable is never bundled with the app.
 if (args is ["--descendant", var descendantRoot])
 {
-    File.WriteAllText(Path.Combine(descendantRoot, "descendant"), Environment.ProcessId.ToString());
+    // Publish only after the writer is closed. File.Exists must mean a complete readable PID.
+    var descendantMarker = Path.Combine(descendantRoot, "descendant");
+    File.WriteAllText(descendantMarker + ".tmp", Environment.ProcessId.ToString());
+    File.Move(descendantMarker + ".tmp", descendantMarker);
     Thread.Sleep(30_000); return;
 }
 Console.InputEncoding = Encoding.UTF8;

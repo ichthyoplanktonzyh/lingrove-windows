@@ -31,13 +31,13 @@ public sealed partial class LearningSpeechControllerTests
             await using var controller = new LearningSpeechController(settings, new SpeechTelemetry((_, _, _) => { }), effects, effects, effects, effects, effects, effects,
                 _ => new Dictionary<string, double>(), StringComparer.Ordinal, Path.GetTempPath(), () => effects);
             int changes = 0; controller.PropertyChanged += (_, _) => changes++;
-            Assert.Contains("stays on this device", controller.DestinationDescription);
+            Assert.True(controller.IsDestinationAvailable); Assert.Contains("stays on this device", controller.DestinationDescription);
             settings.SelectProvider(LearningSpeechProviderKind.Endpoint); settings.SetEndpointBaseUrl("https://example.org/private/path"); settings.SetEndpointModel("voice/model"); settings.SetEndpointVoice("speaker");
-            Assert.Contains("https://example.org", controller.DestinationDescription); Assert.Contains("voice/model", controller.DestinationDescription);
+            Assert.True(controller.IsDestinationAvailable); Assert.Contains("https://example.org", controller.DestinationDescription); Assert.Contains("voice/model", controller.DestinationDescription);
             Assert.DoesNotContain("private/path", controller.DestinationDescription); Assert.True(changes > 0);
             settings.SetEndpointModel("voice?key=secret"); Assert.DoesNotContain("secret", controller.DestinationDescription);
             settings.SetEndpointBaseUrl("https://name:secret@example.org/v1?key=secret"); Assert.DoesNotContain("secret", controller.DestinationDescription);
-            Assert.Contains("not configured", controller.DestinationDescription);
+            Assert.False(controller.IsDestinationAvailable); Assert.Contains("not configured", controller.DestinationDescription);
         });
     }
     private sealed class DisclosureCredentials : IOpenAICompatibleCredentialStore

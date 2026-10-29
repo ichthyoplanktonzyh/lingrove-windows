@@ -16,7 +16,8 @@ the envelope denotes the frozen v8 graph and is not a portable JSON representati
 A CLR representability pass checks all canonical lexical values, evidence and uncollected claims,
 collections, nested explanations, content, reviews/layouts, semantic values and classification
 values before joined projection. It rejects missing required object/string values, invalid enum
-casts and malformed UTF-16 as `InvalidArchive`; optional languages, optional fields and uncollected
+casts and malformed UTF-16 as `InvalidArchive`; valid Unicode noncharacters survive NFC as
+combining-class-zero boundaries, including adjacent canonically equivalent text. Optional languages, optional fields and uncollected
 records remain distinct. Existing immutable constructors own list/map snapshots. The semantic and
 classification validators apply their frozen graph budgets and references; lifecycle checks sources,
 ranges, acceptance and collection ownership. Joined lexical admission then enforces entry keys,

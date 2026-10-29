@@ -20,6 +20,20 @@ public sealed class VocabularyFrozenArchiveValidationTests
     private static void Reject(R.VocabularyFrozenDocument value, VocabularyFailure failure = VocabularyFailure.InvalidArchive) =>
         Assert.Equal(failure, Assert.ThrowsAny<VocabularyException>(() => R.VocabularyFrozenArchiveValidation.Validate(value)).Failure);
     [Fact]
+    public void ValidNoncharactersPreserveNfcLexicalAndSemanticIdentity()
+    {
+        var value = Fixture(); var r = value.Resources;
+        var composed = new R.VocabularyEntry(Id(30), "\ufffeé", "", null, VocabularyEntryKind.Word, [], Now, Now);
+        var decomposed = new R.VocabularyEntry(Id(31), "\ufffee\u0301", "", null, VocabularyEntryKind.Word, [], Now, Now);
+        var one = value with { Resources = r with { Catalog = [.. r.Catalog, composed] } };
+        R.VocabularyFrozenArchiveValidation.Validate(one);
+        Reject(one with { Resources = one.Resources with { Catalog = [.. one.Resources.Catalog, decomposed] } });
+
+        var pattern = new R.VocabularyUsagePattern(Id(2), "template") { Slots = [new("\ufffeé"), new("\ufffee\u0301")] };
+        Reject(value with { Resources = r with { Semantics = new() { Patterns = [pattern] } } }, VocabularyFailure.InvalidContent);
+        Reject(value with { Resources = r with { Sources = [new(Id(3), "\ud800", R.VocabularySourceKind.Imported, null, Now)] } });
+    }
+    [Fact]
     public void LifecycleAndClassificationAreCheckedAgainstTheSameFrozenGraph()
     {
         var value = Fixture(); var r = value.Resources; var claim = r.Interpretations[0];

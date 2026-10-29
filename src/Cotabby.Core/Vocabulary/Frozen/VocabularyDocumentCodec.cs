@@ -58,6 +58,13 @@ public static class VocabularyDocumentCodec
         return VocabularyPayloadCodec.EncodePortableValue(new Wire8(8, r.Catalog, r.Sources, r.Occurrences,
             r.Interpretations, r.Collections, r.ReviewTemplates, r.Semantics, document.Classification), MaximumDocumentBytes);
     }
+    /// <summary>Explicit historical fixture encoder; cannot discard 3b category guidance.</summary>
+    public static byte[] EncodeAt35b(VocabularyDocument document)
+    {
+        VocabularyArchiveValidation.Validate(document);
+        if (document.Classification.Categories.Any(c => c.Examples.Count != 0 || c.ScopeNote.Length != 0 || c.References.Count != 0 || c.Localizations.Count != 0) || document.Classification.Overrides.Any(o => o.Examples is not null || o.ScopeNote is not null || o.References is not null || o.Localizations is not null)) throw new VocabularyException(VocabularyFailure.InvalidContent);
+        var r = document; return VocabularyPayloadCodec.EncodePortableValue(new Wire8(8, r.Catalog, r.Sources, r.Occurrences, r.Interpretations, r.Collections, r.ReviewTemplates, r.Semantics, r.Classification), MaximumDocumentBytes, historical35b: true);
+    }
     // These limits are the actual lifecycle, semantic and classification budgets. Check the
     // source-shaped arrays before constructing CLR graphs. Other arrays remain bounded by bytes.
     private static void CheckCollectionBounds(ReadOnlyMemory<byte> bytes, long version)

@@ -17,7 +17,7 @@ namespace Cotabby.App.Wpf.Tests;
 [Collection("WPF views")]
 public sealed class CanonicalAnkiReviewWindowTests(WpfDispatcher dispatcher)
 {
-    private sealed class ThrowingCancellationAnki(IAnkiConnecting inner) : IAnkiConnecting
+    internal sealed class ThrowingCancellationAnki(IAnkiConnecting inner) : IAnkiConnecting
     {
         internal readonly TaskCompletionSource Entered = new(TaskCreationOptions.RunContinuationsAsynchronously);
         internal readonly TaskCompletionSource Release = new(TaskCreationOptions.RunContinuationsAsynchronously);

@@ -13,7 +13,7 @@ namespace Cotabby.App.Wpf.Tests;
 public sealed class CanonicalVocabularyCompositionTests(WpfDispatcher dispatcher)
 {
     private sealed class Preferences : IVocabularyNotebookListPreferences
-    { public string Density { get; set; } = "compact"; }
+    { public string Density { get; set; } = "compact"; public bool ShowUnexplored { get; set; } }
 
     private static CanonicalVocabularyFeature Create(string path) => new(path,
         new DispatcherSynchronizationContext(Dispatcher.CurrentDispatcher), Dispatcher.CurrentDispatcher,

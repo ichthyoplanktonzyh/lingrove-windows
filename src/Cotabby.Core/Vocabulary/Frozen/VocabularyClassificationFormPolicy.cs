@@ -7,6 +7,20 @@ namespace Cotabby.Core.Vocabulary.Frozen;
 /// and acknowledgement; these rules preserve the source baseline and unedited identities.</summary>
 public static class VocabularyClassificationFormPolicy
 {
+    public static VocabularyClassificationIndex EditCurrentCategory(VocabularyClassificationIndex baseline, VocabularyCategory original, string locale, string name, string definition, VocabularyCategoryAxis axis, IReadOnlySet<Guid> parents, bool hidden, bool restoringDefaults = false)
+    {
+        var (value, overlay) = VocabularyCategoryLocalizationPolicy.Edit(original, baseline, locale, name, definition, hidden, restoringDefaults);
+        bool exists = baseline.Categories.Any(x => x.Id == original.Id); if (!exists) value = value with { Axis = axis };
+        var categories = exists ? baseline.Categories : baseline.Categories.Append(value).ToArray();
+        var overlays = baseline.Overrides.Where(x => x.CategoryId != original.Id).ToList(); if (overlay is not null) overlays.Add(overlay);
+        var edges = baseline.Parents;
+        if (original.FrameworkId is null)
+        {
+            var mutable = edges.Where(edge => edge.CategoryId != value.Id || parents.Contains(edge.ParentId)).ToList();
+            foreach (var parent in parents.Where(parent => !mutable.Any(edge => edge.CategoryId == value.Id && edge.ParentId == parent))) mutable.Add(new(Guid.NewGuid(), value.Id, parent)); edges = mutable;
+        }
+        return baseline with { Categories = categories, Parents = edges, Overrides = overlays };
+    }
     public static VocabularyClassificationIndex AdoptDirectory(VocabularyClassificationIndex baseline, VocabularyClassificationIndex current) => current with { Memberships = baseline.Memberships };
     public static VocabularyClassificationIndex SelectMemberships(VocabularyClassificationIndex baseline, Guid nodeId, IReadOnlySet<Guid> selected)
     {

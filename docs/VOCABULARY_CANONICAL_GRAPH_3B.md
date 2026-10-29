@@ -1,0 +1,20 @@
+# Canonical notebook graph at 3b53402
+
+This module targets macOS `3b53402f2cbc196b0398d133177fd80006d165b2`: `Lingrove/Models/Vocabulary/VocabularyGraphModels.swift`, `Lingrove/Support/Vocabulary/VocabularyGraphProjection.swift`, `Lingrove/Services/Vocabulary/VocabularyGraphLayoutWorker.swift`, `Lingrove/UI/Vocabulary/VocabularyGraphCanvasView.swift`, `VocabularyGraphPresentation.swift`, `VocabularyGraphView.swift`, and graph selection/mode/filter closures in `VocabularyNotebookView.swift`. The Mac graph tests remain at `LingroveTests/Support/Vocabulary/VocabularyGraphTests.swift` and `LingroveTests/UI/Vocabulary/VocabularyGraphViewTests.swift`; historical Windows/Grape fixture pins are unchanged.
+
+The canonical window borrows its existing acknowledged Store snapshots and graph preference owner. Collected frozen entries feed the entry graph directly; `SourceDate` and IDs are not converted through the legacy entry model. Entry/sense nodes keep the existing serialized Grape worker and camera. Meaning graphs add distinct stable meaning, category and axis identities, confirmed taxonomy/mapping/relation edges, counts and unexplored state; they use the source's deterministic tree coordinates rather than a force simulation. Multi-parent category counts include all DAG paths while layout chooses the source's first parent. Hidden categories, query matches, expansion, interface-language category labels and preferred-language meaning labels are projected independently.
+
+The graph mode shares exact notebook selection and detail, filter reconciliation, settings, camera and navigation. It can select meanings and categories as well as senses; showing unexplored categories uses the existing list preference. Locate follows 3b's selected sense, meaning, category, then focused node order. The shared canvas retains the historical headword-first Locate behavior for its older notebook caller. Semantic-tree dragging pans the camera, while entry-graph dragging uses the original worker pin handshake. On hide, animation suspends; retirement cancels and joins canvas work before the borrowed Store is released. Batch-selection mode returns to list mode. Settings and mode use `IVocabularyGraphPreferences`; AppHost now attaches its existing settings/save adapter through `CanonicalVocabularyFeature.AttachGraphPreferences`. Attachment remains inert before a window is shown and creates no second Store or model. A standalone feature without this attachment keeps the Graph button disabled.
+
+WPF uses the existing scoped theme and 96-DPI units. Mixed-language expression labels use Windows culture native names, with the existing language name as fallback; system collation and native-name details are platform-dependent. Semantic labels use bounded single-line text at small scales to prevent columns overlapping; Fit, zoom and pan expose the wider labels. Optional light/dark/simulated-high-contrast offscreen captures and controlled STA pointer/automation tests do not establish physical desktop, external UIA, real high contrast, per-monitor DPI, precision touchpad or screen-reader acceptance. No user notebook, model, endpoint or active editor is used. 3b CLI changes remain separate work.
+
+```powershell
+dotnet test tests/Cotabby.Core.Tests/Cotabby.Core.Tests.csproj -c Release --filter 'FullyQualifiedName~VocabularyGraph'
+dotnet test tests/Cotabby.App.Wpf.Tests/Cotabby.App.Wpf.Tests.csproj -c Release --filter 'FullyQualifiedName~VocabularyGraph|FullyQualifiedName~CanonicalVocabularyGraphTests'
+```
+
+Integration through `3fea82f` received independent source review. On Windows x64
+10.0.19045 with .NET SDK 10.0.403, the Release solution build passed; Core graph
+tests passed **136/136**, and the broader compiled WPF `FullyQualifiedName~Graph`
+selection passed **89/89**. These use synthetic documents and owned controls.
+No physical desktop, user notebook, model or endpoint was exercised.

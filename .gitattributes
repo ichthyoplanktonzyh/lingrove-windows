@@ -13,6 +13,9 @@
 
 # The frozen bundled classification catalog keeps its exact source bytes on Windows too.
 /src/Cotabby.Core/Vocabulary/Resources/VocabularyClassificationCatalog.json text eol=lf
+/src/Cotabby.Core/Vocabulary/Resources/VocabularyClassificationCatalog.3b.json text eol=lf
+/src/Cotabby.Core/Vocabulary/Resources/VocabularyClassificationCatalog.3b.NOTICE.md text eol=lf
+/src/Cotabby.Core/Vocabulary/Resources/CC-BY-SA-4.0.txt text eol=lf whitespace=-blank-at-eof
 
 # Preserve the dependency's exact CRLF license bytes, including its final blank line.
 /src/Cotabby.Win32/Speech/Notices/LICENSE.NAudio.txt -text whitespace=cr-at-eol,-blank-at-eof

@@ -33,8 +33,14 @@ Its browser/create/import/favorite behavior supersedes the old production notebo
 Scoped [entry editing and file images](VOCABULARY_CANONICAL_ENTRY_EDITOR_UI.md),
 [sense/usage commands](VOCABULARY_CANONICAL_SENSE_UI.md) and
 [meaning-node/mapping editing](VOCABULARY_CANONICAL_MEANING_UI.md) now use the same owner.
-Category management, usage-pattern editing, the remaining media workflows, review and export
-remain incomplete. This is an implementation
+The [3b meaning/classification upgrade](VOCABULARY_MEANING_CLASSIFICATION_3B.md),
+[usage-pattern editor](VOCABULARY_CANONICAL_PATTERN_UI.md),
+[independent Anki cards](ANKI_CANONICAL_CARD_WINDOW.md) and
+[batch preparation](ANKI_CANONICAL_REVIEW_BATCH.md) now connect their scoped canonical workflows.
+The [canonical graph](VOCABULARY_CANONICAL_GRAPH_3B.md) connects entry/sense and meaning/category
+navigation to that same window and Store. The remaining media workflows, export/backup and speech
+activation remain incomplete.
+This is an implementation
 checkpoint with scoped automated/render evidence, not full native desktop parity.
 
 ## Status meanings

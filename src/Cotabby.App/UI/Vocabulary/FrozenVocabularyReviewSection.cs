@@ -25,6 +25,7 @@ internal sealed class FrozenVocabularyReviewSection
     private string? _error;
     private (Guid Entry, Guid Sense)? _errorSelection;
     internal Task? LastOperation => _operation;
+    internal bool IsBusy => _operation is not null || _window is not null;
     internal CanonicalAnkiReviewWindow? CardWindow => _window;
     internal FrozenVocabularyReviewSection(Window owner, ICanonicalVocabularyStore store, AnkiReviewFeature feature, Action configure, Action changed, Func<string, bool>? confirm = null, Func<Guid, Guid, bool>? canAct = null)
     { _owner = owner; _store = store; _feature = feature; _configure = configure; _changed = changed; _canAct = canAct ?? ((_, _) => true); _confirm = confirm ?? (name => MessageBox.Show(owner, $"Remove local card ‘{name}’?", "Remove card", MessageBoxButton.OKCancel, MessageBoxImage.Warning) == MessageBoxResult.OK); }

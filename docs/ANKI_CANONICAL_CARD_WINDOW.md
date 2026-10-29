@@ -27,8 +27,8 @@ reads the latest Store after each remote await and rechecks that the exact card 
 active binding equals the captured immutable binding. This is Windows async safety hardening; the
 frozen Mac navigation does not provide this same Store recheck. Revision updates
 refresh the browser. The notebook controller's `AttachReviewFeature(feature, configure)` borrows
-these owners and remains inert until the notebook is shown. AppHost must call that method with its
-existing Feature and settings callback; this commit does not change AppHost. Retire the notebook
+these owners and remains inert until the notebook is shown. The integrated AppHost calls it with
+its existing Feature and settings callback. Retire the notebook
 controller before the Feature and canonical Store, so the modal, accepted operations and Store
 subscription finish before shared owners are disposed.
 
@@ -37,7 +37,8 @@ choices and missing-note re-add, and preserves pending IDs on failure via the se
 are visible but speech is unavailable; sending remains blocked until the user deletes them.
 Preview uses native WPF text and validated Store/prepared images, with no script, network HTML or
 WebBrowser. File image import is supported; clipboard image paste and image drops in card-only
-content are not yet connected. Batch preparation, review template management outside this editor,
+content are not yet connected. [Batch preparation](ANKI_CANONICAL_REVIEW_BATCH.md) is now connected;
+review template management outside this editor,
 and real Anki foreground-window activation are also incomplete. This component's GUI navigation
 requests are real, but the existing connection-only Feature's native activation callback is a no-op.
 Physical Anki, Shell, keyboard/accessibility, DPI and desktop acceptance remain open.

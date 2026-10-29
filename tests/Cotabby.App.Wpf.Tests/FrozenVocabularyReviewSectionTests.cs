@@ -17,7 +17,7 @@ namespace Cotabby.App.Wpf.Tests;
 [Collection("WPF views")]
 public sealed class FrozenVocabularyReviewSectionTests(WpfDispatcher dispatcher)
 {
-    private sealed class Preferences : IVocabularyNotebookListPreferences { public string Density { get; set; } = "compact"; }
+    private sealed class Preferences : IVocabularyNotebookListPreferences { public string Density { get; set; } = "compact"; public bool ShowUnexplored { get; set; } }
     private sealed class NavigationAnki(SessionTestServer inner) : IAnkiConnecting
     {
         internal bool HoldNote;

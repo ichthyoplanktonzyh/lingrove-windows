@@ -18,6 +18,9 @@
     <EmbeddedResource Include="Resources\Foundation\editor-text-data-v1.json" />
     <EmbeddedResource Include="Vocabulary/Resources/VocabularyClassificationCatalog.json"
                       LogicalName="Cotabby.Core.Vocabulary.Resources.VocabularyClassificationCatalog.json" />
+    <EmbeddedResource Include="Vocabulary/Resources/VocabularyClassificationCatalog.3b.json"
+                      LogicalName="Cotabby.Core.Vocabulary.Resources.VocabularyClassificationCatalog.3b.json" />
+    <Content Include="Vocabulary/Resources/VocabularyClassificationCatalog.3b.NOTICE.md;Vocabulary/Resources/CC-BY-SA-4.0.txt" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="Resources\Foundation\NOTICE.md;Resources\Foundation\LICENSE.*.txt" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="Resources\Spelling\**" Exclude="Resources\Spelling\.gitattributes" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>

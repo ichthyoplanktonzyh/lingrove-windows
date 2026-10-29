@@ -7,6 +7,33 @@ namespace Cotabby.App.Tests.Settings;
 public sealed class VocabularyNotebookListPreferencesTests
 {
     [Fact]
+    public void GeneralResetPreservesUnexploredPreferenceIncludingDamagedRawValues()
+    {
+        foreach (string raw in new[] { "null", "false", "true", "42", "\"future\"" })
+        {
+            var current = SettingsStore.Parse("{\"vocabularyShowsUnexplored\":" + raw + "}");
+            var preferences = new VocabularyNotebookListPreferences(() => current, () => throw new InvalidOperationException("Reset must not persist through this owner."));
+            using var before = JsonDocument.Parse(SettingsStore.Serialize(current));
+            bool present = before.RootElement.TryGetProperty("vocabularyShowsUnexplored", out var originalValue);
+            current = current.ResetGeneralPreferences(10);
+            using var after = JsonDocument.Parse(SettingsStore.Serialize(current));
+            Assert.Equal(present, after.RootElement.TryGetProperty("vocabularyShowsUnexplored", out var resetValue));
+            if (present) Assert.Equal(originalValue.GetRawText(), resetValue.GetRawText());
+            Assert.Equal(raw == "true", preferences.ShowUnexplored);
+        }
+    }
+
+    [Fact]
+    public void UnexploredUsesOriginalKeyAndDoesNotApplyModelSettings()
+    {
+        foreach (string raw in new[] { "null", "\"true\"", "42", "false", "true" })
+        {
+            var current = SettingsStore.Parse("{\"Enabled\":false,\"vocabularyShowsUnexplored\":" + raw + "}"); int writes = 0;
+            var preferences = new VocabularyNotebookListPreferences(() => current, () => writes++); Assert.Equal(raw == "true", preferences.ShowUnexplored); Assert.Equal(0, writes);
+            preferences.ShowUnexplored = true; Assert.Equal(1, writes); var reopened = SettingsStore.Parse(SettingsStore.Serialize(current)); Assert.True(reopened.VocabularyShowsUnexplored); Assert.False(reopened.Enabled);
+        }
+    }
+    [Fact]
     public void DensityUsesTheOriginalKeyAndSurvivesReplacementWithoutNormalizingUnknownValues()
     {
         foreach (string raw in new[] { "null", "true", "\"future-density\"", "\"detailed\"" })

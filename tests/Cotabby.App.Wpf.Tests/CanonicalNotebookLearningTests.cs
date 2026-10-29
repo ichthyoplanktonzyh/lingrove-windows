@@ -114,7 +114,7 @@ public sealed class CanonicalNotebookLearningTests(WpfDispatcher dispatcher)
             var row = Descendants(window).OfType<CanonicalVocabularyExplanationRow>().Single();
             Assert.DoesNotContain(Descendants(row).OfType<TextBox>(), x => x.Text == "authored");
             Descendants(row).OfType<Button>().Single(b => Equals(b.Content, "✦")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
-            await row.LastGeneration; await Until(() => row.Session.State.Record is not null); window.UpdateLayout();
+            await row.LastGeneration; await Until(() => { window.UpdateLayout(); return Descendants(row).OfType<TextBox>().Any(x => x.Text == "generated" && x.Visibility == Visibility.Visible); });
             Assert.Contains(Descendants(row).OfType<TextBox>(), x => x.Text == "generated" && x.Visibility == Visibility.Visible);
             Assert.DoesNotContain(Descendants(row).OfType<Button>(), x => Equals(x.Content, "Replace contextual meaning") && x.Visibility == Visibility.Visible);
         }

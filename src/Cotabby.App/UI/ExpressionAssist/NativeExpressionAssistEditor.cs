@@ -19,16 +19,23 @@ internal sealed class NativeExpressionAssistEditor(Win32ExpressionEditor owner) 
     private sealed class Session : IExpressionAssistEditorSession
     {
         private readonly ExpressionEditorSession _native;
-        internal Session(ExpressionEditorSession native) { _native = native; native.Invalidated += OnInvalidated; }
+        private readonly ExpressionInvalidationLatch _invalidation = new();
+        internal Session(ExpressionEditorSession native)
+        {
+            _native = native; native.Invalidated += OnInvalidated;
+            if (!native.CanPresentPanel) _invalidation.Retire();
+        }
         public ExpressionEditorReceipt Receipt => _native.Receipt;
-        public event Action? Invalidated;
-        private void OnInvalidated(object? sender, EventArgs args) => Invalidated?.Invoke();
+        public bool CanPresentPanel => !_invalidation.IsRetired && _native.CanPresentPanel;
+        public bool IsHostForeground => _native.IsHostForeground;
+        public event Action? Invalidated { add { if (value is not null) _invalidation.Invalidated += value; } remove { if (value is not null) _invalidation.Invalidated -= value; } }
+        private void OnInvalidated(object? sender, EventArgs args) => _invalidation.Retire();
         public bool EnterPanel() => _native.EnterPanel();
         public Task<bool> IsUnchangedAsync(CancellationToken cancellationToken) => _native.IsUnchangedAsync(cancellationToken);
         public bool BeginReturn() => _native.BeginReturn();
         public async Task<bool> ResumeAndReplaceAsync(string text, CancellationToken cancellationToken) =>
             await _native.ResumeAndReplaceAsync(text, cancellationToken).ConfigureAwait(false) == ExpressionEditOutcome.Verified;
-        public void Retire() => _native.Retire();
+        public void Retire() { _invalidation.Retire(); _native.Retire(); }
         public ValueTask DisposeAsync() { _native.Invalidated -= OnInvalidated; return _native.DisposeAsync(); }
     }
 }

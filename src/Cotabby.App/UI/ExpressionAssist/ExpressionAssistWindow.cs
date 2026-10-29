@@ -26,6 +26,7 @@ internal sealed class ExpressionAssistWindow : Window, IExpressionAssistPanel
         WindowStyle = WindowStyle.None; ResizeMode = ResizeMode.NoResize; ShowInTaskbar = false;
         SizeToContent = SizeToContent.WidthAndHeight; Background = Brushes.Transparent; AllowsTransparency = true;
         Topmost = true; WindowStartupLocation = WindowStartupLocation.Manual;
+        ShowActivated = false;
         Content = _view;
         _handle = new WindowInteropHelper(this).EnsureHandle();
         Activated += (_, _) => RefreshOwnership();
@@ -44,10 +45,12 @@ internal sealed class ExpressionAssistWindow : Window, IExpressionAssistPanel
     nint IExpressionAssistPanel.WindowHandle => _handle;
     bool IExpressionAssistPanel.OwnsKeyboard => Volatile.Read(ref _ownsKeyboard) != 0;
     bool IExpressionAssistPanel.IsVisible => IsVisible;
-    Task IExpressionAssistPanel.ShowAsync(ExpressionEditorReceipt receipt, string initialQuery)
+    Task IExpressionAssistPanel.ShowAsync(ExpressionEditorReceipt receipt, string initialQuery, Func<bool> mayActivate)
     {
+        if (!mayActivate()) return Task.CompletedTask;
         if (!IsVisible) _view.ResetComposition();
         _view.SetQuery(initialQuery); Show(); UpdateLayout(); LearningPanelPlacement.Position(this, _anchor);
+        if (!mayActivate()) { ((IExpressionAssistPanel)this).Hide(false); return Task.CompletedTask; }
         Activate(); _view.FocusQuery(); RefreshOwnership();
         return Dispatcher.InvokeAsync(RefreshOwnership, DispatcherPriority.Input).Task;
     }

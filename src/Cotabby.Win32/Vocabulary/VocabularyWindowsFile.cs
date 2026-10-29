@@ -218,7 +218,7 @@ internal sealed class VocabularyWindowsFile : IDisposable
     internal struct SecurityAttributes { public int Length; public IntPtr Descriptor; public int InheritHandle; }
     internal static class Native
     {
-        internal const uint Read = 0x80000000, Write = 0x40000000, ShareReadWrite = 3, OpenExisting = 3, OpenAlways = 4,
+        internal const uint Read = 0x80000000, Write = 0x40000000, Delete = 0x00010000, ShareReadWrite = 3, OpenExisting = 3, OpenAlways = 4,
             OpenReparsePoint = 0x00200000, BackupSemantics = 0x02000000;
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
         internal static extern SafeFileHandle CreateFileW(string name, uint access, uint sharing, IntPtr security, uint disposition, uint flags, IntPtr template);
@@ -241,6 +241,9 @@ internal sealed class VocabularyWindowsFile : IDisposable
         [DllImport("kernel32.dll", EntryPoint = "GetFileInformationByHandleEx", ExactSpelling = true, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         internal static extern bool GetIdentity(SafeFileHandle handle, int type, out FileIdentity value, uint size);
+        [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern bool SetFileInformationByHandle(SafeFileHandle handle, int type, ref int value, uint size);
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         internal static extern bool MoveFileExW(string source, string destination, uint flags);

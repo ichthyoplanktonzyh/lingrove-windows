@@ -105,6 +105,10 @@ public sealed class CanonicalWritingFavoriteViewTests(WpfDispatcher dispatcher)
         public Task<Frozen.FrozenVocabularyImportSnapshot> RemoveReviewAsync(Guid e, Guid s, Guid cardId, Frozen.VocabularyReview expected, CancellationToken token = default) => inner.RemoveReviewAsync(e, s, cardId, expected, token);
         public Task<Frozen.FrozenVocabularyImportSnapshot> SaveTemplateAsync(Cotabby.Core.Review.ReviewLayoutTemplate template, IReadOnlyDictionary<string, VocabularyPreparedImage>? images = null, CancellationToken token = default) => inner.SaveTemplateAsync(template, images, token);
         public Task<Frozen.FrozenVocabularyImportSnapshot> RemoveTemplateAsync(Guid id, CancellationToken token = default) => inner.RemoveTemplateAsync(id, token);
+        public Task<VocabularyPreparedImage> PrepareImageAsync(ReadOnlyMemory<byte> data, CancellationToken token = default) => inner.PrepareImageAsync(data, token);
+        public Task<VocabularyPreparedImage> PrepareImageFileAsync(string path, CancellationToken token = default) => inner.PrepareImageFileAsync(path, token);
+        public Task<byte[]> ReadImageAsync(VocabularyImageReference reference, CancellationToken token = default) => inner.ReadImageAsync(reference, token);
+        public Task<Frozen.CanonicalVocabularyMediaSnapshot> ReadMediaSnapshotAsync(CancellationToken token = default) => inner.ReadMediaSnapshotAsync(token);
         public ValueTask DisposeAsync() => ValueTask.CompletedTask;
     }
     [Fact]

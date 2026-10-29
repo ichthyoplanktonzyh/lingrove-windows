@@ -16,3 +16,11 @@ internal interface IVocabularyImageStorage
     bool Write(ReadOnlySpan<byte> data, VocabularyImageReference image);
     void Remove(VocabularyImageReference image);
 }
+
+/// <summary>Identity receipts bind rollback and cleanup to the actual opened file, not its name.</summary>
+internal interface IOwnedVocabularyImageStorage : IVocabularyImageStorage
+{
+    VocabularyWindowsFile.FileIdentity? WriteOwned(ReadOnlySpan<byte> data, VocabularyImageReference image);
+    VocabularyWindowsFile.FileIdentity? CaptureIdentity(VocabularyImageReference image);
+    void RemoveOwned(VocabularyImageReference image, VocabularyWindowsFile.FileIdentity identity);
+}

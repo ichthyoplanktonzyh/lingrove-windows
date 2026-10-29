@@ -12,8 +12,8 @@ internal sealed partial class FrozenVocabularyImportStore
     public Task<FrozenVocabularyImportSnapshot> SaveReviewAsync(Guid entryId, Guid senseId, FrozenReview value, FrozenReview? expected,
         Guid? cardId = null, IReadOnlyDictionary<string, VocabularyPreparedImage>? importedImages = null, CancellationToken cancellationToken = default)
     {
-        if (importedImages is { Count: > 0 }) return Task.FromException<FrozenVocabularyImportSnapshot>(new VocabularyException(VocabularyFailure.InvalidContent));
-        return ReviewTransaction(document => DraftPolicy.SaveReview(document, entryId, senseId, value, expected, cardId), cancellationToken);
+        var supplied = importedImages is null ? new Dictionary<string, VocabularyPreparedImage>() : new Dictionary<string, VocabularyPreparedImage>(importedImages, StringComparer.Ordinal);
+        return ReviewTransaction(document => DraftPolicy.SaveReview(document, entryId, senseId, value, expected, cardId), cancellationToken, supplied);
     }
     public Task<FrozenVocabularyImportSnapshot> RecordAnkiBindingAsync(Guid entryId, Guid senseId, FrozenBinding binding,
         Guid? cardId = null, CancellationToken cancellationToken = default) =>
@@ -24,26 +24,47 @@ internal sealed partial class FrozenVocabularyImportStore
     public Task<FrozenVocabularyImportSnapshot> SaveTemplateAsync(ReviewLayoutTemplate template,
         IReadOnlyDictionary<string, VocabularyPreparedImage>? importedImages = null, CancellationToken cancellationToken = default)
     {
-        if (importedImages is { Count: > 0 }) return Task.FromException<FrozenVocabularyImportSnapshot>(new VocabularyException(VocabularyFailure.InvalidContent));
-        return ReviewTransaction(document => DraftPolicy.SaveTemplate(document, template), cancellationToken);
+        var supplied = importedImages is null ? new Dictionary<string, VocabularyPreparedImage>() : new Dictionary<string, VocabularyPreparedImage>(importedImages, StringComparer.Ordinal);
+        return ReviewTransaction(document => DraftPolicy.SaveTemplate(document, template), cancellationToken, supplied);
     }
     public Task<FrozenVocabularyImportSnapshot> RemoveTemplateAsync(Guid id, CancellationToken cancellationToken = default) =>
         ReviewTransaction(document => DraftPolicy.RemoveTemplate(document, id), cancellationToken);
 
     private Task<FrozenVocabularyImportSnapshot> ReviewTransaction(Func<Cotabby.Core.Vocabulary.Frozen.VocabularyDocument, VocabularyReviewDraft> edit,
-        CancellationToken cancellationToken) => Run(() => Database.Access(true, () =>
+        CancellationToken cancellationToken, IReadOnlyDictionary<string, VocabularyPreparedImage>? supplied = null) => Run(() => Database.Access(true, () =>
     {
         cancellationToken.ThrowIfCancellationRequested();
         var before = LoadCurrent(cancellationToken);
         var draft = edit(before.Document);
         if (!draft.NeedsCommit) return new FrozenVocabularyImportSnapshot(before.Revision, before.Document);
-        // Until a canonical media owner exists, even removal of the last reference is rejected:
-        // it would require coordinated file cleanup, just as addition requires staging.
-        if (!ImageReferences(before.Document).SetEquals(ImageReferences(draft.Document)))
-            throw new VocabularyException(VocabularyFailure.InvalidContent);
-        cancellationToken.ThrowIfCancellationRequested();
-        var committed = CanonicalWritingPolicy.PrepareCommit(before.Document, draft.Document);
-        var revision = Database.Write(committed, before.Document, before.Revision, cancellationToken: cancellationToken);
+        ValidateMediaContent(draft.Document);
+        var existing = ImageReferences(before.Document); var references = ImageReferences(draft.Document);
+        ValidateMediaBudget(references);
+        var retired = new List<(VocabularyImageReference Image, VocabularyWindowsFile.FileIdentity Identity)>();
+        var retained = references.Select(image => image.Filename).ToHashSet(StringComparer.Ordinal);
+        foreach (var image in existing.Where(image => !retained.Contains(image.Filename)))
+            if (CaptureCleanupIdentity(image) is { } identity) retired.Add((image, identity));
+        var written = new List<(VocabularyImageReference Image, VocabularyWindowsFile.FileIdentity Identity)>();
+        Cotabby.Core.Vocabulary.Frozen.VocabularyDocument committed;
+        ulong revision;
+        try
+        {
+            foreach (var image in references)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                if (supplied is not null && supplied.TryGetValue(image.Filename, out var prepared))
+                {
+                    if (prepared is null) throw new VocabularyException(VocabularyFailure.InvalidContent);
+                    if (OwnedImageStorage.WriteOwned(prepared.CopyBytes(), image) is { } identity) written.Add((image, identity));
+                }
+                else if (!existing.Contains(image)) _ = ImageStorage.Read(image);
+            }
+            cancellationToken.ThrowIfCancellationRequested();
+            committed = CanonicalWritingPolicy.PrepareCommit(before.Document, draft.Document);
+            revision = Database.Write(committed, before.Document, before.Revision, cancellationToken: cancellationToken);
+        }
+        catch { foreach (var item in written) RemoveOwnedImage(item.Image, item.Identity); throw; }
+        foreach (var item in retired) RemoveOwnedImage(item.Image, item.Identity);
         var snapshot = new FrozenVocabularyImportSnapshot(revision, committed);
         _notifications.Writer.TryWrite(snapshot);
         return snapshot;

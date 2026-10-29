@@ -43,4 +43,17 @@ public sealed class CliMailboxServerTests : IAsyncLifetime
         using var replies = new CliMailboxDirectory(Path.Combine(_root, "replies"), false);
         Assert.False(replies.Exists(request.Id.ToString("D") + ".json"));
     }
+    [Fact]
+    public async Task StartupRequeuesMoreThanOneScanPage()
+    {
+        using var working = new CliMailboxDirectory(Path.Combine(_root, "working"));
+        for (int index = 0; index < 129; index++)
+        {
+            var request = new CliRequest { ExpiresAt = CliWire.Now() + 60 };
+            working.Publish(request.Id.ToString("D") + ".json", CliWire.Encode(request));
+        }
+        int handled = 0;
+        await using var server = new CliMailboxServer(_root, request => { Interlocked.Increment(ref handled); return Task.FromResult(new CliReply { RequestId = request.Id, Ok = true }); });
+        await server.StartAsync(); await WaitUntil(() => Volatile.Read(ref handled) == 129);
+    }
 }

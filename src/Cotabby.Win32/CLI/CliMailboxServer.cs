@@ -35,10 +35,19 @@ public sealed class CliMailboxServer : IAsyncDisposable
                     throw new CliException(Marshal.GetLastPInvokeError() == 33 ? CliErrorCode.Busy : CliErrorCode.Io, "Another instance owns the CLI mailbox.");
                 _leaseHeld = true;
                 _lease.Verify();
-                foreach (string name in _working.Names()) { if (_requests.Exists(name)) _working.Remove(name); else _working.Claim(name, _requests); }
+                while (true)
+                {
+                    var interrupted = _working.Names(); if (interrupted.Count == 0) break;
+                    bool requeued = false;
+                    foreach (string name in interrupted)
+                    {
+                        if (_requests.Exists(name)) { _working.Remove(name); requeued = true; }
+                        else requeued |= _working.Claim(name, _requests);
+                    }
+                    if (!requeued) throw new CliException(CliErrorCode.Io, "Cannot recover the CLI mailbox.");
+                }
                 StartWatcher();
                 _started = true;
-                _recovery = new Timer(RecoveryTick, null, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(2));
                 ScheduleLocked(); return Task.CompletedTask;
             }
             catch { Cleanup(); throw; }
@@ -63,11 +72,13 @@ public sealed class CliMailboxServer : IAsyncDisposable
         {
             if (!_started || _stopping || !ReferenceEquals(sender, _watcher)) return;
             _watcher.Dispose(); _watcher = null;
+            _recovery ??= new Timer(RecoveryTick, null, Timeout.Infinite, Timeout.Infinite);
+            _recovery.Change(TimeSpan.Zero, Timeout.InfiniteTimeSpan);
             ScheduleLocked();
         }
     }
-    // Recover from a lost Windows change notification, including watcher-buffer overflow.
-    // The periodic scan also covers an event lost while a watcher is being restarted.
+    // Recover after a lost notification, including watcher-buffer overflow. No timer or
+    // periodic disk scan runs during normal operation.
     private void RecoveryTick(object? state)
     {
         lock (_gate)
@@ -75,8 +86,8 @@ public sealed class CliMailboxServer : IAsyncDisposable
             if (!_started || _stopping) return;
             if (_watcher is null)
             {
-                try { StartWatcher(); }
-                catch (Exception e) when (e is IOException or UnauthorizedAccessException) { }
+                try { StartWatcher(); _recovery?.Dispose(); _recovery = null; }
+                catch (Exception e) when (e is IOException or UnauthorizedAccessException or InvalidOperationException or ArgumentException) { _recovery?.Change(TimeSpan.FromSeconds(2), Timeout.InfiniteTimeSpan); }
             }
             ScheduleLocked();
         }
@@ -95,12 +106,14 @@ public sealed class CliMailboxServer : IAsyncDisposable
             {
                 lock (_gate) { if (_stopping) return; _dirty = false; }
                 var requests = _requests!; var working = _working!; var replies = _replies!;
+                bool progressed = false;
                 foreach (string name in requests.Names())
                 {
                     lock (_gate) if (_stopping) return;
                     VocabularyWindowsFile.FileIdentity? claimed;
                     try { claimed = requests.ClaimOwned(name, working); if (claimed is null) continue; }
                     catch (Exception e) when (e is CliException or IOException or UnauthorizedAccessException or VocabularyException) { continue; }
+                    progressed = true;
                     Guid id = Guid.ParseExact(name[..36], "D"); CliReply reply;
                     try
                     {
@@ -122,7 +135,7 @@ public sealed class CliMailboxServer : IAsyncDisposable
                     catch (Exception e) when (e is CliException or IOException or UnauthorizedAccessException or VocabularyException) { /* Retain claimed input for restart. */ }
                 }
                 foreach (string name in replies.Names()) { try { replies.RemoveIfOlderThan(name, DateTime.UtcNow.AddDays(-1)); } catch (Exception e) when (e is CliException or IOException or UnauthorizedAccessException or VocabularyException) { } }
-                lock (_gate) if (!_dirty || _stopping) return;
+                lock (_gate) if ((!_dirty && (!progressed || requests.Names().Count == 0)) || _stopping) return;
             }
         }
         finally

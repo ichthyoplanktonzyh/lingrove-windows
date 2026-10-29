@@ -1,3 +1,4 @@
+using Cotabby.App.Localization;
 using System.Windows;
 using System.Windows.Controls;
 using Cotabby.Core.Vocabulary;
@@ -136,10 +137,10 @@ internal sealed class FrozenVocabularyDeleteSenseWindow : Window
 {
     internal FrozenVocabularyDeleteSenseWindow()
     {
-        Title = "Vocabulary"; Width = 410; SizeToContent = SizeToContent.Height; ResizeMode = ResizeMode.NoResize; ShowInTaskbar = false; WindowStartupLocation = WindowStartupLocation.CenterOwner; VocabularyNotebookTheme.Follow(this);
-        var root = new StackPanel { Margin = new Thickness(20) }; Content = root; root.Children.Add(new TextBlock { Text = "Remove from vocabulary?", FontSize = 18, FontWeight = FontWeights.SemiBold, TextWrapping = TextWrapping.Wrap });
+        Title = InterfaceText.Get("Vocabulary"); Width = 410; SizeToContent = SizeToContent.Height; ResizeMode = ResizeMode.NoResize; ShowInTaskbar = false; WindowStartupLocation = WindowStartupLocation.CenterOwner; VocabularyNotebookTheme.Follow(this);
+        var root = new StackPanel { Margin = new Thickness(20) }; Content = root; root.Children.Add(new TextBlock { Text = InterfaceText.Get("Remove from vocabulary?"), FontSize = 18, FontWeight = FontWeights.SemiBold, TextWrapping = TextWrapping.Wrap });
         root.Children.Add(VocabularyInputControls.Caption("The saved sense will be removed from your notebook."));
-        var cancel = new Button { Name = "frozenDeleteCancel", Content = "Cancel", IsCancel = true, IsDefault = true, MinWidth = 85 }; var delete = new Button { Name = "frozenDeleteConfirm", Content = "Delete", MinWidth = 85 }; cancel.Click += (_, _) => DialogResult = false; delete.Click += (_, _) => DialogResult = true;
+        var cancel = new Button { Name = "frozenDeleteCancel", Content = InterfaceText.Get("Cancel"), IsCancel = true, IsDefault = true, MinWidth = 85 }; var delete = new Button { Name = "frozenDeleteConfirm", Content = InterfaceText.Get("Delete"), MinWidth = 85 }; cancel.Click += (_, _) => DialogResult = false; delete.Click += (_, _) => DialogResult = true;
         root.Children.Add(VocabularyInputControls.Footer(cancel, delete));
     }
 }

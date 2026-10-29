@@ -1,3 +1,4 @@
+using Cotabby.App.Localization;
 using System.Windows;
 using System.Windows.Controls;
 using Cotabby.App.Vocabulary;
@@ -12,7 +13,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow
     private IVocabularyGraphPreferences? _graphPreferences;
     private VocabularyGraphPresentation? _graphPresentation;
     private VocabularyGraphView? _graphView;
-    private readonly Button _graphButton = new() { Name = "canonicalGraphMode", Content = "Graph", Padding = new Thickness(10, 5, 10, 5), IsEnabled = false, ToolTip = "Graph settings are unavailable" };
+    private readonly Button _graphButton = new() { Name = "canonicalGraphMode", Content = InterfaceText.Get("Graph"), Padding = new Thickness(10, 5, 10, 5), IsEnabled = false, ToolTip = "Graph settings are unavailable" };
     private bool _graphMode;
     private double _graphDetailWidth = 360;
     private VocabularySelection? _lastGraphSelection;
@@ -44,7 +45,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow
         _graphView.UpdateCanonical(expanded => meaning ? CanonicalVocabularyGraphProjection.Meanings(doc.Semantics, entries, expanded, query, search, StringComparer.CurrentCultureIgnoreCase, languages, [VocabularyCategoryUiLanguage.Identifier], SenseTitle, GraphLanguageLabel, doc.Classification, includeEmpty: includeEmpty, showsUnexplored: unexplored) : CanonicalVocabularyGraphProjection.Entries(entries, expanded, query, search, SenseTitle, GraphLanguageLabel), graphSelection, SelectFromCanonicalGraph, meaning ? _session.Destination?.NodeId : null, meaning ? _session.Destination?.CategoryId : null, id => { ++_actionSelectionEpoch; ShowMeaning(id); }, id => { ++_actionSelectionEpoch; _session.Destination = new(VocabularyMeaningDestinationKind.Category, CategoryId: id); _session.Refresh(); }, unexplored, value => { _outline.ShowUnexplored = value; if (_listPreferences is not null) _listPreferences.ShowUnexplored = value; _session.Refresh(); });
         bool detail = meaning ? _session.Destination is not null : _session.Selection is not null; _content.ColumnDefinitions.Add(new() { Width = new GridLength(1, GridUnitType.Star), MinWidth = 350 }); if (detail) { _content.ColumnDefinitions.Add(new() { Width = new GridLength(5) }); _content.ColumnDefinitions.Add(new() { Width = new GridLength(_graphDetailWidth), MinWidth = 300, MaxWidth = 480 }); }
         Grid.SetColumn(_graphView, 0); _content.Children.Add(_graphView); if (detail) { var split = VocabularyNotebookTheme.Splitter(); split.DragCompleted += (_, _) => { if (_content.ColumnDefinitions.Count == 3) _graphDetailWidth = Math.Clamp(_content.ColumnDefinitions[2].ActualWidth, 300, 480); }; Grid.SetColumn(split, 1); _content.Children.Add(split); var shell = new DockPanel(); var close = new Button { Name = "canonicalGraphCloseDetail", Content = "Close detail", HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(8) }; VocabularyNotebookTheme.Button(close); close.Click += (_, _) => { _graphPresentation.ClearFocus(); SelectFromCanonicalGraph(null); }; DockPanel.SetDock(close, Dock.Top); shell.Children.Add(close); shell.Children.Add(Detail()); Grid.SetColumn(shell, 2); _content.Children.Add(shell); }
-        _graphButton.Content = "List";
+        _graphButton.Content = InterfaceText.Get("List");
     }
     private void SelectFromCanonicalGraph(VocabularySelection? selection)
     {

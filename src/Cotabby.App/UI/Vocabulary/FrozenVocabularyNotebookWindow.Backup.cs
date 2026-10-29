@@ -1,3 +1,4 @@
+using Cotabby.App.Localization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
@@ -11,7 +12,7 @@ namespace Cotabby.App.UI.Vocabulary;
 /// accepted backup and restore work. Closing cancels unaccepted presentation and joins commits.</summary>
 internal sealed partial class FrozenVocabularyNotebookWindow
 {
-    private readonly Button _backupMenu = new() { Name = "canonicalBackupMenu", Content = "Export and backup", Padding = new Thickness(10, 5, 10, 5) };
+    private readonly Button _backupMenu = new() { Name = "canonicalBackupMenu", Content = InterfaceText.Get("Export and backup"), Padding = new Thickness(10, 5, 10, 5) };
     private readonly TextBlock _backupError = new() { Name = "canonicalBackupError", TextWrapping = TextWrapping.Wrap, VerticalAlignment = VerticalAlignment.Center };
     private CancellationTokenSource? _backupCancellation;
     private TaskCompletionSource? _backupCompletion;

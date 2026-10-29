@@ -1,3 +1,4 @@
+using Cotabby.App.Localization;
 using System.Windows;
 using System.Windows.Controls;
 using Cotabby.Core.Vocabulary;
@@ -239,9 +240,9 @@ internal sealed class FrozenVocabularyPatternDeleteWindow : Window
 {
     internal FrozenVocabularyPatternDeleteWindow()
     {
-        Title = "Vocabulary"; Width = 440; SizeToContent = SizeToContent.Height; ResizeMode = ResizeMode.NoResize; ShowInTaskbar = false; WindowStartupLocation = WindowStartupLocation.CenterOwner; VocabularyNotebookTheme.Follow(this);
-        var root = new StackPanel { Margin = new Thickness(20) }; Content = root; root.Children.Add(new TextBlock { Text = "Remove this wording and its groupings?", FontSize = 18, FontWeight = FontWeights.SemiBold, TextWrapping = TextWrapping.Wrap });
-        var cancel = new Button { Name = "patternDeleteCancel", Content = "Cancel", IsCancel = true, IsDefault = true, MinWidth = 90 }; var remove = new Button { Name = "patternDeleteConfirm", Content = "Remove", MinWidth = 90 }; cancel.Click += (_, _) => DialogResult = false; remove.Click += (_, _) => DialogResult = true; root.Children.Add(VocabularyInputControls.Footer(cancel, remove));
+        Title = InterfaceText.Get("Vocabulary"); Width = 440; SizeToContent = SizeToContent.Height; ResizeMode = ResizeMode.NoResize; ShowInTaskbar = false; WindowStartupLocation = WindowStartupLocation.CenterOwner; VocabularyNotebookTheme.Follow(this);
+        var root = new StackPanel { Margin = new Thickness(20) }; Content = root; root.Children.Add(new TextBlock { Text = InterfaceText.Get("Remove this wording and its groupings?"), FontSize = 18, FontWeight = FontWeights.SemiBold, TextWrapping = TextWrapping.Wrap });
+        var cancel = new Button { Name = "patternDeleteCancel", Content = InterfaceText.Get("Cancel"), IsCancel = true, IsDefault = true, MinWidth = 90 }; var remove = new Button { Name = "patternDeleteConfirm", Content = InterfaceText.Get("Remove"), MinWidth = 90 }; cancel.Click += (_, _) => DialogResult = false; remove.Click += (_, _) => DialogResult = true; root.Children.Add(VocabularyInputControls.Footer(cancel, remove));
     }
 }
 
@@ -249,8 +250,8 @@ internal sealed class FrozenVocabularySemanticDeleteWindow : Window
 {
     internal FrozenVocabularySemanticDeleteWindow()
     {
-        Title = "Vocabulary"; Width = 440; SizeToContent = SizeToContent.Height; ResizeMode = ResizeMode.NoResize; ShowInTaskbar = false; WindowStartupLocation = WindowStartupLocation.CenterOwner; VocabularyNotebookTheme.Follow(this);
+        Title = InterfaceText.Get("Vocabulary"); Width = 440; SizeToContent = SizeToContent.Height; ResizeMode = ResizeMode.NoResize; ShowInTaskbar = false; WindowStartupLocation = WindowStartupLocation.CenterOwner; VocabularyNotebookTheme.Follow(this);
         var root = new StackPanel { Margin = new Thickness(20) }; Content = root; root.Children.Add(new TextBlock { Text = "Delete this meaning?", FontSize = 18, FontWeight = FontWeights.SemiBold, TextWrapping = TextWrapping.Wrap }); root.Children.Add(VocabularyInputControls.Caption("Collected expressions will be kept."));
-        var cancel = new Button { Name = "semanticDeleteCancel", Content = "Cancel", IsCancel = true, IsDefault = true, MinWidth = 90 }; var delete = new Button { Name = "semanticDeleteConfirm", Content = "Delete meaning", MinWidth = 90 }; cancel.Click += (_, _) => DialogResult = false; delete.Click += (_, _) => DialogResult = true; root.Children.Add(VocabularyInputControls.Footer(cancel, delete));
+        var cancel = new Button { Name = "semanticDeleteCancel", Content = InterfaceText.Get("Cancel"), IsCancel = true, IsDefault = true, MinWidth = 90 }; var delete = new Button { Name = "semanticDeleteConfirm", Content = InterfaceText.Get("Delete meaning"), MinWidth = 90 }; cancel.Click += (_, _) => DialogResult = false; delete.Click += (_, _) => DialogResult = true; root.Children.Add(VocabularyInputControls.Footer(cancel, delete));
     }
 }

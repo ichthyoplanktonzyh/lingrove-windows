@@ -6,6 +6,7 @@ using System.Windows.Shapes;
 using System.Windows.Markup;
 using Cotabby.App.UI.Controls;
 using Microsoft.Win32;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI.Vocabulary;
 
@@ -19,6 +20,7 @@ internal static class VocabularyNotebookTheme
     private static readonly Style Scrollbar = CreateScrollbarStyle();
     internal static void Follow(Window window)
     {
+        InterfaceText.ApplyDirection(window);
         window.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("/Cotabby;component/UI/Theme.xaml", UriKind.Relative) });
         // Scoped implicit style also reaches scrollbars created inside native ScrollViewer templates.
         window.Resources[typeof(ScrollBar)] = Scrollbar;

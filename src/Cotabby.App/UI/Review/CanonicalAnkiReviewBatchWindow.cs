@@ -1,3 +1,4 @@
+using Cotabby.App.Localization;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
@@ -24,8 +25,8 @@ internal sealed class CanonicalAnkiReviewBatchWindow : Window
     private readonly TextBlock _speechDestination = new() { Name = "canonicalBatchSpeechDestination", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, 10) };
     internal TextBlock SpeechDestination => _speechDestination;
     private readonly TextBlock _destination = new() { TextWrapping = TextWrapping.Wrap }, _message = new() { TextWrapping = TextWrapping.Wrap }, _count = new();
-    private readonly Button _apply = new() { Content = "Apply to selected" }, _reload = new() { Content = "Refresh connection" },
-        _stop = new() { Content = "Stop" }, _close = new() { Content = "Close", IsCancel = true }, _send = new() { Content = "Send remaining", IsDefault = true };
+    private readonly Button _apply = new() { Content = InterfaceText.Get("Apply to selected") }, _reload = new() { Content = "Refresh connection" },
+        _stop = new() { Content = InterfaceText.Get("Stop") }, _close = new() { Content = InterfaceText.Get("Close"), IsCancel = true }, _send = new() { Content = InterfaceText.Get("Send remaining"), IsDefault = true };
     private ReviewOperationScope? _scope;
     private Task? _aux, _stopWork, _retirement;
     private CanonicalAnkiReviewWindow? _preparation;

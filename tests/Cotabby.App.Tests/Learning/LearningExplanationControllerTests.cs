@@ -6,6 +6,7 @@ using Cotabby.Core.LanguageLearning.Reading;
 using Cotabby.Core.ExpressionAssist;
 using Cotabby.Core.Suggestions;
 using Cotabby.Core.Support.Runtime;
+using Cotabby.Core.Runtime.Metrics;
 using Cotabby.Core.Vocabulary;
 using Cotabby.Inference.LanguageLearning.Local;
 using LLama.Native;
@@ -163,10 +164,13 @@ public sealed class LearningExplanationControllerTests
         var runtime = new FakeRuntime { Generate = _ => Task.FromResult("{\"candidates\":[{\"text\":\"rule out\",\"hint\":\"排除\"}]}") };
         var settings = Settings(); var clock = new Clock();
         await using var owner = Owner(runtime, settings, clock);
+        var observations = new List<PerformanceRequestObservation>(); owner.RequestObserved += observations.Add;
         var result = await owner.GenerateExpressionAsync(Expression, value => value.ToLowerInvariant(), CancellationToken.None).WaitAsync(TimeoutLimit);
         Assert.Equal("rule out", Assert.Single(result.Candidates).Text);
         Assert.Equal(768, runtime.LastOperation.Output); Assert.True(runtime.Configuration!.RequiresGeneralInstructions);
         Assert.Equal(1, runtime.LastOperation.Disposals); Assert.Equal(0, runtime.Disposals);
+        var observation = Assert.Single(observations); Assert.Equal(ModelRequestSource.ExpressionAssist, observation.Source);
+        Assert.Equal(ModelRequestOutcome.Completed, observation.Outcome); Assert.NotNull(observation.UsableResultMs);
         Assert.Equal(TimeSpan.FromSeconds(60), (await clock.NextTimer()).Due);
     }
 

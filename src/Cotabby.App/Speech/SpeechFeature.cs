@@ -2,6 +2,8 @@ using System.IO;
 using System.Runtime.Versioning;
 using System.Windows.Threading;
 using Cotabby.App.Settings;
+using Cotabby.App.Runtime;
+using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Speech;
 using Cotabby.Inference.OpenAICompatible;
 using Cotabby.Inference.Speech;
@@ -26,18 +28,22 @@ internal sealed class SpeechFeature : IAsyncDisposable
     private SpeechModelFiles? _models;
     private Task? _retirement;
     internal LearningSpeechController Controller { get; }
+    internal PerformanceMetricsStore? History { get; }
+    internal PerformanceHistoryCollector? HistoryCollector { get; set; }
     internal string ModelDirectory { get; }
     internal static string DefaultModelDirectory => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Cotabby", "SpeechModels");
 
-    internal SpeechFeature(Func<AppSettings> current, Action persist, IOpenAICompatibleCredentialStore credentials, string modelDirectory)
-        : this(current, persist, credentials, modelDirectory, new WindowsSystemSpeechExporter()) { }
+    internal SpeechFeature(Func<AppSettings> current, Action persist, IOpenAICompatibleCredentialStore credentials, string modelDirectory,
+        PerformanceMetricsStore? history = null, Action<LearningRequestContext, string, IReadOnlyDictionary<string, string>>? emit = null)
+        : this(current, persist, credentials, modelDirectory, new WindowsSystemSpeechExporter(), history, emit) { }
 
     internal SpeechFeature(Func<AppSettings> current, Action persist, IOpenAICompatibleCredentialStore credentials,
-        string modelDirectory, ISystemSpeechAudioExporting systemExporter)
+        string modelDirectory, ISystemSpeechAudioExporting systemExporter, PerformanceMetricsStore? history = null,
+        Action<LearningRequestContext, string, IReadOnlyDictionary<string, string>>? emit = null)
     {
-        _dispatcher = Dispatcher.CurrentDispatcher; ModelDirectory = modelDirectory;
+        _dispatcher = Dispatcher.CurrentDispatcher; ModelDirectory = modelDirectory; History = history;
         var settings = new LearningSpeechSettings(current, persist, credentials);
-        var telemetry = new SpeechTelemetry((_, _, _) => { });
+        var telemetry = new SpeechTelemetry(emit ?? ((_, _, _) => { }), history, () => current().PerformanceTrackingEnabled);
         _system = new(); _encoded = new(); _renderer = WindowsSpeechRendering.CreateRenderer(); _pcm = new(_renderer);
         var local = new LocalSpeechRuntime(new WindowsSpeechProcessFactory(), new WindowsSpeechMemoryPressure(),
             events: value => _dispatcher.InvokeAsync(() => telemetry.Receive(value)).Task);

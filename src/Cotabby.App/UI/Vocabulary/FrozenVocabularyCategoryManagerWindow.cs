@@ -1,3 +1,4 @@
+using Cotabby.App.Localization;
 using System.ComponentModel;
 using System.Globalization;
 using System.Windows;
@@ -43,16 +44,16 @@ internal sealed class FrozenVocabularyCategoryManagerWindow : Window
     private readonly TextBox _search = new() { Name = "categoryManagerSearch", Tag = "Search categories" };
     private readonly ListBox _list = new() { Name = "categoryManagerList" };
     private readonly TextBlock _error = VocabularyNotebookTheme.Brush(new TextBlock { Name = "categoryManagerError", TextWrapping = TextWrapping.Wrap }, TextBlock.ForegroundProperty, "OrangeBrush");
-    private readonly Button _done = new() { Name = "categoryManagerDone", Content = "Done", MinWidth = 90 };
+    private readonly Button _done = new() { Name = "categoryManagerDone", Content = InterfaceText.Get("Done"), MinWidth = 90 };
     private Window? _child;
     private TaskCompletionSource? _childDone, _retirement;
     private Task? _mutation;
     internal Task? LastOperation { get; private set; }
     internal FrozenVocabularyCategoryManagerWindow(ICanonicalVocabularySemanticStore store, IVocabularyEntryImportStore reader, FrozenVocabularyImportSnapshot snapshot, IReadOnlyList<LearningLanguage> languages, bool currentRules = false)
     {
-        _store = store; _snapshot = snapshot; _languages = Array.AsReadOnly(languages.ToArray()); _currentRules = currentRules; Title = "Manage categories"; Width = 620; Height = 540; MinWidth = 500; MinHeight = 400; WindowStartupLocation = WindowStartupLocation.CenterOwner; ShowInTaskbar = false; VocabularyNotebookTheme.Follow(this);
-        var root = new DockPanel { Margin = new Thickness(20) }; Content = root; var header = VocabularyInputControls.Heading("Manage categories"); DockPanel.SetDock(header, Dock.Top); root.Children.Add(header);
-        if (_currentRules) { var create = new Button { Name = "categoryManagerNew", Content = "New category", HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 0, 0, 8) }; VocabularyNotebookTheme.Button(create); create.Click += (_, _) => LastOperation = EditAsync(null); DockPanel.SetDock(create, Dock.Top); root.Children.Add(create); }
+        _store = store; _snapshot = snapshot; _languages = Array.AsReadOnly(languages.ToArray()); _currentRules = currentRules; Title = InterfaceText.Get("Manage categories"); Width = 620; Height = 540; MinWidth = 500; MinHeight = 400; WindowStartupLocation = WindowStartupLocation.CenterOwner; ShowInTaskbar = false; VocabularyNotebookTheme.Follow(this);
+        var root = new DockPanel { Margin = new Thickness(20) }; Content = root; var header = VocabularyInputControls.Heading(InterfaceText.Get("Manage categories")); DockPanel.SetDock(header, Dock.Top); root.Children.Add(header);
+        if (_currentRules) { var create = new Button { Name = "categoryManagerNew", Content = InterfaceText.Get("New category"), HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 0, 0, 8) }; VocabularyNotebookTheme.Button(create); create.Click += (_, _) => LastOperation = EditAsync(null); DockPanel.SetDock(create, Dock.Top); root.Children.Add(create); }
         var footer = VocabularyInputControls.Footer(_done); DockPanel.SetDock(footer, Dock.Bottom); root.Children.Add(footer); DockPanel.SetDock(_error, Dock.Bottom); root.Children.Add(_error);
         VocabularyNotebookTheme.Input(_search); System.Windows.Automation.AutomationProperties.SetName(_search, "Search categories"); _search.Margin = new Thickness(0, 0, 0, 10); DockPanel.SetDock(_search, Dock.Top); root.Children.Add(_search);
         if (_currentRules) { VocabularyNotebookTheme.Combo(_axis); _axis.Margin = new Thickness(0, 0, 0, 8); DockPanel.SetDock(_axis, Dock.Top); root.Children.Add(_axis); _axis.SelectionChanged += (_, _) => Render(); }
@@ -157,8 +158,8 @@ internal sealed class FrozenVocabularyCategoryDeleteWindow : Window
 {
     internal FrozenVocabularyCategoryDeleteWindow()
     {
-        Title = "Vocabulary"; Width = 410; SizeToContent = SizeToContent.Height; ResizeMode = ResizeMode.NoResize; ShowInTaskbar = false; WindowStartupLocation = WindowStartupLocation.CenterOwner; VocabularyNotebookTheme.Follow(this);
-        var root = new StackPanel { Margin = new Thickness(20) }; Content = root; root.Children.Add(new TextBlock { Text = "Delete this category?", FontSize = 18, FontWeight = FontWeights.SemiBold, TextWrapping = TextWrapping.Wrap }); root.Children.Add(VocabularyInputControls.Caption("Meanings and expressions will be kept."));
-        var cancel = new Button { Name = "categoryDeleteCancel", Content = "Cancel", IsCancel = true, IsDefault = true, MinWidth = 90 }; var delete = new Button { Name = "categoryDeleteConfirm", Content = "Delete category", MinWidth = 90 }; cancel.Click += (_, _) => DialogResult = false; delete.Click += (_, _) => DialogResult = true; root.Children.Add(VocabularyInputControls.Footer(cancel, delete));
+        Title = InterfaceText.Get("Vocabulary"); Width = 410; SizeToContent = SizeToContent.Height; ResizeMode = ResizeMode.NoResize; ShowInTaskbar = false; WindowStartupLocation = WindowStartupLocation.CenterOwner; VocabularyNotebookTheme.Follow(this);
+        var root = new StackPanel { Margin = new Thickness(20) }; Content = root; root.Children.Add(new TextBlock { Text = InterfaceText.Get("Delete this category?"), FontSize = 18, FontWeight = FontWeights.SemiBold, TextWrapping = TextWrapping.Wrap }); root.Children.Add(VocabularyInputControls.Caption("Meanings and expressions will be kept."));
+        var cancel = new Button { Name = "categoryDeleteCancel", Content = InterfaceText.Get("Cancel"), IsCancel = true, IsDefault = true, MinWidth = 90 }; var delete = new Button { Name = "categoryDeleteConfirm", Content = InterfaceText.Get("Delete category"), MinWidth = 90 }; cancel.Click += (_, _) => DialogResult = false; delete.Click += (_, _) => DialogResult = true; root.Children.Add(VocabularyInputControls.Footer(cancel, delete));
     }
 }

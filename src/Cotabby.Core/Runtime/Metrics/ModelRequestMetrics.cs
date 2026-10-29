@@ -11,6 +11,7 @@ public enum ModelRequestSource
     [JsonStringEnumMemberName("completion")] Completion, [JsonStringEnumMemberName("translation")] Translation,
     [JsonStringEnumMemberName("analysis")] Analysis, [JsonStringEnumMemberName("explanation")] Explanation,
     [JsonStringEnumMemberName("speech")] Speech, [JsonStringEnumMemberName("ocr")] Ocr,
+    [JsonStringEnumMemberName("expressionAssist")] ExpressionAssist,
 }
 /// <summary>Completed records a validated task result, independently of any later human quality
 /// judgment. Failed and cancelled stay distinct in the shared opt-in history.</summary>
@@ -26,10 +27,12 @@ public static class ModelRequestSources
 {
     public static IReadOnlyList<ModelRequestSource> All { get; } = Array.AsReadOnly(new[]
     { ModelRequestSource.Completion, ModelRequestSource.Translation, ModelRequestSource.Explanation, ModelRequestSource.Speech, ModelRequestSource.Ocr });
+    public static IReadOnlyList<ModelRequestSource> Current { get; } = Array.AsReadOnly(new[]
+    { ModelRequestSource.Completion, ModelRequestSource.Translation, ModelRequestSource.Explanation, ModelRequestSource.ExpressionAssist, ModelRequestSource.Speech, ModelRequestSource.Ocr });
     public static string Label(this ModelRequestSource value) => value switch
     {
         ModelRequestSource.Completion => "Autocomplete", ModelRequestSource.Translation => "Translation", ModelRequestSource.Analysis => "Learning Analysis",
-        ModelRequestSource.Explanation => "AI explanation", ModelRequestSource.Speech => "TTS", ModelRequestSource.Ocr => "Screen OCR", _ => throw new ArgumentOutOfRangeException(nameof(value)),
+        ModelRequestSource.Explanation => "AI explanation", ModelRequestSource.ExpressionAssist => "Expression assistance", ModelRequestSource.Speech => "TTS", ModelRequestSource.Ocr => "Screen OCR", _ => throw new ArgumentOutOfRangeException(nameof(value)),
     };
     public static string Label(this ModelRequestOutcome value) => value switch
     { ModelRequestOutcome.Completed => "Completed", ModelRequestOutcome.Failed => "Failed", ModelRequestOutcome.Cancelled => "Cancelled", _ => throw new ArgumentOutOfRangeException(nameof(value)) };

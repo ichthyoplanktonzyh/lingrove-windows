@@ -1,3 +1,4 @@
+using Cotabby.App.Localization;
 using System.ComponentModel;
 using System.Globalization;
 using System.Windows;
@@ -34,11 +35,11 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
     private readonly TextBox _query = new() { Name = "frozenNotebookSearch", MinWidth = 200, ToolTip = "Search vocabulary" };
     private readonly ComboBox _language = new() { Name = "frozenNotebookLanguage", MinWidth = 130 }, _tag = new() { Name = "frozenNotebookTag", MinWidth = 130 };
     private readonly ComboBox _organization = new() { Name = "frozenNotebookOrganization", MinWidth = 125 };
-    private readonly Button _add = new() { Name = "frozenNotebookAdd", Content = "Add entry", Padding = new Thickness(10, 5, 10, 5) }, _import = new() { Name = "frozenNotebookImport", Content = "Import…", Padding = new Thickness(10, 5, 10, 5) };
+    private readonly Button _add = new() { Name = "frozenNotebookAdd", Content = InterfaceText.Get("Add entry"), Padding = new Thickness(10, 5, 10, 5) }, _import = new() { Name = "frozenNotebookImport", Content = "Import…", Padding = new Thickness(10, 5, 10, 5) };
     private readonly ComboBox _sort = new() { Name = "frozenNotebookSort", MinWidth = 115 }, _density = new() { Name = "frozenNotebookDensity", MinWidth = 100 };
     private readonly Grid _content = new();
-    private readonly Button _categoryToggle = new() { Name = "frozenToggleCategories", Content = "Categories", Padding = new Thickness(10, 5, 10, 5) };
-    private readonly Button _newMeaning = new() { Name = "canonicalToolbarNewMeaning", Content = "New meaning", Padding = new Thickness(10, 5, 10, 5) };
+    private readonly Button _categoryToggle = new() { Name = "frozenToggleCategories", Content = InterfaceText.Get("Categories"), Padding = new Thickness(10, 5, 10, 5) };
+    private readonly Button _newMeaning = new() { Name = "canonicalToolbarNewMeaning", Content = InterfaceText.Get("New meaning"), Padding = new Thickness(10, 5, 10, 5) };
     private bool _showCategories = true, _restoreEntryFocus;
     private readonly TreeView _entries = new() { Name = "frozenNotebookEntries", BorderThickness = new Thickness(0) };
     private readonly VocabularyMeaningSidebar _meanings;
@@ -251,11 +252,11 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
     private FrameworkElement Empty()
     {
         var panel = new StackPanel { HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
-        panel.Children.Add(new TextBlock { Text = "No saved expressions", FontSize = 22, FontWeight = FontWeights.SemiBold, HorizontalAlignment = HorizontalAlignment.Center });
-        panel.Children.Add(new TextBlock { Text = "Add an entry yourself or import a CSV or TXT word list.", Margin = new Thickness(0, 9, 0, 16), HorizontalAlignment = HorizontalAlignment.Center });
+        panel.Children.Add(new TextBlock { Text = InterfaceText.Get("No saved expressions"), FontSize = 22, FontWeight = FontWeights.SemiBold, HorizontalAlignment = HorizontalAlignment.Center });
+        panel.Children.Add(new TextBlock { Text = InterfaceText.Get("Add an entry yourself or import a CSV or TXT word list."), Margin = new Thickness(0, 9, 0, 16), HorizontalAlignment = HorizontalAlignment.Center });
         var buttons = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Center };
-        var add = new Button { Name = "frozenEmptyAdd", Content = "Add entry", Margin = new Thickness(4), Padding = new Thickness(12, 6, 12, 6) }; add.Click += (_, _) => LastOperation = AddAsync();
-        var import = new Button { Name = "frozenEmptyImport", Content = "Import word list", Margin = new Thickness(4), Padding = new Thickness(12, 6, 12, 6) }; import.Click += (_, _) => LastOperation = ImportAsync();
+        var add = new Button { Name = "frozenEmptyAdd", Content = InterfaceText.Get("Add entry"), Margin = new Thickness(4), Padding = new Thickness(12, 6, 12, 6) }; add.Click += (_, _) => LastOperation = AddAsync();
+        var import = new Button { Name = "frozenEmptyImport", Content = InterfaceText.Get("Import word list"), Margin = new Thickness(4), Padding = new Thickness(12, 6, 12, 6) }; import.Click += (_, _) => LastOperation = ImportAsync();
         VocabularyNotebookTheme.Button(add, true); VocabularyNotebookTheme.Button(import); buttons.Children.Add(add); buttons.Children.Add(import); panel.Children.Add(buttons); return panel;
     }
     private static FrameworkElement State(string text, bool error = false) => VocabularyNotebookTheme.Brush(new TextBlock { Text = text, Name = "frozenNotebookState", FontSize = 16, TextWrapping = TextWrapping.Wrap, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center }, TextBlock.ForegroundProperty, error ? "OrangeBrush" : "TextSecondary");
@@ -375,11 +376,11 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
         if (_senseMutating) panel.Children.Add(Caption("Updating vocabulary…"));
         if (_actionError is { } error) panel.Children.Add(VocabularyNotebookTheme.Brush(new TextBlock { Name = "frozenSenseActionError", Text = error, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 12, 0, 0) }, TextBlock.ForegroundProperty, "OrangeBrush"));
         var actions = new WrapPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 18, 0, 0) };
-        var edit = new Button { Name = "frozenNotebookEdit", Content = "Edit", IsEnabled = !_senseMutating && !_semanticBusy && _store is ICanonicalVocabularyEditorStore && _store is ICanonicalVocabularyMediaStore, Margin = new Thickness(0, 0, 8, 0) };
+        var edit = new Button { Name = "frozenNotebookEdit", Content = InterfaceText.Get("Edit"), IsEnabled = !_senseMutating && !_semanticBusy && _store is ICanonicalVocabularyEditorStore && _store is ICanonicalVocabularyMediaStore, Margin = new Thickness(0, 0, 8, 0) };
         VocabularyNotebookTheme.Button(edit); edit.Click += (_, _) => LastOperation = EditAsync(new(entry.Id, sense.Id)); actions.Children.Add(edit);
         AddSenseActions(actions, entry, sense);
         AddSenseSemanticActions(actions, new(entry.Id, sense.Id));
-        var export = new Button { Content = "Export…", Margin = new Thickness(0, 0, 8, 0), IsEnabled = _store is ICanonicalVocabularyExportStore }; VocabularyNotebookTheme.Button(export); export.Click += (_, _) => LastOperation = OpenCanonicalExportAsync(new(entry.Id, sense.Id)); actions.Children.Add(export); panel.Children.Add(actions);
+        var export = new Button { Content = InterfaceText.Get("Export…"), Margin = new Thickness(0, 0, 8, 0), IsEnabled = _store is ICanonicalVocabularyExportStore }; VocabularyNotebookTheme.Button(export); export.Click += (_, _) => LastOperation = OpenCanonicalExportAsync(new(entry.Id, sense.Id)); actions.Children.Add(export); panel.Children.Add(actions);
     }
     private void MeaningDetail(StackPanel panel, F.VocabularyMeaningNode node)
     {

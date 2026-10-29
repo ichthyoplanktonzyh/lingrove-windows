@@ -1,3 +1,4 @@
+using Cotabby.App.Localization;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -29,6 +30,7 @@ public partial class LearningPreviewWindow : Window
     public LearningPreviewWindow()
     {
         InitializeComponent();
+        InterfaceText.TranslateInitialTree(this);
         FavoriteButton.FailureChanged += message =>
         { VocabularyStatus.Text = message ?? ""; VocabularyStatus.Visibility = message is null ? Visibility.Collapsed : Visibility.Visible; };
         InstallSelection();
@@ -144,7 +146,7 @@ public partial class LearningPreviewWindow : Window
         ErrorText.Visibility = Visibility.Visible;
         TitleText.Text = "Sentence preview unavailable";
         StatusText.Text = "No text was sent.";
-        CancelButton.Content = "Close";
+        CancelButton.Content = InterfaceText.Get("Close");
         PresentAt(anchor);
     }
 

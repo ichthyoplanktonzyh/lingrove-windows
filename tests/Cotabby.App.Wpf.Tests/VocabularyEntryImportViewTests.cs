@@ -9,6 +9,7 @@ using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Vocabulary;
 using Cotabby.Core.Vocabulary.EntryInput;
 using Cotabby.Win32.Vocabulary;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.Wpf.Tests;
 
@@ -33,6 +34,34 @@ public sealed class VocabularyEntryImportViewTests(WpfDispatcher dispatcher)
         public Task<VocabularyWordList> ReadAsync(string path, CancellationToken token) { Token = token; return Gate.Task; }
     }
     private static VocabularyInputResult NewResult() => new(1, 1, 0, 0, 0, 0, new(Guid.NewGuid(), Guid.NewGuid()));
+    [Fact]
+    public Task LocalizedCreationKeepsEditableContentLiteral() => dispatcher.RunAsync(async () =>
+    {
+        InterfaceText.Initialize("zh-Hans");
+        var window = new VocabularyEntryCreationWindow(new Owner());
+        try
+        {
+            window.Show(); var entry = Find<TextBox>(window, "vocabularyNewExpression"); entry.Text = "Save";
+            Assert.Equal("Save", entry.Text);
+            Assert.NotEqual("Save", Find<Button>(window, "vocabularyCreateEntry").Content);
+            Render(window, "entry-create-zh", 620, 590);
+        }
+        finally { await window.RetireAsync(); InterfaceText.Initialize("en"); }
+    });
+    [Fact]
+    public Task ArabicCreationUsesRightToLeftWindowLayout() => dispatcher.RunAsync(async () =>
+    {
+        InterfaceText.Initialize("ar"); var window = new VocabularyEntryCreationWindow(new Owner());
+        try
+        {
+            window.Show(); Assert.Equal(FlowDirection.RightToLeft, window.FlowDirection);
+            Assert.NotEqual("Save", Find<Button>(window, "vocabularyCreateEntry").Content);
+            Render(window, "entry-create-ar", 620, 590);
+            window.Width = 500; window.Height = 500; window.UpdateLayout();
+            Render(window, "entry-create-ar-narrow", 500, 500);
+        }
+        finally { await window.RetireAsync(); InterfaceText.Initialize("en"); }
+    });
     [Fact]
     public Task CreationWaitsForAcknowledgementAndBlocksClose() => dispatcher.RunAsync(async () =>
     {

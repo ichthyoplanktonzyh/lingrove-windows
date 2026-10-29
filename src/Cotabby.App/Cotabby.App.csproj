@@ -18,6 +18,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="..\..\resources\InterfaceLanguage\*.xcstrings" LogicalName="Cotabby.InterfaceLanguage.%(Filename)%(Extension)" />
     <Resource Include="Assets\CotabbyLogo.png" />
     <Resource Include="Assets\MenuBarCatIcon.png" />
     <Resource Include="Assets\MenuBarCatIcon@3x.png" />

@@ -1,3 +1,4 @@
+using Cotabby.App.Localization;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,7 +15,7 @@ internal sealed class FrozenVocabularyMeaningOutline : UserControl
 {
     private sealed class Search : IVocabularyTextSearching { public bool Contains(string field, string term) => CultureInfo.CurrentCulture.CompareInfo.IndexOf(field, term, CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace) >= 0; }
     private readonly ListBox _list = new() { Name = "canonicalMeaningOutline" };
-    private readonly CheckBox _unexplored = new() { Name = "canonicalShowUnexplored", Content = "Show unexplored categories" };
+    private readonly CheckBox _unexplored = new() { Name = "canonicalShowUnexplored", Content = InterfaceText.Get("Show unexplored categories") };
     private readonly Button _manage = new() { Content = "Manage", Name = "outlineManageCategories", Padding = new Thickness(8, 4, 8, 4) }, _create = new() { Content = "+", Name = "outlineNewCategory", Padding = new Thickness(8, 4, 8, 4), ToolTip = "New category" };
     private readonly HashSet<string> _expanded = new(StringComparer.Ordinal);
     private R.VocabularyClassificationIndex _index = new();

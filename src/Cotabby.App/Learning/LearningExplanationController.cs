@@ -1,4 +1,5 @@
 using System.IO;
+using System.Diagnostics;
 using Cotabby.App.Settings;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.LanguageLearning.Reading;
@@ -6,6 +7,7 @@ using Cotabby.Core.ExpressionAssist;
 using Cotabby.Core.Models;
 using Cotabby.Core.Suggestions;
 using Cotabby.Core.Support.Runtime;
+using Cotabby.Core.Runtime.Metrics;
 using Cotabby.Inference.LanguageLearning.Local;
 
 namespace Cotabby.App.Learning;
@@ -19,6 +21,7 @@ namespace Cotabby.App.Learning;
 /// </summary>
 internal sealed class LearningExplanationController : IAsyncDisposable
 {
+    internal event Action<PerformanceRequestObservation>? RequestObserved;
     private readonly object _gate = new();
     private readonly ILearningLocalRuntime _runtime;
     private readonly Func<LearningLocalModelConfiguration, ILearningExplanationEngine> _engineFactory;
@@ -252,6 +255,8 @@ internal sealed class LearningExplanationController : IAsyncDisposable
     private async Task<ExpressionAssistResult> GenerateExpressionCoreAsync(ExpressionAssistRequest request, Func<string, string> lowercase,
         LearningModelSnapshot profile, CancellationTokenSource lease, CancellationToken caller)
     {
+        string requestId = LearningRequestIds.Generate(); long start = 0; DateTimeOffset timestamp = default;
+        var outcome = ModelRequestOutcome.Failed; long? usable = null;
         using var registration = caller.Register(() => RetireInstruction(lease));
         try
         {
@@ -265,12 +270,26 @@ internal sealed class LearningExplanationController : IAsyncDisposable
             int output = Math.Min(profile.MaximumOutputTokens ?? 768, 1536);
             string prompt = ExpressionAssistPrompt.Render(request, profile.ContextWindowTokens, output);
             await using var engine = new LearningLocalInstructionEngine(config, _runtime);
+            timestamp = _clock.GetUtcNow(); start = Stopwatch.GetTimestamp();
             var raw = await engine.GenerateAsync(prompt, output, 12_000, lease.Token).ConfigureAwait(false);
             caller.ThrowIfCancellationRequested(); CheckCurrent(profile, lease.Token);
-            return ExpressionAssistPrompt.Parse(raw, request, lowercase);
+            var result = ExpressionAssistPrompt.Parse(raw, request, lowercase);
+            usable = Elapsed(start); outcome = ModelRequestOutcome.Completed; return result;
         }
-        finally { ReleaseInstruction(lease); FacadeDrained(); }
+        catch (OperationCanceledException) { outcome = ModelRequestOutcome.Cancelled; throw; }
+        finally
+        {
+            if (start != 0)
+            {
+                if (caller.IsCancellationRequested || lease.IsCancellationRequested) outcome = ModelRequestOutcome.Cancelled;
+                try { RequestObserved?.Invoke(new(ModelRequestSource.ExpressionAssist, requestId, profile.LocalModel, timestamp, Elapsed(start), outcome, UsableResultMs: usable)); }
+                catch { /* Diagnostics cannot change generation. */ }
+            }
+            ReleaseInstruction(lease); FacadeDrained();
+        }
     }
+
+    private static long Elapsed(long started) => Math.Max(0, (long)Math.Round(Stopwatch.GetElapsedTime(started).TotalMilliseconds, MidpointRounding.AwayFromZero));
 
     private void CheckCurrent(LearningModelSnapshot profile, CancellationToken token)
     {

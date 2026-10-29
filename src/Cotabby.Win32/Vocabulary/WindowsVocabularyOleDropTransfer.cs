@@ -16,12 +16,13 @@ public sealed class WindowsVocabularyOleDropTransfer : IAsyncDisposable
     private readonly Task<byte[]?> _read;
     private Task? _retirement;
     public IntPtr Window { get; }
+    internal int ProcessId { get; }
     public Task<byte[]?> Result => _read;
     public Task DropStarted => _dropStarted.Task;
     internal string? TestTarget { get; private set; }
     private WindowsVocabularyOleDropTransfer(Process process, WindowsVocabularyDropJob job, IntPtr window)
     {
-        _process = process; _job = job; Window = window;
+        _process = process; _job = job; Window = window; ProcessId = process.Id;
         // Even COM argument unmarshalling can stall before our DROP marker. Recycle the
         // isolated receiver on a bounded lifetime, including while it is idle.
         _lifetime.CancelAfter(TimeSpan.FromSeconds(60));

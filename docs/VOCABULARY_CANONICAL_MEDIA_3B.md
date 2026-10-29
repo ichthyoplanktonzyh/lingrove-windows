@@ -50,6 +50,11 @@ cross-process COM tests exercise image and virtual-file HGLOBAL/IStream payloads
 editor and named Store, plus a blocked provider killed and joined before editor dismissal. The test
 also holds a ready helper across window retirement and injects presentation failures: every returned
 helper is joined before retry or host destruction, including when no window state was published.
+An independent review run of the earlier readiness test reported 13/14 with `IsWindow` still true;
+the isolated case then passed. That run did not record the window's owner PID, so it cannot
+distinguish a reused HWND from delayed destruction. The revised tests pin the original process
+instance, verify its exit and drained result, and wait for that PID to stop owning the HWND; a
+reused HWND owned by another process is not treated as the original helper.
 The helper's explicit marshal-token mode exists only to supply synthetic test providers; normal product
 startup does not request it. Physical clipboard producers, drag providers, Shell interaction,
 scaling and desktop acceptance remain unverified.

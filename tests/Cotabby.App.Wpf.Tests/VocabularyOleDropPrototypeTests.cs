@@ -15,17 +15,17 @@ public sealed class VocabularyOleDropPrototypeTests(WpfDispatcher dispatcher)
     [Fact]
     public Task ClosingAfterReadyBeforePublicationRetiresReturnedReceiver() => dispatcher.RunAsync(async () =>
     {
-        var ready = new TaskCompletionSource<WindowsVocabularyOleDropTransfer>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var ready = new TaskCompletionSource<(WindowsVocabularyOleDropTransfer Receiver, Process Owner)>(TaskCreationOptions.RunContinuationsAsynchronously);
         var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         async Task<WindowsVocabularyOleDropTransfer> Start(IntPtr parent, CancellationToken token)
-        { var receiver = await WindowsVocabularyOleDropTransfer.StartForTestAsync(parent, token); ready.TrySetResult(receiver); await release.Task; return receiver; }
+        { var receiver = await WindowsVocabularyOleDropTransfer.StartForTestAsync(parent, token); ready.TrySetResult((receiver, CaptureOwner(receiver))); await release.Task; return receiver; }
         var surface = new Cotabby.App.UI.Vocabulary.CanonicalImageDropSurface(_ => { }, () => { }, _ => { }, Start);
         var window = new Window { Content = surface, Width = 300, Height = 200, ShowInTaskbar = false }; window.Show();
         try
         {
-            var receiver = await ready.Task.WaitAsync(TimeSpan.FromSeconds(10)); Assert.True(IsWindow(receiver.Window));
+            var pair = await ready.Task.WaitAsync(TimeSpan.FromSeconds(10)); var receiver = pair.Receiver; using var owner = pair.Owner;
             Task retirement = surface.RetireAsync(); Assert.False(retirement.IsCompleted); release.SetResult();
-            await retirement.WaitAsync(TimeSpan.FromSeconds(5)); Assert.False(IsWindow(receiver.Window)); Assert.True(receiver.Result.IsCompleted);
+            await retirement.WaitAsync(TimeSpan.FromSeconds(5)); await AssertRetired(receiver, owner);
         }
         finally { release.TrySetResult(); await surface.RetireAsync(); window.Close(); }
     });
@@ -34,13 +34,14 @@ public sealed class VocabularyOleDropPrototypeTests(WpfDispatcher dispatcher)
     [InlineData(false)]
     public Task PresentationFailureRetiresOldReceiverBeforeRetry(bool positionFailure) => dispatcher.RunAsync(async () =>
     {
-        var first = new TaskCompletionSource<WindowsVocabularyOleDropTransfer>(TaskCreationOptions.RunContinuationsAsynchronously);
-        var second = new TaskCompletionSource<WindowsVocabularyOleDropTransfer>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var first = new TaskCompletionSource<(WindowsVocabularyOleDropTransfer Receiver, Process Owner)>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var second = new TaskCompletionSource<(WindowsVocabularyOleDropTransfer Receiver, Process Owner)>(TaskCreationOptions.RunContinuationsAsynchronously);
         int starts = 0, throws = 0;
         async Task<WindowsVocabularyOleDropTransfer> Start(IntPtr parent, CancellationToken token)
         {
             var receiver = await WindowsVocabularyOleDropTransfer.StartForTestAsync(parent, token);
-            if (Interlocked.Increment(ref starts) == 1) first.TrySetResult(receiver); else second.TrySetResult(receiver);
+            var pair = (receiver, CaptureOwner(receiver));
+            if (Interlocked.Increment(ref starts) == 1) first.TrySetResult(pair); else if (!second.TrySetResult(pair)) pair.Item2.Dispose();
             return receiver;
         }
         void Busy(bool busy) { if (!positionFailure && !busy && Interlocked.Increment(ref throws) <= 2) throw new InvalidOperationException("synthetic busy callback"); }
@@ -49,11 +50,11 @@ public sealed class VocabularyOleDropPrototypeTests(WpfDispatcher dispatcher)
         var window = new Window { Content = surface, Width = 300, Height = 200, ShowInTaskbar = false }; window.Show();
         try
         {
-            var original = await first.Task.WaitAsync(TimeSpan.FromSeconds(10));
+            var firstPair = await first.Task.WaitAsync(TimeSpan.FromSeconds(10)); var original = firstPair.Receiver; using var originalOwner = firstPair.Owner;
             if (!positionFailure) await Task.Run(() => InvokeDrop(Convert.FromBase64String(original.TestTarget!), new PngData())).WaitAsync(TimeSpan.FromSeconds(10));
-            var next = await second.Task.WaitAsync(TimeSpan.FromSeconds(10));
-            Assert.False(IsWindow(original.Window)); Assert.True(original.Result.IsCompleted); Assert.True(IsWindow(next.Window));
-            await surface.RetireAsync().WaitAsync(TimeSpan.FromSeconds(5)); Assert.False(IsWindow(next.Window));
+            var nextPair = await second.Task.WaitAsync(TimeSpan.FromSeconds(10)); var next = nextPair.Receiver; using var nextOwner = nextPair.Owner;
+            await AssertRetired(original, originalOwner); Assert.True(IsWindow(next.Window));
+            await surface.RetireAsync().WaitAsync(TimeSpan.FromSeconds(5)); await AssertRetired(next, nextOwner);
         }
         finally { await surface.RetireAsync(); window.Close(); }
     });
@@ -89,6 +90,7 @@ public sealed class VocabularyOleDropPrototypeTests(WpfDispatcher dispatcher)
         IntPtr parent = new WindowInteropHelper(window).Handle;
         var transfer = await WindowsVocabularyOleDropTransfer.StartAsync(parent, CancellationToken.None);
         IntPtr child = transfer.Window;
+        using var owner = CaptureOwner(transfer);
         try
         {
             Assert.True(IsWindow(child)); int width = (int)(100 * scale), height = (int)(40 * scale);
@@ -98,8 +100,21 @@ public sealed class VocabularyOleDropPrototypeTests(WpfDispatcher dispatcher)
             Assert.False(transfer.Result.IsCompleted);
         }
         finally { await transfer.DisposeAsync(); window.Close(); }
-        Assert.False(IsWindow(child)); Assert.True(transfer.Result.IsCompleted);
+        await AssertRetired(transfer, owner);
     });
+    private static Process CaptureOwner(WindowsVocabularyOleDropTransfer receiver)
+    {
+        Assert.True(IsWindow(receiver.Window)); Assert.NotEqual(0u, GetWindowThreadProcessId(receiver.Window, out uint pid)); Assert.Equal((uint)receiver.ProcessId, pid);
+        var process = Process.GetProcessById((int)pid); _ = process.Handle; return process;
+    }
+    private static async Task AssertRetired(WindowsVocabularyOleDropTransfer receiver, Process owner)
+    {
+        int pid = owner.Id; await owner.WaitForExitAsync().WaitAsync(TimeSpan.FromSeconds(5));
+        Assert.True(owner.HasExited); Assert.True(receiver.Result.IsCompleted);
+        var deadline = DateTime.UtcNow.AddSeconds(2);
+        while (IsWindow(receiver.Window) && GetWindowThreadProcessId(receiver.Window, out uint current) != 0 && current == pid)
+        { Assert.True(DateTime.UtcNow < deadline, $"Exited helper PID {pid} still owns HWND {receiver.Window}."); await Task.Delay(10); }
+    }
     [Fact]
     public Task SyntheticProviderIsReadByTheHelperAcrossProcesses() => dispatcher.RunAsync(async () =>
     {

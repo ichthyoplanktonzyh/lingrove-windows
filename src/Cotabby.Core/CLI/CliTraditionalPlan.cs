@@ -47,7 +47,7 @@ internal static class CliTraditionalPlan
         }
         else if (kind == "update")
         {
-            if (input["expectedRevision"]!.GetValue<long>() != (long)revision) throw new CliException(CliErrorCode.Conflict, "Notebook revision changed. Read the entry again.");
+            if (input["expectedRevision"]!.GetValue<ulong>() != revision) throw new CliException(CliErrorCode.Conflict, "Notebook revision changed. Read the entry again.");
             if (input["meaning"] is null && input["meaningLanguage"] is null && input["note"] is null && input["tags"] is null) throw Invalid();
             if (input["meaning"] is { } meaning) headerSense = headerSense with { Meaning = CliExamplePolicy.Text(meaning.GetValue<string>(), 32000, true), MeaningOrigin = VocabularyMeaningOrigin.User };
             if (input["meaningLanguage"] is { } language) headerSense = headerSense with { MeaningLanguage = CliExamplePolicy.Language(language.GetValue<string>()), MeaningOrigin = VocabularyMeaningOrigin.User };

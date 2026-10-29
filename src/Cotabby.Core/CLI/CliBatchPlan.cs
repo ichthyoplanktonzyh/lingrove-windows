@@ -12,7 +12,7 @@ public sealed record CliBatchPlan(F.VocabularyDocument Document, JsonArray Outco
         F.SourceDate now, IReadOnlyDictionary<string, VocabularyPreparedImage> prepared, CancellationToken cancellationToken = default)
     {
         var value = batch.CopyValue(); var operations = value["operations"]!.AsArray(); var key = value["idempotencyKey"]!.GetValue<string>();
-        if (value["expectedRevision"] is { } expected && expected.GetValue<long>() != (long)revision)
+        if (value["expectedRevision"] is { } expected && expected.GetValue<ulong>() != revision)
             throw new CliException(CliErrorCode.Conflict, "Notebook revision changed. Read it again before writing.");
         var draft = new CliResourceDraft(baseline, now); var outcomes = new JsonArray(); var images = new Dictionary<string, VocabularyPreparedImage>(StringComparer.Ordinal);
         for (int index = 0; index < operations.Count; index++)

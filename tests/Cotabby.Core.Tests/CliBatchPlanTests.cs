@@ -60,4 +60,11 @@ public sealed class CliBatchPlanTests
         Assert.Throws<CliException>(() => CliBatchPlan.Create(batch, baseline, 0, CliIdentity.Fingerprint(batch), new F.SourceDate(0), new Dictionary<string, VocabularyPreparedImage>()));
         Assert.Empty(baseline.Catalog); Assert.Empty(baseline.Sources);
     }
+    [Fact]
+    public void UnsignedRevisionOutsideStoredRangeIsAConflictRatherThanRounding()
+    {
+        var batch = Decode("""{"version":1,"idempotencyKey":"future","expectedRevision":18446744073709551615,"operations":[{"add":{"expression":"bank","language":"en","kind":"word","meaning":"money"}}]}""");
+        var error = Assert.Throws<CliException>(() => CliBatchPlan.Create(batch, new F.VocabularyDocument(), 0, CliIdentity.Fingerprint(batch), new F.SourceDate(0), new Dictionary<string, VocabularyPreparedImage>()));
+        Assert.Equal(CliErrorCode.Conflict, error.Code);
+    }
 }

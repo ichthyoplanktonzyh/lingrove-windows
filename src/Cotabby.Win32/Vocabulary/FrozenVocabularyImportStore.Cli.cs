@@ -48,7 +48,7 @@ internal sealed partial class FrozenVocabularyImportStore : ICanonicalVocabulary
             var replay = JsonNode.Parse(receipt.Result)?.AsObject() ?? throw new CliException(CliErrorCode.Io, "Invalid stored receipt.");
             replay["replayed"] = true; replay["currentRevision"] = before.Revision; return replay;
         }
-        if (value["expectedRevision"] is { } expected && expected.GetValue<long>() != (long)before.Revision)
+        if (value["expectedRevision"] is { } expected && expected.GetValue<ulong>() != before.Revision)
             throw new CliException(CliErrorCode.Conflict, "Notebook revision changed. Read resources again before writing.");
         if (!request.DryRun && before.Revision >= long.MaxValue) throw new CliException(CliErrorCode.Conflict, "Notebook revision cannot advance.");
         var prepared = new Dictionary<string, VocabularyPreparedImage>(StringComparer.Ordinal);

@@ -43,7 +43,7 @@ public static class CliInputContract
         long? version = Integer(batch["version"]); string? key = Text(batch["idempotencyKey"]);
         if (version is not (1 or 2) || key is null || Encoding.UTF8.GetByteCount(key) is < 1 or > 200 || FoundationText.TrimWhitespaceAndNewlines(key).Length == 0
             || batch["operations"] is not JsonArray ops || ops.Count is < 1 or > 100) throw Invalid("Invalid batch header or operation count.");
-        if (batch["expectedRevision"] is not null && Integer(batch["expectedRevision"]) is not >= 0) throw Invalid("Invalid expectedRevision.");
+        if (batch["expectedRevision"] is not null && Unsigned(batch["expectedRevision"]) is null) throw Invalid("Invalid expectedRevision.");
         int images = 0, blocks = 0, examples = 0, imageBytes = 0;
         foreach (var opNode in ops)
         {
@@ -100,7 +100,7 @@ public static class CliInputContract
     {
         if (kind == "add" && (Text(action["expression"]) is null || Text(action["language"]) is null || Text(action["kind"]) is null || Text(action["meaning"]) is null)) throw Invalid("Invalid add operation.");
         if (kind is "append" or "update") { _ = Id(action["entryID"]); _ = Id(action["senseID"]); }
-        if (kind == "update" && Integer(action["expectedRevision"]) is not >= 0) throw Invalid("Invalid expectedRevision.");
+        if (kind == "update" && Unsigned(action["expectedRevision"]) is null) throw Invalid("Invalid expectedRevision.");
         foreach (string name in new[] { "dictionaryForm", "meaning", "meaningLanguage", "note", "language", "kind", "expression" }) if (action[name] is not null && Text(action[name]) is null) throw Invalid("Invalid field.");
         foreach (var tag in OptionalArray(action, "tags", int.MaxValue)) if (Text(tag) is null) throw Invalid("Invalid tags.");
     }
@@ -118,6 +118,14 @@ public static class CliInputContract
     private static void OptionalBool(JsonObject value, string name) { if (value[name] is not null && (value[name] is not JsonValue v || !v.TryGetValue<bool>(out _))) throw Invalid("Invalid boolean."); }
     private static string? Text(JsonNode? value) => value is JsonValue scalar && scalar.TryGetValue<string>(out var text) ? text : null;
     private static long? Integer(JsonNode? value) { if (value is not JsonValue scalar) return null; if (scalar.TryGetValue<long>(out var n)) return n; if (scalar.TryGetValue<int>(out var i)) return i; return null; }
+    private static ulong? Unsigned(JsonNode? value)
+    {
+        if (value is not JsonValue scalar) return null;
+        if (scalar.TryGetValue<ulong>(out var n)) return n;
+        if (scalar.TryGetValue<long>(out var signed) && signed >= 0) return (ulong)signed;
+        if (scalar.TryGetValue<int>(out var small) && small >= 0) return (ulong)small;
+        return null;
+    }
     private static Guid Id(JsonNode? value) => Guid.TryParseExact(Text(value), "D", out var result) ? result : throw Invalid("Invalid UUID.");
     private static CliException Invalid(string message) => new(CliErrorCode.InvalidInput, message);
 }

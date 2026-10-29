@@ -10,7 +10,7 @@ public sealed record CanonicalWritingReceipt(ulong Revision, bool Changed, Vocab
 
 /// <summary>One application-owned current-format notebook serves import, browsing and writing.
 /// Card inputs are detached live values; this contract reads no older notebook or persistence format.</summary>
-public interface ICanonicalVocabularyStore : IVocabularyEntryImportStore, ICanonicalVocabularyReviewStore, ICanonicalVocabularyMediaStore, ICanonicalVocabularyEditorStore, ICanonicalVocabularySenseStore, IAsyncDisposable
+public interface ICanonicalVocabularyStore : IVocabularyEntryImportStore, ICanonicalVocabularyReviewStore, ICanonicalVocabularyMediaStore, ICanonicalVocabularyEditorStore, ICanonicalVocabularySenseStore, ICanonicalVocabularySemanticStore, IAsyncDisposable
 {
     Task<CanonicalWritingReceipt> SaveCaptureAsync(VocabularyCapture capture, CancellationToken cancellationToken = default);
     Task<CanonicalWritingReceipt> RemoveCaptureAsync(VocabularyCapture capture, CancellationToken cancellationToken = default);

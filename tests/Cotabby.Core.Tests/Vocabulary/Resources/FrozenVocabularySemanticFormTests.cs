@@ -29,4 +29,16 @@ public sealed class FrozenVocabularySemanticFormTests
         var doc = new VocabularySemanticIndex { Nodes = [one, two], Mappings = [new R.VocabularyMeaningMapping(one.Id, Guid.NewGuid()), new R.VocabularyMeaningMapping(two.Id, Guid.NewGuid())], Relations = [new R.VocabularyMeaningRelation(one.Id, two.Id)], Cues = [cue], CueTargets = [new R.VocabularyCueTarget(cue.Id, one.Id)] };
         var result = VocabularySemanticFormPolicy.RemoveNode(doc, one.Id); Assert.Single(result.Nodes); Assert.Single(result.Mappings); Assert.Empty(result.Relations); Assert.Empty(result.CueTargets); Assert.Single(result.Cues);
     }
+    [Fact]
+    public void ExampleSelectionDoesNotPromoteRepresentativeOrBroadenRestrictedEvidence()
+    {
+        var first = new VocabularyExample(Guid.NewGuid(), "first", "", [], R.VocabularyExampleCompleteness.Sentence, "", new SourceDate(1));
+        var second = new VocabularyExample(Guid.NewGuid(), "second", "", [], R.VocabularyExampleCompleteness.Sentence, "", new SourceDate(2));
+        var sense = new VocabularySense(Guid.NewGuid(), "meaning", new SourceDate(1), new SourceDate(1)) { Examples = [first, second] };
+        var mapping = new R.VocabularyMeaningMapping(Guid.NewGuid(), sense.Id);
+        Assert.Equal(first, VocabularySemanticFormPolicy.Example(mapping, sense)); Assert.Empty(mapping.EvidenceIds);
+        Assert.Null(VocabularySemanticFormPolicy.Example(mapping with { PatternId = Guid.NewGuid() }, sense));
+        Assert.Null(VocabularySemanticFormPolicy.Example(mapping with { EvidenceIds = [Guid.NewGuid()] }, sense));
+        Assert.Equal(second, VocabularySemanticFormPolicy.Example(mapping with { EvidenceIds = [second.Id] }, sense));
+    }
 }

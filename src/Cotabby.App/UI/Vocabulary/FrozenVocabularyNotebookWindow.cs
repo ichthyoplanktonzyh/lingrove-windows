@@ -378,7 +378,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
                 { panel.Children.Add(Caption(pattern.Template)); if (pattern.Note.Length > 0) panel.Children.Add(Caption(pattern.Note)); }
                 if (mapping.Nuance.Length > 0) panel.Children.Add(Caption(mapping.Nuance));
                 if (mapping.Conditions.Length > 0) panel.Children.Add(Caption(mapping.Conditions));
-                var example = sense.Examples.FirstOrDefault(e => mapping.EvidenceIds.Contains(e.Id));
+                var example = VocabularySemanticFormPolicy.Example(mapping, sense);
                 if (example is not null) { panel.Children.Add(Paragraph(example.Text)); if (example.Translation.Length > 0) panel.Children.Add(Caption(example.Translation)); }
                 if (mapping.Provenance.Source.Length > 0) panel.Children.Add(Caption(mapping.Provenance.Source));
             }

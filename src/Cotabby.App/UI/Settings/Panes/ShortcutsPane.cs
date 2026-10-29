@@ -24,7 +24,10 @@ internal static class ShortcutsPane
                 .Tagged("global on off hotkey pause enable disable keybind binding"),
             r.Shortcut(GlobalShortcut.LearningTranslation,
                 "Manually translate the current sentence into a read-only preview. The key is ignored while translation is disabled or conflicts with another shortcut.")
-                .Tagged("learning translate sentence translation hotkey option alt t keybind binding")),
+                .Tagged("learning translate sentence translation hotkey option alt t keybind binding"),
+            r.Shortcut(GlobalShortcut.ExpressionAssist,
+                "Describe an expression at the caret or use the selected text. Choose a modifier shortcut; Enter and Escape are reserved.")
+                .Tagged("expression term assistance meaning shortcut keybind hotkey")),
         new SettingsCard("Per-App Shortcuts",
             Rows.Note("Give a specific app its own accept key, disable an accept action there, "
                 + "or keep inheriting the global shortcut."),
@@ -98,7 +101,13 @@ internal static class ShortcutsPane
     private static DockPanel OverrideKey(
         SettingsContext context, GlobalShortcut global, KeyBinding? key, Action<KeyBinding?> set)
     {
-        var recorder = new KeyRecorder();
+        var recorder = new KeyRecorder
+        {
+            Conflict = candidate => context.Settings.ExpressionAssistEnabled
+                && candidate.IsBound && candidate.VirtualKey == context.Settings.ExpressionAssistShortcut.VirtualKey
+                && candidate.Modifiers == context.Settings.ExpressionAssistShortcut.Modifiers
+                    ? GlobalShortcut.ExpressionAssist.Name : null,
+        };
         recorder.Recorded += binding => set(binding);
         recorder.Show(key switch
         {

@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using Cotabby.App.Settings;
 using Cotabby.App.UI.Controls;
 using Cotabby.Core.LanguageLearning;
+using Cotabby.Core.ExpressionAssist;
 using Cotabby.Inference.OpenAICompatible;
 
 namespace Cotabby.App.UI.Settings.Panes;
@@ -47,6 +48,19 @@ internal static class LearningPane
             new SettingsCard("Anki review",
                 new SettingsRow("Anki review", "Connection, default deck and saved card templates", review)
                     .Tagged("anki review ankiConnect address API key connection deck note type templates")),
+            new SettingsCard("Expression assistance",
+                rows.Toggle("Find an Expression While Writing",
+                    "Describe what you mean at the caret. Confirm a candidate to insert it.",
+                    s => s.ExpressionAssistEnabled, (s, v) => s.ExpressionAssistEnabled = v)
+                    .Tagged("expression assistance term phrase meaning writing"),
+                ExpressionTrigger(rows),
+                rows.Combo("Target Language", "Shared with writing translation for generated expressions.", Languages,
+                    s => s.LearningTargetLanguage, (s, v) => s.LearningTargetLanguage = v)
+                    .Tagged("expression target language shared translation"),
+                rows.Labeled("Expression Shortcut", "Configure a shortcut in Shortcuts.",
+                    Ui.Button("Configure shortcut", () => context.Navigate(ShortcutsPane.Build(rows))))
+                    .Tagged("expression assistance shortcut keybind"),
+                Rows.Note("Uses the local AI explanation model below. Your description, selection and bounded neighboring text stay local; the translation endpoint is not used.")),
             new SettingsCard("Manual sentence preview",
                 rows.Toggle("Enable Sentence Translation",
                     "The configured shortcut reads the complete current sentence from a supported field and opens a read-only preview.",
@@ -91,6 +105,26 @@ internal static class LearningPane
                 Rows.Custom(destination))
                 .VisibleWhen(s => s.EffectiveLearningBackend == LearningTranslationBackend.Endpoint),
         ]);
+    }
+
+    private static SettingsRow ExpressionTrigger(Rows rows)
+    {
+        var context = rows.Context;
+        var input = new TextBox { Width = 140, Tag = "??" }.Styled("Input");
+        input.OnCommit(text => context.Change(settings => settings.ExpressionAssistTrigger = text));
+        var validation = Ui.Text("", "Caption");
+        validation.TextWrapping = TextWrapping.Wrap;
+        context.OnRefresh(() =>
+        {
+            var trigger = context.Settings.ExpressionAssistTrigger ?? "??";
+            if (!input.IsKeyboardFocused) input.Text = trigger;
+            validation.Text = ExpressionAssistPolicy.TriggerError(trigger)
+                ?? (trigger.Any(character => character > 0x7F)
+                    ? "This Windows version supports ASCII trigger symbols. Use ?? or configure the shortcut." : "");
+            validation.Visibility = validation.Text.Length == 0 ? Visibility.Collapsed : Visibility.Visible;
+        });
+        return rows.Stacked("Trigger Symbols", "Type the symbols, then describe what you mean in the expression window.",
+            new StackPanel { Children = { input, validation } }).Tagged("expression trigger punctuation symbols ??");
     }
 
     /// <summary>

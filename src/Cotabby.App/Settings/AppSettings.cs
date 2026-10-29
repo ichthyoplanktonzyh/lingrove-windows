@@ -117,8 +117,30 @@ public sealed partial class AppSettings
     public KeyBinding GlobalToggle { get; set; } = KeyBinding.Unbound;
     /// <summary>Explicit, manual current-sentence translation. The Mac Option+T binding maps to Alt+T on Windows.</summary>
     public KeyBinding LearningTranslationShortcut { get; set; } = new(0x54, KeyModifiers.Alt, "Alt+T");
+    // Interaction preferences borrow the explanation profile, never the translation destination.
+    public bool ExpressionAssistEnabled { get; set; }
+    public string ExpressionAssistTrigger { get; set; } = "??";
+    public KeyBinding ExpressionAssistShortcut { get; set; } = KeyBinding.Unbound;
     public bool DoubleTapAcceptsAll { get; set; }
     public List<PerAppShortcutOverride> ShortcutOverrides { get; set; } = [];
+
+    /// <summary>Recording checks all configured apps; dispatch checks only the active process.
+    /// Reservations for unported reading/vocabulary shortcuts are added when those owners activate.</summary>
+    public string? ExpressionAssistShortcutConflict(KeyBinding candidate, string? processName = null)
+    {
+        var reservations = new List<(KeyBinding Binding, string Name)> { (GlobalToggle, "Toggle Cotabby") };
+        var overrides = ShortcutOverrides ?? [];
+        IEnumerable<string?> processes = processName is null
+            ? new string?[] { "" }.Concat(overrides.Select(item => (string?)item.ProcessName))
+            : [processName];
+        foreach (var process in processes)
+        {
+            reservations.Add((ShortcutResolver.AcceptWord(process, overrides, AcceptWord), "Accept Word"));
+            reservations.Add((ShortcutResolver.AcceptAll(process, overrides, AcceptAll), "Accept Entire Suggestion"));
+        }
+        if (LearningTranslationEnabled) reservations.Add((LearningTranslationShortcut, "Translation"));
+        return Cotabby.Core.ExpressionAssist.ExpressionAssistShortcutPolicy.Conflict(candidate, reservations);
+    }
 
     // Language learning keeps its backend and both provider profiles task-local. Existing endpoint
     // keys remain stable; the new backend key defaults to local, and Parse migrates only old users
@@ -384,6 +406,7 @@ public sealed class SettingsStore
         settings.LearningLocalContextTokensByModel = CaseInsensitiveModelMap(settings.LearningLocalContextTokensByModel);
         settings.LearningLocalGenerationProfiles = CaseInsensitiveModelMap(settings.LearningLocalGenerationProfiles);
         settings.LearningExplanationLocalModel ??= string.Empty;
+        settings.ExpressionAssistTrigger ??= "??";
         settings.LearningExplanationLocalContextTokensByModel = CaseInsensitiveModelMap(settings.LearningExplanationLocalContextTokensByModel);
         settings.LearningExplanationLocalGenerationProfiles = CaseInsensitiveModelMap(settings.LearningExplanationLocalGenerationProfiles);
         if (!Enum.IsDefined(settings.LearningExplanationLocalTemplate))

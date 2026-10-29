@@ -19,7 +19,7 @@ public sealed class CanonicalWritingStoreTests : IDisposable
     {
         var old = Path.Combine(_root, "vocabulary.sqlite"); byte[] sentinel = [1, 2, 3, 4]; File.WriteAllBytes(old, sentinel);
         await Assert.ThrowsAsync<VocabularyException>(() => FrozenVocabularyStoreFactory.OpenAsync(old));
-        await using (var store = await FrozenVocabularyStoreFactory.OpenAsync(FileName))
+        await using (var store = await FrozenVocabularyStoreFactory.OpenAsync(FileName, installBundledClassification: false))
         {
             var one = Capture("hello there", Guid.NewGuid()); var two = Capture("hello friend", Guid.NewGuid());
             var first = await store.SaveCaptureAsync(one); var second = await store.SaveCaptureAsync(two);
@@ -49,7 +49,7 @@ public sealed class CanonicalWritingStoreTests : IDisposable
             Assert.False((await store.RemoveCaptureAsync(one)).Changed);
             var imported = await store.AddEntriesAsync([new VocabularyEntryInput(Expression: "world", Meaning: "earth")]); Assert.True(imported.HasChanges);
         }
-        await using (var reopened = await FrozenVocabularyStoreFactory.OpenAsync(FileName))
+        await using (var reopened = await FrozenVocabularyStoreFactory.OpenAsync(FileName, installBundledClassification: false))
         {
             var snapshot = await reopened.ReadAsync(); Assert.Equal(2, snapshot.Document.Catalog.Count);
             Assert.Equal(2, snapshot.Document.Sources.Count); Assert.Equal(2, snapshot.Document.Interpretations.Count);
@@ -59,7 +59,7 @@ public sealed class CanonicalWritingStoreTests : IDisposable
     [Fact]
     public async Task InvalidOrCancelledCaptureDoesNotChangeRevision()
     {
-        await using var store = await FrozenVocabularyStoreFactory.OpenAsync(FileName);
+        await using var store = await FrozenVocabularyStoreFactory.OpenAsync(FileName, installBundledClassification: false);
         using var cancelled = new CancellationTokenSource(); cancelled.Cancel();
         await Assert.ThrowsAnyAsync<OperationCanceledException>(() => store.SaveCaptureAsync(Capture("hello there", Guid.NewGuid()), cancelled.Token));
         Assert.Equal(0UL, (await store.ReadAsync()).Revision);
@@ -69,7 +69,7 @@ public sealed class CanonicalWritingStoreTests : IDisposable
     [Fact]
     public async Task UncollectedRemovalKeepsPersonalNoteAndRepeatSaveUsesStableIdentity()
     {
-        await using var store = await FrozenVocabularyStoreFactory.OpenAsync(FileName);
+        await using var store = await FrozenVocabularyStoreFactory.OpenAsync(FileName, installBundledClassification: false);
         var imported = await store.AddEntriesAsync([new VocabularyEntryInput(Expression: "hello", Meaning: "greeting", Note: "authored")]);
         var selection = imported.Selection!.Value;
         var capture = new VocabularyCapture("hello", "hello", LearningLanguage.English, VocabularyEntryKind.Word, Meaning: "greeting", SenseId: selection.SenseId);
@@ -82,7 +82,7 @@ public sealed class CanonicalWritingStoreTests : IDisposable
     [Fact]
     public async Task InvalidEnrichedExplanationDoesNotBlockAnOtherwiseValidCapture()
     {
-        await using var store = await FrozenVocabularyStoreFactory.OpenAsync(FileName);
+        await using var store = await FrozenVocabularyStoreFactory.OpenAsync(FileName, installBundledClassification: false);
         var example = new Cotabby.Core.Vocabulary.VocabularyExample(Guid.NewGuid(), "hello there", "", [], VocabularyExampleCompleteness.Sentence, "", DateTimeOffset.UtcNow);
         var input = new LearningExplanationInput("hello", "hello", LearningLanguage.English, VocabularyEntryKind.Word,
             "hello there", [], LearningExplanationContext.Sentence);
@@ -131,7 +131,7 @@ public sealed class CanonicalWritingStoreTests : IDisposable
     [Fact]
     public async Task FailedSqlCommitRollsBackTheWholeCaptureAndPublishesNothing()
     {
-        await using var store = await FrozenVocabularyStoreFactory.OpenAsync(FileName);
+        await using var store = await FrozenVocabularyStoreFactory.OpenAsync(FileName, installBundledClassification: false);
         using var connection = VocabularySQLiteConnection.OpenNamed(FileName);
         connection.Execute("CREATE TRIGGER reject_state BEFORE UPDATE ON state BEGIN SELECT RAISE(ABORT,'injected'); END");
         int notifications = 0; using var subscription = store.Subscribe(_ => Interlocked.Increment(ref notifications));

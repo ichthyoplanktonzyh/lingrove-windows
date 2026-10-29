@@ -10,18 +10,18 @@ public static class FrozenVocabularyStoreFactory
 {
     public const string CanonicalFileName = "vocabulary-v8.sqlite";
     /// <summary>Create one inert owner; no directory or database is opened before an admitted operation.</summary>
-    public static ICanonicalVocabularyStore Create(string path)
+    public static ICanonicalVocabularyStore Create(string path, bool installBundledClassification = true)
     {
         if (!string.Equals(Path.GetFileName(path), CanonicalFileName, StringComparison.OrdinalIgnoreCase))
             throw new VocabularyException(VocabularyFailure.InvalidContent);
         string retained = VocabularyWindowsFile.FullPath(path);
-        return new FrozenVocabularyImportStore(() => FrozenVocabularySQLiteDatabase.OpenFile(retained));
+        return new FrozenVocabularyImportStore(() => FrozenVocabularySQLiteDatabase.OpenFile(retained), installBundledClassification: installBundledClassification);
     }
     /// <summary>Eager convenience for explicitly requested open; failures dispose the candidate owner.</summary>
-    public static async Task<ICanonicalVocabularyStore> OpenAsync(string path, CancellationToken cancellationToken = default)
+    public static async Task<ICanonicalVocabularyStore> OpenAsync(string path, CancellationToken cancellationToken = default, bool installBundledClassification = true)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        var store = Create(path);
+        var store = Create(path, installBundledClassification);
         try { _ = await store.ReadAsync(cancellationToken).ConfigureAwait(false); return store; }
         catch { await store.DisposeAsync().ConfigureAwait(false); throw; }
     }

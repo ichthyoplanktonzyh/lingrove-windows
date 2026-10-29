@@ -34,8 +34,8 @@ This is the manual selected-text subset, not complete reading parity. No languag
 surrounding context is acquired in the current native adapter: source remains unknown and a lookup
 is presented as standalone. ICU root-locale word segmentation is the Windows adaptation when the
 language is unknown; Darwin tokenizer and ICU Unicode/version differences remain unverified. The
-current shortcut requires a matching focused editable-field receipt and may reject otherwise
-readable controls or ancestor selection providers. Selection icon, pointer, screenshot/OCR and
+shortcut arbitration uses a cheap current foreground process/window/epoch snapshot; the native
+reader independently validates readonly or editable selection evidence. Selection icon, pointer, screenshot/OCR and
 clipboard sources are not implemented. No model, external endpoint, user editor or clipboard is
 exercised by tests; real host UIA, physical IME, accessibility, DPI and model-backed behavior remain
 acceptance gates.

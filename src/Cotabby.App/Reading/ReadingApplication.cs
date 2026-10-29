@@ -2,11 +2,12 @@ using System.Windows.Threading;
 using Cotabby.App.Settings;
 using Cotabby.App.UI.Controls;
 using Cotabby.App.UI.Settings.Panes;
-using Cotabby.Core.Focus;
 using Cotabby.Core.Input;
+using Cotabby.Core.Focus;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.LanguageLearning.Reading;
 using Cotabby.Core.Suggestions;
+using Cotabby.Win32.Reading;
 
 namespace Cotabby.App.Reading;
 
@@ -15,7 +16,7 @@ internal sealed class ReadingApplication : IAsyncDisposable
 {
     private readonly Dispatcher _dispatcher;
     private readonly IKeyboardHook _hook;
-    private readonly IFocusTracker _focus;
+    private readonly Func<ReadingForeground?> _origin;
     private readonly IReadingSelectionReader _reader;
     private readonly Func<string, LearningLanguage?, IReadOnlyList<LearningDictionaryWord>> _words;
     private readonly ILearningDictionaryProviding _dictionary;
@@ -35,7 +36,7 @@ internal sealed class ReadingApplication : IAsyncDisposable
     private bool _disposed;
     private Task? _disposal;
 
-    internal ReadingApplication(Dispatcher dispatcher, IKeyboardHook hook, IFocusTracker focus,
+    internal ReadingApplication(Dispatcher dispatcher, IKeyboardHook hook, Func<ReadingForeground?> origin,
         IReadingSelectionReader reader, Func<string, LearningLanguage?, IReadOnlyList<LearningDictionaryWord>> words,
         ILearningDictionaryProviding dictionary,
         Func<ReadingLookupInput, CancellationToken, Task<ReadingLookupResult>> basicLookup,
@@ -43,7 +44,7 @@ internal sealed class ReadingApplication : IAsyncDisposable
         Func<AppSettings, int, Func<ReadingSelection, LearningLanguage?, LearningLanguage, Action<string>, CancellationToken, Task<string>>> translation,
         Action beforeCapture, Func<bool> otherInlineActive)
     {
-        _dispatcher = dispatcher; _hook = hook; _focus = focus; _reader = reader; _words = words;
+        _dispatcher = dispatcher; _hook = hook; _origin = origin; _reader = reader; _words = words;
         _dictionary = dictionary; _basicLookup = basicLookup; _detailsLookup = detailsLookup; _configure = configure; _translation = translation;
         _beforeCapture = beforeCapture; _otherInlineActive = otherInlineActive;
         hook.KeyEvent += OnKey;
@@ -93,28 +94,28 @@ internal sealed class ReadingApplication : IAsyncDisposable
 
     private void OnKey(object? sender, KeyEventArgs args)
     {
-        var preferences = Volatile.Read(ref _preferences); var field = _focus.Current; var key = args.Event;
+        var preferences = Volatile.Read(ref _preferences); var origin = _origin(); var key = args.Event;
         if (preferences is null || !preferences.Enabled || preferences.Conflict || args.Suppress || !key.IsKeyDown
-            || !preferences.Shortcut.Matches(key) || _otherInlineActive() || field is null || !field.HasSelection
+            || !preferences.Shortcut.Matches(key) || _otherInlineActive() || origin is null
             || SuggestionAvailability.DisabledReason(preferences.Availability, DateTimeOffset.UtcNow, preferences.BatterySaver) is not null
-            || field.Composition != InputCompositionState.Clear || field.CompositionSequence <= 0
-            || SuggestionAvailability.DisabledReason(preferences.Availability, field with { HasSelection = false }) is not null) return;
+            || origin.ProcessId == Environment.ProcessId || preferences.Availability.BlockedApps.Contains(origin.ProcessName)
+            || TerminalAppDetector.IsTerminal(origin.ProcessName)) return;
         args.Suppress = true;
         if (key.IsRepeat) return;
         long revision = Interlocked.Read(ref _revision);
         if (_dispatcher.HasShutdownStarted || _dispatcher.HasShutdownFinished) return;
         _dispatcher.BeginInvoke(() =>
         {
-            if (_disposed || revision != Interlocked.Read(ref _revision) || !ReferenceEquals(field, _focus.Current) || _otherInlineActive()) return;
-            Start(preferences, key.VirtualKey, field, revision);
+            if (_disposed || revision != Interlocked.Read(ref _revision) || origin != _origin() || _otherInlineActive()) return;
+            Start(preferences, key.VirtualKey, origin, revision);
         });
     }
 
-    private void Start(Preferences preferences, int key, FocusedField field, long revision)
+    private void Start(Preferences preferences, int key, ReadingForeground origin, long revision)
     {
         Retire(); _beforeCapture();
         var presentation = new ReadingPresentation(_dispatcher, _dictionary, _basicLookup, _detailsLookup, _configure);
-        var session = new ReadingSession(_dispatcher, new OriginReader(_reader, field), presentation,
+        var session = new ReadingSession(_dispatcher, new OriginReader(_reader, _origin, origin), presentation,
             _ => new(null, ReadingLanguageEvidence.Unavailable),
             (text, language) => _words(text, language).Count,
             preferences.Translate,
@@ -166,15 +167,14 @@ internal sealed class ReadingApplication : IAsyncDisposable
 
     // A queued shortcut is authorized for the focus snapshot that won arbitration, not a later
     // process/field that happens to become foreground while native capture is pending.
-    private sealed class OriginReader(IReadingSelectionReader inner, FocusedField origin) : IReadingSelectionReader
+    private sealed class OriginReader(IReadingSelectionReader inner, Func<ReadingForeground?> current, ReadingForeground origin) : IReadingSelectionReader
     {
         public async Task<IReadingSelectionLease?> CaptureAsync(CancellationToken token, int? initiatingVirtualKey = null)
         {
             var lease = await inner.CaptureAsync(token, initiatingVirtualKey).ConfigureAwait(false);
             if (lease is null) return null;
             var selection = lease.Selection;
-            if (selection.ProcessId == origin.ProcessId && !string.IsNullOrEmpty(origin.FieldId)
-                && selection.FieldId == origin.FieldId && selection.FocusEpoch == origin.FocusChangeSequence) return lease;
+            if (selection.ProcessId == origin.ProcessId && selection.FocusEpoch == origin.FocusEpoch && current() == origin) return lease;
             lease.Retire(); await lease.DisposeAsync().ConfigureAwait(false); return null;
         }
     }

@@ -96,6 +96,7 @@ public sealed class AppHost : IAsyncDisposable
     private readonly IAsyncDisposable? _expressionEditor;
     private readonly ExpressionAssistApplication _expressions;
     private readonly Win32ReadingSelectionReader? _nativeReading;
+    private readonly Win32ReadingOriginTracker? _readingOrigin;
     private readonly ReadingApplication? _reading;
     private readonly CanonicalVocabularyFeature _notebook;
     internal CanonicalWritingViewStore Vocabulary => _notebook.Writing;
@@ -277,8 +278,9 @@ public sealed class AppHost : IAsyncDisposable
         if (OperatingSystem.IsWindowsVersionAtLeast(8, 1))
         {
             _nativeReading = new Win32ReadingSelectionReader(nativeFocus, _hook);
+            _readingOrigin = new Win32ReadingOriginTracker(nativeFocus);
             var lexical = _services.GetRequiredService<IcuLearningLexicalText>();
-            _reading = new ReadingApplication(overlay.Dispatcher, _hook, focus,
+            _reading = new ReadingApplication(overlay.Dispatcher, _hook, () => OperatingSystem.IsWindowsVersionAtLeast(8, 1) ? _readingOrigin.Current : null,
                 new NativeReadingSelectionReader(_nativeReading), (text, language) => language is { } known
                     ? lexical.Words(text, known) : lexical.WordsUnknown(text),
                 _services.GetRequiredService<ILearningDictionaryProviding>(),
@@ -662,7 +664,14 @@ public sealed class AppHost : IAsyncDisposable
     private async Task RetireReadingAsync()
     {
         try { if (_reading is not null) await _reading.DisposeAsync().ConfigureAwait(false); }
-        finally { if (OperatingSystem.IsWindowsVersionAtLeast(8, 1) && _nativeReading is not null) await _nativeReading.DisposeAsync().ConfigureAwait(false); }
+        finally
+        {
+            if (OperatingSystem.IsWindowsVersionAtLeast(8, 1))
+            {
+                try { if (_nativeReading is not null) await _nativeReading.DisposeAsync().ConfigureAwait(false); }
+                finally { if (_readingOrigin is not null) await _readingOrigin.DisposeAsync().ConfigureAwait(false); }
+            }
+        }
     }
 
     private async Task RetireExpressionAsync()

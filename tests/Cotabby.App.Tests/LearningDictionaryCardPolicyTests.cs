@@ -53,6 +53,8 @@ public sealed class LearningDictionaryCardPolicyTests
         Assert.Null(LearningDictionaryCardPolicy.ExampleTranslation(input, preview with { Status = LearningPreviewStatus.Loading }));
         Assert.Null(LearningDictionaryCardPolicy.ExampleTranslation(input, preview with
         { Options = new() { TargetLanguage = LearningLanguage.French } }));
+        Assert.Null(LearningDictionaryCardPolicy.ExampleTranslation(input, preview with
+        { Options = new() { SourceLanguage = null, TargetLanguage = LearningLanguage.English } }));
         Assert.Null(LearningDictionaryCardPolicy.ExampleTranslation(input, null));
     }
 

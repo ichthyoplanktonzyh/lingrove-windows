@@ -8,7 +8,7 @@ namespace Cotabby.Core.LanguageLearning;
 public sealed record LearningTranslationOptions
 {
     /// <summary>Configured source direction used when no separate language detector is available.</summary>
-    public LearningLanguage SourceLanguage { get; init; } = LearningLanguage.Chinese;
+    public LearningLanguage? SourceLanguage { get; init; } = LearningLanguage.Chinese;
 
     /// <summary>The language requested from the translator.</summary>
     public LearningLanguage TargetLanguage { get; init; } = LearningLanguage.English;

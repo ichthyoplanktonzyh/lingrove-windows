@@ -94,6 +94,9 @@ public static class CliIdentity
                 writer.WriteStartObject(); foreach (var pair in map.OrderBy(pair => pair.Key, StringComparer.Ordinal)) { writer.WritePropertyName(pair.Key); Write(writer, pair.Value); } writer.WriteEndObject(); break;
             case JsonArray array:
                 writer.WriteStartArray(); foreach (var value in array) Write(writer, value); writer.WriteEndArray(); break;
+            case JsonValue number when !number.TryGetValue<JsonElement>(out _) && number.TryGetValue<double>(out var floating):
+                // Foundation's JSONEncoder spells the exponent with a lowercase e.
+                writer.WriteRawValue(floating.ToString("R", System.Globalization.CultureInfo.InvariantCulture).Replace('E', 'e')); break;
             default: node.WriteTo(writer); break;
         }
     }

@@ -1,6 +1,6 @@
 {
   "macReference": "3b53402f2cbc196b0398d133177fd80006d165b2",
-  "provenance": "First nine cases observed from 3b Swift CI run 40944180841; expanded cases are provisional Windows observations.",
+  "provenance": "Observed from 3b Swift in macOS CI runs 40944180841 and 40945194927.",
   "batches": [
     {
       "name": "typed-nil",
@@ -136,8 +136,8 @@
           }
         ]
       },
-      "expectedFingerprint": "80bb366013dd661e523f170295515409578db4abcfa5f947d3b2d9ecd596d4cc",
-      "expectedId": "43F51E1F-0FCF-5374-9643-F8DFD871576E"
+      "expectedFingerprint": "ee24196e94fed194441ccd7597352d7c6545c3177f4a3d14f72a5b5c04b50819",
+      "expectedId": "C3BF25EC-1D28-5E0D-A8B6-DDBC707F2F01"
     }
   ],
   "ranges": [

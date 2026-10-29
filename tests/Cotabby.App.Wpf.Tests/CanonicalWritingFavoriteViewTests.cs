@@ -83,8 +83,14 @@ public sealed class CanonicalWritingFavoriteViewTests(WpfDispatcher dispatcher)
     private sealed class ReadFaultStore(Frozen.ICanonicalVocabularyStore inner) : Frozen.ICanonicalVocabularyStore
     {
         private int _withhold;
+        private Action<Frozen.FrozenVocabularyImportSnapshot>? _subscriber;
         internal bool Withhold { get => Volatile.Read(ref _withhold) != 0; set => Volatile.Write(ref _withhold, value ? 1 : 0); }
-        public IDisposable Subscribe(Action<Frozen.FrozenVocabularyImportSnapshot> changed) => inner.Subscribe(value => { if (!Withhold) changed(value); });
+        internal void Deliver(Frozen.FrozenVocabularyImportSnapshot value) => Volatile.Read(ref _subscriber)?.Invoke(value);
+        public IDisposable Subscribe(Action<Frozen.FrozenVocabularyImportSnapshot> changed)
+        {
+            Volatile.Write(ref _subscriber, changed);
+            return inner.Subscribe(value => { if (!Withhold) changed(value); });
+        }
         public Task<Frozen.FrozenVocabularyImportSnapshot> ReadAsync(CancellationToken cancellationToken = default) => Withhold
             ? Task.FromException<Frozen.FrozenVocabularyImportSnapshot>(new IOException("injected")) : inner.ReadAsync(cancellationToken);
         public Task<Frozen.FrozenVocabularyImportPreview> PreviewWordListAsync(VocabularyWordList t, VocabularyWordListConfiguration c, CancellationToken token = default) => inner.PreviewWordListAsync(t, c, token);
@@ -112,6 +118,32 @@ public sealed class CanonicalWritingFavoriteViewTests(WpfDispatcher dispatcher)
             Assert.Equal(viewStore.ErrorMessage, Find<TextBlock>(window, "VocabularyStatus").Text);
             fault.Withhold = false; await viewStore.LoadAsync(); await Settle();
             Assert.True(viewStore.Contains(capture)); Assert.Equal("Saved", AutomationProperties.GetItemStatus(button));
+        }
+        finally { window.Close(); }
+    });
+    [Fact]
+    public Task OlderNotificationCannotReviveStaleSavedStateAfterAcknowledgedRemove() => dispatcher.RunAsync(async () =>
+    {
+        var database = FrozenVocabularySQLiteDatabase.CreateMemory(); await using var backend = new FrozenVocabularyImportStore(database);
+        var fault = new ReadFaultStore(backend); await using var viewStore = new CanonicalWritingViewStore(fault, new DispatcherSynchronizationContext(Dispatcher.CurrentDispatcher));
+        var window = new LearningPreviewWindow(); var capture = Capture();
+        try
+        {
+            window.ShowState(Preview, Anchor, false); window.BindVocabulary(viewStore, capture, Preview.RequestId, () => true);
+            var button = Find<VocabularyFavoriteButton>(window, "FavoriteButton"); await button.LastOperation;
+            Click(button); await button.LastOperation; await Settle();
+            var input = LearningExplanationPolicy.Input(capture);
+            var record = new LearningExplanationRecord(Guid.NewGuid(), input, LearningLanguage.English, new("bank", "A financial institution."), "local", DateTimeOffset.UtcNow);
+            Assert.True(await viewStore.SaveExplanationAsync(record)); Assert.NotNull(viewStore.Explanation(input, LearningLanguage.English));
+            var old = await backend.ReadAsync(); Assert.True(viewStore.Contains(capture));
+            fault.Withhold = true; Click(button); ClickMenu(Assert.Single(button.ContextMenu!.Items.OfType<MenuItem>()));
+            await button.LastOperation; await Settle(); var newest = await backend.ReadAsync(); Assert.True(newest.Revision > old.Revision);
+            Assert.False(viewStore.IsLoaded); Assert.False(viewStore.Contains(capture)); Assert.Null(viewStore.Explanation(input, LearningLanguage.English));
+            fault.Deliver(old); await Settle();
+            Assert.False(viewStore.IsLoaded); Assert.False(button.IsEnabled); Assert.Equal("Unavailable", AutomationProperties.GetItemStatus(button));
+            Assert.False(viewStore.Contains(capture)); Assert.Null(viewStore.Explanation(input, LearningLanguage.English));
+            fault.Deliver(newest); await Settle(); Assert.True(viewStore.IsLoaded); Assert.False(viewStore.Contains(capture));
+            Assert.Equal("Not saved", AutomationProperties.GetItemStatus(button));
         }
         finally { window.Close(); }
     });

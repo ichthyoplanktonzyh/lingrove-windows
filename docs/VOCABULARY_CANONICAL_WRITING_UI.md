@@ -9,7 +9,8 @@ new canonical Store; it does not create a Store, open a file, start a model, or 
 sentence/dictionary card Bind methods. `CanonicalWritingViewStore(ICanonicalVocabularyStore,
 SynchronizationContext)` borrows the same app-owned backend used by notebook import and browsing.
 It caches only acknowledged snapshots, rejects older revisions, counts pending operations by the
-capture key, and dispatches presentation notifications to the supplied UI context. The optional
+capture key, and dispatches presentation notifications to the supplied UI context. Acknowledged mutation
+revisions establish a floor: older callbacks cannot revive stale card or explanation state. The optional
 `EnrichCapture` delegate can attach only the explanation service's already cached/saved record;
 `Explanation`, `SaveExplanationAsync`, and `AdoptExplanationAsync` expose the same borrowed Store to
 that service. Root composition supplies these callbacks and the Show-in-vocabulary navigation route.
@@ -36,10 +37,10 @@ dotnet test tests/Cotabby.App.Tests/Cotabby.App.Tests.csproj -c Release
 dotnet build Cotabby.sln -c Release
 ```
 
-The focused STA WPF suite passed 11/11 using the real isolated canonical SQLite owner (plus the
+The focused STA WPF suite passed 12/12 using the real isolated canonical SQLite owner (plus the
 existing library tests); it covers acknowledged save/remove, stable navigation, explanation
 lookup/adoption, dismissal during an admitted write, bridge lifetime, fixed errors and an injected
-post-commit read failure. The portable App suite passed 1228/1228 and the Release solution build
+post-commit read failure and delayed stale-notification recovery. The portable App suite passed 1228/1228 and the Release solution build
 passed with zero warnings/errors. WPF checks include a nonactivating-window and rendered-paint check;
 they do not establish physical editor focus, keyboard/mouse, IME, GPU, or visual acceptance. No
 matching Mac screenshot comparison was performed.

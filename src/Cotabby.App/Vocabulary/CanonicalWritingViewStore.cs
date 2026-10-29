@@ -16,6 +16,9 @@ internal sealed class CanonicalWritingViewStore : IWritingVocabularyStore, IAsyn
     private readonly Dictionary<string, int> _pending = [];
     private readonly HashSet<Task> _work = [];
     private FrozenVocabularyImportSnapshot? _snapshot;
+    // A write can be acknowledged before its notification or a follow-up read arrives.
+    // Never revive presentation from an older snapshot after that acknowledgement.
+    private ulong _revisionFloor;
     private string? _error;
     private bool _loaded, _closing;
     private Task? _load, _disposal;
@@ -31,10 +34,10 @@ internal sealed class CanonicalWritingViewStore : IWritingVocabularyStore, IAsyn
     internal Func<VocabularyCapture, VocabularyCapture>? EnrichCapture { get; set; }
     public bool IsLoaded { get { lock (_gate) return _loaded; } }
     public string? ErrorMessage { get { lock (_gate) return _error; } }
-    internal FrozenVocabularyImportSnapshot? Snapshot { get { lock (_gate) return _snapshot; } }
+    internal FrozenVocabularyImportSnapshot? Snapshot { get { lock (_gate) return _loaded ? _snapshot : null; } }
     public bool Contains(VocabularyCapture capture)
     {
-        try { lock (_gate) return _snapshot is { } snapshot && CanonicalWritingPolicy.SavedDestination(capture, snapshot.Document) is not null; }
+        try { lock (_gate) return _loaded && _snapshot is { } snapshot && CanonicalWritingPolicy.SavedDestination(capture, snapshot.Document) is not null; }
         catch (Exception error) when (error is VocabularyContentValidationException or VocabularyException or ArgumentException) { return false; }
     }
     public bool IsPending(VocabularyCapture capture)
@@ -45,7 +48,7 @@ internal sealed class CanonicalWritingViewStore : IWritingVocabularyStore, IAsyn
     public void Show(VocabularyCapture capture)
     {
         VocabularyExplanationDestination? destination;
-        lock (_gate) destination = _snapshot is { } snapshot ? CanonicalWritingPolicy.SavedDestination(capture, snapshot.Document) : null;
+        lock (_gate) destination = _loaded && _snapshot is { } snapshot ? CanonicalWritingPolicy.SavedDestination(capture, snapshot.Document) : null;
         OpenSelection?.Invoke(destination is { } value ? new(value.EntryId, value.SenseId) : null);
     }
     public Task LoadAsync()
@@ -98,7 +101,7 @@ internal sealed class CanonicalWritingViewStore : IWritingVocabularyStore, IAsyn
         Mutation(() => _backend.AdoptExplanationAsync(record, destination));
     internal LearningExplanationRecord? Explanation(LearningExplanationInput input, LearningLanguage language)
     {
-        lock (_gate) return _snapshot is { } snapshot ? CanonicalWritingPolicy.FindExplanation(input, language, snapshot.Document) : null;
+        lock (_gate) return _loaded && _snapshot is { } snapshot ? CanonicalWritingPolicy.FindExplanation(input, language, snapshot.Document) : null;
     }
     private Task<bool> Mutation(Func<Task<CanonicalWritingReceipt>> action)
     {
@@ -110,6 +113,16 @@ internal sealed class CanonicalWritingViewStore : IWritingVocabularyStore, IAsyn
         CanonicalWritingReceipt receipt;
         try { receipt = await action().ConfigureAwait(false); }
         catch (Exception error) { Report(error); return false; }
+        // Remember the acknowledged revision before awaiting another operation. Until a snapshot
+        // at least this new arrives, stale cached state cannot drive cards or explanation lookup.
+        bool unavailable;
+        lock (_gate)
+        {
+            _revisionFloor = Math.Max(_revisionFloor, receipt.Revision);
+            unavailable = _snapshot is null || _snapshot.Revision < _revisionFloor;
+            if (unavailable) _loaded = false;
+        }
+        if (unavailable) Notify();
         // A committed operation remains successful even if a subsequent read fails. Mark the
         // presentation unavailable until an acknowledged snapshot arrives or a reload succeeds.
         try { await RefreshAsync().ConfigureAwait(false); }
@@ -121,7 +134,7 @@ internal sealed class CanonicalWritingViewStore : IWritingVocabularyStore, IAsyn
     {
         lock (_gate)
         {
-            if (_snapshot is { } current && snapshot.Revision < current.Revision) return;
+            if (snapshot.Revision < _revisionFloor || _snapshot is { } current && snapshot.Revision < current.Revision) return;
             _snapshot = snapshot; _loaded = true; _error = null;
         }
         Notify();

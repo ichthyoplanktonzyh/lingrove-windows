@@ -21,11 +21,12 @@ public sealed class FrozenVocabularyReviewSectionTests(WpfDispatcher dispatcher)
     private sealed class NavigationAnki(SessionTestServer inner) : IAnkiConnecting
     {
         internal bool HoldNote;
+        internal string? HoldAction;
         internal int Browses, Reviews;
         internal TaskCompletionSource Entered = new(TaskCreationOptions.RunContinuationsAsynchronously), Release = new(TaskCreationOptions.RunContinuationsAsynchronously);
         public async Task<AnkiValue> PerformAsync(string action, IReadOnlyDictionary<string, AnkiValue> parameters, AnkiConnection connection, CancellationToken token = default)
         {
-            if (action == "notesInfo" && HoldNote) { HoldNote = false; Entered.TrySetResult(); await Release.Task.WaitAsync(token); }
+            if (action == HoldAction || action == "notesInfo" && HoldNote) { HoldNote = false; HoldAction = null; Entered.TrySetResult(); await Release.Task.WaitAsync(token); }
             if (action == "guiBrowse") { Browses++; return new AnkiValue.Sequence([]); }
             if (action == "findCards") return new AnkiValue.Sequence([new AnkiValue.Number(42)]);
             if (action == "cardsInfo") return new AnkiValue.Sequence([new AnkiValue.Map(new Dictionary<string, AnkiValue> { ["deckName"] = new AnkiValue.Text("Default") })]);
@@ -136,6 +137,40 @@ public sealed class FrozenVocabularyReviewSectionTests(WpfDispatcher dispatcher)
             owner.Content = section.Render(entry, entry.Senses[0]); Click(Button(owner, "Add card")); var child = await Opened(section); await Ready(child);
             await feature.DisposeAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(3)); Assert.True(child.IsVisible);
             await section.RetireAsync(); Assert.False(child.IsVisible); owner.Close();
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    });
+
+    [Theory]
+    [InlineData("notesInfo", false)]
+    [InlineData("getActiveProfile", false)]
+    [InlineData("findCards", false)]
+    [InlineData("notesInfo", true)]
+    [InlineData("getActiveProfile", true)]
+    [InlineData("findCards", true)]
+    public Task NavigationRechecksStoreAfterRemoteAwait(string heldAction, bool replaceBinding) => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "review-stale-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            await using var store = FrozenVocabularyStoreFactory.Create(Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName), false);
+            await store.AddEntriesAsync([new VocabularyEntryInput(Expression: "bank", Meaning: "money")]); var entry = (await store.ReadAsync()).Document.CollectedEntries[0];
+            var settings = new AppSettings(); var server = new SessionTestServer(); var client = new NavigationAnki(server);
+            await using var feature = new AnkiReviewFeature(() => settings, () => { }, null, client, new AnkiTestCredentials());
+            var session = await CanonicalAnkiReviewSession.OpenAsync(feature.Controller, store, entry.Id, entry.Senses[0].Id, Guid.NewGuid());
+            await feature.RunAsync(async token => Assert.True(await session.SendAsync(cancellationToken: token))); session.Dispose(); entry = (await store.ReadAsync()).Document.CollectedEntries[0];
+            var card = entry.Senses[0].ReviewCards!.Single(); var binding = card.ActiveBinding!;
+            var owner = new Window { Width = 700, Height = 500 }; owner.Show(); var section = new FrozenVocabularyReviewSection(owner, store, feature, () => { }, () => { });
+            owner.Content = section.Render(entry, entry.Senses[0]); client.HoldAction = heldAction;
+            Click(Button(owner, heldAction == "findCards" ? "Review in Anki" : "View in Anki")); await client.Entered.Task;
+            if (replaceBinding)
+            {
+                var replacement = new Cotabby.Core.Vocabulary.Frozen.AnkiNoteBinding(Guid.NewGuid(), binding.OriginSenseId, binding.Endpoint, binding.Profile, binding.NoteId, binding.Model, binding.Deck, binding.IdentityField, binding.Mapping, binding.Fields, binding.SyncedAt);
+                await store.SaveReviewAsync(entry.Id, entry.Senses[0].Id, card with { Bindings = [replacement], ActiveBindingId = replacement.Id }, card, card.Plan.Id);
+            }
+            else await store.RemoveReviewAsync(entry.Id, entry.Senses[0].Id, card.Plan.Id, card);
+            client.Release.SetResult(); await Wait(section); Assert.Equal(0, client.Browses); Assert.Equal(0, client.Reviews);
+            await section.RetireAsync(); owner.Close();
         }
         finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
     });

@@ -5,6 +5,10 @@ Reference: macOS `35b7fbe5c788c5524936ade1dfb7c89a3a285b04`,
 `VocabularyReviewSheet.swift`, `VocabularyReviewLayoutEditor.swift`, `VocabularyContentEditor.swift`,
 `Lingrove/Support/Review/ReviewLayoutPolicy.swift`, and `LingroveTests/Services/Review/FlexibleReviewTests.swift`.
 
+Compared the cited review view, session, controller, support and review-card archive paths against
+`3b53402f2cbc196b0398d133177fd80006d165b2`; those paths have no changes from the cited revision.
+Meaning/classification and graph changes elsewhere require their own module upgrade.
+
 The notebook ReviewSection uses a new UUID for Add and the saved plan ID for Edit. A modal
 `CanonicalAnkiReviewWindow` borrows the existing canonical session; name, example, front/back,
 four source presets, source slots, ordered parts, sense block IDs, captions, card-only text/image
@@ -18,7 +22,10 @@ The section borrows one `ICanonicalVocabularyStore` and the existing `AnkiReview
 Open, local removal, metadata, preview, template, save, navigation and explicit send actions use
 Feature admission. Local removal requires confirmation and the captured complete card as CAS
 baseline. Navigation uses the Frozen binding's endpoint/profile/note identity and the same client,
-rechecking selection and connection after awaits before issuing the GUI action. Revision updates
+rechecking selection and connection after awaits before issuing the GUI action. Windows additionally
+reads the latest Store after each remote await and rechecks that the exact card still exists and its
+active binding equals the captured immutable binding. This is Windows async safety hardening; the
+frozen Mac navigation does not provide this same Store recheck. Revision updates
 refresh the browser. The notebook controller's `AttachReviewFeature(feature, configure)` borrows
 these owners and remains inert until the notebook is shown. AppHost must call that method with its
 existing Feature and settings callback; this commit does not change AppHost. Retire the notebook
@@ -40,7 +47,7 @@ A light 96-DPI offscreen card form was inspected; no Mac screenshot comparison w
 Windows WPF tests use isolated named canonical SQLite/media and fake Anki, including all four
 presets, portable template save/apply, name, custom text and order, source image block identity,
 file image import, audio rejection/removal, stable card identity on reopen, send receipt, notebook
-Add/Edit/confirmed Remove, navigation scope/selection, and modal retirement. No user notebook,
+Add/Edit/confirmed Remove, navigation scope/selection and latest-Store binding changes during held network reads, and modal retirement. No user notebook,
 Anki server, network, model or clipboard is used.
 
 ```powershell

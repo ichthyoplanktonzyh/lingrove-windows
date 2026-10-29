@@ -39,23 +39,28 @@ internal sealed partial class AnkiReviewController
         }
         catch { return "Review content needs attention"; }
     }
-    private async Task VerifyNavigationAsync(F.AnkiNoteBinding binding, AnkiConnection connection, CancellationToken token, Func<bool>? current)
+    private async Task EnsureNavigationCurrentAsync(AnkiConnection connection, CancellationToken token, Func<CancellationToken, Task<bool>> current)
     {
-        if (current?.Invoke() == false || !Settings.Connection().Equals(connection)) throw Conflict();
-        await VerifyCanonicalBindingAsync(binding, connection, token);
-        if (current?.Invoke() == false || !Settings.Connection().Equals(connection)) throw Conflict();
+        if (!Settings.Connection().Equals(connection) || !await current(token) || !Settings.Connection().Equals(connection)) throw Conflict();
     }
-    private async Task<long> NavigationNoteAsync(F.AnkiNoteBinding binding, AnkiConnection connection, CancellationToken token, Func<bool>? current)
+    private async Task VerifyNavigationAsync(F.AnkiNoteBinding binding, AnkiConnection connection, CancellationToken token, Func<CancellationToken, Task<bool>> current)
+    {
+        await EnsureNavigationCurrentAsync(connection, token, current);
+        await VerifyCanonicalBindingAsync(binding, connection, token);
+        await EnsureNavigationCurrentAsync(connection, token, current);
+    }
+    private async Task<long> NavigationNoteAsync(F.AnkiNoteBinding binding, AnkiConnection connection, CancellationToken token, Func<CancellationToken, Task<bool>> current)
     {
         await VerifyNavigationAsync(binding, connection, token, current);
         if (binding.NoteId is not { } id) throw Invalid();
         var note = await CanonicalNoteAsync(id, connection, token);
+        await EnsureNavigationCurrentAsync(connection, token, current);
         if (note is null) throw new AnkiReviewException("The associated Anki note no longer exists.");
         if (!Same(note.Model, binding.Model) || !Same(note.Fields.GetValueOrDefault(binding.IdentityField), binding.OriginSenseId.ToString("D")))
             throw new AnkiReviewException("The Anki note identity changed. Check its association.");
         await VerifyNavigationAsync(binding, connection, token, current); return id;
     }
-    internal async Task<string?> OpenCanonicalAsync(F.AnkiNoteBinding binding, CancellationToken token = default, Func<bool>? current = null)
+    internal async Task<string?> OpenCanonicalAsync(F.AnkiNoteBinding binding, Func<CancellationToken, Task<bool>> current, CancellationToken token = default)
     {
         try
         {
@@ -65,19 +70,23 @@ internal sealed partial class AnkiReviewController
         catch (OperationCanceledException) { throw; }
         catch (Exception error) { return error.Message; }
     }
-    internal async Task<string?> ReviewCanonicalDeckAsync(F.AnkiNoteBinding binding, CancellationToken token = default, Func<bool>? current = null)
+    internal async Task<string?> ReviewCanonicalDeckAsync(F.AnkiNoteBinding binding, Func<CancellationToken, Task<bool>> current, CancellationToken token = default)
     {
         try
         {
             var connection = Settings.Connection(); long id = await NavigationNoteAsync(binding, connection, token, current);
             var ids = await CallAsync("findCards", Params(("query", new AnkiValue.Text("nid:" + id))), connection, token);
+            await EnsureNavigationCurrentAsync(connection, token, current);
             if (ids.Array is not { Count: > 0 } cards) throw Invalid();
             var info = await CallAsync("cardsInfo", Params(("cards", new AnkiValue.Sequence(cards))), connection, token);
+            await EnsureNavigationCurrentAsync(connection, token, current);
             if (info.Array?.FirstOrDefault()?.Object?.GetValueOrDefault("deckName")?.String is not { } deck) throw Invalid();
             var decks = Strings(await CallAsync("deckNames", Params(), connection, token));
+            await EnsureNavigationCurrentAsync(connection, token, current);
             if (!decks.Contains(deck, Cotabby.Core.Text.CanonicalStringComparer.Instance)) throw Invalid();
             await VerifyNavigationAsync(binding, connection, token, current);
             if (await CallAsync("guiDeckOverview", Params(("name", new AnkiValue.Text(deck))), connection, token) is not AnkiValue.Boolean { Value: true }) throw Invalid();
+            await EnsureNavigationCurrentAsync(connection, token, current);
             _activateAnki(); return null;
         }
         catch (OperationCanceledException) { throw; }

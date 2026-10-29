@@ -44,8 +44,8 @@ internal sealed class FrozenVocabularyReviewSection
             var edit = Button("Edit", () => Open(entry.Id, sense.Id, card.Plan.Id)); edit.IsEnabled = enabled; actions.Children.Add(edit);
             if (card.ActiveBinding is { NoteId: not null } binding)
             {
-                var open = Button("View in Anki", () => Navigate(entry.Id, sense.Id, token => _feature.Controller.OpenCanonicalAsync(binding, token, () => _canAct(entry.Id, sense.Id)))); open.IsEnabled = enabled; actions.Children.Add(open);
-                var review = Button("Review in Anki", () => Navigate(entry.Id, sense.Id, token => _feature.Controller.ReviewCanonicalDeckAsync(binding, token, () => _canAct(entry.Id, sense.Id)))); review.IsEnabled = enabled; actions.Children.Add(review);
+                var open = Button("View in Anki", () => Navigate(entry.Id, sense.Id, token => _feature.Controller.OpenCanonicalAsync(binding, guardToken => BindingCurrentAsync(entry.Id, sense.Id, card.Plan.Id, binding, guardToken), token))); open.IsEnabled = enabled; actions.Children.Add(open);
+                var review = Button("Review in Anki", () => Navigate(entry.Id, sense.Id, token => _feature.Controller.ReviewCanonicalDeckAsync(binding, guardToken => BindingCurrentAsync(entry.Id, sense.Id, card.Plan.Id, binding, guardToken), token))); review.IsEnabled = enabled; actions.Children.Add(review);
             }
             var remove = Button("Remove local card", () => { if (_canAct(entry.Id, sense.Id) && _confirm(name) && _canAct(entry.Id, sense.Id)) Start(entry.Id, sense.Id, async token => { await _store.RemoveReviewAsync(entry.Id, sense.Id, card.Plan.Id, card, token); }); }); remove.IsEnabled = enabled; actions.Children.Add(remove); row.Children.Add(actions); panel.Children.Add(row);
         }
@@ -82,6 +82,15 @@ internal sealed class FrozenVocabularyReviewSection
             catch (Exception error) { if (!_retiring) _error = error.Message; }
             finally { session?.Dispose(); _operation = null; completion.TrySetResult(); if (!_retiring) Notify(); }
         }
+    }
+    private async Task<bool> BindingCurrentAsync(Guid entryId, Guid senseId, Guid cardId, Cotabby.Core.Vocabulary.Frozen.AnkiNoteBinding binding, CancellationToken token)
+    {
+        if (_retiring || !_canAct(entryId, senseId)) return false;
+        var snapshot = await _store.ReadAsync(token);
+        if (_retiring || !_canAct(entryId, senseId)) return false;
+        var current = snapshot.Document.CollectedEntries.FirstOrDefault(entry => entry.Id == entryId)?.Senses
+            .FirstOrDefault(sense => sense.Id == senseId)?.ReviewCards?.FirstOrDefault(card => card.Plan.Id == cardId);
+        return current?.ActiveBindingId == binding.Id && Equals(current.ActiveBinding, binding);
     }
     private void Navigate(Guid entryId, Guid senseId, Func<CancellationToken, Task<string?>> navigate) { if (_canAct(entryId, senseId)) Start(entryId, senseId, async token => { _error = await navigate(token); }); }
     private void Start(Guid entryId, Guid senseId, Func<CancellationToken, Task> action)

@@ -280,4 +280,25 @@ public sealed class CanonicalAnkiReviewWindowTests(WpfDispatcher dispatcher)
         finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
     });
 
+    [Fact]
+    public Task CardFrontBackAndAudioErrorRender() => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "review-render-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            await using var store = FrozenVocabularyStoreFactory.Create(Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName), false);
+            await store.AddEntriesAsync([new VocabularyEntryInput(Expression: "bank", Meaning: "money", Example: "bank opens")]); var entry = (await store.ReadAsync()).Document.CollectedEntries[0];
+            var session = await CanonicalAnkiReviewSession.OpenAsync(new AnkiReviewController(Settings(), null, new SessionTestServer()), store, entry.Id, entry.Senses[0].Id, Guid.NewGuid());
+            var window = new CanonicalAnkiReviewWindow(session, action => action(CancellationToken.None), () => { }); window.Show(); await Ready(window);
+            VocabularyThemeRender.Capture(window, "canonical-card-front", 720, 1400);
+            window.PreviewPanel.BringIntoView(); await window.Dispatcher.InvokeAsync(() => { }, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
+            VocabularyThemeRender.Capture(window, "canonical-card-front-preview", 720, 760);
+            window.SideBox.SelectedIndex = 1; await window.PreviewOperation; window.PreviewPanel.BringIntoView(); await window.Dispatcher.InvokeAsync(() => { }, System.Windows.Threading.DispatcherPriority.ApplicationIdle); VocabularyThemeRender.Capture(window, "canonical-card-back-preview", 720, 760);
+            window.AddPartChoice.SelectedValue = ReviewContentSource.ExpressionAudio; Click(window.AddPartButton); await window.PreviewOperation;
+            Assert.Contains("Speech", window.ValidationText.Text); Assert.False(window.SendButton.IsEnabled);
+            VocabularyThemeRender.Capture(window, "canonical-card-audio-error", 720, 1400); await window.RetireAsync();
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    });
+
 }

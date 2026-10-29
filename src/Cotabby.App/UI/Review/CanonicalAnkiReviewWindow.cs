@@ -36,6 +36,7 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
     internal Button ClearAudioButton => _clearAudio;
     internal TextBox AnswerBox => _answer;
     internal TextBlock StateText => _state;
+    internal TextBlock ValidationText => _validation;
     internal StackPanel ConflictsPanel => _conflicts;
     internal StackPanel PreviewPanel => _preview;
     internal ComboBox SideBox => _side;

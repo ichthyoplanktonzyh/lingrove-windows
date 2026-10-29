@@ -56,6 +56,7 @@ public sealed class Win32ExpressionEditor : IAsyncDisposable
             ObjectDisposedException.ThrowIf(_disposed, this);
             if (_active is not null) { _active.Retire(); Track(_active.DisposeAsync().AsTask()); }
             session = new(_focus, _keyboard, composition, _gate, _clipboard, panelHwnd, panelOwnsKeyboard, initiatingVirtualKey);
+            session.NotificationGroup = this;
             _active = session;
             work = Task.Run(() => session.Capture(trigger, ct), CancellationToken.None);
             session.Track(work);
@@ -81,17 +82,30 @@ public sealed class Win32ExpressionEditor : IAsyncDisposable
     {
         lock (_sync)
         {
-            if (_disposeTask is not null) return new(_disposeTask);
-            _disposed = true;
-            if (_active is not null) { _active.Retire(); Track(_active.DisposeAsync().AsTask()); }
-            _disposeTask = DrainAsync(_work.ToArray());
-            return new(_disposeTask);
+            if (_disposeTask is null)
+            {
+                _disposed = true;
+                var active = _active;
+                active?.Retire();
+                var work = _work.ToArray();
+                // Begin on another thread so an Invalidated callback cannot cause the shared
+                // drain to omit itself. External callers always join the complete drain.
+                _disposeTask = Task.Run(() => DrainAsync(active, work));
+            }
+            // A synchronous notification callback cannot wait for the drain that includes it.
+            return ExpressionEditorSession.IsNotificationFor(this) ? ValueTask.CompletedTask : new(_disposeTask);
         }
     }
 
-    private static async Task DrainAsync(Task[] work)
+    private static async Task DrainAsync(ExpressionEditorSession? active, Task[] work)
     {
-        try { await Task.WhenAll(work).ConfigureAwait(false); } catch { }
+        Task[] all = active is null ? work : [.. work, active.DisposeAsync().AsTask()];
+        try { await Task.WhenAll(all).ConfigureAwait(false); } catch { }
+    }
+
+    internal void AttachSessionForTest(ExpressionEditorSession session)
+    {
+        lock (_sync) { session.NotificationGroup = this; _active = session; }
     }
 }
 
@@ -123,6 +137,8 @@ public sealed class ExpressionEditorSession : IAsyncDisposable
     private readonly HashSet<Task> _work = [];
     private Task? _notificationTask;
     [ThreadStatic] private static ExpressionEditorSession? _notificationOwner;
+    internal object? NotificationGroup { get; set; }
+    internal static bool IsNotificationFor(object owner) => ReferenceEquals(_notificationOwner?.NotificationGroup, owner);
 
     internal ExpressionEditorSession(UiaFocusTracker focus, IKeyboardHook keyboard, UiaTextEditEvidence composition,
         InsertionTransactionGate gate, ClipboardTextReader? clipboard, nint panel, Func<bool> panelOwnsKeyboard, int? initiatingKey)

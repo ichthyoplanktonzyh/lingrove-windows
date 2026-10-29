@@ -85,7 +85,7 @@ other physical input is ignored. UIA events are asynchronous and providers can b
 small race between final observation and SendInput remains and physical testing is still required.
 
 `dotnet test tests/Cotabby.App.Wpf.Tests/Cotabby.App.Wpf.Tests.csproj --configuration Release
---no-restore --filter FullyQualifiedName~ExpressionEditorSessionTests` passed 16/16 with fake native
+--no-restore --filter FullyQualifiedName~ExpressionEditorSessionTests` passed 18/18 with fake native
 effects. These do not type into or focus any user application.
 
 Expression requests use a revocable, nonblocking permit through the shared focus and retained UIA
@@ -93,3 +93,5 @@ owners and the complete-selection reader. Timeout or retirement prevents later r
 publication; it cannot interrupt a provider call already in progress. Disposal joins that work and
 tracked invalidation notifications, so a stuck provider can delay shutdown beyond the two-second
 request wait. The guarded focus path bounds its text prefix and rejects truncated snapshots.
+An invalidation handler may synchronously request owner disposal without waiting on its own
+notification; other disposal callers share and await the complete drain, including that callback.

@@ -13,6 +13,38 @@ namespace Cotabby.App.Wpf.Tests;
 [SupportedOSPlatform("windows8.1")]
 public sealed class ExpressionEditorSessionTests
 {
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task EditorDisposeFromActiveSessionNotificationDoesNotDeadlockAndExternalDisposeDrainsIt(bool externalStarts)
+    {
+        if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;
+        await using var fixture = new Fixture();
+        var editor = new Win32ExpressionEditor(fixture.Focus, fixture.Keyboard, fixture.Gate);
+        editor.AttachSessionForTest(fixture.Session);
+        using var callbackReturned = new ManualResetEventSlim();
+        using var release = new ManualResetEventSlim();
+        fixture.Session.Invalidated += (_, _) =>
+        {
+            editor.DisposeAsync().AsTask().GetAwaiter().GetResult();
+            callbackReturned.Set();
+            release.Wait();
+        };
+        Task? external = externalStarts ? editor.DisposeAsync().AsTask() : null;
+        if (!externalStarts) fixture.Session.Retire();
+        try
+        {
+            Assert.True(callbackReturned.Wait(TimeSpan.FromSeconds(5)));
+            external ??= editor.DisposeAsync().AsTask();
+            Assert.False(external.IsCompleted);
+            Task secondExternal = editor.DisposeAsync().AsTask();
+            Assert.False(secondExternal.IsCompleted);
+            release.Set();
+            await Task.WhenAll(external, secondExternal).WaitAsync(TimeSpan.FromSeconds(5));
+        }
+        finally { release.Set(); }
+    }
+
     [Fact]
     public async Task ConcurrentEditorDisposalsJoinTheSameHeldWork()
     {

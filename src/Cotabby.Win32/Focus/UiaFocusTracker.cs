@@ -134,8 +134,14 @@ public sealed class UiaFocusTracker : IFocusTracker
 
     public FocusedField? Refresh() => RefreshCore(static () => true, false);
 
-    // The predicate must be atomic and non-blocking; it is never allowed to call UIA.
-    internal FocusedField? RefreshGuarded(Func<bool> allowed) => RefreshCore(allowed, true);
+    /// <summary>Refreshes while a revocable request permit remains valid.</summary>
+    /// <remarks>The predicate must be atomic and nonblocking. It must not call UIA or synchronously
+    /// dispatch to a UI thread. Already-started provider calls cannot be interrupted.</remarks>
+    public FocusedField? RefreshGuarded(Func<bool> allowed)
+    {
+        ArgumentNullException.ThrowIfNull(allowed);
+        return RefreshCore(allowed, true);
+    }
 
     private FocusedField? RefreshCore(Func<bool> allowed, bool bounded)
     {

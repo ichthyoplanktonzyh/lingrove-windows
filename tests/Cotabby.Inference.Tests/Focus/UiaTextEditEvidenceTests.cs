@@ -1,12 +1,25 @@
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using Cotabby.Win32.Focus;
+using Xunit.Abstractions;
 
 namespace Cotabby.Inference.Tests.Focus;
 
 [SupportedOSPlatform("windows8.1")]
-public sealed class UiaTextEditEvidenceTests
+public sealed class UiaTextEditEvidenceTests(ITestOutputHelper output)
 {
+    [Fact]
+    public async Task NativeFactoryCreatesAutomation3OnItsMtaOwner()
+    {
+        if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;
+        using var evidence = new UiaTextEditEvidence(() => { });
+        var result = await evidence.BootstrapForTest.WaitAsync(TimeSpan.FromSeconds(5));
+        output.WriteLine($"CoInitializeEx=0x{result.InitializeHResult:X8}; CoCreateInstance=0x{result.FactoryHResult:X8}; IUIAutomation3={result.HasAutomation}");
+        Assert.True(result.InitializeHResult >= 0, $"CoInitializeEx: 0x{result.InitializeHResult:X8}");
+        Assert.True(result.FactoryHResult is >= 0, $"CoCreateInstance: 0x{result.FactoryHResult:X8}");
+        Assert.True(result.HasAutomation);
+    }
+
     [Fact]
     public async Task OwnerSerializesOperationsAndDoesNotHoldCallerOnTimeout()
     {

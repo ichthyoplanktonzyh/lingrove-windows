@@ -183,6 +183,7 @@ public sealed class AppHost : IAsyncDisposable
         Review = AnkiReviewFeature.CreateConnectionSettings(() => Settings, () => SettingsStore.Save(Settings),
             new Cotabby.Win32.Review.AnkiConnectClient(), new DpapiAnkiCredentialStore());
         Review.Controller.Configure = () => SettingsWindow.ShowReview(this);
+        _notebook.Window.AttachReviewFeature(Review, () => SettingsWindow.ShowReview(this));
         Vocabulary.EnrichCapture = capture =>
         {
             var input = LearningExplanationPolicy.Input(capture);

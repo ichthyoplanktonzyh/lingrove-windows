@@ -16,7 +16,7 @@ namespace Cotabby.App.Wpf.Tests;
 [Collection("WPF views")]
 public sealed class CanonicalAnkiReviewSessionTests(WpfDispatcher dispatcher)
 {
-    private sealed class HeldStore(F.ICanonicalVocabularyStore inner) : F.ICanonicalVocabularyStore
+    internal sealed class HeldStore(F.ICanonicalVocabularyStore inner) : F.ICanonicalVocabularyStore
     {
         internal bool HoldRead, HoldImage, HoldSaveAck;
         internal TaskCompletionSource Entered = new(TaskCreationOptions.RunContinuationsAsynchronously);

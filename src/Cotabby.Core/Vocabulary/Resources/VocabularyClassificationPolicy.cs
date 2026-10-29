@@ -24,7 +24,7 @@ public static class VocabularyClassificationPolicy
         foreach (var category in index.Categories)
         {
             if (!Enum.IsDefined(category.Axis)) throw Invalid();
-            Labels(category.Labels); Text(category.Definition); Provenance(category.Provenance);
+            Labels(category.Labels); Text(category.Definition); Guidance(category.Examples, category.ScopeNote, category.References, category.Localizations); Provenance(category.Provenance);
             if (category.FrameworkId is { } frameworkId)
             {
                 if (!frameworks.ContainsKey(frameworkId) || !Fits(category.Key, 200) || category.Key!.Length == 0 || !categoryKeys.Add((frameworkId, FoundationUnicodeNormalization.Normalize(category.Key)))) throw Invalid();
@@ -54,13 +54,21 @@ public static class VocabularyClassificationPolicy
             if (!categories.ContainsKey(overlay.CategoryId)) throw Invalid();
             if (overlay.Labels is not null) Labels(overlay.Labels);
             if (overlay.Definition is not null) Text(overlay.Definition);
+            Guidance(overlay.Examples ?? [], overlay.ScopeNote ?? "", overlay.References ?? [], overlay.Localizations ?? []);
         }
     }
 
     public static VocabularyCategory Effective(VocabularyCategory category, VocabularyClassificationIndex index)
     {
         var overlay = index.Overrides.FirstOrDefault(x => x.CategoryId == category.Id);
-        return overlay is null ? category : category with { Labels = overlay.Labels ?? category.Labels, Definition = overlay.Definition ?? category.Definition };
+        return overlay is null ? category : category with { Labels = overlay.Labels ?? category.Labels, Definition = overlay.Definition ?? category.Definition, Examples = overlay.Examples ?? category.Examples, ScopeNote = overlay.ScopeNote ?? category.ScopeNote, References = overlay.References ?? category.References, Localizations = VocabularyCategoryLocalizationPolicy.Overlay(category, overlay) };
+    }
+    private static void Guidance(IReadOnlyList<VocabularyCategoryExample> examples, string scopeNote, IReadOnlyList<VocabularyCategoryReference> references, IReadOnlyList<VocabularyCategoryLocalization> localizations)
+    {
+        Text(scopeNote); if (examples.Count > 64 || references.Count > 64) throw Invalid();
+        foreach (var example in examples) if (example is null || string.IsNullOrWhiteSpace(example.Text) || !Fits(example.Text, 4096) || example.Language is { } language && !VocabularyCategoryLocalizationPolicy.ValidLanguageTag(language)) throw Invalid();
+        foreach (var reference in references) { if (reference is null || string.IsNullOrWhiteSpace(reference.Source) || string.IsNullOrWhiteSpace(reference.Identifier) || !Enum.IsDefined(reference.Relationship) || !Uri.TryCreate(reference.Url, UriKind.Absolute, out var url) || url.Scheme is not ("http" or "https") || string.IsNullOrEmpty(url.Host)) throw Invalid(); Text(reference.Source); Text(reference.Identifier); Text(reference.Url); if (reference.Attribution is not null) Text(reference.Attribution); if (reference.License is not null) Text(reference.License); }
+        VocabularyCategoryLocalizationPolicy.Validate(localizations);
     }
     public static string Title(VocabularyCategory category, VocabularyClassificationIndex index, IReadOnlyList<LearningLanguage> languages)
     {

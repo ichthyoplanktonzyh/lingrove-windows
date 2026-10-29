@@ -49,13 +49,14 @@ Python 版本。上面的 `-ExecutionPolicy RemoteSigned` 只作用于该次子�
 ```powershell
 Set-Location C:\Dev
 git clone --filter=blob:none --no-checkout https://github.com/ichthyoplanktonzyh/lingrove.git lingrove-mac-reference
-git -C .\lingrove-mac-reference fetch --depth 1 origin 35b7fbe5c788c5524936ade1dfb7c89a3a285b04
+git -C .\lingrove-mac-reference fetch --depth 1 origin 3b53402f2cbc196b0398d133177fd80006d165b2
 git -C .\lingrove-mac-reference rev-parse FETCH_HEAD
 Set-Location .\lingrove-windows
 ```
 
 读取 [AGENTS.md](../AGENTS.md)、[固定 Mac 基准](MAC_LATEST_BASELINE.md) 和 [对齐与 UI 验收约定](WINDOWS_ALIGNMENT.md)。
-本轮固定使用 `35b7fbe5c788c5524936ade1dfb7c89a3a285b04`，不再每轮追踪 Mac 新提交。
+维护者已允许对齐最新 Mac 功能，当前记录的提交为 `3b53402f2cbc196b0398d133177fd80006d165b2`。
+采纳后续提交前先检查并记录差异，现有模块和历史 fixture 的参考不静默改动。
 使用 `git show SHA:路径` 阅读该快照的源码和设计依据。保留旧测试的版本证据；在 Windows 不运行需要 Xcode 的 Swift verifier，
 这部分继续由 Mac CI 完成。不要把 Windows 的新 UI 建在旧数据语义上，也不要自行设计另一套产品。
 
@@ -83,8 +84,8 @@ dotnet test tests/Cotabby.App.Tests/Cotabby.App.Tests.csproj --configuration Rel
 dotnet test tests/Cotabby.App.Wpf.Tests/Cotabby.App.Wpf.Tests.csproj --configuration Release --no-build --no-restore --blame-hang-timeout 2m
 ```
 
-这些测试不等于真实宿主验收。第一轮真机检查优先使用记事本、Edge／Chrome 编辑区和一个常用 Electron
-编辑器，检查中文输入法组合阶段、切换焦点时撤销旧结果、Tab 接受、部分接受、插入后的原文、带后文的光标，
+这些测试不等于真实宿主验收。维护者现指定按 Word、Chrome、Codex 的顺序优先检查，实际进展记录于
+[宿主验收记录](WINDOWS_HOST_ACCEPTANCE.md)。检查中文输入法组合阶段、切换焦点时撤销旧结果、Tab 接受、部分接受、插入后的原文、带后文的光标，
 再检查不同缩放下的幽灵文字位置。剪贴板恢复用自己准备的纯文本／富文本样例单独核对。生词本同时核对选择、
 编辑、保存重开、图片、导出和备份。记录 Windows 版本、应用版本、屏幕缩放、复现步骤及实际像素，失败就修复，
 不要把“编译通过”写成“原生行为已验证”。
@@ -106,10 +107,11 @@ gh pr status --repo ichthyoplanktonzyh/lingrove-windows
 Git 凭据管理器的登录与 `gh` 登录相互独立；无需把令牌写入 URL、项目文件或聊天记录。
 
 Windows 作为主开发端后，让它继续当前功能分支；同一分支只由一台电脑主动修改。Mac 负责对照与回归，
-源码通过 Git 同步，不搬运构建缓存。主智能体统筹，GPT-6.1 Terra xhigh 子智能体按完整模块负责实现、测试和模块文档，
+源码通过 Git 同步，不搬运构建缓存。主智能体统筹，GPT-6.1 Terra high 子智能体按完整模块负责实现、测试和模块文档，
 经过独立复核与最终提交检查后直接合并 main。功能、交互、UI 与视觉设计共同纳入验收；
 仍不需要每轮生成安装包、可下载程序或发布 release。
 
 当前任务顺序保存在 [最新基准](MAC_LATEST_BASELINE.md)。新的独立资源值／投影与旧运行时数据格式分开，
-参见 [资源适配边界](VOCABULARY_RESOURCES_CURRENT.md)；下一步接持久化与迁移后，继续最新版建词／导入、意义组织、
-复习准备／批量界面、阅读 OCR 和表达辅助。已有源码不等于这些入口全部完成，旧音频扩展仍暂缓。
+参见 [资源适配边界](VOCABULARY_RESOURCES_CURRENT.md)和[当前生产组合](VOCABULARY_CANONICAL_APP.md)。本轮使用
+新的版本化文件，旧数据转换不在范围内。继续推进分类、复习准备／批量界面、阅读 OCR 和其余当前格式入口；
+已有源码不等于这些入口全部完成，旧音频扩展仍暂缓。

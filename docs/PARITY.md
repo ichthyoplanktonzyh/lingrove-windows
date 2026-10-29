@@ -7,9 +7,11 @@ are reference points, not a claim that every Windows behavior has been validated
 still uses Cotabby names. The current learning addition is the scoped manual read-only preview
 recorded in [LEARNING_PREVIEW.md](LEARNING_PREVIEW.md); the wider learning product remains incomplete.
 
-The campaign target is frozen at Mac `35b7fbe5c788c5524936ade1dfb7c89a3a285b04`, recorded
-in [MAC_LATEST_BASELINE.md](MAC_LATEST_BASELINE.md). New work follows that exact target until the
-maintainer explicitly advances it. Functional, interaction and UI/design acceptance follow
+The maintainer advanced the campaign to latest Mac functionality, currently resolved as
+`3b53402f2cbc196b0398d133177fd80006d165b2`, recorded in
+[MAC_LATEST_BASELINE.md](MAC_LATEST_BASELINE.md). Earlier module references, including
+`35b7fbe5c788c5524936ade1dfb7c89a3a285b04`, remain explicit until individually upgraded.
+Functional, interaction and UI/design acceptance follow
 [WINDOWS_ALIGNMENT.md](WINDOWS_ALIGNMENT.md). [MAC_STABLE_DELTA.md](MAC_STABLE_DELTA.md) retains
 the earlier `cc468b89f5c360cc7210fac4f1a8b52197870bf2` audit as history, not the current backlog.
 Existing corpus revisions remain fixed; [current editor annotations](VOCABULARY_EDITOR_CURRENT.md)
@@ -31,8 +33,12 @@ Its browser/create/import/favorite behavior supersedes the old production notebo
 Scoped [entry editing and file images](VOCABULARY_CANONICAL_ENTRY_EDITOR_UI.md),
 [sense/usage commands](VOCABULARY_CANONICAL_SENSE_UI.md) and
 [meaning-node/mapping editing](VOCABULARY_CANONICAL_MEANING_UI.md) now use the same owner.
-Category management, usage-pattern editing, the remaining media workflows, review and export
-remain incomplete. This is an implementation
+The [3b meaning/classification upgrade](VOCABULARY_MEANING_CLASSIFICATION_3B.md),
+[usage-pattern editor](VOCABULARY_CANONICAL_PATTERN_UI.md),
+[independent Anki cards](ANKI_CANONICAL_CARD_WINDOW.md) and
+[batch preparation](ANKI_CANONICAL_REVIEW_BATCH.md) now connect their scoped canonical workflows.
+Graph, the remaining media workflows, export/backup and speech activation remain incomplete.
+This is an implementation
 checkpoint with scoped automated/render evidence, not full native desktop parity.
 
 ## Status meanings

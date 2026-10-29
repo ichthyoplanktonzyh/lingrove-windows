@@ -1,14 +1,16 @@
-# Frozen Mac alignment baseline
+# Current Mac alignment baseline
 
-The maintainer froze this campaign at **`35b7fbe5c788c5524936ade1dfb7c89a3a285b04`** on
-2026-10-29. This is the stable behavior, interaction and UI/design reference for Windows; later
-Mac commits are outside scope until explicitly adopted. It includes the earlier task-shaped
+The maintainer subsequently authorized latest-Mac functionality and deferred physical acceptance
+to one final round. Read-only fetch on 2026-10-29 resolved Mac main to
+**`3b53402f2cbc196b0398d133177fd80006d165b2`**, committed at 23:18:41 +08:00.
+This advances the earlier frozen **`35b7fbe5c788c5524936ade1dfb7c89a3a285b04`** reference.
+The current target defines behavior, interaction and UI/design for new work. It includes the earlier task-shaped
 capture/resource work, readability/consolidated detail, and the new extensible meaning categories
 with catalog, CLI and notebook navigation. Mac source lives under `Lingrove/` and tests under
 `LingroveTests/`; old `Cotabby/` paths remain valid only at historical revisions.
 
-The immediately preceding target was `9290066ef7f20a50068ce820f477737fdfc2b8b0`; the frozen
-snapshot adds one committed classification round. The earlier intermediate target remains
+Before 35b, the preceding target was `9290066ef7f20a50068ce820f477737fdfc2b8b0`; 35b added
+one classification round. The earlier intermediate target remains
 `cc468b89f5c360cc7210fac4f1a8b52197870bf2`, and the original fixture reference remains
 `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`. Commit counts are not workload estimates.
 Existing Windows modules are partial adaptations at their explicitly recorded revisions. Neither
@@ -16,10 +18,10 @@ passing old fixtures nor updating this document establishes latest product parit
 
 ## Reference ownership and freeze
 
-Read relevant source and tests at the exact frozen SHA with `git show`; do not refresh the target
-from Mac `main` at each feature round. A future advancement requires an explicit maintainer decision.
+Read relevant source and tests at the exact recorded SHA with `git show`. The maintainer now permits
+latest-Mac alignment; inspect and record later committed changes before adopting them.
 The Windows read-only reference repository at `D:\GitHub\lingrove-mac-reference` has fetched the
-exact frozen commit without checking out or editing a Mac working tree. New verifiers establish
+exact commits without checking out or editing a Mac working tree. New verifiers establish
 reproducible source availability independently. Do not push Mac work as a side effect.
 
 The UI work previously excluded from `06bf81fe` is committed in `fc8f5b02` and included. This
@@ -35,8 +37,43 @@ is complete; repairing an actual build/CI blocker is still required.
 
 ## Frozen product contracts and Windows gaps
 
+The 35b→3b advance contains four commits (`833f53b`, `799715d`, `7c4f87a`, `3b53402`).
+Classification now carries examples, scope notes, source references and interface-language
+localizations, with a larger attributed catalog and a new CC-BY-SA notice. Meaning creation/editing
+uses one detached semantic/classification draft and one acknowledged atomic organization write.
+Sidebar, hierarchical pickers, guidance and detail views changed together; graph projection and CLI
+contracts also changed. SQL schema remains unchanged; the new guidance belongs in existing payloads.
+This does not authorize legacy conversion or imply that earlier UI candidates already match 3b.
+Review and LanguageLearning service/model/support paths have no direct changes across this range;
+their owners record that comparison while preserving older fixture references.
+
 The committed Mac `SOURCE_LAYOUT.md`, `ARCHITECTURE.md` and `CLI.md` are the responsibility maps.
-The paths below identify actual source, not newly designed Windows features.
+The paths below identify actual source, not newly designed Windows features. The table preserves
+the initial gap audit; its initial Windows gap descriptions are historical. Current delivery is:
+
+- Main contains [task/model assignment](MODEL_MANAGEMENT_FROZEN.md),
+  [recommended setup](RECOMMENDED_SETUP_FROZEN.md), the single current-format
+  [canonical notebook owner](VOCABULARY_CANONICAL_APP.md), creation/import/favorites,
+  [entry editing and file images](VOCABULARY_CANONICAL_ENTRY_EDITOR_UI.md),
+  [sense commands](VOCABULARY_CANONICAL_SENSE_UI.md), and the limited
+  [expression-assistance application](EXPRESSION_ASSIST_APPLICATION.md).
+- Main also contains [semantic/classification transactions](VOCABULARY_CANONICAL_SEMANTICS_STORE.md),
+  [canonical Anki sessions](ANKI_CANONICAL_REVIEW_SESSION.md), and
+  [unknown-source translation planning](READING_TRANSLATION_UNKNOWN_SOURCE.md).
+  The latter two are prerequisites, not activated Anki or reading UI.
+- [Meaning/mapping editors](VOCABULARY_CANONICAL_MEANING_UI.md) await final candidate CI.
+  Complete category management, independent Anki card preparation and selected-text reading are
+  the active user-flow deliveries. Their internal components are reviewed before production
+  integration; an unconnected component does not complete its feature.
+- Remaining frozen scope includes usage-pattern editing, the canonical notebook's remaining
+  graph/media/explanation/dictionary/export/backup workflows, review batch UI, pointer/icon/OCR
+  reading, CLI, remaining onboarding/localization and speech activation. Existing older libraries
+  retain their references and are reused only after checking the frozen consumer contract.
+
+After the maintainer's delivery adjustment, implementation owners carry each active user flow
+through its settings, entry and production adapters. Internal commits use targeted validation;
+independent review and required CI gate the complete candidate. Physical host acceptance belongs
+to the maintainer using the [Windows host checklist](WINDOWS_HOST_ACCEPTANCE.md).
 
 | Area | Latest source responsibility and required Windows alignment |
 | --- | --- |

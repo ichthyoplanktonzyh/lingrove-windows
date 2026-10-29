@@ -1,8 +1,9 @@
-# Frozen Mac alignment campaign
+# Mac alignment campaign
 
-The maintainer approved this campaign on 2026-10-29. The stable product and design reference is
-Mac **`35b7fbe5c788c5524936ade1dfb7c89a3a285b04`**. Subsequent Mac commits are outside this campaign
-until explicitly adopted. Historical module/fixture references remain unchanged until individually
+The maintainer approved this campaign on 2026-10-29 and subsequently authorized the latest Mac
+functionality. The current committed product/design reference is
+Mac **`3b53402f2cbc196b0398d133177fd80006d165b2`**. Record and inspect later targets before adoption.
+Historical module/fixture references remain unchanged until individually
 upgraded; the campaign pin does not claim existing modules already match it.
 
 ## Scope and completion
@@ -63,6 +64,11 @@ file after review and required checks; data compatibility must not keep them art
 AppHost must select one Store for notebook and writing capture, with no parallel legacy writer.
 
 ## Delivery and review
+
+The maintainer's subsequent delivery adjustment groups work by complete user flows, including
+their settings and production entries. Internal commits keep targeted checks; independent review
+and required CI gate the complete candidate. Physical acceptance is consolidated at the end and
+handed to the maintainer, rather than blocking development on interim desktop automation.
 
 1. Audit only the frozen source/test/design evidence and document the module delta and first
    bounded checkpoint. Resolve shared contracts before cross-owner implementation.

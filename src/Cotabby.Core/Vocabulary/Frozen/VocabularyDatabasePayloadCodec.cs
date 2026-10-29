@@ -8,9 +8,25 @@ namespace Cotabby.Core.Vocabulary.Frozen;
 public static class VocabularyDatabasePayloadCodec
 {
     public const int MaximumPayloadBytes = 64 * 1024 * 1024;
-    public static byte[] Encode(VocabularyDatabaseRecord row)
+    public static byte[] Encode(VocabularyDatabaseRecord row) => EncodeCore(row, historical35b: false);
+
+    /// <summary>Historical source-probe encoding only. Production SQLite always uses Encode;
+    /// populated 3b guidance is rejected instead of being lost to the older wire shape.</summary>
+    public static byte[] EncodeAt35b(VocabularyDatabaseRecord row)
     {
         ArgumentNullException.ThrowIfNull(row);
+        if (row.Payload is VocabularyCategory category && (category.Examples.Count != 0 || category.ScopeNote.Length != 0
+                || category.References.Count != 0 || category.Localizations.Count != 0)
+            || row.Payload is VocabularyCategoryOverride overlay && (overlay.Examples is not null || overlay.ScopeNote is not null
+                || overlay.References is not null || overlay.Localizations is not null))
+            throw new VocabularyException(VocabularyFailure.InvalidContent);
+        return EncodeCore(row, historical35b: true);
+    }
+
+    private static byte[] EncodeCore(VocabularyDatabaseRecord row, bool historical35b)
+    {
+        ArgumentNullException.ThrowIfNull(row);
+        byte[] EncodeValue<T>(T value) => VocabularyPayloadCodec.EncodePortableValue(value, MaximumPayloadBytes, historical35b);
         return (row.Table, row.Payload) switch
         {
             (VocabularyDatabaseTable.Entries, VocabularyEntry x) => EncodeValue(x), (VocabularyDatabaseTable.Senses, VocabularySense x) => EncodeValue(x),
@@ -52,6 +68,5 @@ public static class VocabularyDatabasePayloadCodec
             VocabularyDatabaseTable.CategoryOverrides => DecodeValue<VocabularyCategoryOverride>(bytes), _ => throw VocabularyDatabaseTables.Invalid(),
         };
     }
-    private static byte[] EncodeValue<T>(T value) => VocabularyPayloadCodec.EncodePortableValue(value, MaximumPayloadBytes);
     private static T DecodeValue<T>(ReadOnlyMemory<byte> bytes) => VocabularyPayloadCodec.DecodePortableValue<T>(bytes);
 }

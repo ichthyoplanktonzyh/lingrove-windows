@@ -90,7 +90,7 @@ public static class VocabularyEntryDraftPolicy
         { var live = result.FirstOrDefault(item => item.Id == before.Id); if (live is not null && live != before) throw Conflict(); }
         return result;
     }
-    private static string Key(VocabularyExample value)
+    internal static string Key(VocabularyExample value)
     {
         // Mac hashes the UTF-8 bytes of the framed fields. Ordinal framing comparison retains
         // those exact bytes instead of applying Swift String canonical equivalence to the frame.

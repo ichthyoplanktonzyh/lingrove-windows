@@ -1,6 +1,6 @@
 {
   "macReference": "3b53402f2cbc196b0398d133177fd80006d165b2",
-  "provenance": "Observed from 3b Swift in macOS CI runs 40944180841 and 40945194927.",
+  "provenance": "All cases except typed-integers observed from 3b Swift in macOS CI runs 40944180841 and 40945194927; typed-integers is provisional.",
   "batches": [
     {
       "name": "typed-nil",
@@ -138,6 +138,37 @@
       },
       "expectedFingerprint": "ee24196e94fed194441ccd7597352d7c6545c3177f4a3d14f72a5b5c04b50819",
       "expectedId": "C3BF25EC-1D28-5E0D-A8B6-DDBC707F2F01"
+    },
+    {
+      "name": "typed-integers",
+      "batch": {
+        "version": 1.0,
+        "idempotencyKey": "typed-integers",
+        "expectedRevision": 1e0,
+        "operations": [
+          {
+            "add": {
+              "expression": "x",
+              "language": "en",
+              "kind": "word",
+              "meaning": "m",
+              "examples": [
+                {
+                  "text": "x",
+                  "ranges": [
+                    {
+                      "location": 0.0,
+                      "length": 1e0
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "expectedFingerprint": "82136ed53fbfe05b51f5e1da211202a14115b7f6413157041294798469677ea7",
+      "expectedId": "3E6467AF-366C-5FFE-8172-8E4EAD73855B"
     }
   ],
   "ranges": [

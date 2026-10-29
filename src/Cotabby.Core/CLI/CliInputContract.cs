@@ -24,6 +24,7 @@ public static class CliInputContract
         var value = Parse(bytes); Only(value, ["version", "idempotencyKey", "expectedRevision", "defaults", "meanings", "entries", "relations"]);
         if (Integer(value["version"]) != 1 || Text(value["idempotencyKey"]) is not { } key) throw Invalid("Capture needs version 1 and idempotencyKey. Run 'lingrove schema capture'.");
         var capture = (JsonObject)value.DeepClone(); capture.Remove("version"); capture.Remove("idempotencyKey"); var revision = capture["expectedRevision"]?.DeepClone(); capture.Remove("expectedRevision");
+        if (value.ContainsKey("expectedRevision") && Integer(revision) is not >= 0) throw Invalid("Invalid expectedRevision.");
         var material = CliShapeContract.Capture.Normalize(capture); ValidateCapture(material);
         var batch = new JsonObject { ["version"] = 2, ["idempotencyKey"] = key, ["operations"] = new JsonArray(new JsonObject { ["capture"] = material }) };
         if (revision is not null) batch["expectedRevision"] = revision;
@@ -43,7 +44,9 @@ public static class CliInputContract
         long? version = Integer(batch["version"]); string? key = Text(batch["idempotencyKey"]);
         if (version is not (1 or 2) || key is null || Encoding.UTF8.GetByteCount(key) is < 1 or > 200 || FoundationText.TrimWhitespaceAndNewlines(key).Length == 0
             || batch["operations"] is not JsonArray ops || ops.Count is < 1 or > 100) throw Invalid("Invalid batch header or operation count.");
-        if (batch["expectedRevision"] is not null && Unsigned(batch["expectedRevision"]) is null) throw Invalid("Invalid expectedRevision.");
+        batch["version"] = version!.Value;
+        if (batch["expectedRevision"] is not null)
+            batch["expectedRevision"] = Unsigned(batch["expectedRevision"]) ?? throw Invalid("Invalid expectedRevision.");
         int images = 0, blocks = 0, examples = 0, imageBytes = 0;
         foreach (var opNode in ops)
         {
@@ -100,7 +103,7 @@ public static class CliInputContract
     {
         if (kind == "add" && (Text(action["expression"]) is null || Text(action["language"]) is null || Text(action["kind"]) is null || Text(action["meaning"]) is null)) throw Invalid("Invalid add operation.");
         if (kind is "append" or "update") { _ = Id(action["entryID"]); _ = Id(action["senseID"]); }
-        if (kind == "update" && Unsigned(action["expectedRevision"]) is null) throw Invalid("Invalid expectedRevision.");
+        if (kind == "update") action["expectedRevision"] = Unsigned(action["expectedRevision"]) ?? throw Invalid("Invalid expectedRevision.");
         foreach (string name in new[] { "dictionaryForm", "meaning", "meaningLanguage", "note", "language", "kind", "expression" }) if (action[name] is not null && Text(action[name]) is null) throw Invalid("Invalid field.");
         foreach (var tag in OptionalArray(action, "tags", int.MaxValue)) if (Text(tag) is null) throw Invalid("Invalid tags.");
     }
@@ -111,19 +114,37 @@ public static class CliInputContract
         foreach (string key in new[] { "translation", "translationLanguage", "meaning", "meaningLanguage", "completeness", "sourceKind" }) if (item[key] is not null && Text(item[key]) is null) throw Invalid("Invalid example.");
         if (Text(item["sourceKind"]) is { } source && source is not ("unspecified" or "captured" or "authored" or "generated" or "imported")) throw Invalid("Unknown example sourceKind.");
         if (clientInput && item.ContainsKey("ranges") && item["ranges"] is null) throw Invalid("Expected ranges array.");
-        foreach (var range in OptionalArray(item, "ranges", 64)) { if (range is not JsonObject pair) throw Invalid("Invalid range."); Only(pair, ["location", "length"]); if (Integer(pair["location"]) is null || Integer(pair["length"]) is null) throw Invalid("Invalid range."); }
+        foreach (var range in OptionalArray(item, "ranges", 64))
+        {
+            if (range is not JsonObject pair) throw Invalid("Invalid range."); Only(pair, ["location", "length"]);
+            pair["location"] = Integer(pair["location"]) ?? throw Invalid("Invalid range.");
+            pair["length"] = Integer(pair["length"]) ?? throw Invalid("Invalid range.");
+        }
     }
     private static void Only(JsonObject value, IReadOnlyCollection<string> names) { if (value.Any(p => !names.Contains(p.Key))) throw Invalid("Unknown fields or invalid object."); }
     private static JsonArray OptionalArray(JsonObject value, string name, int limit) { if (value[name] is null) return []; if (value[name] is not JsonArray array || array.Count > limit) throw Invalid("Invalid array or count."); return array; }
     private static void OptionalBool(JsonObject value, string name) { if (value[name] is not null && (value[name] is not JsonValue v || !v.TryGetValue<bool>(out _))) throw Invalid("Invalid boolean."); }
     private static string? Text(JsonNode? value) => value is JsonValue scalar && scalar.TryGetValue<string>(out var text) ? text : null;
-    private static long? Integer(JsonNode? value) { if (value is not JsonValue scalar) return null; if (scalar.TryGetValue<long>(out var n)) return n; if (scalar.TryGetValue<int>(out var i)) return i; return null; }
+    private static long? Integer(JsonNode? value)
+    {
+        if (value is not JsonValue scalar) return null;
+        if (scalar.TryGetValue<long>(out var n)) return n;
+        if (scalar.TryGetValue<int>(out var i)) return i;
+        if (scalar.TryGetValue<JsonElement>(out var element) && element.ValueKind == JsonValueKind.Number)
+            try { return FoundationJsonInteger.Read(element); } catch (JsonException) { return null; }
+        return null;
+    }
     private static ulong? Unsigned(JsonNode? value)
     {
         if (value is not JsonValue scalar) return null;
         if (scalar.TryGetValue<ulong>(out var n)) return n;
         if (scalar.TryGetValue<long>(out var signed) && signed >= 0) return (ulong)signed;
         if (scalar.TryGetValue<int>(out var small) && small >= 0) return (ulong)small;
+        if (scalar.TryGetValue<JsonElement>(out var element) && element.ValueKind == JsonValueKind.Number)
+        {
+            if (element.TryGetUInt64(out var raw)) return raw;
+            try { var parsed = FoundationJsonInteger.Read(element); return parsed >= 0 ? (ulong)parsed : null; } catch (JsonException) { return null; }
+        }
         return null;
     }
     private static Guid Id(JsonNode? value) => Guid.TryParseExact(Text(value), "D", out var result) ? result : throw Invalid("Invalid UUID.");

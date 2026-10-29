@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Cotabby.Core.Text;
 
 namespace Cotabby.Core.CLI;
 
@@ -40,7 +41,10 @@ public static class CliShapeContract
             if (field.Kind is "date" or "confidence" && scalar.TryGetValue<double>(out var numberValue) && double.IsFinite(numberValue) && (field.Kind != "confidence" || numberValue is >= 0 and <= 1)) return scalar.DeepClone();
             if (scalar.TryGetValue<JsonElement>(out var element) && element.ValueKind == JsonValueKind.Number)
             {
-                if (field.Kind == "integer" && element.TryGetInt64(out var i) && i >= 0 && element.GetRawText().IndexOfAny(['.', 'e', 'E']) < 0) return scalar.DeepClone();
+                if (field.Kind == "integer")
+                {
+                    try { var i = FoundationJsonInteger.Read(element); if (i >= 0) return JsonValue.Create(i); } catch (JsonException) { }
+                }
                 if (field.Kind is "date" or "confidence" && element.TryGetDouble(out var number) && double.IsFinite(number) && (field.Kind != "confidence" || number is >= 0 and <= 1)) return scalar.DeepClone();
             }
         }

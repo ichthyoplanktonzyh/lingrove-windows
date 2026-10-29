@@ -10,6 +10,19 @@ public sealed class LearningLocalTranslationEngineTests
     private const string Source = "Please close the window before you leave.";
 
     [Fact]
+    public async Task UnknownReadingSourceUsesRealPlannerWithoutInventingDirection()
+    {
+        var operation = new FakeLocalOperation(new LearningGgufMetadata("llama"), contextWindowTokens: 8_192) { Output = "译文。" };
+        var runtime = new FakeLocalRuntime(operation);
+        await using var engine = new LearningLocalTranslationEngine(LocalConfiguration(), runtime);
+        var request = await engine.PlanAsync("reading-unknown", Source, Options() with { SourceLanguage = null }, default).WaitAsync(TestTimeout);
+        Assert.Null(request.Options.SourceLanguage);
+        Assert.Contains("following text into natural", request.Prompt.Prompt);
+        Assert.Equal("译文。", await engine.TranslateAsync(request, default).WaitAsync(TestTimeout));
+        Assert.Single(operation.LiteralInputs); Assert.Equal(1, runtime.BeginCount);
+    }
+
+    [Fact]
     public async Task PlannerUsesMetadataFamilyForRenamedModelAndKeepsSourceLiteral()
     {
         var operation = new FakeLocalOperation(

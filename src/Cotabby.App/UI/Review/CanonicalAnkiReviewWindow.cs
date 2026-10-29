@@ -7,6 +7,8 @@ using Cotabby.App.Review;
 using Cotabby.App.UI.Vocabulary;
 using Cotabby.Core.Review;
 using Cotabby.Core.Vocabulary;
+using Cotabby.Win32.Vocabulary;
+using Cotabby.Inference.Speech;
 using F = Cotabby.Core.Vocabulary.Frozen;
 
 namespace Cotabby.App.UI.Review;
@@ -21,6 +23,7 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
     private readonly CanonicalAnkiReviewSession _session;
     private readonly Func<Func<CancellationToken, Task>, Task> _admit;
     private readonly Action _configure;
+    private readonly IVocabularyClipboardImageTransfer? _clipboard;
     private readonly CancellationTokenSource _lifetime = new();
     private readonly StackPanel _form = new(), _preview = new(), _conflicts = new();
     private readonly ComboBox _binding = new(), _example = new(), _preserved = new(), _deck = new(), _cardType = new(), _side = new();
@@ -29,9 +32,16 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
     private readonly CheckBox _recognition = new() { Content = "Recognition card" }, _gap = new() { Content = "Gap card" },
         _notes = new() { Content = "Include notes" }, _senseContent = new() { Content = "Include sense explanation" },
         _explanation = new() { Content = "Include AI explanation" };
+    private readonly CheckBox _expressionAudio = new() { Name = "canonicalExpressionAudio", Content = "Expression audio" }, _sentenceAudio = new() { Name = "canonicalSentenceAudio", Content = "Example audio" };
+    private readonly Button _previewExpressionAudio = new() { Content = "Preview audio" }, _previewSentenceAudio = new() { Content = "Preview audio" }, _regenerateExpressionAudio = new() { Content = "Regenerate audio" }, _regenerateSentenceAudio = new() { Content = "Regenerate audio" };
+    private ReviewSpeechDisclosure? _shownSpeech;
+    private readonly TextBlock _speechDestination = new() { Name = "canonicalReviewSpeechDestination", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, 10) };
+    internal TextBlock SpeechDestination => _speechDestination;
     private readonly TextBlock _destination = new() { TextWrapping = TextWrapping.Wrap }, _state = new() { TextWrapping = TextWrapping.Wrap }, _validation = new() { TextWrapping = TextWrapping.Wrap };
     private readonly Button _resetFields = new() { Content = "Use notebook fields again" };
     internal Button SaveButton => _save;
+    internal CheckBox ExpressionAudioToggle => _expressionAudio;
+    internal Button PreviewExpressionAudio => _previewExpressionAudio;
     internal Button SendButton => _send;
     internal Button ClearAudioButton => _clearAudio;
     internal TextBox AnswerBox => _answer;
@@ -59,14 +69,17 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
     internal Task PreviewOperation => _previewTask;
     internal Guid? CardId => _session.CardId;
 
-    internal CanonicalAnkiReviewWindow(CanonicalAnkiReviewSession session, Func<Func<CancellationToken, Task>, Task> admit, Action configure)
+    internal CanonicalAnkiReviewWindow(CanonicalAnkiReviewSession session, Func<Func<CancellationToken, Task>, Task> admit, Action configure, IVocabularyClipboardImageTransfer? clipboard = null)
     {
         if (session.CardId is null && session.Plan.Layout is not null) throw new NotSupportedException("Custom review card layout preparation is not available yet.");
-        _session = session; _admit = admit; _configure = configure;
+        _session = session; _clipboard = clipboard; _admit = admit; _configure = configure;
         Title = "Prepare review"; Width = 720; Height = 760; MinWidth = 560; MinHeight = 500; WindowStartupLocation = WindowStartupLocation.CenterOwner;
         VocabularyNotebookTheme.Follow(this);
         var root = new DockPanel { Margin = new Thickness(22) }; Content = root;
         var heading = VocabularyInputControls.Heading("Prepare review"); DockPanel.SetDock(heading, Dock.Top); root.Children.Add(heading);
+        DockPanel.SetDock(_speechDestination, Dock.Top); root.Children.Add(_speechDestination);
+        if (_session.Audio.Speech is ISpeechDestinationDisclosure disclosure) disclosure.PropertyChanged += SpeechDestinationChanged;
+        RefreshSpeechDestination();
         var footer = VocabularyInputControls.Footer(_settings, _cancel, _save, _send); DockPanel.SetDock(footer, Dock.Bottom); root.Children.Add(footer);
         var deckControl = new StackPanel(); deckControl.Children.Add(_deck); deckControl.Children.Add(_deckText); VocabularyNotebookTheme.Input(_deckText); VocabularyNotebookTheme.Combo(_deck);
         var scroll = new ScrollViewer { VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Content = _form }; root.Children.Add(scroll);
@@ -78,13 +91,27 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
             _form.Children.Add(destination);
             _form.Children.Add(VocabularyInputControls.Group(("Review example", _example), ("Preserved plan", _preserved), ("Review answer", _answer), ("", _recognition), ("", _gap), ("", _notes), ("", _senseContent), ("", _explanation), ("", _resetFields), ("", _clearAudio), ("", _updateTemplate)));
         }
-        _form.Children.Add(VocabularyInputControls.Caption("Review audio is unavailable. Remove any requested audio before sending."));
+        int audioIndex = _form.Children.Count;
+        if (_session.Audio.Speech is null) _form.Children.Add(VocabularyInputControls.Caption("Review audio is unavailable. Remove any requested audio before sending."));
         _cardType.ItemsSource = new[] { "Recognition card", "Gap card" }; _cardType.SelectedIndex = 0;
         _form.Children.Add(VocabularyInputControls.Heading("Card preview"));
         if (session.CardId is null) _form.Children.Add(VocabularyInputControls.Group(("Card type", _cardType), ("Side", _side)));
         _form.Children.Add(_preview);
         _form.Children.Add(_conflicts); _form.Children.Add(_validation); _form.Children.Add(_state);
         VocabularyNotebookTheme.Brush(_state, TextBlock.ForegroundProperty, "OrangeBrush");
+        if (_session.CardId is null)
+        {
+            var expressionRow = new WrapPanel(); expressionRow.Children.Add(_expressionAudio); expressionRow.Children.Add(_previewExpressionAudio); expressionRow.Children.Add(_regenerateExpressionAudio);
+            var sentenceRow = new WrapPanel(); sentenceRow.Children.Add(_sentenceAudio); sentenceRow.Children.Add(_previewSentenceAudio); sentenceRow.Children.Add(_regenerateSentenceAudio);
+            _form.Children.Insert(audioIndex, VocabularyInputControls.Heading("Audio")); _form.Children.Insert(audioIndex + 1, VocabularyInputControls.Group(("", expressionRow), ("", sentenceRow)));
+            foreach (var button in new[] { _previewExpressionAudio, _previewSentenceAudio, _regenerateExpressionAudio, _regenerateSentenceAudio }) { VocabularyNotebookTheme.Button(button); button.Margin = new Thickness(8, 0, 0, 4); }
+            void Toggle(ReviewAudioKind kind, CheckBox box) { if (_updating) return; var p = _session.Plan; var kinds = (p.AudioKinds ?? new HashSet<ReviewAudioKind>()).ToHashSet(); if (box.IsChecked == true) kinds.Add(kind); else kinds.Remove(kind); var overrides = new Dictionary<string, string>(p.FieldOverrides); if (_session.Mapping.TryGetValue(kind.Field(), out var field)) overrides.Remove(field); _session.Plan = p with { AudioKinds = kinds, FieldOverrides = overrides }; Fill(); RefreshDraft(); }
+            _expressionAudio.Click += (_, _) => Toggle(ReviewAudioKind.Expression, _expressionAudio); _sentenceAudio.Click += (_, _) => Toggle(ReviewAudioKind.Sentence, _sentenceAudio);
+            _previewExpressionAudio.Click += (_, _) => Start(token => _session.PrepareAudioAsync(ReviewAudioKind.Expression, true, token: token));
+            _previewSentenceAudio.Click += (_, _) => Start(token => _session.PrepareAudioAsync(ReviewAudioKind.Sentence, true, token: token));
+            _regenerateExpressionAudio.Click += (_, _) => Start(token => _session.PrepareAudioAsync(ReviewAudioKind.Expression, false, true, token));
+            _regenerateSentenceAudio.Click += (_, _) => Start(token => _session.PrepareAudioAsync(ReviewAudioKind.Sentence, false, true, token));
+        }
         foreach (var button in new[] { _reload, _clearAudio, _resetFields, _updateTemplate }) VocabularyNotebookTheme.Button(button);
         _binding.SelectionChanged += (_, _) => { if (_updating) return; _session.SelectBinding((_binding.SelectedItem as Option)?.Id); _choices.Clear(); Start(LoadAsync); };
         _example.SelectionChanged += (_, _) => { if (_updating) return; var id = (_example.SelectedItem as Option)?.Id; var p = _session.Plan; var audio = p.AudioKinds?.Where(k => id is not null || k != ReviewAudioKind.Sentence).ToHashSet(); var (entry, sense) = Current(); var example = sense.Examples.FirstOrDefault(e => e.Id == id); bool canGap = example is not null && ReviewCardPolicy.Gap(example.Text, example.Ranges, entry.Kind) is not null; _session.Plan = p with { ExampleId = id, Gap = p.Gap && canGap, FieldOverrides = new Dictionary<string, string>(), AudioKinds = audio }; Fill(); RefreshDraft(); };
@@ -108,9 +135,29 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
         _settings.Click += (_, _) => Start(async token => { if (await _session.SaveAsync(token)) { _configureWhenDone = true; CloseAfterOperation(); } else await PresentAsync(token); });
         _send.Click += (_, _) => Start(async token => { if (await _session.SendAsync(_session.MissingNote, cancellationToken: token)) CloseAfterOperation(); else await PresentAsync(token); });
         _cancel.Click += (_, _) => Close();
-        Loaded += (_, _) => { if (!_started) { _started = true; Start(LoadAsync); } };
-        Closing += OnClosing; _seenRevision = session.Snapshot.Revision; session.PropertyChanged += SessionChanged; session.Controller.Settings.PropertyChanged += SettingsChanged; Closed += (_, _) => RetirePresentation();
+        SourceInitialized += (_, _) => AttachLayoutFileDrop();
+        Loaded += (_, _) => { _session.PresentAudioDisclosure(_shownSpeech); AttachLayoutFileDrop(); if (!_started) { _started = true; Start(LoadAsync); } };
+        Closing += OnClosing; _seenRevision = session.Snapshot.Revision; session.PropertyChanged += SessionChanged; session.Audio.PropertyChanged += AudioChanged; session.Controller.Settings.PropertyChanged += SettingsChanged; Closed += (_, _) => RetirePresentation();
         Fill();
+    }
+    private void SpeechDestinationChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (_closing || Dispatcher.HasShutdownStarted) return;
+        if (Dispatcher.CheckAccess()) RefreshSpeechDestination();
+        else _ = Dispatcher.BeginInvoke(() => { if (!_closing) RefreshSpeechDestination(); });
+    }
+    private void RefreshSpeechDestination()
+    {
+        var shown = ReviewSpeechDisclosure.Capture(_session.Audio.Speech);
+        if (Equals(_shownSpeech, shown) && _speechDestination.Text.Length != 0) return;
+        _shownSpeech = shown;
+        _speechDestination.Text = shown is null ? "Speech for review audio: unavailable. Configure speech before preparing audio." : "Speech for review audio: " + shown.Destination;
+        _session.PresentAudioDisclosure(IsVisible ? shown : null);
+        if (_started && !_closing) RefreshDraft();
+    }
+    private void AudioChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (!_closing && _session.Audio.Generating is { } kind) _state.Text = "Preparing " + kind.Label() + "…";
     }
     private void SettingsChanged(object? sender, PropertyChangedEventArgs e)
     {
@@ -150,7 +197,11 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
             string answer = p.Answer ?? ""; if (p.Answer is null) { try { answer = CanonicalReviewCardPolicy.Content(entry, sense, p with { Recognition = true, Gap = false }).Answer; } catch (AnkiReviewException) { } } _answer.Text = answer; _recognition.IsChecked = p.Recognition; _recognition.IsEnabled = !_session.HasExistingCard(ReviewField.Recognition); _gap.IsChecked = p.Gap; var selectedExample = sense.Examples.FirstOrDefault(e => e.Id == p.ExampleId); bool canGap = selectedExample is not null && ReviewCardPolicy.Gap(selectedExample.Text, selectedExample.Ranges, entry.Kind) is not null; _gap.IsEnabled = !_session.HasExistingCard(ReviewField.GapPrompt) && (canGap || p.Gap); _notes.IsChecked = p.IncludeNotes; _senseContent.IsChecked = p.IncludeSenseContent == true; _explanation.IsChecked = p.IncludeExplanation;
             _destination.Text = $"{AnkiArchiveEndpointPolicy.Normalize(_session.Controller.Settings.Address) ?? "Invalid Anki address"}\nProfile: {(_loadedAddress == _session.Controller.Settings.Address ? _session.Catalog?.Profile : null) ?? "Not loaded"}\nNote type: {_session.Model}";
             _resetFields.Visibility = p.FieldOverrides.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
-            _clearAudio.Visibility = (p.AudioKinds?.Count ?? 0) > 0 ? Visibility.Visible : Visibility.Collapsed;
+            _clearAudio.Visibility = (p.AudioKinds?.Count ?? 0) > 0 && _session.Audio.Speech is null ? Visibility.Visible : Visibility.Collapsed;
+            _expressionAudio.IsChecked = p.AudioKinds?.Contains(ReviewAudioKind.Expression) == true; _sentenceAudio.IsChecked = p.AudioKinds?.Contains(ReviewAudioKind.Sentence) == true;
+            _sentenceAudio.IsEnabled = selectedExample is not null || _sentenceAudio.IsChecked == true;
+            _previewExpressionAudio.Visibility = _regenerateExpressionAudio.Visibility = _expressionAudio.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
+            _previewSentenceAudio.Visibility = _regenerateSentenceAudio.Visibility = _sentenceAudio.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
             _updateTemplate.Visibility = _session.Model == AnkiReviewPolicy.PresetName && !_session.CurrentPresetTemplate && !_session.Loading ? Visibility.Visible : Visibility.Collapsed;
             if (_session.CardId is not null) RenderLayout();
             _state.Text = _windowError ?? _session.Message ?? _windowNotice ?? ""; _send.Content = _session.MissingNote ? "Re-add to Anki" : _session.Binding?.NoteId is null ? "Add to Anki" : "Update Anki";
@@ -206,7 +257,7 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
         void Line(string label, string value) { if (value.Length != 0) _preview.Children.Add(new TextBlock { Text = label + ": " + value, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 3, 0, 3) }); }
         if ((!_session.CurrentPresetTemplate && !_session.LegacyPresetTemplate) || _session.Plan.FieldOverrides.Count > 0)
         {
-            try { var fields = AnkiReviewPolicy.Fields(content, _session.Binding?.OriginSenseId ?? _session.SenseId, _session.Mapping, _session.Plan.FieldOverrides); foreach (var field in fields.OrderBy(p => p.Key)) Line(field.Key, field.Value); }
+            try { var fields = AnkiReviewPolicy.Fields(content, _session.Binding?.OriginSenseId ?? _session.SenseId, _session.Mapping, _session.Plan.FieldOverrides, AnkiReviewPolicy.AudioFields(_session.Plan)); foreach (var field in fields.OrderBy(p => p.Key)) Line(field.Key, field.Value); }
             catch (AnkiReviewException error) { _validation.Text = error.Message; }
             UpdateEnabled(); return;
         }
@@ -276,7 +327,8 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
     private void RetirePresentation()
     {
         if (_retired) return; _retired = true;
-        _session.PropertyChanged -= SessionChanged; _session.Controller.Settings.PropertyChanged -= SettingsChanged;
-        _session.Dispose(); _lifetime.Dispose();
+        if (_session.Audio.Speech is ISpeechDestinationDisclosure disclosure) disclosure.PropertyChanged -= SpeechDestinationChanged;
+        _session.PropertyChanged -= SessionChanged; _session.Audio.PropertyChanged -= AudioChanged; _session.Controller.Settings.PropertyChanged -= SettingsChanged;
+        _layoutDrop?.Dispose(); _layoutDrop = null; _session.Dispose(); _lifetime.Dispose();
     }
 }

@@ -46,6 +46,7 @@
                 <ProgressBar x:Name="Progress" Height="3" IsIndeterminate="True" Margin="0,0,0,12" />
 
                 <StackPanel x:Name="SourceSection" Margin="0,0,0,12">
+                    <Button x:Name="SourceSpeechButton" Content="🔊" ToolTip="Read source aloud" HorizontalAlignment="Right" Focusable="False" Visibility="Collapsed" />
                     <TextBlock Text="SOURCE" FontSize="10" FontWeight="SemiBold"
                                Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,5" />
                     <Border Padding="10" CornerRadius="7" Background="{DynamicResource InputBg}">
@@ -57,6 +58,7 @@
                 </StackPanel>
 
                 <StackPanel x:Name="ResultSection" Margin="0,0,0,12" Visibility="Collapsed">
+                    <Button x:Name="ResultSpeechButton" Content="🔊" ToolTip="Read translation aloud" HorizontalAlignment="Right" Focusable="False" Visibility="Collapsed" />
                     <TextBlock x:Name="ResultLabel" Text="TRANSLATION" FontSize="10" FontWeight="SemiBold"
                                Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,5" />
                     <Border Padding="10" CornerRadius="7" Background="{DynamicResource InputBg}">
@@ -94,6 +96,8 @@
                 <TextBlock x:Name="CopyStatus" FontSize="11" TextWrapping="Wrap" Margin="0,6,0,0"
                            Foreground="{DynamicResource TextSecondary}" Visibility="Collapsed" />
                 <TextBlock x:Name="VocabularyStatus" FontSize="11" TextWrapping="Wrap" Margin="0,6,0,0"
+                           Foreground="{DynamicResource OrangeBrush}" Visibility="Collapsed" />
+                <TextBlock x:Name="SpeechStatus" FontSize="11" TextWrapping="Wrap" Margin="0,6,0,0"
                            Foreground="{DynamicResource OrangeBrush}" Visibility="Collapsed" />
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
                     <Button x:Name="RetryButton" Content="Retry" Padding="12,5" Margin="0,0,8,0" Focusable="False"

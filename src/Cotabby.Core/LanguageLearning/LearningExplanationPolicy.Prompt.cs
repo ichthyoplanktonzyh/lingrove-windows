@@ -12,7 +12,8 @@ public static partial class LearningExplanationPolicy
     /// </summary>
     public static string Prompt(LearningExplanationInput input, LearningLanguage language, int total, int output)
     {
-        if (!IsValid(input)) throw InvalidContent();
+        // Historical pinned policy predates optional language and unknown completeness.
+        if (!IsValid(input) || input.Language is null || input.ContextKind == LearningExplanationContext.Unknown) throw InvalidContent();
         string focus = input.Kind switch
         {
             VocabularyEntryKind.Word => """
@@ -46,7 +47,7 @@ public static partial class LearningExplanationPolicy
             string payload = "{" + string.Join(",", new[]
             {
                 Pair("target", input.Target), Pair("dictionaryForm", input.DictionaryForm),
-                Pair("targetLanguage", input.Language.Code()), Pair("kind", input.Kind.ToString().ToLowerInvariant()),
+                Pair("targetLanguage", input.Language.Value.Code()), Pair("kind", input.Kind.ToString().ToLowerInvariant()),
                 "\"occurrenceQuotes\":" + quotes, Pair("referenceContext", context),
                 Pair("contextCompleteness", scope.ToString().ToLowerInvariant()),
                 Pair("task", scope == LearningExplanationContext.None ? "define_target" : "explain_in_context"),

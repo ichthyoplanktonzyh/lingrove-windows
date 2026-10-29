@@ -28,6 +28,9 @@ internal sealed class LearningSpeechSettings : INotifyPropertyChanged
     private readonly Dictionary<string, string> _voiceIds = new(CanonicalStringComparer.Instance);
     public event PropertyChangedEventHandler? PropertyChanged;
     internal event Action? PlaybackInvalidated;
+    // Request-only admission is retired before a sampler or credential mutation can race a
+    // queued reading effect. This does not stop ordinary playback or change source preferences.
+    internal event Action? RequestConfigurationChanging;
     internal LearningSpeechProviderKind SelectedProvider { get; private set; }
     internal string LocalModelPath { get; private set; }
     internal string LocalProjectionPath { get; private set; }
@@ -98,10 +101,11 @@ internal sealed class LearningSpeechSettings : INotifyPropertyChanged
     internal void SetSamplingOverrides(LearningModelSamplingOverrides value, string? expectedIdentity = null)
     {
         if (SelectedProvider != LearningSpeechProviderKind.Local || expectedIdentity is not null && !Same(expectedIdentity, ParameterIdentity)) return;
+        RequestConfigurationChanging?.Invoke();
         if (_parameters.Set(GenerationProfile with { Sampling = value.Normalized }, ParameterIdentity)) Changed();
     }
     internal string? EndpointApiKey() => _credentials.ReadApiKey();
-    internal void SaveEndpointApiKey(string? value) { _credentials.SaveApiKey(value); PlaybackInvalidated?.Invoke(); Changed(); }
+    internal void SaveEndpointApiKey(string? value) { RequestConfigurationChanging?.Invoke(); _credentials.SaveApiKey(value); PlaybackInvalidated?.Invoke(); Changed(); }
     internal string? VoiceId(LearningLanguage language) => _voiceIds.GetValueOrDefault(language.Code());
     internal void SetVoiceId(string? voiceId, LearningLanguage language)
     {

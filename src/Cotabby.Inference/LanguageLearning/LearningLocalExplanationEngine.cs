@@ -72,7 +72,7 @@ public sealed class LearningLocalExplanationEngine : ILearningExplanationEngine
                 throw new LearningExplanationException(LearningExplanationFailure.ContextBudgetExceeded);
             if (!LearningExplanationModelPolicy.SupportsGeneralInstructions(Path.GetFileName(_configuration.ModelPath), _configuration.RequestedTemplate))
                 throw new LearningExplanationException(LearningExplanationFailure.InstructionModelRequired);
-            string prompt = LearningExplanationPolicy.Prompt(input, responseLanguage, _configuration.ContextWindowTokens, output);
+            string prompt = LearningExplanationPolicy.CurrentPrompt(input, responseLanguage, _configuration.ContextWindowTokens, output);
             CheckCancellation();
             operation = await _runtime.BeginOperationAsync(_configuration, ct, _ownerToken).ConfigureAwait(false);
             lock (_gate) _operation = operation;

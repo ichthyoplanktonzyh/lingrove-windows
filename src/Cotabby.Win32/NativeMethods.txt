@@ -27,3 +27,5 @@ SafeArrayGetUBound
 SafeArrayAccessData
 SafeArrayUnaccessData
 SafeArrayDestroy
+ISpStream
+ISpVoice

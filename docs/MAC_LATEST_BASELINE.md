@@ -60,19 +60,23 @@ the initial gap audit; its initial Windows gap descriptions are historical. Curr
 - Main also contains [semantic/classification transactions](VOCABULARY_CANONICAL_SEMANTICS_STORE.md),
   [canonical Anki sessions](ANKI_CANONICAL_REVIEW_SESSION.md), and
   [unknown-source translation planning](READING_TRANSLATION_UNKNOWN_SOURCE.md).
-  The latter two are prerequisites, not activated Anki or reading UI.
+  Their subsequent production activation is recorded below.
 - The [meaning/mapping editors](VOCABULARY_CANONICAL_MEANING_UI.md) merged in #133.
   Current category management, usage-pattern editing, independent Anki card preparation and batch
-  review are connected in #136, awaiting its final-head checks. The canonical graph follows in
-  #137. These reviewable checkpoints remain distinct from merged-main delivery and physical acceptance.
-- The next integration branch connects [image paste/drop/enlargement](VOCABULARY_CANONICAL_ENTRY_EDITOR_UI.md),
+  review merged in #136. The canonical graph merged in #137. All four final-head checks passed
+  for each; this does not establish physical desktop acceptance.
+- #138 merged [image paste/drop/enlargement](VOCABULARY_CANONICAL_ENTRY_EDITOR_UI.md),
   [full backup/restore](VOCABULARY_CANONICAL_BACKUP.md), [learning-material export](VOCABULARY_CANONICAL_EXPORT.md)
-  and [manual selected-text reading](READING_SELECTION_CHECKPOINT.md). Reading's final-effect
-  admission findings are being repaired; it is not yet accepted for publication.
-- Remaining scope includes canonical notebook explanation/dictionary rows, review audio,
-  pointer/icon/context/OCR reading, CLI, remaining onboarding/localization and speech activation.
-  Speech providers, settings and card composition are now active work over the existing libraries.
-  Those libraries retain their references and are reused only after checking the current consumer contract.
+  and [manual selected-text reading](READING_SELECTION_CHECKPOINT.md), after independent review
+  and all four final-head checks.
+- The next complete candidate connects [notebook explanations/dictionary](CANONICAL_NOTEBOOK_LEARNING.md),
+  [speech providers/settings/cards](SPEECH_PRODUCTION_3B.md) and
+  [review audio/templates](ANKI_CANONICAL_REVIEW_AUDIO.md). Its source and actual AppHost attachment
+  are independently reviewed; final-head remote CI remains its merge gate.
+- Remaining work includes pointer/icon/context/OCR reading, CLI, interface languages, remaining
+  onboarding and shared performance/diagnostic presentation. Their owners are implementing complete
+  flows; internal checkpoints are not activated delivery. Existing older libraries retain explicit
+  references and are reused only after checking the current consumer contract.
 
 After the maintainer's delivery adjustment, implementation owners carry each active user flow
 through its settings, entry and production adapters. Internal commits use targeted validation;

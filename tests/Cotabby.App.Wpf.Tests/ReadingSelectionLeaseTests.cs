@@ -30,6 +30,19 @@ public sealed class ReadingSelectionLeaseTests
     }
 
     [Fact]
+    public async Task NativeRetirementWithdrawsPermissionBeforeNotification()
+    {
+        if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;
+        using var focus = new UiaFocusTracker(NullLogger<UiaFocusTracker>.Instance);
+        var evidence = new FakeEvidence { Block = false };
+        await using var lease = new Win32ReadingSelectionLease(focus, new FakeKeyboard(), evidence, 10, 42, 3, null,
+            () => 3, () => 10, _ => 42);
+        Assert.True(lease.Capture(CancellationToken.None)); Assert.True(lease.IsLive);
+        Interlocked.Exchange(ref evidence.Last!.Active, 0);
+        Assert.False(lease.IsLive);
+    }
+
+    [Fact]
     public async Task LivePermissionRejectsForegroundAndProcessChangesWithoutEvents()
     {
         if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;
@@ -229,8 +242,9 @@ public sealed class ReadingSelectionLeaseTests
         public readonly ManualResetEventSlim Release = new();
         public bool Block = true, Drained;
         public int RetireCalls;
+        public UiaTextEditEvidence.ReadingLease? Last;
         public UiaTextEditEvidence.ReadingLease? CaptureReading(nint host, int pid, Func<bool> allowed, Action invalidated, bool ownedTest = false) =>
-            allowed() ? new(invalidated) { Text = "selected", FieldId = "owned-fake", Ready = true, ProcessId = pid, Host = host } : null;
+            allowed() ? Last = new(invalidated) { Text = "selected", FieldId = "owned-fake", Ready = true, ProcessId = pid, Host = host } : null;
         public bool IsReadingCurrent(UiaTextEditEvidence.ReadingLease lease, Func<bool> allowed)
         {
             Entered.Set(); if (Block) Release.Wait(); return allowed();

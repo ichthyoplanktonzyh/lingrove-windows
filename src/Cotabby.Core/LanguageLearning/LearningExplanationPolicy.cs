@@ -17,7 +17,7 @@ public static partial class LearningExplanationPolicy
             || !LearningExplanationText.Fits(input.Target, 32_000)
             || !LearningExplanationText.Fits(input.DictionaryForm, 32_000)
             || !LearningExplanationText.Fits(input.Context, ModelContextBudget.MaximumTextBytes)
-            || input.Ranges.Count is < 1 or > 64 || !Enum.IsDefined(input.Language) || !Enum.IsDefined(input.Kind)
+            || input.Ranges.Count is < 1 or > 64 || input.Language is { } language && !Enum.IsDefined(language) || !Enum.IsDefined(input.Kind)
             || !Enum.IsDefined(input.ContextKind)) return false;
         var boundaries = LearningExplanationText.Boundaries(input.Context);
         return input.Ranges.All(range => LearningExplanationText.ValidRange(range.Location, range.Length, input.Context, boundaries));

@@ -8,7 +8,7 @@ namespace Cotabby.Win32.Speech;
 /// release the original two-second backpressure without waiting for that entire helper block.
 /// One inner player and one continuous renderer remain alive across fragments. The host still
 /// owns the inner player's shutdown/drain; this adapter owns neither a device nor an extra graph.</summary>
-internal sealed class WindowsSpeechPCMInputAdapter : ISpeechPCMPlaying
+public sealed class WindowsSpeechPCMInputAdapter : ISpeechPCMPlaying
 {
     private readonly ISpeechPCMPlaying _inner;
     private readonly int _ownerThread;
@@ -17,7 +17,7 @@ internal sealed class WindowsSpeechPCMInputAdapter : ISpeechPCMPlaying
     private bool _ending;
     private ulong _epoch;
 
-    internal WindowsSpeechPCMInputAdapter(ISpeechPCMPlaying inner)
+    public WindowsSpeechPCMInputAdapter(ISpeechPCMPlaying inner)
     {
         if (SynchronizationContext.Current is null) throw new InvalidOperationException("Speech input requires a serial UI context.");
         _inner = inner; _ownerThread = Environment.CurrentManagedThreadId;

@@ -58,9 +58,12 @@ settings owner, including entry/sense force layout and meaning/category tree nav
 The [entry image workflow](VOCABULARY_CANONICAL_ENTRY_EDITOR_UI.md) connects explicit paste,
 existing-file drop and enlargement through one feature-owned clipboard transfer and the same media
 Store. [Full backup/restore](VOCABULARY_CANONICAL_BACKUP.md) captures and restores the complete
-current graph and media with explicit replacement confirmation. Full notebook explanation/dictionary
-rows, learning-material export and speech remain subsequent canonical modules. An older library's
-checks do not activate them.
+current graph and media with explicit replacement confirmation. [Learning-material export](VOCABULARY_CANONICAL_EXPORT.md)
+freezes exact sense scopes and bytes. [Canonical explanations and dictionary rows](CANONICAL_NOTEBOOK_LEARNING.md)
+now borrow the existing service and providers, including graph details and nullable source input.
+The [speech owner](SPEECH_PRODUCTION_3B.md) is shared by writing, reading and the
+[review audio/template controls](ANKI_CANONICAL_REVIEW_AUDIO.md); AppHost releases borrowers before
+providers and the Store. Each linked record retains its explicit verification limits.
 
 Windows presentation uses WPF controls/system fonts, native window chrome and 96-DPI layout units.
 The [window-scoped visual adaptation](VOCABULARY_NOTEBOOK_THEME.md) follows Windows light/dark

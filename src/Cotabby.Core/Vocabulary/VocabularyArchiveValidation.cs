@@ -121,7 +121,7 @@ public static partial class VocabularyArchiveValidation
                 && usage.TranslationVariants.All(meaning => meaning is not null && Fits(meaning.Text) && Language(meaning.Language))
                 && usage.Explanations.All(RepresentableRecord)));
     private static bool RepresentableRecord(LearningExplanationRecord record) => record is { Input: not null, Result: not null }
-        && Enum.IsDefined(record.Language) && Enum.IsDefined(record.Input.Language) && Enum.IsDefined(record.Input.Kind) && Enum.IsDefined(record.Input.ContextKind)
+        && Enum.IsDefined(record.Language) && (record.Input.Language is not { } language || Enum.IsDefined(language)) && Enum.IsDefined(record.Input.Kind) && Enum.IsDefined(record.Input.ContextKind)
         && Fits(record.Model) && Fits(record.Input.Target) && Fits(record.Input.DictionaryForm) && Fits(record.Input.Context) && Optional(record.Input.OccurrenceIdentity)
         && Fits(record.Result.Meaning) && Fits(record.Result.Explanation);
     private static bool Language(LearningLanguage? language) => language is null || Enum.IsDefined(language.Value);

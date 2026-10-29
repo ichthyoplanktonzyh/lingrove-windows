@@ -19,7 +19,7 @@ public sealed class CliMailboxServer : IAsyncDisposable
     private FileSystemWatcher? _watcher;
     private Timer? _recovery;
     private Task? _work, _stop;
-    private bool _stopping, _dirty, _started;
+    private bool _stopping, _dirty, _started, _leaseHeld;
     public CliMailboxServer(string root, Func<CliRequest, Task<CliReply>> handler) { _path = root; _handler = handler ?? throw new ArgumentNullException(nameof(handler)); }
     public Task StartAsync()
     {
@@ -33,6 +33,7 @@ public sealed class CliMailboxServer : IAsyncDisposable
                 var position = new VocabularyWindowsFile.LockOverlapped();
                 if (!VocabularyWindowsFile.Native.LockFileEx(_lease.Handle, 3, 0, 1, 0, ref position))
                     throw new CliException(Marshal.GetLastPInvokeError() == 33 ? CliErrorCode.Busy : CliErrorCode.Io, "Another instance owns the CLI mailbox.");
+                _leaseHeld = true;
                 _lease.Verify();
                 foreach (string name in _working.Names()) { if (_requests.Exists(name)) _working.Remove(name); else _working.Claim(name, _requests); }
                 StartWatcher();
@@ -141,7 +142,7 @@ public sealed class CliMailboxServer : IAsyncDisposable
     private void Cleanup()
     {
         _recovery?.Dispose(); _recovery = null; _watcher?.Dispose(); _watcher = null;
-        if (_lease is not null) { var position = new VocabularyWindowsFile.LockOverlapped(); _ = VocabularyWindowsFile.Native.UnlockFileEx(_lease.Handle, 0, 1, 0, ref position); _lease.Dispose(); _lease = null; }
+        if (_lease is not null) { if (_leaseHeld) { var position = new VocabularyWindowsFile.LockOverlapped(); _ = VocabularyWindowsFile.Native.UnlockFileEx(_lease.Handle, 0, 1, 0, ref position); } _leaseHeld = false; _lease.Dispose(); _lease = null; }
         _replies?.Dispose(); _replies = null; _working?.Dispose(); _working = null; _requests?.Dispose(); _requests = null; _root?.Dispose(); _root = null; _started = false;
     }
 }

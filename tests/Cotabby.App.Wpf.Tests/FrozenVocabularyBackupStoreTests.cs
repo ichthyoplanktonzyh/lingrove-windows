@@ -6,6 +6,8 @@ using Cotabby.Core.Vocabulary.Resources;
 using Cotabby.Core.Vocabulary;
 using Cotabby.Core.Vocabulary.EntryInput;
 using Cotabby.Win32.Vocabulary;
+using Cotabby.App.Vocabulary;
+using Cotabby.App.Settings;
 using F = Cotabby.Core.Vocabulary.Frozen;
 
 namespace Cotabby.App.Wpf.Tests;
@@ -106,6 +108,42 @@ public sealed class FrozenVocabularyBackupStoreTests(WpfDispatcher dispatcher)
             if (cancel) await Assert.ThrowsAnyAsync<OperationCanceledException>(() => target.RestoreAsync(backup, cancellation.Token));
             else await Assert.ThrowsAsync<VocabularyException>(() => target.RestoreAsync(backup));
             var after = await target.ReadAsync(); Assert.Equal(before.Revision, after.Revision); Assert.Equal(before.Document, after.Document); Assert.False(File.Exists(Path.Combine(media, prepared.Reference.Filename)));
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    });
+
+    [Fact]
+    public Task NotebookBackupConfirmAndRestorePublishAcknowledgement() => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "canonical-backup-ui-" + Guid.NewGuid().ToString("N")); Directory.CreateDirectory(root);
+        try
+        {
+            string database = Path.Combine(root, "data", FrozenVocabularyStoreFactory.CanonicalFileName), path = Path.Combine(root, "backup.lingrove");
+            await using var store = FrozenVocabularyStoreFactory.Create(database, false); await store.AddEntriesAsync([new VocabularyEntryInput(Expression: "first", Meaning: "one")]); var before = await store.ReadAsync();
+            var settings = new AppSettings(); var controller = new FrozenVocabularyWindowController(store, System.Windows.Threading.Dispatcher.CurrentDispatcher, new WindowsVocabularyWordListReader(), new VocabularyNotebookListPreferences(() => settings, () => { }));
+            controller.Show(); var notebook = controller.Window!; if (notebook.LastOperation is { } load) await load;
+            notebook.ChooseCanonicalBackupFile = (_, _) => Task.FromResult<string?>(path); notebook.StartCanonicalBackup(false); if (notebook.LastCanonicalBackupOperation is { } backup) await backup; Assert.True(File.Exists(path));
+            await store.AddEntriesAsync([new VocabularyEntryInput(Expression: "second", Meaning: "two")]); var changed = await store.ReadAsync();
+            notebook.ConfirmCanonicalRestore = (_, _) => Task.FromResult(false); notebook.StartCanonicalBackup(true); if (notebook.LastCanonicalBackupOperation is { } declined) await declined; Assert.Equal(changed.Document, (await store.ReadAsync()).Document);
+            notebook.ConfirmCanonicalRestore = (_, _) => Task.FromResult(true); notebook.StartCanonicalBackup(true); if (notebook.LastCanonicalBackupOperation is { } restored) await restored;
+            var after = await store.ReadAsync(); Assert.Equal(before.Document, after.Document); Assert.Equal(after.Revision, notebook.Session.Snapshot!.Revision); await controller.DisposeAsync();
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    });
+    [Fact]
+    public Task NotebookRetirementDrainsAcceptedRestoreAcknowledgement() => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "canonical-backup-ui-" + Guid.NewGuid().ToString("N")); Directory.CreateDirectory(root);
+        try
+        {
+            string database = Path.Combine(root, "data", FrozenVocabularyStoreFactory.CanonicalFileName), path = Path.Combine(root, "backup.lingrove");
+            await using var store = FrozenVocabularyStoreFactory.Create(database, false); await store.AddEntriesAsync([new VocabularyEntryInput(Expression: "first", Meaning: "one")]); var before = await store.ReadAsync(); await store.BackupAsync(path);
+            await store.AddEntriesAsync([new VocabularyEntryInput(Expression: "second", Meaning: "two")]); var held = new CanonicalAnkiReviewSessionTests.HeldStore(store) { HoldRestoreAck = true };
+            var settings = new AppSettings(); var controller = new FrozenVocabularyWindowController(held, System.Windows.Threading.Dispatcher.CurrentDispatcher, new WindowsVocabularyWordListReader(), new VocabularyNotebookListPreferences(() => settings, () => { }));
+            controller.Show(); var notebook = controller.Window!; if (notebook.LastOperation is { } load) await load;
+            notebook.ChooseCanonicalBackupFile = (_, _) => Task.FromResult<string?>(path); notebook.ConfirmCanonicalRestore = (_, _) => Task.FromResult(true); notebook.StartCanonicalBackup(true);
+            await held.Entered.Task; Task retiring = controller.DisposeAsync().AsTask(); Assert.False(retiring.IsCompleted); held.Release.SetResult(); await retiring;
+            Assert.False(notebook.IsVisible); Assert.Equal(before.Document, (await store.ReadAsync()).Document);
         }
         finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
     });

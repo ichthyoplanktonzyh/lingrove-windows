@@ -17,6 +17,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow
     private TaskCompletionSource? _backupCompletion;
     private VocabularyRestoreConfirmationWindow? _backupConfirmation;
     private bool _backupAccepted;
+    private Exception? _backupCancellationFailure;
     internal Func<bool, CancellationToken, Task<string?>>? ChooseCanonicalBackupFile { get; set; }
     internal Func<string, CancellationToken, Task<bool>>? ConfirmCanonicalRestore { get; set; }
     internal Task? LastCanonicalBackupOperation { get; private set; }
@@ -34,7 +35,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow
     internal void StartCanonicalBackup(bool restore)
     {
         Dispatcher.VerifyAccess(); if (_retiring || !IsVisible || _modalDone is not null || _backupCompletion is not null || _session.Snapshot is null || _store is not ICanonicalVocabularyBackupStore storage) return;
-        var done = _backupCompletion = new(TaskCreationOptions.RunContinuationsAsynchronously); var lifetime = _backupCancellation = new CancellationTokenSource(); _modalDone = done; _backupAccepted = false; _backupError.Text = "";
+        var done = _backupCompletion = new(TaskCreationOptions.RunContinuationsAsynchronously); var lifetime = _backupCancellation = new CancellationTokenSource(); _modalDone = done; _backupAccepted = false; _backupCancellationFailure = null; _backupError.Text = "";
         LastCanonicalBackupOperation = Track(Run()); UpdateCanonicalBackup();
         async Task Run()
         {
@@ -73,7 +74,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow
     private void CancelCanonicalBackupPresentation()
     {
         if (_backupAccepted) return;
-        try { _backupCancellation?.Cancel(); } catch (ObjectDisposedException) { }
+        try { _backupCancellation?.Cancel(); } catch (ObjectDisposedException) { } catch (Exception error) { _backupCancellationFailure = error; }
     }
     private async Task RetireCanonicalBackupAsync()
     {
@@ -81,6 +82,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow
         try { _backupCancellation?.Cancel(); } catch (Exception error) { errors.Add(error); }
         try { _backupConfirmation?.Close(); } catch (Exception error) { errors.Add(error); }
         try { if (_backupCompletion is { } completion) await completion.Task; } catch (Exception error) { errors.Add(error); }
+        if (_backupCancellationFailure is { } cancellationFailure) errors.Add(cancellationFailure);
         if (errors.Count > 0) throw new AggregateException(errors);
     }
 }

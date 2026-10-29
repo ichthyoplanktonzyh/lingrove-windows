@@ -43,6 +43,13 @@
     <ProjectReference Include="..\..\src\Cotabby.Core\Cotabby.Core.csproj" />
     <ProjectReference Include="..\..\src\Cotabby.Inference\Cotabby.Inference.csproj" />
     <ProjectReference Include="..\..\src\Cotabby.Win32\Cotabby.Win32.csproj" />
+    <ProjectReference Include="..\..\src\Cotabby.Cli.Launcher\Cotabby.Cli.Launcher.csproj" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\Cotabby.Cli.TestHelper\Cotabby.Cli.TestHelper.csproj" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\src\Cotabby.Cli.Launcher\bin\$(Configuration)\$(TargetFramework)\win-x64\lingrove-launcher.exe;..\..\src\Cotabby.Cli.Launcher\bin\$(Configuration)\$(TargetFramework)\win-x64\lingrove-launcher.dll;..\..\src\Cotabby.Cli.Launcher\bin\$(Configuration)\$(TargetFramework)\win-x64\lingrove-launcher.deps.json;..\..\src\Cotabby.Cli.Launcher\bin\$(Configuration)\$(TargetFramework)\win-x64\lingrove-launcher.runtimeconfig.json" Link="cli-launcher\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\Cotabby.Cli.TestHelper\bin\$(Configuration)\$(TargetFramework)\win-x64\lingrove.exe;..\Cotabby.Cli.TestHelper\bin\$(Configuration)\$(TargetFramework)\win-x64\lingrove.dll;..\Cotabby.Cli.TestHelper\bin\$(Configuration)\$(TargetFramework)\win-x64\lingrove.deps.json;..\Cotabby.Cli.TestHelper\bin\$(Configuration)\$(TargetFramework)\win-x64\lingrove.runtimeconfig.json" Link="cli-helper\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

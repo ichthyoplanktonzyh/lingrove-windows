@@ -29,11 +29,11 @@ A CLI start is background-only and suppresses duplicate-instance and first-use d
 changing the saved first-use setting. Replies and pending requests expire; SQLite receipts do not.
 
 General settings offers explicit user-local installation of `lingrove.cmd` under
-`%LOCALAPPDATA%\Cotabby\bin`; no PATH modification occurs. The script is built only from safely
-representable ASCII paths (including verified system short paths where available), quotes paths,
-disables delayed expansion and escapes percent characters. It never overwrites a different file.
-When Windows cannot supply an ASCII path, installation explicitly fails; the executable beside
-Cotabby remains available. The script's app default can be overridden by `--app`.
+`%LOCALAPPDATA%\Cotabby\bin`; no PATH modification occurs. Its ASCII script passes the UTF-8
+app path as base64 to a small apphost in a content-addressed private launcher directory. The
+launcher pins the real app and CLI executable identities and forwards the native arguments,
+standard streams and exit code. The script disables delayed expansion and never overwrites a
+different file. The script's app default can be overridden by `--app`.
 
 The implementation currently preserves ordinary typed nil/UUID fingerprint canonicalization and
 literal resource patch nulls. Floating-point JSON encoding, Unicode substring matching and all

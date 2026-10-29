@@ -39,6 +39,7 @@
     <ProjectReference Include="..\Cotabby.Win32\Cotabby.Win32.csproj" />
     <ProjectReference Include="..\Cotabby.ImageTransferHost\Cotabby.ImageTransferHost.csproj" ReferenceOutputAssembly="false" />
     <ProjectReference Include="..\Cotabby.Cli\Cotabby.Cli.csproj" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\Cotabby.Cli.Launcher\Cotabby.Cli.Launcher.csproj" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
   <ItemGroup>
@@ -47,6 +48,10 @@
     <Content Include="..\Cotabby.Cli\bin\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\lingrove.dll" Link="lingrove.dll" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\Cotabby.Cli\bin\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\lingrove.deps.json" Link="lingrove.deps.json" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\Cotabby.Cli\bin\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\lingrove.runtimeconfig.json" Link="lingrove.runtimeconfig.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\Cotabby.Cli.Launcher\bin\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\lingrove-launcher.exe" Link="lingrove-launcher.exe" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\Cotabby.Cli.Launcher\bin\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\lingrove-launcher.dll" Link="lingrove-launcher.dll" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\Cotabby.Cli.Launcher\bin\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\lingrove-launcher.deps.json" Link="lingrove-launcher.deps.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\Cotabby.Cli.Launcher\bin\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\lingrove-launcher.runtimeconfig.json" Link="lingrove-launcher.runtimeconfig.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

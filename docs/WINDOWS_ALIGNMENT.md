@@ -76,7 +76,8 @@ expansion remains behind the visible writing/notebook/review workflows.
 ## Bootstrap status
 
 PR #108 supplies the older v7 resource value/projection boundary and Windows handoff; it is a
-prerequisite, not a completed v8 archive. Its existing final-head Mac CI must finish before merge.
+prerequisite, not a completed v8 archive. It merged as `c911336` after independent review and all
+three final-head CI jobs passed for `b5297d5`.
 The primary repaired the local Windows file-lock fixture to run a static inline child command,
 passing the path as data without changing execution policy. The documented diagnostic uses a
 process-only RemoteSigned invocation. The focused lock test passes 1/1, the full noninteractive

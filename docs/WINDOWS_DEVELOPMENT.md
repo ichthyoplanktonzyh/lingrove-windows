@@ -95,6 +95,16 @@ dotnet test tests/Cotabby.App.Wpf.Tests/Cotabby.App.Wpf.Tests.csproj --configura
 
 ## 接手后的工作方式
 
+PR 管理可以使用官方 GitHub CLI。安装后在自己的浏览器完成它的独立授权：
+
+```powershell
+winget install --id GitHub.cli --exact --source winget
+gh auth login --hostname github.com --git-protocol https --web
+gh pr status --repo ichthyoplanktonzyh/lingrove-windows
+```
+
+Git 凭据管理器的登录与 `gh` 登录相互独立；无需把令牌写入 URL、项目文件或聊天记录。
+
 Windows 作为主开发端后，让它继续当前功能分支；同一分支只由一台电脑主动修改。Mac 负责对照与回归，
 源码通过 Git 同步，不搬运构建缓存。主智能体统筹，GPT-6.1 Terra xhigh 子智能体按完整模块负责实现、测试和模块文档，
 经过独立复核与最终提交检查后直接合并 main。功能、交互、UI 与视觉设计共同纳入验收；

@@ -54,6 +54,11 @@
     <Compile Include="..\..\src\Cotabby.App\Review\AnkiReviewSettings.cs" Link="Production\AnkiReviewSettings.cs" />
     <Compile Include="..\..\src\Cotabby.App\Review\AnkiReviewController.cs" Link="Production\AnkiReviewController.cs" />
     <Compile Include="..\..\src\Cotabby.App\Review\AnkiReviewController.Navigation.cs" Link="Production\AnkiReviewController.Navigation.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Review\AnkiReviewController.Canonical.cs" Link="Production\AnkiReviewController.Canonical.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Review\CanonicalAnkiReviewSession.cs" Link="Production\CanonicalAnkiReviewSession.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Review\CanonicalAnkiReviewSession.Metadata.cs" Link="Production\CanonicalAnkiReviewSession.Metadata.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Review\CanonicalAnkiReviewSession.Sending.cs" Link="Production\CanonicalAnkiReviewSession.Sending.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Review\CanonicalAnkiReviewSession.Images.cs" Link="Production\CanonicalAnkiReviewSession.Images.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.cs" Link="Production\AppSettings.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.ModelAssignments.cs" Link="Production\AppSettings.ModelAssignments.cs" />
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularySQLiteConnection.cs" Link="Production\VocabularySQLiteConnection.cs" />

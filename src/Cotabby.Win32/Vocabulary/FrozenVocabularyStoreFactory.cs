@@ -9,17 +9,20 @@ namespace Cotabby.Win32.Vocabulary;
 public static class FrozenVocabularyStoreFactory
 {
     public const string CanonicalFileName = "vocabulary-v8.sqlite";
-    public static async Task<ICanonicalVocabularyStore> OpenAsync(string path, CancellationToken cancellationToken = default)
+    /// <summary>Create one inert owner; no directory or database is opened before an admitted operation.</summary>
+    public static ICanonicalVocabularyStore Create(string path)
     {
         if (!string.Equals(Path.GetFileName(path), CanonicalFileName, StringComparison.OrdinalIgnoreCase))
             throw new VocabularyException(VocabularyFailure.InvalidContent);
+        string retained = VocabularyWindowsFile.FullPath(path);
+        return new FrozenVocabularyImportStore(() => FrozenVocabularySQLiteDatabase.OpenFile(retained));
+    }
+    /// <summary>Eager convenience for explicitly requested open; failures dispose the candidate owner.</summary>
+    public static async Task<ICanonicalVocabularyStore> OpenAsync(string path, CancellationToken cancellationToken = default)
+    {
         cancellationToken.ThrowIfCancellationRequested();
-        return await Task.Run<ICanonicalVocabularyStore>(() =>
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            var database = FrozenVocabularySQLiteDatabase.OpenFile(path);
-            if (cancellationToken.IsCancellationRequested) { database.Dispose(); cancellationToken.ThrowIfCancellationRequested(); }
-            return new FrozenVocabularyImportStore(database);
-        }, CancellationToken.None).ConfigureAwait(false);
+        var store = Create(path);
+        try { _ = await store.ReadAsync(cancellationToken).ConfigureAwait(false); return store; }
+        catch { await store.DisposeAsync().ConfigureAwait(false); throw; }
     }
 }

@@ -101,7 +101,7 @@ public partial class LearningDictionaryWindow : Window
         ExplanationDetails.IsExpanded = false;
         Hide();
     }
-    internal void BindVocabulary(VocabularyStore store, VocabularyCapture capture, Guid target, Func<bool> canAct)
+    internal void BindVocabulary(IWritingVocabularyStore store, VocabularyCapture capture, Guid target, Func<bool> canAct)
     {
         Dispatcher.VerifyAccess();
         if (!IsVisible || _state?.TargetIdentity != target) return;

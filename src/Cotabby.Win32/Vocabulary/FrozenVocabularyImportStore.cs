@@ -11,7 +11,10 @@ namespace Cotabby.Win32.Vocabulary;
 /// serializes operations and emits only acknowledged revisioned snapshots. No AppHost creates it.</summary>
 internal sealed class FrozenVocabularyImportStore : ICanonicalVocabularyStore
 {
-    private readonly FrozenVocabularySQLiteDatabase _database;
+    private FrozenVocabularySQLiteDatabase? _database;
+    private readonly Func<FrozenVocabularySQLiteDatabase> _open;
+    // Accessed only while the serialized worker owns _gate; a failed open is not cached.
+    private FrozenVocabularySQLiteDatabase Database => _database ??= _open();
     private readonly Func<SourceDate> _now;
     private readonly SemaphoreSlim _gate = new(1, 1);
     private readonly object _listenersGate = new();
@@ -23,8 +26,10 @@ internal sealed class FrozenVocabularyImportStore : ICanonicalVocabularyStore
     private readonly HashSet<Task> _work = [];
     private Task? _disposal;
     internal FrozenVocabularyImportStore(FrozenVocabularySQLiteDatabase database, Func<SourceDate>? now = null)
+        : this(() => database, now) { _database = database; }
+    internal FrozenVocabularyImportStore(Func<FrozenVocabularySQLiteDatabase> open, Func<SourceDate>? now = null)
     {
-        _database = database; _now = now ?? (() => SourceDate.FromWindows(DateTimeOffset.UtcNow));
+        _open = open ?? throw new ArgumentNullException(nameof(open)); _now = now ?? (() => SourceDate.FromWindows(DateTimeOffset.UtcNow));
         _notificationWorker = Task.Run(DispatchAsync);
     }
     private async Task DispatchAsync()
@@ -68,17 +73,21 @@ internal sealed class FrozenVocabularyImportStore : ICanonicalVocabularyStore
     private async Task<T> RunAccepted<T>(Func<T> work, CancellationToken cancellationToken)
     {
         await _gate.WaitAsync(cancellationToken).ConfigureAwait(false);
-        try { return await Task.Run(work, CancellationToken.None).ConfigureAwait(false); }
+        try
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return await Task.Run(() => { cancellationToken.ThrowIfCancellationRequested(); return work(); }, CancellationToken.None).ConfigureAwait(false);
+        }
         finally { _gate.Release(); }
     }
     public Task<FrozenVocabularyImportSnapshot> ReadAsync(CancellationToken cancellationToken = default) => Run(() =>
     {
-        var snapshot = _database.Read(cancellationToken); return new FrozenVocabularyImportSnapshot(snapshot.Revision, snapshot.Document);
+        var snapshot = Database.Read(cancellationToken); return new FrozenVocabularyImportSnapshot(snapshot.Revision, snapshot.Document);
     }, cancellationToken);
     public Task<FrozenVocabularyImportPreview> PreviewWordListAsync(VocabularyWordList table, VocabularyWordListConfiguration configuration, CancellationToken cancellationToken = default) => Run(() =>
     {
         var inputs = VocabularyWordListPolicy.Inputs(table, configuration, cancellationToken);
-        var snapshot = _database.Read(cancellationToken);
+        var snapshot = Database.Read(cancellationToken);
         var plan = VocabularyEntryImportPolicy.Plan(inputs, snapshot.Document, _now(), cancellationToken);
         return new FrozenVocabularyImportPreview(inputs, plan.Result, snapshot.Revision);
     }, cancellationToken);
@@ -86,14 +95,14 @@ internal sealed class FrozenVocabularyImportStore : ICanonicalVocabularyStore
     {
         // Freeze caller-owned list before queuing; each input owns detached tags.
         var retained = inputs.ToArray();
-        return Run(() => _database.Access(true, () =>
+        return Run(() => Database.Access(true, () =>
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var before = _database.Read(cancellationToken);
+            var before = Database.Read(cancellationToken);
             var plan = VocabularyEntryImportPolicy.Plan(retained, before.Document, _now(), cancellationToken);
             cancellationToken.ThrowIfCancellationRequested();
             var committed = plan.Result.HasChanges ? CanonicalWritingPolicy.PrepareCommit(before.Document, plan.Document) : before.Document;
-            ulong revision = plan.Result.HasChanges ? _database.Write(committed, before.Document, before.Revision, cancellationToken: cancellationToken) : before.Revision;
+            ulong revision = plan.Result.HasChanges ? Database.Write(committed, before.Document, before.Revision, cancellationToken: cancellationToken) : before.Revision;
             // Enqueue only after commit. A successful commit must not be reported as cancelled.
             _notifications.Writer.TryWrite(new(revision, committed));
             return plan.Result;
@@ -102,13 +111,13 @@ internal sealed class FrozenVocabularyImportStore : ICanonicalVocabularyStore
     public Task<CanonicalWritingReceipt> SaveCaptureAsync(VocabularyCapture capture, CancellationToken cancellationToken = default)
     {
         var adapted = CanonicalWritingPolicy.FromLive(capture);
-        return Run(() => _database.Access(true, () =>
+        return Run(() => Database.Access(true, () =>
         {
-            cancellationToken.ThrowIfCancellationRequested(); var before = _database.Read(cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested(); var before = Database.Read(cancellationToken);
             var draft = CanonicalWritingPolicy.Save(adapted, before.Document, _now());
             cancellationToken.ThrowIfCancellationRequested();
             var committed = CanonicalWritingPolicy.PrepareCommit(before.Document, draft.Document);
-            ulong revision = _database.Write(committed, before.Document, before.Revision, cancellationToken: cancellationToken);
+            ulong revision = Database.Write(committed, before.Document, before.Revision, cancellationToken: cancellationToken);
             _notifications.Writer.TryWrite(new(revision, committed));
             return new CanonicalWritingReceipt(revision, true, draft.Destination);
         }), cancellationToken);
@@ -120,7 +129,7 @@ internal sealed class FrozenVocabularyImportStore : ICanonicalVocabularyStore
     }
     public Task<LiveRecord?> FindExplanationAsync(LearningExplanationInput input, LearningLanguage language, CancellationToken cancellationToken = default) => Run(() =>
     {
-        var snapshot = _database.Read(cancellationToken);
+        var snapshot = Database.Read(cancellationToken);
         return CanonicalWritingPolicy.FindExplanation(input, language, snapshot.Document);
     }, cancellationToken);
     public Task<CanonicalWritingReceipt> SaveExplanationAsync(LiveRecord record, CancellationToken cancellationToken = default)
@@ -138,13 +147,13 @@ internal sealed class FrozenVocabularyImportStore : ICanonicalVocabularyStore
         return Mutate(document => (CanonicalWritingPolicy.Adopt(adapted, destination, document), destination), cancellationToken);
     }
     private Task<CanonicalWritingReceipt> Mutate(Func<Cotabby.Core.Vocabulary.Frozen.VocabularyDocument, (Cotabby.Core.Vocabulary.Frozen.VocabularyDocument? Document, VocabularyExplanationDestination? Destination)> mutation,
-        CancellationToken cancellationToken) => Run(() => _database.Access(true, () =>
+        CancellationToken cancellationToken) => Run(() => Database.Access(true, () =>
     {
-        cancellationToken.ThrowIfCancellationRequested(); var before = _database.Read(cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested(); var before = Database.Read(cancellationToken);
         var next = mutation(before.Document); cancellationToken.ThrowIfCancellationRequested();
         if (next.Document is null) return new CanonicalWritingReceipt(before.Revision, false);
         var committed = CanonicalWritingPolicy.PrepareCommit(before.Document, next.Document);
-        ulong revision = _database.Write(committed, before.Document, before.Revision, cancellationToken: cancellationToken);
+        ulong revision = Database.Write(committed, before.Document, before.Revision, cancellationToken: cancellationToken);
         _notifications.Writer.TryWrite(new(revision, committed));
         return new CanonicalWritingReceipt(revision, true, next.Destination);
     }), cancellationToken);
@@ -159,7 +168,7 @@ internal sealed class FrozenVocabularyImportStore : ICanonicalVocabularyStore
     private async Task Drain(Task[] accepted)
     {
         try { await Task.WhenAll(accepted).ConfigureAwait(false); } catch { /* Individual callers observe their own errors. */ }
-        _database.Dispose(); _notifications.Writer.TryComplete();
+        _database?.Dispose(); _notifications.Writer.TryComplete();
         await _notificationWorker.ConfigureAwait(false);
         lock (_listenersGate) _listeners.Clear();
     }

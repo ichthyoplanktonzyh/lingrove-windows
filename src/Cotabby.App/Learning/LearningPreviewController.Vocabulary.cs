@@ -13,7 +13,7 @@ namespace Cotabby.App.Learning;
 /// </summary>
 internal sealed partial class LearningPreviewController
 {
-    private readonly VocabularyStore? _vocabulary;
+    private readonly IWritingVocabularyStore? _vocabulary;
     private readonly VocabularyCaptureFactory? _vocabularyCaptures;
     private LearningPreviewState? _vocabularyPresentation;
     private long _vocabularyPreparationRevision;

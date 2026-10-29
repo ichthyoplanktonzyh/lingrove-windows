@@ -29,9 +29,10 @@ internal sealed class CliMailboxDirectory : IDisposable
         }
         Verify(); return names;
     }
-    internal byte[]? Read(string name, int maximum = CliInputContract.MaximumBytes)
+    internal byte[]? Read(string name, int maximum = CliInputContract.MaximumBytes, VocabularyWindowsFile.FileIdentity? expected = null)
     {
         ValidateName(name); using var handle = _directory.OpenFile(name); if (handle is null) return null;
+        if (expected is not null && VocabularyWindowsFile.Identity(handle) != expected) throw Invalid();
         using var stream = new FileStream(handle, FileAccess.Read); if (stream.Length < 0 || stream.Length > maximum) throw Invalid();
         using var output = new MemoryStream((int)stream.Length); var buffer = new byte[65536];
         while (true) { int read = stream.Read(buffer, 0, Math.Min(buffer.Length, maximum + 1 - (int)output.Length)); if (read == 0) break; output.Write(buffer, 0, read); if (output.Length > maximum) throw Invalid(); }
@@ -55,9 +56,18 @@ internal sealed class CliMailboxDirectory : IDisposable
         finally { if (stream is not null) { if (!published) _ = SetFileInformationByHandle(stream.SafeFileHandle, 4, [1], 1); stream.Dispose(); } }
     }
     internal bool Claim(string name, CliMailboxDirectory target)
+        => ClaimOwned(name, target) is not null;
+    internal VocabularyWindowsFile.FileIdentity? ClaimOwned(string name, CliMailboxDirectory target)
     {
-        ValidateName(name); using var handle = _directory.OpenFile(name, delete: true); if (handle is null) return false;
-        Verify(); target.Verify(); Rename(handle, System.IO.Path.Combine(target.Path, name)); return true;
+        ValidateName(name); using var handle = _directory.OpenFile(name, delete: true); if (handle is null) return null;
+        var identity = VocabularyWindowsFile.Identity(handle);
+        Verify(); target.Verify(); Rename(handle, System.IO.Path.Combine(target.Path, name)); return identity;
+    }
+    internal void RemoveOwned(string name, VocabularyWindowsFile.FileIdentity identity)
+    {
+        ValidateName(name); using var handle = _directory.OpenFile(name, delete: true); if (handle is null) return;
+        if (VocabularyWindowsFile.Identity(handle) != identity) return;
+        Verify(); if (!SetFileInformationByHandle(handle, 4, [1], 1)) throw Invalid();
     }
     internal void Remove(string name)
     {

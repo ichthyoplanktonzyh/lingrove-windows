@@ -25,5 +25,18 @@ public sealed class CliMailboxDirectoryTests : IDisposable
         Assert.Throws<CliException>(() => directory.Publish("../x.json", [])); Assert.Throws<CliException>(() => directory.Publish(name, new byte[CliInputContract.MaximumBytes + 1]));
         Assert.Null(directory.Read(name)); directory.Publish(name, [1,2,3]); Assert.Throws<CliException>(() => directory.Read(name, maximum: 2)); Assert.Equal(new byte[] { 1,2,3 }, directory.Read(name));
     }
+    [Fact]
+    public void ReplacedClaimedLeafIsNeitherReadNorDeletedAsTheClaimedRequest()
+    {
+        using var requests = new CliMailboxDirectory(Path.Combine(_root, "requests"));
+        using var working = new CliMailboxDirectory(Path.Combine(_root, "working"));
+        string name = Guid.NewGuid().ToString("D") + ".json"; requests.Publish(name, [1, 2]);
+        var identity = requests.ClaimOwned(name, working)!.Value;
+        File.Move(Path.Combine(working.Path, name), Path.Combine(working.Path, "displaced"));
+        working.Publish(name, [1, 2]);
+        Assert.Throws<CliException>(() => working.Read(name, expected: identity));
+        working.RemoveOwned(name, identity);
+        Assert.Equal(new byte[] { 1, 2 }, working.Read(name));
+    }
     public void Dispose() { if (Directory.Exists(_root)) Directory.Delete(_root, true); }
 }

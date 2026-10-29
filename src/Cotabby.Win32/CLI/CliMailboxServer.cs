@@ -97,12 +97,13 @@ public sealed class CliMailboxServer : IAsyncDisposable
                 foreach (string name in requests.Names())
                 {
                     lock (_gate) if (_stopping) return;
-                    try { if (!requests.Claim(name, working)) continue; }
+                    VocabularyWindowsFile.FileIdentity? claimed;
+                    try { claimed = requests.ClaimOwned(name, working); if (claimed is null) continue; }
                     catch (Exception e) when (e is CliException or IOException or UnauthorizedAccessException or VocabularyException) { continue; }
                     Guid id = Guid.ParseExact(name[..36], "D"); CliReply reply;
                     try
                     {
-                        byte[] bytes = working.Read(name) ?? throw new CliException(CliErrorCode.Io, "Cannot read a CLI request.");
+                        byte[] bytes = working.Read(name, expected: claimed) ?? throw new CliException(CliErrorCode.Io, "Cannot read a CLI request.");
                         var request = CliWire.DecodeRequest(bytes);
                         if (request.Id != id || request.Version != 1) throw new CliException(CliErrorCode.InvalidInput, "Request identity or protocol version does not match.");
                         reply = await _handler(request).ConfigureAwait(false);
@@ -115,7 +116,7 @@ public sealed class CliMailboxServer : IAsyncDisposable
                         byte[] bytes;
                         try { bytes = CliWire.Encode(reply); } catch (CliException) { bytes = CliWire.Encode(CliWire.Failure(id, new(CliErrorCode.InvalidInput, "Response exceeds 32 MiB. Use the app's export for this entry."))); }
                         if (!replies.Exists(name)) replies.Publish(name, bytes);
-                        working.Remove(name);
+                        working.RemoveOwned(name, claimed.Value);
                     }
                     catch (Exception e) when (e is CliException or IOException or UnauthorizedAccessException or VocabularyException) { /* Retain claimed input for restart. */ }
                 }

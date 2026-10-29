@@ -14,7 +14,7 @@ namespace Cotabby.App.UI.Reading;
 
 /// <summary>Read-only selection card. It owns presentation only; capture and provider operations
 /// remain with the app session and its borrowed owners.</summary>
-internal sealed class ReadingWindow : Window, IReadingPresentation
+internal sealed partial class ReadingWindow : Window, IReadingPresentation
 {
     private readonly TextBlock _heading = new() { FontSize = 16, FontWeight = FontWeights.SemiBold };
     private readonly VocabularyFavoriteButton _favorite = new();
@@ -54,7 +54,7 @@ internal sealed class ReadingWindow : Window, IReadingPresentation
         var stack = new StackPanel();
         var heading = new DockPanel(); DockPanel.SetDock(_favorite, Dock.Right); heading.Children.Add(_favorite); heading.Children.Add(_heading);
         _favorite.FailureChanged += message => { if (message is not null) _status.Text = message; };
-        stack.Children.Add(heading); stack.Children.Add(_destination); stack.Children.Add(_source);
+        stack.Children.Add(heading); stack.Children.Add(_destination); stack.Children.Add(_source); InitializeSpeech(stack);
         stack.Children.Add(_status); stack.Children.Add(_progress); stack.Children.Add(_result);
         _dictionary.Click += (_, _) => DictionaryRequested?.Invoke();
         _details.Click += (_, _) => DetailsRequested?.Invoke();
@@ -97,6 +97,7 @@ internal sealed class ReadingWindow : Window, IReadingPresentation
         _progress.Visibility = state.Status is ReadingStatus.Loading or ReadingStatus.Translating or ReadingStatus.Lookup
             ? Visibility.Visible : Visibility.Collapsed;
         _result.Text = state.Text;
+        UpdateSpeech(state);
         _dictionary.Visibility = state.Route.IsTranslation ? Visibility.Collapsed : Visibility.Visible;
         _details.Visibility = !state.Route.IsTranslation && state.Status == ReadingStatus.Ready ? Visibility.Visible : Visibility.Collapsed;
         _configure.Visibility = !state.Route.IsTranslation && state.Status == ReadingStatus.Error ? Visibility.Visible : Visibility.Collapsed;
@@ -113,7 +114,7 @@ internal sealed class ReadingWindow : Window, IReadingPresentation
     public void ShowCaptureError(string message)
     {
         _heading.Text = "Selected text unavailable"; _source.Text = ""; _destination.Text = "";
-        _result.Text = ""; _status.Text = message; _progress.Visibility = Visibility.Collapsed;
+        _result.Text = ""; _status.Text = message; _progress.Visibility = Visibility.Collapsed; ClearSpeech();
         Show(); UpdateLayout(); LearningPanelPlacement.Position(this, ScreenRect.Empty);
     }
 }

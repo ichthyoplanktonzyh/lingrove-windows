@@ -46,3 +46,9 @@ effects, with no real audio playback, model download or network endpoint.
 without reading credentials or exposing URL userinfo/query. It reports configuration availability
 and updates through the controller's UI-context notifications. Writing and settings display this
 same description; review preparation requires a current disclosure before generating audio.
+
+The reading card borrows this owner through `ReadingPresentation.AttachSpeech`. A click waits
+until the destination is rendered, then rechecks the captured reading selection, application
+admission and speech configuration identity before dispatch. Hiding, switching to the dictionary
+or replacing the text retires the relevant target. The application must attach the same owner
+to each reading presentation; this component alone does not activate that composition.

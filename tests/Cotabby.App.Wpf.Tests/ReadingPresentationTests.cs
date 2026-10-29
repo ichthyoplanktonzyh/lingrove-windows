@@ -9,12 +9,65 @@ using Cotabby.Core.Focus;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.LanguageLearning.Reading;
 using Cotabby.App.UI.Vocabulary;
+using Cotabby.App.Speech;
+using Cotabby.App.Settings;
+using Cotabby.Core.Speech;
+using Cotabby.Core.Models;
+using Cotabby.Inference.Speech;
+using Cotabby.Inference.OpenAICompatible;
 
 namespace Cotabby.App.Wpf.Tests;
 
 [Collection("WPF views")]
 public sealed class ReadingPresentationTests(WpfDispatcher dispatcher)
 {
+    [Fact]
+    public Task ReadingSpeechRetiresHeldAdmissionBeforeAnyProviderCall() => dispatcher.RunAsync(async () =>
+    {
+        var state = new AppSettings(); var settings = new LearningSpeechSettings(() => state, () => { }, new SpeechCredentials()); var effects = new SpeechEffects();
+        await using var speech = new LearningSpeechController(settings, new SpeechTelemetry((_, _, _) => { }), effects, effects, effects, effects, effects, effects,
+            _ => new System.Collections.Generic.Dictionary<string, double>(), StringComparer.Ordinal, Path.GetTempPath(), () => effects);
+        var gate = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously); bool hold = false; int checks = 0;
+        var presentation = new ReadingPresentation(Dispatcher.CurrentDispatcher, new Dictionary(), (_, _) => throw new InvalidOperationException(),
+            (_, _, _) => throw new InvalidOperationException(), () => { }, new Clipboard(), new ReadingVocabularyStoreFake(), (_, _) => [], LearningLanguage.Chinese);
+        var selection = new ReadingSelection(Guid.NewGuid(), "This is a fixture.", 1, "field", 1, 0, 18, false, true, InputCompositionState.Clear, 1, ScreenRect.Empty);
+        Task<bool> Current(CancellationToken _) { checks++; return hold ? gate.Task : Task.FromResult(true); }
+        try
+        {
+            presentation.AttachSpeech(speech); presentation.BindAuthority(selection, Current, default);
+            var card = new ReadingState(selection, LearningLanguage.English, LearningLanguage.English, new(true, ReadingRouteReason.TerminalText, null, false), ReadingStatus.Ready, "Local model", "A translation.");
+            await presentation.ShowAsync(card);
+            VocabularyThemeRender.Capture(presentation.ReadingCard, "reading-speech", 400, 520);
+            FindButton(presentation.ReadingCard, "Read source").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            for (int i = 0; i < 100 && effects.Starts == 0; i++) await Task.Delay(10); Assert.Equal(1, effects.Starts); Assert.Equal(selection.Text, effects.LastText);
+            presentation.Hide(); presentation.BindAuthority(selection, Current, default); await presentation.ShowAsync(card);
+            int previousChecks = checks; hold = true; FindButton(presentation.ReadingCard, "Read source").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            for (int i = 0; i < 100 && checks == previousChecks; i++) await Task.Delay(10); Assert.True(checks > previousChecks);
+            presentation.Hide(); gate.SetResult(true); await Task.Delay(50); Assert.Equal(1, effects.Starts);
+        }
+        finally { gate.TrySetResult(false); await presentation.DisposeAsync(); speech.Shutdown(); await speech.DrainAsync(); }
+    });
+    private sealed class SpeechCredentials : IOpenAICompatibleCredentialStore
+    { public string? ReadApiKey() => null; public void SaveApiKey(string? value) { } public void DeleteApiKey() { } }
+    private sealed class SpeechEffects : ISpeechProviding, ISpeechAudioGenerating, ISpeechAudioPlaying, ISpeechPCMPlaying, ISystemSpeechAudioExporting, ISpeechAudioDuration, ISpeechModelManagement
+    {
+        public Action<SpeechProviderEvent>? EventHandler { get; set; }
+        public Action? DirectoryChanged { get; set; }
+        public Func<IReadOnlySet<string>> ProtectedModelFilenames { get; set; } = () => new HashSet<string>();
+        internal int Starts; internal string? LastText;
+        public IReadOnlyList<SpeechVoice> RefreshVoices() => [new("test", "Test", "en-US", SpeechVoiceQuality.Standard)];
+        public void Speak(string text, SpeechVoice voice, double rateMultiplier, SpeechPlaybackToken token) { Starts++; LastText = text; }
+        public void Stop(SpeechPlaybackToken token) { } public void Stop() { } public void Shutdown() { }
+        public void Play(ReadOnlySpan<byte> data, double rate, SpeechPlaybackToken token) => throw new NotSupportedException();
+        public void Begin(int sampleRate, double rate, SpeechPlaybackToken token) => throw new NotSupportedException();
+        public Task EnqueueAsync(SpeechPCMChunk chunk, SpeechPlaybackToken token, CancellationToken cancellationToken = default) => throw new NotSupportedException();
+        public Task EndInputAsync(SpeechPlaybackToken token, CancellationToken cancellationToken = default) => throw new NotSupportedException();
+        public Task<SpeechExportAudio> AudioAsync(string text, string voiceId, CancellationToken cancellationToken) => throw new NotSupportedException();
+        public double Duration(ReadOnlySpan<byte> audio) => throw new NotSupportedException();
+        public Task GenerateAsync(SpeechAudioRequest request, Func<SpeechAudioChunk, Task> receive, CancellationToken cancellationToken) => throw new NotSupportedException();
+        public Task CancelAsync(SpeechPlaybackToken token) => Task.CompletedTask; public Task ShutdownAsync() => Task.CompletedTask;
+        public IReadOnlyList<RuntimeModelOption> InstalledModelOptions() => [];
+    }
     [Fact]
     public Task TranslationFavoriteAppearsOnlyForCompleteResultAndKeepsOriginalAndTranslation() => dispatcher.RunAsync(async () =>
     {

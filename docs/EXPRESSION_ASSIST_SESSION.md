@@ -10,6 +10,9 @@ select and Escape cancels. The session debounces for 450 ms, invalidates stale r
 checks the saved editor session before generation and presentation. A symbol cancel requests
 one verified removal of its marker; a shortcut cancel does not edit its selection. An uncertain
 insertion exposes a copy-only failure instead of retrying a write.
+The pure trigger observer arms only after a text mutation, expires after 500 ms and requires a
+matching committed snapshot in the same focused field. It reports whether final punctuation
+warrants a probe; the future event owner must schedule and cancel the source's four 35 ms refreshes.
 
 The editor is a borrowed contract. Capture occurs with the panel HWND registered before activation;
 the platform owner checks actual panel ownership, exact retained host evidence, authorized return,

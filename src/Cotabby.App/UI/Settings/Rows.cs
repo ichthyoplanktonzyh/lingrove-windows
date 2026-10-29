@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using Cotabby.App.Settings;
+using Cotabby.App.Localization;
 using Cotabby.App.UI.Controls;
 
 namespace Cotabby.App.UI.Settings;
@@ -113,7 +114,7 @@ internal sealed class Rows(SettingsContext context)
         string title, string subtitle, IReadOnlyList<(T Value, string Label)> options,
         Func<AppSettings, T> get, Action<AppSettings, T> set)
     {
-        var combo = new ComboBox { ItemsSource = options.Select(o => o.Label).ToList() }.Styled("Combo");
+        var combo = new ComboBox { ItemsSource = options.Select(o => InterfaceText.Get(o.Label)).ToList() }.Styled("Combo");
         combo.SelectionChanged += (_, _) =>
         {
             if (combo.SelectedIndex >= 0) context.Change(s => set(s, options[combo.SelectedIndex].Value));
@@ -191,14 +192,14 @@ internal sealed class Rows(SettingsContext context)
     }
 
     public SettingsRow Action(string title, string subtitle, string buttonLabel, Action onClick) =>
-        Labeled(title, subtitle, Ui.Button(buttonLabel, onClick));
+        Labeled(title, subtitle, Ui.Button(InterfaceText.Get(buttonLabel), onClick));
 
     private static StackPanel Label(string title, string subtitle)
     {
-        var label = new StackPanel { Children = { Ui.Text(title) } };
+        var label = new StackPanel { Children = { Ui.Text(InterfaceText.Get(title)) } };
         if (subtitle.Length > 0)
         {
-            var caption = Ui.Text(subtitle, "Caption");
+            var caption = Ui.Text(InterfaceText.Get(subtitle), "Caption");
             caption.Margin = new Thickness(0, 2, 0, 0);
             label.Children.Add(caption);
         }
@@ -213,7 +214,7 @@ internal sealed class Rows(SettingsContext context)
         var panel = new StackPanel { Orientation = orientation };
         foreach (var (value, label) in options)
         {
-            var button = new RadioButton { Content = label }.Styled(styleKey);
+            var button = new RadioButton { Content = InterfaceText.Get(label) }.Styled(styleKey);
             button.Click += (_, _) => context.Change(s => set(s, value));
             panel.Children.Add(button);
         }

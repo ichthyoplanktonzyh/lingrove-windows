@@ -1,3 +1,4 @@
+using Cotabby.App.Localization;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Controls;
@@ -36,10 +37,10 @@ internal sealed class ExpressionAssistView : Border
         Background = Brushes.White; BorderBrush = Brushes.LightGray; BorderThickness = new Thickness(1);
         CornerRadius = new CornerRadius(10);
         var body = new StackPanel(); Child = body;
-        var heading = new TextBlock { Text = "Expression assistance", FontSize = 15, FontWeight = FontWeights.SemiBold,
+        var heading = new TextBlock { Text = InterfaceText.Get("Expression assistance"), FontSize = 15, FontWeight = FontWeights.SemiBold,
             Margin = new Thickness(0, 0, 0, 8) };
         body.Children.Add(heading);
-        body.Children.Add(new TextBlock { Text = "Describe an expression or concept", Foreground = Brushes.DimGray,
+        body.Children.Add(new TextBlock { Text = InterfaceText.Get("Describe an expression or concept"), Foreground = Brushes.DimGray,
             FontSize = 12, Margin = new Thickness(0, 0, 0, 4) });
         AutomationProperties.SetName(_query, "Describe an expression or concept");
         _query.ToolTip = "Describe an expression or concept";

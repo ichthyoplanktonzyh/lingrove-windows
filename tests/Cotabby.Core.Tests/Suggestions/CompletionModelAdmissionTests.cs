@@ -1,5 +1,6 @@
 using Cotabby.Core.Suggestions;
 using Cotabby.Core.Models;
+using Cotabby.Core.Runtime.Metrics;
 
 namespace Cotabby.Core.Tests.Suggestions;
 
@@ -17,6 +18,21 @@ public sealed class CompletionModelAdmissionTests
     private static TaskCompletionSource<T> Signal<T>() => new(TaskCreationOptions.RunContinuationsAsynchronously);
     private static Task<bool> Prepare(CompletionModelAdmission owner, CompletionModelAdmission.Ticket ticket, Func<Task>? load = null) =>
         owner.PrepareAsync(ticket, _ => Task.CompletedTask, load ?? (() => Task.CompletedTask), () => true, CancellationToken.None);
+
+    [Fact]
+    public async Task ObservationUsesActualAdmittedModelAndCancellationWithoutCapturingText()
+    {
+        var started = Signal<bool>(); var finish = Signal<string>();
+        var engine = new Engine { Run = () => { started.TrySetResult(true); return finish.Task; } };
+        await using var owner = new CompletionModelAdmission(engine);
+        var observed = new List<CompletionObservation>(); owner.Observed += observed.Add;
+        var ticket = owner.Select("fixture-model", true); Assert.True(await Prepare(owner, ticket));
+        var task = owner.GenerateAsync(Request, CancellationToken.None); await started.Task.WaitAsync(Timeout);
+        owner.Select("next-model", true); finish.SetResult("generated text");
+        Assert.Equal("", await task.WaitAsync(Timeout));
+        var entry = Assert.Single(observed); Assert.Equal("fixture-model", entry.ModelName);
+        Assert.Equal("fixture", entry.RequestId); Assert.Equal(ModelRequestOutcome.Cancelled, entry.Outcome);
+    }
 
     [Fact]
     public async Task SharedColdPreparationSurvivesCancelledWaitAndRetiresOnSelectionChange()

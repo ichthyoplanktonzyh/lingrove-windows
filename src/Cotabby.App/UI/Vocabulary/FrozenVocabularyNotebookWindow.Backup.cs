@@ -1,3 +1,4 @@
+using Cotabby.App.Localization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
@@ -11,7 +12,7 @@ namespace Cotabby.App.UI.Vocabulary;
 /// accepted backup and restore work. Closing cancels unaccepted presentation and joins commits.</summary>
 internal sealed partial class FrozenVocabularyNotebookWindow
 {
-    private readonly Button _backupMenu = new() { Name = "canonicalBackupMenu", Content = "Export and backup", Padding = new Thickness(10, 5, 10, 5) };
+    private readonly Button _backupMenu = new() { Name = "canonicalBackupMenu", Content = InterfaceText.Get("Export and backup"), Padding = new Thickness(10, 5, 10, 5) };
     private readonly TextBlock _backupError = new() { Name = "canonicalBackupError", TextWrapping = TextWrapping.Wrap, VerticalAlignment = VerticalAlignment.Center };
     private CancellationTokenSource? _backupCancellation;
     private TaskCompletionSource? _backupCompletion;
@@ -25,7 +26,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow
     {
         VocabularyNotebookTheme.Button(_backupMenu); _backupMenu.Margin = new Thickness(0, 0, 8, 8);
         VocabularyNotebookTheme.Brush(_backupError, TextBlock.ForegroundProperty, "OrangeBrush"); _backupError.Margin = new Thickness(0, 0, 8, 8);
-        var menu = new ContextMenu(); var backup = new MenuItem { Header = "Full notebook backup…", Name = "canonicalBackup" }; var restore = new MenuItem { Header = "Restore notebook…", Name = "canonicalRestore" };
+        var menu = new ContextMenu(); var backup = new MenuItem { Header = InterfaceText.Get("Full notebook backup…"), Name = "canonicalBackup" }; var restore = new MenuItem { Header = InterfaceText.Get("Restore notebook…"), Name = "canonicalRestore" };
         backup.Click += (_, _) => StartCanonicalBackup(false); restore.Click += (_, _) => StartCanonicalBackup(true); menu.Items.Add(backup); menu.Items.Add(new Separator()); menu.Items.Add(restore);
         _backupMenu.ContextMenu = menu; _backupMenu.Click += (_, _) => { if (_backupMenu.IsEnabled) { menu.PlacementTarget = _backupMenu; menu.IsOpen = true; } };
         toolbar.Children.Add(_backupMenu); toolbar.Children.Add(_backupError); UpdateCanonicalBackup();

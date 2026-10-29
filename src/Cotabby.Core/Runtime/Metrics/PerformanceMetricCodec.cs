@@ -48,7 +48,8 @@ public static class PerformanceMetricCodec
                     {
                         "completion" => ModelRequestSource.Completion, "translation" => ModelRequestSource.Translation,
                         "analysis" => ModelRequestSource.Analysis, "explanation" => ModelRequestSource.Explanation,
-                        "speech" => ModelRequestSource.Speech, "ocr" => ModelRequestSource.Ocr, _ => throw new JsonException(),
+                        "speech" => ModelRequestSource.Speech, "ocr" => ModelRequestSource.Ocr,
+                        "expressionAssist" => ModelRequestSource.ExpressionAssist, _ => throw new JsonException(),
                     }, outcome switch { "completed" => ModelRequestOutcome.Completed, "failed" => ModelRequestOutcome.Failed, "cancelled" => ModelRequestOutcome.Cancelled, _ => throw new JsonException() },
                     Text("requestID"), Number("modelLoadMs"), Number("firstOutputMs"), Number("usableResultMs"), Number("displayMs")));
                 string? Text(string key) => fields.TryGetValue(key, out var value) && value.ValueKind != JsonValueKind.Null ? value.GetString() : null;

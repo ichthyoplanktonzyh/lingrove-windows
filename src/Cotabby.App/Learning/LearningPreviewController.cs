@@ -256,6 +256,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         // owned by AppHost and stays alive until this drain has completed.
         _coordinator.ClearCache();
         await _coordinator.DisposeAsync().ConfigureAwait(false);
+        DetachPerformanceHistory();
         if (_dictionarySession is not null) await _dictionarySession.DisposeAsync().ConfigureAwait(false);
         if (_explanationSession is not null) await _explanationSession.DisposeAsync().ConfigureAwait(false);
     }

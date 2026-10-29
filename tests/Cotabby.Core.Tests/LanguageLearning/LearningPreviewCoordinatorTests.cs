@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Threading.Channels;
 using Cotabby.Core.LanguageLearning;
+using Cotabby.Core.Runtime.Metrics;
 
 namespace Cotabby.Core.Tests.LanguageLearning;
 
@@ -378,8 +379,10 @@ public sealed class LearningPreviewCoordinatorTests
     public async Task ScopedCacheHitStillPlansButSkipsTranslationGeneration()
     {
         await using var coordinator = new LearningPreviewCoordinator();
+        var observations = new ConcurrentQueue<PerformanceRequestObservation>();
+        coordinator.RequestObserved += observations.Enqueue;
         var engine = new CountingPlannerEngine((_, _) => Task.FromResult("Cached planned result."));
-        var options = new LearningTranslationOptions();
+        var options = new LearningTranslationOptions { ModelName = "fixture-model" };
 
         await coordinator.PreviewAsync("A sentence.", options, engine, "profile").WaitAsync(TestTimeout);
         await coordinator.PreviewAsync("A sentence.", options, engine, "profile").WaitAsync(TestTimeout);
@@ -387,6 +390,11 @@ public sealed class LearningPreviewCoordinatorTests
         Assert.Equal(2, engine.PlanCount);
         Assert.Equal(1, engine.GenerationCount);
         Assert.Equal("Cached planned result.", coordinator.State.Result);
+        var observation = Assert.Single(observations);
+        Assert.Equal("fixture-model", observation.ModelName);
+        Assert.Equal(ModelRequestSource.Translation, observation.Source);
+        Assert.Equal(ModelRequestOutcome.Completed, observation.Outcome);
+        Assert.NotNull(observation.UsableResultMs);
     }
 
     [Fact]

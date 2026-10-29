@@ -1,12 +1,26 @@
 using System.Threading.Channels;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Vocabulary;
+using Cotabby.Core.Runtime.Metrics;
 
 namespace Cotabby.Core.Tests.LanguageLearning;
 
 /// <summary>Mac service regressions and delayed effects; no real runtime, endpoint, UI or notebook.</summary>
 public sealed class LearningExplanationServiceTests
 {
+    [Fact]
+    public async Task OnlyActualExplanationGenerationEmitsContentFreeObservation()
+    {
+        await using var service = new LearningExplanationService(Profile, LearningLanguage.Chinese,
+            _ => new Engine((_, _, _, _) => Task.FromResult(Answer)));
+        var observations = new List<PerformanceRequestObservation>(); service.RequestObserved += observations.Add;
+        await service.GenerateAsync(Input(), "req-generated").WaitAsync(Timeout);
+        await service.GenerateAsync(Input(), "req-cache").WaitAsync(Timeout);
+        var value = Assert.Single(observations);
+        Assert.Equal("req-generated", value.RequestId); Assert.Equal(Profile.LocalModel, value.ModelName);
+        Assert.Equal(ModelRequestSource.Explanation, value.Source); Assert.Equal(ModelRequestOutcome.Completed, value.Outcome);
+        Assert.NotNull(value.UsableResultMs);
+    }
     private static readonly TimeSpan Timeout = TimeSpan.FromSeconds(10);
     private static readonly LearningModelSnapshot Profile = new()
     {

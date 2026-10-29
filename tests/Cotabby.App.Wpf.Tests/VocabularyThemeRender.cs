@@ -28,7 +28,20 @@ internal static class VocabularyThemeRender
                 }
                 root.Measure(new Size(width, height)); root.Arrange(new Rect(0, 0, width, height)); root.UpdateLayout();
                 var background = new DrawingVisual(); using (var draw = background.RenderOpen()) draw.DrawRectangle(window.Background, null, new Rect(0, 0, width, height));
-                var bitmap = new RenderTargetBitmap(width, height, 96, 96, PixelFormats.Pbgra32); bitmap.Render(background); bitmap.Render(root);
+                var bitmap = new RenderTargetBitmap(width, height, 96, 96, PixelFormats.Pbgra32); bitmap.Render(background);
+                if (window.FlowDirection == FlowDirection.RightToLeft)
+                {
+                    // Rendering Content alone omits the Window's inherited RTL transform and
+                    // its layout offset. Capture that actual parent transform from the visual tree.
+                    var surface = new DrawingVisual(); using (var draw = surface.RenderOpen())
+                    {
+                        draw.PushTransform((Transform)root.TransformToAncestor(window));
+                        draw.DrawRectangle(new VisualBrush(root) { Stretch = Stretch.Fill }, null, new Rect(root.RenderSize));
+                        draw.Pop();
+                    }
+                    bitmap.Render(surface);
+                }
+                else bitmap.Render(root);
                 var encoder = new PngBitmapEncoder(); encoder.Frames.Add(BitmapFrame.Create(bitmap));
                 using var stream = File.Create(Path.Combine(directory, Path.GetFileNameWithoutExtension(name) + "-" + suffix + ".png")); encoder.Save(stream);
             }

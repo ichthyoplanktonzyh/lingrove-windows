@@ -1,3 +1,4 @@
+using Cotabby.App.Localization;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Controls;
@@ -26,7 +27,7 @@ internal sealed class ModelManagementView : DockPanel
     internal Panel InstalledRows => _installed;
     internal Panel CustomRows => _custom;
     internal Expander CustomDisclosure => _customDisclosure;
-    internal Button Done { get; } = new() { Content = "Done", IsCancel = true, Padding = new Thickness(14, 4, 14, 4), VerticalAlignment = VerticalAlignment.Center };
+    internal Button Done { get; } = new() { Content = InterfaceText.Get("Done"), IsCancel = true, Padding = new Thickness(14, 4, 14, 4), VerticalAlignment = VerticalAlignment.Center };
     internal Button? CancelTransfer { get; }
 
     internal ModelManagementView(string taskLabel, FrameworkElement recommendations, Action refresh, Action openFolder, Action? import, Action? cancelTransfer = null)
@@ -34,14 +35,14 @@ internal sealed class ModelManagementView : DockPanel
         Background = SystemColors.WindowBrush;
         var header = new DockPanel { Margin = new Thickness(20) };
         DockPanel.SetDock(Done, Dock.Right); header.Children.Add(Done);
-        header.Children.Add(new StackPanel { Children = { new TextBlock { Text = "Manage models", FontSize = 16, FontWeight = FontWeights.SemiBold },
+        header.Children.Add(new StackPanel { Children = { new TextBlock { Text = InterfaceText.Get("Manage models"), FontSize = 16, FontWeight = FontWeights.SemiBold },
             new TextBlock { Text = taskLabel, FontSize = 12, Foreground = SystemColors.GrayTextBrush, Margin = new Thickness(0, 4, 0, 0) } } });
         DockPanel.SetDock(header, Dock.Top); Children.Add(header);
         var divider = new Separator { Margin = new Thickness(0) }; DockPanel.SetDock(divider, Dock.Top); Children.Add(divider);
         var body = new StackPanel { Margin = new Thickness(20) };
         body.Children.Add(new TextBlock { Text = "Installed models", FontSize = 13, FontWeight = FontWeights.SemiBold });
         body.Children.Add(Status); body.Children.Add(_installed);
-        _customDisclosure = new Expander { Header = "Custom models", Content = _custom, Margin = new Thickness(0, 12, 0, 12) };
+        _customDisclosure = new Expander { Header = InterfaceText.Get("Custom models"), Content = _custom, Margin = new Thickness(0, 12, 0, 12) };
         body.Children.Add(_customDisclosure);
         body.Children.Add(new TextBlock { Text = "Recommended models", FontSize = 12, Foreground = SystemColors.GrayTextBrush, Margin = new Thickness(0, 10, 0, 8) });
         body.Children.Add(recommendations);
@@ -51,7 +52,7 @@ internal sealed class ModelManagementView : DockPanel
         actions.Children.Add(ActionButton("Refresh", refresh));
         actions.Children.Add(ActionButton("Open Folder", openFolder));
         body.Children.Add(actions);
-        if (import is not null) body.Children.Add(new TextBlock { Text = "Imported models are used only for this task.", FontSize = 11, Foreground = SystemColors.GrayTextBrush, Margin = new Thickness(0, 6, 0, 0), TextWrapping = TextWrapping.Wrap });
+        if (import is not null) body.Children.Add(new TextBlock { Text = InterfaceText.Get("Imported models are used only for this task."), FontSize = 11, Foreground = SystemColors.GrayTextBrush, Margin = new Thickness(0, 6, 0, 0), TextWrapping = TextWrapping.Wrap });
         Children.Add(new ScrollViewer { Content = body, VerticalScrollBarVisibility = ScrollBarVisibility.Auto, HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled });
     }
 
@@ -84,7 +85,7 @@ internal sealed class ModelManagementView : DockPanel
         var title = ModelDisplayText.Name(model.Filename);
         var details = new StackPanel();
         details.Children.Add(new TextBlock { Text = title, FontSize = 13, TextWrapping = TextWrapping.Wrap });
-        var detail = new Expander { Header = "Model details", FontSize = 11, Foreground = SystemColors.GrayTextBrush };
+        var detail = new Expander { Header = InterfaceText.Get("Model details"), FontSize = 11, Foreground = SystemColors.GrayTextBrush };
         var descriptor = LocalModelCatalog.Descriptor(model.Filename);
         var lines = new List<string> { ModelDisplayText.Safe(model.Filename) };
         if (descriptor is not null) lines.Add("Quantization: " + descriptor.Quantization);
@@ -94,7 +95,7 @@ internal sealed class ModelManagementView : DockPanel
         details.Children.Add(detail);
         var row = new DockPanel { Margin = new Thickness(0, 6, 0, 6) };
         FrameworkElement trailing = selected ? new TextBlock { Text = "✓", FontSize = 16, Foreground = SystemColors.HighlightBrush, VerticalAlignment = VerticalAlignment.Center }
-            : inUse ? new TextBlock { Text = "In Use", Foreground = SystemColors.GrayTextBrush, VerticalAlignment = VerticalAlignment.Center }
+            : inUse ? new TextBlock { Text = InterfaceText.Get("In Use"), Foreground = SystemColors.GrayTextBrush, VerticalAlignment = VerticalAlignment.Center }
             : ActionButton(actionLabel, action);
         if (!selected && inUse && actionLabel == "Select") trailing = new StackPanel { Orientation = Orientation.Horizontal, Children = { trailing, ActionButton(actionLabel, action) } };
         if (!selected && !inUse && delete is not null)
@@ -131,7 +132,7 @@ internal sealed class ModelManagementWindow : Window
     internal ModelManagementWindow(SettingsContext context, LocalModelTask task, FrameworkElement recommendations, Action? import, Action parentRefresh, Action? cancelTransfer = null)
     {
         _context = context; _task = task; _parentRefresh = parentRefresh;
-        Title = "Manage models"; MinWidth = 620; Width = 720; MinHeight = 480; Height = 640;
+        Title = InterfaceText.Get("Manage models"); MinWidth = 620; Width = 720; MinHeight = 480; Height = 640;
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
         _view = new ModelManagementView(task switch { LocalModelTask.Completion => "Autocomplete", LocalModelTask.Translation => "Translation", LocalModelTask.Explanation => "AI explanation", _ => "Speech" },
             recommendations, Refresh, OpenFolder, import ?? (task == LocalModelTask.Completion ? ImportCompletion : null),

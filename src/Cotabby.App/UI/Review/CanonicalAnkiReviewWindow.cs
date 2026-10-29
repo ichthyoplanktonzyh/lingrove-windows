@@ -1,3 +1,4 @@
+using Cotabby.App.Localization;
 using System.ComponentModel;
 using System.IO;
 using System.Windows;
@@ -29,16 +30,16 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
     private readonly ComboBox _binding = new(), _example = new(), _preserved = new(), _deck = new(), _cardType = new(), _side = new();
     private readonly TextBox _deckText = new();
     private readonly TextBox _answer = new() { AcceptsReturn = true, MinHeight = 55, TextWrapping = TextWrapping.Wrap };
-    private readonly CheckBox _recognition = new() { Content = "Recognition card" }, _gap = new() { Content = "Gap card" },
-        _notes = new() { Content = "Include notes" }, _senseContent = new() { Content = "Include sense explanation" },
-        _explanation = new() { Content = "Include AI explanation" };
-    private readonly CheckBox _expressionAudio = new() { Name = "canonicalExpressionAudio", Content = "Expression audio" }, _sentenceAudio = new() { Name = "canonicalSentenceAudio", Content = "Example audio" };
-    private readonly Button _previewExpressionAudio = new() { Content = "Preview audio" }, _previewSentenceAudio = new() { Content = "Preview audio" }, _regenerateExpressionAudio = new() { Content = "Regenerate audio" }, _regenerateSentenceAudio = new() { Content = "Regenerate audio" };
+    private readonly CheckBox _recognition = new() { Content = InterfaceText.Get("Recognition card") }, _gap = new() { Content = InterfaceText.Get("Gap card") },
+        _notes = new() { Content = InterfaceText.Get("Include notes") }, _senseContent = new() { Content = InterfaceText.Get("Include sense explanation") },
+        _explanation = new() { Content = InterfaceText.Get("Include AI explanation") };
+    private readonly CheckBox _expressionAudio = new() { Name = "canonicalExpressionAudio", Content = InterfaceText.Get("Expression audio") }, _sentenceAudio = new() { Name = "canonicalSentenceAudio", Content = InterfaceText.Get("Example audio") };
+    private readonly Button _previewExpressionAudio = new() { Content = InterfaceText.Get("Preview audio") }, _previewSentenceAudio = new() { Content = InterfaceText.Get("Preview audio") }, _regenerateExpressionAudio = new() { Content = InterfaceText.Get("Regenerate audio") }, _regenerateSentenceAudio = new() { Content = InterfaceText.Get("Regenerate audio") };
     private ReviewSpeechDisclosure? _shownSpeech;
     private readonly TextBlock _speechDestination = new() { Name = "canonicalReviewSpeechDestination", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, 10) };
     internal TextBlock SpeechDestination => _speechDestination;
     private readonly TextBlock _destination = new() { TextWrapping = TextWrapping.Wrap }, _state = new() { TextWrapping = TextWrapping.Wrap }, _validation = new() { TextWrapping = TextWrapping.Wrap };
-    private readonly Button _resetFields = new() { Content = "Use notebook fields again" };
+    private readonly Button _resetFields = new() { Content = InterfaceText.Get("Use notebook fields again") };
     internal Button SaveButton => _save;
     internal CheckBox ExpressionAudioToggle => _expressionAudio;
     internal Button PreviewExpressionAudio => _previewExpressionAudio;
@@ -51,11 +52,11 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
     internal StackPanel PreviewPanel => _preview;
     internal ComboBox SideBox => _side;
     internal Button SettingsButton => _settings;
-    private readonly Button _save = new() { Content = "Save", Name = "reviewSave", MinWidth = 90 },
-        _send = new() { Content = "Add to Anki", Name = "reviewSend", IsDefault = true, MinWidth = 110 },
-        _cancel = new() { Content = "Cancel", IsCancel = true, MinWidth = 90 },
-        _settings = new() { Content = "Review settings" }, _clearAudio = new() { Content = "Remove audio requests" },
-        _reload = new() { Content = "Refresh connection" }, _updateTemplate = new() { Content = "Update Lingrove template" };
+    private readonly Button _save = new() { Content = InterfaceText.Get("Save"), Name = "reviewSave", MinWidth = 90 },
+        _send = new() { Content = InterfaceText.Get("Add to Anki"), Name = "reviewSend", IsDefault = true, MinWidth = 110 },
+        _cancel = new() { Content = InterfaceText.Get("Cancel"), IsCancel = true, MinWidth = 90 },
+        _settings = new() { Content = InterfaceText.Get("Review settings") }, _clearAudio = new() { Content = "Remove audio requests" },
+        _reload = new() { Content = "Refresh connection" }, _updateTemplate = new() { Content = InterfaceText.Get("Update Lingrove template") };
     private readonly Dictionary<string, bool> _choices = new(StringComparer.Ordinal);
     private Task? _operation, _retirement;
     private Task _previewTask = Task.CompletedTask;
@@ -94,7 +95,7 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
         int audioIndex = _form.Children.Count;
         if (_session.Audio.Speech is null) _form.Children.Add(VocabularyInputControls.Caption("Review audio is unavailable. Remove any requested audio before sending."));
         _cardType.ItemsSource = new[] { "Recognition card", "Gap card" }; _cardType.SelectedIndex = 0;
-        _form.Children.Add(VocabularyInputControls.Heading("Card preview"));
+        _form.Children.Add(VocabularyInputControls.Heading(InterfaceText.Get("Card preview")));
         if (session.CardId is null) _form.Children.Add(VocabularyInputControls.Group(("Card type", _cardType), ("Side", _side)));
         _form.Children.Add(_preview);
         _form.Children.Add(_conflicts); _form.Children.Add(_validation); _form.Children.Add(_state);
@@ -103,7 +104,7 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
         {
             var expressionRow = new WrapPanel(); expressionRow.Children.Add(_expressionAudio); expressionRow.Children.Add(_previewExpressionAudio); expressionRow.Children.Add(_regenerateExpressionAudio);
             var sentenceRow = new WrapPanel(); sentenceRow.Children.Add(_sentenceAudio); sentenceRow.Children.Add(_previewSentenceAudio); sentenceRow.Children.Add(_regenerateSentenceAudio);
-            _form.Children.Insert(audioIndex, VocabularyInputControls.Heading("Audio")); _form.Children.Insert(audioIndex + 1, VocabularyInputControls.Group(("", expressionRow), ("", sentenceRow)));
+            _form.Children.Insert(audioIndex, VocabularyInputControls.Heading(InterfaceText.Get("Audio"))); _form.Children.Insert(audioIndex + 1, VocabularyInputControls.Group(("", expressionRow), ("", sentenceRow)));
             foreach (var button in new[] { _previewExpressionAudio, _previewSentenceAudio, _regenerateExpressionAudio, _regenerateSentenceAudio }) { VocabularyNotebookTheme.Button(button); button.Margin = new Thickness(8, 0, 0, 4); }
             void Toggle(ReviewAudioKind kind, CheckBox box) { if (_updating) return; var p = _session.Plan; var kinds = (p.AudioKinds ?? new HashSet<ReviewAudioKind>()).ToHashSet(); if (box.IsChecked == true) kinds.Add(kind); else kinds.Remove(kind); var overrides = new Dictionary<string, string>(p.FieldOverrides); if (_session.Mapping.TryGetValue(kind.Field(), out var field)) overrides.Remove(field); _session.Plan = p with { AudioKinds = kinds, FieldOverrides = overrides }; Fill(); RefreshDraft(); }
             _expressionAudio.Click += (_, _) => Toggle(ReviewAudioKind.Expression, _expressionAudio); _sentenceAudio.Click += (_, _) => Toggle(ReviewAudioKind.Sentence, _sentenceAudio);
@@ -208,7 +209,7 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
             if (!ReferenceEquals(_seenConflicts, _session.Conflicts)) { _choices.Clear(); _seenConflicts = _session.Conflicts; }
             _conflicts.Children.Clear(); foreach (var conflict in _session.Conflicts)
             {
-                _conflicts.Children.Add(VocabularyInputControls.Heading("Anki fields changed"));
+                _conflicts.Children.Add(VocabularyInputControls.Heading(InterfaceText.Get("Anki fields changed")));
                 _conflicts.Children.Add(new TextBlock { Text = $"{conflict.Id}\nLingrove: {conflict.Local}\nAnki: {conflict.Remote}", TextWrapping = TextWrapping.Wrap });
                 var choice = new ComboBox { ItemsSource = new[] { "Choose…", "Keep Lingrove", "Keep Anki" }, SelectedIndex = _choices.TryGetValue(conflict.Id, out bool remote) ? remote ? 2 : 1 : 0 };
                 choice.SelectionChanged += (_, _) => { if (choice.SelectedIndex > 0) { bool value = choice.SelectedIndex == 2; _choices[conflict.Id] = value; _session.SetKeepRemote(conflict.Id, value); UpdateEnabled(); } };

@@ -1,3 +1,4 @@
+using Cotabby.App.Localization;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -366,7 +367,7 @@ internal sealed class LearningLocalModels : StackPanel
         var accepted = files.Where(path => LocalModelTaskPolicy.Supports(Path.GetFileName(path), ModelTask)).ToArray();
         if (accepted.Length == 0)
         {
-            _installedStatus.Text = "This model is not compatible with this task. Choose another model.";
+            _installedStatus.Text = InterfaceText.Get("This model is not compatible with this task. Choose another model.");
             _managerWindow?.Report(_installedStatus.Text); return;
         }
         _context.Change(settings => { foreach (var path in accepted) settings.RecordLocalModelTask(Path.GetFileName(path), ModelTask); });

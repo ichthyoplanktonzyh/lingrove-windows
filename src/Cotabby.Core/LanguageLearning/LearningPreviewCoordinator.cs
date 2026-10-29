@@ -1,3 +1,6 @@
+using System.Diagnostics;
+using Cotabby.Core.Runtime.Metrics;
+
 namespace Cotabby.Core.LanguageLearning;
 
 /// <summary>
@@ -50,6 +53,8 @@ public sealed partial class LearningPreviewCoordinator : IAsyncDisposable
     /// immutable snapshot to its dispatcher before touching controls.
     /// </remarks>
     public event Action<LearningPreviewState>? StateChanged;
+    /// <summary>Worker-thread, content-free measurements for actual translation calls only.</summary>
+    public event Action<PerformanceRequestObservation>? RequestObserved;
 
     /// <summary>Returns the latest immutable preview snapshot.</summary>
     public LearningPreviewState State
@@ -233,6 +238,11 @@ public sealed partial class LearningPreviewCoordinator : IAsyncDisposable
         // Retain the value token rather than reading CancellationTokenSource.Token from the stream
         // callback: a provider may retain that callback after this task has disposed its source.
         var token = cancellation.Token;
+        long measurementStart = 0, firstOutput = -1;
+        DateTimeOffset measurementTime = default;
+        string? measurementModel = null;
+        var measurementOutcome = ModelRequestOutcome.Failed;
+        long? usableResult = null;
         try
         {
             if (!IsCurrent(generation, requestId, token)) return;
@@ -288,6 +298,8 @@ public sealed partial class LearningPreviewCoordinator : IAsyncDisposable
             void ReceiveDelta(string delta)
             {
                 if (!IsCurrent(generation, requestId, token)) return;
+                if (!string.IsNullOrEmpty(delta) && measurementStart != 0)
+                    Interlocked.CompareExchange(ref firstOutput, ElapsedMilliseconds(measurementStart), -1);
 
                 string? prefix;
                 long sequence;
@@ -327,6 +339,8 @@ public sealed partial class LearningPreviewCoordinator : IAsyncDisposable
                 if (publish) PublishPartial(generation, requestId, token, sequence, prefix);
             }
 
+            measurementModel = request.Options.ModelName;
+            measurementTime = DateTimeOffset.UtcNow; measurementStart = Stopwatch.GetTimestamp();
             var raw = await engine.TranslateAsync(request, ReceiveDelta, token).ConfigureAwait(false);
             token.ThrowIfCancellationRequested();
 
@@ -339,10 +353,13 @@ public sealed partial class LearningPreviewCoordinator : IAsyncDisposable
             // The shared macOS output contract rejects rather than truncates oversized or unsafe
             // text, so a backend cannot grow a preview without bound or smuggle control characters.
             var result = LearningExpressionOutputPolicy.ValidatedText(raw);
+            usableResult = ElapsedMilliseconds(measurementStart);
+            measurementOutcome = IsCurrent(generation, requestId, token) ? ModelRequestOutcome.Completed : ModelRequestOutcome.Cancelled;
             PublishReady(generation, requestId, token, result, cacheKey, cacheEpoch);
         }
         catch (OperationCanceledException)
         {
+            measurementOutcome = ModelRequestOutcome.Cancelled;
             // Cancel/Dispose already published their terminal state. An engine-originated cancel
             // only becomes visible if this request is still current.
             PublishCancelled(generation, requestId, token);
@@ -359,6 +376,14 @@ public sealed partial class LearningPreviewCoordinator : IAsyncDisposable
         }
         finally
         {
+            if (measurementStart != 0)
+            {
+                if (token.IsCancellationRequested) measurementOutcome = ModelRequestOutcome.Cancelled;
+                long first = Interlocked.Read(ref firstOutput);
+                var observation = new PerformanceRequestObservation(ModelRequestSource.Translation, requestId, measurementModel ?? "",
+                    measurementTime, ElapsedMilliseconds(measurementStart), measurementOutcome, first < 0 ? null : first, usableResult);
+                try { RequestObserved?.Invoke(observation); } catch { /* Diagnostics cannot change translation. */ }
+            }
             bool drainNotifications;
             lock (_gate)
             {
@@ -376,6 +401,9 @@ public sealed partial class LearningPreviewCoordinator : IAsyncDisposable
             if (drainNotifications) DrainNotifications();
         }
     }
+
+    private static long ElapsedMilliseconds(long start) => Math.Max(0,
+        (long)Math.Round(Stopwatch.GetElapsedTime(start).TotalMilliseconds, MidpointRounding.AwayFromZero));
 
     private bool TryGetCached(
         long generation,

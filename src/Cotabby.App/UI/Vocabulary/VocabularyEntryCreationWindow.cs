@@ -1,7 +1,10 @@
+using Cotabby.App.Localization;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Data;
+using System.Globalization;
 using Cotabby.App.Vocabulary;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Vocabulary;
@@ -16,7 +19,7 @@ internal sealed class VocabularyEntryCreationWindow : Window
     private readonly TextBox _expression = new() { Name = "vocabularyNewExpression" }, _dictionary = new(), _meaning = new() { Name = "vocabularyNewMeaning" }, _notes = new(), _tags = new();
     private readonly ComboBox _language, _kind, _meaningLanguage;
     private readonly StackPanel _fields = new();
-    private readonly Button _save = new() { Name = "vocabularyCreateEntry", Content = "Save", IsDefault = true, MinWidth = 90 }, _cancel = new() { Content = "Cancel", IsCancel = true, MinWidth = 90 };
+    private readonly Button _save = new() { Name = "vocabularyCreateEntry", Content = InterfaceText.Get("Save"), IsDefault = true, MinWidth = 90 }, _cancel = new() { Content = InterfaceText.Get("Cancel"), IsCancel = true, MinWidth = 90 };
     private readonly TextBlock _failure = VocabularyNotebookTheme.Brush(new TextBlock { TextWrapping = TextWrapping.Wrap }, TextBlock.ForegroundProperty, "OrangeBrush");
     private bool _saving, _retiring;
     private TaskCompletionSource? _retirement;
@@ -24,11 +27,11 @@ internal sealed class VocabularyEntryCreationWindow : Window
     internal Task? LastOperation { get; private set; }
     internal VocabularyEntryCreationWindow(IVocabularyEntryInputOwner owner, LearningLanguage language = LearningLanguage.English)
     {
-        _owner = owner; Title = "Add entry"; Width = 620; Height = 590; MinWidth = 500; MinHeight = 500; WindowStartupLocation = WindowStartupLocation.CenterOwner;
+        _owner = owner; Title = InterfaceText.Get("Add entry"); Width = 620; Height = 590; MinWidth = 500; MinHeight = 500; WindowStartupLocation = WindowStartupLocation.CenterOwner;
         _language = VocabularyInputControls.Languages(true, language); _meaningLanguage = VocabularyInputControls.Languages(true, null);
         _kind = VocabularyInputControls.Kinds();
         VocabularyNotebookTheme.Follow(this); var root = new DockPanel { Margin = new Thickness(22) }; VocabularyNotebookTheme.Brush(root, Panel.BackgroundProperty, "WindowBg"); Content = root;
-        var title = VocabularyInputControls.Heading("Add entry"); DockPanel.SetDock(title, Dock.Top); root.Children.Add(title);
+        var title = VocabularyInputControls.Heading(InterfaceText.Get("Add entry")); DockPanel.SetDock(title, Dock.Top); root.Children.Add(title);
         var footer = VocabularyInputControls.Footer(_cancel, _save); DockPanel.SetDock(footer, Dock.Bottom); root.Children.Add(footer);
         DockPanel.SetDock(_failure, Dock.Bottom); root.Children.Add(_failure);
         var scroll = new ScrollViewer { VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Content = _fields }; root.Children.Add(scroll);
@@ -36,8 +39,8 @@ internal sealed class VocabularyEntryCreationWindow : Window
             ("Expression", _expression), ("Language", _language), ("Entry type", _kind), ("Dictionary form", _dictionary)));
         _fields.Children.Add(VocabularyInputControls.Group(
             ("Core meaning", _meaning), ("Meaning language", _meaningLanguage), ("Notes", _notes), ("Tags", _tags)));
-        _fields.Children.Add(VocabularyInputControls.Caption("Separate tags with commas or semicolons."));
-        _fields.Children.Add(VocabularyInputControls.Caption("Existing entries keep their content. New content is added as a separate sense."));
+        _fields.Children.Add(VocabularyInputControls.Caption(InterfaceText.Get("Separate tags with commas or semicolons.")));
+        _fields.Children.Add(VocabularyInputControls.Caption(InterfaceText.Get("Existing entries keep their content. New content is added as a separate sense.")));
         _expression.TextChanged += (_, _) => Update(); _save.Click += (_, _) => LastOperation = SaveAsync();
         Loaded += (_, _) => _expression.Focus(); Closing += OnClosing; Update();
     }
@@ -81,16 +84,24 @@ internal sealed class VocabularyEntryCreationWindow : Window
 internal static class VocabularyInputControls
 {
     private sealed record Option(string Label, object? Value) { public override string ToString() => Label; }
+    private sealed class KindLabelConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) => InterfaceText.Get(value.ToString() ?? "");
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotSupportedException();
+    }
     internal static ComboBox Languages(bool optional, LearningLanguage? selected)
     {
         var box = new ComboBox { MinWidth = 130, SelectedValuePath = nameof(Option.Value), DisplayMemberPath = nameof(Option.Label) };
-        if (optional) box.Items.Add(new Option("Not specified", null));
-        foreach (var value in LearningLanguages.All) box.Items.Add(new Option(value.Name(), value));
+        if (optional) box.Items.Add(new Option(InterfaceText.Get("Not specified"), null));
+        foreach (var value in LearningLanguages.All) box.Items.Add(new Option(InterfaceText.Get(value.Name()), value));
         box.SelectedValue = selected; if (selected is null) box.SelectedIndex = 0; return box;
     }
     internal static ComboBox Kinds()
     {
         var box = new ComboBox { MinWidth = 130, ItemsSource = Enum.GetValues<VocabularyEntryKind>(), SelectedItem = VocabularyEntryKind.Word };
+        var label = new FrameworkElementFactory(typeof(TextBlock));
+        label.SetBinding(TextBlock.TextProperty, new Binding { Converter = new KindLabelConverter() });
+        box.ItemTemplate = new DataTemplate { VisualTree = label };
         box.SelectedValuePath = ""; return box;
     }
     internal static TextBlock Heading(string text) => new() { Text = text, FontSize = 18, FontWeight = FontWeights.SemiBold, Margin = new Thickness(0, 0, 0, 16) };
@@ -106,8 +117,9 @@ internal static class VocabularyInputControls
         for (int i = 0; i < fields.Length; i++)
         {
             var column = new StackPanel { Margin = new Thickness(0, 0, i == fields.Length - 1 ? 0 : 12, 0) };
-            column.Children.Add(Caption(fields[i].Label)); if (fields[i].Control is ComboBox combo) VocabularyNotebookTheme.Combo(combo);
-            System.Windows.Automation.AutomationProperties.SetName(fields[i].Control, fields[i].Label); column.Children.Add(fields[i].Control); Grid.SetColumn(column, i); grid.Children.Add(column);
+            var label = InterfaceText.Get(fields[i].Label);
+            column.Children.Add(Caption(label)); if (fields[i].Control is ComboBox combo) VocabularyNotebookTheme.Combo(combo);
+            System.Windows.Automation.AutomationProperties.SetName(fields[i].Control, label); column.Children.Add(fields[i].Control); Grid.SetColumn(column, i); grid.Children.Add(column);
         }
         var card = new Border { BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(9), Padding = new Thickness(14), Margin = new Thickness(0, 0, 0, 12), Child = grid };
         VocabularyNotebookTheme.Brush(card, Border.BackgroundProperty, "CardBg"); return VocabularyNotebookTheme.Brush(card, Border.BorderBrushProperty, "CardBorder");
@@ -118,9 +130,10 @@ internal static class VocabularyInputControls
         for (int i = 0; i < fields.Length; i++)
         {
             grid.RowDefinitions.Add(new() { Height = GridLength.Auto });
-            var label = new TextBlock { Text = fields[i].Label, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 5, 10, 5) };
+            string localized = InterfaceText.Get(fields[i].Label);
+            var label = new TextBlock { Text = localized, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 5, 10, 5) };
             Grid.SetRow(label, i); grid.Children.Add(label); var control = fields[i].Control; control.Margin = new Thickness(0, 4, 0, 4);
-            System.Windows.Automation.AutomationProperties.SetName(control, fields[i].Label); if (control is TextBox text) VocabularyNotebookTheme.Input(text); else if (control is ComboBox combo) VocabularyNotebookTheme.Combo(combo); Grid.SetRow(control, i); Grid.SetColumn(control, 1); grid.Children.Add(control);
+            System.Windows.Automation.AutomationProperties.SetName(control, localized); if (control is TextBox text) VocabularyNotebookTheme.Input(text); else if (control is ComboBox combo) VocabularyNotebookTheme.Combo(combo); Grid.SetRow(control, i); Grid.SetColumn(control, 1); grid.Children.Add(control);
         }
         var card = new Border { BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(9), Padding = new Thickness(14), Margin = new Thickness(0, 0, 0, 12), Child = grid }; VocabularyNotebookTheme.Brush(card, Border.BackgroundProperty, "CardBg"); return VocabularyNotebookTheme.Brush(card, Border.BorderBrushProperty, "CardBorder");
     }

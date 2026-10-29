@@ -1,3 +1,4 @@
+using Cotabby.App.Localization;
 using System.Windows;
 using System.Windows.Controls;
 using Cotabby.Core.Vocabulary.Frozen;
@@ -19,7 +20,7 @@ internal sealed class FrozenVocabularyUsagePatternEditorWindow : FrozenVocabular
     {
         _pattern = pattern ?? new(senseId, ""); _template.Text = _pattern.Template; _template.IsReadOnly = _pattern.Slots.Count > 0; _note.Text = _pattern.Note; _region.Text = _pattern.Region; _collocations.Text = string.Join("\n", _pattern.Collocations); _formality.SelectedItem = _pattern.Formality; _medium.SelectedItem = _pattern.Medium;
         Fields.Children.Add(VocabularyInputControls.Group(("Usage pattern", _template), ("Usage note", _note)));
-        var details = new Expander { Name = "patternDetails", Header = "Details", Margin = new Thickness(0, 12, 0, 0), Content = VocabularyInputControls.Group(("Formality", _formality), ("Medium", _medium), ("Region or dialect", _region), ("Collocations", _collocations)) }; VocabularyNotebookTheme.Brush(details, Control.ForegroundProperty, "TextPrimary"); Fields.Children.Add(details);
+        var details = new Expander { Name = "patternDetails", Header = InterfaceText.Get("Details"), Margin = new Thickness(0, 12, 0, 0), Content = VocabularyInputControls.Group(("Formality", _formality), ("Medium", _medium), ("Region or dialect", _region), ("Collocations", _collocations)) }; VocabularyNotebookTheme.Brush(details, Control.ForegroundProperty, "TextPrimary"); Fields.Children.Add(details);
         _template.TextChanged += (_, _) => UpdateAdmission(); UpdateAdmission();
     }
     protected override VocabularySemanticIndex Edited()

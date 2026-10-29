@@ -1,3 +1,4 @@
+using Cotabby.App.Localization;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -22,7 +23,7 @@ internal sealed partial class CanonicalAnkiReviewWindow
     private readonly StackPanel _layoutPanel = new(), _parts = new();
     private readonly TextBox _cardName = new(), _templateName = new();
     private readonly ComboBox _layoutExample = new(), _applyLayout = new(), _addPart = new();
-    private readonly Button _saveTemplate = new() { Content = "Save as template" }, _addPartButton = new() { Content = "Add content" };
+    private readonly Button _saveTemplate = new() { Content = InterfaceText.Get("Save as template") }, _addPartButton = new() { Content = InterfaceText.Get("Add content") };
     private sealed record SourceChoice(string Label, ReviewContentSource Source) { public override string ToString() => Label; }
     private sealed record LayoutChoice(string Label, ReviewLayout Layout) { public override string ToString() => Label; }
     internal StackPanel LayoutParts => _parts;
@@ -106,7 +107,7 @@ internal sealed partial class CanonicalAnkiReviewWindow
                 }
                 if (part.Source is ReviewContentSource.SenseImage or ReviewContentSource.Custom)
                 {
-                    var caption = new CheckBox { Content = "Show image caption", IsChecked = part.ShowCaption }; caption.Click += (_, _) => { ChangePart(part.Id, p => p with { ShowCaption = caption.IsChecked == true }); RefreshDraft(); }; panel.Children.Add(caption);
+                    var caption = new CheckBox { Content = InterfaceText.Get("Show image caption"), IsChecked = part.ShowCaption }; caption.Click += (_, _) => { ChangePart(part.Id, p => p with { ShowCaption = caption.IsChecked == true }); RefreshDraft(); }; panel.Children.Add(caption);
                 }
                 if (part.Source is ReviewContentSource.ExpressionAudio or ReviewContentSource.SentenceAudio)
                 {

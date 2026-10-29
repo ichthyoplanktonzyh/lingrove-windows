@@ -34,12 +34,22 @@ desktop acceptance. Environment and controller initialization have bounded manag
 the control is disposed and a separately rooted cleanup owner waits for the outstanding SDK operation
 before attempting private-profile removal; a native operation that never finishes retains that cleanup
 owner and profile. Removal retries report failure through the cleanup task. SDK process lifetime and
-this deferred cleanup remain subject to independent review.
+this deferred cleanup remain subject to independent review. At most two article owners may be admitted;
+while both slots remain occupied the article shows a retry action without displaying source text. A slot
+is released only after successful private-profile cleanup. A cleanup failure remains internally observed
+and retains its slot; it is not reported in the UI. Permanently pending SDK work does not fault and keeps
+its slot and profile. This bound is a Windows adapter constraint, not a Mac product rule.
 
 On the Windows development host, the focused Core suite passed 31 tests, including adversarial HTML
 and cancellation. The serialized WPF wrapper passed 23 focused tests, including synthetic MDX/MDD
 import, local reparse refusal, cancellation and drain, settings, existing cards, WebView2 resource
-ownership and delayed environment/controller retirement. These are component checks, not user acceptance.
+ownership and delayed environment/controller retirement. The held initialization tests inject barriers
+before SDK calls; they do not reproduce an SDK call that itself hangs. These are component checks, not
+user acceptance.
+
+At the 3b reference, `LanguageLearningSettings.resetToDefaults()` calls `LearningDictionarySettings.reset()`,
+which publishes an empty catalog and default source preferences. The application-wide Windows reset
+must clear `learningDictionaryCatalog.3b`; this removes references only, not the original local files.
 
 The application composition must construct one `DictionaryFeature` with the existing bundled
 provider and ICU lowercase/word segmentation and pass its router to writing, reading and notebook

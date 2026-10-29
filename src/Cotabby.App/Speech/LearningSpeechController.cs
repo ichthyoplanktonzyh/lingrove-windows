@@ -49,18 +49,18 @@ internal sealed partial class LearningSpeechController : INotifyPropertyChanged,
                 case LearningSpeechProviderKind.Endpoint:
                     try
                     {
-                        var endpoint = Settings.EndpointConfiguration().Endpoint;
-                        return "Speech endpoint: " + endpoint.BaseUrl.GetLeftPart(UriPartial.Authority) + " · model: " + SafeModelName(endpoint.ModelName) + ". The selected text is sent to this server.";
+                        var configuration = Settings.EndpointConfiguration(); var endpoint = configuration.Endpoint;
+                        return "Speech endpoint: " + endpoint.BaseUrl.GetLeftPart(UriPartial.Authority) + " · model: " + SafeModelName(endpoint.ModelName) + " · voice: " + SafeModelName(configuration.Voice, "configured voice") + ". The selected text is sent to this server.";
                     }
                     catch { return "Speech endpoint is not configured; no text can be sent."; }
                 default: return "Speech destination is unavailable.";
             }
         }
     }
-    private static string SafeModelName(string value)
+    private static string SafeModelName(string value, string redacted = "configured model")
     {
         if (value.Length == 0) return "not selected";
-        if (value.Contains("://", StringComparison.Ordinal) || value.IndexOfAny(['?', '#', '@']) >= 0) return "configured model";
+        if (value.Contains("://", StringComparison.Ordinal) || value.IndexOfAny(['?', '#', '@']) >= 0) return redacted;
         var output = new StringBuilder(); int count = 0;
         foreach (var rune in value.EnumerateRunes())
         {

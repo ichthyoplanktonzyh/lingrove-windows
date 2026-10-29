@@ -44,28 +44,32 @@ internal sealed partial class AnkiReviewController
         catch (Exception error) { return error.Message; }
     }
     internal async Task UpdatePresetTemplateAsync(CancellationToken cancellationToken = default)
+    { RequireNotebook(); await UpdatePresetTemplateCoreAsync(cancellationToken, null); }
+    private async Task UpdatePresetTemplateCoreAsync(CancellationToken cancellationToken, Func<Task>? beforeWrite)
     {
-        RequireNotebook();
         if (SendingSenseId is not null || UpdatingTemplate) throw Conflict();
         UpdatingTemplate = true;
         try
         {
             var connection = Settings.Connection(); string profile = await ProfileAsync(connection, cancellationToken);
-            var fields = await FieldsAsync(AnkiReviewPolicy.PresetName, connection, create: true, cancellationToken: cancellationToken);
+            var fields = await FieldsCoreAsync(AnkiReviewPolicy.PresetName, connection, true, beforeWrite is null ? null : profile, cancellationToken, beforeWrite);
             var templates = await CallAsync("modelTemplates", Params(("modelName", new AnkiValue.Text(AnkiReviewPolicy.PresetName))), connection, cancellationToken);
             if (!Equals(templates, new AnkiValue.Map(AnkiNoteTemplate.LegacyTemplates)) && !Equals(templates, new AnkiValue.Map(AnkiNoteTemplate.Templates)))
                 throw new AnkiReviewException("This template was customized. Manage it in Anki.");
             foreach (string field in ReviewFieldNames().Where(f => !fields.Contains(f, Cotabby.Core.Text.CanonicalStringComparer.Instance)))
             {
                 if (!Same(await ProfileAsync(connection, cancellationToken), profile)) throw Conflict();
+                if (beforeWrite is not null) await beforeWrite();
                 _ = await CallAsync("modelFieldAdd", Params(("modelName", new AnkiValue.Text(AnkiReviewPolicy.PresetName)), ("fieldName", new AnkiValue.Text(field))), connection, cancellationToken);
             }
             if (!Same(await ProfileAsync(connection, cancellationToken), profile)) throw Conflict();
+            if (beforeWrite is not null) await beforeWrite();
             _ = await CallAsync("updateModelTemplates", Params(("model", new AnkiValue.Map(Params(("name", new AnkiValue.Text(AnkiReviewPolicy.PresetName)), ("templates", new AnkiValue.Map(AnkiNoteTemplate.Templates)))))), connection, cancellationToken);
             var style = await CallAsync("modelStyling", Params(("modelName", new AnkiValue.Text(AnkiReviewPolicy.PresetName))), connection, cancellationToken);
             if (Same(style.Object?.GetValueOrDefault("css")?.String, AnkiNoteTemplate.LegacyCss))
             {
                 if (!Same(await ProfileAsync(connection, cancellationToken), profile)) throw Conflict();
+                if (beforeWrite is not null) await beforeWrite();
                 _ = await CallAsync("updateModelStyling", Params(("model", new AnkiValue.Map(Params(("name", new AnkiValue.Text(AnkiReviewPolicy.PresetName)), ("css", new AnkiValue.Text(AnkiNoteTemplate.Css)))))), connection, cancellationToken);
             }
             if (!Same(await ProfileAsync(connection, cancellationToken), profile)

@@ -182,7 +182,8 @@ public sealed class AppHost : IAsyncDisposable
         // Review has its own inert HTTP/key owners. Its settings save only their durable values;
         // editing a deck or connection must not wake/reconfigure the autocomplete runtime.
         Review = AnkiReviewFeature.CreateConnectionSettings(() => Settings, () => SettingsStore.Save(Settings),
-            new Cotabby.Win32.Review.AnkiConnectClient(), new DpapiAnkiCredentialStore());
+            new Cotabby.Win32.Review.AnkiConnectClient(), new DpapiAnkiCredentialStore(),
+            activateExisting: new Cotabby.Win32.Review.WindowsAnkiActivator().ActivateExisting);
         Review.Controller.Configure = () => SettingsWindow.ShowReview(this);
         _notebook.Window.AttachReviewFeature(Review, () => SettingsWindow.ShowReview(this));
         Vocabulary.EnrichCapture = capture =>

@@ -15,8 +15,8 @@ internal interface ICompositionEvidenceOwner : IDisposable
     long Version { get; }
     bool Execute(Action action);
     (InputCompositionState State, long Version) Observe(int pid, string field, long focusEpoch);
-    void Invalidate();
-    void RetireAsync();
+    long Invalidate();
+    void RetireAsync(long expectedEpoch);
 }
 
 // Owns all native TextEdit subscriptions on one MTA. COM retains each callback until its last
@@ -27,6 +27,7 @@ internal sealed unsafe class UiaTextEditEvidence : ICompositionEvidenceOwner
     private readonly BlockingCollection<Action> _queue = new();
     private readonly Thread _thread;
     private readonly Action _changed;
+    private readonly Action _failed;
     private long _version = 1;
     private long _epoch;
     private IUIAutomation3* _automation;
@@ -40,11 +41,13 @@ internal sealed unsafe class UiaTextEditEvidence : ICompositionEvidenceOwner
     private long _subscriptionEpoch;
     private int _pendingObservations;
     private int _retirementQueued;
+    private long _retirementEpoch;
     private volatile bool _disposed;
 
-    public UiaTextEditEvidence(Action changed)
+    public UiaTextEditEvidence(Action changed, Action? failed = null)
     {
         _changed = changed;
+        _failed = failed ?? (() => { });
         _thread = new Thread(Run) { IsBackground = true, Name = "Lingrove UIA TextEdit" };
         _thread.SetApartmentState(ApartmentState.MTA);
         _thread.Start();
@@ -78,7 +81,7 @@ internal sealed unsafe class UiaTextEditEvidence : ICompositionEvidenceOwner
         {
             Interlocked.Decrement(ref _pendingObservations);
             Invalidate();
-            _changed();
+            _failed();
             return default;
         }
         long requestedEpoch = Interlocked.Read(ref _epoch);
@@ -99,20 +102,28 @@ internal sealed unsafe class UiaTextEditEvidence : ICompositionEvidenceOwner
         finally { if (!queued) Interlocked.Decrement(ref _pendingObservations); }
         // A timed-out operation may still complete; invalidate every receipt it could publish.
         Invalidate();
-        _changed();
+        _failed();
         return default;
     }
 
-    public void Invalidate()
+    public long Invalidate()
     {
-        Interlocked.Increment(ref _epoch);
+        long epoch = Interlocked.Increment(ref _epoch);
         Interlocked.Increment(ref _version);
+        return epoch;
     }
 
-    public void RetireAsync()
+    public void RetireAsync(long expectedEpoch)
     {
-        if (_disposed || Interlocked.Exchange(ref _retirementQueued, 1) != 0) return;
-        try { _queue.Add(() => { Interlocked.Exchange(ref _retirementQueued, 0); Retire(); }); }
+        if (_disposed) return;
+        long previous;
+        do
+        {
+            previous = Interlocked.Read(ref _retirementEpoch);
+            if (expectedEpoch <= previous) break;
+        } while (Interlocked.CompareExchange(ref _retirementEpoch, expectedEpoch, previous) != previous);
+        if (Interlocked.Exchange(ref _retirementQueued, 1) != 0) return;
+        try { _queue.Add(() => { Interlocked.Exchange(ref _retirementQueued, 0); if (Interlocked.Read(ref _retirementEpoch) == Interlocked.Read(ref _epoch)) Retire(); }); }
         catch (InvalidOperationException) { Interlocked.Exchange(ref _retirementQueued, 0); }
     }
 

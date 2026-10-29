@@ -118,7 +118,7 @@ internal sealed class WindowsVocabularyExportFile : IDisposable
         if (Directory.Exists(media)) { using var directory = OpenDirectory(media); media = FinalPath(directory); }
         if (StringComparer.OrdinalIgnoreCase.Equals(Path, media) || Path.StartsWith(media.TrimEnd('\\') + "\\", StringComparison.OrdinalIgnoreCase)) throw Invalid();
     }
-    private static string CanonicalLeaf(string path)
+    internal static string CanonicalLeaf(string path)
     {
         string parent = System.IO.Path.GetDirectoryName(path)!;
         if (!Directory.Exists(parent)) return VocabularyWindowsFile.Extended(path);

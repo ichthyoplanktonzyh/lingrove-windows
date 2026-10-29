@@ -24,6 +24,7 @@ internal sealed partial class FrozenVocabularyImportStore
 
     public Task<FrozenVocabularyImportSnapshot> RestoreAsync(string source, CancellationToken cancellationToken = default) => Run(() =>
     {
+        RejectProtectedRestoreSource(source);
         var backup = FrozenVocabularyBackupCodec.Decode(WindowsVocabularyBackupInput.ReadFile(source));
         var references = FrozenVocabularyRestorePolicy.Validate(backup); var supplied = backup.CopyImages();
         var prepared = new Dictionary<string, VocabularyPreparedImage>(StringComparer.Ordinal);
@@ -61,4 +62,24 @@ internal sealed partial class FrozenVocabularyImportStore
             catch { foreach (var item in written) RemoveOwnedImage(item.Image, item.Identity); throw; }
         });
     }, cancellationToken);
+    private void RejectProtectedRestoreSource(string source)
+    {
+        if (_notebookPath is null) return;
+        string requested = VocabularyWindowsFile.FullPath(source), notebook = VocabularyWindowsFile.FullPath(_notebookPath);
+        static void Check(string path, string database)
+        {
+            string legacy = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(database)!, "vocabulary.sqlite");
+            foreach (string root in new[] { database, legacy })
+            {
+                foreach (string suffix in new[] { "", "-wal", "-shm", "-journal", ".lock" })
+                    if (StringComparer.OrdinalIgnoreCase.Equals(path, root + suffix)) throw new VocabularyException(VocabularyFailure.InvalidContent);
+            }
+            string oldMedia = legacy + ".media";
+            if (StringComparer.OrdinalIgnoreCase.Equals(path, oldMedia) || path.StartsWith(oldMedia.TrimEnd('\\') + "\\", StringComparison.OrdinalIgnoreCase))
+                throw new VocabularyException(VocabularyFailure.InvalidContent);
+        }
+        Check(requested, notebook);
+        Check(WindowsVocabularyExportFile.CanonicalLeaf(requested), WindowsVocabularyExportFile.CanonicalLeaf(notebook));
+    }
+
 }

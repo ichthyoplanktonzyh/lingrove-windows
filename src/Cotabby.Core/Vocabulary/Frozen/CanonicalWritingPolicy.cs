@@ -251,33 +251,33 @@ public static class CanonicalWritingPolicy
         var entries = next.Entries.ToArray();
         if (!restoringBackup)
         {
-        var oldEntries = previous.Entries;
-        var oldSenses = oldEntries.SelectMany(x => x.Senses).Select(x => x.Id).ToHashSet();
-        var senses = entries.SelectMany(x => x.Senses).ToArray(); var live = senses.Select(x => x.Id).ToHashSet();
-        var aliases = new Dictionary<Guid, Guid>();
-        foreach (var sense in senses) foreach (var alias in sense.MergedFrom) aliases[alias] = sense.Id;
-        Guid? Resolve(Guid id) => live.Contains(id) ? id : aliases.TryGetValue(id, out var owner) ? owner : oldSenses.Contains(id) ? null : id;
-        var patterns = new List<VocabularyUsagePattern>();
-        foreach (var value in next.Semantics.Patterns) if (Resolve(value.SenseId) is { } id) patterns.Add(value with { SenseId = id });
-        var removedPatterns = previous.Semantics.Patterns.Select(x => x.Id).Except(patterns.Select(x => x.Id)).ToHashSet();
-        var oldExamples = oldEntries.SelectMany(x => x.Examples).ToDictionary(x => x.Id);
-        var changedEvidence = new HashSet<Guid>();
-        foreach (var example in senses.SelectMany(x => x.Examples))
-            if (oldExamples.TryGetValue(example.Id, out var before) && (before.SourceId != example.SourceId || before.OccurrenceId != example.OccurrenceId
-                || !CollectionValues.Same(before.Text, example.Text) || !CollectionValues.SequenceEqual(before.Ranges, example.Ranges)
-                || !CollectionValues.Same(before.Meaning, example.Meaning) || before.MeaningLanguage != example.MeaningLanguage)) changedEvidence.Add(example.Id);
-        var evidenceBySense = senses.ToDictionary(x => x.Id, x => x.Examples.Select(e => e.Id).ToHashSet());
-        var mappings = new List<VocabularyMeaningMapping>();
-        foreach (var value in next.Semantics.Mappings)
-        {
-            if (Resolve(value.SenseId) is not { } senseId || value.PatternId is { } pattern && removedPatterns.Contains(pattern)) continue;
-            var valid = evidenceBySense.GetValueOrDefault(senseId) ?? [];
-            var evidence = value.EvidenceIds.Where(id => !changedEvidence.Contains(id) && (!oldExamples.ContainsKey(id) || valid.Contains(id))).ToArray();
-            var mapping = value with { SenseId = senseId, EvidenceIds = evidence };
-            if (!CollectionValues.SequenceEqual(evidence, value.EvidenceIds)) mapping = mapping with { Provenance = mapping.Provenance with { Status = VocabularySemanticStatus.Proposed } };
-            mappings.Add(mapping);
-        }
-        next = next with { Semantics = next.Semantics with { Patterns = patterns, Mappings = mappings } };
+            var oldEntries = previous.Entries;
+            var oldSenses = oldEntries.SelectMany(x => x.Senses).Select(x => x.Id).ToHashSet();
+            var senses = entries.SelectMany(x => x.Senses).ToArray(); var live = senses.Select(x => x.Id).ToHashSet();
+            var aliases = new Dictionary<Guid, Guid>();
+            foreach (var sense in senses) foreach (var alias in sense.MergedFrom) aliases[alias] = sense.Id;
+            Guid? Resolve(Guid id) => live.Contains(id) ? id : aliases.TryGetValue(id, out var owner) ? owner : oldSenses.Contains(id) ? null : id;
+            var patterns = new List<VocabularyUsagePattern>();
+            foreach (var value in next.Semantics.Patterns) if (Resolve(value.SenseId) is { } id) patterns.Add(value with { SenseId = id });
+            var removedPatterns = previous.Semantics.Patterns.Select(x => x.Id).Except(patterns.Select(x => x.Id)).ToHashSet();
+            var oldExamples = oldEntries.SelectMany(x => x.Examples).ToDictionary(x => x.Id);
+            var changedEvidence = new HashSet<Guid>();
+            foreach (var example in senses.SelectMany(x => x.Examples))
+                if (oldExamples.TryGetValue(example.Id, out var before) && (before.SourceId != example.SourceId || before.OccurrenceId != example.OccurrenceId
+                    || !CollectionValues.Same(before.Text, example.Text) || !CollectionValues.SequenceEqual(before.Ranges, example.Ranges)
+                    || !CollectionValues.Same(before.Meaning, example.Meaning) || before.MeaningLanguage != example.MeaningLanguage)) changedEvidence.Add(example.Id);
+            var evidenceBySense = senses.ToDictionary(x => x.Id, x => x.Examples.Select(e => e.Id).ToHashSet());
+            var mappings = new List<VocabularyMeaningMapping>();
+            foreach (var value in next.Semantics.Mappings)
+            {
+                if (Resolve(value.SenseId) is not { } senseId || value.PatternId is { } pattern && removedPatterns.Contains(pattern)) continue;
+                var valid = evidenceBySense.GetValueOrDefault(senseId) ?? [];
+                var evidence = value.EvidenceIds.Where(id => !changedEvidence.Contains(id) && (!oldExamples.ContainsKey(id) || valid.Contains(id))).ToArray();
+                var mapping = value with { SenseId = senseId, EvidenceIds = evidence };
+                if (!CollectionValues.SequenceEqual(evidence, value.EvidenceIds)) mapping = mapping with { Provenance = mapping.Provenance with { Status = VocabularySemanticStatus.Proposed } };
+                mappings.Add(mapping);
+            }
+            next = next with { Semantics = next.Semantics with { Patterns = patterns, Mappings = mappings } };
         }
         for (int i = 0; i < entries.Length; i++)
         {

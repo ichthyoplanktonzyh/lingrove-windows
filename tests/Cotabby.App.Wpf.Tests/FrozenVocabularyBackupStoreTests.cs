@@ -2,12 +2,16 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 using Cotabby.Core.Vocabulary.Resources;
 using Cotabby.Core.Vocabulary;
 using Cotabby.Core.Vocabulary.EntryInput;
 using Cotabby.Win32.Vocabulary;
 using Cotabby.App.Vocabulary;
 using Cotabby.App.Settings;
+using Cotabby.Core.LanguageLearning;
 using F = Cotabby.Core.Vocabulary.Frozen;
 
 namespace Cotabby.App.Wpf.Tests;
@@ -15,6 +19,8 @@ namespace Cotabby.App.Wpf.Tests;
 [Collection("WPF views")]
 public sealed class FrozenVocabularyBackupStoreTests(WpfDispatcher dispatcher)
 {
+    private static IEnumerable<DependencyObject> Nodes(DependencyObject root) { yield return root; for (int i = 0; i < VisualTreeHelper.GetChildrenCount(root); i++) foreach (var child in Nodes(VisualTreeHelper.GetChild(root, i))) yield return child; }
+    private static T Find<T>(Window window, string name) where T : FrameworkElement { window.UpdateLayout(); return Nodes(window).OfType<T>().Single(value => value.Name == name); }
     [Fact]
     public Task FullGraphBackupRestoreAndProtectedPaths() => dispatcher.RunAsync(async () =>
     {
@@ -30,7 +36,7 @@ public sealed class FrozenVocabularyBackupStoreTests(WpfDispatcher dispatcher)
             Assert.Equal(restored.Document, (await store.ReadAsync()).Document);
             await Assert.ThrowsAsync<VocabularyException>(() => store.BackupAsync(database));
             string old = Path.Combine(root, "data", "vocabulary.sqlite"); byte[] sentinel = [1, 2, 3]; await File.WriteAllBytesAsync(old, sentinel);
-            await Assert.ThrowsAsync<VocabularyException>(() => store.BackupAsync(old)); Assert.Equal(sentinel, await File.ReadAllBytesAsync(old));
+            await Assert.ThrowsAsync<VocabularyException>(() => store.BackupAsync(old)); await Assert.ThrowsAsync<VocabularyException>(() => store.RestoreAsync(old)); Assert.Equal(sentinel, await File.ReadAllBytesAsync(old));
             string media = Path.Combine(root, "data", FrozenVocabularyStoreFactory.CanonicalMediaDirectoryName); Directory.CreateDirectory(media);
             await Assert.ThrowsAsync<VocabularyException>(() => store.BackupAsync(Path.Combine(media, "backup.lingrove")));
             byte[] malformed = "{ invalid"u8.ToArray(); string invalid = Path.Combine(root, "bad.lingrove"); await File.WriteAllBytesAsync(invalid, malformed);
@@ -122,7 +128,9 @@ public sealed class FrozenVocabularyBackupStoreTests(WpfDispatcher dispatcher)
             await using var store = FrozenVocabularyStoreFactory.Create(database, false); await store.AddEntriesAsync([new VocabularyEntryInput(Expression: "first", Meaning: "one")]); var before = await store.ReadAsync();
             var settings = new AppSettings(); var controller = new FrozenVocabularyWindowController(store, System.Windows.Threading.Dispatcher.CurrentDispatcher, new WindowsVocabularyWordListReader(), new VocabularyNotebookListPreferences(() => settings, () => { }));
             controller.Show(); var notebook = controller.Window!; if (notebook.LastOperation is { } load) await load;
-            notebook.ChooseCanonicalBackupFile = (_, _) => Task.FromResult<string?>(path); notebook.StartCanonicalBackup(false); if (notebook.LastCanonicalBackupOperation is { } backup) await backup; Assert.True(File.Exists(path));
+            notebook.ChooseCanonicalBackupFile = (_, _) => Task.FromResult<string?>(path);
+            VocabularyThemeRender.Capture(notebook, "canonical-backup-notebook", 1100, 720); var menuButton = Find<Button>(notebook, "canonicalBackupMenu"); Assert.True(menuButton.IsEnabled); menuButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            var menu = menuButton.ContextMenu!; ((MenuItem)menu.Items[0]).RaiseEvent(new RoutedEventArgs(MenuItem.ClickEvent)); menu.IsOpen = false; if (notebook.LastCanonicalBackupOperation is { } backup) await backup; Assert.True(File.Exists(path));
             await store.AddEntriesAsync([new VocabularyEntryInput(Expression: "second", Meaning: "two")]); var changed = await store.ReadAsync();
             notebook.ConfirmCanonicalRestore = (_, _) => Task.FromResult(false); notebook.StartCanonicalBackup(true); if (notebook.LastCanonicalBackupOperation is { } declined) await declined; Assert.Equal(changed.Document, (await store.ReadAsync()).Document);
             notebook.ConfirmCanonicalRestore = (_, _) => Task.FromResult(true); notebook.StartCanonicalBackup(true); if (notebook.LastCanonicalBackupOperation is { } restored) await restored;
@@ -144,6 +152,66 @@ public sealed class FrozenVocabularyBackupStoreTests(WpfDispatcher dispatcher)
             notebook.ChooseCanonicalBackupFile = (_, _) => Task.FromResult<string?>(path); notebook.ConfirmCanonicalRestore = (_, _) => Task.FromResult(true); notebook.StartCanonicalBackup(true);
             await held.Entered.Task; Task retiring = controller.DisposeAsync().AsTask(); Assert.False(retiring.IsCompleted); held.Release.SetResult(); await retiring;
             Assert.False(notebook.IsVisible); Assert.Equal(before.Document, (await store.ReadAsync()).Document);
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    });
+
+    [Fact]
+    public Task BackupRestoreRetainsUncollectedCaptureEvidence() => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "canonical-backup-raw-" + Guid.NewGuid().ToString("N")); Directory.CreateDirectory(root);
+        try
+        {
+            string database = Path.Combine(root, "data", FrozenVocabularyStoreFactory.CanonicalFileName), path = Path.Combine(root, "backup.lingrove");
+            await using var store = FrozenVocabularyStoreFactory.Create(database, false);
+            var capture = new VocabularyCapture("hello", "hello", LearningLanguage.English, VocabularyEntryKind.Word,
+                Example: new(Guid.NewGuid(), "hello there", "你好", [new(0, 5)], Cotabby.Core.Vocabulary.VocabularyExampleCompleteness.Sentence, "", DateTimeOffset.UtcNow, sourceApplicationId: "test.editor"));
+            await store.SaveCaptureAsync(capture); var explanation = new Cotabby.Core.LanguageLearning.LearningExplanationRecord(Guid.NewGuid(), LearningExplanationPolicy.Input(capture), LearningLanguage.Chinese, new("greeting", "Use as greeting."), "local", DateTimeOffset.UtcNow);
+            await store.SaveExplanationAsync(explanation); await store.RemoveCaptureAsync(capture); var before = await store.ReadAsync();
+            Assert.NotEmpty(before.Document.Sources); Assert.NotEmpty(before.Document.Interpretations); Assert.Empty(before.Document.CollectedEntries);
+            await store.BackupAsync(path); await store.AddEntriesAsync([new VocabularyEntryInput(Expression: "other", Meaning: "else")]);
+            var restored = await store.RestoreAsync(path); Assert.Equal(before.Document.Sources, restored.Document.Sources); Assert.Equal(before.Document.Occurrences, restored.Document.Occurrences);
+            Assert.Equal(before.Document.Interpretations, restored.Document.Interpretations); Assert.Equal(before.Document.Collections, restored.Document.Collections); Assert.Empty(restored.Document.CollectedEntries);
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    });
+
+    [Fact]
+    public Task ClosingNotebookCancelsUnacceptedBackupChooser() => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "canonical-backup-ui-" + Guid.NewGuid().ToString("N")); Directory.CreateDirectory(root);
+        try
+        {
+            string database = Path.Combine(root, "data", FrozenVocabularyStoreFactory.CanonicalFileName), path = Path.Combine(root, "never.lingrove");
+            await using var store = FrozenVocabularyStoreFactory.Create(database, false); await store.AddEntriesAsync([new VocabularyEntryInput(Expression: "first", Meaning: "one")]);
+            var settings = new AppSettings(); var controller = new FrozenVocabularyWindowController(store, System.Windows.Threading.Dispatcher.CurrentDispatcher, new WindowsVocabularyWordListReader(), new VocabularyNotebookListPreferences(() => settings, () => { }));
+            controller.Show(); var notebook = controller.Window!; if (notebook.LastOperation is { } load) await load;
+            var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously); var response = new TaskCompletionSource<string?>(TaskCreationOptions.RunContinuationsAsynchronously);
+            notebook.ChooseCanonicalBackupFile = async (_, token) => { entered.TrySetResult(); return await response.Task.WaitAsync(token); };
+            notebook.StartCanonicalBackup(false); await entered.Task; await controller.DisposeAsync(); response.TrySetResult(path); Assert.False(File.Exists(path));
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    });
+
+    [Fact]
+    public Task ExistingCorruptImageRejectsRestoreWithoutReplacementOrGraphChange() => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "canonical-backup-corrupt-" + Guid.NewGuid().ToString("N")); Directory.CreateDirectory(root);
+        try
+        {
+            string sourceDatabase = Path.Combine(root, "source", FrozenVocabularyStoreFactory.CanonicalFileName), backup = Path.Combine(root, "backup.lingrove");
+            using var json = JsonDocument.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "fixtures", "parity", "vocabulary-media-transactions-v1.json")));
+            byte[] bytes = Convert.FromBase64String(json.RootElement.GetProperty("input").GetString()!); var prepared = new VocabularyPreparedImage(new(Convert.ToHexStringLower(SHA256.HashData(bytes)), 80, 40, bytes.Length), bytes);
+            await using (var source = FrozenVocabularyStoreFactory.Create(sourceDatabase, false))
+            {
+                await source.AddEntriesAsync([new VocabularyEntryInput(Expression: "source", Meaning: "value")]); var entry = (await source.ReadAsync()).Document.Entries[0];
+                await source.UpdateEntryAsync(entry with { Senses = [entry.Senses[0] with { Content = [VocabularyContentBlock.Create(new VocabularyBlockContent.Image(prepared.Reference))] }] }, entry, new Dictionary<string, VocabularyPreparedImage> { [prepared.Reference.Filename] = prepared }); await source.BackupAsync(backup);
+            }
+            string targetDatabase = Path.Combine(root, "target", FrozenVocabularyStoreFactory.CanonicalFileName), media = Path.Combine(root, "target", FrozenVocabularyStoreFactory.CanonicalMediaDirectoryName);
+            var images = WindowsVocabularyImageStorage.ForDirectory(media); await using var target = new FrozenVocabularyImportStore(() => FrozenVocabularySQLiteDatabase.OpenFile(targetDatabase), images: images, notebookPath: targetDatabase);
+            await target.AddEntriesAsync([new VocabularyEntryInput(Expression: "target", Meaning: "original")]); var before = await target.ReadAsync();
+            Assert.NotNull(images.WriteOwned(bytes, prepared.Reference)); string path = Path.Combine(media, prepared.Reference.Filename); var damaged = bytes.ToArray(); damaged[^1] ^= 1; await File.WriteAllBytesAsync(path, damaged);
+            await Assert.ThrowsAsync<VocabularyException>(() => target.RestoreAsync(backup)); var after = await target.ReadAsync(); Assert.Equal(before.Revision, after.Revision); Assert.Equal(before.Document, after.Document); Assert.Equal(damaged, await File.ReadAllBytesAsync(path));
         }
         finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
     });

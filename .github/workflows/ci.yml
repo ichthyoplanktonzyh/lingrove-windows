@@ -343,6 +343,33 @@ jobs:
       - name: Verify complete native speech helper adaptation and exact upstream overlay
         run: python3 scripts/verify-native-speech-macos-parity.py --mac-repo .mac-baseline
 
+  frozen-vocabulary:
+    name: Frozen vocabulary schema and UUID Swift probes
+    runs-on: macos-26-intel
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - name: Read the frozen vocabulary reference independently of historical fixtures
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          repository: ichthyoplanktonzyh/lingrove
+          ref: 35b7fbe5c788c5524936ade1dfb7c89a3a285b04
+          path: .mac-frozen-vocabulary
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            Lingrove/Models/Vocabulary/VocabularyDatabaseModels.swift
+            Lingrove/Services/Vocabulary/VocabularySQLiteConnection.swift
+            Lingrove/Services/Vocabulary/VocabularySQLiteDatabase.swift
+            Lingrove/Services/Vocabulary/VocabularySQLiteMeaningSchema.swift
+            Lingrove/Services/Vocabulary/VocabularySQLiteClassificationSchema.swift
+      - name: Compare real frozen Swift SQLite schema and classification migration
+        run: python3 scripts/verify-vocabulary-sqlite-frozen-macos-parity.py --mac-repo .mac-frozen-vocabulary
+      - name: Compare the two UUID-only row payload contracts
+        run: python3 scripts/verify-vocabulary-sqlite-frozen-uuid-macos-parity.py --mac-repo .mac-frozen-vocabulary
+
   speech-native-windows:
     name: Windows x64 isolated native speech helper
     runs-on: windows-2022

@@ -23,6 +23,18 @@ public sealed class OpenAICompatibleLearningTranslationEngineTests
         Assert.Null(request.Options.SourceLanguage); Assert.Contains("Infer the source language", request.Prompt.Prompt);
         Assert.Equal(0, credentials.ReadCount); Assert.Empty(handler.Requests);
     }
+    [Fact]
+    public async Task RetiredReadingAdmissionRejectsAtTransportWithoutSending()
+    {
+        using var handler = new LearningEndpointHandler();
+        using var http = new HttpClient(handler, disposeHandler: false);
+        using var engine = Engine(handler, http);
+        var request = LearningTranslationRequestFactory.Create("reading", "selected", new LearningTranslationOptions { ModelName = "local-translator", ContextTokens = 4096 });
+        request.Admission = () => false;
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => engine.TranslateAsync(request, default));
+        Assert.Empty(handler.Requests);
+    }
+
     private static readonly TimeSpan TestTimeout = TimeSpan.FromSeconds(5);
 
     [Fact]

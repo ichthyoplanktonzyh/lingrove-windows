@@ -10,6 +10,17 @@ namespace Cotabby.App.Wpf.Tests;
 [Collection("WPF views")]
 public sealed class ExpressionAssistShortcutTests(WpfDispatcher dispatcher)
 {
+    [Fact]
+    public void ReadingBindingReservesOnlyWhileEnabledAndChecksPerAppOverrides()
+    {
+        var settings = new AppSettings(); var reading = settings.LearningReadingShortcut;
+        Assert.False(settings.LearningReadingEnabled);
+        Assert.Null(settings.ExpressionAssistShortcutConflict(reading));
+        settings.LearningReadingEnabled = true;
+        Assert.Equal("Selected Text Reading", settings.ExpressionAssistShortcutConflict(reading));
+        settings.ShortcutOverrides.Add(new PerAppShortcutOverride { ProcessName = "editor", AcceptWord = reading });
+        Assert.Equal("editor shortcut", GlobalShortcut.LearningReading.Conflict(settings, reading));
+    }
     private static readonly KeyBinding Chord = new(0x45, KeyModifiers.Control | KeyModifiers.Alt, "Ctrl+Alt+E");
 
     [Fact]

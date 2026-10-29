@@ -7,6 +7,14 @@ namespace Cotabby.Inference.Tests.LanguageLearning;
 
 public sealed class IcuLearningLexicalTextTests
 {
+    [Fact]
+    public void UnknownLanguageUsesRootWordIteratorWithoutInventingALanguage()
+    {
+        var api = new LocaleApi(); var text = new IcuLearningLexicalText(api);
+        Assert.Equal("bank", Assert.Single(text.WordsUnknown("bank")).Text);
+        Assert.Equal("", api.Locale);
+        Assert.Equal(new[] { "hello", "world" }, new IcuLearningLexicalText().WordsUnknown("hello world").Select(word => word.Text));
+    }
     public static IEnumerable<object[]> CaseIds() => LearningLexicalCorpus.Cases().Select(row => new object[] { LearningLexicalCorpus.Text(row, "id") });
 
     [Theory]
@@ -91,6 +99,13 @@ public sealed class IcuLearningLexicalTextTests
     {
         public string ChangeCase(string value, bool upper) => value;
         public IReadOnlyList<LearningTextRange> WordRanges(string value, string locale) => ranges;
+        public bool HasBinaryProperty(int scalar, int property) => true;
+    }
+    private sealed class LocaleApi : IIcuLexicalApi
+    {
+        public string? Locale;
+        public string ChangeCase(string value, bool upper) => value;
+        public IReadOnlyList<LearningTextRange> WordRanges(string value, string locale) { Locale = locale; return [new(0, value.Length)]; }
         public bool HasBinaryProperty(int scalar, int property) => true;
     }
 }

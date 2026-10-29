@@ -5,6 +5,17 @@ namespace Cotabby.Core.Tests.LanguageLearning;
 public sealed class LearningLexiconServiceTests
 {
     [Fact]
+    public async Task UnknownLanguageSearchesAllBundledLanguagesWithoutChangingKnownIndices()
+    {
+        var service = new LearningLexiconService(new Source(() => Resource([
+            Entry("bank", [], "en"), Entry("bank", [], "de"), Entry("other", [], "fr") ])), new FixtureText());
+        var all = Assert.IsType<LearningDictionaryResult.Entries>(await service.LookupUnknownAsync("bank", false));
+        Assert.Equal(new[] { "en", "de" }, all.Values.Select(value => value.Language));
+        var english = Assert.IsType<LearningDictionaryResult.Entries>(await service.LookupAsync("bank", LearningLanguage.English, false));
+        Assert.Equal("en", Assert.Single(english.Values).Language);
+    }
+
+    [Fact]
     public async Task FormsRequireExpressionModeAndMissesAreValues()
     {
         var source = new Source(() => Resource([Entry("take care of", ["taking care of", "take"])]));

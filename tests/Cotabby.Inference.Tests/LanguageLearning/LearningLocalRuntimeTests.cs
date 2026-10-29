@@ -11,6 +11,17 @@ namespace Cotabby.Inference.Tests.LanguageLearning;
 /// </summary>
 public sealed class LearningLocalRuntimeTests
 {
+    [Fact]
+    public async Task LookupRequestsSelectConstrainedSamplerWithoutChangingOtherRequests()
+    {
+        var session = new FakeNativeSession();
+        session.EnqueueSampleScript((LLamaToken)(-1)); session.EnqueueSampleScript((LLamaToken)(-1));
+        await using var runtime = new LearningLocalRuntime(new FakeSessionFactory(session));
+        await using var operation = await runtime.BeginOperationAsync(Configuration, CancellationToken.None);
+        await operation.GenerateLookupAsync(Tokens(1), Sampling, 2, null, false, CancellationToken.None);
+        await operation.GenerateAsync(Tokens(1), Sampling, 2, null, CancellationToken.None);
+        Assert.Equal(new[] { false }, session.LookupContexts); Assert.Equal(2, session.Samplers.Count);
+    }
     private static readonly LearningLocalModelConfiguration Configuration =
         new("test-model.gguf", contextWindowTokens: 4_096);
 
@@ -776,6 +787,7 @@ public sealed class LearningLocalRuntimeTests
         public List<(int Offset, int Count, bool RequestLogits)> PromptBatches { get; } = [];
         public List<LearningModelSamplingValues> SamplingProfiles { get; } = [];
         public List<FakeSampler> Samplers { get; } = [];
+        public List<bool> LookupContexts { get; } = [];
         public Action<(int Offset, int Count, bool RequestLogits)>? AfterPromptBatch { get; set; }
         public Action<(int Offset, int Count, bool RequestLogits)>? OnPromptBatch { get; set; }
         public int ClearMemoryCount { get; private set; }
@@ -841,6 +853,8 @@ public sealed class LearningLocalRuntimeTests
             Samplers.Add(sampler);
             return sampler;
         }
+        public ILearningLocalSampler CreateLookupSampler(LearningModelSamplingValues values, bool hasContext)
+        { LookupContexts.Add(hasContext); return CreateSampler(values); }
 
         public void Dispose()
         {

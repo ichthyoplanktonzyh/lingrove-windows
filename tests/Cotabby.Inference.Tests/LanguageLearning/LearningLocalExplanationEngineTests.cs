@@ -14,6 +14,18 @@ public sealed class LearningLocalExplanationEngineTests
     private static LearningLocalExplanationEngine Engine(FakeRuntime runtime, string path = "general.gguf") =>
         new(new(path, LearningChatTemplate.ChatMl, samplingOverrides: new(Temperature: 0.42, SeedMode: LearningModelSeedMode.Fixed, FixedSeed: 123)), runtime);
 
+    [Theory]
+    [InlineData(false)] [InlineData(true)]
+    public async Task RetiredReadingAdmissionRejectsLookupAndDetailsBeforeNativeGeneration(bool basic)
+    {
+        var operation = new FakeOperation();
+        await using var engine = new LearningLocalInstructionEngine(new("general.gguf", LearningChatTemplate.ChatMl, requiresGeneralInstructions: true), new FakeRuntime(operation));
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => basic
+            ? engine.GenerateLookupAsync("test", 512, 12000, false, default, () => false)
+            : engine.GenerateAsync("test", 512, 12000, default, () => false));
+        Assert.Equal(0, operation.Generations);
+    }
+
     [Fact]
     public async Task ExpressionInstructionUsesLiteralTokenizationAndActualBudget()
     {

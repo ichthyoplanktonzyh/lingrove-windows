@@ -227,6 +227,7 @@ public sealed class LearningLocalTranslationEngine :
         try
         {
             linked.Token.ThrowIfCancellationRequested();
+            if (request.Admission?.Invoke() == false) throw new OperationCanceledException();
             var result = await prepared.Operation.GenerateAsync(
                 prepared.PromptTokens,
                 prepared.Sampling,

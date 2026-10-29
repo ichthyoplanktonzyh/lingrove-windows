@@ -26,7 +26,11 @@ internal sealed class GlobalShortcut
         new("Open Expression Assistance", KeyBinding.Unbound,
             s => s.ExpressionAssistShortcut, (s, key) => s.ExpressionAssistShortcut = key);
 
-    private static readonly GlobalShortcut[] All = [AcceptWord, AcceptAll, Toggle, LearningTranslation, ExpressionAssist];
+    public static GlobalShortcut LearningReading { get; } =
+        new("Read Selected Text", new KeyBinding(0x54, KeyModifiers.Alt | KeyModifiers.Shift, "Alt+Shift+T"),
+            s => s.LearningReadingShortcut, (s, key) => s.LearningReadingShortcut = key);
+
+    private static readonly GlobalShortcut[] All = [AcceptWord, AcceptAll, Toggle, LearningTranslation, ExpressionAssist, LearningReading];
 
     private readonly Func<AppSettings, KeyBinding> _get;
 
@@ -66,6 +70,7 @@ internal sealed class GlobalShortcut
 
         var global = All.FirstOrDefault(other => other != this
             && (other != ExpressionAssist || settings.ExpressionAssistEnabled)
+            && (other != LearningReading || settings.LearningReadingEnabled)
             && other.Binding(settings) is var taken
             && taken.VirtualKey == candidate.VirtualKey
             && taken.Modifiers == candidate.Modifiers);
@@ -74,7 +79,7 @@ internal sealed class GlobalShortcut
         // The learning chord is global, so it must also yield to an accept shortcut a user
         // assigned only in one app. This keeps the existing per-app recorder a visible conflict
         // boundary instead of letting the translation hook consume that app's established key.
-        if (this == LearningTranslation)
+        if (this == LearningTranslation || this == LearningReading)
         {
             foreach (var app in settings.ShortcutOverrides)
             {

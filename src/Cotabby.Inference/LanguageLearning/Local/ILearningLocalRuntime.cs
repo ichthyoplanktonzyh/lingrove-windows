@@ -62,4 +62,9 @@ public interface ILearningLocalOperation : IAsyncDisposable
         int maxTokens,
         Action<string>? onDelta,
         CancellationToken ct);
+
+    /// <summary>Fixed lookup grammars are optional; implementations lacking support fail closed.</summary>
+    Task<string> GenerateLookupAsync(IReadOnlyList<LLamaToken> promptTokens, LearningModelSamplingValues sampling,
+        int maxTokens, Action<string>? onDelta, bool hasContext, CancellationToken ct) =>
+        Task.FromException<string>(new NotSupportedException("Constrained lookup is unavailable."));
 }

@@ -22,7 +22,7 @@ public sealed partial class LearningDictionarySession
         {
             if (_disposed || _state.Unit is null || !Enum.IsDefined(page)
                 || targetIdentity is not null && targetIdentity != _state.TargetIdentity || _state.Page == page
-                || page == LearningDictionaryPage.Contextual && _explanationService is null) return task;
+                || page == LearningDictionaryPage.Contextual && !_state.HasContextualExplanation) return task;
             _state = _state with { Page = page };
             if (page == LearningDictionaryPage.Dictionary && !_dictionaryRequested)
                 (task, drain) = RequestDictionaryLocked();
@@ -67,12 +67,15 @@ public sealed partial class LearningDictionarySession
         var previous = _contextual;
         Guid identity = Guid.NewGuid();
         _contextual = null;
+        // The current explanation input contract cannot represent unknown language yet.
+        // Keep the real bundled dictionary available without inventing a language.
+        bool hasExplanation = _explanationService is not null && (_state.Language is not null || _unitExplanationInput is not null);
         _state = _state with { TargetIdentity = identity, RequestIdentity = Guid.NewGuid(),
             Status = LearningDictionaryContentStatus.Loading, Result = null, ErrorMessage = null,
-            Page = _explanationService is null ? LearningDictionaryPage.Dictionary : LearningDictionaryPage.Contextual,
-            HasContextualExplanation = _explanationService is not null, ExplanationConfigured = false,
+            Page = hasExplanation ? LearningDictionaryPage.Contextual : LearningDictionaryPage.Dictionary,
+            HasContextualExplanation = hasExplanation, ExplanationConfigured = false,
             ExplanationLanguage = null, Explanation = null };
-        if (_explanationService is not null)
+        if (hasExplanation)
         {
             var input = _unitExplanationInput;
             if (_state.SelectedWord is { } word && _state.Unit is { } unit && input is not null)

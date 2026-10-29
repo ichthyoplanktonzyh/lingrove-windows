@@ -1,5 +1,6 @@
 using System.Net.Http;
 using Cotabby.App.Learning;
+using Cotabby.App.Reading;
 using Cotabby.App.Review;
 using Cotabby.App.Emoji;
 using Cotabby.App.Macros;
@@ -14,6 +15,7 @@ using Cotabby.Core.Context;
 using Cotabby.Core.Input;
 using Cotabby.Core.Insertion;
 using Cotabby.Core.LanguageLearning;
+using Cotabby.Core.LanguageLearning.Reading;
 using Cotabby.Core.Models;
 using Cotabby.Core.Spelling;
 using Cotabby.Core.Suggestions;
@@ -28,6 +30,7 @@ using Cotabby.Win32.Focus;
 using Cotabby.Win32.Input;
 using Cotabby.Win32.Insertion;
 using Cotabby.Win32.LanguageLearning;
+using Cotabby.Win32.Reading;
 using Cotabby.Win32.Power;
 using Cotabby.Win32.Security;
 using Cotabby.Win32.Spelling;
@@ -92,6 +95,9 @@ public sealed class AppHost : IAsyncDisposable
     internal LearningExplanationController LearningExplanation { get; }
     private readonly IAsyncDisposable? _expressionEditor;
     private readonly ExpressionAssistApplication _expressions;
+    private readonly Win32ReadingSelectionReader? _nativeReading;
+    private readonly Win32ReadingOriginTracker? _readingOrigin;
+    private readonly ReadingApplication? _reading;
     private readonly CanonicalVocabularyFeature _notebook;
     internal CanonicalWritingViewStore Vocabulary => _notebook.Writing;
     internal AnkiReviewFeature Review { get; }
@@ -188,6 +194,7 @@ public sealed class AppHost : IAsyncDisposable
         _notebook.Window.AttachReviewFeature(Review, () => SettingsWindow.ShowReview(this));
         Vocabulary.EnrichCapture = capture =>
         {
+            if (capture.Language is null) return capture; // The older explanation projection has no unknown-language value.
             var input = LearningExplanationPolicy.Input(capture);
             try { return capture with { Explanation = LearningExplanation.Service.Cached(input) ?? LearningExplanation.Service.SavedRecord(input) }; }
             // Annotation is optional. A shutdown race must preserve the captured favorite even
@@ -248,8 +255,8 @@ public sealed class AppHost : IAsyncDisposable
             clipboard: _services.GetRequiredService<ClipboardTextReader>());
         _suggestionApplication = new SuggestionSettingsApplication(Coordinator, _completion);
         Coordinator.EnsureLocalReady = EnsureSelectedCompletionReadyAsync;
-        Coordinator.InlineCaptureActive = () => _expressions.IsActive || EmojiPicker.IsCapturing || Macros.IsCapturing;
-        EmojiPicker.CanCapture = Macros.CanCapture = field => !_expressions.IsActive && Coordinator.IsAvailableIn(field);
+        Coordinator.InlineCaptureActive = () => _expressions.IsActive || _reading?.IsActive == true || EmojiPicker.IsCapturing || Macros.IsCapturing;
+        EmojiPicker.CanCapture = Macros.CanCapture = field => !_expressions.IsActive && _reading?.IsActive != true && Coordinator.IsAvailableIn(field);
         EmojiPicker.CommitKeyFor = Macros.CommitKeyFor = Coordinator.AcceptWordKeyFor;
         Coordinator.Metrics.Restore(Settings.WordsAccepted);
         LearningPreview = new LearningPreviewController(
@@ -270,7 +277,28 @@ public sealed class AppHost : IAsyncDisposable
             clipboardWriter: _services.GetRequiredService<IClipboardTextWriter>(),
             vocabulary: Vocabulary,
             vocabularyCaptures: _services.GetRequiredService<VocabularyCaptureFactory>());
-        LearningPreview.InlineCaptureActive = () => _expressions.IsActive;
+        LearningPreview.InlineCaptureActive = () => _expressions.IsActive || _reading?.IsActive == true;
+        _expressions.OtherInlineActive = () => _reading?.IsActive == true;
+        if (OperatingSystem.IsWindowsVersionAtLeast(8, 1))
+        {
+            _nativeReading = new Win32ReadingSelectionReader(nativeFocus, _hook);
+            _readingOrigin = new Win32ReadingOriginTracker(nativeFocus);
+            var lexical = _services.GetRequiredService<IcuLearningLexicalText>();
+            var sentences = (IcuLearningEvidenceSentenceTokenizer)_services.GetRequiredService<ILearningEvidenceSentenceTokenizer>();
+            _reading = new ReadingApplication(overlay.Dispatcher, _hook, () => OperatingSystem.IsWindowsVersionAtLeast(8, 1) ? _readingOrigin.Current : null,
+                new NativeReadingSelectionReader(_nativeReading), (text, language) => language is { } known
+                    ? lexical.Words(text, known) : lexical.WordsUnknown(text),
+                _services.GetRequiredService<ILearningDictionaryProviding>(),
+                (input, token) => LearningExplanation.GenerateReadingLookupAsync(input, null,
+                    raw => ReadingLookupPolicy.Parse(raw, input, lexical.Lowercase), token),
+                (input, basic, token) => LearningExplanation.GenerateReadingLookupAsync(input, basic,
+                    ReadingLookupPolicy.ParseDetails, token),
+                () => SettingsWindow.ShowLearning(this), _services.GetRequiredService<IClipboardTextWriter>(), Vocabulary,
+                (text, language) => language is { } known ? sentences.Tokenize(text, known) : sentences.TokenizeUnknown(text),
+                LearningPreview.ReadingTranslator,
+                () => { Coordinator.InvalidateSession(); LearningPreview.SuspendForInlineFeature(); },
+                () => _expressions.IsActive || EmojiPicker.IsCapturing || Macros.IsCapturing);
+        }
 
         SystemEvents.PowerModeChanged += OnPowerModeChanged;
         ApplySettings();
@@ -315,6 +343,7 @@ public sealed class AppHost : IAsyncDisposable
     {
         _learningCredentialRevision++;
         LearningPreview.ApplySettings(Settings, _learningCredentialRevision);
+        _reading?.ApplySettings(Settings, _learningCredentialRevision, PowerStatus.IsBatterySaverOn);
     }
 
     public void CompletionCredentialsChanged()
@@ -378,6 +407,7 @@ public sealed class AppHost : IAsyncDisposable
         Macros.Enabled = Settings.MacrosEnabled;
         LearningPreview.ApplySettings(Settings, _learningCredentialRevision);
         LearningExplanation.ApplySettings(Settings);
+        _reading?.ApplySettings(Settings, _learningCredentialRevision, PowerStatus.IsBatterySaverOn);
         _expressions.ApplySettings(Settings, PowerStatus.IsBatterySaverOn);
         VocabularyWindow.SetPreferredLanguages(NotebookLabelLanguages());
         Overlay.ApplyAppearance(Settings);
@@ -547,6 +577,7 @@ public sealed class AppHost : IAsyncDisposable
     {
         if (_shuttingDown || e.Mode != PowerModes.StatusChange) return;
         _completion.Withdraw();
+        _reading?.Withdraw();
         if (!_router.UseEndpoint) Coordinator.InvalidateSession();
         // Learning owns separate requests and retires them under its own power eligibility gate.
         LearningPreview.PowerStatusChanged();
@@ -554,7 +585,11 @@ public sealed class AppHost : IAsyncDisposable
         _ui.Post(_ =>
         {
             if (Settings.Engine == EngineKind.Local) ApplySettings();
-            else if (!_shuttingDown) _expressions.ApplySettings(Settings, PowerStatus.IsBatterySaverOn);
+            else if (!_shuttingDown)
+            {
+                _expressions.ApplySettings(Settings, PowerStatus.IsBatterySaverOn);
+                _reading?.ApplySettings(Settings, _learningCredentialRevision, PowerStatus.IsBatterySaverOn);
+            }
         }, null);
     }
 
@@ -623,8 +658,25 @@ public sealed class AppHost : IAsyncDisposable
             try { await _completion.DisposeAsync().ConfigureAwait(false); }
             finally
             {
-                try { await RetireExpressionAsync().ConfigureAwait(false); }
-                finally { await RetireNotebookProducersAsync().ConfigureAwait(false); }
+                try { await RetireReadingAsync().ConfigureAwait(false); }
+                finally
+                {
+                    try { await RetireExpressionAsync().ConfigureAwait(false); }
+                    finally { await RetireNotebookProducersAsync().ConfigureAwait(false); }
+                }
+            }
+        }
+    }
+
+    private async Task RetireReadingAsync()
+    {
+        try { if (_reading is not null) await _reading.DisposeAsync().ConfigureAwait(false); }
+        finally
+        {
+            if (OperatingSystem.IsWindowsVersionAtLeast(8, 1))
+            {
+                try { if (_nativeReading is not null) await _nativeReading.DisposeAsync().ConfigureAwait(false); }
+                finally { if (_readingOrigin is not null) await _readingOrigin.DisposeAsync().ConfigureAwait(false); }
             }
         }
     }

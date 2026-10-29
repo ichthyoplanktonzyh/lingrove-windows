@@ -404,6 +404,14 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
             int maxTokens,
             Action<string>? onDelta,
             CancellationToken ct)
+            => await GenerateCoreAsync(promptTokens, sampling, maxTokens, onDelta, null, ct).ConfigureAwait(false);
+
+        public Task<string> GenerateLookupAsync(IReadOnlyList<LLamaToken> promptTokens, LearningModelSamplingValues sampling,
+            int maxTokens, Action<string>? onDelta, bool hasContext, CancellationToken ct) =>
+            GenerateCoreAsync(promptTokens, sampling, maxTokens, onDelta, hasContext, ct);
+
+        private async Task<string> GenerateCoreAsync(IReadOnlyList<LLamaToken> promptTokens,
+            LearningModelSamplingValues sampling, int maxTokens, Action<string>? onDelta, bool? lookupContext, CancellationToken ct)
         {
             if (promptTokens is null || sampling is null || promptTokens.Count == 0 || maxTokens <= 0)
                 throw new LearningLocalRuntimeException(LearningLocalRuntimeFailure.InvalidRequest);
@@ -440,7 +448,7 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
                 // None deliberately avoids pretending Task cancellation can abort an in-flight
                 // llama.cpp call. The loop observes the linked token as soon as each call returns.
                 return await Task.Run(
-                    () => Generate(frozenTokens, sampling, maxTokens, onDelta, linked.Token),
+                    () => Generate(frozenTokens, sampling, maxTokens, onDelta, lookupContext, linked.Token),
                     CancellationToken.None).ConfigureAwait(false);
             }
             finally
@@ -472,6 +480,7 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
             LearningModelSamplingValues sampling,
             int maxTokens,
             Action<string>? onDelta,
+            bool? lookupContext,
             CancellationToken ct)
         {
             Exception? generationFailure = null;
@@ -480,7 +489,7 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
                 _session.ClearMemory();
                 ThrowIfStopped(ct);
                 int logitsIndex = Prefill(promptTokens, ct);
-                using var sampler = _session.CreateSampler(sampling);
+                using var sampler = lookupContext is { } context ? _session.CreateLookupSampler(sampling, context) : _session.CreateSampler(sampling);
                 var output = new StrictUtf8Output(MaximumOutputBytes);
                 int nextPosition = promptTokens.Length;
 
@@ -902,6 +911,13 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
             return new LLamaLearningLocalSampler(_context, values);
         }
 
+        public ILearningLocalSampler CreateLookupSampler(LearningModelSamplingValues values, bool hasContext)
+        {
+            ThrowIfDisposed();
+            return new LLamaLearningLocalSampler(_context, values,
+                Cotabby.Core.LanguageLearning.Reading.ReadingLookupGrammar.ForContext(hasContext));
+        }
+
         public void Dispose()
         {
             if (_disposed) return;
@@ -919,7 +935,7 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
         private readonly DefaultSamplingPipeline _pipeline;
         private bool _disposed;
 
-        public LLamaLearningLocalSampler(LLamaContext context, LearningModelSamplingValues values)
+        public LLamaLearningLocalSampler(LLamaContext context, LearningModelSamplingValues values, string? grammar = null)
         {
             _context = context;
             _pipeline = new DefaultSamplingPipeline
@@ -930,6 +946,7 @@ public sealed class LearningLocalRuntime : ILearningLocalRuntime
                 RepeatPenalty = (float)values.RepetitionPenalty,
                 MinP = 0,
                 Seed = values.Seed,
+                Grammar = grammar is null ? null : new Grammar(grammar, "root"),
             };
         }
 

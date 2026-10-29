@@ -14,7 +14,7 @@ public sealed record LearningDictionaryState
     public string? DocumentId { get; init; }
     public LearningUnit? Unit { get; init; }
     public LearningDictionaryWord? SelectedWord { get; init; }
-    public LearningLanguage Language { get; init; } = LearningLanguage.English;
+    public LearningLanguage? Language { get; init; }
     public string? SpeechContext { get; init; }
     public LearningDictionaryPage Page { get; init; } = LearningDictionaryPage.Dictionary;
     public bool HasContextualExplanation { get; init; }

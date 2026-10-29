@@ -50,7 +50,7 @@ public sealed class VocabularyCardCaptureParityTests
         object? example = usage is null ? null : new { text = usage.Text, translation = usage.Translation, translationLanguage = usage.TranslationLanguage?.Code(),
             ranges = usage.Ranges.Select(range => new { location = range.Location, length = range.Length }), completeness = usage.Completeness.ToString().ToLowerInvariant(),
             meaning = usage.Meaning, meaningLanguage = usage.MeaningLanguage?.Code(), meaningOrigin = usage.MeaningOrigin.ToString().ToLowerInvariant(), app = usage.SourceApplicationId };
-        return new { expression = capture.Expression, dictionaryForm = capture.DictionaryForm, language = capture.Language.Code(), kind = capture.Kind.ToString().ToLowerInvariant(),
+        return new { expression = capture.Expression, dictionaryForm = capture.DictionaryForm, language = capture.Language?.Code(), kind = capture.Kind.ToString().ToLowerInvariant(),
             meaning = capture.Meaning, meaningLanguage = capture.MeaningLanguage?.Code(), example, input = LearningExplanationPolicy.Input(capture) };
     }
 }

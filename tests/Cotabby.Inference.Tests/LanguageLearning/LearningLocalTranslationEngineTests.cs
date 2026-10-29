@@ -10,6 +10,17 @@ public sealed class LearningLocalTranslationEngineTests
     private const string Source = "Please close the window before you leave.";
 
     [Fact]
+    public async Task RetiredReadingAdmissionRejectsAfterPlanningBeforeNativeGeneration()
+    {
+        var operation = new FakeLocalOperation(new LearningGgufMetadata("llama"), 8192);
+        await using var engine = new LearningLocalTranslationEngine(LocalConfiguration(), new FakeLocalRuntime(operation));
+        var request = await engine.PlanAsync("reading", Source, Options(), default);
+        request.Admission = () => false;
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => engine.TranslateAsync(request, default));
+        Assert.Equal(0, operation.GenerateCount);
+    }
+
+    [Fact]
     public async Task UnknownReadingSourceUsesRealPlannerWithoutInventingDirection()
     {
         var operation = new FakeLocalOperation(new LearningGgufMetadata("llama"), contextWindowTokens: 8_192) { Output = "译文。" };

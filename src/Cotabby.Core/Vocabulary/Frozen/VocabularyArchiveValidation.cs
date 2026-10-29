@@ -115,7 +115,7 @@ public static partial class VocabularyArchiveValidation
             },
             example is not null ? ExampleKey(example) : sense.CreatedWithoutContext == true && !sense.IsSavedWithoutContext
                 ? "sense:" + sense.Id.ToString("D").ToUpperInvariant() : null);
-    private static string EntryKey(VocabularyEntry entry) => Key([entry.Language?.Code() ?? "und", Kind(entry.Kind), VocabularyCapturePolicy.Normalized(entry.Expression)]);
+    internal static string EntryKey(VocabularyEntry entry) => Key([entry.Language?.Code() ?? "und", Kind(entry.Kind), VocabularyCapturePolicy.Normalized(entry.Expression)]);
     private static string ExampleKey(VocabularyExample example) => Key([example.Text,
         string.Join(",", example.Ranges.Select(r => r.Location.ToString(CultureInfo.InvariantCulture) + ":" + r.Length.ToString(CultureInfo.InvariantCulture))),
         example.Completeness switch { FrozenCompleteness.Sentence => "sentence", FrozenCompleteness.Fragment => "fragment", FrozenCompleteness.Unknown => "unknown", _ => throw Invalid() }]);

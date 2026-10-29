@@ -9,7 +9,7 @@ public static partial class VocabularyArchiveValidation
 {
     // Separate CLR representability from Mac semantic budgets. Perform this pass on canonical
     // values before projection so malformed nulls cannot be hidden by an uncollected claim.
-    private static void ValidateRepresentability(VocabularyDocument? document)
+    internal static void ValidateRepresentability(VocabularyDocument? document)
     {
         if (document is null || document is not { } value || document.Classification is not { } classification
             || value.Semantics is null || value.Catalog.Any(entry => !Entry(entry))

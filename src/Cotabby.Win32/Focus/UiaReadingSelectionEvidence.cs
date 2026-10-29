@@ -1,6 +1,7 @@
 using System.Runtime.InteropServices;
 using System.Text;
 using Cotabby.Core.Focus;
+using Cotabby.Core.LanguageLearning.Reading;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Accessibility;
 using Native = Cotabby.Win32.Interop.NativeMethods;
@@ -11,6 +12,7 @@ internal interface IReadingSelectionEvidence
 {
     UiaTextEditEvidence.ReadingLease? CaptureReading(nint host, int pid, Func<bool> allowed, Action invalidated, bool ownedTest = false);
     bool IsReadingCurrent(UiaTextEditEvidence.ReadingLease lease, Func<bool> allowed);
+    ReadingAcquisitionWindow? ReadReadingContext(UiaTextEditEvidence.ReadingLease lease, Func<bool> allowed) => null;
     void RetireReading(UiaTextEditEvidence.ReadingLease lease);
     Task DrainRetainedAsync();
 }

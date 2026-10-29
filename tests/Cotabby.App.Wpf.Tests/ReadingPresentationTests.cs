@@ -109,6 +109,31 @@ public sealed class ReadingPresentationTests(WpfDispatcher dispatcher)
         finally { await presentation.DisposeAsync(); }
     });
     [Fact]
+    public Task ContextualLookupFavoriteKeepsExactRepeatedOccurrenceAndTranslation() => dispatcher.RunAsync(async () =>
+    {
+        var store = new ReadingVocabularyStoreFake();
+        var presentation = new ReadingPresentation(Dispatcher.CurrentDispatcher, new Dictionary(),
+            (_, _) => Task.FromResult(new ReadingLookupResult("河岸", "整句")), (_, _, _) => throw new InvalidOperationException(),
+            () => { }, new Clipboard(), store, (_, _) => [], LearningLanguage.Chinese);
+        var context = new ReadingContext("bank by the bank", 12, 4, ReadingBoundary.Unknown, ReadingBoundary.Unknown, ReadingContextMethod.Characters);
+        var selection = new ReadingSelection(Guid.NewGuid(), "bank ", 1, "field", 1, 0, 5, false, true,
+            InputCompositionState.Clear, 1, ScreenRect.Empty, context) { SourceApplicationId = "fixture-editor" };
+        var route = new ReadingRoute(false, ReadingRouteReason.ContextualUnit, "bank", true);
+        try
+        {
+            presentation.BindAuthority(selection, _ => Task.FromResult(true), default);
+            await presentation.ShowAsync(new(selection, null, LearningLanguage.Chinese, route, ReadingStatus.Lookup, "Local model", ""));
+            await presentation.LookupAsync(selection, route, null, LearningLanguage.Chinese, _ => Task.FromResult(true), default, []);
+            var favorite = Descendants(presentation.ReadingCard).OfType<VocabularyFavoriteButton>().Single();
+            await favorite.LastOperation; favorite.RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); await favorite.LastOperation;
+            var example = Assert.IsType<Cotabby.Core.Vocabulary.VocabularyExample>(store.Saved!.Example);
+            Assert.Equal(selection.Id, example.Id); Assert.Equal("bank by the bank", example.Text); Assert.Equal("整句", example.Translation);
+            Assert.Equal(12, Assert.Single(example.Ranges).Location); Assert.Equal("fixture-editor", example.SourceApplicationId);
+            Assert.Equal(Cotabby.Core.Vocabulary.VocabularyExampleCompleteness.Unknown, example.Completeness);
+        }
+        finally { await presentation.DisposeAsync(); }
+    });
+    [Fact]
     public Task LookupFavoriteSavesAcceptedMeaningOnlyAfterCurrentReceiptPreflight() => dispatcher.RunAsync(async () =>
     {
         var store = new ReadingVocabularyStoreFake(); var gate = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);

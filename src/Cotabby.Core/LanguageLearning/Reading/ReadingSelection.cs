@@ -11,6 +11,10 @@ public sealed record ReadingSelection(Guid Id, string Text, int ProcessId, strin
     /// <summary>Nonblocking request-owned admission for final reading effects.</summary>
     [System.Text.Json.Serialization.JsonIgnore]
     public Func<bool>? Admission { get; init; }
+    /// <summary>Verified origin process label, when available; never an editor handle.</summary>
+    public string? SourceApplicationId { get; init; }
+    /// <summary>Capture time is stable across retries and durable contextual saves.</summary>
+    public DateTimeOffset CapturedAt { get; init; } = DateTimeOffset.UtcNow;
 }
 
 public enum ReadingBoundary { Container, LayoutBlock, Sentence, Crop, Unknown, Deadline }

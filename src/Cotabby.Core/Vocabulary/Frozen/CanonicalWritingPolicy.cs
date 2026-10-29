@@ -22,7 +22,8 @@ public static class CanonicalWritingPolicy
         Live.VocabularyCapturePolicy.Validate(capture);
         var example = capture.Example is { } value ? new VocabularyExample(value.Id, value.Text, value.Translation, value.Ranges,
             value.Completeness switch { Live.VocabularyExampleCompleteness.Sentence => R.VocabularyExampleCompleteness.Sentence,
-                Live.VocabularyExampleCompleteness.Fragment => R.VocabularyExampleCompleteness.Fragment, _ => throw Invalid() }, value.Meaning,
+                Live.VocabularyExampleCompleteness.Fragment => R.VocabularyExampleCompleteness.Fragment,
+                Live.VocabularyExampleCompleteness.Unknown => R.VocabularyExampleCompleteness.Unknown, _ => throw Invalid() }, value.Meaning,
             SourceDate.FromWindows(value.CreatedAt))
         {
             SourceKind = VocabularySourceKind.Captured, TranslationLanguage = value.TranslationLanguage,

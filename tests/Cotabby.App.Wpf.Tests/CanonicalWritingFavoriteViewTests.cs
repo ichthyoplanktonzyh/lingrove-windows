@@ -41,6 +41,25 @@ public sealed class CanonicalWritingFavoriteViewTests(WpfDispatcher dispatcher)
         Assert.False(viewStore.Contains(capture)); Assert.Empty((await backend.ReadAsync()).Document.CollectedEntries);
     });
     [Fact]
+    public Task ContextualReadingUnknownCompletenessRoundTripsThroughCanonicalStore() => dispatcher.RunAsync(async () =>
+    {
+        var database = FrozenVocabularySQLiteDatabase.CreateMemory(); await using var backend = new FrozenVocabularyImportStore(database);
+        await using var viewStore = new CanonicalWritingViewStore(backend, new DispatcherSynchronizationContext(Dispatcher.CurrentDispatcher));
+        var context = new Cotabby.Core.LanguageLearning.Reading.ReadingContext("bank by the bank", 12, 4,
+            Cotabby.Core.LanguageLearning.Reading.ReadingBoundary.Unknown, Cotabby.Core.LanguageLearning.Reading.ReadingBoundary.Unknown,
+            Cotabby.Core.LanguageLearning.Reading.ReadingContextMethod.Characters);
+        var selection = new Cotabby.Core.LanguageLearning.Reading.ReadingSelection(Guid.NewGuid(), "bank", 1, "field", 1, 0, 4,
+            false, true, Cotabby.Core.Focus.InputCompositionState.Clear, 1, Cotabby.Core.Focus.ScreenRect.Empty, context) { SourceApplicationId = "fixture-editor", CapturedAt = DateTimeOffset.UnixEpoch };
+        var input = new Cotabby.Core.LanguageLearning.Reading.ReadingLookupInput("bank", null, LearningLanguage.Chinese, true, context);
+        var capture = Cotabby.Core.LanguageLearning.Reading.ReadingVocabularyCaptureFactory.Lookup(input, new("河岸", "整句"), LearningLanguage.Chinese, selection);
+        await viewStore.LoadAsync(); Assert.True(await viewStore.SaveAsync(capture));
+        var snapshot = await backend.ReadAsync(); var entry = Assert.Single(snapshot.Document.CollectedEntries); var usage = Assert.Single(Assert.Single(entry.Senses).Examples);
+        Assert.Equal(selection.Id, usage.Id); Assert.Equal("fixture-editor", usage.SourceApplicationId);
+        Assert.Equal(Cotabby.Core.Vocabulary.Resources.VocabularyExampleCompleteness.Unknown, usage.Completeness);
+        Assert.Equal(12, Assert.Single(usage.Ranges).Location); Assert.Equal("整句", usage.Translation); Assert.Equal("河岸", usage.Meaning);
+        Assert.True(await viewStore.RemoveAsync(capture)); Assert.Empty((await backend.ReadAsync()).Document.CollectedEntries);
+    });
+    [Fact]
     public Task UnknownReadingSentenceRetainsItsAcceptedTranslationAndUsageIdentity() => dispatcher.RunAsync(async () =>
     {
         var database = FrozenVocabularySQLiteDatabase.CreateMemory(); await using var backend = new FrozenVocabularyImportStore(database);

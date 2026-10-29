@@ -23,6 +23,25 @@ public sealed class ReadingVocabularyCaptureFactoryTests
         Assert.Equal(VocabularyExampleCompleteness.Fragment, fragment.Example!.Completeness);
         Assert.Equal(VocabularyCapturePolicy.EntryKey(capture), VocabularyCapturePolicy.EntryKey(fragment));
     }
+    [Theory]
+    [InlineData(ReadingBoundary.Sentence, ReadingBoundary.Sentence, VocabularyExampleCompleteness.Sentence)]
+    [InlineData(ReadingBoundary.Crop, ReadingBoundary.Unknown, VocabularyExampleCompleteness.Fragment)]
+    [InlineData(ReadingBoundary.Unknown, ReadingBoundary.Unknown, VocabularyExampleCompleteness.Unknown)]
+    public void ContextualLookupPreservesExactOccurrenceAndSourceCompleteness(ReadingBoundary left, ReadingBoundary right, VocabularyExampleCompleteness completeness)
+    {
+        var context = new ReadingContext("bank near the bank", 14, 4, left, right, ReadingContextMethod.Characters);
+        var selection = new ReadingSelection(Guid.NewGuid(), "bank", 1, "field", 1, 0, 4, false, true,
+            InputCompositionState.Clear, 1, ScreenRect.Empty, context) { SourceApplicationId = "editor" };
+        var input = new ReadingLookupInput("bank", null, LearningLanguage.Chinese, true, context);
+        var capture = ReadingVocabularyCaptureFactory.Lookup(input, new("河岸", "整句译文"), LearningLanguage.Chinese, selection, DateTimeOffset.UnixEpoch);
+        VocabularyCapturePolicy.Validate(capture); Assert.Equal(selection.Id, capture.Example!.Id);
+        Assert.Equal(completeness, capture.Example.Completeness); Assert.Equal(new VocabularyTextRange(14, 4), Assert.Single(capture.Example.Ranges));
+        Assert.Equal("整句译文", capture.Example.Translation); Assert.Equal("editor", capture.Example.SourceApplicationId);
+        Assert.Equal("河岸", capture.Meaning); Assert.Equal("河岸", capture.Example.Meaning);
+        Assert.Equal(VocabularyMeaningOrigin.Ai, capture.Example.MeaningOrigin);
+        Assert.Equal((Cotabby.Core.Vocabulary.Resources.VocabularyExampleCompleteness)(int)completeness,
+            Cotabby.Core.Vocabulary.Frozen.CanonicalWritingPolicy.FromLive(capture).Example!.Completeness);
+    }
     [Fact]
     public void LookupUsesAcceptedMeaningAndUnknownLanguageWithoutInventingAnExample()
     {

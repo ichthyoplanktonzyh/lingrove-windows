@@ -2,6 +2,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Windows.Interop;
 using Cotabby.Win32.Focus;
+using Cotabby.Core.LanguageLearning.Reading;
 
 namespace Cotabby.App.Wpf.Tests;
 
@@ -37,6 +38,9 @@ public sealed class UiaReadingSelectionTests(WpfDispatcher dispatcher)
             Assert.NotNull(lease);
             Assert.Equal("same", lease.Text);
             Assert.True(await Task.Run(() => owner.IsReadingCurrent(lease, () => true)));
+            var context = await Task.Run(() => owner.ReadReadingContext(lease, () => true));
+            Assert.NotNull(context); Assert.Equal("same and same", context.Text); Assert.Equal(0, context.TargetStart);
+            Assert.Equal(4, context.TargetLength); Assert.Equal(ReadingBoundary.Container, context.Left);
             SendMessage(edit, 0x00B1, 9, 13);
             Assert.False(await Task.Run(() => owner.IsReadingCurrent(lease, () => true)));
             await invalidated.Task.WaitAsync(TimeSpan.FromSeconds(5));

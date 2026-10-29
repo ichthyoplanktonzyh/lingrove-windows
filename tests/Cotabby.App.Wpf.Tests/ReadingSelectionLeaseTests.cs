@@ -1,5 +1,6 @@
 using System.Runtime.Versioning;
 using Cotabby.Core.Input;
+using Cotabby.Core.LanguageLearning.Reading;
 using Cotabby.Win32.Focus;
 using Cotabby.Win32.Reading;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -41,6 +42,49 @@ public sealed class ReadingSelectionLeaseTests
         foreground = 11; Assert.False(lease.IsLive);
         foreground = 10; pid = 43; Assert.False(lease.IsLive);
         pid = 42; Assert.True(lease.IsLive);
+    }
+
+    [Fact]
+    public async Task RetiredDuringOptionalContextNeverPublishesTheSelection()
+    {
+        if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;
+        using var focus = new UiaFocusTracker(NullLogger<UiaFocusTracker>.Instance);
+        var evidence = new FakeEvidence { Block = false, BlockContext = true, NoContext = false };
+        await using var lease = new Win32ReadingSelectionLease(focus, new FakeKeyboard(), evidence, 10, 42, 3, null,
+            () => 3, () => 10, _ => 42);
+        var capture = Task.Run(() => lease.Capture(CancellationToken.None));
+        try
+        {
+            Assert.True(evidence.ContextEntered.Wait(TimeSpan.FromSeconds(5)));
+            var retire = Task.Run(lease.Retire); await retire.WaitAsync(TimeSpan.FromSeconds(2));
+            evidence.ContextRelease.Set(); Assert.False(await capture.WaitAsync(TimeSpan.FromSeconds(5)));
+            Assert.False(lease.IsLive);
+        }
+        finally { evidence.ContextRelease.Set(); }
+    }
+    [Fact]
+    public async Task VerifiedBoundedWindowIsResolvedAroundTheExactSelection()
+    {
+        if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;
+        using var focus = new UiaFocusTracker(NullLogger<UiaFocusTracker>.Instance);
+        var evidence = new FakeEvidence { Block = false, NoContext = false };
+        await using var lease = new Win32ReadingSelectionLease(focus, new FakeKeyboard(), evidence, 10, 42, 3, null,
+            () => 3, () => 10, _ => 42);
+        Assert.True(lease.Capture(CancellationToken.None)); var context = Assert.IsType<ReadingContext>(lease.Selection.Context);
+        Assert.True(ReadingSelectionPolicy.ValidContext(context, lease.Selection.Text));
+        Assert.Equal("selected", context.Text.Substring(context.TargetStart, context.TargetLength));
+    }
+
+    [Fact]
+    public async Task OptionalContextFailureKeepsVerifiedSelection()
+    {
+        if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;
+        using var focus = new UiaFocusTracker(NullLogger<UiaFocusTracker>.Instance);
+        var evidence = new FakeEvidence { Block = false, NoContext = true };
+        await using var lease = new Win32ReadingSelectionLease(focus, new FakeKeyboard(), evidence, 10, 42, 3, null,
+            () => 3, () => 10, _ => 42);
+        Assert.True(lease.Capture(CancellationToken.None)); Assert.Null(lease.Selection.Context);
+        Assert.Equal("selected", lease.Selection.Text);
     }
 
     [Fact]
@@ -227,7 +271,11 @@ public sealed class ReadingSelectionLeaseTests
     {
         public readonly ManualResetEventSlim Entered = new();
         public readonly ManualResetEventSlim Release = new();
-        public bool Block = true, Drained;
+        public bool Block = true, Drained, BlockContext, NoContext = true;
+        public readonly ManualResetEventSlim ContextEntered = new();
+        public readonly ManualResetEventSlim ContextRelease = new();
+        public ReadingAcquisitionWindow? ReadReadingContext(UiaTextEditEvidence.ReadingLease lease, Func<bool> allowed)
+        { ContextEntered.Set(); if (BlockContext) ContextRelease.Wait(); return !NoContext && allowed() ? new("The selected word.", 4, 8, ReadingBoundary.Unknown, ReadingBoundary.Unknown, ReadingContextMethod.Characters) : null; }
         public int RetireCalls;
         public UiaTextEditEvidence.ReadingLease? CaptureReading(nint host, int pid, Func<bool> allowed, Action invalidated, bool ownedTest = false) =>
             allowed() ? new(invalidated) { Text = "selected", FieldId = "owned-fake", Ready = true, ProcessId = pid, Host = host } : null;

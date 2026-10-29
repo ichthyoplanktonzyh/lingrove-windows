@@ -19,6 +19,7 @@ public enum VocabularyExampleCompleteness
 {
     [JsonStringEnumMemberName("sentence")] Sentence,
     [JsonStringEnumMemberName("fragment")] Fragment,
+    [JsonStringEnumMemberName("unknown")] Unknown,
 }
 
 /// <summary>

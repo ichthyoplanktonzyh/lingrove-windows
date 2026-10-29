@@ -64,8 +64,10 @@ public static class ReadingSelectionPolicy
             context.TargetStart > context.Text.Length || context.TargetLength > context.Text.Length - context.TargetStart ||
             context.Text.Length - context.TargetLength > 1_024 || context.TargetLength > 3_072 ||
             !EditorTextRangePolicy.IsValid(context.Text, context.TargetStart, context.TargetLength)) return false;
-        return expected is not null && context.TargetLength == expected.Length
-            && context.Text.AsSpan(context.TargetStart, context.TargetLength).SequenceEqual(expected.AsSpan());
+        if (expected is null) return false;
+        string target = FoundationText.TrimWhitespaceAndNewlines(expected);
+        return target.Length > 0 && context.TargetLength == target.Length
+            && context.Text.AsSpan(context.TargetStart, context.TargetLength).SequenceEqual(target.AsSpan());
     }
 
     public static bool CoversContext(ReadingContext context)

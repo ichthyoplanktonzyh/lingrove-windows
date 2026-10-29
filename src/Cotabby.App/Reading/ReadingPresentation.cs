@@ -109,7 +109,7 @@ internal sealed class ReadingPresentation : IReadingPresentation, IAsyncDisposab
         _current = current; _selection = selection; _token = token;
         var text = route.LookupText!;
         _words = words;
-        var context = text == selection.Text ? selection.Context : null;
+        var context = text == Cotabby.Core.Text.FoundationText.TrimWhitespaceAndNewlines(selection.Text) ? selection.Context : null;
         _input = new(text, language, target, route.IsSingleWord, context) { Admission = selection.Admission };
         await RunBasicAsync();
     }
@@ -130,7 +130,7 @@ internal sealed class ReadingPresentation : IReadingPresentation, IAsyncDisposab
             if (!await StillCurrentAsync(revision, token)) return;
             _basic = basic; _details = null; _detailsExpanded = false; _reading.SetDetailsExpanded(false);
             if (_readingState is { } state) Update(state with { Status = ReadingStatus.Ready, Text = basic.Meaning });
-            BindFavorite(ReadingVocabularyCaptureFactory.Lookup(input, basic, _meaningLanguage), revision, token,
+            BindFavorite(ReadingVocabularyCaptureFactory.Lookup(input, basic, _meaningLanguage, _selection), revision, token,
                 () => ReferenceEquals(_basic, basic) && _input == input);
         }
         catch (OperationCanceledException) { }

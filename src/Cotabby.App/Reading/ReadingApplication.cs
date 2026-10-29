@@ -184,8 +184,17 @@ internal sealed class ReadingApplication : IAsyncDisposable
             var lease = await inner.CaptureAsync(token, initiatingVirtualKey).ConfigureAwait(false);
             if (lease is null) return null;
             var selection = lease.Selection;
-            if (selection.ProcessId == origin.ProcessId && selection.FocusEpoch == origin.FocusEpoch && current() == origin) return lease;
+            if (selection.ProcessId == origin.ProcessId && selection.FocusEpoch == origin.FocusEpoch && current() == origin) return new OriginLease(lease, origin.ProcessName);
             lease.Retire(); await lease.DisposeAsync().ConfigureAwait(false); return null;
         }
+    }
+    private sealed class OriginLease(IReadingSelectionLease inner, string processName) : IReadingSelectionLease
+    {
+        public ReadingSelection Selection => inner.Selection with { SourceApplicationId = processName };
+        public bool IsLive => inner.IsLive;
+        public event Action? Invalidated { add => inner.Invalidated += value; remove => inner.Invalidated -= value; }
+        public Task<bool> IsCurrentAsync(CancellationToken token) => inner.IsCurrentAsync(token);
+        public void Retire() => inner.Retire();
+        public ValueTask DisposeAsync() => inner.DisposeAsync();
     }
 }

@@ -3,6 +3,7 @@ using Cotabby.Core.Focus;
 using Cotabby.Core.Input;
 using Cotabby.Core.LanguageLearning.Reading;
 using Cotabby.Win32.Focus;
+using Cotabby.Win32.Text;
 using Native = Cotabby.Win32.Interop.NativeMethods;
 
 namespace Cotabby.Win32.Reading;
@@ -155,12 +156,20 @@ public sealed class Win32ReadingSelectionLease : IAsyncDisposable
             var native = _owner.CaptureReading(_host, _pid, () => Allowed(ct), Retire);
             if (native is null) return false;
             if (!Allowed(ct)) { _owner.RetireReading(native); return false; }
+            // Segmentation may be slow. Never hold the retirement gate across platform work.
+            ReadingContext? context = null;
+            try
+            {
+                if (_owner.ReadReadingContext(native, () => Allowed(ct)) is { } window && ReadingContextPolicy.Align(window, native.Text) is { } aligned)
+                    context = ReadingContextPolicy.Resolve(aligned, native.Text, new IcuLearningEvidenceSentenceTokenizer().TokenizeUnknown);
+            }
+            catch (Exception) { /* Missing ICU or invalid context does not invent evidence. */ }
             lock (_gate)
             {
                 if (!Allowed(ct)) { _owner.RetireReading(native); return false; }
                 _native = native;
                 _selection = new(Guid.NewGuid(), native.Text, _pid, native.FieldId, _epoch, null, native.Text.Length,
-                    false, true, InputCompositionState.Clear, native.Version, ScreenRect.Empty, SelectionAnchorId: native.Anchor);
+                    false, true, InputCompositionState.Clear, native.Version, ScreenRect.Empty, Context: context, SelectionAnchorId: native.Anchor);
                 ReadingSelectionPolicy.ValidateReceipt(_selection);
                 Volatile.Write(ref _capturing, 0);
                 return IsLive;

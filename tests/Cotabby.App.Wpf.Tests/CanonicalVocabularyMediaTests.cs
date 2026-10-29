@@ -215,4 +215,29 @@ public sealed class CanonicalVocabularyMediaTests(WpfDispatcher dispatcher)
         }
         finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
     });
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public Task FailureAfterPublishRollsBackOnlyOriginalIdentity(bool replace) => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "canonical-media-" + Guid.NewGuid().ToString("N"));
+        string file = Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName);
+        string media = Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalMediaDirectoryName);
+        try
+        {
+            var image = Image(); var storage = WindowsVocabularyImageStorage.ForDirectory(media);
+            string path = Path.Combine(media, image.Reference.Filename);
+            storage.AfterOwnedPublish = () =>
+            {
+                if (replace) { File.Move(path, path + ".original"); File.Copy(path + ".original", path); }
+                throw new IOException("injected post-publication verification failure");
+            };
+            await using var store = new FrozenVocabularyImportStore(() => FrozenVocabularySQLiteDatabase.OpenFile(file), images: storage);
+            var before = await store.ReadAsync();
+            await Assert.ThrowsAsync<VocabularyException>(() => store.SaveTemplateAsync(Template(image.Reference), Supplied(image)));
+            Assert.Equal(before, await store.ReadAsync());
+            if (replace) Assert.Equal(image.CopyBytes(), File.ReadAllBytes(path)); else Assert.False(File.Exists(path));
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    });
 }

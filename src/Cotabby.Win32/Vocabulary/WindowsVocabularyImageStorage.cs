@@ -20,6 +20,7 @@ internal sealed class WindowsVocabularyImageStorage : IOwnedVocabularyImageStora
     private readonly Dictionary<string, byte[]> _memory = new(StringComparer.Ordinal);
     private readonly Func<Guid> _stagingIdentity;
     internal Action? BeforeOwnedDelete { get; set; }
+    internal Action? AfterOwnedPublish { get; set; }
     internal string? DirectoryPath { get; }
     internal WindowsVocabularyImageStorage(string? notebook) : this(notebook, Guid.NewGuid) { }
     /// <summary>Tests may force a CREATE_NEW collision without changing actual file operations.</summary>
@@ -75,29 +76,40 @@ internal sealed class WindowsVocabularyImageStorage : IOwnedVocabularyImageStora
             }
             string staging = System.IO.Path.Combine(root.Path, ".vocabulary-image-" + _stagingIdentity().ToString("N") + ".tmp");
             string destination = System.IO.Path.Combine(root.Path, image.Filename);
-            VocabularyWindowsFile.FileIdentity identity;
-            using (var stream = new FileInfo(staging).Create(FileMode.CreateNew, FileSystemRights.FullControl,
-                FileShare.ReadWrite | FileShare.Delete, 65536, FileOptions.None, VocabularyWindowsFile.NewFileSecurity()))
+            VocabularyWindowsFile.FileIdentity identity = default;
+            bool moved = false;
+            try
             {
-                identity = VocabularyWindowsFile.Identity(stream.SafeFileHandle);
-                bool moved = false;
-                try
+                using (var stream = new FileInfo(staging).Create(FileMode.CreateNew, FileSystemRights.FullControl,
+                    FileShare.ReadWrite | FileShare.Delete, 65536, FileOptions.None, VocabularyWindowsFile.NewFileSecurity()))
                 {
-                    stream.Write(bytes); stream.Flush(flushToDisk: true); root.Verify();
-                    if (!VocabularyWindowsFile.Native.MoveFileExW(staging, destination, 8))
+                    identity = VocabularyWindowsFile.Identity(stream.SafeFileHandle);
+                    try
                     {
-                        if (Marshal.GetLastPInvokeError() is not 80 and not 183) throw Invalid();
-                        using var winner = root.OpenFile(image.Filename) ?? throw Invalid();
-                        if (!Matches(winner, image)) throw Invalid();
-                        root.Verify(); return null;
+                        stream.Write(bytes); stream.Flush(flushToDisk: true); root.Verify();
+                        if (!VocabularyWindowsFile.Native.MoveFileExW(staging, destination, 8))
+                        {
+                            if (Marshal.GetLastPInvokeError() is not 80 and not 183) throw Invalid();
+                            using var winner = root.OpenFile(image.Filename) ?? throw Invalid();
+                            if (!Matches(winner, image)) throw Invalid();
+                            root.Verify(); return null;
+                        }
+                        moved = true;
                     }
-                    moved = true;
+                    finally { if (!moved) DeleteHandle(stream.SafeFileHandle); }
                 }
-                finally { if (!moved) DeleteHandle(stream.SafeFileHandle); }
+                AfterOwnedPublish?.Invoke();
+                using var published = root.OpenFile(image.Filename) ?? throw Invalid();
+                if (VocabularyWindowsFile.Identity(published) != identity || !Matches(published, image)) throw Invalid();
+                root.Verify(); return identity;
             }
-            using var published = root.OpenFile(image.Filename) ?? throw Invalid();
-            if (VocabularyWindowsFile.Identity(published) != identity || !Matches(published, image)) throw Invalid();
-            root.Verify(); return identity;
+            catch
+            {
+                // No receipt has escaped yet. Remove only this publication, by identity; a
+                // replacement leaf or a cleanup failure must not hide the original error.
+                if (moved) { try { RemoveOwned(image, identity); } catch { } }
+                throw;
+            }
         });
     }
     public VocabularyWindowsFile.FileIdentity? CaptureIdentity(VocabularyImageReference image) => ContentOperation<VocabularyWindowsFile.FileIdentity?>(() =>

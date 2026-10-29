@@ -32,6 +32,8 @@ last-reference cleanup, SQL rollback preserving reused media, cancellation after
 staging-name collision and graph/media snapshot copying. Identity regressions replace a leaf with
 another file containing identical bytes before rollback or cleanup; the replacement survives. A
 delete-handle test also verifies that replacement is denied between identity check and disposition.
+Failures after publication but before the write receipt is returned also trigger identity-bound
+best-effort rollback; a replacement leaf is preserved.
 They do not establish physical UI or
 process-crash recovery. Native Windows ACL/reparse coverage of the reused image effect remains in
 `VocabularyImageStorageTests`.

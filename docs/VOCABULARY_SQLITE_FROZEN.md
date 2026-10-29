@@ -21,9 +21,13 @@ reconstructing and reprojecting every row; malformed rows, orphaned children, in
 wrong payload types and hidden nested children fail without being repaired. Whole graph admission
 also runs before a database write and before a read snapshot is returned. Typed payloads share the
 source-shaped leaf serializer and `SourceDate` Double representation, never the old v3 document
-or v7 resource codec. The SQLite value limit remains 64 MiB. Like the frozen Mac database, this slice has no aggregate
-table/row read budget; a maliciously large file can require substantial memory before admission.
-A bounded production read strategy remains a gate before connecting this adapter to user data.
+or v7 resource codec. The SQLite value limit remains 64 MiB. Windows additionally caps aggregate SQL value bytes plus
+per-row accounting at 192 MiB, derived from the standalone document transport bound. It streams
+rows, charges before copying columns, and checks cancellation before each SQLite step. The limit
+is a Windows admission restriction, not a frozen Mac notebook-size rule: oversized notebooks are
+rejected without modification. Object and serializer overhead can exceed the accounting budget,
+and a single SQLite call or row decode cannot be interrupted. Production activation remains gated
+on native compatibility and an explicit decision for notebooks outside this bounded subset.
 
 Creation stages a complete private file and publishes it exclusively; open uses the existing retained
 Windows file-identity and cross-process lock. The owner serializes operations and disallows read-to-

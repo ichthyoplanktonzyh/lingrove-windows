@@ -84,8 +84,9 @@ internal sealed class FrozenVocabularySQLiteDatabase : IDisposable
         long version = _connection.Scalar("PRAGMA user_version");
         if (version is not 4 and not SchemaVersion) throw new VocabularyException(VocabularyFailure.UnsupportedVersion);
         var integrity = _connection.Rows("PRAGMA quick_check");
-        if (integrity is not [{ Length: 1 } check] || check[0] is not Value.Text { Data: "ok" }
-            || _connection.Rows("PRAGMA foreign_key_check").Length != 0) throw Invalid();
+        if (integrity is not [{ Length: 1 } check] || check[0] is not Value.Text { Data: "ok" }) throw Invalid();
+        // Fail at the first violation instead of accumulating every broken relationship.
+        _connection.VisitRows("PRAGMA foreign_key_check", [], CancellationToken.None, null, _ => throw Invalid());
         VerifySchema(_connection, version == 4);
         if (version == 4) MigrateClassification(_connection);
         _connection.Execute("PRAGMA journal_mode=WAL");
@@ -115,17 +116,23 @@ internal sealed class FrozenVocabularySQLiteDatabase : IDisposable
         long value = _connection.Scalar("SELECT revision FROM state WHERE singleton=1");
         return value >= 0 ? (ulong)value : throw Invalid();
     });
-    internal FrozenVocabularySnapshot Read(CancellationToken cancellationToken = default) => Access(false, () => _connection.Transaction(false, () =>
+    internal FrozenVocabularySnapshot Read(CancellationToken cancellationToken = default, long maximumBytes = VocabularyDocumentCodec.MaximumDocumentBytes) => Access(false, () => _connection.Transaction(false, () =>
     {
         cancellationToken.ThrowIfCancellationRequested();
         ulong revision = Revision(); long templates = _connection.Scalar("SELECT has_templates FROM state WHERE singleton=1");
         if (templates is not 0 and not 1) throw Invalid();
         var records = new List<VocabularyDatabaseRecord>();
+        long remaining = Math.Min(maximumBytes, VocabularyDocumentCodec.MaximumDocumentBytes);
+        void Account(int size)
+        {
+            if (size < 0 || size > remaining) throw new VocabularyException(VocabularyFailure.OversizedArchive);
+            remaining -= size;
+        }
         foreach (var table in Enum.GetValues<VocabularyDatabaseTable>())
         {
             cancellationToken.ThrowIfCancellationRequested();
             string[] columns = ["id", "parent_id", "position", "payload", .. table.ExtraColumns()];
-            foreach (var row in _connection.Rows("SELECT " + string.Join(',', columns) + " FROM " + table.Name()))
+            _connection.VisitRows("SELECT " + string.Join(',', columns) + " FROM " + table.Name(), [], cancellationToken, Account, row =>
             {
                 if (row[0] is not Value.Text id || row[1] is not Value.Null and not Value.Text
                     || row[2] is not Value.Integer { Data: >= 0 and <= int.MaxValue } position
@@ -134,7 +141,7 @@ internal sealed class FrozenVocabularySQLiteDatabase : IDisposable
                 try { payload = VocabularyDatabasePayloadCodec.Decode(table, bytes.Data); } catch (VocabularyException) { throw Invalid(); }
                 records.Add(new(table, id.Data, (row[1] as Value.Text)?.Data, (int)position.Data, payload,
                     row.Skip(4).Select(value => (value as Value.Text)?.Data).ToArray()));
-            }
+            });
         }
         var document = VocabularyDatabaseProjection.Document(records, templates == 1);
         Cotabby.Core.Vocabulary.Frozen.VocabularyArchiveValidation.Validate(document);

@@ -179,5 +179,25 @@ public sealed class FrozenVocabularySQLiteTests : IDisposable
         Assert.Equal(VocabularyFailure.UnsupportedVersion, error.Failure); Assert.Equal(before, File.ReadAllBytes(Pathname));
         using var reopened = VocabularySQLiteDatabase.OpenFile(Pathname); Assert.Equal(0UL, reopened.Revision());
     }
+    [Fact]
+    public void AggregateReadBudgetRejectsWithoutChangingDatabase()
+    {
+        using var db = FrozenVocabularySQLiteDatabase.CreateMemory();
+        var source = RichGraph(); db.Write(source, new(), 0);
+        var error = Assert.Throws<VocabularyException>(() => db.Read(maximumBytes: 512));
+        Assert.Equal(VocabularyFailure.OversizedArchive, error.Failure);
+        Assert.Equal(1UL, db.Revision()); Assert.Equal(source, db.Read().Document);
+    }
+    [Fact]
+    public void StreamingStopsOnCancellationBetweenRows()
+    {
+        using var connection = VocabularySQLiteConnection.OpenMemory();
+        connection.Execute("CREATE TABLE probes (value TEXT)");
+        for (int i = 0; i < 20; i++) connection.Execute("INSERT INTO probes VALUES ('data')");
+        using var cancel = new CancellationTokenSource(); int seen = 0;
+        Assert.Throws<OperationCanceledException>(() => connection.VisitRows("SELECT value FROM probes", [], cancel.Token, null,
+            _ => { if (++seen == 3) cancel.Cancel(); }));
+        Assert.Equal(3, seen); Assert.Equal(20, connection.Scalar("SELECT count(*) FROM probes"));
+    }
     public void Dispose() => Directory.Delete(_root, recursive: true);
 }

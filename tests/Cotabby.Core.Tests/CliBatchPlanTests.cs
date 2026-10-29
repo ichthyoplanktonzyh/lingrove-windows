@@ -67,4 +67,25 @@ public sealed class CliBatchPlanTests
         var error = Assert.Throws<CliException>(() => CliBatchPlan.Create(batch, new F.VocabularyDocument(), 0, CliIdentity.Fingerprint(batch), new F.SourceDate(0), new Dictionary<string, VocabularyPreparedImage>()));
         Assert.Equal(CliErrorCode.Conflict, error.Code);
     }
+    [Fact]
+    public void AppendReusesExactEvidenceAndRetainsTranslationVariant()
+    {
+        var first = Decode("""{"version":1,"idempotencyKey":"first","operations":[{"add":{"expression":"bank","language":"en","kind":"word","meaning":"money","examples":[{"text":"the bank","translation":"one"}]}}]}""");
+        var saved = CliBatchPlan.Create(first, new F.VocabularyDocument(), 0, CliIdentity.Fingerprint(first), new F.SourceDate(1), new Dictionary<string, VocabularyPreparedImage>()).Document;
+        var entry = saved.CollectedEntries.Single(); var sense = entry.Senses.Single(); var prior = sense.Examples.Single();
+        string append = """{"version":1,"idempotencyKey":"second","operations":[{"append":{"entryID":"ENTRY","senseID":"SENSE","examples":[{"text":"the bank","translation":"two"}]}}]}""".Replace("ENTRY", entry.Id.ToString("D")).Replace("SENSE", sense.Id.ToString("D"));
+        var second = Decode(append); var result = CliBatchPlan.Create(second, saved, 1, CliIdentity.Fingerprint(second), new F.SourceDate(2), new Dictionary<string, VocabularyPreparedImage>()).Document;
+        var after = result.CollectedEntries.Single().Senses.Single().Examples.Single();
+        Assert.Equal(prior.Id, after.Id); Assert.Equal(prior.SourceId, after.SourceId); Assert.Equal("one", after.Translation);
+        Assert.Equal("two", after.TranslationVariants.Single().Text); Assert.Single(result.Sources); Assert.Single(result.Occurrences);
+    }
+    [Fact]
+    public void CaptureCannotStealAnExistingSenseUsage()
+    {
+        var first = Decode("""{"version":1,"idempotencyKey":"first","operations":[{"add":{"expression":"bank","language":"en","kind":"word","meaning":"money","examples":[{"text":"the bank"}]}}]}""");
+        var saved = CliBatchPlan.Create(first, new F.VocabularyDocument(), 0, CliIdentity.Fingerprint(first), new F.SourceDate(1), new Dictionary<string, VocabularyPreparedImage>()).Document;
+        var capture = CliInputContract.DecodeCapture(Encoding.UTF8.GetBytes("""{"version":1,"idempotencyKey":"second","defaults":{"language":"en"},"entries":[{"expression":"bank","senses":[{"meaning":"river","examples":[{"text":"the bank"}]}]}]}"""));
+        var error = Assert.Throws<CliException>(() => CliBatchPlan.Create(capture, saved, 1, CliIdentity.Fingerprint(capture), new F.SourceDate(2), new Dictionary<string, VocabularyPreparedImage>()));
+        Assert.Equal(CliErrorCode.Conflict, error.Code); Assert.Single(saved.CollectedEntries.Single().Senses);
+    }
 }

@@ -1,6 +1,6 @@
 {
   "macReference": "3b53402f2cbc196b0398d133177fd80006d165b2",
-  "provenance": "Observed from 3b Swift in macOS CI run 40944180841; numeric and canonical range differences corrected from source.",
+  "provenance": "First nine cases observed from 3b Swift CI run 40944180841; expanded cases are provisional Windows observations.",
   "batches": [
     {
       "name": "typed-nil",
@@ -116,6 +116,28 @@
       },
       "expectedFingerprint": "c1de977adc6203d495fdb3376aef086b5bd2b4e708a3ddcd8748efe33d44c3be",
       "expectedId": "0776290B-A251-5A82-8914-E533B7DBAF67"
+    },
+    {
+      "name": "floating-exponents",
+      "batch": {
+        "version": 2,
+        "idempotencyKey": "float",
+        "expectedRevision": 0,
+        "operations": [
+          {
+            "put": {
+              "resource": "senses",
+              "value": {
+                "id": "abcdefab-cdef-abcd-efab-cdefabcdefab",
+                "createdAt": 1e-7,
+                "updatedAt": 1e21
+              }
+            }
+          }
+        ]
+      },
+      "expectedFingerprint": "80bb366013dd661e523f170295515409578db4abcfa5f947d3b2d9ecd596d4cc",
+      "expectedId": "43F51E1F-0FCF-5374-9643-F8DFD871576E"
     }
   ],
   "ranges": [
@@ -142,6 +164,30 @@
       "text": "cafe\u0301",
       "expression": "\u00E9",
       "expected": "3:2"
+    },
+    {
+      "name": "case-sensitive",
+      "text": "Bank",
+      "expression": "bank",
+      "expected": "missing"
+    },
+    {
+      "name": "ligature",
+      "text": "\uFB01",
+      "expression": "fi",
+      "expected": "missing"
+    },
+    {
+      "name": "punctuation",
+      "text": "a-b",
+      "expression": "ab",
+      "expected": "missing"
+    },
+    {
+      "name": "astral-overlap",
+      "text": "\uD83D\uDE00\uD83D\uDE00",
+      "expression": "\uD83D\uDE00",
+      "expected": "ambiguous"
     }
   ]
 }

@@ -1,5 +1,10 @@
 # Feature Parity and Evidence
 
+The [owned-media repair](VOCABULARY_OWNED_MEDIA_REPAIR_3B.md) connects verified-object atomic
+repair on supported local NTFS/TxF through the shared file-backed writer. Repaired existing media
+survives later SQL failure/cancellation; unsupported capability fails closed. Provider and physical
+acceptance limits remain explicit in the [acceptance candidate](WINDOWS_ACCEPTANCE_CANDIDATE_3B.md).
+
 The [review failure interface pass](REVIEW_FAILURE_INTERFACE_3B.md) preserves owned failure
 provenance through the existing Anki/controller/session/settings paths, reuses 48 existing keys
 and adds four prompts in all 15 locales without changing internal synchronization identifiers.

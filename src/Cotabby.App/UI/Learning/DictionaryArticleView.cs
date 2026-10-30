@@ -32,6 +32,7 @@ internal sealed class DictionaryArticleView : Grid, IAsyncDisposable
     private bool _profileMayExist;
     private readonly Func<Task>? _environmentBarrier, _controllerBarrier;
     private readonly Func<string> _runtimeVersion;
+    private readonly Func<Task, CancellationToken, Task> _waitForNative;
     private readonly Action? _cleanupRetryObserved;
     private readonly Func<string, string> _sanitize;
     private readonly DictionaryArticleAdmission _slots;
@@ -50,12 +51,16 @@ internal sealed class DictionaryArticleView : Grid, IAsyncDisposable
     internal string? InitializationFailure { get; private set; }
     internal DictionaryArticleView(Func<Task>? environmentBarrier = null, Func<Task>? controllerBarrier = null,
         Func<string, string>? sanitize = null, DictionaryArticleAdmission? slots = null, DictionaryProfileEffects? profileEffects = null,
-        string? profileParent = null, Func<string>? runtimeVersion = null, Action? cleanupRetryObserved = null)
+        string? profileParent = null, Func<string>? runtimeVersion = null, Action? cleanupRetryObserved = null,
+        Func<Task, CancellationToken, Task>? waitForNative = null)
     {
         _environmentBarrier = environmentBarrier; _controllerBarrier = controllerBarrier;
         _sanitize = sanitize ?? DictionaryHtmlPolicy.Document; _slots = slots ?? DictionaryArticleAdmission.Shared;
         _profileEffects = profileEffects;
         _runtimeVersion = runtimeVersion ?? (() => CoreWebView2Environment.GetAvailableBrowserVersionString());
+        // Keep the production ten-second deadline. Native lifecycle fixtures supply their own
+        // bounded wait so cold runtime startup does not decide a cleanup/ownership assertion.
+        _waitForNative = waitForNative ?? ((native, token) => native.WaitAsync(TimeSpan.FromSeconds(10), token));
         _cleanupRetryObserved = cleanupRetryObserved;
         _profileParent = profileParent ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Cotabby", "dictionary-profiles");
         _profile = Path.GetFullPath(Path.Combine(Path.GetTempPath(), "lingrove-dictionary-" + Guid.NewGuid().ToString("N")));
@@ -145,7 +150,7 @@ internal sealed class DictionaryArticleView : Grid, IAsyncDisposable
     private async Task AwaitNativeAsync(Task native)
     {
         _nativePending = native;
-        await native.WaitAsync(TimeSpan.FromSeconds(10), _shutdown.Token);
+        await _waitForNative(native, _shutdown.Token);
         _nativePending = null;
     }
     private void ResourceRequested(object? sender, CoreWebView2WebResourceRequestedEventArgs e)

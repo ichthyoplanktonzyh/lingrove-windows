@@ -19,6 +19,8 @@ internal sealed class VocabularyMediaDirectory : IDisposable
     private readonly VocabularyWindowsFile.FileIdentity _identity;
     private readonly string _requested;
     internal string Path { get; }
+    // Borrow only within the synchronous directory lease; marshalling retains the native handle.
+    internal SafeFileHandle Handle => _handle;
 
     private VocabularyMediaDirectory(SafeFileHandle handle, string requested)
     {

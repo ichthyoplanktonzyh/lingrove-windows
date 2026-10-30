@@ -90,9 +90,11 @@ public sealed class FrozenVocabularyBackupStoreTests(WpfDispatcher dispatcher)
     private static F.ICanonicalVocabularyStore FStore(string root) => FrozenVocabularyStoreFactory.Create(Path.Combine(root, "data", FrozenVocabularyStoreFactory.CanonicalFileName), false);
 
     [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public Task RestoreFailureOrCancellationRollsBackNewImageAndLeavesGraph(bool cancel) => dispatcher.RunAsync(async () =>
+    [InlineData(false, false)]
+    [InlineData(true, false)]
+    [InlineData(false, true)]
+    [InlineData(true, true)]
+    public Task RestoreFailureOrCancellationRollsBackNewImageAndLeavesGraph(bool cancel, bool repair) => dispatcher.RunAsync(async () =>
     {
         string root = Path.Combine(Path.GetTempPath(), "canonical-backup-" + Guid.NewGuid().ToString("N")); Directory.CreateDirectory(root);
         try
@@ -108,12 +110,15 @@ public sealed class FrozenVocabularyBackupStoreTests(WpfDispatcher dispatcher)
             }
             string targetDatabase = Path.Combine(root, "target", FrozenVocabularyStoreFactory.CanonicalFileName), media = Path.Combine(root, "target", FrozenVocabularyStoreFactory.CanonicalMediaDirectoryName);
             var images = WindowsVocabularyImageStorage.ForDirectory(media); using var cancellation = new CancellationTokenSource();
+            string imagePath = Path.Combine(media, prepared.Reference.Filename);
+            if (repair) { Assert.NotNull(images.WriteOwned(bytes, prepared.Reference)); await File.WriteAllBytesAsync(imagePath, [7, 8, 9]); }
             images.AfterOwnedPublish = () => { if (cancel) cancellation.Cancel(); else throw new IOException("injected after publication"); };
             await using var target = new FrozenVocabularyImportStore(() => FrozenVocabularySQLiteDatabase.OpenFile(targetDatabase), images: images, notebookPath: targetDatabase);
             await target.AddEntriesAsync([new VocabularyEntryInput(Expression: "target", Meaning: "original")]); var before = await target.ReadAsync();
             if (cancel) await Assert.ThrowsAnyAsync<OperationCanceledException>(() => target.RestoreAsync(backup, cancellation.Token));
             else await Assert.ThrowsAsync<VocabularyException>(() => target.RestoreAsync(backup));
-            var after = await target.ReadAsync(); Assert.Equal(before.Revision, after.Revision); Assert.Equal(before.Document, after.Document); Assert.False(File.Exists(Path.Combine(media, prepared.Reference.Filename)));
+            var after = await target.ReadAsync(); Assert.Equal(before.Revision, after.Revision); Assert.Equal(before.Document, after.Document);
+            if (repair) Assert.Equal(bytes, await File.ReadAllBytesAsync(imagePath)); else Assert.False(File.Exists(imagePath));
         }
         finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
     });
@@ -194,7 +199,7 @@ public sealed class FrozenVocabularyBackupStoreTests(WpfDispatcher dispatcher)
     });
 
     [Fact]
-    public Task ExistingCorruptImageRejectsRestoreWithoutReplacementOrGraphChange() => dispatcher.RunAsync(async () =>
+    public Task ExistingCorruptImageIsAtomicallyRepairedBeforeRestoreAcknowledgement() => dispatcher.RunAsync(async () =>
     {
         string root = Path.Combine(Path.GetTempPath(), "canonical-backup-corrupt-" + Guid.NewGuid().ToString("N")); Directory.CreateDirectory(root);
         try
@@ -211,7 +216,9 @@ public sealed class FrozenVocabularyBackupStoreTests(WpfDispatcher dispatcher)
             var images = WindowsVocabularyImageStorage.ForDirectory(media); await using var target = new FrozenVocabularyImportStore(() => FrozenVocabularySQLiteDatabase.OpenFile(targetDatabase), images: images, notebookPath: targetDatabase);
             await target.AddEntriesAsync([new VocabularyEntryInput(Expression: "target", Meaning: "original")]); var before = await target.ReadAsync();
             Assert.NotNull(images.WriteOwned(bytes, prepared.Reference)); string path = Path.Combine(media, prepared.Reference.Filename); var damaged = bytes.ToArray(); damaged[^1] ^= 1; await File.WriteAllBytesAsync(path, damaged);
-            await Assert.ThrowsAsync<VocabularyException>(() => target.RestoreAsync(backup)); var after = await target.ReadAsync(); Assert.Equal(before.Revision, after.Revision); Assert.Equal(before.Document, after.Document); Assert.Equal(damaged, await File.ReadAllBytesAsync(path));
+            var after = await target.RestoreAsync(backup); Assert.True(after.Revision > before.Revision);
+            Assert.Equal("source", Assert.Single(after.Document.Entries).Expression); Assert.Equal(bytes, await File.ReadAllBytesAsync(path));
+            Assert.Equal(bytes, await target.ReadImageAsync(prepared.Reference));
         }
         finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
     });

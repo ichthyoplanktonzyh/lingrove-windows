@@ -48,6 +48,6 @@ before the extra composite-tag regression; the focused media/helper/editor suite
 Final independent Inference/WPF regression and final-head CI outcomes are recorded in the PR.
 No user content, model, endpoint, audio playback, installer or release is involved.
 
-Corrupt-existing-digest repair remains open: the canonical owner still refuses an unsafe pathname
-replacement. This module does not substitute in-place truncation, delete existing media or weaken
-acknowledgement. Other compressed representations and native platform gates retain their records.
+The subsequent [owned-media repair](VOCABULARY_OWNED_MEDIA_REPAIR_3B.md) connects atomic repair of
+an admitted corrupt digest leaf on supported local NTFS/TxF. Unsupported capability fails closed.
+Other compressed representations and native platform gates retain their records.

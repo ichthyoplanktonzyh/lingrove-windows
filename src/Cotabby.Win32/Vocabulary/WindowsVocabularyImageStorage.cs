@@ -20,7 +20,9 @@ internal sealed class WindowsVocabularyImageStorage : IOwnedVocabularyImageStora
     private readonly Dictionary<string, byte[]> _memory = new(StringComparer.Ordinal);
     private readonly Func<Guid> _stagingIdentity;
     internal Action? BeforeOwnedDelete { get; set; }
+    internal Action? BeforeOwnedPublish { get; set; }
     internal Action? AfterOwnedPublish { get; set; }
+    internal Action<VocabularyImageRepairPhase>? RepairObserved { get; set; }
     internal string? DirectoryPath { get; }
     internal WindowsVocabularyImageStorage(string? notebook) : this(notebook, Guid.NewGuid) { }
     /// <summary>Tests may force a CREATE_NEW collision without changing actual file operations.</summary>
@@ -61,56 +63,62 @@ internal sealed class WindowsVocabularyImageStorage : IOwnedVocabularyImageStora
         ValidateReference(image);
         if (DirectoryPath is null || data.Length != image.ByteCount) throw Invalid();
         byte[] bytes = data.ToArray(); WindowsVocabularyImagePreparer.Validate(bytes, image);
-        return ContentOperation<VocabularyWindowsFile.FileIdentity?>(() =>
+        return ContentOperation<VocabularyWindowsFile.FileIdentity?>(() => WriteOwnedValidated(bytes, image));
+    }
+    private VocabularyWindowsFile.FileIdentity? WriteOwnedValidated(byte[] bytes, VocabularyImageReference image)
+    {
+        using var root = VocabularyMediaDirectory.Open(DirectoryPath ?? throw Invalid(), create: true);
+        VocabularyWindowsFile.FileIdentity? repairIdentity = null;
+        using (var current = root.OpenFile(image.Filename))
         {
-            using var root = VocabularyMediaDirectory.Open(DirectoryPath, create: true);
-            using (var current = root.OpenFile(image.Filename))
+            if (current is not null)
             {
-                if (current is not null)
-                {
-                    if (Matches(current, image)) return null;
-                    // A pathname replacement cannot safely repair an object that another process
-                    // can exchange before the rename. Fail closed until handle-based repair exists.
-                    throw Invalid();
-                }
+                if (Matches(current, image)) return null;
+                repairIdentity = VocabularyWindowsFile.Identity(current);
             }
-            string staging = System.IO.Path.Combine(root.Path, ".vocabulary-image-" + _stagingIdentity().ToString("N") + ".tmp");
-            string destination = System.IO.Path.Combine(root.Path, image.Filename);
-            VocabularyWindowsFile.FileIdentity identity = default;
-            bool moved = false;
-            try
+        }
+        if (repairIdentity is { } expected)
+        {
+            WindowsVocabularyImageRepair.Repair(root, bytes, image, expected, _stagingIdentity(), file => Matches(file, image), RepairObserved);
+            AfterOwnedPublish?.Invoke();
+            return null; // Pre-existing repair must survive the caller's later SQL rollback.
+        }
+        string staging = System.IO.Path.Combine(root.Path, ".vocabulary-image-" + _stagingIdentity().ToString("N") + ".tmp");
+        string destination = System.IO.Path.Combine(root.Path, image.Filename);
+        VocabularyWindowsFile.FileIdentity identity = default;
+        bool moved = false;
+        try
+        {
+            using (var stream = new FileInfo(staging).Create(FileMode.CreateNew, FileSystemRights.FullControl,
+                FileShare.ReadWrite | FileShare.Delete, 65536, FileOptions.None, VocabularyWindowsFile.NewFileSecurity()))
             {
-                using (var stream = new FileInfo(staging).Create(FileMode.CreateNew, FileSystemRights.FullControl,
-                    FileShare.ReadWrite | FileShare.Delete, 65536, FileOptions.None, VocabularyWindowsFile.NewFileSecurity()))
+                identity = VocabularyWindowsFile.Identity(stream.SafeFileHandle);
+                try
                 {
-                    identity = VocabularyWindowsFile.Identity(stream.SafeFileHandle);
-                    try
+                    stream.Write(bytes); stream.Flush(flushToDisk: true); root.Verify(); BeforeOwnedPublish?.Invoke();
+                    if (!VocabularyWindowsFile.Native.MoveFileExW(staging, destination, 8))
                     {
-                        stream.Write(bytes); stream.Flush(flushToDisk: true); root.Verify();
-                        if (!VocabularyWindowsFile.Native.MoveFileExW(staging, destination, 8))
-                        {
-                            if (Marshal.GetLastPInvokeError() is not 80 and not 183) throw Invalid();
-                            using var winner = root.OpenFile(image.Filename) ?? throw Invalid();
-                            if (!Matches(winner, image)) throw Invalid();
-                            root.Verify(); return null;
-                        }
-                        moved = true;
+                        if (Marshal.GetLastPInvokeError() is not 80 and not 183) throw Invalid();
+                        using var winner = root.OpenFile(image.Filename) ?? throw Invalid();
+                        if (!Matches(winner, image)) throw Invalid();
+                        root.Verify(); return null;
                     }
-                    finally { if (!moved) DeleteHandle(stream.SafeFileHandle); }
+                    moved = true;
                 }
-                AfterOwnedPublish?.Invoke();
-                using var published = root.OpenFile(image.Filename) ?? throw Invalid();
-                if (VocabularyWindowsFile.Identity(published) != identity || !Matches(published, image)) throw Invalid();
-                root.Verify(); return identity;
+                finally { if (!moved) DeleteHandle(stream.SafeFileHandle); }
             }
-            catch
-            {
-                // No receipt has escaped yet. Remove only this publication, by identity; a
-                // replacement leaf or a cleanup failure must not hide the original error.
-                if (moved) { try { RemoveOwned(image, identity); } catch { } }
-                throw;
-            }
-        });
+            AfterOwnedPublish?.Invoke();
+            using var published = root.OpenFile(image.Filename) ?? throw Invalid();
+            if (VocabularyWindowsFile.Identity(published) != identity || !Matches(published, image)) throw Invalid();
+            root.Verify(); return identity;
+        }
+        catch
+        {
+            // No receipt has escaped yet. Remove only this publication, by identity; a
+            // replacement leaf or a cleanup failure must not hide the original error.
+            if (moved) { try { RemoveOwned(image, identity); } catch { } }
+            throw;
+        }
     }
     public VocabularyWindowsFile.FileIdentity? CaptureIdentity(VocabularyImageReference image) => ContentOperation<VocabularyWindowsFile.FileIdentity?>(() =>
     {
@@ -129,8 +137,8 @@ internal sealed class WindowsVocabularyImageStorage : IOwnedVocabularyImageStora
     });
     private static void DeleteHandle(SafeFileHandle handle)
     {
-        int disposition = 1;
-        if (!VocabularyWindowsFile.Native.SetFileInformationByHandle(handle, 4, ref disposition, sizeof(int))) throw Invalid();
+        byte disposition = 1; // FILE_DISPOSITION_INFO.DeleteFile is a one-byte BOOLEAN.
+        if (!VocabularyWindowsFile.Native.SetFileInformationByHandle(handle, 4, ref disposition, sizeof(byte))) throw Invalid();
     }
     private bool WriteValidated(byte[] bytes, VocabularyImageReference image)
     {
@@ -143,48 +151,7 @@ internal sealed class WindowsVocabularyImageStorage : IOwnedVocabularyImageStora
             }
             _memory[image.Filename] = bytes; return true;
         }
-        using var root = VocabularyMediaDirectory.Open(DirectoryPath, create: true);
-        string destination = System.IO.Path.Combine(root.Path, image.Filename);
-        bool existed;
-        using (var current = root.OpenFile(image.Filename))
-        {
-            existed = current is not null;
-            if (current is not null && Matches(current, image)) { root.Verify(); return false; }
-        }
-        string staging = System.IO.Path.Combine(root.Path, ".vocabulary-image-" + _stagingIdentity().ToString("N") + ".tmp");
-        bool ownsStaging = false;
-        try
-        {
-            // CREATE_NEW with a protected ACL precedes the first byte. No inherited public-data
-            // window exists, and Flush(true) precedes same-volume atomic publication. Staging is
-            // private to this operation and is the only path the finally block may erase.
-            using (var stream = new FileInfo(staging).Create(FileMode.CreateNew, FileSystemRights.FullControl,
-                FileShare.None, 65536, FileOptions.None, VocabularyWindowsFile.NewFileSecurity()))
-            { ownsStaging = true; stream.Write(bytes); stream.Flush(flushToDisk: true); }
-            root.Verify();
-            if (!existed)
-            {
-                if (VocabularyWindowsFile.Native.MoveFileExW(staging, destination, 8)) { ownsStaging = false; return true; }
-                if (Marshal.GetLastPInvokeError() is not 80 and not 183) throw Invalid();
-                // Another writer won publication. Verify that actual leaf rather than assuming
-                // equal hash names imply equal bytes; a valid winner is reused without rewriting.
-                using var winner = root.OpenFile(image.Filename) ?? throw Invalid();
-                if (Matches(winner, image)) { root.Verify(); return false; }
-            }
-            // Re-open immediately before repair: replacing an unsafe leaf is never recovery.
-            // Drop our read handle before rename, because it deliberately denies delete sharing.
-            using (var repair = root.OpenFile(image.Filename) ?? throw Invalid()) { }
-            root.Verify();
-            if (!VocabularyWindowsFile.Native.MoveFileExW(staging, destination, 8 | 1)) throw Invalid();
-            ownsStaging = false;
-            return false;
-        }
-        finally
-        {
-            // CREATE_NEW can fail on an existing path. That file never belonged to us; cleanup
-            // starts only after our create succeeded and ends when publication moves it away.
-            if (ownsStaging) { try { File.Delete(staging); } catch (IOException) { } catch (UnauthorizedAccessException) { } }
-        }
+        return WriteOwnedValidated(bytes, image) is not null;
     }
 
     public void Remove(VocabularyImageReference image)

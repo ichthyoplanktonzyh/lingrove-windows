@@ -150,8 +150,9 @@ the initial gap audit; its initial Windows gap descriptions are historical. Curr
 - #157 merged active learning state/destination localization after all four checks passed at
   `ec8083aaf24e34704cda2454d8e7398b412bb6b1`, as `a8ee9c4`, with independent WPF 1215/1215.
 - The [native bitmap input](VOCABULARY_BITMAP_INPUT_3B.md) adapts bounded CF_BITMAP/TYMED_GDI
-  through the existing transfer helper, WIC and canonical Store. Corrupt-existing-media repair
-  and physical producer/color acceptance remain explicit gaps.
+  through the existing transfer helper, WIC and canonical Store. At that checkpoint corrupt-media
+  repair remained open; the later owned-media module below supersedes that gap on local NTFS/TxF.
+  Physical producer/color acceptance remains separate.
 - #158 merged native bitmap input after all four checks passed at
   `21bf55314656acf9a84099991b0a77e3bdbd47c7`, as `35e392f`, with independent Inference 758/758
   and WPF 1218/1218. Physical producer acceptance remains separate.
@@ -191,8 +192,16 @@ the initial gap audit; its initial Windows gap descriptions are historical. Curr
 - #164 merged workflow failure presentation after all four final-head checks passed at
   `e505cc75b40bdb19d2923a5b85d218b0b6c76ab2`, as `9062354`, with independent WPF 1241/1241
   and App 1278/1278 on its production-identical preceding head.
+- #165 merged review failure presentation after all four final-head checks passed at
+  `7b8af218f5b91839d379e60b4e0654286460de3e`, as `04b556c`, with independent WPF 1243/1243
+  and noninteractive Inference 751/751.
+- #166 merged the acceptance handoff and explicit Python prerequisite after all four checks passed
+  at `edc2cb37e72165514cd0deebf606682c14256152`, as `92e5ab1`.
+- The [owned-media repair](VOCABULARY_OWNED_MEDIA_REPAIR_3B.md) now connects identity-bound atomic
+  corrupt-image repair and retention after SQL failure/cancellation on supported local NTFS/TxF.
+  Unavailable capability fails closed; no unsafe pathname replacement fallback is used.
 - The [acceptance candidate](WINDOWS_ACCEPTANCE_CANDIDATE_3B.md) separates remaining unimplemented
-  automatic-language confidence and corrupt-existing-image repair from the Apple dictionary,
+  automatic-language confidence from the Apple dictionary and optional repair capability,
   supported media/provider subset differences and final native host checks. The named finite
   workflow/review copy inventories are connected in 15 locales; further translation claims need
   a concrete caller/key rather than an open-ended historical backlog. Older libraries retain

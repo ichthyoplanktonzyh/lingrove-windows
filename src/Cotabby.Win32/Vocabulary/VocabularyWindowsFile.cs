@@ -243,6 +243,10 @@ internal sealed class VocabularyWindowsFile : IDisposable
         internal static extern bool GetIdentity(SafeFileHandle handle, int type, out FileIdentity value, uint size);
         [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern bool SetFileInformationByHandle(SafeFileHandle handle, int type, ref byte value, uint size);
+        // FILE_DISPOSITION_INFO_EX.Flags is DWORD; the ordinary disposition above is BOOLEAN.
+        [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
         internal static extern bool SetFileInformationByHandle(SafeFileHandle handle, int type, ref int value, uint size);
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]

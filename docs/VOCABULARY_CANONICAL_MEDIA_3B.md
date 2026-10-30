@@ -22,10 +22,10 @@ converts to sRGB, and produces a metadata-free PNG. A linked V5 bitmap profile i
 WIC receives the data, including for a chosen BMP file, so it cannot name a network path. Other
 compressed bitmap layouts and OLE formats other than the explicitly listed ones remain unsupported. Ordinary WIC
 formats with a readable color context use the existing color conversion. Current-format restore
-also still rejects a corrupt existing digest leaf: the
-current Windows rename operation cannot bind its replacement target to the verified file identity
-against a same-user replacement race. It does not delete that file or claim a successful restore.
-These are explicit platform gaps, not evidence of complete 3b media parity.
+now uses [identity-bound atomic repair](VOCABULARY_OWNED_MEDIA_REPAIR_3B.md) for an admitted corrupt
+digest leaf on supported local NTFS/TxF. Unavailable capability and conflicting handles fail closed;
+no unsafe pathname replacement is used. These provider/platform limits remain explicit rather
+than establishing complete 3b media parity.
 
 An in-process synthetic COM probe holds an `IMarshal::GetUnmarshalClass` callback and observes
 that `CoMarshalInterface` cannot return until it is released. Thus passing a dropped object from

@@ -22,8 +22,9 @@ identity-bound image staging, rollback and cleanup as canonical review transacti
 This bounded editor contract permits existing sense IDs and new/edited/removed usages. Creating,
 merging, moving or deleting senses and category editing remain separate commands and are not
 activated here. The API does not add a window, AppHost owner or legacy-data conversion. Existing
-Windows image preparation limitations and the explicit refusal of unsafe corrupt-file repair are
-recorded in `VOCABULARY_CANONICAL_REVIEW_MEDIA.md`.
+Windows image preparation limitations are recorded in `VOCABULARY_CANONICAL_REVIEW_MEDIA.md`.
+The subsequent [owned-media repair](VOCABULARY_OWNED_MEDIA_REPAIR_3B.md) adds identity-bound atomic
+repair on supported local NTFS/TxF while preserving explicit safe refusal elsewhere.
 
 Source-derived Core cases cover concurrent captures and conflicting fields, uncollect versus raw
 evidence, corrected evidence identities, authorship, stable timestamps, new usages and the editor's

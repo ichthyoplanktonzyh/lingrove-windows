@@ -28,10 +28,10 @@ precedes publication and cleanup. Destination publication uses a same-directory 
 file and handle-bound rename. Admission protects the current database, sidecars and explicit
 `media-v8` directory, and refuses the known old `vocabulary.sqlite` sibling and sidecars by path
 without opening that old file. Its named old `.media` path is also refused. Existing corrupt media
-at the same digest path is currently rejected rather than repaired: Windows cannot safely replace
-that leaf with the present identity-bound API. No success is reported in that case; the prior graph
-and file stay intact. Physical Shell behavior and current-format cross-platform file interchange
-are not established by these checks.
+at the same digest path now supports [identity-bound atomic repair](VOCABULARY_OWNED_MEDIA_REPAIR_3B.md)
+on local NTFS with available TxF. Repair survives later SQL failure/cancellation; unsupported
+capability or a conflicting object fails closed. Physical Shell behavior and current-format
+cross-platform file interchange are not established by these checks.
 
 Tests use isolated current-format named SQLite and synthetic images. They cover complete graph and
 Double roundtrip, classification guidance and uncollected evidence, restore versus ordinary evidence

@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using Cotabby.Core.Vocabulary;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI.Vocabulary;
 
@@ -81,7 +82,7 @@ public partial class VocabularyNotebookWindow
     }
     private Button MoveUsageButton(VocabularySelection receipt, Guid usageId)
     {
-        long version = _detailVersion; var button = new Button { Content = "Move usage", HorizontalAlignment = HorizontalAlignment.Left,
+        long version = _detailVersion; var button = new Button { Content = InterfaceText.Get("Move usage", "Vocabulary"), HorizontalAlignment = HorizontalAlignment.Left,
             Padding = new Thickness(8, 3, 8, 3), Margin = new Thickness(0, 8, 0, 0), Tag = usageId };
         button.Click += (_, _) =>
         {

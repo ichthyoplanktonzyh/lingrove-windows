@@ -7,6 +7,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using Cotabby.App.Vocabulary;
 using Cotabby.Core.Vocabulary;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI.Vocabulary;
 
@@ -26,7 +27,7 @@ internal sealed class VocabularyGraphView : Grid
     private Guid? _meaningSelection, _categorySelection;
     private bool _showsUnexplored;
     private Action<bool>? _setUnexplored;
-    private readonly CheckBox _unexplored = new() { Name = "GraphShowUnexplored", Content = "Show unexplored categories", HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(16), Padding = new Thickness(6) };
+    private readonly CheckBox _unexplored = new() { Name = "GraphShowUnexplored", Content = InterfaceText.Get("Show unexplored categories", "Vocabulary"), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(16), Padding = new Thickness(6) };
     private Action<Guid>? _selectMeaning, _selectCategory;
     private readonly StackPanel _legend = new() { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, Margin = new(16), IsHitTestVisible = false };
     private string _query = "";
@@ -74,7 +75,7 @@ internal sealed class VocabularyGraphView : Grid
         commands.Children.Add(Button("GraphCollapse", "Collapse", "Collapse senses", () => { _presentation.Collapse(); _select(null); }));
         var controls = new Border { Child = commands, Padding = new(9), CornerRadius = new(8), Margin = new(12), HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Bottom };
         controls.SetResourceReference(Border.BackgroundProperty, "CardBg"); Children.Add(controls);
-        _empty = new() { Text = "No matching expressions", HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, IsHitTestVisible = false, TextWrapping = TextWrapping.Wrap };
+        _empty = new() { Text = InterfaceText.Get("No matching expressions", "Vocabulary"), HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, IsHitTestVisible = false, TextWrapping = TextWrapping.Wrap };
         _empty.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondary"); Children.Add(_empty);
         _presentation.PropertyChanged += OnPresentationChanged;
         IsVisibleChanged += (_, _) => { if (!_retired) { if (IsVisible) Refresh(); else _settingsPopup.IsOpen = false; } };
@@ -101,7 +102,7 @@ internal sealed class VocabularyGraphView : Grid
         var graph = _canonicalProjection is null ? VocabularyGraphProjection.Make(_entries, _presentation.Expanded, _query, _search) : _canonicalProjection(_presentation.Expanded);
         _unexplored.Visibility = graph.IsMeaningGraph && _setUnexplored is not null ? Visibility.Visible : Visibility.Collapsed; _unexplored.IsChecked = _showsUnexplored;
         _legend.Margin = graph.IsMeaningGraph ? new Thickness(16, 50, 16, 0) : new Thickness(16);
-        _empty.Text = graph.IsMeaningGraph && graph.SearchQuery.Length == 0 ? "Browse by meaning\nSelect or create a meaning to compare expressions." : "No matching expressions"; _empty.Visibility = graph.Nodes.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+        _empty.Text = graph.IsMeaningGraph && graph.SearchQuery.Length == 0 ? InterfaceText.Get("Browse by meaning\nSelect or create a meaning to compare expressions.", "Vocabulary") : InterfaceText.Get("No matching expressions", "Vocabulary"); _empty.Visibility = graph.Nodes.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
         _legend.Children.Clear(); var names = graph.IsMeaningGraph ? new[] { "Categories", "Meaning groups", "Expressions" } : new[] { "Headwords", "Senses" }; for (int i = 0; i < names.Length; i++) { Shape mark = graph.IsMeaningGraph && i == 0 ? new Rectangle { RadiusX = 2, RadiusY = 2 } : new Ellipse(); mark.Width = mark.Height = 8; mark.Margin = new(8, 0, 5, 0); mark.SetResourceReference(i == names.Length - 1 ? Shape.StrokeProperty : Shape.FillProperty, i == 0 ? "TextSecondary" : "AccentBrush"); mark.StrokeThickness = 1.3; _legend.Children.Add(mark); _legend.Children.Add(Label(names[i])); }
         if (graph.IsMeaningGraph && _showsUnexplored) { var mark = new Ellipse { Width = 8, Height = 8, Margin = new(8, 0, 5, 0), StrokeDashArray = new DoubleCollection([2, 2]), StrokeThickness = 1 }; mark.SetResourceReference(Shape.StrokeProperty, "TextSecondary"); _legend.Children.Add(mark); _legend.Children.Add(Label("Unexplored")); }
         Canvas.Update(graph, _selection, _select, _meaningSelection, _categorySelection, _selectMeaning, _selectCategory, canonicalLocate: _canonicalProjection is not null);

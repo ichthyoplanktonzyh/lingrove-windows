@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Threading;
 using Cotabby.App.Vocabulary;
 using Cotabby.Core.Vocabulary;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI.Vocabulary;
 
@@ -22,8 +23,11 @@ public partial class VocabularyExportWindow : Window
     private TaskCompletionSource? _retirement;
     private bool _presenting = true, _retired, _forceClose, _started, _choosing, _operating;
     private string? _pickerMessage;
-    private sealed record Option<T>(T Value, string Label, bool IsEnabled = true)
-    { public override string ToString() => Label; }
+    private sealed record Option<T>(T Value, string Source, bool IsEnabled = true)
+    {
+        public string Label => InterfaceText.Get(Source, "Vocabulary");
+        public override string ToString() => Label;
+    }
     internal VocabularyExportSession Session => _session;
     internal Task LastPreparation { get; private set; } = Task.CompletedTask;
     internal Task LastOperation { get; private set; } = Task.CompletedTask;
@@ -36,7 +40,7 @@ public partial class VocabularyExportWindow : Window
     private VocabularyExportWindow(VocabularyExportRequest request, Func<Dispatcher, VocabularyExportRequest, VocabularyExportSession> createSession, IVocabularyExportDestinationPicker? picker)
     {
         _session = createSession(Dispatcher, request); _picker = picker ?? new WindowsVocabularyExportDestinationPicker();
-        InitializeComponent(); WindowTheme.Follow(this);
+        InitializeComponent(); InterfaceText.TranslateInitialTree(this, "Vocabulary"); InterfaceText.ApplyDirection(this); WindowTheme.Follow(this);
         ScopeChoice.ItemsSource = new[] { new Option<VocabularyExportScope>(VocabularyExportScope.All, "Entire notebook", request.All.Count > 0),
             new(VocabularyExportScope.Filtered, "Current results", request.Filtered.Count > 0), new(VocabularyExportScope.Selected, "Selected senses", request.Selected.Count > 0) };
         FormatChoice.ItemsSource = new[] { new Option<VocabularyExportFormat>(VocabularyExportFormat.Text, "TXT"),
@@ -81,9 +85,9 @@ public partial class VocabularyExportWindow : Window
             FormContent.IsEnabled = !_session.Saving && !_choosing && !_operating; CancelButton.IsEnabled = !_choosing;
             ExportButton.IsEnabled = _session.CanExport && !_choosing && !_operating;
             PreparationProgress.Visibility = _session.Loading ? Visibility.Visible : Visibility.Collapsed;
-            BusyText.Text = _session.Saving ? "Saving…" : _session.Loading ? "Preparing preview…" : "";
+            BusyText.Text = InterfaceText.Get(_session.Saving ? "Saving…" : _session.Loading ? "Preparing preview…" : "", "Vocabulary");
             PreviewText.Text = _session.Package?.Preview ?? "";
-            CountsText.Text = _session.Package is { } p ? $"Expressions: {p.EntryCount:N0}     Senses: {p.SenseCount:N0}     Usages: {p.ExampleCount:N0}" : "";
+            CountsText.Text = _session.Package is { } p ? InterfaceText.Format("Expressions: {0:N0}     Senses: {1:N0}     Usages: {2:N0}", p.EntryCount, p.SenseCount, p.ExampleCount) : "";
             FailureText.Text = _pickerMessage ?? _session.Message ?? ""; FailureText.Visibility = FailureText.Text.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
         }
         finally { _presenting = false; }

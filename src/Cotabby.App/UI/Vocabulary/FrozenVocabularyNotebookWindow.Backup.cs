@@ -45,14 +45,14 @@ internal sealed partial class FrozenVocabularyNotebookWindow
                 string? path = await (ChooseCanonicalBackupFile?.Invoke(restore, lifetime.Token) ?? ChooseBackupAsync(restore, lifetime.Token));
                 if (_retiring || _hideRequested || lifetime.IsCancellationRequested || path is null) return;
                 Task? accepted = null; Task<FrozenVocabularyImportSnapshot>? restored = null;
-                if (!restore) { _backupAccepted = true; _backupError.Text = "Backing up…"; accepted = storage.BackupAsync(path, CancellationToken.None); }
+                if (!restore) { _backupAccepted = true; _backupError.Text = InterfaceText.Get("Backing up…", "Vocabulary"); accepted = storage.BackupAsync(path, CancellationToken.None); }
                 else if (ConfirmCanonicalRestore is { } confirm)
                 {
-                    if (await confirm(path, lifetime.Token) && !_retiring && !_hideRequested && !lifetime.IsCancellationRequested) { _backupAccepted = true; _backupError.Text = "Restoring…"; accepted = restored = storage.RestoreAsync(path, CancellationToken.None); }
+                    if (await confirm(path, lifetime.Token) && !_retiring && !_hideRequested && !lifetime.IsCancellationRequested) { _backupAccepted = true; _backupError.Text = InterfaceText.Get("Restoring…", "Vocabulary"); accepted = restored = storage.RestoreAsync(path, CancellationToken.None); }
                 }
                 else
                 {
-                    var confirmation = new VocabularyRestoreConfirmationWindow(() => { if (!_retiring && !_hideRequested && !lifetime.IsCancellationRequested) { _backupAccepted = true; _backupError.Text = "Restoring…"; accepted = restored = storage.RestoreAsync(path, CancellationToken.None); } }) { Owner = this };
+                    var confirmation = new VocabularyRestoreConfirmationWindow(() => { if (!_retiring && !_hideRequested && !lifetime.IsCancellationRequested) { _backupAccepted = true; _backupError.Text = InterfaceText.Get("Restoring…", "Vocabulary"); accepted = restored = storage.RestoreAsync(path, CancellationToken.None); } }) { Owner = this };
                     _backupConfirmation = confirmation; try { confirmation.ShowDialog(); } finally { _backupConfirmation = null; }
                 }
                 if (accepted is not null) { await accepted; if (!_retiring && restored is not null) _session.AcceptAcknowledgement(await restored); if (!_retiring) _backupError.Text = ""; }

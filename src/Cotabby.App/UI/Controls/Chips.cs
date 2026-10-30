@@ -3,6 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI.Controls;
 
@@ -21,7 +22,7 @@ internal static class Chips
             var close = Ui.Icon("\uE711", 9).Themed(TextBlock.ForegroundProperty, "TextSecondary");
             close.Margin = new Thickness(7, 1, 0, 0);
             close.Cursor = Cursors.Hand;
-            close.ToolTip = "Remove";
+            close.ToolTip = InterfaceText.Get("Remove", "Localizable");
             close.MouseLeftButtonUp += (_, _) => remove();
             content.Children.Add(close);
         }

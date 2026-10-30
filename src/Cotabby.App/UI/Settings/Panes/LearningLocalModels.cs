@@ -50,7 +50,7 @@ internal sealed class LearningLocalModels : StackPanel
         _context = context;
         _role = role;
         Margin = new Thickness(0, 4, 0, 0);
-        _cancelTransfer = Ui.Button("Cancel", CancelActiveTransfer);
+        _cancelTransfer = Ui.Button(InterfaceText.Get("Cancel", "Localizable"), CancelActiveTransfer);
         _installed.Styled("Combo");
         _template.Styled("Combo");
         _contextTokens.Styled("Input");
@@ -64,7 +64,7 @@ internal sealed class LearningLocalModels : StackPanel
             Setters = { new Setter(IsEnabledProperty, new Binding(nameof(ModelChoice.IsSelectable))) },
         };
 
-        Children.Add(SettingLine("Installed model", _installed, Ui.Button("Refresh", RefreshInstalledAsync)));
+        Children.Add(SettingLine("Installed model", _installed, Ui.Button(InterfaceText.Get("Refresh", "Localizable"), RefreshInstalledAsync)));
         Children.Add(SettingLine("Instruction template", _template));
         Children.Add(SettingLine("Context tokens", _contextTokens));
         if (role == LearningModelRole.Explanation)
@@ -76,7 +76,7 @@ internal sealed class LearningLocalModels : StackPanel
         }
         Children.Add(Ui.Across(_installedStatus, _cancelTransfer));
 
-        Children.Add(Ui.Button("Manage models", OpenModelManager));
+        Children.Add(Ui.Button(InterfaceText.Get("Manage models", "Localizable"), OpenModelManager));
 
         var deferredNote = Ui.Text(
             role == LearningModelRole.Translation
@@ -148,7 +148,7 @@ internal sealed class LearningLocalModels : StackPanel
             var status = Ui.Text("", "Caption");
             _transferStatuses.Bind(model.Filename, status, $"{model.ApproximateSizeInGigabytes:0.00} GB");
             status.TextWrapping = TextWrapping.Wrap;
-            var get = Ui.Button("Get", () => _ = DownloadModelAsync(model));
+            var get = Ui.Button(InterfaceText.Get("Get", "Localizable"), () => _ = DownloadModelAsync(model));
             var title = new TextBlock { Text = model.DisplayName, FontWeight = FontWeights.SemiBold };
             var description = Ui.Text(model.Recommendation ?? model.Filename, "Caption");
             description.TextWrapping = TextWrapping.Wrap;
@@ -224,7 +224,7 @@ internal sealed class LearningLocalModels : StackPanel
             var model = Catalog[index];
             bool isInstalled = installed.Contains(model.Filename);
             button.IsEnabled = !_busy && !isInstalled;
-            button.Content = isInstalled ? "Installed" : "Get";
+            button.Content = isInstalled ? InterfaceText.Get("Installed", "Localizable") : InterfaceText.Get("Get", "Localizable");
         }
     }
 
@@ -304,7 +304,7 @@ internal sealed class LearningLocalModels : StackPanel
             _models = models.ToArray();
             UpdateControls();
             _installedStatus.Text = $"{_models.Length} installed GGUF model(s). Weights load only on request.";
-        }, () => _installedStatus.Text = "The installed learning models could not be listed.", _lifetime.Token);
+        }, () => _installedStatus.Text = InterfaceText.Get("The installed learning models could not be listed.", "Localizable"), _lifetime.Token);
     }
 
     private void SetTransferStatus(LearningDownloadableModel model, string text)
@@ -383,7 +383,7 @@ internal sealed class LearningLocalModels : StackPanel
         using var transfer = new CancellationTokenSource();
         _activeTransfer = transfer;
         _busy = true;
-        _installedStatus.Text = "Importing selected GGUF files…";
+        _installedStatus.Text = InterfaceText.Get("Importing selected GGUF files…", "Localizable");
         UpdateControls();
         try
         {
@@ -397,11 +397,11 @@ internal sealed class LearningLocalModels : StackPanel
         }
         catch (OperationCanceledException) when (transfer.IsCancellationRequested)
         {
-            if (!_lifetime.IsCancellationRequested) { _installedStatus.Text = "Import cancelled."; _managerWindow?.Report(_installedStatus.Text); }
+            if (!_lifetime.IsCancellationRequested) { _installedStatus.Text = InterfaceText.Get("Import cancelled.", "Localizable"); _managerWindow?.Report(_installedStatus.Text); }
         }
         catch (Exception)
         {
-            if (!_lifetime.IsCancellationRequested) { _installedStatus.Text = "The selected model files could not be imported."; _managerWindow?.Report(_installedStatus.Text); }
+            if (!_lifetime.IsCancellationRequested) { _installedStatus.Text = InterfaceText.Get("The selected model files could not be imported.", "Localizable"); _managerWindow?.Report(_installedStatus.Text); }
         }
         finally
         {

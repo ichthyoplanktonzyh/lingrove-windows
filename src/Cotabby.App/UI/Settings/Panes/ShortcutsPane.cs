@@ -3,6 +3,7 @@ using System.Windows.Controls;
 using Cotabby.App.Settings;
 using Cotabby.App.UI.Controls;
 using Cotabby.Core.Input;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI.Settings.Panes;
 
@@ -20,7 +21,7 @@ internal static class ShortcutsPane
                 s => s.DoubleTapAcceptsAll, (s, v) => s.DoubleTapAcceptsAll = v)
                 .Tagged("double-tap twice tab tab press twice accept all"),
             r.Shortcut(GlobalShortcut.Toggle,
-                "Turn Cotabby on or off from anywhere without opening the system tray.")
+                "Turn Lingrove on or off from anywhere without opening the system tray.")
                 .Tagged("global on off hotkey pause enable disable keybind binding"),
             r.Shortcut(GlobalShortcut.LearningTranslation,
                 "Translate the current sentence or expand its preview. The key is ignored while translation is disabled or conflicts with another shortcut.")
@@ -67,7 +68,7 @@ internal static class ShortcutsPane
             }
             if (panel.Children.Count == 0)
             {
-                var empty = Ui.Text("No per-app shortcuts. Cotabby uses the global accept keys everywhere.", "Caption");
+                var empty = Ui.Text(InterfaceText.Get("No per-app shortcuts. Lingrove uses the global accept keys everywhere.", "Localizable"), "Caption");
                 empty.Margin = new Thickness(0, 12, 0, 12);
                 panel.Children.Add(empty);
             }
@@ -86,7 +87,7 @@ internal static class ShortcutsPane
         });
 
         var name = new TextBlock { Text = entry.ProcessName, FontSize = 13, FontWeight = FontWeights.SemiBold };
-        var remove = Ui.Button("Remove", () => Replace(null));
+        var remove = Ui.Button(InterfaceText.Get("Remove", "Localizable"), () => Replace(null));
         DockPanel.SetDock(remove, Dock.Right);
         name.VerticalAlignment = VerticalAlignment.Center;
 
@@ -114,7 +115,7 @@ internal static class ShortcutsPane
     private static StackPanel IconOverride(bool? enabled, Action<bool?> set)
     {
         var panel = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
-        panel.Children.Add(new TextBlock { Text = "Selection icon", VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 8, 0) });
+        panel.Children.Add(new TextBlock { Text = InterfaceText.Get("Selection icon", "Localizable"), VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 8, 0) });
         var choices = new ComboBox { ItemsSource = new[] { "Use default", "Show", "Hide" }, SelectedIndex = enabled is null ? 0 : enabled.Value ? 1 : 2 };
         choices.SelectionChanged += (_, _) => set(choices.SelectedIndex switch { 1 => true, 2 => false, _ => null }); panel.Children.Add(choices); return panel;
     }
@@ -153,9 +154,9 @@ internal static class ShortcutsPane
             { } bound => bound.Label,
         });
 
-        var inherit = Ui.Button("Inherit", () => set(null));
+        var inherit = Ui.Button(InterfaceText.Get("Inherit", "Localizable"), () => set(null));
         inherit.IsEnabled = key is not null;
-        var disable = Ui.Button("Disable", () => set(KeyBinding.Unbound));
+        var disable = Ui.Button(InterfaceText.Get("Disable", "Localizable"), () => set(KeyBinding.Unbound));
         disable.IsEnabled = key is not { IsBound: false };
 
         var buttons = Ui.Across(recorder, inherit, disable);

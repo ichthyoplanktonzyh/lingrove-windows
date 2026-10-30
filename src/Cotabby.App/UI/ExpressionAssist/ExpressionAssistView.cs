@@ -68,7 +68,7 @@ internal sealed class ExpressionAssistView : Border
         var prompt = new TextBlock { Text = InterfaceText.Get("Describe an expression or concept"), FontSize = 12, Margin = new Thickness(0, 0, 0, 4) };
         prompt.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondary"); body.Children.Add(prompt);
         AutomationProperties.SetName(_query, "Describe an expression or concept");
-        _query.ToolTip = "Describe an expression or concept";
+        _query.ToolTip = InterfaceText.Get("Describe an expression or concept", "Learning");
         body.Children.Add(_query);
         AutomationProperties.SetLiveSetting(_status, AutomationLiveSetting.Polite);
         _candidateScroll.Content = _rows;
@@ -112,7 +112,7 @@ internal sealed class ExpressionAssistView : Border
     {
         _candidates = result?.Candidates ?? Array.Empty<ExpressionAssistCandidate>();
         _selected = 0;
-        _status.Text = loading ? "Finding expressions…" : message ?? "";
+        _status.Text = loading ? InterfaceText.Get("Finding expressions…", "Learning") : message ?? "";
         _status.Visibility = string.IsNullOrEmpty(_status.Text) ? Visibility.Collapsed : Visibility.Visible;
         _status.SetResourceReference(TextBlock.ForegroundProperty, loading ? "TextSecondary" : "TextPrimary");
         RefreshRows(false);
@@ -188,8 +188,8 @@ internal sealed class ExpressionAssistView : Border
                     }
                 });
         }
-        _footer.Text = _candidates.Count > 1 ? "↑↓ Select    Enter / Tab Insert    Esc Cancel"
-            : _candidates.Count == 1 ? "Enter / Tab Insert    Esc Cancel" : "Enter Search    Esc Cancel";
+        _footer.Text = _candidates.Count > 1 ? InterfaceText.Get("↑↓ Select    Enter / Tab Insert    Esc Cancel", "Learning")
+            : _candidates.Count == 1 ? InterfaceText.Get("Enter / Tab Insert    Esc Cancel", "Learning") : InterfaceText.Get("Enter Search    Esc Cancel", "Learning");
         RefreshTools();
     }
 

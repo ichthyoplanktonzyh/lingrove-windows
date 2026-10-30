@@ -55,8 +55,8 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
     private readonly Button _save = new() { Content = InterfaceText.Get("Save"), Name = "reviewSave", MinWidth = 90 },
         _send = new() { Content = InterfaceText.Get("Add to Anki"), Name = "reviewSend", IsDefault = true, MinWidth = 110 },
         _cancel = new() { Content = InterfaceText.Get("Cancel"), IsCancel = true, MinWidth = 90 },
-        _settings = new() { Content = InterfaceText.Get("Review settings") }, _clearAudio = new() { Content = "Remove audio requests" },
-        _reload = new() { Content = "Refresh connection" }, _updateTemplate = new() { Content = InterfaceText.Get("Update Lingrove template") };
+        _settings = new() { Content = InterfaceText.Get("Review settings") }, _clearAudio = new() { Content = InterfaceText.Get("Remove audio requests", "Vocabulary") },
+        _reload = new() { Content = InterfaceText.Get("Refresh connection", "Vocabulary") }, _updateTemplate = new() { Content = InterfaceText.Get("Update Lingrove template") };
     private readonly Dictionary<string, bool> _choices = new(StringComparer.Ordinal);
     private Task? _operation, _retirement;
     private Task _previewTask = Task.CompletedTask;
@@ -77,7 +77,7 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
         if (session.CardId is null && session.Plan.Layout is not null) throw new NotSupportedException("Custom review card layout preparation is not available yet.");
         _session = session; _clipboard = clipboard; _admit = admit; _configure = configure; _embeddedExample = embeddedExample;
         _allowExternalMedia = allowExternalMedia && !embeddedExample;
-        Title = "Prepare review"; Width = 720; Height = 760; MinWidth = 560; MinHeight = 500; WindowStartupLocation = WindowStartupLocation.CenterOwner;
+        Title = InterfaceText.Get("Prepare review", "Vocabulary"); Width = 720; Height = 760; MinWidth = 560; MinHeight = 500; WindowStartupLocation = WindowStartupLocation.CenterOwner;
         VocabularyNotebookTheme.Follow(this);
         var root = new DockPanel { Margin = new Thickness(22) }; Content = root;
         var heading = VocabularyInputControls.Heading("Prepare review"); DockPanel.SetDock(heading, Dock.Top); root.Children.Add(heading);
@@ -120,7 +120,7 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
         _binding.SelectionChanged += (_, _) => { if (_updating) return; _session.SelectBinding((_binding.SelectedItem as Option)?.Id); _choices.Clear(); Start(LoadAsync); };
         _example.SelectionChanged += (_, _) => { if (_updating) return; var id = (_example.SelectedItem as Option)?.Id; var p = _session.Plan; var audio = p.AudioKinds?.Where(k => id is not null || k != ReviewAudioKind.Sentence).ToHashSet(); var (entry, sense) = Current(); var example = sense.Examples.FirstOrDefault(e => e.Id == id); bool canGap = example is not null && ReviewCardPolicy.Gap(example.Text, example.Ranges, entry.Kind) is not null; _session.Plan = p with { ExampleId = id, Gap = p.Gap && canGap, FieldOverrides = new Dictionary<string, string>(), AudioKinds = audio }; Fill(); RefreshDraft(); };
         _cardType.SelectionChanged += (_, _) => { if (!_updating) RefreshDraft(); }; _side.SelectionChanged += (_, _) => { if (!_updating) { if (_session.CardId is not null) RenderLayout(); RefreshDraft(); } };
-        _preserved.SelectionChanged += (_, _) => { if (!_updating && _preserved.SelectedItem is PlanOption plan) { if (plan.Plan.Layout is not null) { _state.Text = "Custom review layouts are not available yet."; return; } _session.RestorePlan(plan.Plan); _previewVersion++; Fill(); RefreshDraft(); } };
+        _preserved.SelectionChanged += (_, _) => { if (!_updating && _preserved.SelectedItem is PlanOption plan) { if (plan.Plan.Layout is not null) { _state.Text = InterfaceText.Get("Custom review layouts are not available yet.", "Vocabulary"); return; } _session.RestorePlan(plan.Plan); _previewVersion++; Fill(); RefreshDraft(); } };
         _answer.TextChanged += (_, _) => { if (!_updating) { _session.Plan = _session.Plan with { Answer = _answer.Text }; RefreshDraft(); } };
         _deckText.TextChanged += (_, _) => { if (!_updating) { _session.Deck = _deckText.Text; RefreshDraft(); } };
         _deck.SelectionChanged += (_, _) => { if (!_updating && _deck.SelectedItem is string value) { _session.Deck = value; RefreshDraft(); } };
@@ -155,7 +155,7 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
         var shown = ReviewSpeechDisclosure.Capture(_session.Audio.Speech);
         if (Equals(_shownSpeech, shown) && _speechDestination.Text.Length != 0) return;
         _shownSpeech = shown;
-        _speechDestination.Text = shown is null ? "Speech for review audio: unavailable. Configure speech before preparing audio." : "Speech for review audio: " + shown.Destination;
+        _speechDestination.Text = shown is null ? InterfaceText.Get("Speech for review audio: unavailable. Configure speech before preparing audio.", "Vocabulary") : "Speech for review audio: " + shown.Destination;
         _session.PresentAudioDisclosure(IsVisible ? shown : null);
         if (_started && !_closing) RefreshDraft();
     }
@@ -166,14 +166,14 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
     private void SettingsChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (_closing || e.PropertyName is not (nameof(AnkiReviewSettings.Address) or nameof(AnkiReviewSettings.Model) or nameof(AnkiReviewSettings.Mapping))) return;
-        _loadedAddress = null; Fill(); _validation.Text = "Refresh the Anki connection before sending."; UpdateEnabled();
+        _loadedAddress = null; Fill(); _validation.Text = InterfaceText.Get("Refresh the Anki connection before sending.", "Vocabulary"); UpdateEnabled();
     }
     private void SessionChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (_closing || _session.Snapshot.Revision <= _seenRevision) return;
         _seenRevision = _session.Snapshot.Revision;
         try { Fill(); RefreshDraft(); }
-        catch (InvalidOperationException) { _validation.Text = "This sense is no longer available."; UpdateEnabled(); }
+        catch (InvalidOperationException) { _validation.Text = InterfaceText.Get("This sense is no longer available.", "Vocabulary"); UpdateEnabled(); }
     }
     private void Hook(CheckBox box, Func<ReviewPlan, ReviewPlan> update)
     { box.Checked += Change; box.Unchecked += Change; void Change(object sender, RoutedEventArgs e) { if (!_updating) { _session.Plan = update(_session.Plan); RefreshDraft(); } } }
@@ -208,7 +208,7 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
             _previewSentenceAudio.Visibility = _regenerateSentenceAudio.Visibility = _sentenceAudio.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
             _updateTemplate.Visibility = _session.Model == AnkiReviewPolicy.PresetName && !_session.CurrentPresetTemplate && !_session.Loading ? Visibility.Visible : Visibility.Collapsed;
             if (_session.CardId is not null) RenderLayout();
-            _state.Text = _windowError ?? _session.Message ?? _windowNotice ?? ""; _send.Content = _session.MissingNote ? "Re-add to Anki" : _session.Binding?.NoteId is null ? "Add to Anki" : "Update Anki";
+            _state.Text = _windowError ?? _session.Message ?? _windowNotice ?? ""; _send.Content = _session.MissingNote ? InterfaceText.Get("Re-add to Anki", "Vocabulary") : _session.Binding?.NoteId is null ? InterfaceText.Get("Add to Anki", "Vocabulary") : InterfaceText.Get("Update Anki", "Vocabulary");
             if (!ReferenceEquals(_seenConflicts, _session.Conflicts)) { _choices.Clear(); _seenConflicts = _session.Conflicts; }
             _conflicts.Children.Clear(); foreach (var conflict in _session.Conflicts)
             {
@@ -229,7 +229,7 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
     }
     private void RefreshDraft()
     {
-        _previewVersion++; _validation.Text = "Updating preview…"; UpdateEnabled();
+        _previewVersion++; _validation.Text = InterfaceText.Get("Updating preview…", "Vocabulary"); UpdateEnabled();
         if (_closing) return;
         long requested = _previewVersion; var previous = _previewTask;
         _previewTask = Refresh();
@@ -257,7 +257,7 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
         long version = _previewVersion; if (_session.CardId is not null) { await PresentLayoutAsync(version, token); return; }
         string? validation = await _session.ValidationMessageAsync(token); ReviewCardContent? content = null; try { content = await _session.ContentAsync(token); } catch (AnkiReviewException error) { validation ??= error.Message; }
         if (version != _previewVersion || _closing) return;
-        _validation.Text = validation ?? (_loadedAddress == _session.Controller.Settings.Address ? "" : "Refresh the Anki connection before sending."); _preview.Children.Clear(); if (content is null) { UpdateEnabled(); return; }
+        _validation.Text = validation ?? (_loadedAddress == _session.Controller.Settings.Address ? "" : InterfaceText.Get("Refresh the Anki connection before sending.", "Vocabulary")); _preview.Children.Clear(); if (content is null) { UpdateEnabled(); return; }
         void Line(string label, string value) { if (value.Length != 0) _preview.Children.Add(new TextBlock { Text = label + ": " + value, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 3, 0, 3) }); }
         if ((!_session.CurrentPresetTemplate && !_session.LegacyPresetTemplate) || _session.Plan.FieldOverrides.Count > 0)
         {
@@ -296,7 +296,7 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
             try { await _admit(async featureToken => { using var linked = CancellationTokenSource.CreateLinkedTokenSource(featureToken, _lifetime.Token); await action(linked.Token); }); }
             catch (OperationCanceledException) { }
             catch (Exception error) { if (!_closing) { _windowError = error.Message; _state.Text = error.Message; _validation.Text = error.Message; } }
-            finally { _operation = null; completion.TrySetResult(); if (_closeWhenDone && !_closing) { _ = RetireAsync(); } else if (!_closing) { try { Fill(); } catch (InvalidOperationException) { _validation.Text = "This sense is no longer available."; } UpdateEnabled(); } }
+            finally { _operation = null; completion.TrySetResult(); if (_closeWhenDone && !_closing) { _ = RetireAsync(); } else if (!_closing) { try { Fill(); } catch (InvalidOperationException) { _validation.Text = InterfaceText.Get("This sense is no longer available.", "Vocabulary"); } UpdateEnabled(); } }
         }
     }
     private void CloseAfterOperation() { if (!_embeddedExample) _closeWhenDone = true; }

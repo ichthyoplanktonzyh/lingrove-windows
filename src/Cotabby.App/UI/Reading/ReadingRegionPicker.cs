@@ -6,6 +6,7 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using Cotabby.App.UI.Learning;
 using Cotabby.Core.Focus;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI.Reading;
 
@@ -34,7 +35,7 @@ internal sealed class ReadingRegionPicker : Window, IDisposable
         _canvas.SizeChanged += (_, _) => UpdateShade();
         var instructions = new Border { Background = new SolidColorBrush(Color.FromArgb(220, 25, 25, 25)),
             CornerRadius = new CornerRadius(8), Padding = new Thickness(12, 8, 12, 8), IsHitTestVisible = false,
-            Child = new TextBlock { Text = "Select a region to read · Esc or right-click to cancel\nWindows OCR runs on this device; screen pixels are not sent to a model.",
+            Child = new TextBlock { Text = InterfaceText.Get("Select a region to read · Esc or right-click to cancel\nWindows OCR runs on this device; screen pixels are not sent to a model.", "Learning"),
                 Foreground = Brushes.White, FontFamily = new FontFamily("Segoe UI Variable, Segoe UI"), FontSize = 13, TextWrapping = TextWrapping.Wrap } };
         Canvas.SetLeft(instructions, 18); Canvas.SetTop(instructions, 18); _canvas.Children.Add(instructions); Content = _canvas;
         SourceInitialized += (_, _) => LearningPanelPlacement.Install(this);

@@ -39,7 +39,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
     private static readonly TimeSpan CapturePollInterval = TimeSpan.FromMilliseconds(400);
     private static readonly ILearningTranslationEngine UnavailableLocalEngine = new UnavailableLocalLearningTranslationEngine();
     private const string SecureFieldMessage = "Sentence translation is unavailable in secure fields.";
-    private const string OwnFieldMessage = "Cotabby does not translate text from its own windows.";
+    private const string OwnFieldMessage = "Lingrove does not translate text from its own windows.";
     private const string BlockedAppMessage = "Sentence translation is disabled in this app.";
     private const string TerminalFieldMessage = "Sentence translation is unavailable in terminal apps.";
     private const string SelectedTextMessage = "The selected text cannot be verified. Select the committed source text again.";

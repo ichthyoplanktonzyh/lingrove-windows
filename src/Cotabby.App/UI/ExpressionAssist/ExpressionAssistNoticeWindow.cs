@@ -80,10 +80,10 @@ internal sealed class ExpressionAssistNoticeWindow : Window
     }
     private void CopyText(string text, bool wholeCandidate)
     {
-        try { _copy(text); _status.Text = ""; if (wholeCandidate && _copyButton is not null) { _copyButton.Content = "Copied ✓"; _copyButton.IsEnabled = false; _copiedTimer.Stop(); _copiedTimer.Start(); } }
-        catch (ExternalException) { _status.Text = "Unable to copy. Try again."; }
-        catch (InvalidOperationException) { _status.Text = "Unable to copy. Try again."; }
-        catch (ArgumentException) { _status.Text = "Unable to copy. Try again."; }
+        try { _copy(text); _status.Text = ""; if (wholeCandidate && _copyButton is not null) { _copyButton.Content = InterfaceText.Get("Copied ✓", "Learning"); _copyButton.IsEnabled = false; _copiedTimer.Stop(); _copiedTimer.Start(); } }
+        catch (ExternalException) { _status.Text = InterfaceText.Get("Unable to copy. Try again.", "Learning"); }
+        catch (InvalidOperationException) { _status.Text = InterfaceText.Get("Unable to copy. Try again.", "Learning"); }
+        catch (ArgumentException) { _status.Text = InterfaceText.Get("Unable to copy. Try again.", "Learning"); }
         if (IsVisible) { UpdateLayout(); LearningPanelPlacement.Position(this, _anchor); }
     }
     private void ApplyContrast()

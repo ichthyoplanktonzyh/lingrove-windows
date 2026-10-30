@@ -9,6 +9,7 @@ using Cotabby.Core.Vocabulary.Frozen;
 using Cotabby.Win32.Vocabulary;
 using Cotabby.Win32.Text;
 using Cotabby.App.Review;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI;
 
@@ -49,9 +50,9 @@ internal sealed class LearningShowcaseVocabulary : Grid, IAsyncDisposable
         _store = store; _presentation = new(_preferences); _graph = new(_presentation, new WindowsVocabularyTextSearch());
         RowDefinitions.Add(new() { Height = GridLength.Auto }); RowDefinitions.Add(new() { Height = new GridLength(1, GridUnitType.Star) });
         var bar = new WrapPanel();
-        var list = new Button { Content = "List", Margin = new Thickness(0, 0, 5, 5), Padding = new Thickness(8, 4, 8, 4) };
-        var graph = new Button { Content = "Graph", Margin = new Thickness(0, 0, 5, 5), Padding = new Thickness(8, 4, 8, 4) };
-        var open = new Button { Content = "Open vocabulary", Margin = new Thickness(0, 0, 0, 5), Padding = new Thickness(8, 4, 8, 4) };
+        var list = new Button { Content = InterfaceText.Get("List", "Localizable"), Margin = new Thickness(0, 0, 5, 5), Padding = new Thickness(8, 4, 8, 4) };
+        var graph = new Button { Content = InterfaceText.Get("Graph", "Localizable"), Margin = new Thickness(0, 0, 5, 5), Padding = new Thickness(8, 4, 8, 4) };
+        var open = new Button { Content = InterfaceText.Get("Open vocabulary", "Localizable"), Margin = new Thickness(0, 0, 0, 5), Padding = new Thickness(8, 4, 8, 4) };
         list.Click += (_, _) => { Interacted?.Invoke(); SetGraph(false); };
         graph.Click += (_, _) => { Interacted?.Invoke(); SetGraph(true); };
         open.Click += (_, _) => { Interacted?.Invoke(); Track(OpenNotebookAsync(null)); };
@@ -110,7 +111,7 @@ internal sealed class LearningShowcaseVocabulary : Grid, IAsyncDisposable
         if (_window is null)
         {
             var window = new FrozenVocabularyNotebookWindow(_store.Backend, new NoFiles(), [LearningLanguage.English],
-                pickFile: () => null, exampleNoExternalFiles: true) { Owner = Window.GetWindow(this), Title = "Vocabulary · Sample content" };
+                pickFile: () => null, exampleNoExternalFiles: true) { Owner = Window.GetWindow(this), Title = InterfaceText.Get("Vocabulary · Sample content", "Localizable") };
             window.AttachGraphPreferences(_preferences); _window = window;
             if (_review is not null) window.AttachReviewFeature(_review(), () => { });
             if (_explanations is not null && _dictionary is not null)

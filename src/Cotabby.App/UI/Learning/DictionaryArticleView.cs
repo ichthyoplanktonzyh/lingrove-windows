@@ -6,6 +6,7 @@ using Cotabby.Core.LanguageLearning;
 using Cotabby.Win32.Dictionary;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.Wpf;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI.Learning;
 
@@ -18,7 +19,7 @@ internal sealed class DictionaryArticleView : Grid, IAsyncDisposable
     // Composition control must stay loaded while its native controller is initialized.
     private readonly WebView2CompositionControl _view = new() { Focusable = false };
     private readonly TextBlock _status = new() { TextWrapping = TextWrapping.Wrap, FontSize = 11 };
-    private readonly Button _retry = new() { Content = "Retry", HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Bottom, Visibility = Visibility.Collapsed };
+    private readonly Button _retry = new() { Content = InterfaceText.Get("Retry", "Learning"), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Bottom, Visibility = Visibility.Collapsed };
     private Action? _retryAction;
     private readonly HashSet<Task> _work = []; private readonly object _gate = new();
     private readonly CancellationTokenSource _shutdown = new();
@@ -69,14 +70,14 @@ internal sealed class DictionaryArticleView : Grid, IAsyncDisposable
         Retire(); if (article.ResourceLibrary is not { } id || !permit() || token.IsCancellationRequested || Encoding.UTF8.GetByteCount(article.Html) > 8_000_000) return;
         if (_initialization is null && _admission is null && (_admission = _slots.TryAcquire()) is null)
         {
-            _status.Text = "Rich dictionary display is waiting for resources to close. Retry may not succeed until the application restarts.";
+            _status.Text = InterfaceText.Get("Rich dictionary display is waiting for resources to close. Retry may not succeed until the application restarts.", "Learning");
             _status.Visibility = Visibility.Visible; _retry.Visibility = Visibility.Visible;
             _retryAction = () => { if (!_disposed && permit() && !token.IsCancellationRequested) _ = ShowAsync(article, load, permit, token); };
             return;
         }
         _resourceRequests = _resourceBytes = 0;
         var cancel = CancellationTokenSource.CreateLinkedTokenSource(token); _targetCancel = cancel; long epoch = ++_epoch;
-        _status.Text = "Opening local dictionary…"; _status.Visibility = Visibility.Visible; ((UIElement)_view).Opacity = 0;
+        _status.Text = InterfaceText.Get("Opening local dictionary…", "Learning"); _status.Visibility = Visibility.Visible; ((UIElement)_view).Opacity = 0;
         try
         {
             _target = new(id, _sanitize(article.Html), load, permit, cancel.Token);
@@ -89,7 +90,7 @@ internal sealed class DictionaryArticleView : Grid, IAsyncDisposable
         {
             InitializationFailure = error.GetType().Name + " 0x" + error.HResult.ToString("X8");
             if (!_disposed && epoch == _epoch && !cancel.IsCancellationRequested)
-            { _status.Text = "Rich dictionary display is unavailable. Check that Microsoft Edge WebView2 Runtime is installed, then reopen the dictionary."; _status.Visibility = Visibility.Visible; }
+            { _status.Text = InterfaceText.Get("Rich dictionary display is unavailable. Check that Microsoft Edge WebView2 Runtime is installed, then reopen the dictionary.", "Learning"); _status.Visibility = Visibility.Visible; }
         }
     }
     private async Task InitializeAsync()

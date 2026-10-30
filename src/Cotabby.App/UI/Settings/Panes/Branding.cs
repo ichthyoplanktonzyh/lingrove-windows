@@ -2,6 +2,8 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using Cotabby.App.UI.Controls;
+using Cotabby.App.Branding;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI.Settings.Panes;
 
@@ -15,10 +17,10 @@ internal static class Branding
 
     public static FrameworkElement Identity(string tagline)
     {
-        var name = Ui.Text("Cotabby");
+        var name = Ui.Text(AppBrand.Name);
         name.FontSize = 20;
         name.FontWeight = FontWeights.SemiBold;
-        var version = Ui.Text($"Version {Version}", "Caption");
+        var version = Ui.Text(InterfaceText.Format("Version {0}", Version), "Caption");
         version.Margin = new Thickness(10, 3, 0, 0);
         version.VerticalAlignment = VerticalAlignment.Center;
 
@@ -29,7 +31,7 @@ internal static class Branding
             Children =
             {
                 new StackPanel { Orientation = Orientation.Horizontal, Children = { name, version } },
-                Ui.Text(tagline, "Caption"),
+                Ui.Text(InterfaceText.Get(tagline), "Caption"),
             },
         };
         return new DockPanel { Margin = new Thickness(0, 12, 0, 12), Children = { Ui.Logo(52), text } };

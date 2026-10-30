@@ -40,7 +40,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow
         _prepareSelected.IsEnabled = _reviewSelections.Count > 0 && _reviewFeature is not null && !_retiring && _modalDone is null;
         _exportSelected.IsEnabled = _reviewSelections.Count > 0 && !_retiring && _modalDone is null && _store is F.ICanonicalVocabularyExportStore;
         _selectVisible.IsEnabled = _session.Visible.Count > 0 && !_retiring; _selectReview.IsEnabled = !_retiring && (_reviewFeature is not null || _store is F.ICanonicalVocabularyExportStore);
-        _selectReview.Content = _selectingReviewSenses ? "Selecting senses" : "Select senses";
+        _selectReview.Content = _selectingReviewSenses ? InterfaceText.Get("Selecting senses", "Vocabulary") : InterfaceText.Get("Select senses", "Vocabulary");
     }
     private object ReviewSenseHeader(F.VocabularyEntry entry, F.VocabularySense sense, FrameworkElement label)
     {

@@ -32,10 +32,10 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
     private readonly List<CanonicalVocabularyImageView> _detailImages = [];
     private readonly FrozenVocabularyEntryInputOwner _owner;
     private readonly FrozenVocabularyBrowserSession _session;
-    private readonly TextBox _query = new() { Name = "frozenNotebookSearch", MinWidth = 200, ToolTip = "Search vocabulary" };
+    private readonly TextBox _query = new() { Name = "frozenNotebookSearch", MinWidth = 200, ToolTip = InterfaceText.Get("Search vocabulary", "Vocabulary") };
     private readonly ComboBox _language = new() { Name = "frozenNotebookLanguage", MinWidth = 130 }, _tag = new() { Name = "frozenNotebookTag", MinWidth = 130 };
     private readonly ComboBox _organization = new() { Name = "frozenNotebookOrganization", MinWidth = 125 };
-    private readonly Button _add = new() { Name = "frozenNotebookAdd", Content = InterfaceText.Get("Add entry"), Padding = new Thickness(10, 5, 10, 5) }, _import = new() { Name = "frozenNotebookImport", Content = "Import…", Padding = new Thickness(10, 5, 10, 5) };
+    private readonly Button _add = new() { Name = "frozenNotebookAdd", Content = InterfaceText.Get("Add entry"), Padding = new Thickness(10, 5, 10, 5) }, _import = new() { Name = "frozenNotebookImport", Content = InterfaceText.Get("Import…", "Vocabulary"), Padding = new Thickness(10, 5, 10, 5) };
     private readonly ComboBox _sort = new() { Name = "frozenNotebookSort", MinWidth = 115 }, _density = new() { Name = "frozenNotebookDensity", MinWidth = 100 };
     private readonly Grid _content = new();
     private readonly Button _categoryToggle = new() { Name = "frozenToggleCategories", Content = InterfaceText.Get("Categories"), Padding = new Thickness(10, 5, 10, 5) };
@@ -64,10 +64,10 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
         _session = new(Dispatcher, store, search) { PreferredLanguages = preferredLanguages ?? VocabularyMeaningLabelPolicy.PreferredLanguages(null, [CultureInfo.CurrentUICulture.Name]) };
         _session.Detailed = listPreferences?.Density == "detailed";
         _pickFile = exampleNoExternalFiles ? (() => null) : pickFile ?? (() => { var dialog = new OpenFileDialog { Filter = "Word lists (*.csv;*.txt)|*.csv;*.txt", Multiselect = false }; return dialog.ShowDialog(this) == true ? dialog.FileName : null; });
-        Title = "Vocabulary notebook"; Width = 1100; Height = 720; MinWidth = 760; MinHeight = 460; VocabularyNotebookTheme.Follow(this);
+        Title = InterfaceText.Get("Vocabulary notebook", "Vocabulary"); Width = 1100; Height = 720; MinWidth = 760; MinHeight = 460; VocabularyNotebookTheme.Follow(this);
         var root = new DockPanel(); VocabularyNotebookTheme.Brush(root, Panel.BackgroundProperty, "WindowBg"); Content = root;
         var toolbar = new WrapPanel { Margin = new Thickness(20, 16, 20, 8), Orientation = Orientation.Horizontal };
-        toolbar.Children.Add(new TextBlock { Text = "Vocabulary notebook", FontSize = 21, FontWeight = FontWeights.SemiBold, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 20, 8) });
+        toolbar.Children.Add(new TextBlock { Text = InterfaceText.Get("Vocabulary notebook", "Vocabulary"), FontSize = 21, FontWeight = FontWeights.SemiBold, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 20, 8) });
         InitializeGraphButton(); foreach (var button in new[] { _categoryToggle, _newMeaning, _add, _import, _graphButton })
         { VocabularyNotebookTheme.Button(button, button == _add); button.Margin = new Thickness(0, 0, 8, 8); toolbar.Children.Add(button); }
         DockPanel.SetDock(toolbar, Dock.Top); root.Children.Add(toolbar);
@@ -244,7 +244,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
             _content.Children.Clear(); _content.ColumnDefinitions.Clear();
             if (_session.Loading) { _content.Children.Add(State("Loading vocabulary…")); return; }
             if (_session.Failure is { } failure) { _content.Children.Add(State("Could not load vocabulary\n" + failure, error: true)); return; }
-            _graphButton.Content = _graphMode ? "List" : "Graph"; if (!_session.MeaningMode && _session.Entries.Count == 0) { _content.Children.Add(Empty()); return; }
+            _graphButton.Content = _graphMode ? InterfaceText.Get("List", "Vocabulary") : InterfaceText.Get("Graph", "Vocabulary"); if (!_session.MeaningMode && _session.Entries.Count == 0) { _content.Children.Add(Empty()); return; }
             if (_graphMode) { BuildGraphLayout(); return; }
             if (_session.MeaningMode) BuildMeaningLayout(); else BuildEntryLayout();
         }

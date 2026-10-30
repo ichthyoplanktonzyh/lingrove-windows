@@ -91,7 +91,7 @@ internal sealed class FrozenVocabularyMeaningEditorWindow : FrozenVocabularySema
         if (_draft is not null)
         {
             Fields.Children.Add(VocabularyInputControls.Heading(InterfaceText.Get("Categories"))); Fields.Children.Add(_categorySummary);
-            var categories = new Button { Name = "meaningDraftCategories", Content = "Choose categories", HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 4, 0, 12) }; VocabularyNotebookTheme.Button(categories); categories.Click += (_, _) => _ = ChooseAsync(false); Fields.Children.Add(categories);
+            var categories = new Button { Name = "meaningDraftCategories", Content = InterfaceText.Get("Choose categories", "Vocabulary"), HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 4, 0, 12) }; VocabularyNotebookTheme.Button(categories); categories.Click += (_, _) => _ = ChooseAsync(false); Fields.Children.Add(categories);
             if (_isNew) { Fields.Children.Add(VocabularyInputControls.Heading(InterfaceText.Get("My expressions"))); Fields.Children.Add(_expressionSummary); if (linking is null) { var expressions = new Button { Name = "meaningDraftExpressions", Content = InterfaceText.Get("Add from vocabulary"), HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 4, 0, 12) }; VocabularyNotebookTheme.Button(expressions); expressions.Click += (_, _) => _ = ChooseAsync(true); Fields.Children.Add(expressions); } }
             RefreshDraftSummaries();
         }
@@ -100,7 +100,7 @@ internal sealed class FrozenVocabularyMeaningEditorWindow : FrozenVocabularySema
     private void RefreshDraftSummaries()
     {
         if (_draft is null) return; var locale = VocabularyCategoryUiLanguage.Identifier;
-        var names = _draft.Classification.Categories.Where(c => _draft.CategoryIds.Contains(c.Id)).Select(c => string.Join(" › ", VocabularyClassificationProjection.Breadcrumb(c.Id, _draft.Classification).TakeLast(2).Select(part => R.VocabularyCategoryLocalizationPolicy.Resolve(R.VocabularyClassificationPolicy.Effective(part, _draft.Classification), [locale]).Name))).ToArray(); _categorySummary.Text = names.Length == 0 ? "Uncategorized meanings" : string.Join(" · ", names);
+        var names = _draft.Classification.Categories.Where(c => _draft.CategoryIds.Contains(c.Id)).Select(c => string.Join(" › ", VocabularyClassificationProjection.Breadcrumb(c.Id, _draft.Classification).TakeLast(2).Select(part => R.VocabularyCategoryLocalizationPolicy.Resolve(R.VocabularyClassificationPolicy.Effective(part, _draft.Classification), [locale]).Name))).ToArray(); _categorySummary.Text = names.Length == 0 ? InterfaceText.Get("Uncategorized meanings", "Vocabulary") : string.Join(" · ", names);
         _expressionSummary.Text = string.Join("\n", _entries.SelectMany(e => e.Senses.Where(s => _draft.SenseIds.Contains(s.Id)).Select(s => e.Expression + " · " + s.Meaning)));
     }
     private async Task ChooseAsync(bool expressions)
@@ -168,7 +168,7 @@ internal sealed class FrozenVocabularyMappingEditorWindow : FrozenVocabularySema
     private async Task ChooseExpressionAsync(Button button, IReadOnlyList<VocabularyEntry> entries, IReadOnlyList<LearningLanguage> languages)
     {
         if (Retiring || ChildDone is not null) return; var done = ChildDone = new(TaskCreationOptions.RunContinuationsAsynchronously); UpdateAdmission();
-        try { var selected = _sense.SelectedValue is Guid id ? new HashSet<Guid> { id } : []; var picker = new FrozenVocabularyDraftPickerWindow(Store, new(), languages, selected, R.VocabularyCategoryAxis.Content, entries, allowsMultiple: false) { Owner = this }; ChildWindow = picker; try { picker.ShowDialog(); } finally { await picker.RetireAsync(); ChildWindow = null; } if (!Retiring && picker.Accepted) { _sense.SelectedValue = picker.Selection.Cast<Guid?>().FirstOrDefault(); var entry = entries.FirstOrDefault(e => e.Senses.Any(s => s.Id == (Guid?)_sense.SelectedValue)); var sense = entry?.Senses.FirstOrDefault(s => s.Id == (Guid?)_sense.SelectedValue); button.Content = entry is null ? "Choose an expression" : entry.Expression + " · " + (sense?.Meaning ?? ""); } }
+        try { var selected = _sense.SelectedValue is Guid id ? new HashSet<Guid> { id } : []; var picker = new FrozenVocabularyDraftPickerWindow(Store, new(), languages, selected, R.VocabularyCategoryAxis.Content, entries, allowsMultiple: false) { Owner = this }; ChildWindow = picker; try { picker.ShowDialog(); } finally { await picker.RetireAsync(); ChildWindow = null; } if (!Retiring && picker.Accepted) { _sense.SelectedValue = picker.Selection.Cast<Guid?>().FirstOrDefault(); var entry = entries.FirstOrDefault(e => e.Senses.Any(s => s.Id == (Guid?)_sense.SelectedValue)); var sense = entry?.Senses.FirstOrDefault(s => s.Id == (Guid?)_sense.SelectedValue); button.Content = entry is null ? InterfaceText.Get("Choose an expression", "Vocabulary") : entry.Expression + " · " + (sense?.Meaning ?? ""); } }
         finally { ChildWindow = null; ChildDone = null; try { UpdateAdmission(); } finally { done.TrySetResult(); } }
     }
     protected override VocabularySemanticIndex Edited()

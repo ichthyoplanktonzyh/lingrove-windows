@@ -21,11 +21,11 @@ internal static class PerformancePane
         var context = r.Context;
         var metrics = context.Host.Coordinator.Metrics;
         var history = context.Host.Speech.History;
-        var resourceStatus = Ui.Text("Collecting…", "Caption");
+        var resourceStatus = Ui.Text(InterfaceText.Get("Collecting…", "Localizable"), "Caption");
         var cpuTrend = new Polyline { Height = 55, Stretch = Stretch.Fill, StrokeThickness = 1.5 }.Themed(Shape.StrokeProperty, "AccentBrush");
         var memoryTrend = new Polyline { Height = 55, Stretch = Stretch.Fill, StrokeThickness = 1.5 }.Themed(Shape.StrokeProperty, "AccentBrush");
         var cpuSamples = new Queue<double>(); var memorySamples = new Queue<double>();
-        var resources = new StackPanel { Children = { Ui.Text("CPU", "Caption"), cpuTrend, Ui.Text("Memory", "Caption"), memoryTrend, resourceStatus } };
+        var resources = new StackPanel { Children = { Ui.Text(InterfaceText.Get("CPU", "Localizable"), "Caption"), cpuTrend, Ui.Text(InterfaceText.Get("Memory", "Localizable"), "Caption"), memoryTrend, resourceStatus } };
         var resourceTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
         TimeSpan? priorCpu = null;
         long priorTime = 0;
@@ -51,7 +51,7 @@ internal static class PerformancePane
                 resourceStatus.Text = $"CPU {cpuText} · Memory {process.WorkingSet64 / (1024.0 * 1024):F0} MB · GPU unavailable";
             }
             catch (Exception error) when (error is InvalidOperationException or System.ComponentModel.Win32Exception)
-            { resourceStatus.Text = "Resource readings are unavailable."; }
+            { resourceStatus.Text = InterfaceText.Get("Resource readings are unavailable.", "Localizable"); }
         };
         resources.IsVisibleChanged += (_, _) =>
         {
@@ -74,7 +74,7 @@ internal static class PerformancePane
             catch (Exception error) when (error is System.IO.IOException or UnauthorizedAccessException)
             {
                 context.Settings.PerformanceTrackingEnabled = previous; tracking.IsChecked = previous;
-                trackingError.Text = "Could not save the tracking preference.";
+                trackingError.Text = InterfaceText.Get("Could not save the tracking preference.", "Localizable");
             }
         };
         context.OnRefresh(() => tracking.IsChecked = context.Settings.PerformanceTrackingEnabled);
@@ -84,7 +84,7 @@ internal static class PerformancePane
         void UpdateHistory()
         {
             records.Children.Clear();
-            if (history is null) { records.Children.Add(Ui.Text("Request history is unavailable.", "Caption")); return; }
+            if (history is null) { records.Children.Add(Ui.Text(InterfaceText.Get("Request history is unavailable.", "Localizable"), "Caption")); return; }
             var selected = ((SourceChoice)source.SelectedItem).Value;
             var entries = history.Entries.Where(x => x.Source == selected).Reverse().ToArray();
             clear.IsEnabled = history.Entries.Count != 0;
@@ -137,7 +137,7 @@ internal static class PerformancePane
             var samples = metrics.LatenciesMs;
             sparkline.Points = [.. samples.Select((ms, index) => new Point(index, -ms))];
             latency.Text = samples.Count == 0
-                ? "No suggestions yet. Type somewhere to see how long they take."
+                ? InterfaceText.Get("No suggestions yet. Type somewhere to see how long they take.", "Localizable")
                 : $"Last {samples[^1]} ms · Median {samples.Order().ElementAt(samples.Count / 2)} ms · "
                     + $"{samples.Count} most recent suggestions";
         }
@@ -157,7 +157,7 @@ internal static class PerformancePane
             new SettingsCard("Live Resource Usage",
                 r.Stacked("This process", "Updated every second while this pane is visible. Helper processes and GPU counters are not included.", resources)),
             new SettingsCard("Suggestion Quality",
-                r.Labeled("Suggestions Shown", "How many suggestions appeared since Cotabby started.", shown)
+                r.Labeled("Suggestions Shown", "How many suggestions appeared since Lingrove started.", shown)
                     .Tagged("quality stats counters"),
                 r.Labeled("Suggestions Accepted", "How many of them you accepted at least part of.", accepted)
                     .Tagged("quality stats counters"),

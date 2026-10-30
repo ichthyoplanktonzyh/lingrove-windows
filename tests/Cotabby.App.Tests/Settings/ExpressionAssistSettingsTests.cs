@@ -48,7 +48,7 @@ public sealed class ExpressionAssistSettingsTests
         settings.LearningTranslationEnabled = true;
         Assert.Equal("Translation", settings.ExpressionAssistShortcutConflict(Chord with { Label = "another label" }));
         settings.LearningTranslationEnabled = false; settings.GlobalToggle = Chord;
-        Assert.Equal("Toggle Cotabby", settings.ExpressionAssistShortcutConflict(Chord));
+        Assert.Equal("Toggle Lingrove", settings.ExpressionAssistShortcutConflict(Chord));
     }
 
     [Theory]

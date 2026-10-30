@@ -73,7 +73,7 @@ internal sealed class CanonicalVocabularyExplanationRow : StackPanel, IDisposabl
         _authoredLanguage = example is null ? sense.MeaningLanguage : example.MeaningLanguage;
         _standalone = example is null;
         _alwaysAuthored = example?.MeaningOrigin == VocabularyMeaningOrigin.User;
-        _heading.Text = example is null ? "General meaning" : "Meaning in this context";
+        _heading.Text = example is null ? InterfaceText.Get("General meaning", "Vocabulary") : InterfaceText.Get("Meaning in this context", "Vocabulary");
         Render(_session.State);
     }
     private bool Current() => !_disposed && _canAct() && _owner.IsCurrent(_key, _session);
@@ -107,7 +107,7 @@ internal sealed class CanonicalVocabularyExplanationRow : StackPanel, IDisposabl
         Set(_proposal, proposal ? record!.Result.Meaning : "", record?.Language);
         _replace.Visibility = proposal ? Visibility.Visible : Visibility.Collapsed; _replace.IsEnabled = !_adopting;
         Set(_prose, record?.Result.Explanation ?? "", record?.Language);
-        _status.Text = _adopting ? "Saving meaning…" : _adoptionError ?? (state.IsGenerating ? "Explaining…" : state.ErrorMessage ?? (_owner.HasUnavailableSavedRecord(_key) ? "A saved explanation has a date unavailable for display on Windows." : ""));
+        _status.Text = _adopting ? InterfaceText.Get("Saving meaning…", "Vocabulary") : _adoptionError ?? (state.IsGenerating ? InterfaceText.Get("Explaining…", "Vocabulary") : state.ErrorMessage ?? (_owner.HasUnavailableSavedRecord(_key) ? InterfaceText.Get("A saved explanation has a date unavailable for display on Windows.", "Vocabulary") : ""));
         _status.Visibility = _status.Text.Length == 0 ? Visibility.Collapsed : Visibility.Visible;
     }
     private void OnGenerate(object sender, RoutedEventArgs args)

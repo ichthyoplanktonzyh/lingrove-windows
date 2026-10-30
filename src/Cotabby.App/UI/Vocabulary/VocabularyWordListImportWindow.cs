@@ -75,7 +75,7 @@ internal sealed class VocabularyWordListImportWindow : Window
         if (_session.Table is { } table && !ReferenceEquals(table, _renderedTable)) { _renderedTable = table; BuildSettings(table); }
         _settings.IsEnabled = !_session.Saving && !_retiring; _cancel.IsEnabled = !_session.Saving && !_retiring;
         _import.IsEnabled = !_retiring && !_session.Preparing && !_session.Saving && _session.Preview?.Plan.Result.HasChanges == true;
-        _status.Text = _session.Preparing ? "Preparing preview…" : ""; _failure.Text = _session.Failure ?? "";
+        _status.Text = _session.Preparing ? InterfaceText.Get("Preparing preview…", "Vocabulary") : ""; _failure.Text = _session.Failure ?? "";
         _results.Children.Clear();
         if (_session.Preview is not { } preview) return;
         var count = preview.Plan.Result;

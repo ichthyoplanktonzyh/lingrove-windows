@@ -1,4 +1,5 @@
 using System.Windows;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI.Vocabulary;
 
@@ -8,7 +9,7 @@ public partial class VocabularyRestoreConfirmationWindow : Window
 {
     private readonly Action? _accepted;
     internal VocabularyRestoreConfirmationWindow(Action? accepted = null)
-    { _accepted = accepted; InitializeComponent(); WindowTheme.Follow(this); }
+    { _accepted = accepted; InitializeComponent(); InterfaceText.TranslateInitialTree(this, "Vocabulary"); InterfaceText.ApplyDirection(this); WindowTheme.Follow(this); }
     private void OnCancel(object sender, RoutedEventArgs args) => DialogResult = false;
     private void OnRestore(object sender, RoutedEventArgs args)
     {

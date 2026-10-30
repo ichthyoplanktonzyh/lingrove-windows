@@ -11,7 +11,7 @@ internal static class AdvancedPane
         return new SettingsPane("Advanced", "\uE9E9", "Timing, files, and logs",
             new SettingsCard("Timing",
                 r.Slider("Suggestion Delay",
-                    "How long Cotabby waits after a keystroke before asking the model. "
+                    "How long Lingrove waits after a keystroke before asking the model. "
                     + "Lower feels snappier; higher saves work while you type in bursts.",
                     0, 300, 10, v => $"{v:0} ms",
                     s => s.DebounceMs, (s, v) => s.DebounceMs = (int)v)
@@ -22,7 +22,7 @@ internal static class AdvancedPane
                 EnginePane.ModelsFolder(r),
                 r.Action("Log File", AppHost.LogPath, "Open", () => Ui.OpenPath(AppHost.LogPath))
                     .Tagged("path logs diagnostics debug troubleshooting"),
-                Rows.Note("Set the environment variable COTABBY_DEBUG_LOG=1 before starting Cotabby to write "
+                Rows.Note("Set the environment variable COTABBY_DEBUG_LOG=1 before starting Lingrove to write "
                     + "verbose logs. Verbose logs include the text you type.")));
     }
 }

@@ -5,6 +5,7 @@ using Cotabby.App.UI.Controls;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Models;
 using Cotabby.App.Settings;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI.Settings.Panes;
 
@@ -15,7 +16,7 @@ internal sealed class LearningPowerControls : StackPanel
     private readonly Func<AppSettings> _settings;
     private readonly Action<Action<AppSettings>> _change;
     private readonly LearningModelRole _role;
-    private readonly CheckBox _enabled = new() { Content = "Switch based on power source" };
+    private readonly CheckBox _enabled = new() { Content = InterfaceText.Get("Switch based on power source", "Localizable") };
     private readonly StackPanel _choices = new();
     private readonly ComboBox[] _backends = [new(), new()];
     private readonly ComboBox[] _models = [new(), new()];
@@ -36,7 +37,7 @@ internal sealed class LearningPowerControls : StackPanel
     {
         _settings = settings; _change = change; _role = role; _installed = installed?.ToArray() ?? [];
         Children.Add(_enabled);
-        var description = Ui.Text("Use a different engine or model on battery and while plugged in for this task.", "Caption");
+        var description = Ui.Text(InterfaceText.Get("Use a different engine or model on battery and while plugged in for this task.", "Localizable"), "Caption");
         description.TextWrapping = TextWrapping.Wrap; Children.Add(description);
         Children.Add(_choices);
         for (int index = 0; index < 2; index++)
@@ -66,7 +67,7 @@ internal sealed class LearningPowerControls : StackPanel
             System.Windows.Automation.AutomationProperties.SetName(_templates[index], index == 0 ? "On battery instruction template" : "Plugged in instruction template");
             _choices.Children.Add(row);
         }
-        var note = Ui.Text("Endpoint profiles use this task's connection address and credential. Model choices do not change autocomplete or the other learning task.", "Caption");
+        var note = Ui.Text(InterfaceText.Get("Endpoint profiles use this task's connection address and credential. Model choices do not change autocomplete or the other learning task.", "Localizable"), "Caption");
         note.TextWrapping = TextWrapping.Wrap; note.Margin = new Thickness(0, 8, 0, 0); _choices.Children.Add(note);
         _enabled.Checked += (_, _) => SetEnabled(true); _enabled.Unchecked += (_, _) => SetEnabled(false);
         Refresh();

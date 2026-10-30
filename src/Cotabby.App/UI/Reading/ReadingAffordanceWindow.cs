@@ -5,6 +5,7 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using Cotabby.App.UI.Learning;
 using Cotabby.Core.Focus;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI.Reading;
 
@@ -21,7 +22,7 @@ internal sealed class ReadingAffordanceWindow : Window
         ResizeMode = ResizeMode.NoResize; Topmost = true; Background = Brushes.Transparent; AllowsTransparency = true;
         Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("/Cotabby;component/UI/Theme.xaml", UriKind.Relative) });
         WindowTheme.Follow(this);
-        var button = new Button { Content = "文", FontSize = 16, Focusable = false, ToolTip = "Read selected text" };
+        var button = new Button { Content = "文", FontSize = 16, Focusable = false, ToolTip = InterfaceText.Get("Read selected text", "Learning") };
         button.SetResourceReference(StyleProperty, "Btn"); button.Click += (_, _) => _activate?.Invoke(); Content = button;
         SourceInitialized += (_, _) => LearningPanelPlacement.Install(this);
     }

@@ -6,6 +6,7 @@ using Cotabby.App.Vocabulary;
 using Cotabby.Core.Vocabulary;
 using Cotabby.Core.Text;
 using Cotabby.Win32.Vocabulary;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI.Vocabulary;
 
@@ -147,7 +148,7 @@ public partial class VocabularyEntryEditorWindow : Window
                 formatting.Children.Add(style);
                 foreach (bool bold in new[] { true, false })
                 {
-                    var toggle = new CheckBox { Content = bold ? "Bold" : "Italic", IsChecked = bold ? text.Value.Bold : text.Value.Italic, Margin = new Thickness(10, 3, 0, 0) };
+                    var toggle = new CheckBox { Content = bold ? InterfaceText.Get("Bold", "Vocabulary") : InterfaceText.Get("Italic", "Vocabulary"), IsChecked = bold ? text.Value.Bold : text.Value.Italic, Margin = new Thickness(10, 3, 0, 0) };
                     toggle.Click += (_, _) => ChangeBlock(block.Id, value => value is VocabularyBlockContent.Text old
                         ? new VocabularyBlockContent.Text(bold ? old.Value with { Bold = toggle.IsChecked == true } : old.Value with { Italic = toggle.IsChecked == true }) : value);
                     formatting.Children.Add(toggle);

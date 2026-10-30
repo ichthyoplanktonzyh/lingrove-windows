@@ -5,6 +5,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using Cotabby.App.UI.Controls;
 using Cotabby.Core.Overlay;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI.Settings.Panes;
 
@@ -75,8 +76,8 @@ internal static class AppearancePane
 
     private static Border Preview(SettingsContext context)
     {
-        var typed = new TextBlock { Text = "This is how your ", VerticalAlignment = VerticalAlignment.Center };
-        var ghost = new TextBlock { Text = "suggestions will look", VerticalAlignment = VerticalAlignment.Center };
+        var typed = new TextBlock { Text = InterfaceText.Get("This is how your ", "Localizable"), VerticalAlignment = VerticalAlignment.Center };
+        var ghost = new TextBlock { Text = InterfaceText.Get("suggestions will look", "Localizable"), VerticalAlignment = VerticalAlignment.Center };
         var hintLabel = Ui.Text("", "KeycapText");
         var hint = new Border { Margin = new Thickness(6, 0, 0, 0), Child = hintLabel }.Styled("Keycap");
 

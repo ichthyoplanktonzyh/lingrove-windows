@@ -7,6 +7,7 @@ using Cotabby.App.Vocabulary;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Vocabulary;
 using Cotabby.Win32.Vocabulary;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI.Vocabulary;
 
@@ -261,7 +262,7 @@ public partial class VocabularyNotebookWindow : Window
         if (sense.AlternateMeanings.Count > 0)
         {
             var alternatives = new StackPanel(); foreach (var meaning in sense.AlternateMeanings) alternatives.Children.Add(Literal(meaning.Text, 13, meaning.Language));
-            DetailContent.Children.Add(new Expander { Header = "Other wordings", Content = alternatives, Margin = new Thickness(0, 12, 0, 0) });
+            DetailContent.Children.Add(new Expander { Header = InterfaceText.Get("Other wordings", "Vocabulary"), Content = alternatives, Margin = new Thickness(0, 12, 0, 0) });
         }
         if (sense.Tags.Count > 0) DetailContent.Children.Add(Label(string.Join(" · ", sense.Tags), 12));
         if (sense.Note.Length > 0) Section("Notes", Literal(sense.Note, 14));

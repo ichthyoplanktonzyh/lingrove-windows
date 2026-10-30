@@ -7,6 +7,7 @@ using Cotabby.App.UI.Controls;
 using Cotabby.Core.Models;
 using Cotabby.Core.Suggestions;
 using Cotabby.Inference;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI.Settings.Panes;
 
@@ -81,22 +82,22 @@ internal sealed class ModelList : StackPanel
         else if (selected && _context.Host.AdmittedLocalModel?.Id == model.Id)
         {
             var check = Ui.Icon("\uE73E", 12);
-            var active = new TextBlock { Text = "Active", FontSize = 12, FontWeight = FontWeights.SemiBold };
+            var active = new TextBlock { Text = InterfaceText.Get("Active", "Localizable"), FontSize = 12, FontWeight = FontWeights.SemiBold };
             check.Themed(TextBlock.ForegroundProperty, "GreenBrush");
             active.Themed(TextBlock.ForegroundProperty, "GreenBrush");
             trailing = Ui.Across(check, active);
         }
         else if (!ModelDownloader.IsCached(model))
         {
-            trailing = Ui.Button("Download", () => Load(model));
+            trailing = Ui.Button(InterfaceText.Get("Download", "Localizable"), () => Load(model));
         }
         else if (selected)
         {
-            trailing = Ui.Button("Load", () => Load(model));
+            trailing = Ui.Button(InterfaceText.Get("Load", "Localizable"), () => Load(model));
         }
         else
         {
-            trailing = Ui.Text("Downloaded", "Caption");
+            trailing = Ui.Text(InterfaceText.Get("Downloaded", "Localizable"), "Caption");
         }
         trailing.VerticalAlignment = VerticalAlignment.Center;
         trailing.IsEnabled = !Busy;
@@ -209,7 +210,7 @@ internal sealed class ModelList : StackPanel
         _progressBar.Visibility = hasTotal ? Visibility.Visible : Visibility.Collapsed;
         if (_progress is null)
         {
-            _progressLabel.Text = "Preparing…";
+            _progressLabel.Text = InterfaceText.Get("Preparing…", "Localizable");
         }
         else if (hasTotal)
         {

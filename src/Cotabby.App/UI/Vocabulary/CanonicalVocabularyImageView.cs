@@ -22,7 +22,7 @@ internal sealed class CanonicalVocabularyImageView : Border, IDisposable
     private readonly ICanonicalVocabularyMediaStore _store;
     private readonly Button _open;
     private readonly Image _image = new() { Stretch = Stretch.Uniform, MaxHeight = 280 };
-    private readonly TextBlock _status = new() { Text = "Loading image…", Margin = new Thickness(0, 8, 0, 8) };
+    private readonly TextBlock _status = new() { Text = InterfaceText.Get("Loading image…", "Vocabulary"), Margin = new Thickness(0, 8, 0, 8) };
     private readonly VocabularyImageReference _reference;
     private VocabularyPreparedImage? _draft;
     private CancellationTokenSource? _work;
@@ -37,7 +37,7 @@ internal sealed class CanonicalVocabularyImageView : Border, IDisposable
     internal CanonicalVocabularyImageView(ICanonicalVocabularyMediaStore store, VocabularyImageReference reference, VocabularyPreparedImage? draft = null, string caption = "")
     {
         _store = store; _reference = reference; _draft = draft;
-        _open = new Button { Content = _image, ToolTip = "Enlarge image", Padding = new Thickness(0),
+        _open = new Button { Content = _image, ToolTip = InterfaceText.Get("Enlarge image", "Vocabulary"), Padding = new Thickness(0),
             BorderThickness = new Thickness(0), Background = Brushes.Transparent, Visibility = Visibility.Collapsed };
         AutomationProperties.SetName(_open, "Enlarge image"); _open.Click += (_, _) => Enlarge();
         var content = new StackPanel(); content.Children.Add(_status); content.Children.Add(_open); Child = content; SetCaption(caption);
@@ -52,7 +52,7 @@ internal sealed class CanonicalVocabularyImageView : Border, IDisposable
         if (_disposed || !IsVisible || _work is not null || _loaded) return;
         var work = new CancellationTokenSource(); _work = work; long version = ++_version;
         _loaded = false; _image.Source = null;
-        _status.Text = "Loading image…"; _status.Visibility = Visibility.Visible; _open.Visibility = Visibility.Collapsed;
+        _status.Text = InterfaceText.Get("Loading image…", "Vocabulary"); _status.Visibility = Visibility.Visible; _open.Visibility = Visibility.Collapsed;
         _loads.RemoveAll(task => task.IsCompleted); LastLoad = LoadAsync(_reference, _draft, version, work); _loads.Add(LastLoad);
     }
     private async Task LoadAsync(VocabularyImageReference reference, VocabularyPreparedImage? draft, long version, CancellationTokenSource work)

@@ -22,3 +22,6 @@
 
 # Committed upstream localization catalogs are byte-preserved for provenance.
 /resources/InterfaceLanguage/*.xcstrings -text
+
+# Approved Mac brand masters keep their exact upstream bytes on both hosts.
+/resources/Branding/*.svg -text

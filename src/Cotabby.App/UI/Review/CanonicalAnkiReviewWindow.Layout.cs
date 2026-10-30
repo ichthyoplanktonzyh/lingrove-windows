@@ -139,7 +139,7 @@ internal sealed partial class CanonicalAnkiReviewWindow
             if (block.Content is VocabularyBlockContent.Text text)
             {
                 var style = new ComboBox { ItemsSource = Enum.GetValues<VocabularyTextStyle>(), SelectedItem = text.Value.Style }; VocabularyNotebookTheme.Combo(style); style.SelectionChanged += (_, _) => { if (!_updating && style.SelectedItem is VocabularyTextStyle v) ChangeBlock(part.Id, block.Id, b => b with { Content = new VocabularyBlockContent.Text(((VocabularyBlockContent.Text)b.Content).Value with { Style = v }) }); }; panel.Children.Add(style);
-                var format = new WrapPanel(); foreach (bool bold in new[] { true, false }) { var toggle = new CheckBox { Content = bold ? "Bold" : "Italic", IsChecked = bold ? text.Value.Bold : text.Value.Italic, Margin = new Thickness(0, 4, 12, 4) }; toggle.Click += (_, _) => ChangeBlock(part.Id, block.Id, b => { var value = ((VocabularyBlockContent.Text)b.Content).Value; return b with { Content = new VocabularyBlockContent.Text(bold ? value with { Bold = toggle.IsChecked == true } : value with { Italic = toggle.IsChecked == true }) }; }); format.Children.Add(toggle); } panel.Children.Add(format);
+                var format = new WrapPanel(); foreach (bool bold in new[] { true, false }) { var toggle = new CheckBox { Content = bold ? InterfaceText.Get("Bold", "Vocabulary") : InterfaceText.Get("Italic", "Vocabulary"), IsChecked = bold ? text.Value.Bold : text.Value.Italic, Margin = new Thickness(0, 4, 12, 4) }; toggle.Click += (_, _) => ChangeBlock(part.Id, block.Id, b => { var value = ((VocabularyBlockContent.Text)b.Content).Value; return b with { Content = new VocabularyBlockContent.Text(bold ? value with { Bold = toggle.IsChecked == true } : value with { Italic = toggle.IsChecked == true }) }; }); format.Children.Add(toggle); } panel.Children.Add(format);
                 var field = new TextBox { Text = text.Value.Text, AcceptsReturn = true, MinHeight = 65, TextWrapping = TextWrapping.Wrap }; VocabularyNotebookTheme.Input(field); field.TextChanged += (_, _) => { if (!_updating) ChangeBlock(part.Id, block.Id, b => b with { Content = new VocabularyBlockContent.Text(((VocabularyBlockContent.Text)b.Content).Value with { Text = field.Text }) }); }; panel.Children.Add(field);
             }
             else if (block.Content is VocabularyBlockContent.Image image)
@@ -191,7 +191,7 @@ internal sealed partial class CanonicalAnkiReviewWindow
         try { var (entry, sense) = Current(); content = CanonicalReviewCardPolicy.Content(entry, sense, _session.Plan, _side.SelectedIndex == 1); }
         catch (AnkiReviewException error) { validation ??= error.Message; }
         if (version != _previewVersion || _closing) return;
-        _validation.Text = validation ?? (_loadedAddress == _session.Controller.Settings.Address ? "" : "Refresh the Anki connection before sending."); _preview.Children.Clear();
+        _validation.Text = validation ?? (_loadedAddress == _session.Controller.Settings.Address ? "" : InterfaceText.Get("Refresh the Anki connection before sending.", "Vocabulary")); _preview.Children.Clear();
         foreach (var part in (_side.SelectedIndex == 1 ? content?.Back : content?.Front) ?? [])
         {
             if (part is ReviewResolvedPart.Text text) _preview.Children.Add(new TextBlock { Text = text.Value, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 4) });

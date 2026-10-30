@@ -150,7 +150,7 @@ public sealed class AppHost : IAsyncDisposable
             // GGUF downloads are large, so the timeout is generous.
             var http = new HttpClient { Timeout = TimeSpan.FromMinutes(30) };
             http.DefaultRequestHeaders.UserAgent.ParseAdd(
-                "Cotabby-Windows/0.2 (+https://github.com/Msde-7/cotabby-windows)");
+                Cotabby.App.Branding.AppBrand.UserAgent);
             return http;
         });
         sc.AddSingleton(preloadedStore ?? new SettingsStore());

@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Cotabby.App.UI.Controls;
 using Cotabby.Inference.OpenAICompatible;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI.Settings.Panes;
 
@@ -20,7 +21,7 @@ internal sealed class EndpointSection
 
     private readonly StatusLine _status = new();
     private readonly Button _test;
-    private readonly ComboBox _discovered = new ComboBox { MinWidth = 44, ToolTip = "Models found on the server" }.Styled("Combo");
+    private readonly ComboBox _discovered = new ComboBox { MinWidth = 44, ToolTip = InterfaceText.Get("Models found on the server", "Localizable") }.Styled("Combo");
     private readonly PasswordBox _key = new PasswordBox { Width = 240 }.Styled("PasswordInput");
     private readonly TextBlock _keyStatus = Ui.Text("", "Caption");
 
@@ -29,7 +30,7 @@ internal sealed class EndpointSection
         _rows = rows;
         _context = rows.Context;
         _connection = new OpenAICompatibleConnectionModel(_context.Host.EndpointClient);
-        _test = Ui.Button("Test Connection", TestConnection, "AccentBtn");
+        _test = Ui.Button(InterfaceText.Get("Test Connection", "Localizable"), TestConnection, "AccentBtn");
 
         _context.Closed += _closed.Cancel;
         _connection.PropertyChanged += (_, e) =>
@@ -69,7 +70,7 @@ internal sealed class EndpointSection
             // Models listed by the previous server do not apply to the new one.
             _connection.Invalidate();
         });
-        var useDefault = Ui.Button("Use Ollama Default", () => _context.Change(s =>
+        var useDefault = Ui.Button(InterfaceText.Get("Use Ollama Default", "Localizable"), () => _context.Change(s =>
         {
             s.EndpointBaseUrl = OpenAICompatibleEndpointConfiguration.DefaultBaseUrl;
             _connection.Invalidate();
@@ -98,15 +99,15 @@ internal sealed class EndpointSection
             },
         };
         return _rows.Stacked("Server URL",
-            "The OpenAI-compatible server address. Cotabby adds /v1 when the address has no path; "
+            "The OpenAI-compatible server address. Lingrove adds /v1 when the address has no path; "
             + "Ollama uses http://127.0.0.1:11434 by default.", content)
             .Tagged("endpoint url host ollama localhost openai v1 connect connection status lm studio vllm");
     }
 
     private SettingsRow ApiKey()
     {
-        var save = Ui.Button("Save", () => StoreKey(() => _context.Host.EndpointCredentials.SaveApiKey(_key.Password)));
-        var clear = Ui.Button("Clear", () => StoreKey(_context.Host.EndpointCredentials.DeleteApiKey));
+        var save = Ui.Button(InterfaceText.Get("Save", "Localizable"), () => StoreKey(() => _context.Host.EndpointCredentials.SaveApiKey(_key.Password)));
+        var clear = Ui.Button(InterfaceText.Get("Clear", "Localizable"), () => StoreKey(_context.Host.EndpointCredentials.DeleteApiKey));
         var content = new StackPanel { Children = { Ui.Across(_key, save, clear), _keyStatus } };
         _keyStatus.Margin = new Thickness(0, 8, 0, 0);
         return _rows.Stacked("API Key",
@@ -184,7 +185,7 @@ internal sealed class EndpointSection
         }
     }
 
-    private void ShowKeyStatus() => _keyStatus.Text = ReadKey() is null ? "No API key is stored." : "An API key is stored.";
+    private void ShowKeyStatus() => _keyStatus.Text = ReadKey() is null ? InterfaceText.Get("No API key is stored.", "Localizable") : InterfaceText.Get("An API key is stored.", "Localizable");
 
     /// <summary>The stored key, or null when there is none or it cannot be decrypted.</summary>
     private string? ReadKey()

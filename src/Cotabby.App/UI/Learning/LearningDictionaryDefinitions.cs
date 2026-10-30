@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using Cotabby.Core.LanguageLearning;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI.Learning;
 
@@ -22,7 +23,7 @@ internal static class LearningDictionaryDefinitions
         {
             AddText(content, "Online English dictionary · https://api.dictionaryapi.dev", bold: true);
             AddText(content, "Only this lookup term is sent to this destination.", secondary: true);
-            var button = new Button { Content = "Look up online", HorizontalAlignment = HorizontalAlignment.Left, IsEnabled = confirmOnline is not null };
+            var button = new Button { Content = InterfaceText.Get("Look up online", "Learning"), HorizontalAlignment = HorizontalAlignment.Left, IsEnabled = confirmOnline is not null };
             button.SetResourceReference(FrameworkElement.StyleProperty, "Btn");
             button.Click += (_, _) => { if (current?.Invoke() != false) confirmOnline?.Invoke(); }; content.Children.Add(button);
         }
@@ -38,7 +39,7 @@ internal static class LearningDictionaryDefinitions
             AddText(content, state.ErrorMessage ?? "The dictionary could not complete this lookup.", secondary: true);
             if (state.SelectedSource == DictionarySource.Online)
             {
-                var retry = new Button { Content = "Retry online", HorizontalAlignment = HorizontalAlignment.Left, IsEnabled = confirmOnline is not null };
+                var retry = new Button { Content = InterfaceText.Get("Retry online", "Learning"), HorizontalAlignment = HorizontalAlignment.Left, IsEnabled = confirmOnline is not null };
                 retry.SetResourceReference(FrameworkElement.StyleProperty, "Btn");
                 retry.Click += (_, _) => { if (current?.Invoke() != false) confirmOnline?.Invoke(); }; content.Children.Add(retry);
             }

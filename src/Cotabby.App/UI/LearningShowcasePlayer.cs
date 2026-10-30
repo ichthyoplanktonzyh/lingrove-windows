@@ -6,6 +6,7 @@ using Cotabby.App.Speech;
 using Cotabby.Core.Focus;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Vocabulary;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI;
 
@@ -18,8 +19,8 @@ internal sealed class LearningShowcasePlayer : StackPanel, IAsyncDisposable
     private const string Translation = "Please keep me posted on the project's progress.";
     private readonly LearningShowcasePlayback _playback = new();
     private readonly ComboBox _scenes = new(), _steps = new();
-    private readonly Button _previous = new() { Content = "‹", ToolTip = "Previous step" }, _play = new() { Content = "▶", ToolTip = "Play demo" },
-        _next = new() { Content = "›", ToolTip = "Next step" }, _replay = new() { Content = "↻", ToolTip = "Replay demo" };
+    private readonly Button _previous = new() { Content = "‹", ToolTip = InterfaceText.Get("Previous step", "Localizable") }, _play = new() { Content = "▶", ToolTip = InterfaceText.Get("Play demo", "Localizable") },
+        _next = new() { Content = "›", ToolTip = InterfaceText.Get("Next step", "Localizable") }, _replay = new() { Content = "↻", ToolTip = InterfaceText.Get("Replay demo", "Localizable") };
     private readonly TextBlock _title = new() { FontWeight = FontWeights.SemiBold, TextWrapping = TextWrapping.Wrap }, _description = new() { TextWrapping = TextWrapping.Wrap };
     private readonly ContentControl _content = new();
     private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromSeconds(3.5) };
@@ -51,7 +52,7 @@ internal sealed class LearningShowcasePlayer : StackPanel, IAsyncDisposable
         System.Windows.Automation.AutomationProperties.SetName(_steps, "Demo steps");
         Children.Add(_scenes);
         var shell = new StackPanel { Margin = new Thickness(0, 10, 0, 0) };
-        shell.Children.Add(new TextBlock { Text = "Interactive demo · sample content", FontSize = 11, Margin = new Thickness(0, 0, 0, 8) });
+        shell.Children.Add(new TextBlock { Text = InterfaceText.Get("Interactive demo · sample content", "Localizable"), FontSize = 11, Margin = new Thickness(0, 0, 0, 8) });
         var controls = new StackPanel(); controls.Children.Add(_title);
         var buttons = new WrapPanel { Margin = new Thickness(0, 8, 0, 0) };
         foreach (var control in new Control[] { _steps, _previous, _play, _next, _replay }) { control.Margin = new Thickness(3, 0, 0, 0); buttons.Children.Add(control); }
@@ -96,10 +97,10 @@ internal sealed class LearningShowcasePlayer : StackPanel, IAsyncDisposable
             scope.Interacted += Interact; scope.Inserted += () => { _playback.Go(3); Stage(); };
             scope.LookupRequested += () => { _playback.Select(3); Stage(); };
             scope.OpenSaved += selection => { _playback.Select(5); Stage(); scope.RevealSaved(selection); };
-            scope.Failed += stage => Dispatcher.BeginInvoke(() => { if (ReferenceEquals(_scope, scope) && scope.IsStageCurrent(stage)) _description.Text = "This sample action could not be completed. Choose another step or replay the example."; });
+            scope.Failed += stage => Dispatcher.BeginInvoke(() => { if (ReferenceEquals(_scope, scope) && scope.IsStageCurrent(stage)) _description.Text = InterfaceText.Get("This sample action could not be completed. Choose another step or replay the example.", "Localizable"); });
             await scope.Store.PrepareAsync();
         }
-        catch { if (_mounted && epoch == _epoch) _description.Text = "The sample notebook could not be prepared."; return; }
+        catch { if (_mounted && epoch == _epoch) _description.Text = InterfaceText.Get("The sample notebook could not be prepared.", "Localizable"); return; }
         if (_mounted && epoch == _epoch) Stage();
     }
     private void Unmount()
@@ -130,7 +131,7 @@ internal sealed class LearningShowcasePlayer : StackPanel, IAsyncDisposable
             _title.Text = Cotabby.App.Localization.InterfaceText.Get(_playback.CurrentStep.Title); _description.Text = Cotabby.App.Localization.InterfaceText.Get(_playback.CurrentStep.Description);
             _previous.IsEnabled = _playback.Step > 0; _next.IsEnabled = _playback.Step + 1 < _playback.CurrentScene.Steps.Count;
             _play.IsEnabled = SystemParameters.ClientAreaAnimation; _play.Content = _playback.IsPlaying ? "Ⅱ" : "▶";
-            _play.ToolTip = _playback.IsPlaying ? "Pause demo" : "Play demo";
+            _play.ToolTip = _playback.IsPlaying ? InterfaceText.Get("Pause demo", "Localizable") : InterfaceText.Get("Play demo", "Localizable");
             System.Windows.Automation.AutomationProperties.SetName(_play, (string)_play.ToolTip);
             if (_playback.IsPlaying && _mounted && IsVisible) _timer.Start(); else _timer.Stop();
         }
@@ -158,7 +159,7 @@ internal sealed class LearningShowcasePlayer : StackPanel, IAsyncDisposable
         private readonly TextBlock _readingText = new() { TextWrapping = TextWrapping.Wrap, Margin = new Thickness(8) };
         private readonly ContentControl _readingCard = new();
         private readonly TextBlock _editor = new() { TextWrapping = TextWrapping.Wrap, Margin = new Thickness(8) };
-        private readonly TextBlock _silentNote = new() { Text = "Silent sample: no audio is played.", FontSize = 11, Margin = new Thickness(8), Visibility = Visibility.Collapsed };
+        private readonly TextBlock _silentNote = new() { Text = InterfaceText.Get("Silent sample: no audio is played.", "Localizable"), FontSize = 11, Margin = new Thickness(8), Visibility = Visibility.Collapsed };
         private readonly LearningSpeechController _speech;
         private readonly LearningShowcaseSpeech _speechOwner;
         private readonly LearningShowcaseVocabulary _vocabulary;
@@ -182,7 +183,7 @@ internal sealed class LearningShowcasePlayer : StackPanel, IAsyncDisposable
         private long _dictionaryEpoch;
         private int _readingSource;
         private readonly Func<Cotabby.App.Settings.AppSettings> _current;
-        private readonly Button _readingTranslate = new() { Content = "Translate sample", HorizontalAlignment = HorizontalAlignment.Left, Padding = new Thickness(8, 4, 8, 4) };
+        private readonly Button _readingTranslate = new() { Content = InterfaceText.Get("Translate sample", "Localizable"), HorizontalAlignment = HorizontalAlignment.Left, Padding = new Thickness(8, 4, 8, 4) };
         private long _stageEpoch;
         private Task _lastFailure = Task.CompletedTask;
         internal Task Pending { get { lock (_work) return Task.WhenAll(_work.Append(_lastFailure)); } }
@@ -218,7 +219,7 @@ internal sealed class LearningShowcasePlayer : StackPanel, IAsyncDisposable
                 if (_closed || !_dictionaryActive || !ReferenceEquals(state, _dictionary.State)) return;
                 _dictionaryView.ShowState(state, ScreenRect.Empty); DescribeExample(_dictionaryView);
                 if (_dictionaryView.FindName("AttributionText") is TextBlock attribution)
-                    attribution.Text = "Fixed local sample entries · no dictionary service is contacted.";
+                    attribution.Text = InterfaceText.Get("Fixed local sample entries · no dictionary service is contacted.", "Localizable");
                 if (state.Unit is not null)
                 {
                     var capture = state.SelectedWord is { } word ? WordCapture(word) : _phrase;
@@ -300,7 +301,7 @@ internal sealed class LearningShowcasePlayer : StackPanel, IAsyncDisposable
         private static void CloseMenu(Window window)
         { if (window.FindName("FavoriteButton") is Control { ContextMenu: { } menu }) menu.IsOpen = false; }
         private static void DescribeExample(Window view)
-        { if (view.FindName("ExplanationDestination") is TextBlock label) label.Text = "Sample explanation · fixed local content"; }
+        { if (view.FindName("ExplanationDestination") is TextBlock label) label.Text = InterfaceText.Get("Sample explanation · fixed local content", "Localizable"); }
         private async Task SaveExampleAsync(VocabularyCapture capture, Window view, long stage, bool showMenu)
         {
             await Store.Writing.SaveAsync(capture);
@@ -313,7 +314,7 @@ internal sealed class LearningShowcasePlayer : StackPanel, IAsyncDisposable
             _readingSource = source;
             var settings = _current();
             var binding = source == 1 ? settings.LearningReadingPointerShortcut : source == 2 ? settings.LearningReadingScreenshotShortcut : settings.LearningReadingShortcut;
-            _readingTranslate.Content = binding.IsBound ? binding.Label : "Translate sample";
+            _readingTranslate.Content = binding.IsBound ? binding.Label : InterfaceText.Get("Translate sample", "Localizable");
             string sourceText = source switch { 1 => "posted", 2 => Translation + "\nI'll send an update tomorrow.", _ => Translation };
             string translated = source switch { 1 => "获知最新情况", 2 => Source + "\n我明天会发送更新。", _ => Source };
             _readingText.Text = source == 1 ? "Thanks for your help. " + Translation : sourceText;

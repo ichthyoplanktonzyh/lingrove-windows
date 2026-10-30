@@ -107,11 +107,13 @@ the initial gap audit; its initial Windows gap descriptions are historical. Curr
   prerequisite for the screenshot command while retaining native security/composition admission,
   origin/window freshness, local OCR and existing reading/Store ownership. All four final-head checks
   passed at `d5bd6830eb99d3d6b08634013bd7eb48e7226dfb` before merge as `69f5a73`.
-- The [literal Unicode trigger candidate](EXPRESSION_UNICODE_TRIGGER_3B.md) connects policy-admitted
+- #149 merged [native expression commits and Unicode triggers](EXPRESSION_UNICODE_TRIGGER_3B.md), connecting policy-admitted
   fullwidth/symbol markers to one-shot exact native range selection for acceptance and cancellation,
   and routes all production ASCII/shortcut writes through the same acknowledged native transaction;
-  its CI and physical host acceptance remain separate gates.
-- Remaining work includes pointer/selection visual OCR fallback, native automatic language
+  all four final-head checks passed at `b6135301c0e1905286aeed91b9b0de49ad069b2a` before merge as
+  `27f711e`. Physical host acceptance remains separate.
+- Remaining work includes pointer/selection visual OCR fallback, canonical custom review layouts,
+  full interface-language coverage, native automatic language
   confidence, Apple's unavailable system dictionary and the explicitly documented media/native gaps.
   Internal components are not evidence that those flows are complete. Existing older libraries
   retain explicit references and are reused only after checking the current consumer contract.

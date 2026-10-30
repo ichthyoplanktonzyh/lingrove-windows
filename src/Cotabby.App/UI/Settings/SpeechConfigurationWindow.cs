@@ -33,7 +33,7 @@ internal sealed class SpeechConfigurationWindow : Window
     private SpeechTarget Target => new(_owner, "settings.testVoice." + _language.Code());
     internal SpeechConfigurationWindow(LearningSpeechController speech, Func<SpeechModelFiles>? models = null)
     {
-        _speech = speech; _models = models; Title = "Speech"; Width = 700; Height = 680; MinWidth = 520; MinHeight = 450; ShowInTaskbar = false;
+        _speech = speech; _models = models; Title = InterfaceText.Get("Speech", "Localizable"); Width = 700; Height = 680; MinWidth = 520; MinHeight = 450; ShowInTaskbar = false;
         VocabularyNotebookTheme.Follow(this);
         Content = new ScrollViewer { Content = _body, VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Padding = new Thickness(22) };
         Loaded += (_, _) => { if (_speech.Settings.SelectedProvider == LearningSpeechProviderKind.System && !_speech.CatalogIsLoaded) _speech.RefreshVoices(); Render(); };
@@ -73,8 +73,8 @@ internal sealed class SpeechConfigurationWindow : Window
         string? saved = _speech.Settings.VoiceId(_language); string? selected = choices.FirstOrDefault(v => v.Id == saved)?.Id ?? choices.FirstOrDefault(v => !v.IsNovelty)?.Id;
         var voices = new ComboBox { ItemsSource = choices.Select(v => new VoiceChoice(v.Id, v.Name)).ToArray(), DisplayMemberPath = "Name", SelectedValuePath = "Id", SelectedValue = selected, MinWidth = 200, IsEnabled = choices.Count > 0 };
         VocabularyNotebookTheme.Combo(voices); voices.SelectionChanged += (_, _) => { if (voices.SelectedValue is string id) _speech.Settings.SetVoiceId(id, _language); }; Row("System voice", voices);
-        if (choices.Count == 0) _body.Children.Add(new TextBlock { Text = _speech.VoiceCatalogError ?? "No compatible system voice is installed for this language.", TextWrapping = TextWrapping.Wrap });
-        else if (saved is not null && choices.All(v => v.Id != saved)) _body.Children.Add(new TextBlock { Text = "The saved voice is unavailable. An available voice will be used until you choose another.", TextWrapping = TextWrapping.Wrap });
+        if (choices.Count == 0) _body.Children.Add(new TextBlock { Text = _speech.VoiceCatalogError ?? InterfaceText.Get("No compatible system voice is installed for this language.", "Localizable"), TextWrapping = TextWrapping.Wrap });
+        else if (saved is not null && choices.All(v => v.Id != saved)) _body.Children.Add(new TextBlock { Text = InterfaceText.Get("The saved voice is unavailable. An available voice will be used until you choose another.", "Localizable"), TextWrapping = TextWrapping.Wrap });
     }
     private void LocalControls()
     {
@@ -82,9 +82,9 @@ internal sealed class SpeechConfigurationWindow : Window
         Asset("Model", _speech.Settings.LocalModelPath, path => { _speech.SelectLocalModel(path); Render(); }, "GGUF model|*.gguf");
         Asset("Decoder", _speech.Settings.LocalProjectionPath, path => { _speech.Settings.SetLocalProjectionPath(path); Render(); }, "GGUF decoder|*.gguf");
         Asset("Reference voice (optional)", _speech.Settings.ReferenceAudioPath, path => { _speech.Settings.SetReferenceAudioPath(path); Render(); }, "Audio|*.wav;*.mp3");
-        _body.Children.Add(new TextBlock { Text = "Local speech loads its own model only when requested.", TextWrapping = TextWrapping.Wrap });
+        _body.Children.Add(new TextBlock { Text = InterfaceText.Get("Local speech loads its own model only when requested.", "Localizable"), TextWrapping = TextWrapping.Wrap });
         if (!System.IO.File.Exists(System.IO.Path.Combine(AppContext.BaseDirectory, "Helpers", "lingrove-tts-helper.exe")))
-            _body.Children.Add(new TextBlock { Text = "The local speech helper is not available in this build.", TextWrapping = TextWrapping.Wrap });
+            _body.Children.Add(new TextBlock { Text = InterfaceText.Get("The local speech helper is not available in this build.", "Localizable"), TextWrapping = TextWrapping.Wrap });
         if (_models is not null)
         {
             Heading("Installed speech models"); _speech.RefreshLocalModels();
@@ -101,11 +101,11 @@ internal sealed class SpeechConfigurationWindow : Window
     private void SamplingControls()
     {
         string identity = _speech.Settings.ParameterIdentity; var sampling = _speech.Settings.GenerationProfile.Sampling;
-        var content = new StackPanel(); var disclosure = new Expander { Header = "Advanced sampling", Content = content, Margin = new Thickness(0, 10, 0, 10) }; _body.Children.Add(disclosure);
+        var content = new StackPanel(); var disclosure = new Expander { Header = InterfaceText.Get("Advanced sampling", "Localizable"), Content = content, Margin = new Thickness(0, 10, 0, 10) }; _body.Children.Add(disclosure);
         void Number(string label, string value, Func<string, LearningModelSamplingOverrides, LearningModelSamplingOverrides?> parse)
         {
-            var box = new TextBox { Text = value, MinWidth = 140, HorizontalAlignment = HorizontalAlignment.Left, ToolTip = "Leave empty for the recommended value." }; VocabularyNotebookTheme.Input(box);
-            box.LostKeyboardFocus += (_, _) => { var updated = parse(box.Text, _speech.Settings.GenerationProfile.Sampling); if (updated is not null) _speech.Settings.SetSamplingOverrides(updated, identity); else _status.Text = "Enter a valid number or leave the value empty."; };
+            var box = new TextBox { Text = value, MinWidth = 140, HorizontalAlignment = HorizontalAlignment.Left, ToolTip = InterfaceText.Get("Leave empty for the recommended value.", "Localizable") }; VocabularyNotebookTheme.Input(box);
+            box.LostKeyboardFocus += (_, _) => { var updated = parse(box.Text, _speech.Settings.GenerationProfile.Sampling); if (updated is not null) _speech.Settings.SetSamplingOverrides(updated, identity); else _status.Text = InterfaceText.Get("Enter a valid number or leave the value empty.", "Localizable"); };
             content.Children.Add(new TextBlock { Text = label, Margin = new Thickness(0, 8, 0, 4) }); content.Children.Add(box);
         }
         static double? ParseDouble(string value) => double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out double n) && double.IsFinite(n) ? n : null;
@@ -115,48 +115,48 @@ internal sealed class SpeechConfigurationWindow : Window
         Number("Repetition penalty", sampling.RepetitionPenalty?.ToString(CultureInfo.InvariantCulture) ?? "", (v, s) => v.Trim().Length == 0 ? s with { RepetitionPenalty = null } : ParseDouble(v) is { } n ? s with { RepetitionPenalty = n } : null);
         var seed = new ComboBox { ItemsSource = Enum.GetValues<LearningModelSeedMode>(), SelectedItem = sampling.SeedMode, MinWidth = 140, HorizontalAlignment = HorizontalAlignment.Left }; VocabularyNotebookTheme.Combo(seed);
         seed.SelectionChanged += (_, _) => { if (seed.SelectedItem is LearningModelSeedMode mode) _speech.Settings.SetSamplingOverrides(_speech.Settings.GenerationProfile.Sampling with { SeedMode = mode }, identity); };
-        content.Children.Add(new TextBlock { Text = "Seed mode", Margin = new Thickness(0, 8, 0, 4) }); content.Children.Add(seed);
+        content.Children.Add(new TextBlock { Text = InterfaceText.Get("Seed mode", "Localizable"), Margin = new Thickness(0, 8, 0, 4) }); content.Children.Add(seed);
         Number("Fixed seed", sampling.FixedSeed.ToString(CultureInfo.InvariantCulture), (v, s) => uint.TryParse(v, NumberStyles.Integer, CultureInfo.InvariantCulture, out uint n) ? s with { FixedSeed = n } : null);
     }
     private void ImportModels()
     {
         var dialog = new OpenFileDialog { Filter = "GGUF models|*.gguf", Multiselect = true }; if (dialog.ShowDialog(this) != true) return;
         Track(Import()); async Task Import() { try { var result = await _models!().ImportAsync(dialog.FileNames, _lifetime.Token); if (!_closed) { Render(); _status.Text = $"Imported {result.Imported}; skipped {result.Skipped}; failed {result.Failed}."; } }
-        catch (OperationCanceledException) { } catch { if (!_closed) _status.Text = "Could not import the selected models."; } }
+        catch (OperationCanceledException) { } catch { if (!_closed) _status.Text = InterfaceText.Get("Could not import the selected models.", "Localizable"); } }
     }
     private void DeleteModel(string name)
     {
         if (MessageBox.Show(this, "Delete " + name + " from the speech model folder?", "Delete model?", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes) return;
-        Track(Delete()); async Task Delete() { try { bool deleted = await _models!().DeleteAsync(name, _lifetime.Token); if (!_closed) { Render(); if (!deleted) _status.Text = "This model is in use."; } }
-        catch (OperationCanceledException) { } catch { if (!_closed) _status.Text = "Could not delete this model."; } }
+        Track(Delete()); async Task Delete() { try { bool deleted = await _models!().DeleteAsync(name, _lifetime.Token); if (!_closed) { Render(); if (!deleted) _status.Text = InterfaceText.Get("This model is in use.", "Localizable"); } }
+        catch (OperationCanceledException) { } catch { if (!_closed) _status.Text = InterfaceText.Get("Could not delete this model.", "Localizable"); } }
     }
     private void Track(Task task) { _transfers.Add(task); _ = Remove(); async Task Remove() { try { await task; } finally { _transfers.Remove(task); } } }
     private void EndpointControls()
     {
         Heading("Speech endpoint");
-        _body.Children.Add(new TextBlock { Text = "A speech request sends the selected phrase to this destination.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, 8) });
+        _body.Children.Add(new TextBlock { Text = InterfaceText.Get("A speech request sends the selected phrase to this destination.", "Localizable"), TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, 8) });
         Input("Server URL", _speech.Settings.EndpointBaseUrl, _speech.Settings.SetEndpointBaseUrl);
         Input("Model", _speech.Settings.EndpointModel, _speech.Settings.SetEndpointModel);
         Input("Voice", _speech.Settings.EndpointVoice, _speech.Settings.SetEndpointVoice);
         var password = _key = new PasswordBox { MinWidth = 200, Password = _keyDraft }; password.PasswordChanged += (_, _) => { _keyDraft = password.Password; _keyDirty = true; }; var panel = new StackPanel { Orientation = Orientation.Horizontal }; panel.Children.Add(password);
         var message = new TextBlock { TextWrapping = TextWrapping.Wrap };
-        panel.Children.Add(Button("Save key", () => { try { if (!_keyDirty) { message.Text = "Enter a key to save."; return; } SaveKey(); message.Text = "Key saved."; } catch { message.Text = "Unable to save the key."; } }));
-        panel.Children.Add(Button("Clear key", () => { try { _speech.Settings.SaveEndpointApiKey(null); password.Clear(); _keyDraft = ""; _keyDirty = false; message.Text = "Key removed."; } catch { message.Text = "Unable to remove the key."; } }));
+        panel.Children.Add(Button("Save key", () => { try { if (!_keyDirty) { message.Text = InterfaceText.Get("Enter a key to save.", "Localizable"); return; } SaveKey(); message.Text = InterfaceText.Get("Key saved.", "Localizable"); } catch { message.Text = InterfaceText.Get("Unable to save the key.", "Localizable"); } }));
+        panel.Children.Add(Button("Clear key", () => { try { _speech.Settings.SaveEndpointApiKey(null); password.Clear(); _keyDraft = ""; _keyDirty = false; message.Text = InterfaceText.Get("Key removed.", "Localizable"); } catch { message.Text = InterfaceText.Get("Unable to remove the key.", "Localizable"); } }));
         Row("API key", panel); _body.Children.Add(message);
     }
     private void SaveKey() { if (!_keyDirty) return; _speech.Settings.SaveEndpointApiKey(_keyDraft); _keyDirty = false; }
     private void TestVoice()
     {
         try { if (_speech.Settings.SelectedProvider == LearningSpeechProviderKind.Endpoint) SaveKey(); _speech.Toggle(new(Target, Phrase(_language), _language, LanguageMode: SpeechLanguageMode.Fixed)); }
-        catch { _status.Text = "Unable to save the speech endpoint key."; }
+        catch { _status.Text = InterfaceText.Get("Unable to save the speech endpoint key.", "Localizable"); }
     }
     private void RenderStatus() { _destination.Text = _speech.DestinationDescription; if (_test is not null) _test.Content = InterfaceText.Get(_speech.IsPlaying(Target) ? "Stop" : "Test voice"); _status.Text = _speech.Error(Target) ?? (_speech.IsPreparing(Target) ? InterfaceText.Get("Generating speech…") : _speech.IsPlaying(Target) ? InterfaceText.Get("Playing") : _speech.ConfigurationError ?? ""); }
     private void Input(string label, string value, Action<string> save)
     { var box = new TextBox { Text = value, MinWidth = 240 }; VocabularyNotebookTheme.Input(box); box.LostKeyboardFocus += (_, _) => save(box.Text); Row(label, box); }
     private void Asset(string label, string path, Action<string> save, string filter)
     {
-        var panel = new StackPanel { Orientation = Orientation.Horizontal }; panel.Children.Add(new TextBlock { Text = path.Length == 0 ? "Not selected" : System.IO.Path.GetFileName(path), Width = 220, TextTrimming = TextTrimming.CharacterEllipsis });
-        panel.Children.Add(Button("Choose…", () => { var dialog = new OpenFileDialog { Filter = filter, Multiselect = false }; if (dialog.ShowDialog(this) == true) { try { save(dialog.FileName); } catch { _status.Text = "Unable to select this file."; } } }));
+        var panel = new StackPanel { Orientation = Orientation.Horizontal }; panel.Children.Add(new TextBlock { Text = path.Length == 0 ? InterfaceText.Get("Not selected", "Localizable") : System.IO.Path.GetFileName(path), Width = 220, TextTrimming = TextTrimming.CharacterEllipsis });
+        panel.Children.Add(Button("Choose…", () => { var dialog = new OpenFileDialog { Filter = filter, Multiselect = false }; if (dialog.ShowDialog(this) == true) { try { save(dialog.FileName); } catch { _status.Text = InterfaceText.Get("Unable to select this file.", "Localizable"); } } }));
         if (path.Length > 0) panel.Children.Add(Button("Clear", () => save(""))); Row(label, panel);
     }
     private void Heading(string title) => _body.Children.Add(new TextBlock { Text = InterfaceText.Get(title), FontSize = 17, FontWeight = FontWeights.SemiBold, Margin = new Thickness(0, 14, 0, 8) });

@@ -5,6 +5,7 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using Cotabby.Core.Emoji;
 using Cotabby.Core.Focus;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.Emoji;
 
@@ -35,6 +36,7 @@ public partial class EmojiPopupWindow : Window
     public EmojiPopupWindow()
     {
         InitializeComponent();
+        EmptyLabel.Text = InterfaceText.Get("No emoji");
         QueryRow.Height = EmojiPickerMetrics.QueryRowHeight;
         QueryRow.Margin = new Thickness(EmojiPickerMetrics.HorizontalInset, 0, EmojiPickerMetrics.HorizontalInset, 0);
         RibbonRow.Height = EmojiPickerMetrics.RibbonRowHeight;

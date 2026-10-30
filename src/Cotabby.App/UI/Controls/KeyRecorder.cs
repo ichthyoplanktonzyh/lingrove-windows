@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using KeyBinding = Cotabby.Core.Input.KeyBinding;
 using KeyModifiers = Cotabby.Core.Input.KeyModifiers;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI.Controls;
 
@@ -105,7 +106,7 @@ public sealed partial class KeyRecorder : Button
         // Shift alone still types the character, so it does not make a letter safe to bind.
         if (TypesLetterOrDigit(key) && (modifiers & ~KeyModifiers.Shift) == KeyModifiers.None)
         {
-            Content = "Add Ctrl, Alt or Win";
+            Content = InterfaceText.Get("Add Ctrl, Alt or Win", "Localizable");
             return;
         }
 

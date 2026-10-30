@@ -15,9 +15,11 @@ and opens them, bounds blocks, decompression, aliases and resources, and retires
 the descriptor or files change. Existing sessions borrow the same router; source changes retire stale
 work. Unknown entry language is retained, not guessed. The original Apple system dictionary and online
 providers are unavailable here; selecting one reports an unavailable source. No network dictionary
-provider is activated. Loose directory resources and automatic adjacent stylesheets are unavailable:
-only resources in explicitly authorized MDD files are opened, preventing a reparse point from initiating
-an unvalidated remote file access.
+provider is activated in this original checkpoint. Online/website activation is subsequently recorded
+in [its module](DICTIONARY_WEBSITE_ONLINE_3B.md). The subsequent
+[local-file/resource module](MDICT_LOCAL_RESOURCES_3B.md) adds adjacent CSS/images/fonts and actual
+handle-based MDX/MDD/resource admission. The earlier path-based source reader did not establish
+reparse refusal; limiting rich resources to MDD alone did not protect its source-file opens.
 
 The App-hosted rich article uses WebView2 with a separate owned in-private profile under the private
 Cotabby local-data directory, JavaScript
@@ -50,7 +52,7 @@ lists possible failures but does not establish a general no-process guarantee fo
 
 On the Windows development host, the focused Core suite passed 31 tests, including adversarial HTML
 and cancellation. The serialized WPF wrapper passed 31 focused tests, including synthetic MDX/MDD
-import, local reparse refusal, cancellation and drain, settings, existing cards, WebView2 resource
+import, unsupported loose-resource refusal, cancellation and drain, settings, existing cards, WebView2 resource
 ownership and delayed environment/controller retirement. The held initialization tests inject barriers
 before SDK calls; they do not reproduce an SDK call that itself hangs. Injected cleanup effects cover
 denied access, I/O failure, path replacement and confirmed absence. The native owner has separate isolated

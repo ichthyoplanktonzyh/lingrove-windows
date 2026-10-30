@@ -76,6 +76,7 @@ internal sealed partial class LearningSpeechController : INotifyPropertyChanged,
     // The application injects its frozen-locale template adapter. Portable controller tests
     // retain an ordinary .NET formatter; user/model/provider values are arguments only.
     private readonly Func<string, object?[], string> _format;
+    private readonly Func<Exception, string> _failureText;
     private string Text(string key, params object?[] values) => _format(key, values);
     private readonly ISpeechAudioGenerating _generator;
     private readonly ISpeechAudioPlaying _audioPlayer;
@@ -107,8 +108,9 @@ internal sealed partial class LearningSpeechController : INotifyPropertyChanged,
         ISpeechPCMPlaying pcmPlayer, ISystemSpeechAudioExporting systemExporter, ISpeechAudioDuration duration,
         Func<string, IReadOnlyDictionary<string, double>> recognize, IComparer<string> voiceComparer,
         string modelDirectory, Func<ISpeechModelManagement> modelFactory, ISpeechAssetFiles? files = null,
-        Func<string, object?[], string>? format = null)
+        Func<string, object?[], string>? format = null, Func<Exception, string>? failureText = null)
     {
+        _failureText = failureText ?? (error => error.Message);
         _format = format ?? ((key, values) => string.Format(System.Globalization.CultureInfo.CurrentCulture, key, values));
         _context = SynchronizationContext.Current ?? throw new InvalidOperationException("Speech control requires a serial UI context.");
         _ownerThread = Environment.CurrentManagedThreadId;
@@ -157,40 +159,40 @@ internal sealed partial class LearningSpeechController : INotifyPropertyChanged,
     internal void RefreshVoices()
     {
         RequireOwner();
-        try { VoiceCatalog = Array.AsReadOnly(_provider.RefreshVoices().ToArray()); VoiceCatalogError = VoiceCatalog.Count == 0 ? "No system speech voices are available." : null; }
-        catch (Exception error) { VoiceCatalog = Array.Empty<SpeechVoice>(); VoiceCatalogError = error.Message; }
+        try { VoiceCatalog = Array.AsReadOnly(_provider.RefreshVoices().ToArray()); VoiceCatalogError = VoiceCatalog.Count == 0 ? Text("No system speech voices are available.") : null; }
+        catch (Exception error) { VoiceCatalog = Array.Empty<SpeechVoice>(); VoiceCatalogError = _failureText(error); }
         CatalogIsLoaded = true; Changed();
     }
     internal IReadOnlyList<SpeechVoice> Voices(LearningLanguage language) => SpeechVoicePolicy.Voices(VoiceCatalog, language, _voiceComparer);
     internal void Toggle(SpeechRequest request)
     {
         RequireOwner();
-        if (_exportToken is not null) { SetError(new SpeechException(SpeechFailure.OperationInProgress).Message, request.Target); return; }
+        if (_exportToken is not null) { SetError(_failureText(new SpeechException(SpeechFailure.OperationInProgress)), request.Target); return; }
         if (IsPlaying(request.Target)) { Stop(request.Target); return; }
         Stop();
         if (!SpeechTextPolicy.WithinRequestLimit(request.Text))
-        { SetError(new SpeechException(SpeechFailure.TextTooLong).Message, request.Target); return; }
-        if (SpeechTextPolicy.SanitizedText(request.Text) is not { } text) { SetError("There is no text to read aloud.", request.Target); return; }
+        { SetError(_failureText(new SpeechException(SpeechFailure.TextTooLong)), request.Target); return; }
+        if (SpeechTextPolicy.SanitizedText(request.Text) is not { } text) { SetError(Text("There is no text to read aloud."), request.Target); return; }
         if (ResolvedRequest(request, text) is not { } resolved) return;
         if (Settings.SelectedProvider != LearningSpeechProviderKind.System) { StartGeneratedAudio(text, resolved); return; }
         if (!CatalogIsLoaded) RefreshVoices();
-        if (VoiceCatalog.Count == 0) { SetError(VoiceCatalogError ?? "No system speech voices are available.", request.Target); return; }
+        if (VoiceCatalog.Count == 0) { SetError(VoiceCatalogError ?? Text("No system speech voices are available."), request.Target); return; }
         var language = resolved.Language!.Value;
         if (SpeechVoicePolicy.Select(VoiceCatalog, language, Settings.VoiceId(language), _voiceComparer) is not { } voice)
-        { SetError("No speech voice is available for this language.", request.Target); return; }
+        { SetError(Text("No speech voice is available for this language."), request.Target); return; }
         var token = new SpeechPlaybackToken(); Telemetry.Begin(token, voice.Name, "system_speech", language);
         _activeToken = token; _activeRequest = resolved; ActiveTarget = resolved.Target; Phase = SpeechPlaybackPhase.Preparing; Changed();
         try { _provider.Speak(text, voice, Settings.RateMultiplier, token, resolved.Admission); }
         catch (Exception error)
         {
             if (_activeToken != token) return;
-            Telemetry.Finish(token, ModelRequestOutcome.Failed, ErrorType(error)); ClearActivePlayback(); SetError(error.Message, resolved.Target);
+            Telemetry.Finish(token, ModelRequestOutcome.Failed, ErrorType(error)); ClearActivePlayback(); SetError(_failureText(error), resolved.Target);
         }
     }
     private SpeechRequest? ResolvedRequest(SpeechRequest request, string text)
     {
         var language = request.LanguageMode == SpeechLanguageMode.Fixed ? request.Language : SpeechLanguageResolver.Resolve(text, request.Language, _recognize, request.Context);
-        if (language is null) { SetError(new SpeechException(SpeechFailure.UnrecognizedLanguage).Message, request.Target); return null; }
+        if (language is null) { SetError(_failureText(new SpeechException(SpeechFailure.UnrecognizedLanguage)), request.Target); return null; }
         return new(request.Target, text, language.Value, LanguageMode: SpeechLanguageMode.Fixed) { Admission = request.Admission };
     }
     public void Audition(SpeechExportAudio audio, Guid ownerId, LearningLanguage language)
@@ -214,7 +216,7 @@ internal sealed partial class LearningSpeechController : INotifyPropertyChanged,
                 { case LearningSpeechProviderKind.Local: _ = Settings.LocalConfiguration(); break; case LearningSpeechProviderKind.Endpoint: _ = Settings.EndpointConfiguration(); break; }
                 return null;
             }
-            catch (Exception error) { return error.Message; }
+            catch (Exception error) { return _failureText(error); }
         }
     }
     internal void RefreshLocalModels()
@@ -246,7 +248,7 @@ internal sealed partial class LearningSpeechController : INotifyPropertyChanged,
         var language = request.Language!.Value;
         SpeechAudioSource source;
         try { if (GeneratedSource(language) is not { } configured) return; source = configured; }
-        catch (Exception error) { SetError(error.Message, request.Target); return; }
+        catch (Exception error) { SetError(_failureText(error), request.Target); return; }
         var token = new SpeechPlaybackToken();
         if (source is SpeechAudioSource.Local local) Telemetry.Begin(token, Path.GetFileName(local.Configuration.ModelUrl.LocalPath), "llama", language);
         else if (source is SpeechAudioSource.Endpoint endpoint) Telemetry.Begin(token, endpoint.Configuration.Endpoint.ModelName, "openai_compatible", language);
@@ -276,7 +278,7 @@ internal sealed partial class LearningSpeechController : INotifyPropertyChanged,
         {
             if (_activeToken != token) return;
             Telemetry.Finish(token, ModelRequestOutcome.Failed, ErrorType(error)); _audioPlayer.Stop(); _pcmPlayer.Stop(); ClearActivePlayback();
-            if (target is not null) SetError(error.Message, target);
+            if (target is not null) SetError(_failureText(error), target);
         }
     }
     private static Func<SpeechAudioChunk, Task> AudioReceiver(WeakReference<LearningSpeechController> weak, double rate, SpeechPlaybackToken token, CancellationToken cancellation) =>

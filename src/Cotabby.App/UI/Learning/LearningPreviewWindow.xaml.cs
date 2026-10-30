@@ -170,7 +170,7 @@ public partial class LearningPreviewWindow : Window
         PresentTranslation(state, visibleTranslation ?? string.Empty);
         SourceText.FlowDirection = state.Options?.SourceLanguage == LearningLanguage.Arabic
             ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
-        ErrorText.Text = ready ? "" : state.ErrorMessage ?? "";
+        ErrorText.Text = ready ? "" : InterfaceFailureText.TranslationState(state.ErrorMessage) ?? "";
         ErrorText.Visibility = ErrorText.Text.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
         RetryButton.Visibility = !loading && !ready && canRetry ? Visibility.Visible : Visibility.Collapsed;
         CancelButton.Content = InterfaceText.Get(loading ? "Cancel" : "Close");
@@ -292,7 +292,7 @@ public partial class LearningPreviewWindow : Window
         ExplanationDestination.Text = LearningModelDestinationText.Explanation(profile);
         ExplanationDestinationSection.Visibility = action == LearningExplanationCardAction.None ? Visibility.Collapsed : Visibility.Visible;
         ExplanationButton.ToolTip = state.ErrorMessage is not null && configured && !state.IsGenerating
-            ? label + "\n" + state.ErrorMessage : label;
+            ? label + "\n" + InterfaceFailureText.ExplanationState(state.ErrorMessage) : label;
         System.Windows.Automation.AutomationProperties.SetName(ExplanationButton, label);
         ExplanationSection.Visibility = state.Record is not null || state.IsGenerating || state.ErrorMessage is not null
             ? Visibility.Visible : Visibility.Collapsed;
@@ -303,7 +303,7 @@ public partial class LearningPreviewWindow : Window
         ExplanationResult.FlowDirection = state.Record?.Language == LearningLanguage.Arabic
             ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
         ExplanationProgress.Visibility = state.IsGenerating ? Visibility.Visible : Visibility.Collapsed;
-        ExplanationStatus.Text = state.IsGenerating ? InterfaceText.Get("Explaining…") : state.ErrorMessage ?? string.Empty;
+        ExplanationStatus.Text = state.IsGenerating ? InterfaceText.Get("Explaining…") : InterfaceFailureText.ExplanationState(state.ErrorMessage) ?? string.Empty;
         ExplanationStatus.Visibility = ExplanationStatus.Text.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
         ApplyPresentation();
         PresentAt(anchor);

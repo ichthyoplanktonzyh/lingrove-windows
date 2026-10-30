@@ -1,5 +1,6 @@
 
 using System.Windows.Threading;
+using Cotabby.App.Localization;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Vocabulary.EntryInput;
 
@@ -167,21 +168,21 @@ internal sealed class VocabularyEntryImportSession
 
 internal static class VocabularyInputMessages
 {
-    internal static string For(Exception error) => error is not VocabularyWordListException e ? error.Message : e.Error switch
+    internal static string For(Exception error) => error is not VocabularyWordListException e ? InterfaceFailureText.For(error) : e.Error switch
     {
-        VocabularyWordListError.TooLarge => "Use a word list up to 4 MB with at most 10,000 rows.",
-        VocabularyWordListError.Encoding => "Save the word list as UTF-8 or UTF-16 text and try again.",
-        VocabularyWordListError.UnsupportedFile => "Choose a CSV or TXT word list.",
-        VocabularyWordListError.Empty => "The word list has no entries to import.",
-        VocabularyWordListError.Mapping => "Choose the column containing the expressions.",
-        VocabularyWordListError.InvalidInput => "Check the expression, meaning, notes, and tags before saving.",
-        VocabularyWordListError.MalformedCsv => $"Check the CSV quoting near line {e.Line}.",
-        VocabularyWordListError.MissingExpression => $"An expression is missing on line {e.Line}.",
-        VocabularyWordListError.Language => $"Use a supported language code on line {e.Line}, such as en or zh-Hans.",
-        VocabularyWordListError.Kind => $"Use word, expression, pattern, or sentence as the type on line {e.Line}.",
-        VocabularyWordListError.MissingExample => $"An example sentence is missing on line {e.Line}.",
-        VocabularyWordListError.TranslationWithoutExample => "Add an example sentence before its translation.",
-        VocabularyWordListError.ExampleConflict => "This example belongs to another sense. Match its saved meaning or edit it in the notebook.",
-        _ => "The word list could not be imported."
+        VocabularyWordListError.TooLarge => InterfaceText.Get("Use a word list up to 4 MB with at most 10,000 rows.", "Vocabulary"),
+        VocabularyWordListError.Encoding => InterfaceText.Get("Save the word list as UTF-8 or UTF-16 text and try again.", "Vocabulary"),
+        VocabularyWordListError.UnsupportedFile => InterfaceText.Get("Choose a CSV or TXT word list.", "Vocabulary"),
+        VocabularyWordListError.Empty => InterfaceText.Get("The word list has no entries to import.", "Vocabulary"),
+        VocabularyWordListError.Mapping => InterfaceText.Get("Choose the column containing the expressions.", "Vocabulary"),
+        VocabularyWordListError.InvalidInput => InterfaceText.Get("Check the expression, meaning, notes, and tags before saving.", "Vocabulary"),
+        VocabularyWordListError.MalformedCsv => InterfaceText.FormatFrom("Vocabulary", "Check the CSV quoting near line %lld.", e.Line),
+        VocabularyWordListError.MissingExpression => InterfaceText.FormatFrom("Vocabulary", "An expression is missing on line %lld.", e.Line),
+        VocabularyWordListError.Language => InterfaceText.FormatFrom("Vocabulary", "Use a supported language code on line %lld, such as en or zh-Hans.", e.Line),
+        VocabularyWordListError.Kind => InterfaceText.FormatFrom("Vocabulary", "Use word, expression, pattern, or sentence as the type on line %lld.", e.Line),
+        VocabularyWordListError.MissingExample => InterfaceText.FormatFrom("Vocabulary", "An example sentence is missing on line %lld.", e.Line),
+        VocabularyWordListError.TranslationWithoutExample => InterfaceText.Get("Add an example sentence before its translation.", "Vocabulary"),
+        VocabularyWordListError.ExampleConflict => InterfaceText.Get("This example belongs to another sense. Match its saved meaning or edit it in the notebook.", "Vocabulary"),
+        _ => InterfaceText.Get("The word list could not be imported.", "Vocabulary")
     };
 }

@@ -116,7 +116,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow
                 if (meaning && _session.MeaningMode) _session.Destination = new(VocabularyMeaningDestinationKind.Sense, node, id);
             }
         }
-        catch (Exception error) { if (!_retiring && epoch == _actionSelectionEpoch) _actionError = error.Message; }
+        catch (Exception error) { if (!_retiring && epoch == _actionSelectionEpoch) _actionError = InterfaceFailureText.For(error); }
         finally { _senseMutating = false; _senseCompletion = null; try { if (!_retiring) _session.Refresh(); } finally { completion.TrySetResult(); } }
     }
     private async Task DeleteSenseAsync(VocabularySelection source, long epoch)

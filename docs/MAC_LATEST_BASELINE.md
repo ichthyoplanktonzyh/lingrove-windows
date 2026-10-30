@@ -175,6 +175,10 @@ the initial gap audit; its initial Windows gap descriptions are historical. Curr
 - The [Windows development build](WINDOWS_DEV_BUILD_3B.md) explicitly builds, checks and embeds
   the independent CPU speech helper into the existing app-relative runtime path. It creates no
   installer, release or uploaded artifact, and downloads no model weights.
+- The [workflow failure interface pass](WORKFLOW_FAILURE_INTERFACE_3B.md) connects typed and fixed
+  status/error messages across current writing, reading, expression, speech and notebook paths.
+  All prior resources remain intact; 55 authored keys bring the Windows supplement to 518 in
+  fifteen locales. Further fixed review/controller copy and physical acceptance remain distinct.
 - Remaining work includes native host/provider acceptance,
   full interface-language coverage, native automatic language
   confidence, Apple's unavailable system dictionary and the explicitly documented media/native gaps.

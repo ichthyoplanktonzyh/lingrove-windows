@@ -18,13 +18,18 @@ public sealed class WindowsEncodedSpeechPlayer : ISpeechAudioPlaying, IAsyncDisp
     private readonly Func<ReadOnlyMemory<byte>, CancellationToken, Task<WindowsSpeechDecodedAudio>> _decode;
     private readonly Action<WindowsSpeechDecodedAudio, double, SpeechPlaybackToken, CancellationToken> _render;
     private readonly object _gate = new();
+    // Decoder/device diagnostics never become localization keys or event payloads.
+    private readonly Func<string, string> _failureText = key => key;
     private readonly HashSet<Task> _work = [];
     private CancellationTokenSource? _active;
     private Task? _disposal;
     public Action<SpeechProviderEvent>? EventHandler { get; set; }
     public WindowsEncodedSpeechPlayer() { _decode = (data, token) => _codec.DecodeAsync(data, token); _render = Render; }
+    public WindowsEncodedSpeechPlayer(Func<string, string> failureText) : this()
+    { _failureText = failureText ?? throw new ArgumentNullException(nameof(failureText)); }
     internal WindowsEncodedSpeechPlayer(Func<ReadOnlyMemory<byte>, CancellationToken, Task<WindowsSpeechDecodedAudio>> decode,
-        Action<WindowsSpeechDecodedAudio, double, SpeechPlaybackToken, CancellationToken> render) { _decode = decode; _render = render; }
+        Action<WindowsSpeechDecodedAudio, double, SpeechPlaybackToken, CancellationToken> render, Func<string, string>? failureText = null)
+    { _decode = decode; _render = render; _failureText = failureText ?? (key => key); }
 
     public void Play(ReadOnlySpan<byte> data, double rate, SpeechPlaybackToken token)
     {
@@ -47,7 +52,7 @@ public sealed class WindowsEncodedSpeechPlayer : ISpeechAudioPlaying, IAsyncDisp
             await WindowsSpeechMta.RunAsync(() => { _render(decoded, rate, token, cancellation); return true; }, CancellationToken.None).ConfigureAwait(false);
         }
         catch (OperationCanceledException) { }
-        catch { Post(new SpeechProviderEvent.Failed(token, "Unable to play the speech audio.")); }
+        catch { Post(new SpeechProviderEvent.Failed(token, _failureText("Unable to play the speech audio."))); }
     }
     private void Render(WindowsSpeechDecodedAudio audio, double rate, SpeechPlaybackToken token, CancellationToken cancellation)
     {

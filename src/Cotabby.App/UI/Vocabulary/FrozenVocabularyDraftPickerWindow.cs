@@ -72,7 +72,7 @@ internal sealed class FrozenVocabularyDraftPickerWindow : Window
     {
         if (_retiring || _saving || _childDone is not null) return; _saving = true; _failure.Text = ""; IsEnabled = false;
         try { if (_commit is not null) await _commit(Classification, _selected); Accepted = true; }
-        catch (Exception error) { if (!_retiring) _failure.Text = error.Message; }
+        catch (Exception error) { if (!_retiring) _failure.Text = InterfaceFailureText.For(error); }
         finally { _saving = false; IsEnabled = true; }
         if (Accepted && !_retiring) Close();
     }

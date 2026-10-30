@@ -124,9 +124,9 @@ internal sealed class ReadingSession : IAsyncDisposable
             if (!Current(revision, token)) return;
             if (capture is null) { Dismiss(); _presentation.ShowCaptureError(settings.Source switch
                 {
-                    ReadingSourceKind.Pointer => "Text under the pointer cannot be verified in this app.",
-                    ReadingSourceKind.Screenshot => "The screen region could not be verified or Windows OCR is unavailable.",
-                    _ => "Selected text is unavailable in this app.",
+                    ReadingSourceKind.Pointer => InterfaceText.Get("Text under the pointer cannot be verified in this app.", "Learning"),
+                    ReadingSourceKind.Screenshot => InterfaceText.Get("The screen region could not be verified or Windows OCR is unavailable.", "Learning"),
+                    _ => InterfaceText.Get("Selected text is unavailable in this app.", "Learning"),
                 }); return; }
             _lease = capture; transferred = true;
             _invalidated = () =>
@@ -172,13 +172,13 @@ internal sealed class ReadingSession : IAsyncDisposable
             var destinationLabel = destination?.Display();
             if (destinationLabel is null)
             {
-                Dismiss(); _presentation.ShowCaptureError("Configure and explicitly select a destination for this reading task."); return;
+                Dismiss(); _presentation.ShowCaptureError(InterfaceText.Get("Configure and explicitly select a destination for this reading task.", "Learning")); return;
             }
             _presentation.BindAuthority(selection, capture.IsCurrentAsync, token);
             if (route.IsTranslation && resolution.Language == settings.Target)
             {
                 await _presentation.ShowAsync(new(selection, resolution.Language, settings.Target, route, ReadingStatus.Error,
-                    destinationLabel, "", "The text is already in the reading target language."));
+                    destinationLabel, "", InterfaceText.Get("The text is already in the reading target language.", "Learning")));
                 return;
             }
             var state = new ReadingState(selection, resolution.Language, settings.Target, route, ReadingStatus.Loading, destinationLabel, "", WordCount: wordCount);
@@ -248,7 +248,7 @@ internal sealed class ReadingSession : IAsyncDisposable
         catch (OperationCanceledException) { if (Current(revision, token)) Dismiss(); }
         catch (ReadingOcrUnavailableException)
         {
-            if (Current(revision, token)) { Dismiss(); _presentation.ShowCaptureError("Windows OCR is unavailable. Install a supported OCR language in Windows settings."); }
+            if (Current(revision, token)) { Dismiss(); _presentation.ShowCaptureError(InterfaceText.Get("Windows OCR is unavailable. Install a supported OCR language in Windows settings.", "Learning")); }
         }
         catch
         {
@@ -262,9 +262,9 @@ internal sealed class ReadingSession : IAsyncDisposable
                 {
                     Dismiss(); _presentation.ShowCaptureError(settings.Source switch
                     {
-                        ReadingSourceKind.Pointer => "Text under the pointer cannot be verified in this app.",
-                        ReadingSourceKind.Screenshot => "The screen region could not be verified or Windows OCR could not complete.",
-                        _ => "Selected text is unavailable in this app.",
+                        ReadingSourceKind.Pointer => InterfaceText.Get("Text under the pointer cannot be verified in this app.", "Learning"),
+                        ReadingSourceKind.Screenshot => InterfaceText.Get("The screen region could not be verified or Windows OCR could not complete.", "Learning"),
+                        _ => InterfaceText.Get("Selected text is unavailable in this app.", "Learning"),
                     });
                 }
                 else Dismiss();

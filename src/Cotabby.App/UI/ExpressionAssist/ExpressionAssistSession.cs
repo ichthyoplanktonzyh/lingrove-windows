@@ -1,3 +1,4 @@
+using Cotabby.App.Localization;
 using System.Windows.Threading;
 using Cotabby.Core.ExpressionAssist;
 using Cotabby.Core.LanguageLearning;
@@ -118,7 +119,7 @@ internal sealed class ExpressionAssistSession : IAsyncDisposable
             if (!token.IsCancellationRequested)
             {
                 Invalidate();
-                _panel.ShowUnavailable("This trigger is not supported here. Choose ASCII trigger symbols or use the expression shortcut.");
+                _panel.ShowUnavailable(InterfaceText.Get("This trigger is not supported here. Use the expression shortcut.", "Learning"));
             }
         }
         catch { if (!token.IsCancellationRequested) Invalidate(); }
@@ -167,8 +168,8 @@ internal sealed class ExpressionAssistSession : IAsyncDisposable
         }
         catch (OperationCanceledException) { }
         catch (LearningTranslationException error) when (error.Failure == LearningTranslationFailure.LocalModelNotConfigured)
-        { if (Current(capture, revision, token)) _panel.Update(null, "Choose an AI explanation model in Learning settings.", false); }
-        catch { if (Current(capture, revision, token)) _panel.Update(null, "Expression assistance could not complete. Press Enter to retry.", false); }
+        { if (Current(capture, revision, token)) _panel.Update(null, InterfaceText.Get("Choose an AI explanation model in Learning settings.", "Learning"), false); }
+        catch { if (Current(capture, revision, token)) _panel.Update(null, InterfaceText.Get("Expression assistance could not complete. Press Enter to retry.", "Learning"), false); }
     }
 
     internal void Accept(ExpressionAssistCandidate candidate)
@@ -197,7 +198,7 @@ internal sealed class ExpressionAssistSession : IAsyncDisposable
         {
             Invalidate();
             if (text is not null && capture.IsHostForeground)
-                _panel.ShowFailure(text, "The insertion could not be verified. Check the editor before copying this candidate.");
+                _panel.ShowFailure(text, InterfaceText.Get("The insertion could not be verified. Check the editor before copying this candidate.", "Learning"));
             return;
         }
         _panel.Hide(true);
@@ -213,7 +214,7 @@ internal sealed class ExpressionAssistSession : IAsyncDisposable
         bool cancelled = token.IsCancellationRequested;
         Invalidate();
         if (!verified && candidate && !cancelled && capture.IsHostForeground)
-            _panel.ShowFailure(replacement, "The insertion could not be verified. Check the editor before copying this candidate.");
+            _panel.ShowFailure(replacement, InterfaceText.Get("The insertion could not be verified. Check the editor before copying this candidate.", "Learning"));
     }
 
     internal void Invalidate()

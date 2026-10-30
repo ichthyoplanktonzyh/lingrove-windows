@@ -101,7 +101,7 @@ internal sealed class FrozenVocabularyEntryEditorWindow : Window
         if (!_save.IsEnabled) return; var tags = VocabularyEntryEditingPolicy.ParseTags(_tags.Text).Select(t => t.Trim().Trim('#')).Where(t => t.Length > 0).Distinct(CanonicalStringComparer.Instance).Order(CanonicalStringComparer.Instance).ToArray(); ChangeSense(s => s with { Tags = tags });
         _saving = true; _failure.Text = ""; Update();
         try { await _editor.UpdateEntryAsync(_draft, _baseline, _images, CancellationToken.None); Saved = true; }
-        catch (Exception e) { if (!_retiring) _failure.Text = e.Message; }
+        catch (Exception e) { if (!_retiring) _failure.Text = InterfaceFailureText.For(e); }
         finally { _saving = false; Update(); }
         if (Saved && !_retiring) Close();
     }
@@ -131,7 +131,7 @@ internal sealed class FrozenVocabularyEntryEditorWindow : Window
         var live = Sense!.Examples.Select(e => e.Id).ToHashSet(); foreach (var id in _rangeInputs.Keys.Where(id => !live.Contains(id)).ToArray()) _rangeInputs.Remove(id);
         _rangeToken?.Cancel(); var token = CancellationTokenSource.CreateLinkedTokenSource(_lifetime.Token); _rangeToken = token; long epoch = ++_rangeEpoch;
         var inputs = _rangeInputs.Values.ToArray(); _rangesPending = true; _rangeFailed = false; Update();
-        Track(Compute()); async Task Compute() { try { var ranges = await Task.Run(() => inputs.ToDictionary(e => e.Id, e => VocabularyPolicy.ReconciledRanges(e.Text, e.Expression, e.Form, token.Token)), token.Token); if (!_retiring && epoch == _rangeEpoch) { ChangeSense(s => s with { Examples = s.Examples.Select(e => ranges.TryGetValue(e.Id, out var range) ? e with { Ranges = range } : e).ToArray() }); _rangeInputs.Clear(); _rangesPending = false; Update(); } } catch (OperationCanceledException) { } catch (Exception e) { if (!_retiring && epoch == _rangeEpoch) { _rangeFailed = true; _rangesPending = false; _failure.Text = e.Message; Update(); } } finally { if (_rangeToken == token) _rangeToken = null; token.Dispose(); } }
+        Track(Compute()); async Task Compute() { try { var ranges = await Task.Run(() => inputs.ToDictionary(e => e.Id, e => VocabularyPolicy.ReconciledRanges(e.Text, e.Expression, e.Form, token.Token)), token.Token); if (!_retiring && epoch == _rangeEpoch) { ChangeSense(s => s with { Examples = s.Examples.Select(e => ranges.TryGetValue(e.Id, out var range) ? e with { Ranges = range } : e).ToArray() }); _rangeInputs.Clear(); _rangesPending = false; Update(); } } catch (OperationCanceledException) { } catch (Exception e) { if (!_retiring && epoch == _rangeEpoch) { _rangeFailed = true; _rangesPending = false; _failure.Text = InterfaceFailureText.For(e); Update(); } } finally { if (_rangeToken == token) _rangeToken = null; token.Dispose(); } }
     }
     private TextBox Field(string value, string name, Action<string> changed, bool multiline = true) { var box = new TextBox { Text = value, TextWrapping = TextWrapping.Wrap, AcceptsReturn = multiline, MinHeight = multiline ? 50 : 0, Margin = new Thickness(0, 4, 0, 8) }; VocabularyNotebookTheme.Input(box); AutomationProperties.SetName(box, InterfaceText.Get(name, "Vocabulary")); box.TextChanged += (_, _) => changed(box.Text); return box; }
     private static TextBlock Label(string value) => new() { Text = InterfaceText.Get(value, "Vocabulary"), Margin = new Thickness(0, 8, 0, 3) };

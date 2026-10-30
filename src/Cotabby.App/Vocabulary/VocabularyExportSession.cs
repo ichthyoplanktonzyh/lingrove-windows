@@ -1,3 +1,4 @@
+using Cotabby.App.Localization;
 using System.Windows.Threading;
 using Cotabby.Core.Vocabulary;
 
@@ -59,7 +60,7 @@ internal sealed class VocabularyExportSession
         {
             await OnUiAsync(() =>
             {
-                if (IsActive && _generation == id && error is not OperationCanceledException) { Message = error.Message; Notify(); }
+                if (IsActive && _generation == id && error is not OperationCanceledException) { Message = InterfaceFailureText.For(error); Notify(); }
             }).ConfigureAwait(false);
         }
         finally
@@ -84,7 +85,7 @@ internal sealed class VocabularyExportSession
         {
             await OnUiAsync(() =>
             {
-                if (IsActive && error is not OperationCanceledException) { Message = error.Message; Notify(); }
+                if (IsActive && error is not OperationCanceledException) { Message = InterfaceFailureText.For(error); Notify(); }
             }).ConfigureAwait(false);
             return false;
         }

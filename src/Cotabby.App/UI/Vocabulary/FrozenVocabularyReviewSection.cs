@@ -61,7 +61,7 @@ internal sealed class FrozenVocabularyReviewSection
     }
     private static Button Button(string title, Action action)
     { var button = new Button { Content = title, Margin = new Thickness(0, 0, 8, 4) }; VocabularyNotebookTheme.Button(button); button.Click += (_, _) => action(); return button; }
-    private void Notify() { try { _changed(); } catch (Exception error) { _error = error.Message; } }
+    private void Notify() { try { _changed(); } catch (Exception error) { _error = InterfaceFailureText.For(error); } }
     private void Open(Guid entryId, Guid senseId, Guid cardId)
     {
         if (!_canAct(entryId, senseId) || _retiring || _operation is not null || _feature.Controller.SendingSenseId is not null) return;
@@ -86,7 +86,7 @@ internal sealed class FrozenVocabularyReviewSection
                 try { child.ShowDialog(); } finally { await child.RetireAsync(); }
             }
             catch (OperationCanceledException) { }
-            catch (Exception error) { if (!_retiring) _error = error.Message; }
+            catch (Exception error) { if (!_retiring) _error = InterfaceFailureText.For(error); }
             finally { session?.Dispose(); _operation = null; completion.TrySetResult(); if (!_retiring) Notify(); }
         }
     }
@@ -108,7 +108,7 @@ internal sealed class FrozenVocabularyReviewSection
         {
             try { await _feature.RunAsync(async featureToken => { using var linked = CancellationTokenSource.CreateLinkedTokenSource(featureToken, _lifetime.Token); await action(linked.Token); }); }
             catch (OperationCanceledException) { }
-            catch (Exception error) { if (!_retiring) _error = error.Message; }
+            catch (Exception error) { if (!_retiring) _error = InterfaceFailureText.For(error); }
             finally { _operation = null; completion.TrySetResult(); if (!_retiring) Notify(); }
         }
     }

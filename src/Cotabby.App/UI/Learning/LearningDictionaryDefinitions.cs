@@ -21,22 +21,22 @@ internal static class LearningDictionaryDefinitions
         if (!contextual) attributionText.Inlines.Clear();
         if (state.Status == LearningDictionaryContentStatus.AwaitingOnlineConfirmation)
         {
-            AddText(content, "Online English dictionary · https://api.dictionaryapi.dev", bold: true);
-            AddText(content, "Only this lookup term is sent to this destination.", secondary: true);
+            AddText(content, InterfaceText.FormatFrom("Learning", "Online English dictionary · {0}", "https://api.dictionaryapi.dev"), bold: true);
+            AddText(content, InterfaceText.Get("Only this lookup term is sent to this destination.", "Learning"), secondary: true);
             var button = new Button { Content = InterfaceText.Get("Look up online", "Learning"), HorizontalAlignment = HorizontalAlignment.Left, IsEnabled = confirmOnline is not null };
             button.SetResourceReference(FrameworkElement.StyleProperty, "Btn");
             button.Click += (_, _) => { if (current?.Invoke() != false) confirmOnline?.Invoke(); }; content.Children.Add(button);
         }
         else if (state.Status == LearningDictionaryContentStatus.Loading)
         {
-            if (state.SelectedSource == DictionarySource.Online) AddText(content, "Online English dictionary · https://api.dictionaryapi.dev", secondary: true);
-            AddText(content, "Looking up…", secondary: true);
+            if (state.SelectedSource == DictionarySource.Online) AddText(content, InterfaceText.FormatFrom("Learning", "Online English dictionary · {0}", "https://api.dictionaryapi.dev"), secondary: true);
+            AddText(content, InterfaceText.Get("Looking up…", "Learning"), secondary: true);
         }
         else if (state.Status == LearningDictionaryContentStatus.Failed)
         {
             if (state.SelectedSource == DictionarySource.Online)
-                AddText(content, "Online English dictionary · https://api.dictionaryapi.dev · Sends only this lookup term", secondary: true);
-            AddText(content, state.ErrorMessage ?? "The dictionary could not complete this lookup.", secondary: true);
+                AddText(content, InterfaceText.FormatFrom("Learning", "Online English dictionary · {0} · Sends only this lookup term", "https://api.dictionaryapi.dev"), secondary: true);
+            AddText(content, InterfaceFailureText.DictionaryState(state.ErrorMessage) ?? InterfaceText.Get("The dictionary could not complete this lookup.", "Learning"), secondary: true);
             if (state.SelectedSource == DictionarySource.Online)
             {
                 var retry = new Button { Content = InterfaceText.Get("Retry online", "Learning"), HorizontalAlignment = HorizontalAlignment.Left, IsEnabled = confirmOnline is not null };
@@ -47,13 +47,13 @@ internal static class LearningDictionaryDefinitions
         else if (state.Result is LearningDictionaryResult.Article article)
         {
             AddText(content, article.Text);
-            AddText(content, "Rich dictionary display is unavailable.", secondary: true);
+            AddText(content, InterfaceText.Get("Rich dictionary display is unavailable.", "Learning"), secondary: true);
         }
         else if (state.Result is LearningDictionaryResult.Website website)
         {
             AddText(content, website.Url.AbsoluteUri, secondary: true);
-            AddText(content, "This opens in your browser and sends the lookup term to the website.", secondary: true);
-            var link = Link("Open lookup website", website.Url.AbsoluteUri, current);
+            AddText(content, InterfaceText.Get("This opens in your browser and sends the lookup term to the website.", "Learning"), secondary: true);
+            var link = Link(InterfaceText.Get("Open lookup website", "Learning"), website.Url.AbsoluteUri, current);
             if (link is not null) { var block = new TextBlock(); block.Inlines.Add(link); content.Children.Add(block); }
         }
         else if (state.Result is LearningDictionaryResult.Entries entries)
@@ -69,18 +69,18 @@ internal static class LearningDictionaryDefinitions
                 }
                 foreach (var example in entry.Examples ?? []) AddText(content, example, secondary: true);
                 AddLink(content, entry.SourceName ?? "Wiktionary / Kaikki", entry.SourceUrl, current);
-                if (entry.LicenseUrl is { } license) AddLink(content, entry.LicenseName ?? "License", license, current);
+                if (entry.LicenseUrl is { } license) AddLink(content, entry.LicenseName ?? InterfaceText.Get("License", "Learning"), license, current);
                 else if (entry.LicenseName is { Length: > 0 } name) AddText(content, name, secondary: true);
             }
             var attribution = Link("Wiktionary contributors / Kaikki · CC BY-SA 4.0",
                 "https://creativecommons.org/licenses/by-sa/4.0/", current);
             if (!contextual && (state.SelectedSource is null || state.SelectedSource == DictionarySource.Bundled) && attribution is not null)
                 attributionText.Inlines.Add(attribution);
-            else if (!contextual) attributionText.Text = state.SourceLabels.GetValueOrDefault(state.SelectedSource ?? default, "Dictionary");
+            else if (!contextual) attributionText.Text = state.SourceLabels.GetValueOrDefault(state.SelectedSource ?? default, InterfaceText.Get("Dictionary", "Learning"));
         }
-        else AddText(content, state.IsExpression
+        else AddText(content, InterfaceText.Get(state.IsExpression
             ? "No dictionary entry was found for this expression. Select a word below to look it up."
-            : "No definition for this word was found in the available dictionary.", secondary: true);
+            : "No definition for this word was found in the available dictionary.", "Learning"), secondary: true);
     }
 
     private static void AddText(StackPanel content, string text, bool secondary = false, bool bold = false)

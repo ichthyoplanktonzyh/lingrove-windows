@@ -48,7 +48,7 @@ public partial class LearningDictionaryWindow
             ExplanationButton.Content = explanation?.IsGenerating == true ? "■" : "✦";
             string label = InterfaceText.Get(explanation is null ? "AI explanation" : LearningExplanationCardPolicy.Label(explanation, state.ExplanationConfigured));
             ExplanationButton.ToolTip = explanation?.ErrorMessage is not null && state.ExplanationConfigured && !explanation.IsGenerating
-                ? label + "\n" + explanation.ErrorMessage : label;
+                ? label + "\n" + InterfaceFailureText.ExplanationState(explanation.ErrorMessage) : label;
             System.Windows.Automation.AutomationProperties.SetName(ExplanationButton, label);
             ContextualMeaning.SetLiteralText(explanation?.Record?.Result.Meaning ?? string.Empty);
             ContextualMeaning.Visibility = explanation?.Record is null ? Visibility.Collapsed : Visibility.Visible;
@@ -57,7 +57,7 @@ public partial class LearningDictionaryWindow
             ContextualMeaning.FlowDirection = ExplanationProse.FlowDirection = state.ExplanationLanguage == LearningLanguage.Arabic
                 ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
             ExplanationProgress.Visibility = explanation?.IsGenerating == true ? Visibility.Visible : Visibility.Collapsed;
-            ExplanationStatus.Text = explanation?.IsGenerating == true ? InterfaceText.Get("Explaining…") : explanation?.ErrorMessage ?? string.Empty;
+            ExplanationStatus.Text = explanation?.IsGenerating == true ? InterfaceText.Get("Explaining…") : InterfaceFailureText.ExplanationState(explanation?.ErrorMessage) ?? string.Empty;
             ExplanationStatus.Visibility = ExplanationStatus.Text.Length == 0 ? Visibility.Collapsed : Visibility.Visible;
             PresentExample();
             ContextualExampleTranslation.SetLiteralText(exampleTranslation?.Text ?? string.Empty);

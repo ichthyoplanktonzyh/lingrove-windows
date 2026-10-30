@@ -1,5 +1,9 @@
 # Feature Parity and Evidence
 
+The [workflow failure interface pass](WORKFLOW_FAILURE_INTERFACE_3B.md) connects owned fixed
+capture/replacement/reading/speech and current notebook/import/export errors while preserving
+unknown diagnostics and task text. Its 55 additional keys cover all 15 interface locales.
+
 The [Windows development build](WINDOWS_DEV_BUILD_3B.md) adds explicit source preparation,
 model-free checking and app-local embedding for the independent CPU speech helper. It prepares
 an unpackaged development directory without changing native/model/physical acceptance gates.

@@ -124,6 +124,8 @@ internal static class InterfaceText
         string key = source == "Version {0}" ? "Version %@" : source;
         return FormatTemplate(Get(key), arguments);
     }
+    internal static string FormatFrom(string table, string source, params object?[] arguments) =>
+        FormatTemplate(Get(source, table), arguments);
     /// <summary>Read the original xcstrings plural forms, then select with the installed Windows
     /// ICU grammar. This is interface copy only: it does not reinterpret any generated/task text.</summary>
     internal static string Quantity(string source, int count, string table = "Localizable") =>

@@ -58,7 +58,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow
                 if (accepted is not null) { await accepted; if (!_retiring && restored is not null) _session.AcceptAcknowledgement(await restored); if (!_retiring) _backupError.Text = ""; }
             }
             catch (OperationCanceledException) { }
-            catch (Exception error) { if (!_retiring) _backupError.Text = error.Message; }
+            catch (Exception error) { if (!_retiring) _backupError.Text = InterfaceFailureText.For(error); }
             finally
             {
                 _backupConfirmation = null; _backupCancellation = null; lifetime.Dispose(); _backupCompletion = null; _modalDone = null;

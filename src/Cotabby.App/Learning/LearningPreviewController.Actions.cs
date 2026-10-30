@@ -1,3 +1,4 @@
+using Cotabby.App.Localization;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Focus;
 using System.Windows.Threading;
@@ -15,9 +16,9 @@ internal sealed partial class LearningPreviewController
     private FocusedField? _observedField;
     private FocusedField? _recoveryField;
     private readonly HashSet<Task> _automaticWork = [];
-    private const string ReplacementUnavailable = "This field cannot safely replace this sentence here. Copy the translation instead.";
-    private const string ReplacementUnverified = "Could not verify the replacement. Check the editor; use Copy instead of replacing again.";
-    private const string ReplacementRejected = "This editor could not safely select the source. No text was replaced. Copy the translation or select the source again.";
+    private static string ReplacementUnavailable => InterfaceText.Get("This field cannot safely replace this sentence here. Copy the translation instead.", "Learning");
+    private static string ReplacementUnverified => InterfaceText.Get("Could not verify the replacement. Check the editor; use Copy instead of replacing again.", "Learning");
+    private static string ReplacementRejected => InterfaceText.Get("This editor could not safely select the source. No text was replaced. Copy the translation or select the source again.", "Learning");
     internal Action? BeforeReplacement { get; set; }
     internal bool IsReplacing => Volatile.Read(ref _replacementInProgress);
 

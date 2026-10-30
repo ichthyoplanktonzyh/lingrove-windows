@@ -58,7 +58,7 @@ internal abstract class FrozenVocabularyClassificationWindow : Window
     {
         if (!_save.IsEnabled) return; _saving = true; Failure.Text = ""; UpdateAdmission();
         try { if (_draftOnly) DraftResult = Edited(); else Receipt = await Store.UpdateClassificationAsync(Edited(), Baseline, CancellationToken.None); }
-        catch (Exception error) { if (!_retiring) Failure.Text = error.Message; }
+        catch (Exception error) { if (!_retiring) Failure.Text = InterfaceFailureText.For(error); }
         finally { _saving = false; UpdateAdmission(); }
         if ((Receipt is not null || DraftResult is not null) && !_retiring) Close();
     }

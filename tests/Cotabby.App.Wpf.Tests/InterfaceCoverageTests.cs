@@ -5,11 +5,14 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using Cotabby.App.Localization;
+using Cotabby.App.Learning;
+using Cotabby.App.UI.Learning;
 using Cotabby.App.UI.Reading;
 using Cotabby.App.UI.Settings;
 using Cotabby.App.UI.Settings.Panes;
 using Cotabby.App.UI.Vocabulary;
 using Cotabby.Core.Focus;
+using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Settings;
 using Cotabby.Core.Vocabulary;
 using Cotabby.Core.Vocabulary.EntryInput;
@@ -23,6 +26,51 @@ namespace Cotabby.App.Wpf.Tests;
 [Collection("WPF views")]
 public sealed class InterfaceCoverageTests(WpfDispatcher dispatcher)
 {
+    [Fact]
+    public Task DynamicWritingStatesRemainLocalizedAndKeepCapturedTextLiteral() => dispatcher.RunAsync(() =>
+    {
+        LearningPreviewWindow? window = null;
+        try
+        {
+            InterfaceText.Initialize("zh-Hans"); window = new LearningPreviewWindow();
+            var state = LearningViewProbe.Preview with { Source = "General {0} Cotabby", Status = LearningPreviewStatus.Loading,
+                PartialResult = "Translation {0}", Result = null };
+            window.ShowState(state, LearningViewProbe.Anchor, false);
+            Assert.Equal(state.Source, LearningViewProbe.Find<TextBlock>(window, "SourceText").Text);
+            Assert.Equal("正在翻译…", LearningViewProbe.Find<TextBlock>(window, "StatusText").Text);
+            Assert.Equal("取消", LearningViewProbe.Find<Button>(window, "CancelButton").Content);
+            Assert.DoesNotContain("TRANSLATION", LearningViewProbe.Find<TextBlock>(window, "ResultLabel").Text);
+            window.ShowCaptureFailure("General {0} · provider detail", LearningViewProbe.Anchor);
+            Assert.Equal("未发送任何文本。", LearningViewProbe.Find<TextBlock>(window, "StatusText").Text);
+            Assert.Equal("General {0} · provider detail", LearningViewProbe.Find<TextBlock>(window, "ErrorText").Text);
+            VocabularyThemeRender.Capture(window, "learning-localized-failure-zh", 520, 350);
+        }
+        finally { window?.Close(); InterfaceText.Initialize("en"); }
+        return Task.CompletedTask;
+    });
+
+    [Fact]
+    public Task TypedDestinationCopyLocalizesWithoutInterpretingModelValuesOrPublishingSecrets() => dispatcher.RunAsync(() =>
+    {
+        try
+        {
+            InterfaceText.Initialize("zh-Hans"); const string model = "General {0} Cotabby";
+            string destination = LearningModelDestinationText.TranslationSettings("https://owned.invalid/v1", model, false, true);
+            Assert.Contains(model, destination); Assert.Contains("https://owned.invalid/v1", destination);
+            Assert.Contains("端点发送已关闭", destination); Assert.Contains("已启用草稿参考", destination);
+            Assert.DoesNotContain("owned-secret", LearningModelDestinationText.TranslationSettings("https://name:owned-secret@owned.invalid/?key=owned-secret", model, true, false));
+            Assert.DoesNotContain("Public endpoints", EndpointInterfaceText.Error(OpenAICompatibleEndpointError.InsecurePublicHttp));
+            Assert.Null(EndpointInterfaceText.Privacy(OpenAICompatibleHostScope.Loopback));
+            Assert.DoesNotContain("outside your PC", EndpointInterfaceText.Privacy(OpenAICompatibleHostScope.PublicInternet)!);
+            var unconfigured = new LearningModelSnapshot { Backend = LearningModelBackend.Endpoint, BaseUrl = "http://127.0.0.1:8888/v1", EndpointModel = "" };
+            Assert.Null(LearningModelDestinationText.Endpoint(unconfigured));
+            Assert.Contains("127.0.0.1", LearningModelDestinationText.Explanation(unconfigured, allowEmptyModel: true));
+            Assert.Contains("本机", LearningModelDestinationText.Explanation(unconfigured, allowEmptyModel: true));
+        }
+        finally { InterfaceText.Initialize("en"); }
+        return Task.CompletedTask;
+    });
+
     [Theory]
     [InlineData("en", 1, "one")]
     [InlineData("en", 2, "other")]

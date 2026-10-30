@@ -2,6 +2,7 @@ using System.IO;
 using System.Windows.Threading;
 using Cotabby.App.Settings;
 using Cotabby.App.Speech;
+using Cotabby.App.Localization;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Models;
 using Cotabby.Core.Speech;
@@ -16,6 +17,30 @@ namespace Cotabby.App.Wpf.Tests;
 [Collection("WPF views")]
 public sealed class LearningSpeechControllerNativeTests(WpfDispatcher dispatcher)
 {
+    [Fact]
+    public Task FrozenInterfaceFormatterDisclosesSpeechWithoutActivatingProviders() => dispatcher.RunAsync(async () =>
+    {
+        try
+        {
+            InterfaceText.Initialize("zh-Hans"); var saved = new AppSettings();
+            var settings = new LearningSpeechSettings(() => saved, () => { }, new NoCredentials());
+            var effects = new Effects(Dispatcher.CurrentDispatcher);
+            await using var controller = new LearningSpeechController(settings, new SpeechTelemetry((_, _, _) => { }),
+                effects, new WorkerGenerator(), effects, effects, effects, effects, _ => new Dictionary<string, double>(),
+                StringComparer.Ordinal, Path.GetTempPath(), () => effects, format: InterfaceText.Format);
+            Assert.Contains("系统语音", controller.DestinationDescription);
+            settings.SetEndpointBaseUrl("https://owned.invalid/private/path"); settings.SetEndpointModel("General {0} Cotabby");
+            settings.SetEndpointVoice("voice {1}"); settings.SelectProvider(LearningSpeechProviderKind.Endpoint);
+            string text = controller.DestinationDescription;
+            Assert.Contains("语音端点", text); Assert.Contains("https://owned.invalid", text); Assert.DoesNotContain("private/path", text);
+            Assert.Contains("General {0} Cotabby", text); Assert.Contains("voice {1}", text);
+            settings.SetEndpointBaseUrl("https://name:owned-secret@owned.invalid/?key=owned-secret");
+            Assert.DoesNotContain("owned-secret", controller.DestinationDescription); Assert.Contains("无法发送文本", controller.DestinationDescription);
+            Assert.Equal(0, effects.Played);
+        }
+        finally { InterfaceText.Initialize("en"); }
+    });
+
     [Fact]
     public Task WorkerAudioReturnsToDispatcherAndSettingsRetireTheCapturedRequest() => dispatcher.RunAsync(async () =>
     {

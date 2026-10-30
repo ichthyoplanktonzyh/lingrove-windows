@@ -1,5 +1,6 @@
 using System.Windows;
 using Cotabby.App.Speech;
+using Cotabby.App.Localization;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Speech;
 
@@ -39,9 +40,10 @@ public partial class LearningPreviewWindow
         SourceSpeechButton.Visibility = source ? Visibility.Visible : Visibility.Collapsed; ResultSpeechButton.Visibility = result ? Visibility.Visible : Visibility.Collapsed;
         SourceSpeechButton.IsEnabled = source;
         SourceSpeechButton.Content = _speech?.IsPlaying(SourceTarget) == true ? "■" : "🔊"; ResultSpeechButton.Content = _speech?.IsPlaying(ResultTarget) == true ? "■" : "🔊";
-        SourceSpeechButton.ToolTip = _speech?.Error(SourceTarget) ?? "Read source aloud"; ResultSpeechButton.ToolTip = _speech?.Error(ResultTarget) ?? "Read translation aloud";
+        SourceSpeechButton.ToolTip = _speech?.Error(SourceTarget) ?? InterfaceText.Get("Play source text aloud", "Learning"); ResultSpeechButton.ToolTip = _speech?.Error(ResultTarget) ?? InterfaceText.Get("Play translation aloud", "Learning");
         SpeechStatus.Text = _speech?.Error(SourceTarget) ?? _speech?.Error(ResultTarget) ?? ((source || result) ? _speech?.DestinationDescription : null) ?? ""; SpeechStatus.Visibility = SpeechStatus.Text.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
-        System.Windows.Automation.AutomationProperties.SetName(SourceSpeechButton, "Read source aloud"); System.Windows.Automation.AutomationProperties.SetName(ResultSpeechButton, "Read translation aloud");
+        System.Windows.Automation.AutomationProperties.SetName(SourceSpeechButton, InterfaceText.Get(_speech?.IsPlaying(SourceTarget) == true ? "Stop speaking source text" : "Play source text aloud", "Learning"));
+        System.Windows.Automation.AutomationProperties.SetName(ResultSpeechButton, InterfaceText.Get(_speech?.IsPlaying(ResultTarget) == true ? "Stop speaking translation" : "Play translation aloud", "Learning"));
     }
     private void SpeakSource() { if (_displayedPreview is { } state && _speech is { } speech) speech.Toggle(new(SourceTarget, state.Source, state.Options?.SourceLanguage)); }
     private void SpeakResult() { if (_displayedPreview is { Status: LearningPreviewStatus.Ready, Options: { } options, Result: { Length: > 0 } text } && _speech is { } speech) speech.Toggle(new(ResultTarget, text, options.TargetLanguage)); }

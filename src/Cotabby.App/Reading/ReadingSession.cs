@@ -2,6 +2,7 @@ using System.Windows.Threading;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.LanguageLearning.Reading;
 using Cotabby.Core.Runtime.Metrics;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.Reading;
 
@@ -41,7 +42,7 @@ internal sealed record ReadingDestination(string Label, bool UsesEndpoint, bool 
         if (!UsesEndpoint) return string.IsNullOrWhiteSpace(Label) ? null : Label;
         if (!Authorized || !Uri.TryCreate(EndpointUrl, UriKind.Absolute, out var uri)
             || uri.Scheme is not ("http" or "https") || !string.IsNullOrEmpty(uri.UserInfo)) return null;
-        return "Endpoint: " + uri.GetLeftPart(UriPartial.Path) + (string.IsNullOrWhiteSpace(Model) ? "" : " · " + Model);
+        return InterfaceText.Get("Endpoint", "Learning") + ": " + uri.GetLeftPart(UriPartial.Path) + (string.IsNullOrWhiteSpace(Model) ? "" : " · " + Model);
     }
 }
 internal sealed record ReadingSettings(bool Enabled, bool SelectionEnabled, bool AppAllowed, LearningLanguage Target,

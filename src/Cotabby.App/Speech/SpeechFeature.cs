@@ -8,6 +8,7 @@ using Cotabby.Core.Speech;
 using Cotabby.Inference.OpenAICompatible;
 using Cotabby.Inference.Speech;
 using Cotabby.Win32.Speech;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.Speech;
 
@@ -50,7 +51,7 @@ internal sealed class SpeechFeature : IAsyncDisposable
         _generator = new(local, new SpeechEndpointClient());
         Controller = new(settings, telemetry, _system, _generator, _encoded, new WindowsSpeechPCMInputAdapter(_pcm),
             systemExporter, new WindowsSpeechAudioCodec(), _ => new Dictionary<string, double>(),
-            StringComparer.CurrentCulture, modelDirectory, () => _models ??= new(ModelDirectory, _dispatcher));
+            StringComparer.CurrentCulture, modelDirectory, () => _models ??= new(ModelDirectory, _dispatcher), format: InterfaceText.Format);
     }
     internal SpeechModelFiles Models => (SpeechModelFiles)Controller.ModelDownloads;
     public ValueTask DisposeAsync() { lock (_gate) return new(_retirement ??= RetireAsync()); }

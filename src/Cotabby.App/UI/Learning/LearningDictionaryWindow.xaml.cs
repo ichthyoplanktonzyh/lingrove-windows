@@ -84,7 +84,7 @@ public partial class LearningDictionaryWindow : Window
             ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
         WordSection.Visibility = unit.Kind == LearningUnitKind.Word || state.SelectedWord is not null ? Visibility.Collapsed : Visibility.Visible;
         BackButton.Visibility = state.SelectedWord is null && state.ReferenceQuery is null ? Visibility.Collapsed : Visibility.Visible;
-        QueryText.Text = "Dictionary form: " + state.Query;
+        QueryText.Text = InterfaceText.Format("Dictionary form: %@", state.Query);
         QueryText.Visibility = state.Query.Normalize() == state.Title.Normalize() ? Visibility.Collapsed : Visibility.Visible;
         WordButtons.Children.Clear();
         foreach (var word in unit.Words)

@@ -140,8 +140,8 @@ internal sealed class ReadingApplication : IAsyncDisposable
         var translation = translationSelection.Backend == LearningModelBackend.Endpoint
             ? new ReadingDestination("", true, settings.LearningTranslationActiveEndpointEnabled, settings.LearningEndpointBaseUrl,
                 ModelDisplayText.Safe(translationSelection.EndpointModel))
-            : new ReadingDestination(string.IsNullOrWhiteSpace(translationSelection.LocalModel)
-                ? "Local translation model not configured" : "Local translation model: " + ModelDisplayText.Safe(translationSelection.LocalModel), false, true);
+            : new ReadingDestination(Cotabby.App.Learning.LearningModelDestinationText.Translation(LearningTranslationBackend.Local,
+                "", translationSelection.LocalModel, false), false, true);
         var target = Enum.IsDefined(settings.LearningReadingTargetLanguage) ? settings.LearningReadingTargetLanguage : LearningLanguage.Chinese;
         var next = new Preferences(enabled, settings.LearningReadingShortcut,
             GlobalShortcut.LearningReading.Conflict(settings, settings.LearningReadingShortcut) is not null,
@@ -163,7 +163,7 @@ internal sealed class ReadingApplication : IAsyncDisposable
             LookupProfile = explanation,
             LookupDestination = explanationEndpoint is not null
                 ? new("", true, true, explanationEndpoint.BaseUrl.AbsoluteUri, ModelDisplayText.Safe(explanationEndpoint.ModelName))
-                : new(Cotabby.App.Learning.LearningModelDestinationText.Explanation(explanation) + " · bundled dictionary available", false, true),
+                : new(Cotabby.App.Learning.LearningModelDestinationText.Explanation(explanation) + " · " + Cotabby.App.Localization.InterfaceText.Get("Expression dictionary", "Learning"), false, true),
         };
         if (_preferences is { } old && old.Signature == next.Signature && old.CredentialRevision == credentialRevision
             && old.BatterySaver == batterySaver && old.LookupProfile == next.LookupProfile && old.TranslationProfile == next.TranslationProfile) return;

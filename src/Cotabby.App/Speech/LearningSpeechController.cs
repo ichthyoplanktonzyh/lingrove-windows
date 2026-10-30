@@ -44,23 +44,24 @@ internal sealed partial class LearningSpeechController : INotifyPropertyChanged,
             RequireOwner();
             switch (Settings.SelectedProvider)
             {
-                case LearningSpeechProviderKind.System: return "System voice · audio stays on this device.";
-                case LearningSpeechProviderKind.Local: return "Local speech · audio stays on this device. Model: " + SafeModelName(Path.GetFileName(Settings.LocalModelPath));
+                case LearningSpeechProviderKind.System: return Text("System voice · audio stays on this device.");
+                case LearningSpeechProviderKind.Local: return Text("Local speech · audio stays on this device. Model: {0}", SafeModelName(Path.GetFileName(Settings.LocalModelPath)));
                 case LearningSpeechProviderKind.Endpoint:
                     try
                     {
                         var configuration = Settings.EndpointConfiguration(); var endpoint = configuration.Endpoint;
-                        return "Speech endpoint: " + endpoint.BaseUrl.GetLeftPart(UriPartial.Authority) + " · model: " + SafeModelName(endpoint.ModelName) + " · voice: " + SafeModelName(configuration.Voice, "configured voice") + ". The selected text is sent to this server.";
+                        return Text("Speech endpoint: {0} · model: {1} · voice: {2}. The selected text is sent to this server.",
+                            endpoint.BaseUrl.GetLeftPart(UriPartial.Authority), SafeModelName(endpoint.ModelName), SafeModelName(configuration.Voice, "configured voice"));
                     }
-                    catch { return "Speech endpoint is not configured; no text can be sent."; }
-                default: return "Speech destination is unavailable.";
+                    catch { return Text("Speech endpoint is not configured; no text can be sent."); }
+                default: return Text("Speech destination is unavailable.");
             }
         }
     }
-    private static string SafeModelName(string value, string redacted = "configured model")
+    private string SafeModelName(string value, string redacted = "configured model")
     {
-        if (value.Length == 0) return "not selected";
-        if (value.Contains("://", StringComparison.Ordinal) || value.IndexOfAny(['?', '#', '@']) >= 0) return redacted;
+        if (value.Length == 0) return Text("Not selected");
+        if (value.Contains("://", StringComparison.Ordinal) || value.IndexOfAny(['?', '#', '@']) >= 0) return Text(redacted);
         var output = new StringBuilder(); int count = 0;
         foreach (var rune in value.EnumerateRunes())
         {
@@ -72,6 +73,10 @@ internal sealed partial class LearningSpeechController : INotifyPropertyChanged,
         return output.ToString();
     }
     private readonly ISpeechProviding _provider;
+    // The application injects its frozen-locale template adapter. Portable controller tests
+    // retain an ordinary .NET formatter; user/model/provider values are arguments only.
+    private readonly Func<string, object?[], string> _format;
+    private string Text(string key, params object?[] values) => _format(key, values);
     private readonly ISpeechAudioGenerating _generator;
     private readonly ISpeechAudioPlaying _audioPlayer;
     private readonly ISpeechPCMPlaying _pcmPlayer;
@@ -101,8 +106,10 @@ internal sealed partial class LearningSpeechController : INotifyPropertyChanged,
         ISpeechProviding provider, ISpeechAudioGenerating generator, ISpeechAudioPlaying audioPlayer,
         ISpeechPCMPlaying pcmPlayer, ISystemSpeechAudioExporting systemExporter, ISpeechAudioDuration duration,
         Func<string, IReadOnlyDictionary<string, double>> recognize, IComparer<string> voiceComparer,
-        string modelDirectory, Func<ISpeechModelManagement> modelFactory, ISpeechAssetFiles? files = null)
+        string modelDirectory, Func<ISpeechModelManagement> modelFactory, ISpeechAssetFiles? files = null,
+        Func<string, object?[], string>? format = null)
     {
+        _format = format ?? ((key, values) => string.Format(System.Globalization.CultureInfo.CurrentCulture, key, values));
         _context = SynchronizationContext.Current ?? throw new InvalidOperationException("Speech control requires a serial UI context.");
         _ownerThread = Environment.CurrentManagedThreadId;
         Settings = settings; Telemetry = telemetry; _provider = provider; _generator = generator; _audioPlayer = audioPlayer;

@@ -1,4 +1,5 @@
 using Cotabby.App.Localization;
+using Cotabby.App.Settings;
 using Cotabby.App.UI.Settings.Panes;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Inference.OpenAICompatible;
@@ -10,6 +11,19 @@ namespace Cotabby.App.Learning;
 /// This helper performs no IO, credential access, provider activation or model discovery.</summary>
 internal static class LearningModelDestinationText
 {
+    internal static string Translation(LearningTranslationBackend backend, string url, string model, bool draft)
+    {
+        string label;
+        if (backend != LearningTranslationBackend.Endpoint)
+            label = InterfaceText.Get("Local translation model") + ": " + ModelDisplayText.Safe(model);
+        else
+        {
+            var endpoint = Endpoint(new() { Backend = LearningModelBackend.Endpoint, BaseUrl = url, EndpointModel = model });
+            label = endpoint is null ? InterfaceText.Get("Translation endpoint is not configured correctly")
+                : InterfaceText.Get("Translation endpoint") + ": " + endpoint.BaseUrl.AbsoluteUri + " · " + ModelDisplayText.Safe(endpoint.ModelName);
+        }
+        return label + (draft ? " · " + InterfaceText.Get("Draft reference enabled") : "");
+    }
     internal static string Explanation(LearningModelSnapshot? profile)
     {
         if (profile?.Backend != LearningModelBackend.Endpoint)

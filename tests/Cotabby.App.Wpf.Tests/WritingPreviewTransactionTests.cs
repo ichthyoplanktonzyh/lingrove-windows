@@ -7,6 +7,8 @@ using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Threading;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using Cotabby.App.Learning;
 using Cotabby.App.Settings;
 using Cotabby.App.UI.Learning;
@@ -31,6 +33,38 @@ public sealed class WritingPreviewTransactionTests(WpfDispatcher dispatcher)
         CopyButton(window).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         await Until(() => fixture.Clipboard.Values.Count == 1);
         Assert.Equal("bonjour", Assert.Single(fixture.Clipboard.Values));
+        Assert.Equal(0, fixture.Inserter.Calls);
+    });
+
+    [Theory]
+    [InlineData(false)] [InlineData(true)]
+    public Task OnlyExplicitDraftModeSendsNearestReferenceWithoutChangingTheTarget(bool enabled) => dispatcher.RunAsync(async () =>
+    {
+        await using var fixture = new Fixture(draft: "earlier. hello later.", range: new(9, 5),
+            referenceMode: enabled ? LearningReferenceMode.Draft : LearningReferenceMode.CurrentSentence);
+        var window = await fixture.ReadyAsync();
+        Capture(window, enabled ? "writing-draft-expanded" : "writing-current-expanded");
+        Assert.Equal(enabled, fixture.Transport.Body.Contains("REFERENCE EXCERPTS (JSON)", StringComparison.Ordinal));
+        Assert.Equal(enabled, fixture.Transport.Body.Contains("earlier.", StringComparison.Ordinal));
+        Assert.Equal(enabled, fixture.Transport.Body.Contains("later.", StringComparison.Ordinal));
+        Assert.Contains("hello", fixture.Transport.Body); Assert.Equal(0, fixture.Inserter.Calls);
+    });
+
+    [Fact]
+    public Task PreviousTranslationRequiresItsUnchangedPrecedingSource() => dispatcher.RunAsync(async () =>
+    {
+        await using var fixture = new Fixture(); await fixture.ReadyAsync();
+        fixture.Hook.Type(); fixture.Focus.Publish(fixture.Focus.Current! with { Text = "hello. second", CaretOffset = 13 });
+        var window = await fixture.ReadyAsync("second", "deuxième");
+        ((Button)window.FindName("ExpandButton")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        await Until(() => ((TextBlock)window.FindName("PreviousTranslation")).Visibility == Visibility.Visible);
+        Assert.Equal("bonjour", ((TextBlock)window.FindName("PreviousTranslation")).Text);
+        Capture(window, "writing-compact-previous");
+        fixture.Hook.Type(); fixture.Focus.Publish(fixture.Focus.Current! with { Text = "other. second", CaretOffset = 13 });
+        window = await fixture.ReadyAsync("second", "deuxième");
+        ((Button)window.FindName("ExpandButton")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        await Until(() => ((FrameworkElement)window.FindName("SourceSection")).Visibility == Visibility.Collapsed);
+        Assert.Equal(Visibility.Collapsed, ((TextBlock)window.FindName("PreviousTranslation")).Visibility);
         Assert.Equal(0, fixture.Inserter.Calls);
     });
 
@@ -89,6 +123,16 @@ public sealed class WritingPreviewTransactionTests(WpfDispatcher dispatcher)
     private static Button CopyButton(LearningPreviewWindow window) => ((Panel)window.FindName("CopyActions")).Children
         .OfType<Button>().Single(button => AutomationProperties.GetName(button) == "Copy translation");
 
+    private static void Capture(LearningPreviewWindow window, string name)
+    {
+        if (Environment.GetEnvironmentVariable("LINGROVE_WRITING_RENDER_DIRECTORY") is not { Length: > 0 } directory) return;
+        var view = (FrameworkElement)window.Content; window.UpdateLayout();
+        var bitmap = new RenderTargetBitmap((int)Math.Ceiling(view.ActualWidth), (int)Math.Ceiling(view.ActualHeight), 96, 96, PixelFormats.Pbgra32);
+        bitmap.Render(view); var png = new PngBitmapEncoder(); png.Frames.Add(BitmapFrame.Create(bitmap));
+        using var output = new System.IO.FileStream(System.IO.Path.Combine(directory, name + ".png"), System.IO.FileMode.CreateNew);
+        png.Save(output);
+    }
+
     private static async Task Until(Func<bool> condition)
     {
         var elapsed = Stopwatch.StartNew();
@@ -103,25 +147,31 @@ public sealed class WritingPreviewTransactionTests(WpfDispatcher dispatcher)
         internal Inserter Inserter { get; }
         internal WritingSentenceReplacement Owner { get; }
         internal LearningPreviewController Controller { get; }
-        private readonly HttpClient _http = new(new Handler());
+        internal Handler Transport { get; } = new();
+        private readonly HttpClient _http;
 
-        internal Fixture(bool uncertain = false, bool holdInsert = false, bool holdCopy = false)
+        internal Fixture(bool uncertain = false, bool holdInsert = false, bool holdCopy = false, string? draft = null,
+            LearningTextRange? range = null, LearningReferenceMode referenceMode = LearningReferenceMode.CurrentSentence)
         {
+            _http = new(Transport);
+            if (draft is not null) Focus.Publish(Focus.Current! with { Text = draft, CaretOffset = range!.Value.Location + range.Value.Length });
             Clipboard = new(holdCopy); Inserter = new(Focus, uncertain, holdInsert);
             Owner = new(Inserter, _ => Focus.Refresh(), (_, _) => Task.CompletedTask);
-            Controller = new(Hook, Focus, Dispatcher.CurrentDispatcher, new Tokenizer(), new Runtime(), _http,
+            Controller = new(Hook, Focus, Dispatcher.CurrentDispatcher, new Tokenizer(range), new Runtime(), _http,
                 new Keys(), NullLogger<LearningPreviewController>.Instance, clipboardWriter: Clipboard);
             Controller.AttachReplacement(Owner);
             Controller.ApplySettings(new AppSettings { LearningTranslationEnabled = true, LearningSentencePreviewEnabled = false,
                 LearningBackend = LearningTranslationBackend.Endpoint, LearningEndpointEnabled = true, LearningEndpointModel = "synthetic-model",
-                LearningSourceLanguages = [LearningLanguage.English], LearningTargetLanguage = LearningLanguage.French }, 0);
+                LearningSourceLanguages = [LearningLanguage.English], LearningTargetLanguage = LearningLanguage.French,
+                LearningReferenceMode = referenceMode }, 0);
         }
-        internal async Task<LearningPreviewWindow> ReadyAsync()
+        internal async Task<LearningPreviewWindow> ReadyAsync(string expectedSource = "hello", string expectedTranslation = "bonjour")
         {
             Controller.RequestFromCurrentField(); LearningPreviewWindow? result = null;
             await Until(() => (result = Application.Current.Windows.OfType<LearningPreviewWindow>().FirstOrDefault(window => window.IsVisible
                 && new TextRange(((TextBlock)window.FindName("ResultText")).ContentStart,
-                    ((TextBlock)window.FindName("ResultText")).ContentEnd).Text == "bonjour")) is not null
+                    ((TextBlock)window.FindName("ResultText")).ContentEnd).Text == expectedTranslation
+                && ((TextBlock)window.FindName("SourceText")).Text == expectedSource)) is not null
                 && ((Button)result.FindName("ReplaceButton")).IsEnabled);
             return result!;
         }
@@ -179,8 +229,15 @@ public sealed class WritingPreviewTransactionTests(WpfDispatcher dispatcher)
             bool accepted = tryCommit(); if (accepted) Values.Enqueue(text); Completed.TrySetResult(accepted); return accepted;
         }
     }
-    private sealed class Tokenizer : ILearningSentenceTokenizer
-    { public IReadOnlyList<LearningTextRange> Tokenize(string value, LearningLanguage language) => [new(0, value.Length)]; }
+    private sealed class Tokenizer(LearningTextRange? range = null) : ILearningSentenceTokenizer
+    {
+        public IReadOnlyList<LearningTextRange> Tokenize(string value, LearningLanguage language)
+        {
+            if (range is { } exact) return [exact];
+            int split = value.IndexOf(". ", StringComparison.Ordinal);
+            return split < 0 ? [new(0, value.Length)] : [new(0, split + 1), new(split + 2, value.Length - split - 2)];
+        }
+    }
     private sealed class Runtime : ILearningLocalRuntime
     {
         public Task UnloadAsync() => Task.CompletedTask;
@@ -191,7 +248,14 @@ public sealed class WritingPreviewTransactionTests(WpfDispatcher dispatcher)
     { public string? ReadApiKey() => null; public void SaveApiKey(string? value) => throw new InvalidOperationException(); public void DeleteApiKey() => throw new InvalidOperationException(); }
     private sealed class Handler : HttpMessageHandler
     {
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken token) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
-        { Content = new StringContent("data: {\"choices\":[{\"delta\":{\"content\":\"bonjour\"},\"finish_reason\":null}]}\n\ndata: {\"choices\":[{\"delta\":{},\"finish_reason\":\"stop\"}]}\n\ndata: [DONE]\n\n") });
+        internal string Body = "";
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken token)
+        {
+            Body = await request.Content!.ReadAsStringAsync(token);
+            string translation = Body.Contains("second", StringComparison.Ordinal) ? "deuxième" : "bonjour";
+            const string response = "data: {\"choices\":[{\"delta\":{\"content\":\"bonjour\"},\"finish_reason\":null}]}\n\ndata: {\"choices\":[{\"delta\":{},\"finish_reason\":\"stop\"}]}\n\ndata: [DONE]\n\n";
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            { Content = new StringContent(response.Replace("\"bonjour\"", System.Text.Json.JsonSerializer.Serialize(translation), StringComparison.Ordinal)) };
+        }
     }
 }

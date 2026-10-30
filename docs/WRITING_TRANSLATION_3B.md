@@ -56,7 +56,20 @@ revocation of a queued Copy all passed. The transaction/embedded/inline group pa
 automatic IME/transaction/embedded group then passed 11/11. These use synthetic text and no actual
 editor, clipboard, model, endpoint or audio device.
 
-Draft-reference extraction/planning, previous-sentence presentation and wider selected/middle/Unicode
-source replacement remain work at this checkpoint. Multiple-source language confidence remains
+Draft reference is now connected as a separate explicit choice with the original `learningReferenceMode`
+raw strings and safe current-sentence default. Capture retains the nearest 65,536 graphemes per side;
+the 3b planner quotes reference as data, binary-searches only reference length and retains the whole
+target. Native planning carries the winning token payload with its prompt, including when the last
+probe is oversized. Current-sentence mode sends no adjacent draft. Both the settings destination and
+card disclose the effective reference choice. Older empty-reference fixtures retain their behavior.
+
+Previous-sentence presentation now retains bounded, window-local source/range/translation evidence.
+The old source must still occupy its original range before the current target and the gap must contain
+only punctuation/whitespace. Editing an earlier sentence cannot relabel a cached current result as its
+previous translation. Settings, field changes and explicit dismissal retire the appropriate history.
+Core reference/budget/prompt checks passed 42/42, local native-plan fake checks 16/16, the explicit
+reference settings check 1/1, history policy 2/2 and the real controller/card transaction group 8/8.
+
+Wider selected/middle/Unicode source replacement remains work. Multiple-source language confidence remains
 unavailable. This does not establish real Word/Chrome/Codex behavior, rich-editor acknowledgement,
 IME compatibility, mixed DPI or accessibility; those remain the final unified native acceptance.

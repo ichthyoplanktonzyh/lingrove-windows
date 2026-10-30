@@ -83,7 +83,7 @@ internal sealed partial class LearningPreviewController
         _dispatcher.VerifyAccess();
         if (!IsCurrentRequest(requestId)) return;
         if (_dictionarySession?.State.Unit is not null) { _dictionarySession.Close(); _dictionaryWindow?.HideCard(); return; }
-        CancelAndHide();
+        DismissPreview();
     }
     private async Task ExecuteReplacementAsync(IWritingSentenceReplacement owner, CapturedSentence capture, LearningPreviewState state, long epoch)
     {
@@ -104,7 +104,7 @@ internal sealed partial class LearningPreviewController
                 _replacementInProgress = false; _replacementWork = null;
                 if (_disposed || !_intentActive || Interlocked.Read(ref _replacementEpoch) != epoch
                     || _activeRequestId != state.RequestId || !ReferenceEquals(_activeCapture, capture)) return;
-                if (outcome == WritingReplacementOutcome.Verified) { CancelAndHide(); return; }
+                if (outcome == WritingReplacementOutcome.Verified) { DismissPreview(); return; }
                 if (outcome == WritingReplacementOutcome.Unverified)
                 {
                     if (recovery is null || !Cotabby.Core.Insertion.InsertionTargetPolicy.IsSameField(capture.Field, recovery)
@@ -123,6 +123,9 @@ internal sealed partial class LearningPreviewController
             && _replacement is not null && !_replacementBlocked
             && WritingSentenceReplacementPolicy.CanReplace(capture.Field, capture.Range, capture.Source, state.Result);
         _window?.ShowExpanded(_expanded);
+        _window?.ShowTranslationDestination(LearningModelDestinationText.Translation(capture.Settings.Backend,
+            capture.Settings.EndpointBaseUrl, capture.TranslationOptions.ModelName, capture.Settings.ReferenceMode == LearningReferenceMode.Draft));
+        _window?.ShowPreviousTranslation(_currentPreviousSentence?.Translation);
         _window?.ShowReplacementState(can, _replacementInProgress, _replacementBlocked ? ReplacementUnverified
             : state.Status == LearningPreviewStatus.Ready && !can ? ReplacementUnavailable : null);
     }

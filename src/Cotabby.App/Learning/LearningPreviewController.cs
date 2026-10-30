@@ -35,7 +35,7 @@ namespace Cotabby.App.Learning;
 internal sealed partial class LearningPreviewController : IAsyncDisposable
 {
     internal Func<bool>? InlineCaptureActive { get; set; }
-    internal void SuspendForInlineFeature() => CancelAndHide();
+    internal void SuspendForInlineFeature() => DismissPreview();
     private static readonly TimeSpan CapturePollInterval = TimeSpan.FromMilliseconds(400);
     private static readonly ILearningTranslationEngine UnavailableLocalEngine = new UnavailableLocalLearningTranslationEngine();
     private const string SecureFieldMessage = "Sentence translation is unavailable in secure fields.";
@@ -146,7 +146,10 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
             if (_disposed) return;
             var previous = _settings;
             if (previous is not null && !previous.HasSameTranslationInputs(next))
+            {
                 retired = RetireIntentLocked();
+                _writingHistory = null; _currentPreviousSentence = null;
+            }
             Volatile.Write(ref _settings, next);
             // Retirement, provider publication and native resource intent share capture admission.
             // A new hotkey sees all three together; old planner tokens are already cancelled.
@@ -176,7 +179,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         if (IsBatterySaverPauseActive(settings))
         {
             _coordinator.ClearCache();
-            CancelAndHide();
+            DismissPreview();
         }
         ReconcileLocalResources();
     }
@@ -525,9 +528,11 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
             if (automatic && !IcuWritingScriptEvidence.Accepts(source, sourceLanguage.Value))
                 return new CaptureAttempt(null, null, field.CaretRect);
 
+            var input = LearningTranslationInput.Captured(field.Text, range, source, settings.ReferenceMode);
             return new CaptureAttempt(
                 new CapturedSentence(field, range, source, settings,
-                    settings.Options with { SourceLanguage = sourceLanguage.Value }), null, field.CaretRect);
+                    settings.Options with { SourceLanguage = sourceLanguage.Value, ReferenceBefore = input.ReferenceBefore,
+                        ReferenceAfter = input.ReferenceAfter }), null, field.CaretRect);
         }
         catch (LearningTranslationException error)
         {
@@ -752,6 +757,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
             if (previousCapture?.Lifetime is { } previousLifetime) _ = previousLifetime.Retire();
             _pendingOrigin = null;
             _activeCapture = capture;
+            _currentPreviousSentence = PreviousSentenceLocked(capture);
             // Begin the Core request while holding the intent gate. A concurrent key/focus
             // invalidation then either wins before this point or cancels the request after it has
             // an identity; it cannot slip between a freshness check and request creation.
@@ -1042,6 +1048,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
             Volatile.Write(ref _presentedRequestId, state.RequestId);
             Volatile.Write(ref _readyReplacementRequestId, state.Status == LearningPreviewStatus.Ready ? state.RequestId : null);
             UpdateReplacementPresentation(state, capture);
+            RememberCompleteSentence(state, capture);
             PrepareSentenceExplanation(state, capture, intent);
             PrepareSentenceVocabulary(state, capture, intent);
         }, DispatcherPriority.Background);
@@ -1104,6 +1111,8 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         lock (_gate)
         {
             previous = _observedField; _observedField = WritingCommittedMutationPolicy.BaselineAfter(previous, field);
+            if (_writingHistory is { } history && (field is null || !HistoryFieldMatches(history, field)))
+            { _writingHistory = null; _currentPreviousSentence = null; }
             capture = _activeCapture;
             origin = _pendingOrigin;
             if (_replacementInProgress && capture is not null && field is not null
@@ -1235,8 +1244,8 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         _window = new LearningPreviewWindow();
         if (_speechController is not null) _window.AttachSpeech(_speechController);
         _window.RetryRequested += RetryCurrentCapture;
-        _window.CancelRequested += CancelAndHide;
-        _window.DismissRequested += CancelAndHide;
+        _window.CancelRequested += DismissPreview;
+        _window.DismissRequested += DismissPreview;
         _window.ExpandRequested += ExpandPreview;
         _window.ReplaceRequested += ReplacePreview;
         _window.LookupRequested += OnDictionaryLookupRequested;
@@ -1399,6 +1408,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         KeyBinding Shortcut,
         bool ShortcutConflicts,
         bool AutomaticPreview,
+        LearningReferenceMode ReferenceMode,
         KeyBinding ReplacementShortcut,
         bool ReplacementShortcutConflicts,
         string EndpointBaseUrl,
@@ -1430,6 +1440,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         public bool HasSameTranslationInputs(LearningRuntimeSettings other) =>
             TranslationEnabled == other.TranslationEnabled
             && AutomaticPreview == other.AutomaticPreview
+            && ReferenceMode == other.ReferenceMode
             && AvailabilitySettings.Enabled == other.AvailabilitySettings.Enabled
             && AvailabilitySettings.Pause == other.AvailabilitySettings.Pause
             && AvailabilitySettings.PauseOnBatterySaver == other.AvailabilitySettings.PauseOnBatterySaver
@@ -1540,6 +1551,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
                 settings.LearningTranslationShortcut,
                 GlobalShortcut.LearningTranslation.Conflict(settings, settings.LearningTranslationShortcut) is not null,
                 settings.LearningSentencePreviewEnabled,
+                settings.LearningReferenceMode,
                 settings.LearningReplacementShortcut,
                 GlobalShortcut.LearningReplacement.Conflict(settings, settings.LearningReplacementShortcut) is not null,
                 endpointBaseUrl,

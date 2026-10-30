@@ -37,6 +37,8 @@ public partial class LearningPreviewWindow : Window
         _embeddedExample = embeddedExample;
         InitializeComponent();
         InterfaceText.TranslateInitialTree(this);
+        System.Windows.Automation.AutomationProperties.SetName(CloseButton, InterfaceText.Get("Dismiss"));
+        CloseButton.ToolTip = InterfaceText.Get("Dismiss");
         FavoriteButton.FailureChanged += message =>
         { VocabularyStatus.Text = message ?? ""; VocabularyStatus.Visibility = message is null ? Visibility.Collapsed : Visibility.Visible; };
         InstallSelection();
@@ -60,6 +62,7 @@ public partial class LearningPreviewWindow : Window
     {
         if (!_embeddedExample) throw new InvalidOperationException();
         RetireExampleSpeech(); FavoriteButton.Clear(); _displayedPreview = null; _previousTranslation = null; _canReplace = _isCommitting = false;
+        ClearTranslationDestination();
         ReplacementReason.Text = ""; ClearExplanation(); ClearCopyActions();
         SourceText.Text = DirectionText.Text = ErrorText.Text = string.Empty; ResultText.Inlines.Clear();
         ApplyPresentation();
@@ -81,6 +84,14 @@ public partial class LearningPreviewWindow : Window
     {
         Dispatcher.VerifyAccess(); _previousTranslation = previous; ApplyPresentation(); RepositionIfVisible();
     }
+    internal void ShowTranslationDestination(string destination)
+    {
+        Dispatcher.VerifyAccess(); TranslationDestination.Text = destination;
+        TranslationDestinationSection.Visibility = destination.Length == 0 ? Visibility.Collapsed : Visibility.Visible;
+        RepositionIfVisible();
+    }
+    private void ClearTranslationDestination()
+    { TranslationDestination.Text = ""; TranslationDestinationSection.Visibility = Visibility.Collapsed; }
     internal void ShowReplacementState(bool canReplace, bool isCommitting, string? unavailableReason)
     {
         Dispatcher.VerifyAccess(); _canReplace = canReplace; _isCommitting = isCommitting;
@@ -109,6 +120,7 @@ public partial class LearningPreviewWindow : Window
         System.Windows.Automation.AutomationProperties.SetName(ReplaceButton, _isCommitting ? "Replacing" : "Replace");
         ReplacementReason.Visibility = !error && ReplacementReason.Text.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
         CopyActions.Visibility = !_embeddedExample && _expanded && CopyActions.Children.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+        CancelButton.Visibility = _expanded || error ? Visibility.Visible : Visibility.Collapsed;
         if (!_expanded) { ExplanationSection.Visibility = Visibility.Collapsed; ExplanationDestinationSection.Visibility = Visibility.Collapsed; }
         else if (_displayedExplanation is { } explanation)
         {
@@ -128,7 +140,10 @@ public partial class LearningPreviewWindow : Window
     {
         Dispatcher.VerifyAccess();
         if (!LearningExplanationCardPolicy.SameDocument(_displayedPreview, state))
-        { StopSpeech(); ClearExplanation(); FavoriteButton.Clear(); _canReplace = false; _isCommitting = false; ReplacementReason.Text = ""; }
+        {
+            StopSpeech(); ClearExplanation(); FavoriteButton.Clear(); _canReplace = false; _isCommitting = false; ReplacementReason.Text = "";
+            ClearTranslationDestination();
+        }
         else if (_displayedPreview is { } old) ReconcileSpeech(old, state);
         if (state.Status != LearningPreviewStatus.Ready) FavoriteButton.Clear();
         _displayedPreview = state;
@@ -212,6 +227,7 @@ public partial class LearningPreviewWindow : Window
     public void ShowCaptureFailure(string message, ScreenRect anchor)
     {
         Dispatcher.VerifyAccess();
+        ClearTranslationDestination();
         _displayedPreview = null;
         StopSpeech(); UpdateSpeech();
         FavoriteButton.Clear();
@@ -243,6 +259,7 @@ public partial class LearningPreviewWindow : Window
         }
 
         Hide();
+        ClearTranslationDestination();
         StopSpeech();
         FavoriteButton.Clear();
         _displayedPreview = null;

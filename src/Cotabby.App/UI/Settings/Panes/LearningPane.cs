@@ -90,7 +90,7 @@ internal static class LearningPane
                     Ui.Button("Configure shortcut", () => context.Navigate(ShortcutsPane.Build(rows))))
                     .Tagged("expression assistance shortcut keybind"),
                 Rows.Note("Uses the independent AI explanation provider below. The configured destination is shown before a request; the translation endpoint is not used.")),
-            new SettingsCard("Manual sentence preview",
+            new SettingsCard("Writing translation",
                 rows.Toggle("Enable Sentence Translation",
                     "The configured shortcut reads the complete current sentence from a supported field and opens a preview.",
                     s => s.LearningTranslationEnabled, (s, v) => s.LearningTranslationEnabled = v)
@@ -107,6 +107,10 @@ internal static class LearningPane
                 rows.Combo("Target Language", "The language requested from the translator.", Languages,
                     s => s.LearningTargetLanguage, (s, v) => s.LearningTargetLanguage = v)
                     .Tagged("to target language english en chinese"),
+                rows.Combo("Reference Context", "Translate only the selected sentence. Draft reference can send nearby text to the configured translation endpoint.",
+                    new[] { (LearningReferenceMode.CurrentSentence, "Current sentence only"), (LearningReferenceMode.Draft, "Use surrounding draft") },
+                    s => s.LearningReferenceMode, (s, v) => s.LearningReferenceMode = v)
+                    .Tagged("writing translation draft reference context privacy"),
                 TranslationStyle(rows)),
             new SettingsCard("Local learning model",
                 Rows.Custom(new LearningLocalModels(context)))
@@ -121,7 +125,7 @@ internal static class LearningPane
                 Rows.Custom(new LearningExplanationProviderSettings(context))),
             new SettingsCard("Learning endpoint",
                 rows.Toggle("Allow the Learning Endpoint",
-                    "This separate consent sends a manually requested sentence and its selected translation style. A power profile that explicitly selects Endpoint authorizes that profile. Selecting Local never uses this endpoint.",
+                    "This task permission sends the captured sentence, selected style and any draft reference you enable. A power profile that explicitly selects Endpoint authorizes that profile. Selecting Local never uses this endpoint.",
                     s => s.LearningTranslationActiveEndpointEnabled, (s, v) => { if (!s.LearningTranslationPowerSwitching) s.LearningEndpointEnabled = v; })
                     .Tagged("endpoint send network cloud privacy remote allow opt in translation")
                     .EnabledWhen(s => !s.LearningTranslationPowerSwitching),
@@ -413,6 +417,9 @@ internal static class LearningPane
     {
         try
         {
+            string payload = settings.LearningReferenceMode == LearningReferenceMode.Draft
+                ? "The captured sentence, selected style and bounded draft reference are sent."
+                : "The captured sentence and selected style are sent.";
             var configuration = new OpenAICompatibleEndpointConfiguration(
                 settings.LearningEndpointBaseUrl,
                 settings.LearningTranslationActiveSelection.EndpointModel,
@@ -420,8 +427,8 @@ internal static class LearningPane
             if (configuration.ModelName.Length == 0)
             {
                     destination.Text = settings.LearningTranslationActiveEndpointEnabled
-                    ? $"Learning requests will use {configuration.BaseUrl}; enter a model before translating. The captured sentence and selected style are sent."
-                    : $"If enabled, the captured sentence and selected style will be sent to {configuration.BaseUrl}.";
+                    ? $"Learning requests will use {configuration.BaseUrl}; enter a model before translating. {payload}"
+                    : $"If enabled, learning requests will use {configuration.BaseUrl}. {payload}";
             }
             else
             {
@@ -431,12 +438,12 @@ internal static class LearningPane
                     OpenAICompatibleHostScope.LocalNetwork => "This endpoint is on your local network.",
                     _ => "This endpoint is outside this PC; the captured sentence will leave the device.",
                 };
-                destination.Text = $"Learning destination: {configuration.BaseUrl} · {configuration.ModelName}. The captured sentence and selected style are sent. {scope}";
+                destination.Text = $"Learning destination: {configuration.BaseUrl} · {configuration.ModelName}. {payload} {scope}";
             }
 
             if (settings.LearningTranslationActiveEndpointEnabled)
             {
-                destination.Text += " The endpoint is opted in for manual sentence requests.";
+                destination.Text += " The endpoint is opted in for translation requests.";
             }
             else
             {

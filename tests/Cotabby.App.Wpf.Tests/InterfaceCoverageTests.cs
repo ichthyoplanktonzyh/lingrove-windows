@@ -5,6 +5,9 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using Cotabby.App.Localization;
+using Cotabby.App.Hosting;
+using Cotabby.App.Settings;
+using Cotabby.App.UI;
 using Cotabby.App.Learning;
 using Cotabby.App.UI.Learning;
 using Cotabby.App.UI.Reading;
@@ -13,6 +16,7 @@ using Cotabby.App.UI.Settings.Panes;
 using Cotabby.App.UI.Vocabulary;
 using Cotabby.Core.Focus;
 using Cotabby.Core.LanguageLearning;
+using Cotabby.Core.Models;
 using Cotabby.Core.Settings;
 using Cotabby.Core.Vocabulary;
 using Cotabby.Core.Vocabulary.EntryInput;
@@ -93,6 +97,42 @@ public sealed class InterfaceCoverageTests(WpfDispatcher dispatcher)
         finally { window?.Close(); InterfaceText.Initialize("en"); }
         return Task.CompletedTask;
     });
+
+    [Fact]
+    public Task ArabicRecommendedSetupKeepsTheLiteralEndpointAndDoesNotStartTransfers() => dispatcher.RunAsync(async () =>
+    {
+        var host = new SetupHost();
+        await using var owner = new RecommendedSetupController(host, 16UL * 1024 * 1024 * 1024);
+        Window? window = null;
+        try
+        {
+            InterfaceText.Initialize("ar");
+            var view = new RecommendedSetupView(owner, () => host.Settings);
+            window = new Window { Content = view, Width = 720, Height = 650, ShowActivated = false };
+            VocabularyNotebookTheme.Follow(window); window.Show(); window.UpdateLayout();
+            var destination = Assert.Single(Descendants(view).OfType<TextBlock>(), text => text.Text.Contains("https://owned.invalid/v1", StringComparison.Ordinal));
+            Assert.Equal(FlowDirection.RightToLeft, window.FlowDirection);
+            Assert.Equal(FlowDirection.LeftToRight, destination.FlowDirection);
+            Assert.Contains("General {0} Cotabby", string.Join("\n", Descendants(view).OfType<TextBlock>().Select(text => text.Text)));
+            Assert.False(owner.Busy); Assert.Equal(0, host.Transfers);
+            VocabularyThemeRender.Capture(window, "recommended-setup-localized-ar", 720, 650);
+        }
+        finally { window?.Close(); InterfaceText.Initialize("en"); }
+    });
+
+    private sealed class SetupHost : IRecommendedSetupHost
+    {
+        public AppSettings Settings { get; } = new() { Engine = EngineKind.Endpoint, EndpointBaseUrl = "https://owned.invalid/v1", EndpointModel = "General {0} Cotabby" };
+        public event Action? SettingsApplied { add { } remove { } }
+        internal int Transfers;
+        public void PersistSettings() { }
+        public void PersistSelectionWithoutLoading() { }
+        public bool IsCached(CotabbyModel model) => false;
+        public Task DownloadCompletion(CotabbyModel model, IProgress<(long Bytes, long? Total)> progress, CancellationToken token)
+        { Transfers++; throw new InvalidOperationException("No transfers are authorized by this fixture."); }
+        public Task DownloadLearning(LearningDownloadableModel model, LocalModelTask role, IProgress<(long Bytes, long? Total)> progress, CancellationToken token)
+        { Transfers++; throw new InvalidOperationException("No transfers are authorized by this fixture."); }
+    }
 
     [Fact]
     public Task TypedDestinationCopyLocalizesWithoutInterpretingModelValuesOrPublishingSecrets() => dispatcher.RunAsync(() =>

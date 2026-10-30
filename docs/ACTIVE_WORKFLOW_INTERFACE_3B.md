@@ -55,6 +55,10 @@ direction. Endpoint/model disclosures, speech endpoint inputs and the website UR
 retain LTR direction. Dictionary dialogs use the frozen interface direction. Rendering remains WPF,
 Segoe UI, themed spacing and existing sizing/keyboard behavior. No physical screen coordinates,
 capture bounds, insertion target, graph IDs or data/storage/binary/IPC identifiers are translated.
+Recommended setup also uses the existing WPF background/text/button resources instead of fixed
+system-white/default controls; its URL disclosure remains LTR inside Arabic onboarding. Its owned
+fixture verifies that constructing/opening the view starts no transfer and preserves literal model
+and endpoint values.
 
 ## Executed checks and remaining scope
 

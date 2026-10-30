@@ -15,7 +15,7 @@ internal sealed class RecommendedSetupView : UserControl
 {
     private readonly RecommendedSetupController _owner;
     private readonly Func<AppSettings> _settings;
-    private readonly TextBlock _completion = new(), _translation = new(), _explanation = new(), _endpoint = new(), _size = new();
+    private readonly TextBlock _completion = new(), _translation = new(), _explanation = new(), _endpoint = new() { FlowDirection = FlowDirection.LeftToRight }, _size = new();
     private readonly Button _apply = new() { Content = InterfaceText.Get("Use recommended setup"), Padding = new Thickness(12, 6, 12, 6) };
     private readonly Button _cancel = new() { Content = InterfaceText.Get("Cancel downloads", "Localizable"), Padding = new Thickness(12, 6, 12, 6), Margin = new Thickness(8, 0, 0, 0) };
     internal event Action? ManualRequested;
@@ -24,19 +24,21 @@ internal sealed class RecommendedSetupView : UserControl
     internal RecommendedSetupView(RecommendedSetupController owner, Func<AppSettings> settings)
     {
         _owner = owner; _settings = settings;
-        Background = SystemColors.WindowBrush; Foreground = SystemColors.WindowTextBrush;
+        SetResourceReference(BackgroundProperty, "WindowBg"); SetResourceReference(ForegroundProperty, "TextPrimary");
+        _apply.SetResourceReference(StyleProperty, "AccentBtn"); _cancel.SetResourceReference(StyleProperty, "Btn");
         var body = new StackPanel { Margin = new Thickness(4, 0, 4, 0) };
         body.Children.Add(new TextBlock { Text = InterfaceText.Get("Recommended setup"), FontSize = 20, FontWeight = FontWeights.SemiBold });
-        body.Children.Add(new TextBlock { Text = InterfaceText.Get("Set up local autocomplete, sentence translation and explanations together. Existing models, languages and shortcuts are kept.", "Localizable"), TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 12), Foreground = SystemColors.GrayTextBrush });
+        body.Children.Add(Secondary(new TextBlock { Text = InterfaceText.Get("Set up local autocomplete, sentence translation and explanations together. Existing models, languages and shortcuts are kept.", "Localizable"), TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 12) }));
         AddRow(body, "Autocomplete", _completion); AddRow(body, "Translation", _translation); AddRow(body, "AI explanation", _explanation);
-        AddRow(body, "Read aloud", new TextBlock { Text = InterfaceText.Get("Open TTS settings to configure and test speech.", "Learning"), Foreground = SystemColors.GrayTextBrush });
-        body.Children.Add(new TextBlock { Text = InterfaceText.Get("Models download only when you choose setup. Translation and expression assistance use their own task settings.", "Localizable"), TextWrapping = TextWrapping.Wrap, FontSize = 12, Foreground = SystemColors.GrayTextBrush, Margin = new Thickness(0, 8, 0, 4) });
-        _endpoint.TextWrapping = TextWrapping.Wrap; _endpoint.Foreground = SystemColors.GrayTextBrush; _endpoint.Margin = new Thickness(0, 4, 0, 8); body.Children.Add(_endpoint);
+        AddRow(body, "Read aloud", Secondary(new TextBlock { Text = InterfaceText.Get("Open TTS settings to configure and test speech.", "Learning") }));
+        body.Children.Add(Secondary(new TextBlock { Text = InterfaceText.Get("Models download only when you choose setup. Translation and expression assistance use their own task settings.", "Localizable"), TextWrapping = TextWrapping.Wrap, FontSize = 12, Margin = new Thickness(0, 8, 0, 4) }));
+        _endpoint.TextWrapping = TextWrapping.Wrap; _endpoint.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondary"); _endpoint.Margin = new Thickness(0, 4, 0, 8); body.Children.Add(_endpoint);
         _size.TextWrapping = TextWrapping.Wrap; _size.Margin = new Thickness(0, 2, 0, 4); body.Children.Add(_size);
         var actions = new WrapPanel { Margin = new Thickness(0, 8, 0, 0) };
         _apply.Click += (_, _) => { if (!owner.NeedsApplication) owner.Retry(); else { owner.Apply(); Applied?.Invoke(); } };
         _cancel.Click += (_, _) => owner.Cancel();
         var manual = new Button { Content = InterfaceText.Get("Configure manually"), Padding = new Thickness(12, 6, 12, 6), Margin = new Thickness(8, 0, 0, 0) };
+        manual.SetResourceReference(StyleProperty, "Btn");
         manual.Click += (_, _) => { owner.UseManualConfiguration(); ManualRequested?.Invoke(); };
         actions.Children.Add(_apply); actions.Children.Add(_cancel); actions.Children.Add(manual); body.Children.Add(actions);
         Content = new ScrollViewer { Content = body, VerticalScrollBarVisibility = ScrollBarVisibility.Auto, HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled };
@@ -44,6 +46,8 @@ internal sealed class RecommendedSetupView : UserControl
         Unloaded += (_, _) => owner.Changed -= Refresh;
         Refresh();
     }
+    private static TextBlock Secondary(TextBlock text)
+    { text.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondary"); return text; }
     private static void AddRow(Panel body, string title, TextBlock detail)
     {
         var row = new StackPanel { Margin = new Thickness(0, 4, 0, 5) };

@@ -64,6 +64,15 @@ refresh during the thousand-delta burst, and then verifies the latest text after
 refresh and UI. This changes no production logic. At the isolated PR base, Core passed 5,046/5,046
 and all 17 streaming cases passed five consecutive runs; the final revised head still requires CI.
 
+With Core green remotely, the Windows adapter suite exposed a pre-existing 400 ms spin-wait race
+in queued UIA registration revocation. That test now uses a dedicated caller and an explicit
+queue-admission barrier; the real 500 ms production timeout is unchanged. A null-by-default
+internal test observation point orders this regression without querying a user field. The same
+Inference filter used by CI passed 732/732, followed by five passes of that exact case. Windows CI
+now runs all four test suites sequentially after a successful build even if an earlier suite fails,
+retaining the overall failure, original commands/filters and all four required jobs. This collects
+all diagnostics in one run rather than hiding later suites behind the first failure.
+
 Tests use synthetic text, fake HTTP/keys/runtime, owned files/databases and isolated native components.
 No user notebook/editor/clipboard, real provider query, model download or audio-device playback is used.
 No installer, release, downloadable package or CI build artifact is produced.

@@ -14,20 +14,30 @@ public sealed class UiaTextEditEvidenceTests(ITestOutputHelper output)
         if (!OperatingSystem.IsWindowsVersionAtLeast(8, 1)) return;
         using var owner = new UiaTextEditEvidence(() => { });
         using var release = new ManualResetEventSlim();
+        using var callerRelease = new ManualResetEventSlim();
+        var queued = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        owner.RetainedRegistrationQueuedForTest = () =>
+        {
+            queued.TrySetResult();
+            Assert.True(callerRelease.Wait(TimeSpan.FromSeconds(10)));
+        };
         bool allowed = true;
         int checks = 0;
         Assert.False(owner.Execute(() => release.Wait()));
         try
         {
-            var register = Task.Run(() => owner.RegisterRetainedHost(123, "test-only", 1, 2, () => { },
-                CancellationToken.None, () => { Interlocked.Increment(ref checks); return Volatile.Read(ref allowed); }));
-            Assert.True(SpinWait.SpinUntil(() => owner.RetainedRegistrationPendingForTest, TimeSpan.FromMilliseconds(400)));
+            var register = Task.Factory.StartNew(() => owner.RegisterRetainedHost(123, "test-only", 1, 2, () => { },
+                CancellationToken.None, () => { Interlocked.Increment(ref checks); return Volatile.Read(ref allowed); }),
+                CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+            await queued.Task.WaitAsync(TimeSpan.FromSeconds(5));
+            Assert.True(owner.RetainedRegistrationPendingForTest);
             Volatile.Write(ref allowed, false);
+            callerRelease.Set();
             release.Set();
             Assert.Null(await register.WaitAsync(TimeSpan.FromSeconds(5)));
             Assert.True(Volatile.Read(ref checks) > 0);
         }
-        finally { release.Set(); }
+        finally { callerRelease.Set(); release.Set(); }
     }
 
     [Fact]

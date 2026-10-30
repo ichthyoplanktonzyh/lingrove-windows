@@ -178,6 +178,7 @@ internal sealed unsafe partial class UiaTextEditEvidence : ICompositionEvidenceO
                 completion.TrySetResult(result);
             });
             queued = true;
+            RetainedRegistrationQueuedForTest?.Invoke();
             if (completion.Task.Wait(TimeSpan.FromMilliseconds(500), ct))
             {
                 long? result = completion.Task.Result;
@@ -461,6 +462,9 @@ internal sealed unsafe partial class UiaTextEditEvidence : ICompositionEvidenceO
 
     internal Task<UiaBootstrapResult> BootstrapForTest => _bootstrap.Task;
     internal bool RetainedRegistrationPendingForTest => Volatile.Read(ref _retainedPending) != 0;
+    // Lets the revocation regression order its queued request without relying on ThreadPool
+    // scheduling inside the production 500 ms wait. Unset in application composition.
+    internal Action? RetainedRegistrationQueuedForTest { get; set; }
 
     long? IExpressionRetainedEvidence.Register(int pid, string field, nint host, nint panel, Action changed, Func<bool> allowed, CancellationToken ct) =>
         RegisterRetainedHost(pid, field, host, panel, changed, ct, allowed);

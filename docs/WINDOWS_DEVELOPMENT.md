@@ -62,6 +62,11 @@ Set-Location .\lingrove-windows
 
 ## 第一轮编译与启动
 
+需要完整的本地语音 helper 时，使用新的[可运行开发版构建步骤](WINDOWS_DEV_BUILD_3B.md)。
+`scripts/build-windows-dev.ps1 -IncludeLocalSpeech` 会显式构建固定依赖、执行无模型原生检查，
+再将 helper 与原始许可放入开发目录；可以用 `-NativeBuildRoot` 把缓存放在空间充足的盘。
+普通 .NET 构建仍不会隐式下载或编译这个独立依赖，也不会自动获取模型或启动应用。
+
 ```powershell
 dotnet --version
 dotnet restore Cotabby.sln

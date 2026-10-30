@@ -1,5 +1,9 @@
 # Feature Parity and Evidence
 
+The [Windows development build](WINDOWS_DEV_BUILD_3B.md) adds explicit source preparation,
+model-free checking and app-local embedding for the independent CPU speech helper. It prepares
+an unpackaged development directory without changing native/model/physical acceptance gates.
+
 The [auxiliary interface pass](AUXILIARY_INTERFACE_COPY_3B.md) connects further onboarding,
 expression, review, semantic and export chrome and coherent model-window theming. Its resource,
 component/render evidence and remaining diagnostic/native scope stay explicit.

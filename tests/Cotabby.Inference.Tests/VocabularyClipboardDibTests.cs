@@ -5,6 +5,43 @@ namespace Cotabby.Inference.Tests;
 
 public sealed class VocabularyClipboardDibTests
 {
+    [Fact]
+    public void EmbeddedProfileIsBoundedDetachedAndCannotOverlapPixels()
+    {
+        byte[] source = VocabularyDibFixture.Image(124); byte[] dib = [.. source, .. new byte[8], .. Enumerable.Repeat((byte)7, 128)];
+        VocabularyDibFixture.U32(dib, 56, 0x4D424544); VocabularyDibFixture.U32(dib, 112, (uint)(source.Length + 8)); VocabularyDibFixture.U32(dib, 116, 128);
+        byte[] bmp = VocabularyClipboardDib.Wrap(dib, true); Assert.Equal((uint)source.Length, U32(bmp, 126));
+        Assert.Equal(Enumerable.Repeat((byte)7, 128), VocabularyClipboardDib.EmbeddedProfile(bmp));
+        VocabularyDibFixture.U32(dib, 112, (uint)(source.Length - 1)); Assert.Throws<InvalidDataException>(() => VocabularyClipboardDib.Wrap(dib, true));
+        VocabularyDibFixture.U32(dib, 112, uint.MaxValue); Assert.Throws<InvalidDataException>(() => VocabularyClipboardDib.Wrap(dib, true));
+    }
+    private static byte[] Rle(int bits, byte[] commands)
+    {
+        byte[] dib = new byte[40 + 16 * 4 + commands.Length]; VocabularyDibFixture.U32(dib, 0, 40);
+        VocabularyDibFixture.I32(dib, 4, 3); VocabularyDibFixture.I32(dib, 8, 2);
+        dib[12] = 1; dib[14] = (byte)bits; VocabularyDibFixture.U32(dib, 16, bits == 8 ? 1u : 2u);
+        VocabularyDibFixture.U32(dib, 20, (uint)commands.Length); VocabularyDibFixture.U32(dib, 32, 16);
+        commands.CopyTo(dib, 104); return dib;
+    }
+    [Theory]
+    [InlineData(4)]
+    [InlineData(8)]
+    public void RleCommandsAreBoundedAndPreserved(int bits)
+    {
+        byte[] commands = bits == 4 ? [3, 0x12, 0, 0, 0, 3, 0x12, 0x30, 0, 1] : [3, 1, 0, 0, 0, 3, 1, 2, 3, 0, 0, 1];
+        byte[] dib = Rle(bits, commands), bmp = VocabularyClipboardDib.Wrap(dib);
+        Assert.Equal(commands, bmp[118..]); Assert.True(VocabularyClipboardDib.HasProvenSrgbBitmap(bmp));
+        Assert.Throws<InvalidDataException>(() => VocabularyClipboardDib.Wrap(Rle(bits, [4, 1, 0, 1])));
+        Assert.Throws<InvalidDataException>(() => VocabularyClipboardDib.Wrap(Rle(bits, [0, 2, 4, 0, 0, 1])));
+        Assert.Throws<InvalidDataException>(() => VocabularyClipboardDib.Wrap(Rle(bits, [0, 3, 1])));
+        Assert.Throws<InvalidDataException>(() => VocabularyClipboardDib.Wrap(Rle(bits, [1, 1])));
+        byte[] badIndex = Rle(bits, bits == 8 ? [1, 16, 0, 1] : [1, 0xF0, 0, 1]);
+        VocabularyDibFixture.U32(badIndex, 32, 2);
+        // Shrink the palette to match biClrUsed, so the error is the index itself.
+        byte[] compact = [.. badIndex[..48], .. badIndex[104..]];
+        Assert.Throws<InvalidDataException>(() => VocabularyClipboardDib.Wrap(compact));
+        VocabularyDibFixture.I32(dib, 8, -2); Assert.Throws<InvalidDataException>(() => VocabularyClipboardDib.Wrap(dib));
+    }
     [Theory]
     [InlineData(40, false)]
     [InlineData(40, true)]

@@ -51,6 +51,7 @@ public partial class App : Application
         var settingsStore = new SettingsStore();
         var settings = settingsStore.Load();
         InterfaceText.Initialize(settings.InterfaceLanguage);
+        settings.InterfaceLocaleAtLaunch = InterfaceText.Locale;
         InterfaceText.RequestRestart = () => RequestShutdownAsync(restart: true);
 
         // Realizing the windows now makes the first suggestion and the first popup instant.
@@ -118,7 +119,14 @@ public partial class App : Application
                 finally
                 {
                     try { _tray?.Dispose(); _tray = null; }
-                    finally { if (_host is not null) await _host.DisposeAsync(); }
+                    finally
+                    {
+                        if (_host is not null)
+                        {
+                            try { await WelcomeWindow.RetireForAsync(_host); }
+                            finally { await _host.DisposeAsync(); }
+                        }
+                    }
                 }
                 drained = true;
             }

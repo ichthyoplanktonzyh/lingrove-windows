@@ -22,6 +22,13 @@ internal static class GeneralPane
             r.Toggle("Pause on Battery Saver", "Pause suggestions while battery saver is on to reduce battery use.",
                 s => s.PauseOnBatterySaver, (s, v) => s.PauseOnBatterySaver = v)
                 .Tagged("low power energy automatic auto disable")),
+        new SettingsCard("Suggestions",
+            r.Toggle("Predict Ahead While Typing", "Keep on-device predictions ready as you type and show matching suggestions when you pause. This may use more power.",
+                s => s.PredictAheadWhileTyping, (s, v) => s.PredictAheadWhileTyping = v)
+                .Tagged("prediction local typing latency"),
+            r.Toggle("Show Following Words", "Show the predicted phrase. Turn off to reveal one word at a time.",
+                s => s.ShowFollowingWords, (s, v) => s.ShowFollowingWords = v)
+                .Tagged("phrase word preview")),
         new SettingsCard("System Tray",
             r.Toggle("Show Word Count in Tray", "Show a running count of words you've accepted in the tray menu.",
                 s => s.ShowTrayWordCount, (s, v) => s.ShowTrayWordCount = v)

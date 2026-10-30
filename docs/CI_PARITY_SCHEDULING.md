@@ -31,3 +31,9 @@ retains the separate frozen vocabulary/latest CLI probes, Windows tests and nati
 build. It downloads no model, creates no installer/package/release and uploads no artifact.
 The source-job throughput change requires an actual successful macOS run before acceptance;
 no measured speedup is claimed from the Windows scheduler tests.
+
+Both final-head CI runs subsequently passed all four jobs. The sequential #140 macOS job took
+2,650s (44m10s), and #141 took 1,538s (25m38s), with its complete 68-verifier parallel step taking
+1,222s (20m22s). This pair saved 18m32s of job time; hosted-runner variation still applies and
+these two observations are not a guaranteed duration for later runs. The verifier bodies,
+commands, assertions and source pins were identical in that comparison.

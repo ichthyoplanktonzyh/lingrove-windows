@@ -10,6 +10,17 @@ namespace Cotabby.Inference.Tests;
 /// </summary>
 public sealed class VocabularyClipboardReaderTests
 {
+    [Fact]
+    public void CompressedDibIsDetachedBeforeWrapping()
+    {
+        byte[] commands = [3, 1, 0, 0, 3, 2, 0, 0, 0, 1]; byte[] dib = new byte[104 + commands.Length];
+        VocabularyDibFixture.U32(dib, 0, 40); VocabularyDibFixture.I32(dib, 4, 3); VocabularyDibFixture.I32(dib, 8, 2);
+        dib[12] = 1; dib[14] = 8; VocabularyDibFixture.U32(dib, 16, 1); VocabularyDibFixture.U32(dib, 20, (uint)commands.Length); VocabularyDibFixture.U32(dib, 32, 16);
+        commands.CopyTo(dib, 104);
+        using var native = new Clipboard(); var reader = new VocabularyClipboardImageReader(native); native.Add("DIB", dib);
+        native.AfterClose = () => native.Zero("DIB"); byte[] result = reader.Read(7)!;
+        Assert.Equal(commands, result[118..]); Assert.Equal(1, native.Closes); Assert.Equal(1, native.Unlocks);
+    }
     [Theory]
     [InlineData("TIFF")]
     [InlineData("DIBV5")]

@@ -48,6 +48,21 @@ public sealed class RecommendedSetupTests(WpfDispatcher dispatcher)
         host.PersistSettings(); Assert.Equal(1, host.AutomaticLoads); // Ordinary persistence retains its original behavior.
     });
     [Fact]
+    public Task PowerAndExplanationEndpointAreNotOverwrittenOrDownloaded() => dispatcher.RunAsync(async () =>
+    {
+        var host = new Host(); host.Settings.Engine = EngineKind.Endpoint;
+        host.Settings.SetLearningPowerSwitching(LearningModelRole.Translation, true);
+        host.Settings.LearningTranslationPluggedInProfile = LearningPowerProfile.Endpoint("chosen");
+        host.Settings.LearningExplanationBackend = LearningModelBackend.Endpoint;
+        host.Settings.LearningExplanationEndpointModel = "explainer";
+        await using var setup = new RecommendedSetupController(host, 8UL * 1_073_741_824);
+        setup.Apply(); Assert.Empty(host.Requests);
+        Assert.Empty(host.Settings.LearningLocalModel); Assert.Empty(host.Settings.LearningExplanationLocalModel);
+        Assert.Equal("chosen", host.Settings.LearningTranslationActiveSelection.EndpointModel);
+        Assert.Equal("explainer", host.Settings.LearningExplanationSnapshot().EndpointModel);
+        await setup.CurrentWork;
+    });
+    [Fact]
     public Task CardRendersWithoutStartingWorkAndExposesExplicitActions() => dispatcher.RunAsync(async () =>
     {
         var host = new Host(); await using var setup = new RecommendedSetupController(host, 8UL * 1_073_741_824);

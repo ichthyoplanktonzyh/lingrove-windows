@@ -7,14 +7,14 @@ namespace Cotabby.Win32.Vocabulary;
 /// <summary>
 /// The transfer host wraps a detached packed Windows DIB in a bounded BMP file envelope for the
 /// existing WIC preparation boundary. This owns no clipboard handle, decoded pixels, file IO or decoder.
-/// Header/palette/mask/stride admission happens before allocation; linked/embedded profiles and
-/// compressed/unknown layouts fail closed rather than letting a decoder follow external paths.
+/// Header/palette/mask/stride admission happens before allocation; linked profiles and
+/// unsupported/unknown layouts fail closed rather than letting a decoder follow external paths.
 /// </summary>
 internal static class VocabularyClipboardDib
 {
     // One parsed layout serves wrapping and the decoder's narrow color-evidence check. Keeping
     // them together prevents a looser second parser from admitting a profile or different rows.
-    private readonly record struct Layout(uint Header, long Offset, long Pixels, int Extension, int Length);
+    private readonly record struct Layout(uint Header, long Offset, long Pixels, int Extension, int Length, int ProfileOffset, int ProfileSize);
     private static Layout ReadLayout(ReadOnlySpan<byte> dib, bool requiresV5)
     {
         if (dib.Length < 40 || dib.Length > VocabularyClipboardImageReader.MaximumBytes) throw Invalid();
@@ -25,13 +25,16 @@ internal static class VocabularyClipboardDib
         int bits = BinaryPrimitives.ReadUInt16LittleEndian(dib[14..]); uint compression = U32(dib, 16);
         if (width is <= 0 or > 30000 || height is <= 0 or > 30000 || width * height > 100000000
             || BinaryPrimitives.ReadUInt16LittleEndian(dib[12..]) != 1
-            || bits is not (1 or 4 or 8 or 16 or 24 or 32) || compression is not (0 or 3)
+            || bits is not (1 or 4 or 8 or 16 or 24 or 32) || compression is not (0 or 1 or 2 or 3)
+            || (compression == 1 && bits != 8) || (compression == 2 && bits != 4)
+            || (compression is 1 or 2 && BinaryPrimitives.ReadInt32LittleEndian(dib[8..]) < 0)
             || (compression == 3 && bits is not (16 or 32))) throw Invalid();
 
-        // V4/V5 profile-linked color spaces can contain a filename, including a network path.
-        // Only inline calibrated/sRGB/Windows RGB values are admitted, with no V5 profile area.
-        if (header >= 108 && U32(dib, 56) is not (0 or 0x73524742 or 0x57696E20)) throw Invalid();
-        if (header == 124 && (U32(dib, 112) != 0 || U32(dib, 116) != 0)) throw Invalid();
+        // Linked profiles can name a network path. Only a V5 inline embedded profile may
+        // carry profile bytes; all other color spaces must have zero profile fields.
+        bool embedded = header == 124 && U32(dib, 56) == 0x4D424544;
+        if (header >= 108 && !embedded && U32(dib, 56) is not (0 or 0x73524742 or 0x57696E20)) throw Invalid();
+        if (header == 124 && !embedded && (U32(dib, 112) != 0 || U32(dib, 116) != 0)) throw Invalid();
 
         long extraMasks = compression == 3 && header == 40 ? 12 : 0;
         if (header + extraMasks > dib.Length) throw Invalid();
@@ -54,14 +57,57 @@ internal static class VocabularyClipboardDib
         if (bits <= 8 && colors == 0) colors = 1u << bits;
         if (bits < 32 && colors > (1u << bits)) throw Invalid();
         long offset = header + extraMasks + 4L * colors;
-        long stride = ((width * (long)bits + 31) / 32) * 4, pixels = stride * height;
-        if (offset > dib.Length || pixels > dib.Length - offset) throw Invalid();
         uint declaredPixels = U32(dib, 20);
-        if (declaredPixels != 0 && (declaredPixels < pixels || declaredPixels > dib.Length - offset)) throw Invalid();
+        if (offset > dib.Length) throw Invalid();
+        long stride = ((width * (long)bits + 31) / 32) * 4;
+        long pixels = compression is 1 or 2 ? declaredPixels : stride * height;
+        if (pixels > dib.Length - offset || (compression is 1 or 2 && pixels == 0)) throw Invalid();
+        if (compression is not (1 or 2) && declaredPixels != 0 && (declaredPixels < pixels || declaredPixels > dib.Length - offset)) throw Invalid();
+        if (compression is 1 or 2) ValidateRle(dib.Slice((int)offset, (int)pixels), width, (int)height, bits, colors);
         int extension = header == 108 && alpha != 0 ? 16 : 0;
-        long length = 14 + extension + offset + pixels;
+        int profileOffset = 0, profileSize = 0;
+        if (embedded)
+        {
+            uint start = U32(dib, 112), size = U32(dib, 116);
+            if (start < offset + pixels || size < 128 || (long)start + size > dib.Length) throw Invalid();
+            profileOffset = (int)start; profileSize = (int)size;
+        }
+        long length = 14 + extension + offset + pixels + profileSize;
         if (length > VocabularyClipboardImageReader.MaximumBytes) throw Invalid();
-        return new(header, offset, pixels, extension, (int)length);
+        return new(header, offset, pixels, extension, (int)length, profileOffset, profileSize);
+    }
+    // Validate every command before WIC sees the compressed stream. Never allow a run or
+    // delta outside the bitmap or an index outside the admitted palette.
+    private static void ValidateRle(ReadOnlySpan<byte> data, int width, int height, int bits, uint colors)
+    {
+        int position = 0, x = 0, y = 0;
+        while (position + 2 <= data.Length)
+        {
+            int count = data[position++], value = data[position++];
+            if (count != 0)
+            {
+                if (y >= height || count > width - x || (bits == 8 ? value >= colors : (value >> 4) >= colors || (count > 1 && (value & 15) >= colors))) throw Invalid();
+                x += count; continue;
+            }
+            if (value == 0) { if (y >= height) throw Invalid(); x = 0; y++; continue; }
+            if (value == 1) { if (position != data.Length) throw Invalid(); return; }
+            if (value == 2)
+            {
+                if (position + 2 > data.Length || y >= height) throw Invalid();
+                x += data[position++]; y += data[position++];
+                if (x > width || y >= height) throw Invalid();
+                continue;
+            }
+            int bytes = bits == 8 ? value : (value + 1) / 2, padded = (bytes + 1) & ~1;
+            if (y >= height || value > width - x || position + padded > data.Length) throw Invalid();
+            for (int i = 0; i < value; i++)
+            {
+                int index = bits == 8 ? data[position + i] : (i % 2 == 0 ? data[position + i / 2] >> 4 : data[position + i / 2] & 15);
+                if (index >= colors) throw Invalid();
+            }
+            position += padded; x += value;
+        }
+        throw Invalid();
     }
     internal static byte[] Wrap(ReadOnlySpan<byte> dib, bool requiresV5 = false)
     {
@@ -72,6 +118,12 @@ internal static class VocabularyClipboardDib
         // Discard unused HGLOBAL allocation tail; biSizeImage describes only admitted pixel rows.
         dib[..(int)layout.Header].CopyTo(bmp.AsSpan(14));
         dib[(int)layout.Header..(int)(layout.Offset + layout.Pixels)].CopyTo(bmp.AsSpan(14 + (int)layout.Header + layout.Extension));
+        if (layout.ProfileSize != 0)
+        {
+            int destination = checked(14 + (int)(layout.Offset + layout.Pixels));
+            dib.Slice(layout.ProfileOffset, layout.ProfileSize).CopyTo(bmp.AsSpan(destination));
+            BinaryPrimitives.WriteUInt32LittleEndian(bmp.AsSpan(126), (uint)(destination - 14));
+        }
         if (layout.Extension != 0)
         {
             BinaryPrimitives.WriteUInt32LittleEndian(bmp.AsSpan(14), 124);
@@ -88,6 +140,18 @@ internal static class VocabularyClipboardDib
             BinaryPrimitives.WriteUInt32LittleEndian(bmp.AsSpan(62), 0x000000FF);
         }
         BinaryPrimitives.WriteUInt32LittleEndian(bmp.AsSpan(34), (uint)layout.Pixels); return bmp;
+    }
+    internal static byte[]? EmbeddedProfile(ReadOnlySpan<byte> bmp)
+    {
+        if (bmp.Length < 138 || bmp.Length > VocabularyClipboardImageReader.MaximumBytes || bmp[0] != 'B' || bmp[1] != 'M'
+            || U32(bmp, 2) != bmp.Length || U32(bmp, 6) != 0) return null;
+        try
+        {
+            var layout = ReadLayout(bmp[14..], false);
+            if (layout.ProfileSize == 0 || layout.Length != bmp.Length || U32(bmp, 10) != 14 + layout.Offset) return null;
+            return bmp.Slice(14 + layout.ProfileOffset, layout.ProfileSize).ToArray();
+        }
+        catch (InvalidDataException) { return null; }
     }
     /// <summary>
     /// Independent positive evidence for WIC BMP codecs that cannot enumerate color contexts.

@@ -8,6 +8,21 @@ The NuGet packages this port links against (LLamaSharp and its llama.cpp backend
 H.NotifyIcon, Microsoft.Extensions) are credited in the README and in Settings, About.
 The gemoji license is bundled next to the emoji data in `src/Cotabby.Core/Resources/Emoji/`.
 
+## Microsoft WebView2
+
+The rich local dictionary article uses Microsoft.Web.WebView2 1.0.4258.31, copyright Microsoft
+Corporation. The NuGet package includes its license and third-party notice; see the
+[package page](https://www.nuget.org/packages/Microsoft.Web.WebView2/1.0.4258.31).
+
+## MDictReader
+
+The MDict parser adapts `Packages/MDictReader` from Lingrove macOS commit
+`3b53402f2cbc196b0398d133177fd80006d165b2`, itself based on Easydict revision
+`b4eced749d492d283f451f88e5504413e4533f44`. Copyright © 2026 izual and Easydict
+contributors; the parser remains GPL-3.0. The original [notice](resources/ThirdParty/MDictReader/NOTICE.md)
+and [license](resources/ThirdParty/MDictReader/LICENSE) are retained. Dictionary content has
+its own license and is not included here.
+
 ## Learning expression data
 
 `resources/LearningLexicon/learning-expressions.json` is the unchanged Mac Lingrove expression

@@ -9,8 +9,9 @@ public sealed class SuggestionWorkController : IAsyncDisposable
     private readonly object _gate = new();
 
     private CancellationTokenSource? _inFlight;
-    private Task? _pendingTask;
+    private readonly HashSet<Task> _tasks = [];
     private bool _disposed;
+    private Task? _disposal;
 
     public SuggestionWorkController(TimeSpan debounce) => Debounce = debounce;
 
@@ -24,23 +25,28 @@ public sealed class SuggestionWorkController : IAsyncDisposable
     /// </summary>
     public Task Submit(Func<CancellationToken, Task> work)
     {
-        if (_disposed) return Task.CompletedTask;
-
         CancellationTokenSource? prior;
         CancellationTokenSource cts;
+        Task task;
+        var start = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         lock (_gate)
         {
+            if (_disposed) return Task.CompletedTask;
             prior = _inFlight;
             cts = new CancellationTokenSource();
             _inFlight = cts;
+            // Register the task before shutdown can take its drain snapshot.
+            task = Task.Run(async () => { await start.Task.ConfigureAwait(false); await RunAsync(work, cts).ConfigureAwait(false); });
+            _tasks.Add(task);
         }
 
-        Cancel(prior);
+        try { Cancel(prior); }
+        finally { start.TrySetResult(); }
 
         // The work always starts on the thread pool. With no debounce it would otherwise run on
         // the caller, which is the UI thread.
-        var task = Task.Run(() => RunAsync(work, cts));
-        lock (_gate) { _pendingTask = task; }
+        _ = task.ContinueWith(completed => { lock (_gate) _tasks.Remove(completed); }, CancellationToken.None,
+            TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
         return task;
     }
 
@@ -89,17 +95,22 @@ public sealed class SuggestionWorkController : IAsyncDisposable
         }
     }
 
-    public async ValueTask DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        if (_disposed) return;
-        _disposed = true;
-        Cancel();
-        Task? task;
-        lock (_gate) { task = _pendingTask; }
-        if (task is not null)
+        lock (_gate)
         {
-            try { await task.ConfigureAwait(false); }
-            catch { /* already logged at submit site */ }
+            if (_disposal is not null) return new(_disposal);
+            _disposed = true;
+            var prior = _inFlight; _inFlight = null;
+            var tasks = _tasks.ToArray();
+            _disposal = Task.Run(() => DrainAsync(prior, tasks));
+            return new(_disposal);
         }
+    }
+    private static async Task DrainAsync(CancellationTokenSource? prior, Task[] tasks)
+    {
+        try { Cancel(prior); } catch { /* Still join work if a foreign cancellation callback fails. */ }
+        try { await Task.WhenAll(tasks).ConfigureAwait(false); }
+        catch { /* already logged at submit site */ }
     }
 }

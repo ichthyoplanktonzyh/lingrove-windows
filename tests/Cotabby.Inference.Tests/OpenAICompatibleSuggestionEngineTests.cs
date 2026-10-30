@@ -8,6 +8,22 @@ namespace Cotabby.Inference.Tests;
 
 public class OpenAICompatibleSuggestionEngineTests : IDisposable
 {
+    [Fact]
+    public async Task StreamingReportsNormalizedCumulativeTextBeforeFinal()
+    {
+        _server.Respond(_ => StubHttpMessageHandler.Sse("data: {\"choices\":[{\"text\":\" wor\"}]}\n\ndata: {\"choices\":[{\"text\":\"ld\"}]}\n\ndata: [DONE]\n\n"));
+        var partials = new List<string>(); var engine = MakeEngine();
+        var final = await engine.GenerateAsync(Request, partials.Add, CancellationToken.None);
+        Assert.NotEmpty(partials); Assert.Equal(final, partials[^1]); Assert.Equal(" world", final);
+    }
+    [Fact]
+    public async Task StreamingAcceptsCrDelimitersAndRejectsUnboundedEventLines()
+    {
+        _server.Respond(_ => StubHttpMessageHandler.Sse("data: {\"choices\":[{\"text\":\" world\"}]}\r\rdata: [DONE]\r\r"));
+        Assert.Equal(" world", await Collect(MakeEngine()));
+        _server.Respond(_ => StubHttpMessageHandler.Sse("data: " + new string('x', 262_145)));
+        await Assert.ThrowsAsync<OpenAICompatibleClientException>(() => Collect(MakeEngine()));
+    }
     private readonly StubHttpMessageHandler _server = new();
     private readonly OpenAICompatibleApiClient _client;
 

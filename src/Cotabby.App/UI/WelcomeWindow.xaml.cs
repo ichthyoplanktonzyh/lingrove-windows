@@ -2,7 +2,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
 using Cotabby.App.Hosting;
 using Cotabby.App.Localization;
 using Cotabby.App.Settings;
@@ -21,6 +20,7 @@ namespace Cotabby.App.UI;
 /// </summary>
 public partial class WelcomeWindow : Window
 {
+    private static readonly HashSet<WelcomeWindow> OpenWindows = [];
     private readonly AppHost _host;
     private readonly FrameworkElement[] _steps;
     private readonly (Border Card, Border Badge)[] _templates;
@@ -30,6 +30,9 @@ public partial class WelcomeWindow : Window
     private string _templateModelId;
     private bool _templateChosen, _recommendedRoute = true;
     private readonly bool _resumeFirstRun;
+    private readonly WelcomeReadinessView _readiness;
+    private readonly WelcomeDonePage StepDone;
+    private bool _retired, _retiring;
 
     // Background model preparation. The sequence number lets a run that was superseded,
     // because the user went back and picked another starting point, drop its late results.
@@ -47,6 +50,17 @@ public partial class WelcomeWindow : Window
     {
         _host = host; _resumeFirstRun = resumeFirstRun;
         InitializeComponent();
+        OpenWindows.Add(this);
+        StepDone = new WelcomeDonePage { Visibility = Visibility.Collapsed };
+        Grid.SetRowSpan(StepDone, 3); ((Panel)NormalFooter.Parent).Children.Add(StepDone);
+        StepDone.FinishRequested += Finish;
+        StepDone.BackRequested += () => ShowStep(_step - 1);
+        _readiness = new WelcomeReadinessView(host);
+        _readiness.CompletionFailed = id => _modelError is not null && _lastEnsureFor == id;
+        StepDone.ReadinessHost.Content = _readiness;
+        _readiness.IsVisibleChanged += (_, _) => _readiness.VisibilityChanged();
+        Activated += (_, _) => _readiness.Refresh();
+        Closing += OnRetiring;
         InterfaceText.ApplyDirection(this);
         InterfaceText.TranslateInitialTree(this);
         var showcase = new TabControl { Width = 360, Margin = new Thickness(0, 20, 0, 0) };
@@ -55,7 +69,7 @@ public partial class WelcomeWindow : Window
         { Text = "请随时告诉我项目的最新进展。\nPlease keep me posted on the project's progress.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(12) } });
         StepWelcome.Children.Add(showcase);
         _host.SettingsApplied += HostSettingsApplied;
-        Closed += (_, _) => { _host.SettingsApplied -= HostSettingsApplied; _statusGate.Invalidate(); _modelCts?.Cancel(); };
+        Closed += (_, _) => { OpenWindows.Remove(this); _host.SettingsApplied -= HostSettingsApplied; _statusGate.Invalidate(); _modelCts?.Cancel(); };
         WindowTheme.Follow(this);
 
         var permissions = new StackPanel { VerticalAlignment = VerticalAlignment.Center, Visibility = Visibility.Collapsed };
@@ -71,7 +85,6 @@ public partial class WelcomeWindow : Window
         _templates = [(QuickCard, QuickBadge), (EverydayCard, EverydayBadge), (PowerCard, PowerBadge)];
         BuildCapsules();
         BuildShortcutRows();
-        StartSpinner();
 
         // Seeding from the current settings makes a second run from the tray non-destructive.
         var settings = _host.Settings;
@@ -96,6 +109,25 @@ public partial class WelcomeWindow : Window
     }
 
     public static void ShowFor(AppHost host, bool resumeFirstRun = false) => new WelcomeWindow(host, resumeFirstRun).Show();
+
+    internal static async Task RetireForAsync(AppHost host)
+    {
+        var windows = OpenWindows.Where(window => ReferenceEquals(window._host, host)).ToArray();
+        foreach (var window in windows) { window.IsEnabled = false; window._retiring = true; }
+        await Task.WhenAll(windows.Select(window => window._readiness.RetireAsync()));
+        foreach (var window in windows) if (!window._retired) { window._retired = true; window.Close(); }
+    }
+
+    private async void OnRetiring(object? sender, System.ComponentModel.CancelEventArgs e)
+    {
+        if (_retired) return;
+        e.Cancel = true; IsEnabled = false;
+        if (_retiring) return;
+        _retiring = true;
+        await _readiness.RetireAsync();
+        if (_retired) return;
+        _retired = true; Close();
+    }
 
     // ---------- Step navigation ----------
 
@@ -134,6 +166,7 @@ public partial class WelcomeWindow : Window
         }
 
         var step = _steps[_step];
+        NormalFooter.Visibility = step == StepDone ? Visibility.Collapsed : Visibility.Visible;
         StepCaption.Text = $"Step {progressIndex} of 4";
         ContinueButton.Content =
             step == StepWelcome ? InterfaceText.Get("Get Started")
@@ -146,7 +179,7 @@ public partial class WelcomeWindow : Window
         if (step == StepTemplates) UpdateTemplateStatus();
         if (step == StepDone)
         {
-            DoneKeysText.Text = DoneKeysHint();
+            StepDone.Keys.Text = DoneKeysHint();
             UpdateModelStatusUi();
         }
     }
@@ -304,25 +337,7 @@ public partial class WelcomeWindow : Window
 
     private void UpdateModelStatusUi()
     {
-        bool ready = _modelReadyFor is not null;
-        bool busy = !ready && _modelError is null && _ensureBusy;
-        DoneSpinner.Visibility = busy ? Visibility.Visible : Visibility.Collapsed;
-        DoneCheck.Visibility = ready ? Visibility.Visible : Visibility.Collapsed;
-        DoneModelStatus.SetResourceReference(TextBlock.ForegroundProperty, ready ? "GreenBrush" : "TextSecondary");
-        DoneModelStatus.Text =
-            ready ? "Your model is ready"
-            : _modelError is not null ? "Model setup didn't finish. You can retry from Settings."
-            : !busy ? ""
-            : _modelPercent is int percent ? $"Downloading your model… {percent}%"
-            : "Preparing your model…";
-    }
-
-    private void StartSpinner()
-    {
-        // The spinner is mostly hidden. One endless animation is cheaper than
-        // starting and stopping it on every status change.
-        var spin = new DoubleAnimation(0, 360, TimeSpan.FromSeconds(1.1)) { RepeatBehavior = RepeatBehavior.Forever };
-        DoneSpinnerRotate.BeginAnimation(RotateTransform.AngleProperty, spin);
+        _readiness.Refresh();
     }
 
     // ---------- Keybinds ----------

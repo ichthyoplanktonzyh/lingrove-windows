@@ -106,7 +106,7 @@ public sealed class LlamaRuntimeCore : IDisposable
     /// word is healed, so the model may re-spell the typed fragment with a token that also carries
     /// its continuation. Returns raw text, empty when nothing admissible was produced.
     /// </summary>
-    public Task<string> GenerateAsync(string prompt, LlamaGenerationOptions options, CancellationToken ct)
+    public Task<string> GenerateAsync(string prompt, LlamaGenerationOptions options, CancellationToken ct, Action<string>? onPartialRawText = null)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
         var tokens = Array.ConvertAll(TokenizeText(prompt, addBos: Vocab.ShouldAddBOS), token => (int)token);
@@ -115,7 +115,7 @@ public sealed class LlamaRuntimeCore : IDisposable
             ? TokenHealingPlan.Unhealed(tokens)
             : new TokenHealingPlan(prompt, tokens, options.SingleLine, token => TokenPiece(token));
         var promptTokens = healing.PromptTokens.Select(token => (LLamaToken)token).ToArray();
-        return GenerateAsync(promptTokens, healing.ReplayBytes, options, ct);
+        return GenerateAsync(promptTokens, healing.ReplayBytes, options, ct, onPartialRawText);
     }
 
     /// <summary>
@@ -123,11 +123,11 @@ public sealed class LlamaRuntimeCore : IDisposable
     /// text, empty when nothing admissible was produced or the caller cancelled before the first token.
     /// </summary>
     public Task<string> GenerateAsync(
-        LLamaToken[] promptTokens, LlamaGenerationOptions options, CancellationToken ct) =>
-        GenerateAsync(promptTokens, [], options, ct);
+        LLamaToken[] promptTokens, LlamaGenerationOptions options, CancellationToken ct, Action<string>? onPartialRawText = null) =>
+        GenerateAsync(promptTokens, [], options, ct, onPartialRawText);
 
     private async Task<string> GenerateAsync(
-        LLamaToken[] promptTokens, byte[] healingPrefix, LlamaGenerationOptions options, CancellationToken ct)
+        LLamaToken[] promptTokens, byte[] healingPrefix, LlamaGenerationOptions options, CancellationToken ct, Action<string>? onPartialRawText)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
         await _gate.WaitAsync(ct).ConfigureAwait(false);
@@ -135,7 +135,7 @@ public sealed class LlamaRuntimeCore : IDisposable
         {
             // The model can be unloaded while this request waited for its turn.
             if (_disposed) return string.Empty;
-            return await Task.Run(() => Generate(promptTokens, healingPrefix, options, ct), CancellationToken.None)
+            return await Task.Run(() => Generate(promptTokens, healingPrefix, options, ct, onPartialRawText), CancellationToken.None)
                 .ConfigureAwait(false);
         }
         finally
@@ -145,7 +145,7 @@ public sealed class LlamaRuntimeCore : IDisposable
     }
 
     private string Generate(
-        LLamaToken[] promptTokens, byte[] healingPrefix, LlamaGenerationOptions options, CancellationToken ct)
+        LLamaToken[] promptTokens, byte[] healingPrefix, LlamaGenerationOptions options, CancellationToken ct, Action<string>? onPartialRawText)
     {
         var handle = _context.NativeHandle;
         var seq = (LLamaSeqId)0;
@@ -257,7 +257,7 @@ public sealed class LlamaRuntimeCore : IDisposable
 
             var piece = scratch.AsSpan(0, WritePiece(chosen, scratch));
             bool replayWasComplete = buffer.ReplayComplete;
-            buffer.Append(piece);
+            var partial = buffer.Append(piece);
             if (buffer.HasReplayMismatch)
             {
                 generatedText = string.Empty;
@@ -271,6 +271,8 @@ public sealed class LlamaRuntimeCore : IDisposable
                 continue;
             }
             generatedText = buffer.Text;
+            if (partial is not null && onPartialRawText is not null && !ct.IsCancellationRequested)
+                try { onPartialRawText(partial); } catch { /* Presentation cannot break decoding. */ }
             tokensGenerated++;
 
             if (DecodeStopPolicy.Verdict(

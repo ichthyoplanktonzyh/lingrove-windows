@@ -27,9 +27,10 @@ The native structure/message contracts come from Microsoft's [DROPFILES layout](
 [DragAcceptFiles](https://learn.microsoft.com/en-us/windows/win32/api/shellapi/nf-shellapi-dragacceptfiles)
 and [DragFinish](https://learn.microsoft.com/en-us/windows/win32/api/shellapi/nf-shellapi-dragfinish).
 The Shell documents an OLE compatibility path for real [`CF_HDROP` file locations](https://learn.microsoft.com/en-us/windows/win32/shell/clipboard).
-Virtual file contents use different provider protocols, so this does not claim full Mac
-`NSItemProvider` or arbitrary OLE drag parity. Pixel-only image drags, virtual files, ANSI drops,
-and elevated-host interoperability remain open. Encoded clipboard images now use the separate
+Virtual file contents use different provider protocols, so this path does not claim full Mac
+`NSItemProvider` or arbitrary OLE drag parity. The later [canonical media slice](VOCABULARY_CANONICAL_MEDIA_3B.md)
+adds a separate helper-owned surface for bounded virtual files and selected pixel representations;
+ANSI drops and elevated-host interoperability remain open. Encoded clipboard images use the separate
 [image paste adapter](VOCABULARY_IMAGE_PASTE.md), including the bounded [DIB subset](VOCABULARY_CLIPBOARD_DIB.md). No message filter is relaxed.
 
 Twenty-one Windows cases use actual HGLOBAL allocation, `SendMessage` and the compiled WPF HWND

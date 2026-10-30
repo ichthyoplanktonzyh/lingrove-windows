@@ -120,18 +120,21 @@ internal sealed class LearningSpeechSettings : INotifyPropertyChanged
         PlaybackInvalidated?.Invoke(); RateMultiplier = clamped; _current().SpeechRateValue = JsonSerializer.SerializeToElement(clamped); Persist(); Changed();
     }
     internal SpeechLocalConfiguration LocalConfiguration()
+        => ValidateLocalConfiguration(LocalModelPath, LocalProjectionPath, ReferenceAudioPath, _files);
+
+    internal static SpeechLocalConfiguration ValidateLocalConfiguration(string modelPath, string projectionPath, string referencePath, ISpeechAssetFiles files)
     {
-        if (LocalModelPath.Length == 0 || LocalProjectionPath.Length == 0) throw new SpeechException(SpeechFailure.MissingLocalAssets);
+        if (modelPath.Length == 0 || projectionPath.Length == 0) throw new SpeechException(SpeechFailure.MissingLocalAssets);
         SpeechAssetFile model, decoder;
-        try { model = _files.Inspect(LocalModelPath); decoder = _files.Inspect(LocalProjectionPath); }
+        try { model = files.Inspect(modelPath); decoder = files.Inspect(projectionPath); }
         catch (Exception error) when (error is ArgumentException or IOException or UnauthorizedAccessException or NotSupportedException) { throw new SpeechException(SpeechFailure.MissingLocalAssets); }
         if (SpeechModelPairingPolicy.IsKnownDecoder(model.Filename) || !Gguf(model) || !Gguf(decoder) || Same(model.Url.AbsoluteUri, decoder.Url.AbsoluteUri) || !model.Readable || !decoder.Readable)
             throw new SpeechException(SpeechFailure.MissingLocalAssets);
         if (SpeechModelPairingPolicy.IsKnownMismatch(model.Filename, decoder.Filename)) throw new SpeechException(SpeechFailure.MismatchedLocalAssets);
         SpeechAssetFile? reference = null;
-        if (ReferenceAudioPath.Length > 0)
+        if (referencePath.Length > 0)
         {
-            try { reference = _files.Inspect(ReferenceAudioPath); }
+            try { reference = files.Inspect(referencePath); }
             catch (Exception error) when (error is ArgumentException or IOException or UnauthorizedAccessException or NotSupportedException) { throw new SpeechException(SpeechFailure.InvalidReferenceAudio); }
             if (!(reference.Extension.Equals("wav", StringComparison.OrdinalIgnoreCase) || reference.Extension.Equals("mp3", StringComparison.OrdinalIgnoreCase)) || !reference.Readable || reference.Size is not (> 0 and <= 10 * 1_024 * 1_024))
                 throw new SpeechException(SpeechFailure.InvalidReferenceAudio);

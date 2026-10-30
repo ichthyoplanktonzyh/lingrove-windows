@@ -62,6 +62,7 @@
     <Compile Include="..\..\src\Cotabby.App\Review\CanonicalAnkiReviewSession.Images.cs" Link="Production\CanonicalAnkiReviewSession.Images.cs" />
     <Compile Include="..\..\src\Cotabby.App\Review\CanonicalAnkiReviewSession.Audio.cs" Link="Production\CanonicalAnkiReviewSession.Audio.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.cs" Link="Production\AppSettings.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.AutocompleteStreaming.cs" Link="Production\AppSettings.AutocompleteStreaming.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.ModelAssignments.cs" Link="Production\AppSettings.ModelAssignments.cs" />
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularySQLiteConnection.cs" Link="Production\VocabularySQLiteConnection.cs" />
     <Compile Include="..\..\src\Cotabby.Win32\Vocabulary\VocabularySQLiteDatabase.cs" Link="Production\VocabularySQLiteDatabase.cs" />
@@ -84,6 +85,8 @@
     <Compile Include="..\..\src\Cotabby.App\Vocabulary\VocabularyNotebookListPreferences.cs" Link="Production\VocabularyNotebookListPreferences.cs" />
     <Compile Include="..\..\src\Cotabby.App\Vocabulary\VocabularyGraphPresentation.cs" Link="Production\VocabularyGraphPresentation.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Explanation.cs" Link="Production\AppSettings.Explanation.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.ExplanationEndpoint.cs" Link="Production\AppSettings.ExplanationEndpoint.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.LearningPower.cs" Link="Production\AppSettings.LearningPower.cs" />
     <Compile Include="..\..\src\Cotabby.App\Learning\LearningExplanationController.cs" Link="Production\LearningExplanationController.cs" />
     <Compile Include="..\..\src\Cotabby.App\Learning\LearningTextCopyController.cs" Link="Production\LearningTextCopyController.cs" />
     <Compile Include="..\..\src\Cotabby.App\Learning\LearningSelectedCopyPolicy.cs" Link="Production\LearningSelectedCopyPolicy.cs" />

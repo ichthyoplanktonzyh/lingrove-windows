@@ -15,6 +15,7 @@ public sealed class ModelDownloader
 
     private readonly HttpClient _http;
     private readonly ILogger<ModelDownloader> _logger;
+    public ModelDownloadActivity Activity { get; } = new();
 
     public ModelDownloader(HttpClient http, ILogger<ModelDownloader> logger)
     {
@@ -40,6 +41,8 @@ public sealed class ModelDownloader
         using var fileLease = await ModelFileOperations.AcquireAsync(finalPath, ct).ConfigureAwait(false);
         if (IsGguf(finalPath)) return;
         if (model.IsCustom) throw new FileNotFoundException("The model file is no longer in the models folder.", finalPath);
+
+        using var activity = Activity.Begin(model.FileName);
 
         Directory.CreateDirectory(ModelCatalog.DefaultLocalDirectory());
         var partPath = finalPath + ".part";

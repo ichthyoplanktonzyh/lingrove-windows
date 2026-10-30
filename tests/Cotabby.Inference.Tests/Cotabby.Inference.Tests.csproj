@@ -30,6 +30,7 @@
     <!-- Exercise the real persisted settings without starting the WPF application or touching
          the user's settings directory. This file depends only on Core and Inference contracts. -->
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.cs" Link="AppSettings\AppSettings.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.AutocompleteStreaming.cs" Link="AppSettings\AppSettings.AutocompleteStreaming.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.ModelAssignments.cs" Link="AppSettings\AppSettings.ModelAssignments.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Review.cs" Link="Production\AppSettings.Review.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Speech.cs" Link="Production\AppSettings.Speech.cs" />
@@ -37,6 +38,8 @@
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Onboarding.cs" Link="Production\AppSettings.Onboarding.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Vocabulary.cs" Link="AppSettings\AppSettings.Vocabulary.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Explanation.cs" Link="AppSettings\AppSettings.Explanation.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.ExplanationEndpoint.cs" Link="AppSettings\AppSettings.ExplanationEndpoint.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.LearningPower.cs" Link="AppSettings\AppSettings.LearningPower.cs" />
     <Compile Include="..\..\src\Cotabby.App\Learning\LearningModelCatalogManager.cs" Link="AppLearning\LearningModelCatalogManager.cs" />
   </ItemGroup>
 

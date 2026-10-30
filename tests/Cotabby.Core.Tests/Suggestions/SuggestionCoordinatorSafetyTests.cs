@@ -95,6 +95,8 @@ public sealed class SuggestionCoordinatorSafetyTests : CoordinatorHarness
             CancellationToken.None,
             null,
             null,
+            "",
+            true,
         ]));
 
         Assert.Equal("", Overlay.Text);
@@ -251,6 +253,8 @@ public sealed class SuggestionCoordinatorSafetyTests : CoordinatorHarness
             CancellationToken.None,
             null,
             null,
+            "",
+            true,
         ]));
         await Shown(" next");
 

@@ -38,14 +38,19 @@ jobs:
       - name: Check the Windows development environment without changing it
         run: ./scripts/check-windows-dev.ps1 -Json
       - name: Compile all projects
+        id: build
         run: dotnet build Cotabby.sln --configuration Release --no-restore
       - name: Test portable core and parity fixtures
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: dotnet test tests/Cotabby.Core.Tests/Cotabby.Core.Tests.csproj --configuration Release --no-build --no-restore
       - name: Test inference transport and Windows adapters
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: dotnet test tests/Cotabby.Inference.Tests/Cotabby.Inference.Tests.csproj --configuration Release --no-build --no-restore --filter 'FullyQualifiedName!~ClipboardTextReaderTests'
       - name: Test portable app settings and task ownership
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: dotnet test tests/Cotabby.App.Tests/Cotabby.App.Tests.csproj --configuration Release --no-build --no-restore
       - name: Test compiled WPF learning views on an isolated STA dispatcher
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: dotnet test tests/Cotabby.App.Wpf.Tests/Cotabby.App.Wpf.Tests.csproj --configuration Release --no-build --no-restore --blame-hang-timeout 2m
 
   portable-core:

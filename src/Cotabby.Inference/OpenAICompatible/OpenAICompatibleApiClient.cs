@@ -33,14 +33,21 @@ public sealed class OpenAICompatibleApiClient : IDisposable
     public static readonly TimeSpan GenerationTimeout = TimeSpan.FromSeconds(120);
 
     private readonly HttpClient _http;
+    private readonly bool _ownsHttp;
 
     public OpenAICompatibleApiClient(HttpMessageHandler? handler = null)
     {
         // Each request carries its own timeout, so the client-wide 100 second default must not win.
-        _http = new HttpClient(handler ?? new SocketsHttpHandler()) { Timeout = Timeout.InfiniteTimeSpan };
+        _http = new HttpClient(handler ?? new SocketsHttpHandler { AllowAutoRedirect = false, UseCookies = false }) { Timeout = Timeout.InfiniteTimeSpan };
+        _ownsHttp = true;
     }
 
-    public void Dispose() => _http.Dispose();
+    private OpenAICompatibleApiClient(HttpClient http, bool ownsHttp) { _http = http; _ownsHttp = ownsHttp; }
+    /// <summary>Creates a separate stateless facade over a task-owned pool. Its owner must disable
+    /// redirects/cookies and drain all requests before retiring that pool.</summary>
+    public static OpenAICompatibleApiClient Borrowing(HttpClient http)
+    { ArgumentNullException.ThrowIfNull(http); return new(http, false); }
+    public void Dispose() { if (_ownsHttp) _http.Dispose(); }
 
     /// <summary>Lists the endpoint's models sorted by identifier.</summary>
     public Task<IReadOnlyList<OpenAICompatibleModelOption>> FetchModelsAsync(
@@ -54,10 +61,22 @@ public sealed class OpenAICompatibleApiClient : IDisposable
             await using var body = await response.Content.ReadAsStreamAsync(timeout.Token).ConfigureAwait(false);
             try
             {
-                var payload = await JsonSerializer
-                    .DeserializeAsync<ModelListResponse>(body, OpenAICompatibleJson.Options, timeout.Token)
-                    .ConfigureAwait(false);
-                return (payload ?? throw OpenAICompatibleClientException.MalformedResponse()).Data
+                const int maximum = 1024 * 1024;
+                if (response.Content.Headers.ContentLength is > maximum) throw OpenAICompatibleClientException.MalformedResponse();
+                using var bytes = new MemoryStream(); var buffer = new byte[8192];
+                while (true)
+                {
+                    int count = await body.ReadAsync(buffer.AsMemory(0, Math.Min(buffer.Length, maximum + 1 - (int)bytes.Length)), timeout.Token).ConfigureAwait(false);
+                    if (count == 0) break;
+                    bytes.Write(buffer, 0, count);
+                    if (bytes.Length > maximum) throw OpenAICompatibleClientException.MalformedResponse();
+                }
+                var payload = JsonSerializer.Deserialize<ModelListResponse>(bytes.ToArray(), OpenAICompatibleJson.Options);
+                if (payload?.Data is null || payload.Data.Count > 512
+                    || payload.Data.Any(model => model is null || string.IsNullOrWhiteSpace(model.Id)
+                        || model.Id.Length > 1024 || model.Id.Any(char.IsControl))) throw OpenAICompatibleClientException.MalformedResponse();
+                timeout.Token.ThrowIfCancellationRequested();
+                return payload.Data
                     .OrderBy(model => model.Id, StringComparer.CurrentCultureIgnoreCase)
                     .ToList();
             }
@@ -94,7 +113,7 @@ public sealed class OpenAICompatibleApiClient : IDisposable
         string? apiKey,
         string prompt,
         OpenAICompatibleGenerationOptions options,
-        CancellationToken ct = default)
+        CancellationToken ct = default, Action<string>? onPartialRawText = null)
     {
         RequireModelName(configuration);
 
@@ -120,7 +139,7 @@ public sealed class OpenAICompatibleApiClient : IDisposable
             using var reader = new StreamReader(stream, Encoding.UTF8);
             var accumulated = new StringBuilder();
             var sawEvent = false;
-            while (await reader.ReadLineAsync(timeout.Token).ConfigureAwait(false) is { } line)
+            await foreach (var line in ReadBoundedLinesAsync(reader, timeout.Token).ConfigureAwait(false))
             {
                 timeout.CancelAfter(GenerationTimeout);
                 var sseEvent = OpenAICompatibleSseDecoder.Decode(line, mode);
@@ -130,7 +149,10 @@ public sealed class OpenAICompatibleApiClient : IDisposable
                         return accumulated.ToString();
                     case OpenAICompatibleSseEventKind.Text:
                         sawEvent = true;
+                        if (sseEvent.Value!.Length > 65_536 - accumulated.Length) throw OpenAICompatibleClientException.MalformedResponse();
                         accumulated.Append(sseEvent.Value);
+                        if (onPartialRawText is not null)
+                            try { onPartialRawText(accumulated.ToString()); } catch { /* Observers cannot break transport. */ }
                         break;
                     case OpenAICompatibleSseEventKind.Error:
                         throw OpenAICompatibleClientException.StreamError(sseEvent.Value!);
@@ -140,6 +162,35 @@ public sealed class OpenAICompatibleApiClient : IDisposable
             // A stream that closes without [DONE] still produced a usable answer.
             return sawEvent ? accumulated.ToString() : throw OpenAICompatibleClientException.MalformedResponse();
         }, ct).ConfigureAwait(false);
+    }
+
+    private static async IAsyncEnumerable<string> ReadBoundedLinesAsync(StreamReader reader,
+        [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken token)
+    {
+        const int maxLine = 262_144;
+        var buffer = new char[4096]; var line = new StringBuilder(); bool previousCr = false;
+        while (true)
+        {
+            int read = await reader.ReadAsync(buffer.AsMemory(), token).ConfigureAwait(false);
+            if (read == 0) break;
+            for (int i = 0; i < read; i++)
+            {
+                char next = buffer[i];
+                if (next == '\n' && previousCr) { previousCr = false; continue; }
+                previousCr = false;
+                if (next is '\r' or '\n')
+                {
+                    previousCr = next == '\r';
+                    yield return line.ToString(); line.Clear();
+                }
+                else
+                {
+                    if (line.Length == maxLine) throw OpenAICompatibleClientException.MalformedResponse();
+                    line.Append(next);
+                }
+            }
+        }
+        if (line.Length > 0) yield return line.ToString();
     }
 
     // The shared prompt is a base-model continuation that ends at the caret. Chat models tend to

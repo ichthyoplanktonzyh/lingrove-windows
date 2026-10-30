@@ -31,6 +31,7 @@ public sealed class LearningExplanationSession : IAsyncDisposable
     public event Action<LearningExplanationState>? StateChanged;
     public LearningExplanationState State { get { lock (_gate) return _state; } }
     public bool IsConfigured => _service?.IsConfigured == true;
+    public LearningModelSnapshot? Profile => _service?.Profile;
 
     public void SetTarget(LearningExplanationInput? input, LearningExplanationRecord? saved = null)
     {

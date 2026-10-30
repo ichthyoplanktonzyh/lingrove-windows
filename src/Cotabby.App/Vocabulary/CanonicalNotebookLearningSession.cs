@@ -34,6 +34,7 @@ internal sealed class CanonicalNotebookLearningSession : IAsyncDisposable
     internal LearningDictionarySession Dictionary { get; }
     internal string? DictionaryError { get; private set; }
     internal bool IsConfigured => _service?.IsConfigured == true;
+    internal LearningModelSnapshot? Profile => _service?.Profile;
     internal Task LastDictionaryOperation { get; private set; } = Task.CompletedTask;
     internal bool IsPreparingDictionary { get { VerifyAccess(); return _pendingDictionary is not null; } }
     internal event Action? Changed;
@@ -207,14 +208,23 @@ internal sealed class CanonicalNotebookLearningSession : IAsyncDisposable
         try { work?.Cancel(); } catch (ObjectDisposedException) { /* The completed worker already released its source. */ }
     }
     private void Notify() { if (Changed is { } handlers) foreach (Action handler in handlers.GetInvocationList()) try { handler(); } catch { } }
+    private readonly List<Task> _dictionaryPresentationDrains = [];
+    private Task? _disposal;
+    internal void TrackDictionaryPresentation(Task task)
+    { VerifyAccess(); _dictionaryPresentationDrains.RemoveAll(x => x.IsCompletedSuccessfully); _dictionaryPresentationDrains.Add(task); }
     public ValueTask DisposeAsync()
     {
-        VerifyAccess(); if (_disposed) return ValueTask.CompletedTask;
+        VerifyAccess(); if (_disposal is not null) return new(_disposal);
         _disposed = true; ++_selectionVersion; EntryId = SenseId = null; _dictionaryEntry = null; CancelPreparation();
         foreach (var session in _explanations.Values) session.RevokeWork();
         foreach (var session in _explanations.Values) _ = session.DisposeAsync(); _explanations = Empty(); Changed = null;
         // Word preparation owns no native runtime. Weak workers release their own resources;
         // the dictionary owns and boundedly retires its provider tasks, as in other cards.
-        return Dictionary.DisposeAsync();
+        _disposal = DrainDictionaryAsync(); return new(_disposal);
+    }
+    private async Task DrainDictionaryAsync()
+    {
+        await Dictionary.DisposeAsync();
+        try { await Task.WhenAll(_dictionaryPresentationDrains); } catch { }
     }
 }

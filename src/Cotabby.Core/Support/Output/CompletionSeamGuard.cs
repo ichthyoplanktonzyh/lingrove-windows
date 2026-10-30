@@ -40,12 +40,13 @@ public static class CompletionSeamGuard
     /// assessment is injected so the rule stays pure and the caller picks the backend.
     /// </summary>
     public static string? VisibleText(
-        string precedingText, string completion, Func<string, SpellingAssessment> spellingAssessment)
+        string precedingText, string completion, Func<string, SpellingAssessment> spellingAssessment, bool isFinal = true)
     {
         if (completion.Length == 0 || IntroducesJunkPunctuationRun(precedingText, completion)) return null;
 
         var completionGraphemes = new GraphemeString(completion);
         string? prefix = CaretWordContext.UnfinishedWord(precedingText);
+        if (!isFinal && PartialWordIsIncomplete(prefix, precedingText, completionGraphemes)) return null;
         if (prefix is not null && IsJoinedWord(prefix, completionGraphemes, spellingAssessment, out string? joined))
         {
             return joined;
@@ -76,6 +77,33 @@ public static class CompletionSeamGuard
             return null;
         }
         return completion;
+    }
+
+    private static bool PartialWordIsIncomplete(string? prefix, string preceding, GraphemeString value)
+    {
+        if (prefix is not null && value.First is { } first && (first.IsLetter || CaretWordContext.IsConnector(first)))
+        {
+            int ending = value.PrefixLength(g => g.IsLetter || CaretWordContext.IsConnector(g));
+            if (ending < value.Count && (value[ending].IsNumber || value[ending].Is('_'))) return false;
+            return ending == value.Count || ending > 0 && CaretWordContext.IsConnector(value[ending - 1]);
+        }
+        int start = value.PrefixLength(g => !g.IsLetter);
+        if (start == value.Count) return value.All(g => g.IsWhitespace || g.IsPunctuation || g.IsSymbol);
+        int tokenEnd = start + value.PrefixLength(g => !g.IsWhitespace, start);
+        if (value.PrefixLength(g => !g.IsNumber) < tokenEnd) return false;
+        if (GraphemeString.LastOf(preceding) is { IsLetter: true } && value.PrefixLength(CaretWordContext.IsConnector) == start) return false;
+        int end = start; bool dangling = false;
+        while (end < value.Count)
+        {
+            if (value[end].IsLetter) { end++; continue; }
+            int next = end + 1;
+            if (CaretWordContext.IsConnector(value[end]) && next < value.Count && value[next].IsLetter) { end = next; continue; }
+            dangling = CaretWordContext.IsConnector(value[end]) && next == value.Count; break;
+        }
+        string word = value.Text[value.Offset(start)..value.Offset(end)];
+        var letters = new GraphemeString(word).Where(g => g.IsLetter).ToArray();
+        if (letters.Length == 0 || !letters[0].IsLowercase || letters.Skip(1).Any(g => g.IsUppercase) || ContainsCjk(word)) return false;
+        return end == value.Count || dangling;
     }
 
     /// <summary>

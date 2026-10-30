@@ -65,12 +65,15 @@ internal sealed partial class ReadingPresentation : IReadingPresentation, IAsync
         _detailsRecord = detailsRecord; _copy = new(clipboard);
         _vocabulary = vocabulary; _sentences = sentences; _meaningLanguage = meaningLanguage;
         _session = new(dictionary);
+        _dictionary.AttachSession(_session, () => !_token.IsCancellationRequested && _selection?.Admission?.Invoke() != false);
         _session.StateChanged += StateChanged;
         _reading.DismissRequested += () => DismissRequested?.Invoke();
         _dictionary.CloseRequested += _ => DismissRequested?.Invoke();
         _dictionary.WordRequested += (word, target) => Navigate(() => _session.SelectWordAsync(word, target));
         _dictionary.BackRequested += target => Navigate(() => _session.ReturnToExpressionAsync(target));
+        _dictionary.ReferenceRequested += (query, target) => Navigate(() => _session.FollowReferenceAsync(query, target));
         _dictionary.PageRequested += (page, target) => Navigate(() => _session.SelectPageAsync(page, target));
+        _dictionary.SourceRequested += (source, target) => Navigate(() => _session.SelectSourceAsync(source, target));
         _dictionary.ExplanationRequested += (target, state) => Navigate(() => state.IsGenerating
             ? CancelExplanation(target, state) : _session.ExplainAsync(target, state));
         _reading.DictionaryRequested += () => Navigate(OpenDictionaryAsync);
@@ -140,7 +143,7 @@ internal sealed partial class ReadingPresentation : IReadingPresentation, IAsync
         catch
         {
             if (await StillCurrentAsync(revision, token) && _readingState is { } state)
-                Update(state with { Status = ReadingStatus.Error, Message = "Could not look up this meaning. Check the local AI explanation model, or use Dictionary." });
+                Update(state with { Status = ReadingStatus.Error, Message = "Could not look up this meaning. Check the AI explanation model, or use Dictionary." });
         }
         finally { _basicRunning = false; }
     }
@@ -272,7 +275,7 @@ internal sealed partial class ReadingPresentation : IReadingPresentation, IAsync
         if (!await current(token) || token.IsCancellationRequested || revision != _revision || !_dictionaryMode || !ReferenceEquals(state, _session.State)) return;
         _dictionary.ShowState(state, selection.Anchor);
         UpdateBounds();
-        if (state.SelectedWord is null && _favoriteCapture is { } favorite)
+        if (state.SelectedWord is null && state.ReferenceQuery is null && _favoriteCapture is { } favorite)
         {
             var tokenCopy = token; long binding = Interlocked.Read(ref _favoriteRevision);
             bool Current() => !tokenCopy.IsCancellationRequested && selection.Admission?.Invoke() != false && Interlocked.Read(ref _favoriteRevision) == binding && _favoriteCurrent?.Invoke() == true;
@@ -311,6 +314,6 @@ internal sealed partial class ReadingPresentation : IReadingPresentation, IAsync
             Task[] pending; lock (_gate) { if (_work.Count == 0) break; pending = _work.ToArray(); }
             try { await Task.WhenAll(pending); } catch { }
         }
-        DetachSpeech(); _reading.Close(); _dictionary.Close();
+        DetachSpeech(); _reading.Close(); _dictionary.Close(); await _dictionary.ArticleShutdown;
     }
 }

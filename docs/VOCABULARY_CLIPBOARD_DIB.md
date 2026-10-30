@@ -29,9 +29,10 @@ Layout follows Microsoft's [info-header fields/stride](https://learn.microsoft.c
 [V4 fields](https://learn.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-bitmapv4header),
 [V5 profile layout](https://learn.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-bitmapv5header)
 and [BMP file envelope](https://learn.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-bitmapfileheader).
-Only inline calibrated/sRGB/Windows RGB color spaces are admitted. Linked or embedded profiles
-and any V5 profile offset/size fail before decoding, so a profile cannot ask WIC to follow a local
-or network filename. Compressed, OS/2/unknown header layouts remain unsupported.
+Inline calibrated/sRGB/Windows RGB color spaces are admitted. Linked profiles fail before decoding,
+so a profile cannot ask WIC to follow a local or network filename. The later
+[3b media slice](VOCABULARY_CANONICAL_MEDIA_3B.md) also admits bounded embedded profiles and
+BI_RLE4 and BI_RLE8; other compressed, OS/2 and unknown layouts remain unsupported.
 
 The [WIC BMP codec](https://learn.microsoft.com/en-us/windows/win32/wic/bmp-format-overview) documents
 32-bit V5 alpha support. Nonzero alpha requires 32 bits; BI_RGB admits only its canonical spare

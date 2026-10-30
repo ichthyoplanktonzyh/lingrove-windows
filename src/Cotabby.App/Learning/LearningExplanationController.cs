@@ -25,6 +25,9 @@ internal sealed class LearningExplanationController : IAsyncDisposable
     private readonly object _gate = new();
     private readonly ILearningLocalRuntime _runtime;
     private readonly Func<LearningLocalModelConfiguration, ILearningExplanationEngine> _engineFactory;
+    private readonly Func<LearningModelSnapshot, ILearningExplanationEngine>? _endpointFactory;
+    private readonly Func<LearningModelSnapshot, ILearningInstructionEngine>? _endpointInstructionFactory;
+    private readonly SemaphoreSlim _instructionSerial = new(1, 1);
     private readonly string _modelDirectory;
     private readonly Func<bool> _batterySaverOn;
     private readonly TimeProvider _clock;
@@ -49,7 +52,9 @@ internal sealed class LearningExplanationController : IAsyncDisposable
 
     internal LearningExplanationController(ILearningLocalRuntime runtime, AppSettings settings, string modelDirectory,
         Func<bool>? batterySaverOn = null, TimeProvider? clock = null, TimeSpan? idleDelay = null,
-        Func<LearningLocalModelConfiguration, ILearningExplanationEngine>? engineFactory = null)
+        Func<LearningLocalModelConfiguration, ILearningExplanationEngine>? engineFactory = null,
+        Func<LearningModelSnapshot, ILearningExplanationEngine>? endpointFactory = null,
+        Func<LearningModelSnapshot, ILearningInstructionEngine>? endpointInstructionFactory = null)
     {
         _runtime = runtime ?? throw new ArgumentNullException(nameof(runtime));
         _modelDirectory = Path.GetFullPath(modelDirectory);
@@ -58,9 +63,11 @@ internal sealed class LearningExplanationController : IAsyncDisposable
         _idleDelay = idleDelay ?? TimeSpan.FromSeconds(60);
         if (_idleDelay <= TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(idleDelay));
         _engineFactory = engineFactory ?? (configuration => new LearningLocalExplanationEngine(configuration, _runtime));
+        _endpointFactory = endpointFactory; _endpointInstructionFactory = endpointInstructionFactory;
         _profile = settings.LearningExplanationSnapshot();
         _instructionLanguage = settings.ResolvedLearningExplanationLanguage;
-        Service = new(_profile, settings.ResolvedLearningExplanationLanguage, CreateEngine, _clock);
+        Service = new(_profile, settings.ResolvedLearningExplanationLanguage,
+            _ => throw new InvalidOperationException("Explanation requires an admission reservation."), _clock, ReserveExplanation);
         ApplySettings(settings);
     }
 
@@ -71,8 +78,11 @@ internal sealed class LearningExplanationController : IAsyncDisposable
     {
         ArgumentNullException.ThrowIfNull(settings);
         var next = settings.LearningExplanationSnapshot();
-        bool admitted = settings.IsLocalModelCandidate(next.LocalModel, LocalModelTask.Explanation)
-            && LocalModelTaskPolicy.PermitsTemplate(next.Template, LocalModelTask.Explanation);
+        bool admitted = next.Backend == LearningModelBackend.Endpoint
+            ? _endpointFactory is not null && _endpointInstructionFactory is not null && !string.IsNullOrWhiteSpace(next.EndpointModel)
+                && LearningExplanationModelPolicy.SupportsGeneralInstructions(next.EndpointModel, LearningChatTemplate.Automatic)
+            : settings.IsLocalModelCandidate(next.LocalModel, LocalModelTask.Explanation)
+                && LocalModelTaskPolicy.PermitsTemplate(next.Template, LocalModelTask.Explanation);
         lock (_gate)
         {
             if (_disposal is not null) return;
@@ -111,7 +121,7 @@ internal sealed class LearningExplanationController : IAsyncDisposable
     private void ReconcileLocked()
     {
         bool allowed = AllowedLocked() && _modelAdmitted;
-        _residency = LocalRuntimeResidencyPolicy.Residency(usesLocalModel: true,
+        _residency = LocalRuntimeResidencyPolicy.Residency(usesLocalModel: _profile.Backend == LearningModelBackend.Local,
             enabled: allowed, paused: !allowed, keepWarm: false);
         if (!allowed)
         {
@@ -122,12 +132,28 @@ internal sealed class LearningExplanationController : IAsyncDisposable
         else if (_activeFacades == 0) ScheduleIdleLocked();
     }
 
-    private ILearningExplanationEngine CreateEngine(LearningModelSnapshot profile)
+    private ILearningExplanationAdmission ReserveExplanation(CancellationToken caller)
     {
         lock (_gate)
         {
-            if (_disposal is not null || !AllowedLocked() || _profile != profile) throw new OperationCanceledException();
+            ObjectDisposedException.ThrowIf(_disposal is not null, this);
+            caller.ThrowIfCancellationRequested();
+            return new ExplanationAdmission(this, ReserveInstructionLocked());
+        }
+    }
+
+    private ILearningExplanationEngine CreateEngine(LearningModelSnapshot profile, CancellationTokenSource lease)
+    {
+        lock (_gate)
+        {
+            if (_disposal is not null || !AllowedLocked() || _profile != profile || lease.IsCancellationRequested || !ReferenceEquals(_currentInstruction, lease)) throw new OperationCanceledException();
             if (!_modelAdmitted) throw new LearningTranslationException(LearningTranslationFailure.LocalModelNotConfigured);
+            if (profile.Backend == LearningModelBackend.Endpoint)
+            {
+                var endpoint = _endpointFactory!(profile);
+                StopIdleLocked(); _activeFacades++;
+                return new OwnedFacade(this, endpoint, profile, lease);
+            }
             string name = profile.LocalModel;
             // This setting denotes an installed filename, never an arbitrary path. Explicitly
             // reject both separators even in cross-platform tests; Windows owns the actual IO.
@@ -139,7 +165,7 @@ internal sealed class LearningExplanationController : IAsyncDisposable
                 profile.ContextWindowTokens, profile.SamplingOverrides, requiresGeneralInstructions: true);
             var inner = _engineFactory(configuration);
             StopIdleLocked(); _activeFacades++; _nativeMayBeResident = true;
-            return new OwnedFacade(this, inner, profile, ReserveInstructionLocked());
+            return new OwnedFacade(this, inner, profile, lease);
         }
     }
 
@@ -189,12 +215,12 @@ internal sealed class LearningExplanationController : IAsyncDisposable
         lock (_gate)
         {
             token.ThrowIfCancellationRequested();
-            if (_disposal is not null || !AllowedLocked() || _profile.Backend != LearningModelBackend.Local)
+            if (_disposal is not null || !AllowedLocked())
                 throw new OperationCanceledException();
             if (!_modelAdmitted) throw new LearningTranslationException(LearningTranslationFailure.LocalModelNotConfigured);
             var profile = _profile;
             var lease = ReserveInstructionLocked();
-            StopIdleLocked(); _activeFacades++; _nativeMayBeResident = true;
+            StopIdleLocked(); _activeFacades++; _nativeMayBeResident |= profile.Backend == LearningModelBackend.Local;
             var task = Task.Run(() => GenerateExpressionCoreAsync(request, lowercase, profile, lease, token));
             _instructionWork.Add(task);
             _ = task.ContinueWith(t => { lock (_gate) _instructionWork.Remove(t); }, CancellationToken.None,
@@ -220,7 +246,7 @@ internal sealed class LearningExplanationController : IAsyncDisposable
             throw new LearningExplanationException(LearningExplanationFailure.InvalidContent);
         return GenerateReadingLookupWithProfileAsync(input, basic, (raw, profile, language) =>
             new LearningExplanationRecord(Guid.NewGuid(), target, language,
-                new(basic.Meaning, ReadingLookupPolicy.ParseDetails(raw)), profile.LocalModel, DateTimeOffset.UtcNow), token);
+                new(basic.Meaning, ReadingLookupPolicy.ParseDetails(raw)), ModelName(profile), _clock.GetUtcNow()), token);
     }
 
     private Task<T> GenerateReadingLookupWithProfileAsync<T>(ReadingLookupInput input, ReadingLookupResult? basic,
@@ -231,11 +257,11 @@ internal sealed class LearningExplanationController : IAsyncDisposable
         lock (_gate)
         {
             token.ThrowIfCancellationRequested();
-            if (_disposal is not null || !AllowedLocked() || _profile.Backend != LearningModelBackend.Local)
+            if (_disposal is not null || !AllowedLocked())
                 throw new OperationCanceledException();
             if (!_modelAdmitted) throw new LearningTranslationException(LearningTranslationFailure.LocalModelNotConfigured);
             var profile = _profile; var language = _instructionLanguage;
-            var lease = ReserveInstructionLocked(); StopIdleLocked(); _activeFacades++; _nativeMayBeResident = true;
+            var lease = ReserveInstructionLocked(); StopIdleLocked(); _activeFacades++; _nativeMayBeResident |= profile.Backend == LearningModelBackend.Local;
             var task = Task.Run(() => GenerateReadingLookupCoreAsync(input, basic, parse, profile, language, lease, token));
             _instructionWork.Add(task);
             _ = task.ContinueWith(t => { lock (_gate) _instructionWork.Remove(t); }, CancellationToken.None,
@@ -248,18 +274,15 @@ internal sealed class LearningExplanationController : IAsyncDisposable
         Func<string, LearningModelSnapshot, LearningLanguage, T> parse, LearningModelSnapshot profile, LearningLanguage language, CancellationTokenSource lease, CancellationToken caller)
     {
         using var registration = caller.Register(() => RetireInstruction(lease));
+        bool serial = false;
         try
         {
+            await _instructionSerial.WaitAsync(lease.Token).ConfigureAwait(false); serial = true;
             caller.ThrowIfCancellationRequested(); CheckCurrent(profile, lease.Token);
-            string name = profile.LocalModel;
-            if (string.IsNullOrWhiteSpace(name) || name.IndexOfAny(['/', '\\', ':']) >= 0 || name.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0
-                || !string.Equals(Path.GetExtension(name), ".gguf", StringComparison.OrdinalIgnoreCase))
-                throw new LearningTranslationException(LearningTranslationFailure.LocalModelNotConfigured);
-            var config = new LearningLocalModelConfiguration(Path.Combine(_modelDirectory, name), profile.Template,
-                profile.ContextWindowTokens, profile.SamplingOverrides, requiresGeneralInstructions: true);
+            if (profile.Backend == LearningModelBackend.Endpoint && input.Admission is null) throw new OperationCanceledException();
             int output = Math.Min(profile.MaximumOutputTokens ?? 1024, basic is null ? 512 : 1024);
             string prompt = ReadingLookupPolicy.Prompt(input, language, profile.ContextWindowTokens, output, basic);
-            await using var engine = new LearningLocalInstructionEngine(config, _runtime);
+            await using var engine = InstructionEngine(profile);
             string raw = basic is null
                 ? await engine.GenerateLookupAsync(prompt, output, 24_000, input.Context is not null, lease.Token, input.Admission).ConfigureAwait(false)
                 : await engine.GenerateAsync(prompt, output, 24_000, lease.Token, input.Admission).ConfigureAwait(false);
@@ -270,7 +293,7 @@ internal sealed class LearningExplanationController : IAsyncDisposable
             lock (_gate) if (_instructionLanguage != language) throw new OperationCanceledException();
             return result;
         }
-        finally { ReleaseInstruction(lease); FacadeDrained(); }
+        finally { if (serial) _instructionSerial.Release(); ReleaseInstruction(lease); FacadeDrained(); }
     }
 
     private async Task<ExpressionAssistResult> GenerateExpressionCoreAsync(ExpressionAssistRequest request, Func<string, string> lowercase,
@@ -279,20 +302,17 @@ internal sealed class LearningExplanationController : IAsyncDisposable
         string requestId = LearningRequestIds.Generate(); long start = 0; DateTimeOffset timestamp = default;
         var outcome = ModelRequestOutcome.Failed; long? usable = null;
         using var registration = caller.Register(() => RetireInstruction(lease));
+        bool serial = false;
         try
         {
+            await _instructionSerial.WaitAsync(lease.Token).ConfigureAwait(false); serial = true;
             caller.ThrowIfCancellationRequested(); CheckCurrent(profile, lease.Token);
-            string name = profile.LocalModel;
-            if (string.IsNullOrWhiteSpace(name) || name.IndexOfAny(['/', '\\', ':']) >= 0 || name.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0
-                || !string.Equals(Path.GetExtension(name), ".gguf", StringComparison.OrdinalIgnoreCase))
-                throw new LearningTranslationException(LearningTranslationFailure.LocalModelNotConfigured);
-            var config = new LearningLocalModelConfiguration(Path.Combine(_modelDirectory, name), profile.Template,
-                profile.ContextWindowTokens, profile.SamplingOverrides, requiresGeneralInstructions: true);
+            if (profile.Backend == LearningModelBackend.Endpoint && request.Admission is null) throw new OperationCanceledException();
             int output = Math.Min(profile.MaximumOutputTokens ?? 768, 1536);
             string prompt = ExpressionAssistPrompt.Render(request, profile.ContextWindowTokens, output);
-            await using var engine = new LearningLocalInstructionEngine(config, _runtime);
+            await using var engine = InstructionEngine(profile);
             timestamp = _clock.GetUtcNow(); start = Stopwatch.GetTimestamp();
-            var raw = await engine.GenerateAsync(prompt, output, 12_000, lease.Token).ConfigureAwait(false);
+            var raw = await engine.GenerateAsync(prompt, output, 12_000, lease.Token, request.Admission).ConfigureAwait(false);
             caller.ThrowIfCancellationRequested(); CheckCurrent(profile, lease.Token);
             var result = ExpressionAssistPrompt.Parse(raw, request, lowercase);
             usable = Elapsed(start); outcome = ModelRequestOutcome.Completed; return result;
@@ -303,11 +323,23 @@ internal sealed class LearningExplanationController : IAsyncDisposable
             if (start != 0)
             {
                 if (caller.IsCancellationRequested || lease.IsCancellationRequested) outcome = ModelRequestOutcome.Cancelled;
-                try { RequestObserved?.Invoke(new(ModelRequestSource.ExpressionAssist, requestId, profile.LocalModel, timestamp, Elapsed(start), outcome, UsableResultMs: usable)); }
+                try { RequestObserved?.Invoke(new(ModelRequestSource.ExpressionAssist, requestId, ModelName(profile), timestamp, Elapsed(start), outcome, UsableResultMs: usable)); }
                 catch { /* Diagnostics cannot change generation. */ }
             }
-            ReleaseInstruction(lease); FacadeDrained();
+            if (serial) _instructionSerial.Release(); ReleaseInstruction(lease); FacadeDrained();
         }
+    }
+
+    private static string ModelName(LearningModelSnapshot profile) => profile.Backend == LearningModelBackend.Local ? profile.LocalModel : profile.EndpointModel;
+    private ILearningInstructionEngine InstructionEngine(LearningModelSnapshot profile)
+    {
+        if (profile.Backend == LearningModelBackend.Endpoint) return _endpointInstructionFactory!(profile);
+        string name = profile.LocalModel;
+        if (string.IsNullOrWhiteSpace(name) || name.IndexOfAny(['/', '\\', ':']) >= 0 || name.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0
+            || !string.Equals(Path.GetExtension(name), ".gguf", StringComparison.OrdinalIgnoreCase))
+            throw new LearningTranslationException(LearningTranslationFailure.LocalModelNotConfigured);
+        return new LearningLocalInstructionEngine(new(Path.Combine(_modelDirectory, name), profile.Template,
+            profile.ContextWindowTokens, profile.SamplingOverrides, requiresGeneralInstructions: true), _runtime);
     }
 
     private static long Elapsed(long started) => Math.Max(0, (long)Math.Round(Stopwatch.GetElapsedTime(started).TotalMilliseconds, MidpointRounding.AwayFromZero));
@@ -343,7 +375,6 @@ internal sealed class LearningExplanationController : IAsyncDisposable
             // to match, or an old timeout could unload a newly admitted explanation.
             if (_disposal is not null || revision != _idleRevision || _activeFacades != 0) return;
             StopIdleLocked();
-            RetireInstructionLocked();
             if (_nativeMayBeResident) ReleaseLocked();
         }
     }
@@ -391,7 +422,11 @@ internal sealed class LearningExplanationController : IAsyncDisposable
             try { await Task.WhenAll(releases).ConfigureAwait(false); } catch { }
             if (failure is not null) System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(failure).Throw();
         }
-        finally { await _runtime.DisposeAsync().ConfigureAwait(false); }
+        finally
+        {
+            try { await _runtime.DisposeAsync().ConfigureAwait(false); }
+            finally { _instructionSerial.Dispose(); }
+        }
     }
 
     /// <summary>One service request owns this wrapper until its native lease has drained.</summary>
@@ -399,11 +434,16 @@ internal sealed class LearningExplanationController : IAsyncDisposable
         LearningModelSnapshot profile, CancellationTokenSource lease) : ILearningExplanationEngine
     {
         private readonly object _gate = new();
+        private bool _serial;
+        private int _generationStarted;
         private Task? _disposal;
         public async Task<LearningExplanationResult> GenerateAsync(LearningExplanationInput input, LearningLanguage responseLanguage,
             int maximumOutputTokens, CancellationToken ct)
         {
+            if (Interlocked.Exchange(ref _generationStarted, 1) != 0)
+                throw new InvalidOperationException("An explanation facade owns one request.");
             using var registration = ct.Register(() => owner.RetireInstruction(lease));
+            await owner._instructionSerial.WaitAsync(lease.Token).ConfigureAwait(false); _serial = true;
             ct.ThrowIfCancellationRequested(); owner.CheckCurrent(profile, lease.Token);
             var result = await inner.GenerateAsync(input, responseLanguage, maximumOutputTokens, lease.Token).ConfigureAwait(false);
             ct.ThrowIfCancellationRequested(); owner.CheckCurrent(profile, lease.Token);
@@ -416,7 +456,18 @@ internal sealed class LearningExplanationController : IAsyncDisposable
         private async Task DrainAsync()
         {
             try { await inner.DisposeAsync().ConfigureAwait(false); }
-            finally { owner.ReleaseInstruction(lease); owner.FacadeDrained(); }
+            finally { if (_serial) owner._instructionSerial.Release(); owner.FacadeDrained(); }
+        }
+    }
+
+    private sealed class ExplanationAdmission(LearningExplanationController owner, CancellationTokenSource lease) : ILearningExplanationAdmission
+    {
+        private int _disposed;
+        public CancellationToken Token => lease.Token;
+        public ILearningExplanationEngine CreateEngine(LearningModelSnapshot profile) => owner.CreateEngine(profile, lease);
+        public void Dispose()
+        {
+            if (Interlocked.Exchange(ref _disposed, 1) == 0) owner.ReleaseInstruction(lease);
         }
     }
 }

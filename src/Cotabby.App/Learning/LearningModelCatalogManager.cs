@@ -31,6 +31,7 @@ internal sealed class LearningModelCatalogManager : IAsyncDisposable
     private readonly HashSet<Task> _operations = [];
     private Task? _disposeTask;
     private int _disposed;
+    internal ModelDownloadActivity Activity { get; } = new();
 
     /// <summary>
     /// Creates the production manager for Cotabby's shared physical model folder. The optional
@@ -135,6 +136,7 @@ internal sealed class LearningModelCatalogManager : IAsyncDisposable
                 throw new IOException("A file with this name already exists and does not match the catalog copy. Rename or remove it before downloading.");
             }
 
+            using var activity = Activity.Begin(model.Filename);
             var staging = Path.Combine(directory, $".learning-{Guid.NewGuid():N}.part");
             try
             {

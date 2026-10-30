@@ -9,6 +9,14 @@ namespace Cotabby.Core.LanguageLearning;
 /// </summary>
 public static class DictionaryLinkPolicy
 {
+    public static string? Reference(string value)
+    {
+        if (!Uri.TryCreate(value, UriKind.Absolute, out var uri) || uri.Scheme is not ("entry" or "bword")) return null;
+        int start = value.IndexOf("://", StringComparison.Ordinal); if (start < 0) return null;
+        string raw = value[(start + 3)..]; string decoded;
+        try { decoded = Uri.UnescapeDataString(raw); } catch (UriFormatException) { decoded = raw; }
+        string query = decoded.Split('#')[0]; return DictionaryContentPolicy.ValidQuery(query) ? query : null;
+    }
     public static Uri? ExternalUrl(string value)
     {
         if (Encoding.UTF8.GetByteCount(value) > 4096 || !Uri.TryCreate(value, UriKind.Absolute, out var uri)

@@ -6,7 +6,11 @@ using Cotabby.Core.Text;
 namespace Cotabby.Core.ExpressionAssist;
 
 public sealed record ExpressionAssistRequest(string Query, string LeftContext, string RightContext,
-    string SelectedText, string TargetLanguage, string ExplanationLanguage);
+    string SelectedText, string TargetLanguage, string ExplanationLanguage)
+{
+    /// <summary>Request-scoped nonblocking native receipt/query permit; never persisted or sent.</summary>
+    [System.Text.Json.Serialization.JsonIgnore] public Func<bool>? Admission { get; init; }
+}
 public sealed record ExpressionAssistCandidate(string Text, string Hint, string? DictionaryForm);
 public sealed record ExpressionAssistResult(IReadOnlyList<ExpressionAssistCandidate> Candidates, string? Clarification);
 

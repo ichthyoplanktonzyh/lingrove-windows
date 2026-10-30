@@ -8,6 +8,70 @@ namespace Cotabby.App.Wpf.Tests;
 public sealed class VocabularyDibPreparationTests(WpfDispatcher dispatcher)
 {
     [Fact]
+    public Task EmbeddedBitmapProfileIsConvertedAndRemoved() => dispatcher.Run(() =>
+    {
+        var context = new ColorContext(PixelFormats.Bgra32);
+        using var stream = context.OpenProfileStream(); using var profile = new System.IO.MemoryStream(); stream.CopyTo(profile);
+        byte[] source = VocabularyDibFixture.Image(124), icc = profile.ToArray();
+        byte[] dib = [.. source, .. icc]; VocabularyDibFixture.U32(dib, 56, 0x4D424544);
+        VocabularyDibFixture.U32(dib, 112, (uint)source.Length); VocabularyDibFixture.U32(dib, 116, (uint)icc.Length);
+        byte[] bmp = VocabularyClipboardDib.Wrap(dib, true);
+        var prepared = WindowsVocabularyImagePreparer.Prepare(bmp);
+        var bitmap = WindowsVocabularyImageDecoder.Decode(prepared.CopyBytes(), prepared.Reference);
+        byte[] pixels = new byte[24]; bitmap.CopyPixels(pixels, 12, 0);
+        Assert.Equal(new byte[] { 0, 0, 255, 255 }, pixels[..4]);
+        Assert.Equal(new byte[] { 255, 0, 0, 255 }, pixels[12..16]);
+        byte[] invalid = (byte[])dib.Clone(); Array.Clear(invalid, source.Length, icc.Length);
+        Assert.Throws<Cotabby.Core.Vocabulary.VocabularyException>(() => WindowsVocabularyImagePreparer.Prepare(VocabularyClipboardDib.Wrap(invalid, true)));
+    });
+    [Fact]
+    public Task LinkedBitmapProfilesAreRejectedBeforeDecoding() => dispatcher.Run(() =>
+    {
+        byte[] bmp = VocabularyClipboardDib.Wrap(VocabularyDibFixture.Image(124));
+        VocabularyDibFixture.U32(bmp, 70, 0x4C494E4B);
+        Assert.Throws<Cotabby.Core.Vocabulary.VocabularyException>(() => WindowsVocabularyImagePreparer.Prepare(bmp));
+    });
+    [Fact]
+    public Task NonSrgbBitmapProfileChangesPixelValuesBeforePngOutput() => dispatcher.Run(() =>
+    {
+        // Derive a synthetic linear-light RGB profile from the platform sRGB profile, retaining
+        // its color primaries but replacing its sampled tone curves with the identity curve.
+        using var input = new ColorContext(PixelFormats.Bgra32).OpenProfileStream(); using var buffer = new System.IO.MemoryStream(); input.CopyTo(buffer);
+        byte[] icc = buffer.ToArray(); int count = (int)System.Buffers.Binary.BinaryPrimitives.ReadUInt32BigEndian(icc.AsSpan(128));
+        for (int i = 0; i < count; i++)
+        {
+            int entry = 132 + i * 12; string tag = System.Text.Encoding.ASCII.GetString(icc, entry, 4);
+            if (tag is not ("rTRC" or "gTRC" or "bTRC")) continue;
+            int offset = (int)System.Buffers.Binary.BinaryPrimitives.ReadUInt32BigEndian(icc.AsSpan(entry + 4));
+            Assert.Equal("curv", System.Text.Encoding.ASCII.GetString(icc, offset, 4));
+            int samples = (int)System.Buffers.Binary.BinaryPrimitives.ReadUInt32BigEndian(icc.AsSpan(offset + 8)); Assert.True(samples > 1);
+            for (int j = 0; j < samples; j++) System.Buffers.Binary.BinaryPrimitives.WriteUInt16BigEndian(icc.AsSpan(offset + 12 + j * 2), (ushort)(j * 65535L / (samples - 1)));
+        }
+        byte[] source = VocabularyDibFixture.Image(124); for (int i = 124; i < source.Length; i++) source[i] = 128;
+        byte[] dib = [.. source, .. icc]; VocabularyDibFixture.U32(dib, 56, 0x4D424544); VocabularyDibFixture.U32(dib, 112, (uint)source.Length); VocabularyDibFixture.U32(dib, 116, (uint)icc.Length);
+        var prepared = WindowsVocabularyImagePreparer.Prepare(VocabularyClipboardDib.Wrap(dib, true));
+        var bitmap = WindowsVocabularyImageDecoder.Decode(prepared.CopyBytes(), prepared.Reference); byte[] pixels = new byte[24]; bitmap.CopyPixels(pixels, 12, 0);
+        Assert.InRange(pixels[0], (byte)180, (byte)195); Assert.InRange(pixels[1], (byte)180, (byte)195); Assert.InRange(pixels[2], (byte)180, (byte)195);
+    });
+    [Theory]
+    [InlineData(4)]
+    [InlineData(8)]
+    public Task CompressedClipboardRowsReachTheExistingPngPreparation(int bits) => dispatcher.RunAsync(async () =>
+    {
+        byte[] commands = bits == 4 ? [3, 0x11, 0, 0, 3, 0x22, 0, 0, 0, 1] : [3, 1, 0, 0, 3, 2, 0, 0, 0, 1];
+        byte[] dib = new byte[40 + 16 * 4 + commands.Length]; VocabularyDibFixture.U32(dib, 0, 40);
+        VocabularyDibFixture.I32(dib, 4, 3); VocabularyDibFixture.I32(dib, 8, 2);
+        dib[12] = 1; dib[14] = (byte)bits; VocabularyDibFixture.U32(dib, 16, bits == 8 ? 1u : 2u);
+        VocabularyDibFixture.U32(dib, 20, (uint)commands.Length); VocabularyDibFixture.U32(dib, 32, 16);
+        dib[44] = 255; dib[50] = 255; commands.CopyTo(dib, 104);
+        await using var archive = new VocabularyArchive((string?)null);
+        var prepared = await archive.PrepareImageAsync(VocabularyClipboardDib.Wrap(dib));
+        var image = await Task.Run(() => WindowsVocabularyImageDecoder.Decode(prepared.CopyBytes(), prepared.Reference));
+        byte[] pixels = new byte[24]; image.CopyPixels(pixels, 12, 0);
+        Assert.Equal(new byte[] { 0, 0, 255, 255 }, pixels[..4]);
+        Assert.Equal(new byte[] { 255, 0, 0, 255 }, pixels[12..16]);
+    });
+    [Fact]
     public Task RawWicBmpFrameCanBeOpenedBeforeArchiveNormalization() => dispatcher.Run(() =>
     {
         // Exercise the native boundary directly so a codec/HRESULT regression identifies the

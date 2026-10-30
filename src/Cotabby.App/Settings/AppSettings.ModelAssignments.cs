@@ -49,7 +49,9 @@ public sealed partial class AppSettings
         return new HashSet<string>(ModelUsagePolicy.ProtectedFilenames(CompletionFilenameForId(ActiveModelId),
             [CompletionFilenameForId(BatteryModelId), CompletionFilenameForId(PluggedInModelId), residentCompletion,
              Leaf(SpeechLocalModelValue), Leaf(SpeechLocalProjectionValue)],
-            [new[] { LearningLocalModel ?? "", LearningExplanationLocalModel ?? "" }]), StringComparer.OrdinalIgnoreCase);
+            [new[] { LearningLocalModel ?? "", LearningExplanationLocalModel ?? "",
+                LearningTranslationBatteryProfile?.LocalModel ?? "", LearningTranslationPluggedInProfile?.LocalModel ?? "",
+                LearningExplanationBatteryProfile?.LocalModel ?? "", LearningExplanationPluggedInProfile?.LocalModel ?? "" }]), StringComparer.OrdinalIgnoreCase);
     }
 
     /// <summary>Register persisted explicit choices before discovery begins. Invalid cross-task choices stay stored but unavailable.</summary>
@@ -74,6 +76,10 @@ public sealed partial class AppSettings
         }
         if (!string.IsNullOrEmpty(LearningLocalModel)) RecordLocalModelTask(LearningLocalModel, LocalModelTask.Translation);
         if (!string.IsNullOrEmpty(LearningExplanationLocalModel)) RecordLocalModelTask(LearningExplanationLocalModel, LocalModelTask.Explanation);
+        foreach (var filename in new[] { LearningTranslationBatteryProfile?.LocalModel, LearningTranslationPluggedInProfile?.LocalModel })
+            if (!string.IsNullOrEmpty(filename)) RecordLocalModelTask(filename, LocalModelTask.Translation);
+        foreach (var filename in new[] { LearningExplanationBatteryProfile?.LocalModel, LearningExplanationPluggedInProfile?.LocalModel })
+            if (!string.IsNullOrEmpty(filename)) RecordLocalModelTask(filename, LocalModelTask.Explanation);
         if (SpeechLocalModelValue is { ValueKind: JsonValueKind.String } speech && speech.GetString() is { Length: > 0 } path)
         {
             int separator = path.LastIndexOfAny(['/', '\\']);

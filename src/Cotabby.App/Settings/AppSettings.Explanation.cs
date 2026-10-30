@@ -17,11 +17,14 @@ public sealed partial class AppSettings
     public Dictionary<string, LearningGenerationProfile> LearningExplanationLocalGenerationProfiles { get; set; } = new(StringComparer.OrdinalIgnoreCase);
     public LearningLanguage? LearningExplanationLanguage { get; set; }
 
-    // Mac follows the app's preferred localization when unset. The current Windows UI is English;
-    // do not silently use the translation target or the machine locale as the explanation language.
+    // Captured once before presentation/controllers are constructed. A pending interface-language
+    // preference must not reconfigure generation until the app actually restarts in that locale.
     [JsonIgnore]
-    public LearningLanguage ResolvedLearningExplanationLanguage => LearningExplanationLanguage is { } language && Enum.IsDefined(language)
-        ? language : LearningLanguage.English;
+    internal string InterfaceLocaleAtLaunch { get; set; } = "en";
+
+    [JsonIgnore]
+    public LearningLanguage ResolvedLearningExplanationLanguage =>
+        LearningExplanationLanguagePolicy.Resolve(LearningExplanationLanguage, InterfaceLocaleAtLaunch);
 
     public int EffectiveLearningExplanationContextTokens(string model) =>
         !string.IsNullOrEmpty(model) && LearningExplanationLocalContextTokensByModel is not null
@@ -44,12 +47,14 @@ public sealed partial class AppSettings
 
     public LearningModelSnapshot LearningExplanationSnapshot()
     {
-        var model = LearningExplanationLocalModel ?? "";
+        var selection = LearningExplanationActiveSelection;
+        if (selection.Backend == LearningModelBackend.Endpoint) return LearningExplanationEndpointSnapshot(selection.EndpointModel);
+        var model = selection.LocalModel;
         var generation = EffectiveLearningExplanationGenerationProfile(model);
         return new LearningModelSnapshot
         {
             LocalModel = model,
-            Template = Enum.IsDefined(LearningExplanationLocalTemplate) ? LearningExplanationLocalTemplate : LearningChatTemplate.Automatic,
+            Template = selection.Template,
             ContextWindowTokens = EffectiveLearningExplanationContextTokens(model),
             SamplingOverrides = generation.Sampling,
             MaximumOutputTokens = generation.MaximumOutputTokens,

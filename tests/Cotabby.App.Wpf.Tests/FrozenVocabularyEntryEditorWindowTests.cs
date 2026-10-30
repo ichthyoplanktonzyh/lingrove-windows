@@ -112,17 +112,47 @@ public sealed class FrozenVocabularyEntryEditorWindowTests(WpfDispatcher dispatc
         internal VocabularyClipboardImageOffer Offer = new(41, true);
         internal uint ReadSequence;
         internal TaskCompletionSource<byte[]?>? Held;
+        internal bool ThrowOnCancellation;
         public VocabularyClipboardImageOffer Capture() => Offer;
-        public Task<byte[]?> ReadAsync(uint expectedSequence, CancellationToken token = default) { ReadSequence = expectedSequence; return Held?.Task ?? Task.FromResult(bytes); }
+        public Task<byte[]?> ReadAsync(uint expectedSequence, CancellationToken token = default) { if (ThrowOnCancellation) token.Register(() => throw new InvalidOperationException("synthetic cancellation")); ReadSequence = expectedSequence; return Held?.Task ?? Task.FromResult(bytes); }
     }
     [Fact]
-    public Task ExplicitPasteUsesCapturedSequenceAndPersistsMedia() => dispatcher.RunAsync(async () =>
+    public Task CancellationCallbackFailureStillDrainsAcceptedImportAndCloses() => dispatcher.RunAsync(async () =>
+    {
+        await using var store = new FrozenVocabularyImportStore(FrozenVocabularySQLiteDatabase.CreateMemory(), () => new SourceDate(123));
+        await store.AddEntriesAsync([new(Expression: "hello")]); var entry = (await store.ReadAsync()).Document.Entries.Single();
+        var clipboard = new ClipboardFixture(null) { ThrowOnCancellation = true, Held = new(TaskCreationOptions.RunContinuationsAsynchronously) };
+        var window = new FrozenVocabularyEntryEditorWindow(store, store, entry, entry.Senses.Single().Id, clipboard: clipboard); window.Show();
+        Assert.True(window.PasteImage()); await Until(() => clipboard.ReadSequence == 41); window.Close(); Task retirement = window.RetireAsync(); Assert.False(retirement.IsCompleted);
+        clipboard.Held.SetResult(null); await Assert.ThrowsAnyAsync<Exception>(async () => await retirement); Assert.False(window.IsVisible);
+    });
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(2)]
+    public Task ExplicitPasteUsesCapturedSequenceAndPersistsMedia(int kind) => dispatcher.RunAsync(async () =>
     {
         string root = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "canonical-paste-" + Guid.NewGuid().ToString("N"));
         try
         {
             using var json = System.Text.Json.JsonDocument.Parse(System.IO.File.ReadAllText(System.IO.Path.Combine(AppContext.BaseDirectory, "fixtures", "parity", "vocabulary-media-transactions-v1.json")));
-            var clipboard = new ClipboardFixture(Convert.FromBase64String(json.RootElement.GetProperty("input").GetString()!));
+            byte[] input = Convert.FromBase64String(json.RootElement.GetProperty("input").GetString()!);
+            if (kind == 1)
+            {
+                byte[] commands = [3, 1, 0, 0, 3, 2, 0, 0, 0, 1]; byte[] dib = new byte[104 + commands.Length];
+                VocabularyDibFixture.U32(dib, 0, 40); VocabularyDibFixture.I32(dib, 4, 3); VocabularyDibFixture.I32(dib, 8, 2);
+                dib[12] = 1; dib[14] = 8; VocabularyDibFixture.U32(dib, 16, 1); VocabularyDibFixture.U32(dib, 20, (uint)commands.Length); VocabularyDibFixture.U32(dib, 32, 16);
+                dib[44] = 255; dib[50] = 255; commands.CopyTo(dib, 104); input = VocabularyClipboardDib.Wrap(dib);
+            }
+            else if (kind == 2)
+            {
+                var color = new System.Windows.Media.ColorContext(System.Windows.Media.PixelFormats.Bgra32);
+                using var profile = color.OpenProfileStream(); using var buffer = new System.IO.MemoryStream(); profile.CopyTo(buffer);
+                byte[] source = VocabularyDibFixture.Image(124), icc = buffer.ToArray(), dib = [.. source, .. icc];
+                VocabularyDibFixture.U32(dib, 56, 0x4D424544); VocabularyDibFixture.U32(dib, 112, (uint)source.Length);
+                VocabularyDibFixture.U32(dib, 116, (uint)icc.Length); input = VocabularyClipboardDib.Wrap(dib, true);
+            }
+            var clipboard = new ClipboardFixture(input);
             await using var store = FrozenVocabularyStoreFactory.Create(System.IO.Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName), false);
             await store.AddEntriesAsync([new(Expression: "image")]); var entry = (await store.ReadAsync()).Document.Entries.Single();
             var window = new FrozenVocabularyEntryEditorWindow(store, store, entry, entry.Senses.Single().Id, clipboard: clipboard); window.Show();
@@ -173,7 +203,9 @@ public sealed class FrozenVocabularyEntryEditorWindowTests(WpfDispatcher dispatc
         await store.AddEntriesAsync([new(Expression: "hello")]); var entry = (await store.ReadAsync()).Document.Entries.Single();
         var clipboard = new ClipboardFixture(null) { Held = new(TaskCreationOptions.RunContinuationsAsynchronously) };
         var window = new FrozenVocabularyEntryEditorWindow(store, store, entry, entry.Senses.Single().Id, clipboard: clipboard); window.Show();
-        Assert.True(window.PasteImage()); await Until(() => clipboard.ReadSequence == 41); window.Close(); var retirement = window.RetireAsync(); Assert.False(retirement.IsCompleted);
+        Assert.True(window.PasteImage()); await Until(() => clipboard.ReadSequence == 41);
+        Assert.False(Descendants(window).OfType<CanonicalImageDropSurface>().Single().IsEnabled);
+        window.Close(); var retirement = window.RetireAsync(); Assert.False(retirement.IsCompleted);
         clipboard.Held.SetResult([1, 2, 3]); await retirement; Assert.Null(window.Draft.Senses.Single().Content); Assert.Null((await store.ReadAsync()).Document.Entries.Single().Senses.Single().Content);
     });
     private static async Task Until(Func<bool> predicate) { for (int i = 0; i < 100 && !predicate(); i++) await Task.Delay(10); Assert.True(predicate()); }

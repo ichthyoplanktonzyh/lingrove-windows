@@ -6,6 +6,74 @@ namespace Cotabby.App.Tests.Settings;
 public sealed class LearningExplanationSettingsTests
 {
     [Fact]
+    public void EndpointKeepsItsOwnDestinationBudgetSamplerAndRuntimeKeyRevision()
+    {
+        var settings = new AppSettings { LearningExplanationBackend = LearningModelBackend.Endpoint,
+            LearningExplanationEndpointBaseUrl = "https://FIRST.invalid:443/", LearningExplanationEndpointModel = " tutor ",
+            LearningEndpointModel = "translation", LearningExplanationLocalModel = "local.gguf", LearningExplanationCredentialRevision = 3 };
+        string first = settings.LearningExplanationEndpointIdentity;
+        settings.LearningExplanationEndpointContextTokensByDestination[first] = 65536;
+        settings.LearningExplanationEndpointGenerationProfiles[first] = new() { Sampling = new(Temperature: .7, TopK: 17, SeedMode: LearningModelSeedMode.Fixed), MaximumOutputTokens = 768 };
+        var frozen = settings.LearningExplanationSnapshot();
+        Assert.Equal(LearningModelBackend.Endpoint, frozen.Backend); Assert.Empty(frozen.LocalModel);
+        Assert.Equal(65536, frozen.ContextWindowTokens); Assert.Equal(768, frozen.MaximumOutputTokens);
+        Assert.Equal(.7, frozen.SamplingOverrides.Temperature); Assert.Null(frozen.SamplingOverrides.TopK);
+        Assert.Equal(LearningModelSeedMode.Recommended, frozen.SamplingOverrides.SeedMode); Assert.Equal(3, frozen.CredentialRevision);
+        settings.LearningExplanationEndpointBaseUrl = "https://first.invalid/v1/";
+        Assert.Equal(first, settings.LearningExplanationEndpointIdentity);
+        Assert.Equal(65536, settings.LearningExplanationSnapshot().ContextWindowTokens);
+        settings.LearningExplanationEndpointBaseUrl = "https://second.invalid/v1";
+        Assert.Equal(8192, settings.LearningExplanationSnapshot().ContextWindowTokens);
+        Assert.Null(settings.LearningExplanationSnapshot().SamplingOverrides.Temperature);
+        settings.LearningExplanationEndpointBaseUrl = "https://first.invalid/v1";
+        var reopened = SettingsStore.Parse(SettingsStore.Serialize(settings));
+        Assert.Equal(65536, reopened.LearningExplanationSnapshot().ContextWindowTokens);
+        Assert.Equal(.7, reopened.LearningExplanationSnapshot().SamplingOverrides.Temperature);
+        Assert.Equal(0, reopened.LearningExplanationSnapshot().CredentialRevision);
+        settings.LearningExplanationEndpointContextTokensByDestination[first] = 1024;
+        Assert.Equal(65536, frozen.ContextWindowTokens);
+    }
+
+    [Fact]
+    public void DormantProviderFieldsAndUnknownBackendCannotRedirectAnActiveTask()
+    {
+        var settings = new AppSettings { LearningExplanationLocalModel = "local.gguf" };
+        var local = settings.LearningExplanationSnapshot();
+        settings.LearningExplanationEndpointBaseUrl = "https://other.invalid/v1";
+        settings.LearningExplanationEndpointModel = "other"; settings.LearningExplanationCredentialRevision = 5;
+        Assert.Equal(local, settings.LearningExplanationSnapshot());
+        settings.LearningExplanationBackend = LearningModelBackend.Endpoint;
+        var endpoint = settings.LearningExplanationSnapshot();
+        settings.LearningExplanationLocalModel = "different.gguf";
+        Assert.Equal(endpoint, settings.LearningExplanationSnapshot());
+        var unknown = SettingsStore.Parse("{\"learning.explanation.backend\":\"future\",\"LearningExplanationEndpointModel\":\"remote\"}");
+        Assert.Equal(LearningModelBackend.Local, unknown.LearningExplanationSnapshot().Backend);
+        Assert.Contains("future", SettingsStore.Serialize(unknown));
+    }
+
+    [Theory]
+    [InlineData("zh-Hans", LearningLanguage.Chinese)]
+    [InlineData("zh-Hant", LearningLanguage.TraditionalChinese)]
+    [InlineData("fr", LearningLanguage.French)]
+    [InlineData("ar", LearningLanguage.Arabic)]
+    [InlineData("pt-BR", LearningLanguage.English)]
+    [InlineData("id", LearningLanguage.English)]
+    [InlineData("tr", LearningLanguage.English)]
+    public void AppLanguageUsesActualLaunchLocalizationUntilRestart(string locale, LearningLanguage expected)
+    {
+        var settings = new AppSettings { InterfaceLocaleAtLaunch = locale, InterfaceLanguage = locale };
+        Assert.Equal(expected, settings.ResolvedLearningExplanationLanguage);
+        settings.InterfaceLanguage = "ja"; // Preference is pending; the displayed interface has not restarted.
+        Assert.Equal(expected, settings.ResolvedLearningExplanationLanguage);
+        Assert.Equal(expected, settings.ResetGeneralPreferences(0).ResolvedLearningExplanationLanguage);
+        string json = SettingsStore.Serialize(settings);
+        Assert.DoesNotContain("InterfaceLocaleAtLaunch", json);
+        Assert.Null(settings.LearningExplanationLanguage);
+        settings.LearningExplanationLanguage = LearningLanguage.German;
+        Assert.Equal(LearningLanguage.German, settings.ResolvedLearningExplanationLanguage);
+    }
+
+    [Fact]
     public void OldPreferencesNeverInheritTranslationOrAutocompleteDestinations()
     {
         var settings = SettingsStore.Parse("""{"ActiveModelId":"completion","LearningEndpointEnabled":true,"LearningEndpointModel":"remote","LearningLocalModel":"translator.gguf","LearningTargetLanguage":"French"}""");

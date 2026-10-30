@@ -49,6 +49,7 @@ public sealed partial class AppSettings
         LocalModelSourcesValue = new Dictionary<string, string>(LocalModelSourcesValue ?? [], StringComparer.Ordinal),
         ShowFirstRunWelcome = ShowFirstRunWelcome,
         OnboardingProgressValue = OnboardingProgressValue,
+        InterfaceLocaleAtLaunch = InterfaceLocaleAtLaunch,
         WordsAccepted = wordsAccepted,
         VocabularyGraphSettingsValue = VocabularyGraphSettingsValue,
         VocabularyBrowserModeValue = VocabularyBrowserModeValue,
@@ -305,6 +306,9 @@ public sealed partial class AppSettings
         AddSpaceAfterAccept = AddSpaceAfterAccept,
         DisplayMode = DisplayMode,
         SuggestWithinWords = SuggestWithinWords,
+        StreamSuggestionsWhileGenerating = StreamSuggestionsWhileGenerating,
+        PredictAheadWhileTyping = PredictAheadWhileTyping,
+        ShowFollowingWords = ShowFollowingWords,
         // Offering a fix needs typo detection on, and fixing automatically needs offering on.
         Typos = new TypoGateSettings(
             SuppressCompletionsOnTypo,
@@ -422,6 +426,7 @@ public sealed class SettingsStore
         settings.ExpressionAssistTrigger ??= "??";
         settings.LearningExplanationLocalContextTokensByModel = CaseInsensitiveModelMap(settings.LearningExplanationLocalContextTokensByModel);
         settings.LearningExplanationLocalGenerationProfiles = CaseInsensitiveModelMap(settings.LearningExplanationLocalGenerationProfiles);
+        settings.NormalizeExplanationEndpoints();
         if (!Enum.IsDefined(settings.LearningExplanationLocalTemplate))
             settings.LearningExplanationLocalTemplate = LearningChatTemplate.Automatic;
         if (!Enum.IsDefined(settings.LearningLocalTemplate))

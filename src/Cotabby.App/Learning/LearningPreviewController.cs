@@ -234,11 +234,12 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         if (_explanationSession is not null) _explanationSession.StateChanged -= OnExplanationStateChanged;
         CancelCurrentState();
 
+        Task articleShutdown = Task.CompletedTask;
         if (_dispatcher.CheckAccess())
         {
             _window?.Close();
             _window = null;
-            _dictionaryWindow?.Close();
+            var dictionaryWindow = _dictionaryWindow; dictionaryWindow?.Close(); articleShutdown = dictionaryWindow?.ArticleShutdown ?? Task.CompletedTask;
             _dictionaryWindow = null;
         }
         else
@@ -247,13 +248,14 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
             {
                 _window?.Close();
                 _window = null;
-                _dictionaryWindow?.Close();
+                var dictionaryWindow = _dictionaryWindow; dictionaryWindow?.Close(); articleShutdown = dictionaryWindow?.ArticleShutdown ?? Task.CompletedTask;
                 _dictionaryWindow = null;
             });
         }
 
         // Core waits only for its documented bounded interval. The dedicated endpoint client is
         // owned by AppHost and stays alive until this drain has completed.
+        await articleShutdown.ConfigureAwait(false);
         _coordinator.ClearCache();
         await _coordinator.DisposeAsync().ConfigureAwait(false);
         DetachPerformanceHistory();
@@ -1397,18 +1399,16 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
             var sentenceLanguage = segmentationCandidates.Length == 1
                 ? segmentationCandidates[0]
                 : legacySource;
-            var register = Enum.IsDefined(settings.LearningStyleRegister)
-                ? settings.LearningStyleRegister
-                : LearningTranslationRegister.Natural;
-            var backend = settings.EffectiveLearningBackend;
-            var endpointModel = (settings.LearningEndpointModel ?? string.Empty).Trim();
-            var localModel = (settings.LearningLocalModel ?? string.Empty).Trim();
+            var selection = settings.LearningTranslationActiveSelection;
+            var backend = selection.Backend == LearningModelBackend.Endpoint ? LearningTranslationBackend.Endpoint : LearningTranslationBackend.Local;
+            var endpointModel = selection.EndpointModel.Trim();
+            var localModel = selection.LocalModel.Trim();
             var localProfile = settings.EffectiveLearningLocalGenerationProfile(localModel);
             var localContextTokens = settings.EffectiveLearningLocalContextTokens(localModel);
             var model = backend == LearningTranslationBackend.Local ? localModel : endpointModel;
             var style = backend == LearningTranslationBackend.Local
                 ? localProfile.Style.Effective
-                : new LearningTranslationStyle(register, settings.LearningCustomInstruction ?? string.Empty).Effective;
+                : (settings.LearningTranslationActiveEndpointGeneration.Style ?? new()).Effective;
             var blockedApps = (settings.BlockedApps ?? [])
                 .Where(app => !string.IsNullOrWhiteSpace(app))
                 .Select(app => app.Trim())
@@ -1429,17 +1429,18 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
                 TargetLanguage = target,
                 Style = style,
                 ModelName = model,
+                EndpointSampling = backend == LearningTranslationBackend.Endpoint
+                    ? (settings.LearningTranslationActiveEndpointGeneration.Sampling ?? new()).EndpointOnly : new(),
                 ContextTokens = backend == LearningTranslationBackend.Local
                     ? localContextTokens
-                    : Math.Clamp(settings.LearningContextTokens,
-                        2_048, ModelContextBudget.MaximumEndpointTokens),
+                    : settings.LearningTranslationActiveEndpointContext,
             };
 
             LearningLocalModelConfiguration? localConfiguration = null;
             if (backend == LearningTranslationBackend.Local
                 && localModel.Length > 0
                 && settings.IsLocalModelCandidate(localModel, LocalModelTask.Translation)
-                && LocalModelTaskPolicy.PermitsTemplate(settings.LearningLocalTemplate, LocalModelTask.Translation)
+                && LocalModelTaskPolicy.PermitsTemplate(selection.Template, LocalModelTask.Translation)
                 && string.Equals(Path.GetFileName(localModel), localModel, StringComparison.Ordinal)
                 && string.Equals(Path.GetExtension(localModel), ".gguf", StringComparison.OrdinalIgnoreCase))
             {
@@ -1447,8 +1448,8 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
                 {
                     localConfiguration = new LearningLocalModelConfiguration(
                         Path.Combine(ModelCatalog.DefaultLocalDirectory(), localModel),
-                        Enum.IsDefined(settings.LearningLocalTemplate)
-                            ? settings.LearningLocalTemplate
+                        Enum.IsDefined(selection.Template)
+                            ? selection.Template
                             : LearningChatTemplate.Automatic,
                         localContextTokens,
                         localProfile.Sampling);
@@ -1463,7 +1464,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
             var endpointBaseUrl = (settings.LearningEndpointBaseUrl ?? OpenAICompatibleEndpointConfiguration.DefaultBaseUrl).Trim();
             var cacheScope = backend == LearningTranslationBackend.Local
                 ? CreateLocalCacheScope(localConfiguration, localProfile, model)
-                : CreateEndpointCacheScope(settings.LearningEndpointEnabled, endpointBaseUrl,
+                : CreateEndpointCacheScope(settings.LearningTranslationActiveEndpointEnabled, endpointBaseUrl,
                     endpointModel, credentialRevision);
 
             return new LearningRuntimeSettings(
@@ -1471,7 +1472,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
                 settings.LearningTranslationEnabled,
                 availabilitySettings,
                 blockedApps,
-                settings.LearningEndpointEnabled,
+                settings.LearningTranslationActiveEndpointEnabled,
                 settings.LearningTranslationShortcut,
                 GlobalShortcut.LearningTranslation.Conflict(settings, settings.LearningTranslationShortcut) is not null,
                 endpointBaseUrl,

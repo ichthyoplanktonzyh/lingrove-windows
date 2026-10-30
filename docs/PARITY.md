@@ -58,6 +58,10 @@ adds explicit online offers and browser destinations to the shared dictionary se
 bounded transport ownership and native WPF source settings. Their local/CI and physical acceptance
 records remain distinct; the historical matrix below retains its own references.
 
+The [Home/Welcome examples](HOME_WELCOME_SHOWCASE_3B.md) now connect their complete seven-scene
+walkthrough and explicit example windows using real components and isolated in-memory owners.
+Illustrated reading acquisition and sample replacement are not native host feature acceptance.
+
 ## Status meanings
 
 The [expression assistance application composition](EXPRESSION_ASSIST_APPLICATION.md) connects

@@ -88,11 +88,14 @@ the initial gap audit; its initial Windows gap descriptions are historical. Curr
   `d5f0e52a54aefad88a16965424e6de68d4e6eef4` before merge as `889196d`.
   The caret-ending ASCII-source replacement subset remains explicit; physical editor acceptance
   and complete Unicode/selected-range replacement are still open.
-- The [online and website dictionary candidate](DICTIONARY_WEBSITE_ONLINE_3B.md) now connects
+- #144 merged [online and website dictionaries](DICTIONARY_WEBSITE_ONLINE_3B.md), connecting
   explicit online offers/retry and browser destinations across floating cards and notebook, with
-  shared settings, bounded HTTP cancellation/drain and website editing. Remote CI remains separate
-  from the recorded local checks and renders.
-- Remaining work includes the complete Home/Welcome learning showcase, native automatic language
+  shared settings, bounded HTTP cancellation/drain and website editing. All four final-head checks
+  passed at `926ceaf6d937c7d02968a3cfb79862e2c9543a4c` before merge as `ded4be4`.
+- The [Home/Welcome showcase candidate](HOME_WELCOME_SHOWCASE_3B.md) connects both production
+  entries to the same seven-scene player, real cards/notebook/review and private sample owners.
+  Full local validation passed; final-head remote CI and physical acceptance remain separate gates.
+- Remaining work includes wider writing replacement, native automatic language
   confidence, Apple's unavailable system dictionary and the explicitly documented media/native gaps.
   Internal components are not evidence that those flows are complete. Existing older libraries
   retain explicit references and are reused only after checking the current consumer contract.

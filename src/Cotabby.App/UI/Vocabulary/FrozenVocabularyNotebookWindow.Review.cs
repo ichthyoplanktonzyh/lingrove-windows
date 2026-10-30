@@ -26,7 +26,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow
         if (_store is not ICanonicalVocabularyStore canonical) return;
         _reviewFeature = feature; _configureReview = configure;
         _reviewSection = new(this, canonical, feature, configure, () => { if (!_retiring) _session.Refresh(); },
-            canAct: (entry, sense) => !_retiring && IsVisible && _modalDone is null && !_senseMutating && !_semanticBusy && _session.Selection == new VocabularySelection(entry, sense), clipboard: _clipboard);
+            canAct: (entry, sense) => !_retiring && IsVisible && _modalDone is null && !_senseMutating && !_semanticBusy && _session.Selection == new VocabularySelection(entry, sense), clipboard: _clipboard, allowExternalMedia: !_exampleNoExternalFiles);
         feature.Controller.PropertyChanged += ReviewChanged; _session.Refresh();
     }
     private void ReviewChanged(object? sender, PropertyChangedEventArgs e) { if (!_retiring) _session.Refresh(); }
@@ -48,7 +48,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow
             {
                 var batch = await CanonicalAnkiReviewBatchSession.OpenAsync(_reviewFeature, (ICanonicalVocabularyStore)_store, captured, cancellation.Token);
                 if (_retiring) return;
-                var window = new CanonicalAnkiReviewBatchWindow(batch, _reviewFeature, _configureReview, _clipboard) { Owner = this }; _reviewBatchWindow = window;
+                var window = new CanonicalAnkiReviewBatchWindow(batch, _reviewFeature, _configureReview, _clipboard, allowExternalMedia: !_exampleNoExternalFiles) { Owner = this }; _reviewBatchWindow = window;
                 try { window.ShowDialog(); } finally { await window.RetireAsync(); _reviewBatchWindow = null; }
             }
             catch (OperationCanceledException) { }

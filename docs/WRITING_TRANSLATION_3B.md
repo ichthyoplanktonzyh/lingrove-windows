@@ -6,7 +6,8 @@ Reference: committed Mac `3b53402f2cbc196b0398d133177fd80006d165b2`,
 `Support/LanguageLearning/LearningCommittedTextChangePolicy.swift`,
 `LearningAutomaticLanguagePolicy.swift`, and their coordinator/policy/card tests.
 The older [manual read-only slice](LEARNING_PREVIEW.md) retains its historical fixture references.
-This work is an unmerged integration candidate, not physical editor acceptance.
+This flow merged in #143 after all four final-head CI jobs passed at
+`d5f0e52a54aefad88a16965424e6de68d4e6eef4`; physical editor acceptance remains separate.
 
 ## Current application wiring
 

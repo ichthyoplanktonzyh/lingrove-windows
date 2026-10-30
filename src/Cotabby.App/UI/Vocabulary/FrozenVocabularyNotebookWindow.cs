@@ -49,6 +49,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
     private readonly Func<string?> _pickFile;
     private bool _updating, _started, _retiring, _allowClose, _hideRequested;
     private readonly bool _hideOnClose;
+    private readonly bool _exampleNoExternalFiles;
     private readonly IVocabularyNotebookListPreferences? _listPreferences;
     private Window? _inputWindow;
     private TaskCompletionSource? _modalDone;
@@ -57,12 +58,12 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
     internal FrozenVocabularyBrowserSession Session => _session;
     internal Task? LastOperation { get; private set; }
     internal FrozenVocabularyNotebookWindow(IVocabularyEntryImportStore store, IVocabularyWordListReader reader,
-        IReadOnlyList<LearningLanguage>? preferredLanguages = null, Func<string?>? pickFile = null, IVocabularyNotebookListPreferences? listPreferences = null, bool hideOnClose = false)
+        IReadOnlyList<LearningLanguage>? preferredLanguages = null, Func<string?>? pickFile = null, IVocabularyNotebookListPreferences? listPreferences = null, bool hideOnClose = false, bool exampleNoExternalFiles = false)
     {
-        _store = store; _reader = reader; _owner = new(store); _hideOnClose = hideOnClose; _listPreferences = listPreferences; var search = new Search();
+        _store = store; _reader = reader; _owner = new(store); _hideOnClose = hideOnClose; _exampleNoExternalFiles = exampleNoExternalFiles; _listPreferences = listPreferences; var search = new Search();
         _session = new(Dispatcher, store, search) { PreferredLanguages = preferredLanguages ?? VocabularyMeaningLabelPolicy.PreferredLanguages(null, [CultureInfo.CurrentUICulture.Name]) };
         _session.Detailed = listPreferences?.Density == "detailed";
-        _pickFile = pickFile ?? (() => { var dialog = new OpenFileDialog { Filter = "Word lists (*.csv;*.txt)|*.csv;*.txt", Multiselect = false }; return dialog.ShowDialog(this) == true ? dialog.FileName : null; });
+        _pickFile = exampleNoExternalFiles ? (() => null) : pickFile ?? (() => { var dialog = new OpenFileDialog { Filter = "Word lists (*.csv;*.txt)|*.csv;*.txt", Multiselect = false }; return dialog.ShowDialog(this) == true ? dialog.FileName : null; });
         Title = "Vocabulary notebook"; Width = 1100; Height = 720; MinWidth = 760; MinHeight = 460; VocabularyNotebookTheme.Follow(this);
         var root = new DockPanel(); VocabularyNotebookTheme.Brush(root, Panel.BackgroundProperty, "WindowBg"); Content = root;
         var toolbar = new WrapPanel { Margin = new Thickness(20, 16, 20, 8), Orientation = Orientation.Horizontal };
@@ -104,7 +105,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
         InputBindings.Add(new KeyBinding(new Relay(() => { if (_import.IsEnabled) LastOperation = ImportAsync(); }), Key.I, ModifierKeys.Control | ModifierKeys.Shift));
         _session.Changed += Present; Loaded += (_, _) => { if (!_started && !_retiring) { _started = true; LastOperation = Track(_session.LoadAsync()); } }; IsVisibleChanged += (_, _) => { if (IsVisible && _started && !_retiring) { _session.Refresh(); _learningDictionary?.ResumeExpanded(); if (_learning is not null) _ = _learning.Resume(); } else if (!IsVisible) CancelLearning(); }; Closing += OnClosing; Closed += (_, _) => _session.Dispose(); Present();
     }
-    internal void AttachClipboard(IVocabularyClipboardImageTransfer clipboard) => _clipboard = clipboard;
+    internal void AttachClipboard(IVocabularyClipboardImageTransfer clipboard) { if (!_exampleNoExternalFiles) _clipboard = clipboard; }
     internal void SetPreferredLanguages(IReadOnlyList<LearningLanguage> languages) { _session.PreferredLanguages = Array.AsReadOnly(languages.ToArray()); _session.Refresh(); }
     private static Button Disabled(string title, string tooltip) { var button = new Button { Content = title, ToolTip = tooltip, IsEnabled = false, Padding = new Thickness(10, 5, 10, 5) }; VocabularyNotebookTheme.Button(button); return button; }
     private sealed class Relay(Action action) : ICommand { public event EventHandler? CanExecuteChanged { add { } remove { } } public bool CanExecute(object? p) => true; public void Execute(object? p) => action(); }
@@ -171,7 +172,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
     }
     private async Task ImportAsync()
     {
-        if (_retiring || _modalDone is not null) return;
+        if (_retiring || _modalDone is not null || _exampleNoExternalFiles) return;
         var done = _modalDone = new(TaskCreationOptions.RunContinuationsAsynchronously);
         try
         {
@@ -195,7 +196,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
         try
         {
             var tags = _session.Entries.SelectMany(e => e.Senses).SelectMany(s => s.Tags).ToArray();
-            var window = new FrozenVocabularyEntryEditorWindow(editor, media, entry, selection.SenseId, tags, _clipboard) { Owner = this }; _inputWindow = window;
+            var window = new FrozenVocabularyEntryEditorWindow(editor, media, entry, selection.SenseId, tags, _clipboard, allowExternalMedia: !_exampleNoExternalFiles) { Owner = this }; _inputWindow = window;
             try { window.ShowDialog(); } finally { await window.RetireAsync(); _inputWindow = null; }
             if (!_retiring && window.Saved) await _session.LoadAsync();
             if (!_retiring && _pendingShow is { } pending) { _pendingShow = null; _expanded.Add(pending.EntryId); await _session.RevealSelectionAsync(pending); }
@@ -232,7 +233,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
             var tags = _session.Entries.SelectMany(e => e.Senses).SelectMany(s => s.Tags).Distinct().Order(StringComparer.CurrentCultureIgnoreCase).ToArray();
             if (_session.Tag.Length > 0 && !tags.Contains(_session.Tag)) _session.Tag = "";
             _tag.Items.Clear(); _tag.Items.Add(new TagChoice("All tags", "")); foreach (var tag in tags) _tag.Items.Add(new TagChoice(tag, tag)); _tag.SelectedItem = _tag.Items.Cast<TagChoice>().First(x => x.Value == _session.Tag);
-            _add.IsEnabled = _import.IsEnabled = !_session.Loading && _session.Failure is null; _categoryToggle.Visibility = Visibility.Collapsed; _newMeaning.Visibility = _session.MeaningMode ? Visibility.Visible : Visibility.Collapsed; _newMeaning.IsEnabled = CanSemantic && _store is ICanonicalVocabularyMeaningOrganizationStore; _categories.AllowEditing = CanSemantic;
+            _add.IsEnabled = !_session.Loading && _session.Failure is null; _import.IsEnabled = !_exampleNoExternalFiles && _add.IsEnabled; _categoryToggle.Visibility = Visibility.Collapsed; _newMeaning.Visibility = _session.MeaningMode ? Visibility.Visible : Visibility.Collapsed; _newMeaning.IsEnabled = CanSemantic && _store is ICanonicalVocabularyMeaningOrganizationStore; _categories.AllowEditing = CanSemantic;
             _sort.Visibility = _density.Visibility = _graphMode ? Visibility.Collapsed : Visibility.Visible;
             foreach (var image in _detailImages) _ = Track(image.RetireAsync()); _detailImages.Clear();
             if (_session.Loading || _session.Failure is not null || _session.Selection is not { } selected
@@ -256,7 +257,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
         panel.Children.Add(new TextBlock { Text = InterfaceText.Get("Add an entry yourself or import a CSV or TXT word list."), Margin = new Thickness(0, 9, 0, 16), HorizontalAlignment = HorizontalAlignment.Center });
         var buttons = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Center };
         var add = new Button { Name = "frozenEmptyAdd", Content = InterfaceText.Get("Add entry"), Margin = new Thickness(4), Padding = new Thickness(12, 6, 12, 6) }; add.Click += (_, _) => LastOperation = AddAsync();
-        var import = new Button { Name = "frozenEmptyImport", Content = InterfaceText.Get("Import word list"), Margin = new Thickness(4), Padding = new Thickness(12, 6, 12, 6) }; import.Click += (_, _) => LastOperation = ImportAsync();
+        var import = new Button { Name = "frozenEmptyImport", Content = InterfaceText.Get("Import word list"), IsEnabled = !_exampleNoExternalFiles, Margin = new Thickness(4), Padding = new Thickness(12, 6, 12, 6) }; import.Click += (_, _) => LastOperation = ImportAsync();
         VocabularyNotebookTheme.Button(add, true); VocabularyNotebookTheme.Button(import); buttons.Children.Add(add); buttons.Children.Add(import); panel.Children.Add(buttons); return panel;
     }
     private static FrameworkElement State(string text, bool error = false) => VocabularyNotebookTheme.Brush(new TextBlock { Text = text, Name = "frozenNotebookState", FontSize = 16, TextWrapping = TextWrapping.Wrap, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center }, TextBlock.ForegroundProperty, error ? "OrangeBrush" : "TextSecondary");
@@ -380,7 +381,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
         VocabularyNotebookTheme.Button(edit); edit.Click += (_, _) => LastOperation = EditAsync(new(entry.Id, sense.Id)); actions.Children.Add(edit);
         AddSenseActions(actions, entry, sense);
         AddSenseSemanticActions(actions, new(entry.Id, sense.Id));
-        var export = new Button { Content = InterfaceText.Get("Export…"), Margin = new Thickness(0, 0, 8, 0), IsEnabled = _store is ICanonicalVocabularyExportStore }; VocabularyNotebookTheme.Button(export); export.Click += (_, _) => LastOperation = OpenCanonicalExportAsync(new(entry.Id, sense.Id)); actions.Children.Add(export); panel.Children.Add(actions);
+        var export = new Button { Content = InterfaceText.Get("Export…"), Margin = new Thickness(0, 0, 8, 0), IsEnabled = !_exampleNoExternalFiles && _store is ICanonicalVocabularyExportStore }; VocabularyNotebookTheme.Button(export); export.Click += (_, _) => LastOperation = OpenCanonicalExportAsync(new(entry.Id, sense.Id)); actions.Children.Add(export); panel.Children.Add(actions);
     }
     private void MeaningDetail(StackPanel panel, F.VocabularyMeaningNode node)
     {
@@ -419,7 +420,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
             }
         }
     }
-    private static string SenseTitle(F.VocabularySense sense)
+    internal static string SenseTitle(F.VocabularySense sense)
     {
         if (sense.Meaning.Length > 0) return sense.Meaning;
         foreach (var block in sense.Content ?? []) if (block.Content is VocabularyBlockContent.Text text && !string.IsNullOrWhiteSpace(text.Value.Text)) return text.Value.Text;

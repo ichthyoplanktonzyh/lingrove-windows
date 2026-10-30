@@ -63,11 +63,7 @@ public partial class WelcomeWindow : Window
         Closing += OnRetiring;
         InterfaceText.ApplyDirection(this);
         InterfaceText.TranslateInitialTree(this);
-        var showcase = new TabControl { Width = 360, Margin = new Thickness(0, 20, 0, 0) };
-        showcase.Items.Add(new TabItem { Header = InterfaceText.Get("Autocomplete"), Content = new WelcomeCompletionDemo() });
-        showcase.Items.Add(new TabItem { Header = InterfaceText.Get("Language Learning"), Content = new TextBlock
-        { Text = "请随时告诉我项目的最新进展。\nPlease keep me posted on the project's progress.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(12) } });
-        StepWelcome.Children.Add(showcase);
+        StepWelcome.Children.Add(ProductFeatureExamples.WelcomeChoices(() => _host.Settings.ExpressionAssistTrigger, current: () => _host.Settings));
         _host.SettingsApplied += HostSettingsApplied;
         Closed += (_, _) => { OpenWindows.Remove(this); _host.SettingsApplied -= HostSettingsApplied; _statusGate.Invalidate(); _modelCts?.Cancel(); };
         WindowTheme.Follow(this);

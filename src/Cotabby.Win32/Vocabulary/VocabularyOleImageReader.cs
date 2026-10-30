@@ -17,11 +17,11 @@ internal static class VocabularyOleImageReader
         foreach (short format in new short[] { 15, unchecked((short)ClipboardNativeMethods.RegisterClipboardFormat("FileGroupDescriptorW")),
             unchecked((short)ClipboardNativeMethods.RegisterClipboardFormat("PNG")), unchecked((short)ClipboardNativeMethods.RegisterClipboardFormat("image/png")), 6,
             unchecked((short)ClipboardNativeMethods.RegisterClipboardFormat("JFIF")), unchecked((short)ClipboardNativeMethods.RegisterClipboardFormat("JPEG")),
-            unchecked((short)ClipboardNativeMethods.RegisterClipboardFormat("image/jpeg")), 17, 8 })
+            unchecked((short)ClipboardNativeMethods.RegisterClipboardFormat("image/jpeg")), 17, 8, 2 })
         {
             if (format == 0) continue;
             short descriptors = unchecked((short)ClipboardNativeMethods.RegisterClipboardFormat("FileGroupDescriptorW"));
-            TYMED kinds = format == 15 || format == descriptors || format is 6 or 17 or 8 ? TYMED.TYMED_HGLOBAL : TYMED.TYMED_HGLOBAL | TYMED.TYMED_ISTREAM;
+            TYMED kinds = format == 2 ? TYMED.TYMED_GDI : format == 15 || format == descriptors || format is 6 or 17 or 8 ? TYMED.TYMED_HGLOBAL : TYMED.TYMED_HGLOBAL | TYMED.TYMED_ISTREAM;
             var request = new FORMATETC { cfFormat = format, dwAspect = DVASPECT.DVASPECT_CONTENT, lindex = -1, tymed = kinds };
             if (source.QueryGetData(ref request) == 0) return true;
         }
@@ -46,7 +46,7 @@ internal static class VocabularyOleImageReader
         foreach (short format in new short[] { 17, 8 })
             if (TryRead(source, format, -1, TYMED.TYMED_HGLOBAL, Maximum) is { } bytes)
                 return VocabularyClipboardDib.Wrap(bytes, format == 17);
-        return null;
+        return TryRead(source, 2, -1, TYMED.TYMED_GDI, Maximum);
     }
     private static byte[] ReadFirstFile(byte[] files)
     {
@@ -100,6 +100,9 @@ internal static class VocabularyOleImageReader
         source.GetData(ref request, out var medium);
         try
         {
+            if (medium.tymed is not (TYMED.TYMED_HGLOBAL or TYMED.TYMED_ISTREAM or TYMED.TYMED_GDI)
+                || (medium.tymed & kinds) != medium.tymed) throw Invalid();
+            if (format == 2 && medium.tymed == TYMED.TYMED_GDI) return VocabularyClipboardBitmap.Read(medium.unionmember);
             if (medium.tymed == TYMED.TYMED_HGLOBAL)
             {
                 nuint length = ClipboardNativeMethods.GlobalSize(medium.unionmember); if (length > (nuint)maximum) throw Invalid();

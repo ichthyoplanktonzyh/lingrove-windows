@@ -40,8 +40,9 @@ startup, admitted transfers, and the receiver's total lifetime are bounded. Edit
 and joins it before destroying the host HWND. A missing helper or failed image is shown explicitly.
 The job isolates lifetime and resource accounting; it is not a reduced-privilege sandbox.
 The existing file-drop target still covers the explanation area. The dedicated surface is a
-Windows airspace adaptation for virtual and pixel data, not a claim that every OLE representation
-or a CF_BITMAP-only provider is supported.
+Windows airspace adaptation for virtual and pixel data. The subsequent
+[native bitmap input module](VOCABULARY_BITMAP_INPUT_3B.md) adds bounded opaque CF_BITMAP/TYMED_GDI
+through this same helper and Store; every OLE representation and producer is not thereby verified.
 
 Synthetic native Windows tests cover RLE4/RLE8 validation and real WIC pixel normalization,
 embedded-profile rejection/bounds and a synthetic linear-light profile converted to sRGB, plus

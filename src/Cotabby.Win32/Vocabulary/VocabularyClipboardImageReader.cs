@@ -7,7 +7,7 @@ namespace Cotabby.Win32.Vocabulary;
 /// <summary>
 /// Read-only encoded-image extraction used inside the killable transfer host. Never run this on
 /// a UI thread: GetClipboardData can synchronously request a foreign application's delayed render.
-/// It copies only the first non-null PNG/TIFF/JPEG or supported DIB representation, bounds its HGLOBAL and never
+/// It copies only the first non-null PNG/TIFF/JPEG, supported DIB or CF_BITMAP representation, bounds each copy and never
 /// empties, replaces or frees Windows-owned clipboard data. Decode belongs to the archive later.
 /// </summary>
 internal sealed class VocabularyClipboardImageReader
@@ -21,15 +21,16 @@ internal sealed class VocabularyClipboardImageReader
         // Registered aliases are Windows producer conventions, not automatic format conversion.
         // Preserve Mac's PNG -> TIFF -> JPEG groups. A non-null invalid blob never falls through.
         _formats = [_native.Register("PNG"), _native.Register("image/png"), 6,
-            _native.Register("JFIF"), _native.Register("JPEG"), _native.Register("image/jpeg"), 17, 8];
+            _native.Register("JFIF"), _native.Register("JPEG"), _native.Register("image/jpeg"), 17, 8, 2];
     }
     // Metadata only: safe for command admission without invoking delayed clipboard rendering.
     internal bool HasAvailableImage() => _formats.Any(format => format != 0 && _native.Available(format));
     internal byte[]? Read(uint expectedSequence)
     {
         var selected = ReadRepresentation(expectedSequence);
-        // Native open/lock ownership ends before format adaptation or pipe output. The parent
-        // still normalizes the resulting encoded BMP through its normal WIC/archive boundary.
+        // Global-memory bytes are detached before DIB wrapping. CF_BITMAP instead returns an
+        // envelope copied under its clipboard lease; every representation is detached before
+        // pipe output and uses the same later WIC/archive normalization boundary.
         return selected is not { } value ? null : value.Format is 17 or 8 ? VocabularyClipboardDib.Wrap(value.Bytes, value.Format == 17) : value.Bytes;
     }
     private (uint Format, byte[] Bytes)? ReadRepresentation(uint expectedSequence)
@@ -55,9 +56,18 @@ internal sealed class VocabularyClipboardImageReader
                 // data is non-nil, so it is returned for normal preparation failure, not fallback.
                 if (handle == IntPtr.Zero) continue;
                 if (_native.Owner != owner) return null;
-                nuint count = _native.Size(handle); if (count > MaximumBytes) throw Invalid();
                 uint renderedSequence = _native.Sequence;
                 if (renderedSequence == 0) return null;
+                if (format == 2)
+                {
+                    // HBITMAP is not an HGLOBAL. Copy while the clipboard still owns it;
+                    // owner/sequence checks and finally-close apply to the native copy too.
+                    byte[] bitmap = _native.ReadBitmap(handle);
+                    if (bitmap.Length > MaximumBytes) throw Invalid();
+                    if (_native.Owner != owner || _native.Sequence != renderedSequence) return null;
+                    return (format, bitmap);
+                }
+                nuint count = _native.Size(handle); if (count > MaximumBytes) throw Invalid();
                 byte[] bytes = new byte[(int)count];
                 if (count > 0)
                 {
@@ -87,6 +97,7 @@ internal sealed class VocabularyClipboardImageReader
         public nuint Size(IntPtr handle) => ClipboardNativeMethods.GlobalSize(handle);
         public IntPtr Lock(IntPtr handle) => ClipboardNativeMethods.GlobalLock(handle);
         public void Unlock(IntPtr handle) => ClipboardNativeMethods.GlobalUnlock(handle);
+        public byte[] ReadBitmap(IntPtr bitmap) => VocabularyClipboardBitmap.Read(bitmap);
     }
 }
 
@@ -103,4 +114,5 @@ internal interface IVocabularyImageClipboard
     nuint Size(IntPtr handle);
     IntPtr Lock(IntPtr handle);
     void Unlock(IntPtr handle);
+    byte[] ReadBitmap(IntPtr bitmap) => throw new InvalidDataException("This clipboard adapter has no bitmap reader.");
 }

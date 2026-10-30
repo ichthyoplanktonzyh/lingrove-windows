@@ -115,8 +115,10 @@ public sealed class VocabularyOleDropPrototypeTests(WpfDispatcher dispatcher)
         while (IsWindow(receiver.Window) && GetWindowThreadProcessId(receiver.Window, out uint current) != 0 && current == pid)
         { Assert.True(DateTime.UtcNow < deadline, $"Exited helper PID {pid} still owns HWND {receiver.Window}."); await Task.Delay(10); }
     }
-    [Fact]
-    public Task SyntheticProviderIsReadByTheHelperAcrossProcesses() => dispatcher.RunAsync(async () =>
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public Task SyntheticProviderIsReadByTheHelperAcrossProcesses(bool bitmap) => dispatcher.RunAsync(async () =>
     {
         var window = new Window { Width = 300, Height = 200, ShowInTaskbar = false }; window.Show();
         var start = new ProcessStartInfo(System.IO.Path.Combine(AppContext.BaseDirectory, "Cotabby.ImageTransferHost.exe"))
@@ -129,12 +131,20 @@ public sealed class VocabularyOleDropPrototypeTests(WpfDispatcher dispatcher)
             var stdout = process.StandardOutput.BaseStream;
             Assert.StartsWith("READY ", await ReadLine(stdout).WaitAsync(TimeSpan.FromSeconds(10)));
             string? target = await ReadLine(stdout).WaitAsync(TimeSpan.FromSeconds(10)); Assert.StartsWith("TARGET ", target);
-            byte[] wire = Convert.FromBase64String(target![7..]); var provider = new PngData();
+            byte[] wire = Convert.FromBase64String(target![7..]); var provider = new PngData { Gdi = bitmap };
             var call = Task.Run(() => InvokeDrop(wire, provider));
             Assert.Equal("DROP", await ReadLine(stdout).WaitAsync(TimeSpan.FromSeconds(10)));
             var reading = VocabularyImageTransferProtocol.ReadAsync(stdout, CancellationToken.None);
             if (await Task.WhenAny(reading, Task.Delay(5000)) != reading) throw new InvalidOperationException($"Read held; call={call.Status}, reads={provider.Reads}, exited={process.HasExited}");
-            Assert.Equal(new byte[] { 1, 2, 3 }, await reading);
+            byte[] bytes;
+            try { bytes = (await reading)!; }
+            catch (Exception error)
+            {
+                await process.WaitForExitAsync().WaitAsync(TimeSpan.FromSeconds(5));
+                throw new InvalidDataException($"Synthetic bitmap={bitmap}; reads={provider.Reads}; child={process.ExitCode}; diagnostic={await process.StandardError.ReadToEndAsync()}", error);
+            }
+            if (bitmap) Assert.Equal(Cotabby.Tests.Shared.VocabularyBitmapFixture.Pixels, bytes[54..]);
+            else Assert.Equal(new byte[] { 1, 2, 3 }, bytes);
             await call.WaitAsync(TimeSpan.FromSeconds(10)); Assert.Equal(1, provider.Reads);
         }
         finally { if (!process.HasExited) process.Kill(); await process.WaitForExitAsync().WaitAsync(TimeSpan.FromSeconds(5)); window.Close(); }
@@ -169,6 +179,7 @@ public sealed class VocabularyOleDropPrototypeTests(WpfDispatcher dispatcher)
     [InlineData(0)]
     [InlineData(1)]
     [InlineData(2)]
+    [InlineData(3)]
     public Task CrossProcessDropSavesThroughCanonicalEditorAndNamedStore(int kind) => dispatcher.RunAsync(async () =>
     {
         string folder = Path.Combine(Path.GetTempPath(), "ole-canonical-" + Guid.NewGuid().ToString("N"));
@@ -183,7 +194,7 @@ public sealed class VocabularyOleDropPrototypeTests(WpfDispatcher dispatcher)
             var editor = new Cotabby.App.UI.Vocabulary.FrozenVocabularyEntryEditorWindow(store, store, entry, entry.Senses.Single().Id, dropStart: Start); editor.Show();
             try
             {
-                var receiver = await started.Task.WaitAsync(TimeSpan.FromSeconds(10)); var provider = new PngData(png) { Virtual = kind != 0, Stream = kind == 2 };
+                var receiver = await started.Task.WaitAsync(TimeSpan.FromSeconds(10)); var provider = new PngData(png) { Virtual = kind is 1 or 2, Stream = kind == 2, Gdi = kind == 3 };
                 if (kind == 0) CaptureNative(editor);
                 await Task.Run(() => InvokeDrop(Convert.FromBase64String(receiver.TestTarget!), provider)).WaitAsync(TimeSpan.FromSeconds(10));
                 var until = DateTime.UtcNow.AddSeconds(10);
@@ -192,6 +203,7 @@ public sealed class VocabularyOleDropPrototypeTests(WpfDispatcher dispatcher)
                 save.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Button.ClickEvent)); await editor.LastOperation!; await editor.RetireAsync();
                 var image = Assert.IsType<Cotabby.Core.Vocabulary.VocabularyBlockContent.Image>((await store.ReadAsync()).Document.Entries.Single().Senses.Single().Content!.Single().Content);
                 Assert.NotEmpty(await store.ReadImageAsync(image.Reference));
+                if (kind == 3) { Assert.Equal(3, image.Reference.Width); Assert.Equal(2, image.Reference.Height); }
             }
             finally { await editor.RetireAsync(); }
         }
@@ -312,11 +324,12 @@ public sealed class VocabularyOleDropPrototypeTests(WpfDispatcher dispatcher)
     public sealed class PngData(byte[]? supplied = null) : IDataObject
     {
         public int Reads;
-        public bool Virtual, Stream;
+        public bool Virtual, Stream, Gdi;
         public ManualResetEventSlim? Entered, Release;
         public int QueryGetData(ref FORMATETC format)
         {
             uint id = unchecked((ushort)format.cfFormat);
+            if (Gdi) return id == 2 && format.tymed == TYMED.TYMED_GDI ? 0 : unchecked((int)0x80040064);
             if (Virtual)
                 return id == RegisterClipboardFormatW("FileGroupDescriptorW") || id == RegisterClipboardFormatW("FileContents") ? 0 : unchecked((int)0x80040064);
             if (id != RegisterClipboardFormatW("PNG")) return unchecked((int)0x80040064);
@@ -324,6 +337,11 @@ public sealed class VocabularyOleDropPrototypeTests(WpfDispatcher dispatcher)
         }
         public void GetData(ref FORMATETC format, out STGMEDIUM medium)
         {
+            if (Gdi)
+            {
+                Interlocked.Increment(ref Reads); using var bitmap = new Cotabby.Tests.Shared.VocabularyBitmapFixture(transferable: true);
+                medium = new() { tymed = TYMED.TYMED_GDI, unionmember = bitmap.Transfer() }; return;
+            }
             Interlocked.Increment(ref Reads); byte[] bytes = supplied ?? [1, 2, 3];
             bool descriptor = Virtual && unchecked((ushort)format.cfFormat) == RegisterClipboardFormatW("FileGroupDescriptorW");
             if (descriptor) { bytes = new byte[596]; System.Buffers.Binary.BinaryPrimitives.WriteUInt32LittleEndian(bytes, 1); System.Text.Encoding.Unicode.GetBytes("image.png\0").CopyTo(bytes, 76); }

@@ -1,5 +1,9 @@
 # Windows bitmap clipboard adaptation
 
+The subsequent [3b native bitmap adapter](VOCABULARY_BITMAP_INPUT_3B.md) also accepts bounded
+CF_BITMAP/TYMED_GDI under the existing helper ownership. This document retains the earlier DIB
+reference and evidence; its checks alone do not establish the newer native-handle path.
+
 Reference: macOS `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`,
 `UI/Vocabulary/VocabularyContentEditor.swift` and
 `Services/Vocabulary/VocabularyImageTransfer.swift`. The existing Mac paste/import/draft rules

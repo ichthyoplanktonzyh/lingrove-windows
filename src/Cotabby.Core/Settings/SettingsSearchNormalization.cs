@@ -9,7 +9,7 @@ namespace Cotabby.Core.Settings;
 /// Existing Darwin data is reused only for its grapheme-extend property, not editor search folds.</summary>
 public static class SettingsSearchNormalization
 {
-    public static string Fold(string value, bool turkic, Func<string, bool, string> fullCaseFold)
+    public static string Fold(string value, Func<string, string> fullCaseFold)
     {
         ArgumentNullException.ThrowIfNull(value); ArgumentNullException.ThrowIfNull(fullCaseFold);
         var result = new StringBuilder(value.Length);
@@ -21,10 +21,10 @@ public static class SettingsSearchNormalization
             string source = original.ToString(), decomposed = FoundationUnicodeNormalization.Normalize(source, NormalizationForm.FormD);
             Rune first = Rune.GetRuneAt(decomposed, 0);
             if (first.Value < 0x0510) source = first.ToString();
-            bool dotted = turkic && source == "I" && position < value.Length && value[position] == '\u0307';
-            if (dotted) position++;
-            string folded = dotted ? "i" : source.Length == 1 && source[0] < 128 && !(turkic && source == "I")
-                ? source.ToLowerInvariant() : fullCaseFold(source, turkic);
+            // The unchanged Mac ranker uses default Unicode I folding even under tr_TR;
+            // this was measured with real Foundation, rather than inferred from Locale.current.
+            string folded = source.Length == 1 && source[0] < 128
+                ? source.ToLowerInvariant() : fullCaseFold(source);
             bool removeMarks = Rune.GetRuneAt(folded, 0).Value < 0x0510;
             foreach (var scalar in folded.EnumerateRunes())
                 if (folded == source || !removeMarks || !FoundationEditorTextData.IsExtend(scalar.Value)) result.Append(scalar.ToString());

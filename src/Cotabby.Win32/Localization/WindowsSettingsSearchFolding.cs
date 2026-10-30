@@ -11,19 +11,17 @@ public sealed class WindowsSettingsSearchUnavailableException() : Exception("Win
 /// No query cache, settings mutation, credential or text transmission is introduced.</summary>
 public sealed partial class WindowsSettingsSearchFolding : ISettingsSearchFolding
 {
-    private readonly bool _turkic;
     public WindowsSettingsSearchFolding(string locale)
     {
-        string supported = InterfaceLanguagePolicy.Normalize(locale) ?? throw new ArgumentException("Unsupported interface locale.", nameof(locale));
-        _turkic = supported == "tr";
+        _ = InterfaceLanguagePolicy.Normalize(locale) ?? throw new ArgumentException("Unsupported interface locale.", nameof(locale));
     }
-    public string Fold(string value) => SettingsSearchNormalization.Fold(value, _turkic, CaseFold);
-    private static unsafe string CaseFold(string value, bool turkic)
+    public string Fold(string value) => SettingsSearchNormalization.Fold(value, CaseFold);
+    private static unsafe string CaseFold(string value)
     {
         fixed (char* source = value)
         {
             char* target = stackalloc char[16]; int status = 0;
-            int length = u_strFoldCase(target, 16, source, value.Length, turkic ? 1u : 0u, &status);
+            int length = u_strFoldCase(target, 16, source, value.Length, 0, &status);
             if (status > 0 || length is < 1 or > 15) throw new WindowsSettingsSearchUnavailableException();
             return new string(target, 0, length);
         }

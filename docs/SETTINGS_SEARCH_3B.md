@@ -43,7 +43,7 @@ No new settings, focus, model, endpoint or AppHost service owner is constructed.
   source duration; WPF honors disabled client animations.
 
 The native fold retains width, kana and Indic distinctions while removing the source's selected
-Roman/Greek/Cyrillic diacritics and applying locale-sensitive full case folding. Canonical comparison
+Roman/Greek/Cyrillic diacritics and applying the measured Foundation full case folding. Canonical comparison
 keys do not change stored strings. The existing editor-fold map is not reused; only its Unicode
 extend-property data is borrowed. Malformed UTF-16 and unavailable native text services fail with
 an explicit localized unavailable state rather than silently selecting different matching rules.
@@ -57,7 +57,7 @@ renders at 96 DPI were inspected in light, dark and simulated high contrast; the
 and revealed row remained legible. These are component renders, not Mac screenshots or native
 mixed-DPI/accessibility acceptance.
 
-`fixtures/parity/settings-search-3b-v1.json` contains 43 scored observations and 23 fold observations,
+`fixtures/parity/settings-search-3b-v1.json` contains 44 scored observations and 24 fold observations,
 including all-token admission, eight-token budgeting, stable ties, grapheme boundaries, Turkish,
 case expansions, accents, width, kana and non-Latin marks. Core tests execute the real policies
 with an isolated full-case primitive; WPF tests execute the actual installed ICU adapter and
@@ -74,6 +74,12 @@ source/hash on Windows; it explicitly does **not** execute Swift. The frozen-voc
 compiles the unchanged original ranker and runs all observations using real Foundation under
 separate `en_US`, `tr_TR`, `zh_CN` and `ar_SA` processes. Its outcome must be checked before claiming
 Mac behavior verification. The existing 68-verifier manifest and historical pins are unchanged.
+
+The first real Mac run on macOS 26.6.1 exposed an incorrect Turkic-fold assumption: the unchanged
+ranker normalized both `I` and `İ` to `i` even under `tr_TR`, and retained dotless `ı`. The Windows
+projection and the new, unmerged corpus were corrected to those actual Foundation observations;
+opposing dotted/dotless matching cases now guard the distinction. This does not repin or change
+any historical corpus. The verifier evaluates every locale even if an earlier locale fails.
 
 Remaining internationalization includes other authored settings/auxiliary-window and typed-domain
 copy. Physical keyboard/screen-reader, mixed DPI and the final Word/Chrome/Codex acceptance remain

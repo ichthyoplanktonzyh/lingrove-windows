@@ -7,11 +7,11 @@ namespace Cotabby.Core.Tests.Settings;
 /// tests. This stand-in supplies Unicode full-fold primitives only, not scoring or accent rules.</summary>
 public sealed class SettingsSearchRankerTests
 {
-    private sealed class Folding(string locale) : ISettingsSearchFolding
+    private sealed class Folding : ISettingsSearchFolding
     {
-        public string Fold(string value) => SettingsSearchNormalization.Fold(value, locale.StartsWith("tr", StringComparison.Ordinal), CaseFold);
-        private static string CaseFold(string value, bool turkic) => value switch
-        { "I" when turkic => "ı", "ß" => "ss", "ﬃ" => "ffi", "ς" => "σ", _ => value.ToLowerInvariant() };
+        public string Fold(string value) => SettingsSearchNormalization.Fold(value, CaseFold);
+        private static string CaseFold(string value) => value switch
+        { "ß" => "ss", "ﬃ" => "ffi", "ς" => "σ", _ => value.ToLowerInvariant() };
     }
     [Fact]
     public void ScoresAndStableNavigationMatchTheCommittedMacCorpus()
@@ -23,7 +23,7 @@ public sealed class SettingsSearchRankerTests
                 item.GetProperty("id").GetString()!, item.GetProperty("title").GetString()!,
                 item.GetProperty("keywords").EnumerateArray().Select(value => value.GetString()!),
                 item.GetProperty("group").GetString()!, item.GetProperty("summary").GetString()!)).ToArray();
-            var actual = SettingsSearchRanker.Matches(row.GetProperty("query").GetString()!, items, new Folding(row.GetProperty("locale").GetString()!));
+            var actual = SettingsSearchRanker.Matches(row.GetProperty("query").GetString()!, items, new Folding());
             var expected = row.GetProperty("expected").EnumerateArray().Select(value => (Id: value.GetProperty("id").GetString(), Score: value.GetProperty("score").GetDouble())).ToArray();
             Assert.True(expected.SequenceEqual(actual.Select(value => ((string?)value.Value, value.Score))), row.GetProperty("id").GetString());
         }
@@ -35,7 +35,7 @@ public sealed class SettingsSearchRankerTests
         foreach (var row in json.RootElement.GetProperty("folds").EnumerateArray())
         {
             string expected = row.GetProperty("expected").GetString()!.Normalize();
-            string actual = new Folding(row.GetProperty("locale").GetString()!).Fold(row.GetProperty("text").GetString()!);
+            string actual = new Folding().Fold(row.GetProperty("text").GetString()!);
             Assert.True(expected == actual, row.GetProperty("id").GetString() + ": " + actual);
         }
     }
@@ -44,6 +44,6 @@ public sealed class SettingsSearchRankerTests
     {
         var words = new[] { "original" }; var item = new SettingsSearchItem<int>(1, "Title", words, "", ""); words[0] = "changed";
         Assert.Equal("original", Assert.Single(item.Keywords));
-        Assert.Throws<ArgumentException>(() => new Folding("en").Fold("\ud800"));
+        Assert.Throws<ArgumentException>(() => new Folding().Fold("\ud800"));
     }
 }

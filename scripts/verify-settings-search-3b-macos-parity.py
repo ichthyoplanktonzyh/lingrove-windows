@@ -72,8 +72,12 @@ def main():
         driver = directory / "Main.swift"; driver.write_text(DRIVER, encoding="utf-8")
         executable = directory / "settings-search"
         subprocess.run(["swiftc", str(policy), str(driver), "-o", str(executable)], check=True, timeout=120)
+        failed = False
         for locale in sorted({row["locale"] for row in corpus["cases"] + corpus["folds"]}):
-            subprocess.run([str(executable), str(args.fixture.resolve()), locale, "-AppleLocale", locale], check=True, timeout=30)
+            result = subprocess.run([str(executable), str(args.fixture.resolve()), locale, "-AppleLocale", locale], timeout=30)
+            failed |= result.returncode != 0
+        if failed:
+            raise SystemExit("Original Mac settings-search observations failed")
 
 
 if __name__ == "__main__":

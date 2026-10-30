@@ -887,6 +887,21 @@
           "summary": ""
         }
       ],
+      "expected": []
+    },
+    {
+      "id": "turkish-default-I",
+      "locale": "tr_TR",
+      "query": "i",
+      "items": [
+        {
+          "id": "x",
+          "title": "I",
+          "keywords": [],
+          "group": "",
+          "summary": ""
+        }
+      ],
       "expected": [
         {
           "id": "x",
@@ -1014,13 +1029,13 @@
       "id": "turkic-I",
       "locale": "tr_TR",
       "text": "I",
-      "expected": "ı"
+      "expected": "i"
     },
     {
       "id": "turkic-precomposed-dot",
       "locale": "tr_TR",
       "text": "İ",
-      "expected": "ı"
+      "expected": "i"
     },
     {
       "id": "turkic-combining-dot",
@@ -1032,7 +1047,13 @@
       "id": "turkic-word",
       "locale": "tr_TR",
       "text": "TITLE",
-      "expected": "tıtle"
+      "expected": "title"
+    },
+    {
+      "id": "turkic-retains-dotless",
+      "locale": "tr_TR",
+      "text": "ı",
+      "expected": "ı"
     }
   ]
 }

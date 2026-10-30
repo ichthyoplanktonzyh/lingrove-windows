@@ -33,7 +33,9 @@ meaning-node and mapping edits. The [latest organization workflow](docs/VOCABULA
 adds atomic category/meaning drafts and localized catalog guidance; usage-pattern edits are connected.
 The [independent card editor](docs/ANKI_CANONICAL_CARD_WINDOW.md) and
 [batch review](docs/ANKI_CANONICAL_REVIEW_BATCH.md) now borrow the existing Feature/client and the
-same Store. Graph, export, speech/audio and reading each retain their scoped implementation records;
+same Store. [Current review preparation](docs/ANKI_REVIEW_PREPARATION_3B.md) also admits default and
+preserved layouts through that same session without changing card/model/mapping identity.
+Graph, export, speech/audio and reading each retain their scoped implementation records;
 none establishes complete native parity. The
 [reading/CLI/interface composition](docs/WINDOWS_READING_CLI_INTERFACE_CHECKPOINT_20261030.md)
 shares this Store, launches one private mailbox, freezes interface language before window construction

@@ -52,6 +52,7 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
     internal StackPanel PreviewPanel => _preview;
     internal ComboBox SideBox => _side;
     internal Button SettingsButton => _settings;
+    internal ComboBox PreservedPlanBox => _preserved;
     private readonly Button _save = new() { Content = InterfaceText.Get("Save"), Name = "reviewSave", MinWidth = 90 },
         _send = new() { Content = InterfaceText.Get("Add to Anki"), Name = "reviewSend", IsDefault = true, MinWidth = 110 },
         _cancel = new() { Content = InterfaceText.Get("Cancel"), IsCancel = true, MinWidth = 90 },
@@ -74,32 +75,31 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
 
     internal CanonicalAnkiReviewWindow(CanonicalAnkiReviewSession session, Func<Func<CancellationToken, Task>, Task> admit, Action configure, IVocabularyClipboardImageTransfer? clipboard = null, bool embeddedExample = false, bool allowExternalMedia = true)
     {
-        if (session.CardId is null && session.Plan.Layout is not null) throw new NotSupportedException("Custom review card layout preparation is not available yet.");
         _session = session; _clipboard = clipboard; _admit = admit; _configure = configure; _embeddedExample = embeddedExample;
         _allowExternalMedia = allowExternalMedia && !embeddedExample;
         Title = InterfaceText.Get("Prepare review", "Vocabulary"); Width = 720; Height = 760; MinWidth = 560; MinHeight = 500; WindowStartupLocation = WindowStartupLocation.CenterOwner;
         VocabularyNotebookTheme.Follow(this);
         var root = new DockPanel { Margin = new Thickness(22) }; Content = root;
-        var heading = VocabularyInputControls.Heading("Prepare review"); DockPanel.SetDock(heading, Dock.Top); root.Children.Add(heading);
+        var heading = VocabularyInputControls.Heading(ReviewText("Prepare review")); DockPanel.SetDock(heading, Dock.Top); root.Children.Add(heading);
         DockPanel.SetDock(_speechDestination, Dock.Top); root.Children.Add(_speechDestination);
         if (_session.Audio.Speech is ISpeechDestinationDisclosure disclosure) disclosure.PropertyChanged += SpeechDestinationChanged;
         RefreshSpeechDestination();
         var footer = VocabularyInputControls.Footer(_settings, _cancel, _save, _send); DockPanel.SetDock(footer, Dock.Bottom); root.Children.Add(footer);
         var deckControl = new StackPanel(); deckControl.Children.Add(_deck); deckControl.Children.Add(_deckText); VocabularyNotebookTheme.Input(_deckText); VocabularyNotebookTheme.Combo(_deck);
         var scroll = new ScrollViewer { VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Content = _form }; root.Children.Add(scroll);
-        var destination = VocabularyInputControls.Group(("Destination", _destination), ("Association", _binding), ("Deck", deckControl), ("", _reload));
-        _side.ItemsSource = new[] { "Front", "Back" }; _side.SelectedIndex = 0;
+        var destination = VocabularyInputControls.Group(("Anki connection", _destination), ("Anki association", _binding), ("Deck", deckControl), ("", _reload));
+        _side.ItemsSource = new[] { ReviewText("Front"), ReviewText("Back") }; _side.SelectedIndex = 0;
         if (session.CardId is not null) { BuildLayoutControls(); _form.Children.Add(_layoutPanel); _form.Children.Add(destination); }
         else
         {
             _form.Children.Add(destination);
-            _form.Children.Add(VocabularyInputControls.Group(("Review example", _example), ("Preserved plan", _preserved), ("Review answer", _answer), ("", _recognition), ("", _gap), ("", _notes), ("", _senseContent), ("", _explanation), ("", _resetFields), ("", _clearAudio), ("", _updateTemplate)));
+            _form.Children.Add(VocabularyInputControls.Group(("Review example", _example), ("Preserved review plans", _preserved), ("Review answer", _answer), ("", _recognition), ("", _gap), ("", _notes), ("", _senseContent), ("", _explanation), ("", _resetFields), ("", _clearAudio), ("", _updateTemplate)));
         }
         int audioIndex = _form.Children.Count;
-        if (_session.Audio.Speech is null) _form.Children.Add(VocabularyInputControls.Caption("Review audio is unavailable. Remove any requested audio before sending."));
-        _cardType.ItemsSource = new[] { "Recognition card", "Gap card" }; _cardType.SelectedIndex = 0;
+        if (_session.Audio.Speech is null) _form.Children.Add(VocabularyInputControls.Caption(ReviewText("Review audio is unavailable. Remove any requested audio before sending.")));
+        _cardType.ItemsSource = new[] { ReviewText("Recognition card"), ReviewText("Gap card") }; _cardType.SelectedIndex = 0;
         _form.Children.Add(VocabularyInputControls.Heading(InterfaceText.Get("Card preview")));
-        if (session.CardId is null) _form.Children.Add(VocabularyInputControls.Group(("Card type", _cardType), ("Side", _side)));
+        if (session.CardId is null) _form.Children.Add(VocabularyInputControls.Group(("Card type", _cardType), ("Card side", _side)));
         _form.Children.Add(_preview);
         _form.Children.Add(_conflicts); _form.Children.Add(_validation); _form.Children.Add(_state);
         VocabularyNotebookTheme.Brush(_state, TextBlock.ForegroundProperty, "OrangeBrush");
@@ -120,7 +120,7 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
         _binding.SelectionChanged += (_, _) => { if (_updating) return; _session.SelectBinding((_binding.SelectedItem as Option)?.Id); _choices.Clear(); Start(LoadAsync); };
         _example.SelectionChanged += (_, _) => { if (_updating) return; var id = (_example.SelectedItem as Option)?.Id; var p = _session.Plan; var audio = p.AudioKinds?.Where(k => id is not null || k != ReviewAudioKind.Sentence).ToHashSet(); var (entry, sense) = Current(); var example = sense.Examples.FirstOrDefault(e => e.Id == id); bool canGap = example is not null && ReviewCardPolicy.Gap(example.Text, example.Ranges, entry.Kind) is not null; _session.Plan = p with { ExampleId = id, Gap = p.Gap && canGap, FieldOverrides = new Dictionary<string, string>(), AudioKinds = audio }; Fill(); RefreshDraft(); };
         _cardType.SelectionChanged += (_, _) => { if (!_updating) RefreshDraft(); }; _side.SelectionChanged += (_, _) => { if (!_updating) { if (_session.CardId is not null) RenderLayout(); RefreshDraft(); } };
-        _preserved.SelectionChanged += (_, _) => { if (!_updating && _preserved.SelectedItem is PlanOption plan) { if (plan.Plan.Layout is not null) { _state.Text = InterfaceText.Get("Custom review layouts are not available yet.", "Vocabulary"); return; } _session.RestorePlan(plan.Plan); _previewVersion++; Fill(); RefreshDraft(); } };
+        _preserved.SelectionChanged += (_, _) => { if (!_updating && _preserved.SelectedItem is PlanOption plan) { _session.RestorePlan(plan.Plan); _previewVersion++; Fill(); RefreshDraft(); } };
         _answer.TextChanged += (_, _) => { if (!_updating) { _session.Plan = _session.Plan with { Answer = _answer.Text }; RefreshDraft(); } };
         _deckText.TextChanged += (_, _) => { if (!_updating) { _session.Deck = _deckText.Text; RefreshDraft(); } };
         _deck.SelectionChanged += (_, _) => { if (!_updating && _deck.SelectedItem is string value) { _session.Deck = value; RefreshDraft(); } };
@@ -144,6 +144,9 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
         Closing += OnClosing; _seenRevision = session.Snapshot.Revision; session.PropertyChanged += SessionChanged; session.Audio.PropertyChanged += AudioChanged; session.Controller.Settings.PropertyChanged += SettingsChanged; Closed += (_, _) => RetirePresentation();
         Fill();
     }
+    // Only authored labels and enum-derived source keys enter this table. Notebook text,
+    // template names, field names, endpoint/profile values and errors keep their own spelling.
+    private static string ReviewText(string source) => InterfaceText.Get(source, "Vocabulary");
     private void SpeechDestinationChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (_closing || Dispatcher.HasShutdownStarted) return;
@@ -155,13 +158,13 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
         var shown = ReviewSpeechDisclosure.Capture(_session.Audio.Speech);
         if (Equals(_shownSpeech, shown) && _speechDestination.Text.Length != 0) return;
         _shownSpeech = shown;
-        _speechDestination.Text = shown is null ? InterfaceText.Get("Speech for review audio: unavailable. Configure speech before preparing audio.", "Vocabulary") : "Speech for review audio: " + shown.Destination;
+        _speechDestination.Text = shown is null ? InterfaceText.Get("Speech for review audio: unavailable. Configure speech before preparing audio.", "Vocabulary") : InterfaceText.Format("Speech for review audio: {0}", shown.Destination);
         _session.PresentAudioDisclosure(IsVisible ? shown : null);
         if (_started && !_closing) RefreshDraft();
     }
     private void AudioChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (!_closing && _session.Audio.Generating is { } kind) _state.Text = "Preparing " + kind.Label() + "…";
+        if (!_closing && _session.Audio.Generating is { } kind) _state.Text = InterfaceText.Format("Preparing {0}…", ReviewText(kind.Label()));
     }
     private void SettingsChanged(object? sender, PropertyChangedEventArgs e)
     {
@@ -188,18 +191,18 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
         try
         {
             var (entry, sense) = Current(); var p = _session.Plan; var review = _session.CardId is { } cardId ? sense.ReviewCards?.FirstOrDefault(r => r.Plan.Id == cardId) : sense.Review;
-            _binding.Items.Clear(); _binding.Items.Add(new Option(review?.Bindings.Count > 0 ? "Choose…" : "New association", null));
-            foreach (var b in review?.Bindings ?? []) _binding.Items.Add(new Option($"{b.Profile} · {(b.NoteId?.ToString() ?? "Ready to send")}", b.Id));
+            _binding.Items.Clear(); _binding.Items.Add(new Option(ReviewText(review?.Bindings.Count > 0 ? "Choose…" : "New association"), null));
+            foreach (var b in review?.Bindings ?? []) _binding.Items.Add(new Option($"{b.Profile} · {(b.NoteId?.ToString() ?? ReviewText("Ready to send"))}", b.Id));
             _binding.SelectedItem = _binding.Items.Cast<Option>().FirstOrDefault(o => o.Id == _session.BindingId);
-            _example.Items.Clear(); _example.Items.Add(new Option("No context", null));
+            _example.Items.Clear(); _example.Items.Add(new Option(ReviewText("No context"), null));
             foreach (var e in sense.Examples) _example.Items.Add(new Option(e.Text, e.Id));
             _example.SelectedItem = _example.Items.Cast<Option>().FirstOrDefault(o => o.Id == p.ExampleId);
-            _preserved.Items.Clear(); foreach (var plan in review?.PreservedPlans ?? []) _preserved.Items.Add(new PlanOption(plan.Answer ?? "Preserved plan", plan));
-            if (_preserved.Items.Count == 0) { _preserved.Items.Add("No preserved plans"); _preserved.SelectedIndex = 0; _preserved.IsEnabled = false; } else _preserved.IsEnabled = true;
+            _preserved.Items.Clear(); foreach (var plan in review?.PreservedPlans ?? []) _preserved.Items.Add(new PlanOption(plan.Answer ?? ReviewText("Preserved review plans"), plan));
+            if (_preserved.Items.Count == 0) { _preserved.Items.Add(ReviewText("No preserved plans")); _preserved.SelectedIndex = 0; _preserved.IsEnabled = false; } else _preserved.IsEnabled = true;
             _deck.Items.Clear(); foreach (string deck in (_session.Catalog?.Decks ?? []).Append(_session.Deck).Distinct()) _deck.Items.Add(deck); _deck.SelectedItem = _session.Deck; _deckText.Text = _session.Deck; _deck.Visibility = _session.Catalog is null ? Visibility.Collapsed : Visibility.Visible; _deckText.Visibility = _session.Catalog is null ? Visibility.Visible : Visibility.Collapsed;
             _deck.IsEnabled = _deckText.IsEnabled = _session.Binding?.NoteId is null;
             string answer = p.Answer ?? ""; if (p.Answer is null) { try { answer = CanonicalReviewCardPolicy.Content(entry, sense, p with { Recognition = true, Gap = false }).Answer; } catch (AnkiReviewException) { } } _answer.Text = answer; _recognition.IsChecked = p.Recognition; _recognition.IsEnabled = !_session.HasExistingCard(ReviewField.Recognition); _gap.IsChecked = p.Gap; var selectedExample = sense.Examples.FirstOrDefault(e => e.Id == p.ExampleId); bool canGap = selectedExample is not null && ReviewCardPolicy.Gap(selectedExample.Text, selectedExample.Ranges, entry.Kind) is not null; _gap.IsEnabled = !_session.HasExistingCard(ReviewField.GapPrompt) && (canGap || p.Gap); _notes.IsChecked = p.IncludeNotes; _senseContent.IsChecked = p.IncludeSenseContent == true; _explanation.IsChecked = p.IncludeExplanation;
-            _destination.Text = $"{AnkiArchiveEndpointPolicy.Normalize(_session.Controller.Settings.Address) ?? "Invalid Anki address"}\nProfile: {(_loadedAddress == _session.Controller.Settings.Address ? _session.Catalog?.Profile : null) ?? "Not loaded"}\nNote type: {_session.Model}";
+            _destination.Text = $"{AnkiArchiveEndpointPolicy.Normalize(_session.Controller.Settings.Address) ?? ReviewText("Invalid Anki address")}\n{ReviewText("Anki profile")}: {(_loadedAddress == _session.Controller.Settings.Address ? _session.Catalog?.Profile : null) ?? ReviewText("Not loaded")}\n{ReviewText("Note type")}: {_session.Model}";
             _resetFields.Visibility = p.FieldOverrides.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
             _clearAudio.Visibility = (p.AudioKinds?.Count ?? 0) > 0 && _session.Audio.Speech is null ? Visibility.Visible : Visibility.Collapsed;
             _expressionAudio.IsChecked = p.AudioKinds?.Contains(ReviewAudioKind.Expression) == true; _sentenceAudio.IsChecked = p.AudioKinds?.Contains(ReviewAudioKind.Sentence) == true;
@@ -214,7 +217,7 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
             {
                 _conflicts.Children.Add(VocabularyInputControls.Heading(InterfaceText.Get("Anki fields changed")));
                 _conflicts.Children.Add(new TextBlock { Text = $"{conflict.Id}\nLingrove: {conflict.Local}\nAnki: {conflict.Remote}", TextWrapping = TextWrapping.Wrap });
-                var choice = new ComboBox { ItemsSource = new[] { "Choose…", "Keep Lingrove", "Keep Anki" }, SelectedIndex = _choices.TryGetValue(conflict.Id, out bool remote) ? remote ? 2 : 1 : 0 };
+                var choice = new ComboBox { ItemsSource = new[] { ReviewText("Choose…"), ReviewText("Keep Lingrove"), ReviewText("Keep Anki") }, SelectedIndex = _choices.TryGetValue(conflict.Id, out bool remote) ? remote ? 2 : 1 : 0 };
                 choice.SelectionChanged += (_, _) => { if (choice.SelectedIndex > 0) { bool value = choice.SelectedIndex == 2; _choices[conflict.Id] = value; _session.SetKeepRemote(conflict.Id, value); UpdateEnabled(); } };
                 _conflicts.Children.Add(choice);
             }
@@ -258,20 +261,24 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
         string? validation = await _session.ValidationMessageAsync(token); ReviewCardContent? content = null; try { content = await _session.ContentAsync(token); } catch (AnkiReviewException error) { validation ??= error.Message; }
         if (version != _previewVersion || _closing) return;
         _validation.Text = validation ?? (_loadedAddress == _session.Controller.Settings.Address ? "" : InterfaceText.Get("Refresh the Anki connection before sending.", "Vocabulary")); _preview.Children.Clear(); if (content is null) { UpdateEnabled(); return; }
-        void Line(string label, string value) { if (value.Length != 0) _preview.Children.Add(new TextBlock { Text = label + ": " + value, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 3, 0, 3) }); }
+        void Line(string label, string value, bool authoredLabel = true) { if (value.Length != 0) _preview.Children.Add(new TextBlock { Text = (authoredLabel ? ReviewText(label) : label) + ": " + value, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 3, 0, 3) }); }
         if ((!_session.CurrentPresetTemplate && !_session.LegacyPresetTemplate) || _session.Plan.FieldOverrides.Count > 0)
         {
-            try { var fields = AnkiReviewPolicy.Fields(content, _session.Binding?.OriginSenseId ?? _session.SenseId, _session.Mapping, _session.Plan.FieldOverrides, AnkiReviewPolicy.AudioFields(_session.Plan)); foreach (var field in fields.OrderBy(p => p.Key)) Line(field.Key, field.Value); }
+            try { var fields = AnkiReviewPolicy.Fields(content, _session.Binding?.OriginSenseId ?? _session.SenseId, _session.Mapping, _session.Plan.FieldOverrides, AnkiReviewPolicy.AudioFields(_session.Plan)); foreach (var field in fields.OrderBy(p => p.Key)) Line(field.Key, field.Value, false); }
             catch (AnkiReviewException error) { _validation.Text = error.Message; }
             UpdateEnabled(); return;
         }
         bool gap = _cardType.SelectedIndex == 1, back = _side.SelectedIndex == 1;
-        if (gap && !content.Gap || !gap && !content.Recognition) Line("Card", "This card is not enabled.");
+        if (gap && !content.Gap || !gap && !content.Recognition) Line("Card type", ReviewText("This card is not enabled."));
+        else if (content.Front is not null && content.Back is not null)
+        {
+            await AppendResolvedPreviewAsync(content, version, token); UpdateEnabled(); return;
+        }
         else
         {
-            if (gap) { Line("Gap", content.GapPrompt); if (_session.LegacyPresetTemplate) Line("Answer", content.Answer); }
+            if (gap) { Line("Gap question", content.GapPrompt); if (_session.LegacyPresetTemplate) Line("Review answer", content.Answer); }
             else Line(content.Sentence.Length == 0 ? "Expression" : "Example", content.Sentence.Length == 0 ? content.Expression : content.Sentence);
-            if (back) { if (gap) Line("Example", content.Sentence); Line("Answer", content.Answer); }
+            if (back) { if (gap) Line("Example", content.Sentence); Line("Review answer", content.Answer); }
         }
         if (!back || gap && !content.Gap || !gap && !content.Recognition) { UpdateEnabled(); return; }
         foreach (var block in content.SenseContent)
@@ -281,7 +288,7 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
             {
                 try { byte[] bytes = await _session.Store.ReadImageAsync(image.Reference, token); if (version != _previewVersion || _closing) return; using var stream = new MemoryStream(bytes); var bitmap = new BitmapImage(); bitmap.BeginInit(); bitmap.CacheOption = BitmapCacheOption.OnLoad; bitmap.StreamSource = stream; bitmap.EndInit(); bitmap.Freeze(); _preview.Children.Add(new Image { Source = bitmap, MaxWidth = 360, MaxHeight = 180, HorizontalAlignment = HorizontalAlignment.Left }); Line("Caption", image.Caption); }
                 catch (OperationCanceledException) { throw; }
-                catch { Line("Image", "Image unavailable. Add it again before sending."); }
+                catch { Line("Image", ReviewText("An explanation image is missing. Add it again before sending.")); }
             }
         }
         Line("Expression", content.Expression); Line("Translation", content.Translation); Line("Notes", content.Notes); Line("AI explanation", content.Explanation);

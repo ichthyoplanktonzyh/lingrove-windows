@@ -9,6 +9,11 @@ Compared the cited review view, session, controller, support and review-card arc
 `3b53402f2cbc196b0398d133177fd80006d165b2`; those paths have no changes from the cited revision.
 Meaning/classification and graph changes elsewhere require their own module upgrade.
 
+This historical handoff's audio/media/template limits are superseded by
+[current review preparation](ANKI_REVIEW_PREPARATION_3B.md) and its linked integration records.
+Card-only clipboard/file drops, production review audio and canonical settings template removal
+are now connected; default/preserved layouts also open through the existing review owner.
+
 The notebook ReviewSection uses a new UUID for Add and the saved plan ID for Edit. A modal
 `CanonicalAnkiReviewWindow` borrows the existing canonical session; name, example, front/back,
 four source presets, source slots, ordered parts, sense block IDs, captions, card-only text/image
@@ -53,5 +58,5 @@ Add/Edit/confirmed Remove, navigation scope/selection and latest-Store binding c
 Anki server, network, model or clipboard is used.
 
 ```powershell
-dotnet test tests/Cotabby.App.Wpf.Tests/Cotabby.App.Wpf.Tests.csproj -c Release --filter 'FullyQualifiedName~FrozenVocabularyReviewSectionTests|FullyQualifiedName~CanonicalAnkiReviewWindowTests|FullyQualifiedName~CanonicalAnkiReviewSessionTests|FullyQualifiedName~FrozenVocabularyNotebookWindowTests'
+& ./scripts/test-wpf-dev.ps1 -Configuration Release -NoBuild -NoRestore -Filter 'FullyQualifiedName~FrozenVocabularyReviewSectionTests|FullyQualifiedName~CanonicalAnkiReviewWindowTests|FullyQualifiedName~CanonicalAnkiReviewSessionTests|FullyQualifiedName~FrozenVocabularyNotebookWindowTests'
 ```

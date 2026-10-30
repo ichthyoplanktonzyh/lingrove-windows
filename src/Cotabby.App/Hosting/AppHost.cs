@@ -230,7 +230,9 @@ public sealed class AppHost : IAsyncDisposable
         Review = AnkiReviewFeature.CreateConnectionSettings(() => Settings, () => SettingsStore.Save(Settings),
             new Cotabby.Win32.Review.AnkiConnectClient(), new DpapiAnkiCredentialStore(),
             activateExisting: new Cotabby.Win32.Review.WindowsAnkiActivator().ActivateExisting,
-            speech: Speech.Controller, canonicalStore: _notebook.Store);
+            speech: Speech.Controller, canonicalStore: _notebook.Store,
+            failureText: Cotabby.App.Localization.InterfaceFailureText.For,
+            text: key => Cotabby.App.Localization.InterfaceText.Get(key, "Vocabulary"));
         Review.Controller.Configure = () => SettingsWindow.ShowReview(this);
         _notebook.Window.AttachReviewFeature(Review, () => SettingsWindow.ShowReview(this));
         Vocabulary.EnrichCapture = capture =>

@@ -61,7 +61,7 @@ internal sealed partial class CanonicalAnkiReviewSession : INotifyPropertyChange
         Controller = controller; Audio = new ReviewAudioPreparation(controller.Speech); Store = store; _snapshot = snapshot; _context = SynchronizationContext.Current; EntryId = entry.Id; SenseId = sense.Id; CardId = cardId;
         _initialDefaultDeck = controller.Settings.Deck; _initialDefaultRecognition = controller.Settings.DefaultRecognition; _initialDefaultGap = controller.Settings.DefaultGap;
         _baseline = ReviewValue(sense, cardId); var initial = _baseline?.Plan ?? CanonicalReviewCardPolicy.InitialPlan(sense);
-        if (cardId is { } id && _baseline is null) initial = new ReviewPlan(id) { Name = "New card", Layout = ReviewLayoutPolicy.Preset(0), ExampleId = sense.Examples.FirstOrDefault()?.Id };
+        if (cardId is { } id && _baseline is null) initial = new ReviewPlan(id) { Name = Controller.DisplayText("New card"), Layout = ReviewLayoutPolicy.Preset(0), ExampleId = sense.Examples.FirstOrDefault()?.Id };
         if (_baseline is null && cardId is null) { var example = sense.Examples.FirstOrDefault(); bool gap = _initialDefaultGap && example is not null && ReviewCardPolicy.Gap(example.Text, example.Ranges, entry.Kind) is not null; initial = initial with { Recognition = _initialDefaultRecognition || !gap, Gap = gap }; }
         _plan = initial; _bindingId = _baseline?.ActiveBindingId; _deck = _baseline?.ActiveBinding?.Deck ?? initial.Deck ?? _initialDefaultDeck;
         if (!Same(Model, AnkiReviewPolicy.PresetName)) Plan = _plan with { Recognition = true };
@@ -123,7 +123,7 @@ internal sealed partial class CanonicalAnkiReviewSession : INotifyPropertyChange
     private void RequireNoAudio()
     {
         if (((Plan.AudioKinds?.Count ?? 0) != 0 || (Plan.Layout?.AudioKinds.Count ?? 0) != 0) && Audio.Speech is null)
-            throw new AnkiReviewException("Speech is not available for review audio.");
+            throw new AnkiReviewException(AnkiReviewFailure.ReviewSpeechUnavailable);
         if ((Plan.AudioKinds?.Count ?? 0) != 0 || (Plan.Layout?.AudioKinds.Count ?? 0) != 0) RequireAudioDisclosure();
     }
     private sealed record SendState(ReviewPlan Plan, string Deck, Guid? BindingId, string Model, IReadOnlyDictionary<ReviewField, string> Mapping);
@@ -157,18 +157,18 @@ internal sealed partial class CanonicalAnkiReviewSession : INotifyPropertyChange
         try
         {
             RequireNoAudio(); var current = await CurrentAsync(token);
-            if (Binding is { } binding && RemovesExistingCard(Plan, binding)) return "Manage existing card types in Anki.";
+            if (Binding is { } binding && RemovesExistingCard(Plan, binding)) return Controller.DisplayText("Manage existing card types in Anki.");
             if (_baseline?.NeedsBindingChoice == true && BindingId is null || Deck.Length == 0
-                || Binding?.NoteId is null && Catalog is { } catalog && !Has(catalog.Decks, Deck)) return "Choose a deck and an Anki association.";
+                || Binding?.NoteId is null && Catalog is { } catalog && !Has(catalog.Decks, Deck)) return Controller.DisplayText("Choose a deck and an Anki association.");
             var content = CanonicalReviewCardPolicy.Content(current.Entry, current.Sense, Plan);
             ValidateAudioMapping(content);
             if (Same(Model, AnkiReviewPolicy.PresetName) && Plan.Gap && content.SenseContent.Count > 0 && !SafeGapFront && !Loading)
-                return "Update the Lingrove template before adding explanation content to gap cards.";
+                return Controller.DisplayText("Update the Lingrove template before adding explanation content to gap cards.");
             var fields = AnkiReviewPolicy.Fields(content, Binding?.OriginSenseId ?? CardId ?? SenseId, Mapping, Plan.FieldOverrides);
             return AvailableFields.Count > 0 && fields.Keys.Any(field => !Has(AvailableFields, field)) ? "The Anki note type does not contain the mapped fields." : null;
         }
         catch (OperationCanceledException) { throw; }
-        catch (Exception error) { return error.Message; }
+        catch (Exception error) { return Controller.DisplayFailure(error); }
     }
     internal void RestorePlan(ReviewPlan saved)
     {
@@ -181,7 +181,7 @@ internal sealed partial class CanonicalAnkiReviewSession : INotifyPropertyChange
         if (Busy) return false;
         Busy = true; Changed();
         try { await SavePlanAsync(token); return true; }
-        catch (Exception error) { Message = error is OperationCanceledException ? null : error.Message; Changed(); return false; }
+        catch (Exception error) { Message = error is OperationCanceledException ? null : Controller.DisplayFailure(error); Changed(); return false; }
         finally { Busy = false; Changed(); }
     }
     private async Task SavePlanAsync(CancellationToken token)
@@ -190,7 +190,7 @@ internal sealed partial class CanonicalAnkiReviewSession : INotifyPropertyChange
         var current = await CurrentAsync(token); if (ReviewValue(current.Sense, CardId) != _baseline) throw Conflict();
         if (_sendState is not null) RequireSendState();
         var plan = captured.Plan;
-        if (CardId is not null && (plan.Name is null || FoundationText.TrimWhitespaceAndNewlines(plan.Name).Length == 0)) plan = plan with { Name = "New card" };
+        if (CardId is not null && (plan.Name is null || FoundationText.TrimWhitespaceAndNewlines(plan.Name).Length == 0)) plan = plan with { Name = Controller.DisplayText("New card") };
         plan = plan with { Deck = captured.Deck };
         if (plan.Layout is { } layout && (plan.AudioKinds is null || !plan.AudioKinds.SetEquals(layout.AudioKinds))) plan = plan with { AudioKinds = layout.AudioKinds };
         if (MatchesSendState(captured))

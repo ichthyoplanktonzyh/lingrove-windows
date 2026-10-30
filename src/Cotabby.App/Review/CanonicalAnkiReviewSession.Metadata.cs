@@ -42,7 +42,7 @@ internal sealed partial class CanonicalAnkiReviewSession
             if (Binding is null && Plan.Deck is null && !Controller.Settings.HasSavedDeck && !Has(catalog.Decks, Deck) && catalog.Decks.FirstOrDefault() is { } first) Deck = first;
             Changed();
         }
-        catch (Exception error) { if ((requestedConnection is null ? _metadataId == request && BindingId == selectedId && Same(Model, selectedModel) : IsCurrent()) && !cancellationToken.IsCancellationRequested) { Message = error.Message; Changed(); } }
+        catch (Exception error) { if ((requestedConnection is null ? _metadataId == request && BindingId == selectedId && Same(Model, selectedModel) : IsCurrent()) && !cancellationToken.IsCancellationRequested) { Message = Controller.DisplayFailure(error); Changed(); } }
         finally { if (_metadataId == request) { Loading = false; Changed(); } }
     }
     internal async Task UpdateTemplateAsync(CancellationToken cancellationToken = default)
@@ -63,7 +63,7 @@ internal sealed partial class CanonicalAnkiReviewSession
             });
             await LoadMetadataAsync(cancellationToken);
         }
-        catch (Exception error) { Message = error is OperationCanceledException ? null : error.Message; Changed(); }
+        catch (Exception error) { Message = error is OperationCanceledException ? null : Controller.DisplayFailure(error); Changed(); }
         finally { Busy = false; Changed(); }
     }
 }

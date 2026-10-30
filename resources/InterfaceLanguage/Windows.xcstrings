@@ -49051,6 +49051,386 @@
           }
         }
       }
+    },
+    "Speech is not available for review audio.": {
+      "comment": "Windows-specific review/speech and credential failure presentation at Mac 3b53402. Authored translations; connection/profile/key data are never resource keys.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Speech is not available for review audio."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "复习音频无法使用语音功能。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "複習音訊無法使用語音功能。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "復習用音声では読み上げを利用できません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "복습 오디오에 음성 기능을 사용할 수 없습니다."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La synthèse vocale est indisponible pour l’audio de révision."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sprachausgabe ist für das Wiederholungsaudio nicht verfügbar."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La voz no está disponible para el audio de repaso."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A voz está indisponível para o áudio de revisão."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La sintesi vocale non è disponibile per l’audio di ripasso."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Речь недоступна для аудио повторения."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ميزة النطق غير متاحة لصوت المراجعة."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "समीक्षा ऑडियो के लिए वाक् सुविधा उपलब्ध नहीं है।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ucapan tidak tersedia untuk audio ulasan."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tekrar sesi için konuşma kullanılamıyor."
+          }
+        }
+      }
+    },
+    "Speech destination is unavailable or changed. Review the speech settings before continuing.": {
+      "comment": "Windows-specific review/speech and credential failure presentation at Mac 3b53402. Authored translations; connection/profile/key data are never resource keys.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Speech destination is unavailable or changed. Review the speech settings before continuing."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "语音处理目标不可用或已变更。请先检查语音设置，再继续。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "語音處理目標無法使用或已變更。請先檢查語音設定，再繼續。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "音声の処理先が利用できないか変更されています。続行する前に音声設定を確認してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "음성 처리 대상이 없거나 변경되었습니다. 계속하기 전에 음성 설정을 확인하세요."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La destination vocale est indisponible ou a changé. Vérifiez les réglages vocaux avant de continuer."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das Sprachziel ist nicht verfügbar oder wurde geändert. Prüfen Sie vor dem Fortfahren die Spracheinstellungen."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El destino de voz no está disponible o cambió. Revisa los ajustes de voz antes de continuar."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O destino de voz está indisponível ou mudou. Confira as configurações de voz antes de continuar."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La destinazione vocale non è disponibile o è cambiata. Controlla le impostazioni vocali prima di continuare."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Назначение речи недоступно или изменилось. Перед продолжением проверьте настройки речи."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "وجهة النطق غير متاحة أو تغيّرت. افحص إعدادات النطق قبل المتابعة."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "वाक् गंतव्य उपलब्ध नहीं है या बदल गया है। आगे बढ़ने से पहले वाक् सेटिंग जाँचें।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tujuan ucapan tidak tersedia atau berubah. Periksa pengaturan ucapan sebelum melanjutkan."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Konuşma hedefi kullanılamıyor veya değişti. Devam etmeden önce konuşma ayarlarını kontrol edin."
+          }
+        }
+      }
+    },
+    "Anki connection or profile changed. Refresh before sending.": {
+      "comment": "Windows-specific review/speech and credential failure presentation at Mac 3b53402. Authored translations; connection/profile/key data are never resource keys.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anki connection or profile changed. Refresh before sending."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anki 连接或配置文件已变更。发送前请刷新。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anki 連線或設定檔已變更。傳送前請重新整理。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anki の接続またはプロファイルが変更されました。送信前に更新してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anki 연결 또는 프로필이 변경되었습니다. 보내기 전에 새로 고치세요."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La connexion ou le profil Anki a changé. Actualisez avant d’envoyer."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Anki-Verbindung oder das Profil wurde geändert. Aktualisieren Sie vor dem Senden."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La conexión o el perfil de Anki cambió. Actualiza antes de enviar."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A conexão ou o perfil do Anki mudou. Atualize antes de enviar."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La connessione o il profilo Anki è cambiato. Aggiorna prima di inviare."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Подключение или профиль Anki изменились. Обновите данные перед отправкой."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تغيّر اتصال Anki أو ملفه الشخصي. حدّث قبل الإرسال."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anki कनेक्शन या प्रोफ़ाइल बदल गई है। भेजने से पहले रीफ़्रेश करें।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Koneksi atau profil Anki berubah. Segarkan sebelum mengirim."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anki bağlantısı veya profili değişti. Göndermeden önce yenileyin."
+          }
+        }
+      }
+    },
+    "Could not access the Anki API key in Windows credential storage.": {
+      "comment": "Windows-specific review/speech and credential failure presentation at Mac 3b53402. Authored translations; connection/profile/key data are never resource keys.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not access the Anki API key in Windows credential storage."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法访问 Windows 凭据存储中的 Anki API 密钥。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法存取 Windows 認證儲存區中的 Anki API 金鑰。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Windows の資格情報ストアにある Anki API キーにアクセスできませんでした。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Windows 자격 증명 저장소의 Anki API 키에 접근할 수 없습니다."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible d’accéder à la clé API Anki dans le stockage d’identifiants Windows."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auf den Anki-API-Schlüssel im Windows-Anmeldeinformationsspeicher konnte nicht zugegriffen werden."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se pudo acceder a la clave API de Anki en el almacén de credenciales de Windows."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não foi possível acessar a chave de API do Anki no armazenamento de credenciais do Windows."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossibile accedere alla chiave API di Anki nell’archivio credenziali di Windows."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не удалось получить доступ к API-ключу Anki в хранилище учётных данных Windows."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّر الوصول إلى مفتاح API الخاص بـ Anki في مخزن بيانات اعتماد Windows."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Windows क्रेडेंशियल स्टोरेज में Anki API कुंजी तक पहुँच नहीं हो सकी।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kunci API Anki di penyimpanan kredensial Windows tidak dapat diakses."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Windows kimlik bilgisi deposundaki Anki API anahtarına erişilemedi."
+          }
+        }
+      }
     }
   },
   "version": "1.0"

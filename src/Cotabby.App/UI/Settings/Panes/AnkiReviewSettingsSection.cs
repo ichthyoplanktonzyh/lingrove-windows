@@ -109,7 +109,7 @@ internal sealed class AnkiReviewSettingsSection : StackPanel
         {
             try { await _feature.RunAsync(async featureToken => { using var linked = CancellationTokenSource.CreateLinkedTokenSource(featureToken, cancellation.Token); var value = await store.ReadAsync(linked.Token); Publish(value); }); }
             catch (OperationCanceledException) { } catch (ObjectDisposedException) { }
-            catch (Exception error) { if (_appeared && generation == _appearanceGeneration) { StatusBox.Text = error.Message; } }
+            catch (Exception error) { if (_appeared && generation == _appearanceGeneration) { StatusBox.Text = InterfaceFailureText.For(error); } }
         }
     }
     private async Task LoadStore()
@@ -167,7 +167,7 @@ internal sealed class AnkiReviewSettingsSection : StackPanel
                 {
                     long generation = _appearanceGeneration;
                     try { await _feature.RunAsync(async _ => { var acknowledged = await canonical.RemoveTemplateAsync(template.Id, CancellationToken.None); if (_appeared && !_closed && generation == _appearanceGeneration && (_canonicalSnapshot is null || acknowledged.Revision > _canonicalSnapshot.Revision)) { _canonicalSnapshot = acknowledged; Refresh(); } }); }
-                    catch (Exception error) { if (_appeared && !_closed && generation == _appearanceGeneration) StatusBox.Text = error.Message; }
+                    catch (Exception error) { if (_appeared && !_closed && generation == _appearanceGeneration) StatusBox.Text = InterfaceFailureText.For(error); }
                 });
             }
             else if (controller.StoreOrNull is { } store) foreach (var template in store.ReviewTemplates) AddTemplate(template.Name, async () =>

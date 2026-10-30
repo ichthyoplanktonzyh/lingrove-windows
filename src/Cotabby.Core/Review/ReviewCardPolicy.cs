@@ -18,7 +18,7 @@ public static class ReviewCardPolicy
     {
         if (plan.Layout is not null) return ReviewLayoutPolicy.Content(entry, sense, plan);
         var example = sense.Examples.FirstOrDefault(value => value.Id == plan.ExampleId);
-        if (plan.ExampleId is not null && example is null) throw new AnkiReviewException("Choose a review example again.");
+        if (plan.ExampleId is not null && example is null) throw new AnkiReviewException(AnkiReviewFailure.MissingExample);
         string contextual = LearningExplanationText.Trim(example?.Meaning ?? "");
         string fallback = contextual.Length == 0 ? sense.Meaning : contextual;
         string preferred = sense.MeaningOrigin == VocabularyMeaningOrigin.User || example is null ? sense.Meaning : fallback;
@@ -27,8 +27,8 @@ public static class ReviewCardPolicy
         var gap = Gap(sentence, ranges, entry.Kind);
         var blocks = plan.IncludeSenseContent == true ? sense.Content ?? [] : [];
         VocabularyContentPolicy.Validate(blocks);
-        if (answer.Length == 0 && !VocabularyContentPolicy.Meaningful(blocks)) throw new AnkiReviewException("Add a review answer before sending.");
-        if ((!plan.Recognition && !plan.Gap) || plan.Gap && gap is null) throw new AnkiReviewException("Choose valid expression positions for a gap card.");
+        if (answer.Length == 0 && !VocabularyContentPolicy.Meaningful(blocks)) throw new AnkiReviewException(AnkiReviewFailure.MissingAnswer);
+        if ((!plan.Recognition && !plan.Gap) || plan.Gap && gap is null) throw new AnkiReviewException(AnkiReviewFailure.InvalidGap);
         var records = example?.Explanations ?? sense.Explanations;
         string explanation = plan.IncludeExplanation ? records.LastOrDefault()?.Result.Explanation ?? "" : "";
         return new(entry.Expression, answer, sentence, ranges, example?.Translation ?? "", explanation, plan.IncludeNotes ? sense.Note : "",

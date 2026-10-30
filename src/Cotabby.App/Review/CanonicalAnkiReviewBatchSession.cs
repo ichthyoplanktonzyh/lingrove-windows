@@ -124,7 +124,7 @@ internal sealed class CanonicalAnkiReviewBatchSession : INotifyPropertyChanged
     }
     private void FailOutstanding(Exception error)
     {
-        Message = error is OperationCanceledException ? null : error.Message; Changed();
+        Message = error is OperationCanceledException ? null : _feature.Controller.DisplayFailure(error); Changed();
         for (int i = 0; i < _items.Length; i++) if (_items[i].Status is ReviewBatchStatus.Sending or ReviewBatchStatus.Ready or ReviewBatchStatus.VerifyAudio)
             Replace(i, _items[i] with { Status = error is OperationCanceledException ? ReviewBatchStatus.Cancelled : ReviewBatchStatus.Failed, Message = Message });
     }
@@ -156,7 +156,7 @@ internal sealed class CanonicalAnkiReviewBatchSession : INotifyPropertyChanged
                         Replace(remaining, _items[remaining] with { Status = ReviewBatchStatus.Cancelled, Message = null });
                 return;
             }
-            catch (Exception error) { Replace(i, _items[i] with { Status = ReviewBatchStatus.Failed, Message = error.Message }); }
+            catch (Exception error) { Replace(i, _items[i] with { Status = ReviewBatchStatus.Failed, Message = _feature.Controller.DisplayFailure(error) }); }
         }
     }
     private async Task RunAsync(ReviewOperationScope scope, Guid? only, ReviewSpeechDisclosure? shown, CancellationToken token)
@@ -191,7 +191,7 @@ internal sealed class CanonicalAnkiReviewBatchSession : INotifyPropertyChanged
                     Message = success || token.IsCancellationRequested ? null : session.Message ?? "Resolve this item's Anki field changes in preparation." });
             }
             catch (OperationCanceledException) when (token.IsCancellationRequested) { throw; }
-            catch (Exception error) { Replace(i, _items[i] with { Status = ReviewBatchStatus.Failed, Message = error.Message }); }
+            catch (Exception error) { Replace(i, _items[i] with { Status = ReviewBatchStatus.Failed, Message = _feature.Controller.DisplayFailure(error) }); }
         }
     }
 }

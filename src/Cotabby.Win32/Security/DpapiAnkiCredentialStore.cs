@@ -153,5 +153,5 @@ public sealed class DpapiAnkiCredentialStore(string? filePath = null) : IAnkiCre
         return security;
     }
     private static bool IsStorageFailure(Exception error) => error is IOException or UnauthorizedAccessException or CryptographicException or ArgumentException or NotSupportedException or SecurityException;
-    private static AnkiReviewException Failure() => new(FailureMessage);
+    private static AnkiReviewException Failure() => new(AnkiReviewFailure.CredentialUnavailable);
 }

@@ -184,6 +184,10 @@ the initial gap audit; its initial Windows gap descriptions are historical. Curr
   status/error messages across current writing, reading, expression, speech and notebook paths.
   All prior resources remain intact; 55 authored keys bring the Windows supplement to 518 in
   fifteen locales. Further fixed review/controller copy and physical acceptance remain distinct.
+- The [review failure interface pass](REVIEW_FAILURE_INTERFACE_3B.md) connects the finite active
+  Anki/review inventory through typed owned categories and the shared controller. Four additions
+  bring the Windows supplement to 522 in fifteen locales; internal synchronization values and
+  unknown diagnostics retain their original contracts.
 - Remaining work includes native host/provider acceptance,
   full interface-language coverage, native automatic language
   confidence, Apple's unavailable system dictionary and the explicitly documented media/native gaps.

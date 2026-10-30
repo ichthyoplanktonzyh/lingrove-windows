@@ -1,5 +1,9 @@
 # Feature Parity and Evidence
 
+The [review failure interface pass](REVIEW_FAILURE_INTERFACE_3B.md) preserves owned failure
+provenance through the existing Anki/controller/session/settings paths, reuses 48 existing keys
+and adds four prompts in all 15 locales without changing internal synchronization identifiers.
+
 The [workflow failure interface pass](WORKFLOW_FAILURE_INTERFACE_3B.md) connects owned fixed
 capture/replacement/reading/speech and current notebook/import/export errors while preserving
 unknown diagnostics and task text. Its 55 additional keys cover all 15 interface locales.

@@ -21,18 +21,17 @@ public static partial class AnkiReviewPolicy
         IReadOnlyDictionary<ReviewField, string> mapping, IReadOnlyDictionary<string, string> overrides,
         IReadOnlyDictionary<ReviewField, string>? audio = null)
     {
-        const string invalidMapping = "Map unique fields for the sense ID, expression and answer.";
-        if (mapping.Any(pair => !Enum.IsDefined(pair.Key) || pair.Value is null)) throw new AnkiReviewException(invalidMapping);
+        if (mapping.Any(pair => !Enum.IsDefined(pair.Key) || pair.Value is null)) throw new AnkiReviewException(AnkiReviewFailure.InvalidMapping);
         var selected = mapping.Where(pair => pair.Value.Length != 0).ToDictionary(pair => pair.Key, pair => pair.Value);
         if (!selected.ContainsKey(ReviewField.Identity) || !selected.ContainsKey(ReviewField.Expression) || !selected.ContainsKey(ReviewField.Meaning)
             || selected.Values.Distinct(CanonicalStringComparer.Instance).Count() != selected.Count
             || selected.Values.Any(name => !LearningExplanationText.Fits(name, 200) || name.Any(c => ScalarSets.IsNewline(c))))
-            throw new AnkiReviewException(invalidMapping);
+            throw new AnkiReviewException(AnkiReviewFailure.InvalidMapping);
         var values = ReviewCardPolicy.Values(content, identity).ToDictionary(pair => pair.Key, pair => pair.Value);
         audio ??= new Dictionary<ReviewField, string>();
         foreach (var pair in audio)
         {
-            if (!Enum.IsDefined(pair.Key)) throw new AnkiReviewException(invalidMapping);
+            if (!Enum.IsDefined(pair.Key)) throw new AnkiReviewException(AnkiReviewFailure.InvalidMapping);
             values[pair.Key] = pair.Value;
         }
         if (content.Front is not null && content.Back is not null)
@@ -49,10 +48,10 @@ public static partial class AnkiReviewPolicy
         long count = 0;
         foreach (string value in result.Values)
         {
-            if (!LearningExplanationText.Fits(value, 1_000_000)) throw new AnkiReviewException("The review content is too large to send.");
+            if (!LearningExplanationText.Fits(value, 1_000_000)) throw new AnkiReviewException(AnkiReviewFailure.ReviewContentTooLarge);
             count += System.Text.Encoding.UTF8.GetByteCount(value);
         }
-        if (count > 1_000_000) throw new AnkiReviewException("The review content is too large to send.");
+        if (count > 1_000_000) throw new AnkiReviewException(AnkiReviewFailure.ReviewContentTooLarge);
         return CollectionValues.Map(result);
     }
     public static IReadOnlyList<AnkiFieldConflict> Conflicts(IReadOnlyDictionary<string, string> baseline,

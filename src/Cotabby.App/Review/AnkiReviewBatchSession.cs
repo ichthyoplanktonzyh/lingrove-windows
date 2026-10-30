@@ -161,7 +161,7 @@ internal sealed class AnkiReviewBatchSession : INotifyPropertyChanged
         }
         catch (Exception error)
         {
-            Message = error is OperationCanceledException ? null : error.Message; Changed();
+            Message = error is OperationCanceledException ? null : Controller.DisplayFailure(error); Changed();
             for (int index = 0; index < _items.Length; index++)
                 if (_items[index].Status is ReviewBatchStatus.Sending or ReviewBatchStatus.Ready or ReviewBatchStatus.VerifyAudio)
                     Replace(index, _items[index] with { Status = error is OperationCanceledException ? ReviewBatchStatus.Cancelled : ReviewBatchStatus.Failed, Message = Message });

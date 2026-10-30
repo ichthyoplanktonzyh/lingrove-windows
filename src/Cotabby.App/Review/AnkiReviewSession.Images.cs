@@ -18,7 +18,7 @@ internal sealed partial class AnkiReviewSession
             {
                 var templates = await Controller.CallAsync("modelTemplates", Params(("modelName", new AnkiValue.Text(Model))), connection, cancellationToken);
                 ValidateCurrent(content, connection);
-                if (!templates.Equals(new AnkiValue.Map(ReviewLayoutPolicy.Templates))) throw new AnkiReviewException("The Anki card template changed. Restore Front and Back before sending.");
+                if (!templates.Equals(new AnkiValue.Map(ReviewLayoutPolicy.Templates))) throw new AnkiReviewException(AnkiReviewFailure.TemplateChanged);
             }
             return;
         }
@@ -29,7 +29,7 @@ internal sealed partial class AnkiReviewSession
         var preset = await Controller.CallAsync("modelTemplates", Params(("modelName", new AnkiValue.Text(Model))), connection, cancellationToken);
         ValidateCurrent(content, connection);
         if (!Same(preset.Object?.GetValueOrDefault("Gap")?.Object?.GetValueOrDefault("Front")?.String, AnkiNoteTemplate.GapFront))
-            throw new AnkiReviewException("Update the Lingrove template before adding explanation content to gap cards.");
+            throw new AnkiReviewException(AnkiReviewFailure.GapTemplateUpgradeRequired);
     }
     private async Task UploadImagesAsync(ReviewCardContent content, AnkiConnection connection, string profile, CancellationToken cancellationToken)
     {
@@ -38,7 +38,7 @@ internal sealed partial class AnkiReviewSession
             cancellationToken.ThrowIfCancellationRequested();
             byte[] data;
             try { data = await Controller.Store.ReadImageAsync(image); }
-            catch { throw new AnkiReviewException("An explanation image is missing. Add it again before sending."); }
+            catch { throw new AnkiReviewException(AnkiReviewFailure.MissingExplanationImage); }
             ValidateCurrent(content, connection);
             if (!Same(await Controller.ProfileAsync(connection, cancellationToken), profile)) throw Conflict();
             ValidateCurrent(content, connection);

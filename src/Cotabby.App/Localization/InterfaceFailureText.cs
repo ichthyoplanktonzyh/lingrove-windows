@@ -1,4 +1,5 @@
 using Cotabby.Core.LanguageLearning;
+using Cotabby.Core.Review;
 using Cotabby.Core.Speech;
 using Cotabby.Core.Vocabulary;
 
@@ -11,6 +12,7 @@ internal static class InterfaceFailureText
 {
     internal static string For(Exception error) => error switch
     {
+        AnkiReviewException { Failure: { } failure } review => Review(review, failure),
         VocabularyExportException export => InterfaceText.Get(new VocabularyExportException(export.Failure).Message, "Vocabulary"),
         VocabularyException vocabulary => InterfaceText.Get(new VocabularyException(vocabulary.Failure).Message, "Vocabulary"),
         LearningTranslationException translation => InterfaceText.Get(new LearningTranslationException(translation.Failure).Message, "Learning"),
@@ -21,6 +23,12 @@ internal static class InterfaceFailureText
         SpeechException speech => InterfaceText.Get(new SpeechException(speech.Failure).Message, "Learning"),
         _ => error.Message,
     };
+
+    private static string Review(AnkiReviewException error, AnkiReviewFailure failure)
+    {
+        string message = InterfaceText.Get(failure.SourceKey(), failure == AnkiReviewFailure.RequestTooLarge ? "Learning" : "Vocabulary");
+        return error.MissingSource is { } source ? message + " · " + InterfaceText.Get(source.Label(), "Vocabulary") : message;
+    }
 
     // These two Core state fields explicitly contain only fixed policy messages. Match the
     // complete closed producer vocabulary; this is not an arbitrary string/exception lookup.

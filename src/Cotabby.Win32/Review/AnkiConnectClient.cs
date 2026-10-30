@@ -30,7 +30,7 @@ public sealed class AnkiConnectClient : IAnkiConnecting, IDisposable
         AnkiConnection connection, CancellationToken cancellationToken = default)
     {
         string? endpoint = AnkiArchiveEndpointPolicy.Normalize(connection.Endpoint);
-        if (endpoint is null) throw new AnkiReviewException(AnkiWirePolicy.InvalidResponse);
+        if (endpoint is null) throw new AnkiReviewException(AnkiReviewFailure.InvalidResponse);
         // Encoding is deliberately outside transport error mapping, matching the original.
         byte[] body = AnkiWirePolicy.Request(action, parameters, connection.ApiKey);
         using var request = new HttpRequestMessage(HttpMethod.Post, new Uri(endpoint, UriKind.Absolute));
@@ -41,7 +41,7 @@ public sealed class AnkiConnectClient : IAnkiConnecting, IDisposable
         try
         {
             using var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, deadline.Token).ConfigureAwait(false);
-            if (response.StatusCode != System.Net.HttpStatusCode.OK) throw new AnkiReviewException(AnkiWirePolicy.InvalidResponse);
+            if (response.StatusCode != System.Net.HttpStatusCode.OK) throw new AnkiReviewException(AnkiReviewFailure.InvalidResponse);
             idleTimeout.CancelAfter(_timeout);
             await using var stream = await response.Content.ReadAsStreamAsync(deadline.Token).ConfigureAwait(false);
             using var bytes = new MemoryStream(); var buffer = new byte[8192];
@@ -52,7 +52,7 @@ public sealed class AnkiConnectClient : IAnkiConnecting, IDisposable
                 idleTimeout.CancelAfter(_timeout);
                 int count = await stream.ReadAsync(buffer.AsMemory(0, (int)Math.Min(buffer.Length, AnkiWirePolicy.MaximumResponseBytes - bytes.Length + 1)), deadline.Token).ConfigureAwait(false);
                 if (count == 0) break;
-                if (bytes.Length + count > AnkiWirePolicy.MaximumResponseBytes) throw new AnkiReviewException(AnkiWirePolicy.InvalidResponse);
+                if (bytes.Length + count > AnkiWirePolicy.MaximumResponseBytes) throw new AnkiReviewException(AnkiReviewFailure.InvalidResponse);
                 bytes.Write(buffer, 0, count);
             }
             idleTimeout.CancelAfter(Timeout.InfiniteTimeSpan);
@@ -62,7 +62,7 @@ public sealed class AnkiConnectClient : IAnkiConnecting, IDisposable
         catch (AnkiReviewException) { throw; }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { throw new OperationCanceledException(cancellationToken); }
         catch (Exception error) when (error is HttpRequestException or IOException or OperationCanceledException or System.Text.Json.JsonException or ArgumentException or InvalidOperationException)
-        { throw new AnkiReviewException(AnkiWirePolicy.CouldNotConnect); }
+        { throw new AnkiReviewException(AnkiReviewFailure.CouldNotConnect); }
     }
     public void Dispose() => _client.Dispose();
 }

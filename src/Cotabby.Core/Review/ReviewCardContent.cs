@@ -70,4 +70,14 @@ public abstract record ReviewResolvedPart
 
 /// <summary>Original review preparation failures are user-facing fixed messages, not an OS,
 /// endpoint or model diagnostic. Pure preparation can fail before any external operation exists.</summary>
-public sealed class AnkiReviewException(string message) : Exception(message);
+public sealed class AnkiReviewException : Exception
+{
+    /// <summary>Unclassified diagnostics retain their literal message; presentation must not
+    /// interpret it as a resource key even when it happens to equal an owned failure sentence.</summary>
+    public AnkiReviewException(string message) : base(message) { }
+    public AnkiReviewException(AnkiReviewFailure failure, ReviewContentSource? missingSource = null)
+        : base(failure.SourceKey() + (missingSource is { } source ? " · " + source.Label() : ""))
+    { Failure = failure; MissingSource = missingSource; }
+    public AnkiReviewFailure? Failure { get; }
+    public ReviewContentSource? MissingSource { get; }
+}

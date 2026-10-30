@@ -22,18 +22,20 @@ internal sealed class AnkiReviewFeature : IAsyncDisposable
     internal AnkiReviewController Controller { get; }
     internal ICanonicalVocabularyStore? CanonicalStore { get; }
     internal AnkiReviewFeature(Func<AppSettings> current, Action persist, VocabularyStore? store,
-        IAnkiConnecting client, IAnkiCredentialStore credentials, Func<string?>? speechConfigurationId = null, Action? activateExisting = null, ISpeechExporting? speech = null, ICanonicalVocabularyStore? canonicalStore = null)
+        IAnkiConnecting client, IAnkiCredentialStore credentials, Func<string?>? speechConfigurationId = null, Action? activateExisting = null, ISpeechExporting? speech = null, ICanonicalVocabularyStore? canonicalStore = null,
+        Func<Exception, string>? failureText = null, Func<string, string>? text = null)
     {
         CanonicalStore = canonicalStore;
         _client = client; _token = _cancellation.Token;
         Settings = new(current, persist, credentials);
-        Controller = new(Settings, store, client, speechConfigurationId, activateExisting, speech);
+        Controller = new(Settings, store, client, speechConfigurationId, activateExisting, speech, failureText, text);
     }
     /// <summary>Real connection and preference owner without a legacy notebook. Canonical callers
     /// borrow this owner; no Store is constructed or opened here.</summary>
     internal static AnkiReviewFeature CreateConnectionSettings(Func<AppSettings> current, Action persist,
-        IAnkiConnecting client, IAnkiCredentialStore credentials, Action? activateExisting = null, ISpeechExporting? speech = null, ICanonicalVocabularyStore? canonicalStore = null) =>
-        new(current, persist, null, client, credentials, activateExisting: activateExisting, speech: speech, canonicalStore: canonicalStore);
+        IAnkiConnecting client, IAnkiCredentialStore credentials, Action? activateExisting = null, ISpeechExporting? speech = null, ICanonicalVocabularyStore? canonicalStore = null,
+        Func<Exception, string>? failureText = null, Func<string, string>? text = null) =>
+        new(current, persist, null, client, credentials, activateExisting: activateExisting, speech: speech, canonicalStore: canonicalStore, failureText: failureText, text: text);
     internal Task RunAsync(Func<CancellationToken, Task> operation)
     {
         var completion = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);

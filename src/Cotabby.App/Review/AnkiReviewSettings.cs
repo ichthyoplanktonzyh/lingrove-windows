@@ -38,7 +38,7 @@ internal sealed class AnkiReviewSettings(Func<AppSettings> current, Action persi
     public AnkiConnection Connection()
     {
         string? endpoint = AnkiArchiveEndpointPolicy.Normalize(Address);
-        if (endpoint is null) throw new AnkiReviewException("Use a local AnkiConnect HTTP address.");
+        if (endpoint is null) throw new AnkiReviewException(AnkiReviewFailure.NonLocalEndpoint);
         return new(endpoint, credentials.ReadKey());
     }
     public string ReadKey() => credentials.ReadKey();

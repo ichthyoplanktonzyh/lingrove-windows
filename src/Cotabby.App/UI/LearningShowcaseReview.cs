@@ -31,7 +31,8 @@ internal sealed class LearningShowcaseReview : StackPanel, IAsyncDisposable
     {
         _store = store; _capture = capture;
         var settings = new AppSettings();
-        _feature = AnkiReviewFeature.CreateConnectionSettings(() => settings, () => { }, new SampleAnki(), new Credentials(), speech: speech, canonicalStore: store.Backend);
+        _feature = AnkiReviewFeature.CreateConnectionSettings(() => settings, () => { }, new SampleAnki(), new Credentials(), speech: speech, canonicalStore: store.Backend,
+            failureText: InterfaceFailureText.For, text: key => InterfaceText.Get(key, "Vocabulary"));
         Children.Add(new TextBlock { Text = InterfaceText.Get("Sample Anki · Changes stay in this example", "Localizable"), FontSize = 11, Margin = new Thickness(0, 0, 0, 6) });
         var sides = new WrapPanel { Margin = new Thickness(0, 0, 0, 6) };
         for (int index = 0; index < 2; index++)

@@ -200,7 +200,7 @@ internal sealed partial class CanonicalAnkiReviewWindow
     {
         string? validation = await _session.ValidationMessageAsync(token); ReviewCardContent? content = null;
         try { var (entry, sense) = Current(); content = CanonicalReviewCardPolicy.Content(entry, sense, _session.Plan, _side.SelectedIndex == 1); }
-        catch (AnkiReviewException error) { validation ??= error.Message; }
+        catch (AnkiReviewException error) { validation ??= InterfaceFailureText.For(error); }
         if (version != _previewVersion || _closing) return;
         _validation.Text = validation ?? (_loadedAddress == _session.Controller.Settings.Address ? "" : InterfaceText.Get("Refresh the Anki connection before sending.", "Vocabulary")); _preview.Children.Clear();
         if (content is not null) await AppendResolvedPreviewAsync(content, version, token);

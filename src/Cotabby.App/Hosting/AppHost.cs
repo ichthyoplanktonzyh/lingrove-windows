@@ -719,18 +719,19 @@ public sealed class AppHost : IAsyncDisposable
         WithdrawCompletion();
         try
         {
-            try
-            {
-                try { await RetireCliAsync().ConfigureAwait(false); }
-                finally { await RetireWritingFeaturesAsync().ConfigureAwait(false); }
-            }
+            try { await Cotabby.App.UI.LearningShowcasePlayer.RetireAllAsync(); }
             finally
             {
-                // Producer or presentation failures must not strand the sole database owner.
-                try { await _notebook.DisposeAsync().ConfigureAwait(false); }
+                try
+                {
+                    try { await RetireCliAsync().ConfigureAwait(false); }
+                    finally { await RetireWritingFeaturesAsync().ConfigureAwait(false); }
+                }
                 finally
                 {
-                    await RetireRemainingOwnersAsync().ConfigureAwait(false);
+                    // Producer or presentation failures must not strand the sole database owner.
+                    try { await _notebook.DisposeAsync().ConfigureAwait(false); }
+                    finally { await RetireRemainingOwnersAsync().ConfigureAwait(false); }
                 }
             }
         }

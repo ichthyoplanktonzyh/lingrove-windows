@@ -26,6 +26,7 @@ internal static class HomePane
 
         return new SettingsPane("Home", "\uE80F", "Overview and status",
             new SettingsCard(null, Rows.Custom(Branding.Identity("Write faster, everywhere you type."))),
+            new SettingsCard("Explore Lingrove", Rows.Custom(new ProductFeatureExamples(() => context.Settings.ExpressionAssistTrigger, current: () => context.Settings))),
             new SettingsCard("Status",
                 r.Labeled("Cotabby", "Suggests the next words as you type in any app. Press your accept key to take them.", status),
                 r.Labeled("Words Completed", "Words you have accepted from suggestions so far.", words)),

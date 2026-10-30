@@ -36,6 +36,7 @@ internal sealed partial class CanonicalAnkiReviewWindow
 
     private void BuildLayoutControls()
     {
+        VocabularyNotebookTheme.Input(_cardName); VocabularyNotebookTheme.Input(_templateName);
         _layoutPanel.Children.Add(VocabularyInputControls.Heading("Card layout"));
         _layoutPanel.Children.Add(VocabularyInputControls.Group(("Card name", _cardName), ("Apply template", _applyLayout), ("Review example", _layoutExample), ("Template name", _templateName), ("", _saveTemplate), ("Side", _side)));
         _layoutPanel.Children.Add(_parts);
@@ -149,8 +150,8 @@ internal sealed partial class CanonicalAnkiReviewWindow
         }
         var add = new WrapPanel();
         var textButton = LayoutAction("Add text", () => { ChangePart(part.Id, p => p with { Content = p.Content.Append(VocabularyContentBlock.Create(new VocabularyBlockContent.Text(new()))).ToArray() }); RenderLayout(); RefreshDraft(); }); textButton.IsEnabled = part.Content.Count < VocabularyContentPolicy.MaximumBlocks; add.Children.Add(textButton);
-        var paste = LayoutAction("Paste image", () => PasteLayoutImage(part.Id)); paste.IsEnabled = _clipboard is not null && part.Content.Count < VocabularyContentPolicy.MaximumBlocks; add.Children.Add(paste);
-        var imageButton = LayoutAction("Add image", () => { var dialog = new OpenFileDialog { Title = "Add image", Filter = "Images|*.png;*.jpg;*.jpeg;*.tif;*.tiff;*.bmp;*.gif;*.ico;*.webp;*.heic;*.heif", Multiselect = false }; if (dialog.ShowDialog(this) == true) ImportLayoutImage(part.Id, dialog.FileName); }); imageButton.IsEnabled = part.Content.Count < VocabularyContentPolicy.MaximumBlocks; add.Children.Add(imageButton); panel.Children.Add(add);
+        var paste = LayoutAction("Paste image", () => PasteLayoutImage(part.Id)); paste.IsEnabled = _allowExternalMedia && _clipboard is not null && part.Content.Count < VocabularyContentPolicy.MaximumBlocks; add.Children.Add(paste);
+        var imageButton = LayoutAction("Add image", () => { if (!_allowExternalMedia) return; var dialog = new OpenFileDialog { Title = "Add image", Filter = "Images|*.png;*.jpg;*.jpeg;*.tif;*.tiff;*.bmp;*.gif;*.ico;*.webp;*.heic;*.heif", Multiselect = false }; if (dialog.ShowDialog(this) == true) ImportLayoutImage(part.Id, dialog.FileName); }); imageButton.IsEnabled = _allowExternalMedia && part.Content.Count < VocabularyContentPolicy.MaximumBlocks; add.Children.Add(imageButton); panel.Children.Add(add);
     }
     private void MoveBlock(Guid partId, Guid blockId, int delta)
     {
@@ -162,7 +163,7 @@ internal sealed partial class CanonicalAnkiReviewWindow
     }
     internal bool PasteLayoutImage(Guid partId)
     {
-        if (_closing || _operation is not null || _clipboard?.Capture() is not { HasImage: true } offer || !SideParts.Any(p => p.Id == partId && p.Content.Count < VocabularyContentPolicy.MaximumBlocks)) return false;
+        if (!_allowExternalMedia || _closing || _operation is not null || _clipboard?.Capture() is not { HasImage: true } offer || !SideParts.Any(p => p.Id == partId && p.Content.Count < VocabularyContentPolicy.MaximumBlocks)) return false;
         Start(async token =>
         {
             var bytes = await _clipboard.ReadAsync(offer.Sequence, token); token.ThrowIfCancellationRequested(); if (bytes is null) return;
@@ -176,7 +177,7 @@ internal sealed partial class CanonicalAnkiReviewWindow
     }
     private void AttachLayoutFileDrop()
     {
-        if (_closing || _layoutDrop is not null || HwndSource.FromVisual(this) is not HwndSource source) return;
+        if (!_allowExternalMedia || _closing || _layoutDrop is not null || HwndSource.FromVisual(this) is not HwndSource source) return;
         _layoutDrop = new(source, (path, point) =>
         {
             if (_closing || _operation is not null || !IsVisible || source.CompositionTarget is null || source.RootVisual is not Visual root) return;

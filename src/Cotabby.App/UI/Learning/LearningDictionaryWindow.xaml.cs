@@ -22,16 +22,25 @@ public partial class LearningDictionaryWindow : Window
     private ScreenRect _anchor;
     private LearningDictionarySession? _session; private Func<bool>? _permit; private DictionaryArticleView? _article;
     private Guid _articleRequest; private bool _updatingSources; private Task _articleShutdown = Task.CompletedTask;
+    private readonly bool _embeddedExample;
     private sealed record SourceChoice(DictionarySource Source, string Name) { public override string ToString() => Name; }
-    public LearningDictionaryWindow()
+    public LearningDictionaryWindow() : this(false) { }
+    internal LearningDictionaryWindow(bool embeddedExample)
     {
+        _embeddedExample = embeddedExample;
         InitializeComponent();
         FavoriteButton.FailureChanged += message =>
         { VocabularyStatus.Text = message ?? ""; VocabularyStatus.Visibility = message is null ? Visibility.Collapsed : Visibility.Visible; };
         InstallSelection();
-        WindowTheme.Follow(this);
-        SourceInitialized += (_, _) => LearningPanelPlacement.Install(this);
+        if (!embeddedExample) { WindowTheme.Follow(this); SourceInitialized += (_, _) => LearningPanelPlacement.Install(this); }
         Closed += (_, _) => { if (_article is not null) _articleShutdown = _article.DisposeAsync().AsTask(); };
+    }
+    internal FrameworkElement TakeExampleCard()
+    {
+        if (!_embeddedExample || !ReferenceEquals(Content, Card)) throw new InvalidOperationException();
+        Content = null; Card.Width = double.NaN; Card.MaxWidth = 410;
+        foreach (var button in new[] { CloseButton, ExplanationButton, BackButton, ContextualPageButton, DictionaryPageButton }) button.Focusable = true;
+        SourcePicker.Focusable = true; return Card;
     }
     public event Action<LearningDictionaryWord, Guid>? WordRequested;
     public event Action<Guid>? BackRequested;
@@ -91,9 +100,7 @@ public partial class LearningDictionaryWindow : Window
         AttributionText.Visibility = new TextRange(AttributionText.ContentStart, AttributionText.ContentEnd).IsEmpty
             ? Visibility.Collapsed : Visibility.Visible;
         MeasureBody();
-        if (!IsVisible) Show();
-        UpdateLayout();
-        LearningPanelPlacement.Position(this, anchor);
+        if (!_embeddedExample) { if (!IsVisible) Show(); UpdateLayout(); LearningPanelPlacement.Position(this, anchor); }
     }
 
     private void PresentDefinitions(LearningDictionaryState state)
@@ -101,7 +108,7 @@ public partial class LearningDictionaryWindow : Window
         if (state.Result is not LearningDictionaryResult.Article article || article.ResourceLibrary is null || _session is null)
         {
             _article?.Retire(); _articleRequest = Guid.Empty;
-            bool Current() => IsVisible && ReferenceEquals(_state, state) && _session?.State.RequestIdentity == state.RequestIdentity
+            bool Current() => (_embeddedExample ? Card.IsVisible : IsVisible) && ReferenceEquals(_state, state) && _session?.State.RequestIdentity == state.RequestIdentity
                 && (_permit?.Invoke() ?? false);
             LearningDictionaryDefinitions.Populate(DefinitionContent, AttributionText, state,
                 () => { if (Current()) _ = _session!.ConfirmOnlineAsync(state.RequestIdentity); }, Current);
@@ -147,14 +154,14 @@ public partial class LearningDictionaryWindow : Window
         ContextualExampleTranslation.Text = DictionaryExampleTranslation.Text = string.Empty;
         ContextualExampleText.Inlines.Clear(); DictionaryExampleText.Inlines.Clear();
         ExplanationDetails.IsExpanded = false;
-        Hide();
+        if (!_embeddedExample) Hide();
     }
     internal void ClearVocabulary() => FavoriteButton.Clear();
     internal void BindVocabulary(IWritingVocabularyStore store, VocabularyCapture capture, Guid target, Func<bool> canAct, Func<Task<bool>>? preflight = null)
     {
         Dispatcher.VerifyAccess();
-        if (!IsVisible || _state?.TargetIdentity != target) return;
-        FavoriteButton.Bind(store, capture, () => IsVisible && _state?.TargetIdentity == target && canAct(), preflight);
+        if ((!IsVisible && !_embeddedExample) || _state?.TargetIdentity != target) return;
+        FavoriteButton.Bind(store, capture, () => (_embeddedExample ? Card.IsVisible : IsVisible) && _state?.TargetIdentity == target && canAct(), preflight);
     }
     private void OnClose(object sender, RoutedEventArgs args) { if (_state is { } state) CloseRequested?.Invoke(state.TargetIdentity); }
     private void OnBack(object sender, RoutedEventArgs args) { if (_state is { } state) BackRequested?.Invoke(state.TargetIdentity); }

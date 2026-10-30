@@ -32,10 +32,10 @@ internal sealed partial class FrozenVocabularyNotebookWindow
         toolbar.Children.Add(_backupMenu); toolbar.Children.Add(_backupError); UpdateCanonicalBackup();
     }
     private void UpdateCanonicalBackup()
-    { _backupMenu.IsEnabled = !_retiring && _modalDone is null && _session.Snapshot is not null && _session.Failure is null && _store is ICanonicalVocabularyBackupStore; }
+    { _backupMenu.IsEnabled = !_exampleNoExternalFiles && !_retiring && _modalDone is null && _session.Snapshot is not null && _session.Failure is null && _store is ICanonicalVocabularyBackupStore; }
     internal void StartCanonicalBackup(bool restore)
     {
-        Dispatcher.VerifyAccess(); if (_retiring || !IsVisible || _modalDone is not null || _backupCompletion is not null || _session.Snapshot is null || _store is not ICanonicalVocabularyBackupStore storage) return;
+        Dispatcher.VerifyAccess(); if (_exampleNoExternalFiles || _retiring || !IsVisible || _modalDone is not null || _backupCompletion is not null || _session.Snapshot is null || _store is not ICanonicalVocabularyBackupStore storage) return;
         var done = _backupCompletion = new(TaskCreationOptions.RunContinuationsAsynchronously); var lifetime = _backupCancellation = new CancellationTokenSource(); _modalDone = done; _backupAccepted = false; _backupCancellationFailure = null; _backupError.Text = "";
         LastCanonicalBackupOperation = Track(Run()); UpdateCanonicalBackup();
         async Task Run()

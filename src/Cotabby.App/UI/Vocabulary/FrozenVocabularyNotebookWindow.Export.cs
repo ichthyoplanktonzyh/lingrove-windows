@@ -16,10 +16,10 @@ internal sealed partial class FrozenVocabularyNotebookWindow
         VocabularyNotebookTheme.Button(_canonicalExportButton); toolbar.Children.Add(_canonicalExportButton);
         _canonicalExportButton.Click += (_, _) => LastOperation = OpenCanonicalExportAsync();
     }
-    private void UpdateCanonicalExport() => _canonicalExportButton.IsEnabled = !_retiring && _modalDone is null && _session.Snapshot is not null && _session.Failure is null && _store is ICanonicalVocabularyExportStore && _session.Entries.Count > 0;
+    private void UpdateCanonicalExport() => _canonicalExportButton.IsEnabled = !_exampleNoExternalFiles && !_retiring && _modalDone is null && _session.Snapshot is not null && _session.Failure is null && _store is ICanonicalVocabularyExportStore && _session.Entries.Count > 0;
     private async Task OpenCanonicalExportAsync(VocabularySelection? single = null)
     {
-        if (_retiring || _modalDone is not null || _store is not ICanonicalVocabularyExportStore store || _session.Snapshot is null) return;
+        if (_exampleNoExternalFiles || _retiring || _modalDone is not null || _store is not ICanonicalVocabularyExportStore store || _session.Snapshot is null) return;
         static VocabularySelection[] Select(IEnumerable<Cotabby.Core.Vocabulary.Frozen.VocabularyEntry> entries) => entries.SelectMany(entry => entry.Senses.Select(sense => new VocabularySelection(entry.Id, sense.Id))).ToArray();
         var ordered = _session.NewestFirst ? _session.Entries.OrderByDescending(e => e.UpdatedAt.ReferenceSeconds) : _session.Entries.OrderBy(e => e.UpdatedAt.ReferenceSeconds);
         var all = Select(ordered); var filtered = _session.MeaningMode ? _session.MeaningItems.SelectMany(item => item.Selections).Concat(_session.Unclassified).Distinct().ToArray() : Select(_session.Visible); var selected = single is { } value ? [value] : all.Where(_reviewSelections.Contains).ToArray();

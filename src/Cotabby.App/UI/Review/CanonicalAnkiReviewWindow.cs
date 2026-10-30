@@ -62,6 +62,8 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
     private Task _previewTask = Task.CompletedTask;
     private bool _closeWhenDone, _configureWhenDone;
     private bool _updating, _closing, _allowClose, _started, _retired;
+    private readonly bool _embeddedExample;
+    private readonly bool _allowExternalMedia;
     private long _previewVersion;
         private ulong _seenRevision;
     private string? _loadedAddress, _windowError, _windowNotice;
@@ -70,10 +72,11 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
     internal Task PreviewOperation => _previewTask;
     internal Guid? CardId => _session.CardId;
 
-    internal CanonicalAnkiReviewWindow(CanonicalAnkiReviewSession session, Func<Func<CancellationToken, Task>, Task> admit, Action configure, IVocabularyClipboardImageTransfer? clipboard = null)
+    internal CanonicalAnkiReviewWindow(CanonicalAnkiReviewSession session, Func<Func<CancellationToken, Task>, Task> admit, Action configure, IVocabularyClipboardImageTransfer? clipboard = null, bool embeddedExample = false, bool allowExternalMedia = true)
     {
         if (session.CardId is null && session.Plan.Layout is not null) throw new NotSupportedException("Custom review card layout preparation is not available yet.");
-        _session = session; _clipboard = clipboard; _admit = admit; _configure = configure;
+        _session = session; _clipboard = clipboard; _admit = admit; _configure = configure; _embeddedExample = embeddedExample;
+        _allowExternalMedia = allowExternalMedia && !embeddedExample;
         Title = "Prepare review"; Width = 720; Height = 760; MinWidth = 560; MinHeight = 500; WindowStartupLocation = WindowStartupLocation.CenterOwner;
         VocabularyNotebookTheme.Follow(this);
         var root = new DockPanel { Margin = new Thickness(22) }; Content = root;
@@ -296,7 +299,19 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
             finally { _operation = null; completion.TrySetResult(); if (_closeWhenDone && !_closing) { _ = RetireAsync(); } else if (!_closing) { try { Fill(); } catch (InvalidOperationException) { _validation.Text = "This sense is no longer available."; } UpdateEnabled(); } }
         }
     }
-    private void CloseAfterOperation() { _closeWhenDone = true; }
+    private void CloseAfterOperation() { if (!_embeddedExample) _closeWhenDone = true; }
+    internal FrameworkElement TakeExampleCard()
+    {
+        if (!_embeddedExample || Content is not FrameworkElement card) throw new InvalidOperationException();
+        Content = null; _cancel.Visibility = _settings.Visibility = Visibility.Collapsed;
+        card.Margin = new Thickness(0);
+        foreach (string key in new[] { "NotebookInput", "NotebookAccentBtn", "NotebookCardBtn" })
+            if (Resources[key] is Style style) card.Resources[key] = style;
+        if (card is DockPanel dock && dock.Children.Count > 0) dock.Children[0].Visibility = Visibility.Collapsed;
+        _form.Children.Remove(_preview); _form.Children.Insert(0, _preview);
+        card.Loaded += (_, _) => { if (!_started) { _started = true; Start(LoadAsync); } };
+        return card;
+    }
     private void OnClosing(object? sender, CancelEventArgs e)
     {
         if (_allowClose) return;

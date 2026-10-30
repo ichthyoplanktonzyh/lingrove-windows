@@ -10,6 +10,8 @@ public static class FrozenVocabularyStoreFactory
 {
     public const string CanonicalFileName = "vocabulary-v8.sqlite";
     public const string CanonicalMediaDirectoryName = "media-v8";
+    /// <summary>Creates an isolated, nonpersistent canonical owner for bounded product examples.</summary>
+    public static ICanonicalVocabularyStore CreateInMemory() => new FrozenVocabularyImportStore(FrozenVocabularySQLiteDatabase.CreateMemory());
     /// <summary>Create one inert owner; no directory or database is opened before an admitted operation.</summary>
     public static ICanonicalVocabularyStore Create(string path, bool installBundledClassification = true)
     {

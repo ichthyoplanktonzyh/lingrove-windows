@@ -36,20 +36,20 @@ public static class AnkiWirePolicy
         // JSONEncoder finishes encoding before it applies the byte limit. Validate the entire
         // value first, so a late NaN/bad scalar/depth failure is not misclassified as oversize.
         long count = Measure(value, 0);
-        if (count > MaximumRequestBytes) throw new AnkiReviewException(RequestTooLarge);
+        if (count > MaximumRequestBytes) throw new AnkiReviewException(AnkiReviewFailure.RequestTooLarge);
         var builder = new StringBuilder((int)count); Append(builder, value);
         return StrictUtf8.GetBytes(builder.ToString());
     }
     public static AnkiValue Response(ReadOnlyMemory<byte> bytes)
     {
-        if (bytes.Length > MaximumResponseBytes) throw new AnkiReviewException(InvalidResponse);
+        if (bytes.Length > MaximumResponseBytes) throw new AnkiReviewException(AnkiReviewFailure.InvalidResponse);
         // A syntactically malformed JSON response remains a decode exception, mapped by the
         // transport to CouldNotConnect. A decoded but wrong-shaped envelope is InvalidResponse.
         var value = JsonSerializer.Deserialize<AnkiValue>(FoundationJsonInput.Utf8Input(bytes).Span, ReaderOptions);
         var envelope = value?.Object;
         if (envelope is null || !envelope.TryGetValue("error", out var error) || !envelope.TryGetValue("result", out var result))
-            throw new AnkiReviewException(InvalidResponse);
-        if (error is not AnkiValue.NullValue) throw new AnkiReviewException(Rejected);
+            throw new AnkiReviewException(AnkiReviewFailure.InvalidResponse);
+        if (error is not AnkiValue.NullValue) throw new AnkiReviewException(AnkiReviewFailure.Rejected);
         return result;
     }
     private static long Measure(AnkiValue value, int depth)

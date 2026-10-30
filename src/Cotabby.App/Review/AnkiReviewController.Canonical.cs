@@ -16,7 +16,7 @@ internal sealed partial class AnkiReviewController
     internal async Task VerifyCanonicalBindingAsync(F.AnkiNoteBinding binding, AnkiConnection connection, CancellationToken token)
     {
         if (!Same(binding.Endpoint, connection.Endpoint) || !Same(await ProfileAsync(connection, token), binding.Profile))
-            throw new AnkiReviewException("Switch to the Anki profile associated with this sense.");
+            throw new AnkiReviewException(AnkiReviewFailure.ProfileMismatch);
     }
     internal string CanonicalStatus(F.VocabularyEntry entry, F.VocabularySense sense, Guid cardId)
     {
@@ -55,9 +55,9 @@ internal sealed partial class AnkiReviewController
         if (binding.NoteId is not { } id) throw Invalid();
         var note = await CanonicalNoteAsync(id, connection, token);
         await EnsureNavigationCurrentAsync(connection, token, current);
-        if (note is null) throw new AnkiReviewException("The associated Anki note no longer exists.");
+        if (note is null) throw new AnkiReviewException(AnkiReviewFailure.MissingNote);
         if (!Same(note.Model, binding.Model) || !Same(note.Fields.GetValueOrDefault(binding.IdentityField), binding.OriginSenseId.ToString("D")))
-            throw new AnkiReviewException("The Anki note identity changed. Check its association.");
+            throw new AnkiReviewException(AnkiReviewFailure.NoteIdentityChanged);
         await VerifyNavigationAsync(binding, connection, token, current); return id;
     }
     internal async Task<string?> OpenCanonicalAsync(F.AnkiNoteBinding binding, Func<CancellationToken, Task<bool>> current, CancellationToken token = default)
@@ -68,7 +68,7 @@ internal sealed partial class AnkiReviewController
             _ = await CallAsync("guiBrowse", Params(("query", new AnkiValue.Text("nid:" + id))), connection, token); return null;
         }
         catch (OperationCanceledException) { throw; }
-        catch (Exception error) { return error.Message; }
+        catch (Exception error) { return DisplayFailure(error); }
     }
     internal async Task<string?> ReviewCanonicalDeckAsync(F.AnkiNoteBinding binding, Func<CancellationToken, Task<bool>> current, CancellationToken token = default)
     {
@@ -90,7 +90,7 @@ internal sealed partial class AnkiReviewController
             _activateAnki(); return null;
         }
         catch (OperationCanceledException) { throw; }
-        catch (Exception error) { return error.Message; }
+        catch (Exception error) { return DisplayFailure(error); }
     }
 
 }

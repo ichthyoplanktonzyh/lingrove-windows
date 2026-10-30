@@ -73,7 +73,7 @@ internal sealed partial class AnkiReviewSession : INotifyPropertyChanged
         Audio = new(controller.Speech); _baseline = sense.ReviewValue(cardId);
         var initial = _baseline?.Plan ?? ReviewCardPolicy.InitialPlan(sense);
         if (cardId is { } id && _baseline is null)
-            initial = new ReviewPlan(id) { Name = "New card", Layout = ReviewLayoutPolicy.Preset(0), ExampleId = sense.Examples.FirstOrDefault()?.Id };
+            initial = new ReviewPlan(id) { Name = Controller.DisplayText("New card"), Layout = ReviewLayoutPolicy.Preset(0), ExampleId = sense.Examples.FirstOrDefault()?.Id };
         if (_baseline is null && cardId is null)
         {
             var example = sense.Examples.FirstOrDefault();
@@ -112,20 +112,20 @@ internal sealed partial class AnkiReviewSession : INotifyPropertyChanged
     {
         get
         {
-            if (Current is not { } current) return Conflict().Message;
+            if (Current is not { } current) return Controller.DisplayFailure(Conflict());
             try
             {
-                if (Binding is { } binding && AnkiReviewPolicy.RemovesExistingCard(Plan, binding)) return "Manage existing card types in Anki.";
+                if (Binding is { } binding && AnkiReviewPolicy.RemovesExistingCard(Plan, binding)) return Controller.DisplayText("Manage existing card types in Anki.");
                 if (_baseline?.NeedsBindingChoice == true && BindingId is null || Deck.Length == 0
-                    || Binding?.NoteId is null && Catalog is { } catalog && !Has(catalog.Decks, Deck)) return "Choose a deck and an Anki association.";
+                    || Binding?.NoteId is null && Catalog is { } catalog && !Has(catalog.Decks, Deck)) return Controller.DisplayText("Choose a deck and an Anki association.");
                 var content = ReviewCardPolicy.Content(current.Entry, current.Sense, Plan);
                 if (Same(Model, AnkiReviewPolicy.PresetName) && Plan.Gap && content.SenseContent.Count > 0 && !SafeGapFront && !Loading)
-                    return "Update the Lingrove template before adding explanation content to gap cards.";
+                    return Controller.DisplayText("Update the Lingrove template before adding explanation content to gap cards.");
                 ValidateAudioMapping();
                 var fields = AnkiReviewPolicy.Fields(content, Binding?.OriginSenseId ?? CardId ?? SenseId, Mapping, Plan.FieldOverrides);
                 return AvailableFields.Count > 0 && fields.Keys.Any(k => !Has(AvailableFields, k)) ? "The Anki note type does not contain the mapped fields." : null;
             }
-            catch (Exception error) { return error.Message; }
+            catch (Exception error) { return Controller.DisplayFailure(error); }
         }
     }
     internal string Answer
@@ -157,13 +157,13 @@ internal sealed partial class AnkiReviewSession : INotifyPropertyChanged
     internal async Task<bool> SaveAsync(CancellationToken cancellationToken = default)
     {
         try { await SavePlanAsync(cancellationToken); return true; }
-        catch (Exception error) { Message = error.Message; Changed(); return false; }
+        catch (Exception error) { Message = Controller.DisplayFailure(error); Changed(); return false; }
     }
     private async Task SavePlanAsync(CancellationToken cancellationToken)
     {
         var current = Controller.Current(EntryId, SenseId);
         if (!Equals(current.Sense.ReviewValue(CardId), _baseline)) throw Conflict();
-        if (CardId is not null && (Plan.Name is null || LearningTrim(Plan.Name).Length == 0)) Plan = Plan with { Name = "New card" };
+        if (CardId is not null && (Plan.Name is null || LearningTrim(Plan.Name).Length == 0)) Plan = Plan with { Name = Controller.DisplayText("New card") };
         Plan = Plan with { Deck = Deck };
         var next = (_baseline ?? new VocabularyReview(Plan)) with { Plan = Plan, ActiveBindingId = BindingId };
         int index = next.Bindings.ToList().FindIndex(b => b.Id == BindingId && b.NoteId is null);

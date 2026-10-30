@@ -13,7 +13,7 @@ internal sealed partial class AnkiReviewSession
     {
         if (Busy) return false;
         try { Controller.Begin(SenseId, CardId); }
-        catch (Exception error) { Message = error.Message; Changed(); return false; }
+        catch (Exception error) { Message = Controller.DisplayFailure(error); Changed(); return false; }
         Busy = true; Message = null; Changed();
         try
         {
@@ -24,7 +24,7 @@ internal sealed partial class AnkiReviewSession
         }
         catch (Exception error)
         {
-            Message = error is OperationCanceledException ? null : error.Message;
+            Message = error is OperationCanceledException ? null : Controller.DisplayFailure(error);
             Controller.Finish(SenseId, CardId, error, MissingNote); return false;
         }
         finally { Busy = false; _sendScope = null; Changed(); }
@@ -32,7 +32,7 @@ internal sealed partial class AnkiReviewSession
     private async Task<bool> SynchronizeAsync(bool recreateMissing, CancellationToken cancellationToken)
     {
         var content = SendingContent();
-        if (_baseline?.NeedsBindingChoice == true && BindingId is null || Deck.Length == 0) throw new AnkiReviewException("Choose a deck and an Anki association.");
+        if (_baseline?.NeedsBindingChoice == true && BindingId is null || Deck.Length == 0) throw new AnkiReviewException(AnkiReviewFailure.InvalidAssociation);
         await SavePlanAsync(cancellationToken);
         var scope = _sendScope ?? throw Conflict(); await Controller.VerifyAsync(scope, cancellationToken);
         var connection = scope.Connection; string profile = scope.Profile;
@@ -46,7 +46,7 @@ internal sealed partial class AnkiReviewSession
         await UploadImagesAsync(content, connection, profile, cancellationToken);
         var desired = AnkiReviewPolicy.Fields(content, identity, mapping, Plan.FieldOverrides, audioFields);
         if (desired.Keys.Any(k => !Has(available, k)) || !mapping.TryGetValue(ReviewField.Identity, out string? identityField))
-            throw new AnkiReviewException("The Anki note type does not contain the mapped fields.");
+            throw new AnkiReviewException(AnkiReviewFailure.MappedFieldsMissing);
         if (existing is null)
         {
             var intent = AnkiNoteBinding.Create(identity, connection.Endpoint, profile, null, model, Deck, identityField, mapping, desired);
@@ -58,17 +58,17 @@ internal sealed partial class AnkiReviewSession
         if (remote is not null)
         {
             if (!Same(remote.Model, model) || !Same(remote.Fields.GetValueOrDefault(identityField), identity.ToString("D")))
-                throw new AnkiReviewException("The Anki note identity changed. Check its association.");
+                throw new AnkiReviewException(AnkiReviewFailure.NoteIdentityChanged);
             var resolved = await ResolveAsync(remote, existing, desired, identityField, cancellationToken);
             if (resolved is null) return false; desired = resolved;
         }
         ValidateCurrent(content, connection);
         if (!Same(await Controller.ProfileAsync(connection, cancellationToken), profile)) throw Conflict();
         long noteId = await WriteAsync(remote, desired, content, profile, connection, model, cancellationToken);
-        if (!Same(await Controller.ProfileAsync(connection, cancellationToken), profile)) throw new AnkiReviewException("Anki did not confirm the saved fields. Retry to check the note.");
+        if (!Same(await Controller.ProfileAsync(connection, cancellationToken), profile)) throw new AnkiReviewException(AnkiReviewFailure.UnconfirmedFields);
         var verified = await Controller.NoteAsync(noteId, connection, cancellationToken);
         if (verified is null || !Same(verified.Model, model) || desired.Any(p => !Same(verified.Fields.GetValueOrDefault(p.Key), p.Value)))
-            throw new AnkiReviewException("Anki did not confirm the saved fields. Retry to check the note.");
+            throw new AnkiReviewException(AnkiReviewFailure.UnconfirmedFields);
         var receipt = new AnkiNoteBinding(existing?.Id ?? Guid.NewGuid(), identity, connection.Endpoint, profile, noteId, model, Deck, identityField, mapping, desired, DateTimeOffset.Now);
         await Controller.Store.RecordAnkiBindingAsync(EntryId, SenseId, receipt, CardId);
         _baseline = Controller.Current(EntryId, SenseId).Sense.ReviewValue(CardId);
@@ -85,7 +85,7 @@ internal sealed partial class AnkiReviewSession
     private ReviewCardContent SendingContent()
     {
         var source = Controller.Current(EntryId, SenseId); var content = ReviewCardPolicy.Content(source.Entry, source.Sense, Plan);
-        if (Binding is { } binding && AnkiReviewPolicy.RemovesExistingCard(Plan, binding)) throw new AnkiReviewException("Manage existing card types in Anki.");
+        if (Binding is { } binding && AnkiReviewPolicy.RemovesExistingCard(Plan, binding)) throw new AnkiReviewException(AnkiReviewFailure.ManageCardTypes);
         return content;
     }
     private async Task<long> WriteAsync(AnkiRemoteNote? remote, IReadOnlyDictionary<string, string> desired, ReviewCardContent content, string profile,
@@ -140,14 +140,14 @@ internal sealed partial class AnkiReviewSession
         bool recreate, AnkiConnection connection, CancellationToken cancellationToken)
     {
         if (existing?.NoteId is { } id && await Controller.NoteAsync(id, connection, cancellationToken) is { } remote) return remote;
-        if (existing?.NoteId is not null && !recreate) { MissingNote = true; throw new AnkiReviewException("The associated Anki note no longer exists."); }
+        if (existing?.NoteId is not null && !recreate) { MissingNote = true; throw new AnkiReviewException(AnkiReviewFailure.MissingNote); }
         if (field.IndexOfAny(['"', '\\', ':']) >= 0) throw AnkiReviewController.Invalid();
         var matches = await Controller.CallAsync("findNotes", Params(("query", new AnkiValue.Text("\"" + field + ":" + identity.ToString("D") + "\""))), connection, cancellationToken);
         if (matches.Array is not { } rows || rows.Count > 32 || rows.Any(r => r.Integer is null)) throw AnkiReviewController.Invalid();
         var found = new List<AnkiRemoteNote>();
         foreach (var row in rows)
             if (row.Integer is { } noteId && await Controller.NoteAsync(noteId, connection, cancellationToken) is { } note && Same(note.Model, model) && Same(note.Fields.GetValueOrDefault(field), identity.ToString("D"))) found.Add(note);
-        if (found.Count > 1) throw new AnkiReviewException("Several Anki notes use this sense ID. Resolve duplicates in Anki.");
+        if (found.Count > 1) throw new AnkiReviewException(AnkiReviewFailure.DuplicateNotes);
         return found.FirstOrDefault();
     }
 }

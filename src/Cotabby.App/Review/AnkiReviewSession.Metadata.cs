@@ -37,14 +37,14 @@ internal sealed partial class AnkiReviewSession
             if (Binding is null && Plan.Deck is null && !Controller.Settings.HasSavedDeck && !Has(catalog.Decks, Deck) && catalog.Decks.FirstOrDefault() is { } first) Deck = first;
             Changed();
         }
-        catch (Exception error) { if (_metadataId == request && !cancellationToken.IsCancellationRequested) { Message = error.Message; Changed(); } }
+        catch (Exception error) { if (_metadataId == request && !cancellationToken.IsCancellationRequested) { Message = Controller.DisplayFailure(error); Changed(); } }
         finally { if (_metadataId == request) { Loading = false; Changed(); } }
     }
     internal async Task UpdateTemplateAsync(CancellationToken cancellationToken = default)
     {
         Busy = true; Changed();
         try { await Controller.UpdatePresetTemplateAsync(cancellationToken); await LoadAsync(cancellationToken); }
-        catch (Exception error) { Message = error.Message; Changed(); }
+        catch (Exception error) { Message = Controller.DisplayFailure(error); Changed(); }
         finally { Busy = false; Changed(); }
     }
 }

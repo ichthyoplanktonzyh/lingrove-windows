@@ -18,7 +18,7 @@ internal sealed partial class CanonicalAnkiReviewSession
             {
                 var templates = await Controller.CallAsync("modelTemplates", Params(("modelName", new AnkiValue.Text(Model))), connection, cancellationToken);
                 await ValidateCurrentAsync(content, connection, cancellationToken);
-                if (!templates.Equals(new AnkiValue.Map(ReviewLayoutPolicy.Templates))) throw new AnkiReviewException("The Anki card template changed. Restore Front and Back before sending.");
+                if (!templates.Equals(new AnkiValue.Map(ReviewLayoutPolicy.Templates))) throw new AnkiReviewException(AnkiReviewFailure.TemplateChanged);
             }
             return;
         }
@@ -29,7 +29,7 @@ internal sealed partial class CanonicalAnkiReviewSession
         var preset = await Controller.CallAsync("modelTemplates", Params(("modelName", new AnkiValue.Text(Model))), connection, cancellationToken);
         await ValidateCurrentAsync(content, connection, cancellationToken);
         if (!Same(preset.Object?.GetValueOrDefault("Gap")?.Object?.GetValueOrDefault("Front")?.String, AnkiNoteTemplate.GapFront))
-            throw new AnkiReviewException("Update the Lingrove template before adding explanation content to gap cards.");
+            throw new AnkiReviewException(AnkiReviewFailure.GapTemplateUpgradeRequired);
     }
     private async Task UploadImagesAsync(ReviewCardContent content, AnkiConnection connection, string profile, CancellationToken cancellationToken)
     {
@@ -39,7 +39,7 @@ internal sealed partial class CanonicalAnkiReviewSession
             byte[] data;
             try { data = await Store.ReadImageAsync(image, cancellationToken); }
             catch (OperationCanceledException) { throw; }
-            catch { throw new AnkiReviewException("An explanation image is missing. Add it again before sending."); }
+            catch { throw new AnkiReviewException(AnkiReviewFailure.MissingExplanationImage); }
             await ValidateCurrentAsync(content, connection, cancellationToken);
             if (!Same(await Controller.ProfileAsync(connection, cancellationToken), profile)) throw Conflict();
             await ValidateCurrentAsync(content, connection, cancellationToken);

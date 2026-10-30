@@ -19,6 +19,7 @@ public sealed class DpapiAnkiCredentialStoreTests : IDisposable
     {
         var error = Assert.Throws<AnkiReviewException>(action);
         Assert.Equal(DpapiAnkiCredentialStore.FailureMessage, error.Message); Assert.Null(error.InnerException);
+        Assert.Equal(AnkiReviewFailure.CredentialUnavailable, error.Failure);
     }
     [Fact]
     public void ConstructionAndMissingReadOrDeleteDoNotCreateAFileOrDirectory()

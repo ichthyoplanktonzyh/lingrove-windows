@@ -106,10 +106,10 @@ internal sealed class CanonicalAnkiReviewBatchWindow : Window
     private static Button Button(string label, Action action) { var value = new Button { Content = label, Margin = new Thickness(0, 0, 8, 0) }; VocabularyNotebookTheme.Button(value); value.Click += (_, _) => action(); return value; }
     private async Task StartBatchAsync(Guid? only, CancellationToken token)
     {
-        var shown = _scope ?? throw new AnkiReviewException("Refresh the Anki connection before sending."); ReviewOperationScope? current = null;
+        var shown = _scope ?? throw new AnkiReviewException(AnkiReviewFailure.ConnectionRefreshRequired); ReviewOperationScope? current = null;
         await _feature.RunAsync(async featureToken => { using var linked = CancellationTokenSource.CreateLinkedTokenSource(token, featureToken); current = await _feature.Controller.CanonicalScopeAsync(linked.Token); await _feature.Controller.CanonicalVerifyAsync(current, linked.Token); });
         if (current is null || !current.Connection.Equals(shown.Connection) || !Cotabby.Core.Text.CanonicalStringComparer.Instance.Equals(current.Profile, shown.Profile) || !_feature.Controller.Matches(shown))
-        { _scope = null; throw new AnkiReviewException("Anki connection or profile changed. Refresh before sending."); }
+        { _scope = null; throw new AnkiReviewException(AnkiReviewFailure.ConnectionChanged); }
         _batch.Start(current, only);
     }
     private async Task LoadScopeAsync(CancellationToken token)
@@ -132,7 +132,7 @@ internal sealed class CanonicalAnkiReviewBatchWindow : Window
     {
         if (_retiring || _aux is not null || _batch.Busy) return;
         _uiError = null; var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously); _aux = completion.Task; Render(); _ = Run();
-        async Task Run() { try { await action(_lifetime.Token); } catch (OperationCanceledException) { } catch (Exception error) { if (!_retiring) _uiError = error.Message; } finally { _aux = null; completion.TrySetResult(); if (!_retiring) Render(); } }
+        async Task Run() { try { await action(_lifetime.Token); } catch (OperationCanceledException) { } catch (Exception error) { if (!_retiring) _uiError = InterfaceFailureText.For(error); } finally { _aux = null; completion.TrySetResult(); if (!_retiring) Render(); } }
     }
     private void Stop()
     {
@@ -141,7 +141,7 @@ internal sealed class CanonicalAnkiReviewBatchWindow : Window
         async Task Run()
         {
             try { await _batch.StopAsync(); done.TrySetResult(); }
-            catch (Exception error) { _stopFailure = error; _uiError = error.Message; done.TrySetResult(); }
+            catch (Exception error) { _stopFailure = error; _uiError = InterfaceFailureText.For(error); done.TrySetResult(); }
             finally { _stopWork = null; if (!_retiring) Render(); }
         }
     }

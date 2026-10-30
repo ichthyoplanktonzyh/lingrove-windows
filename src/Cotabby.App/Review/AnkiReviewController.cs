@@ -15,9 +15,16 @@ namespace Cotabby.App.Review;
 /// lease prevents concurrent note creation; sessions will own writes and durable acknowledgement.
 /// Construction is inert. Async methods retain the caller's UI context like the source MainActor.</summary>
 internal sealed partial class AnkiReviewController(AnkiReviewSettings settings, VocabularyStore? store,
-    IAnkiConnecting client, Func<string?>? speechConfigurationId = null, Action? activateAnki = null, ISpeechExporting? speech = null) : INotifyPropertyChanged
+    IAnkiConnecting client, Func<string?>? speechConfigurationId = null, Action? activateAnki = null, ISpeechExporting? speech = null,
+    Func<Exception, string>? failureText = null, Func<string, string>? text = null) : INotifyPropertyChanged
 {
     internal AnkiReviewSettings Settings { get; } = settings;
+    // Only presentation is injected; wire values, status identifiers, scopes and receipts keep
+    // their original contracts. Unknown diagnostic messages are not treated as resource keys.
+    private readonly Func<Exception, string> _failureText = failureText ?? (error => error.Message);
+    private readonly Func<string, string> _text = text ?? (key => key);
+    internal string DisplayFailure(Exception error) => _failureText(error);
+    internal string DisplayText(string key) => _text(key);
     private readonly VocabularyStore? _store = store;
     internal const string NotebookUnavailableMessage = "Card templates and notebook review are not yet available with the current notebook.";
     internal VocabularyStore? StoreOrNull => _store;
@@ -55,9 +62,9 @@ internal sealed partial class AnkiReviewController(AnkiReviewSettings settings, 
             var next = await FetchCatalogAsync(connection, cancellationToken);
             var available = await FieldsAsync(model, connection, create: false, cancellationToken: cancellationToken);
             if (!Settings.Connection().Equals(connection) || selectedModel is null && !Same(model, Settings.Model)) return;
-            Catalog = next; ModelFields = available; ConnectionMessage = "Connected"; Changed();
+            Catalog = next; ModelFields = available; ConnectionMessage = DisplayText("Connected"); Changed();
         }
-        catch (Exception error) { Catalog = null; ModelFields = []; ConnectionMessage = error.Message; Changed(); }
+        catch (Exception error) { Catalog = null; ModelFields = []; ConnectionMessage = DisplayFailure(error); Changed(); }
         finally { Testing = false; Changed(); }
     }
     internal async Task RefreshFieldsAsync(CancellationToken cancellationToken = default)
@@ -69,7 +76,7 @@ internal sealed partial class AnkiReviewController(AnkiReviewSettings settings, 
             if (!Same(model, Settings.Model) || !Settings.Connection().Equals(connection)) return;
             ModelFields = result; Changed();
         }
-        catch (Exception error) { ModelFields = []; ConnectionMessage = error.Message; Changed(); }
+        catch (Exception error) { ModelFields = []; ConnectionMessage = DisplayFailure(error); Changed(); }
     }
     internal async Task<ReviewOperationScope> OperationScopeAsync(CancellationToken cancellationToken = default)
     { RequireNotebook(); return await OperationScopeCoreAsync(cancellationToken); }
@@ -143,13 +150,13 @@ internal sealed partial class AnkiReviewController(AnkiReviewSettings settings, 
             var connection = Settings.Connection(); await VerifyScopeAsync(binding, connection, cancellationToken);
             if (binding.NoteId is not { } id) return null;
             var remote = await NoteAsync(id, connection, cancellationToken);
-            if (remote is null) throw new AnkiReviewException("The associated Anki note no longer exists.");
+            if (remote is null) throw new AnkiReviewException(AnkiReviewFailure.MissingNote);
             if (!Same(remote.Fields.GetValueOrDefault(binding.IdentityField), binding.OriginSenseId.ToString("D").ToLowerInvariant()))
-                throw new AnkiReviewException("The Anki note identity changed. Check its association.");
+                throw new AnkiReviewException(AnkiReviewFailure.NoteIdentityChanged);
             _ = await CallAsync("guiBrowse", Params(("query", new AnkiValue.Text("nid:" + id))), connection, cancellationToken);
             return null;
         }
-        catch (Exception error) { return error.Message; }
+        catch (Exception error) { return DisplayFailure(error); }
     }
     internal async Task<AnkiReviewCatalog> FetchCatalogAsync(AnkiConnection connection, CancellationToken cancellationToken = default)
     {
@@ -167,7 +174,7 @@ internal sealed partial class AnkiReviewController(AnkiReviewSettings settings, 
     {
         RequireNotebook();
         if (!Same(binding.Endpoint, connection.Endpoint) || !Same(await ProfileAsync(connection, cancellationToken), binding.Profile))
-            throw new AnkiReviewException("Switch to the Anki profile associated with this sense.");
+            throw new AnkiReviewException(AnkiReviewFailure.ProfileMismatch);
     }
     internal async Task<IReadOnlyList<string>> FieldsAsync(string model, AnkiConnection connection, bool create,
         string? expectedProfile = null, CancellationToken cancellationToken = default)
@@ -226,7 +233,7 @@ internal sealed partial class AnkiReviewController(AnkiReviewSettings settings, 
         if (value.Array is not { } rows || rows.Any(r => r.String is null)) throw Invalid();
         return System.Array.AsReadOnly(rows.Select(r => r.String!).ToArray());
     }
-    internal static AnkiReviewException Invalid() => new("AnkiConnect returned an invalid response.");
+    internal static AnkiReviewException Invalid() => new(AnkiReviewFailure.InvalidResponse);
     internal void Begin(Guid id, Guid? cardId = null)
     {
         RequireNotebook();
@@ -234,14 +241,14 @@ internal sealed partial class AnkiReviewController(AnkiReviewSettings settings, 
     }
     private void BeginCore(Guid id, Guid? cardId)
     {
-        if (SendingSenseId is not null || UpdatingTemplate) throw new AnkiReviewException("Wait for the current Anki operation to finish.");
+        if (SendingSenseId is not null || UpdatingTemplate) throw new AnkiReviewException(AnkiReviewFailure.OperationInProgress);
         Guid key = cardId ?? id; SendingSenseId = id; SendingReviewId = key; _failures.Remove(key); Changed();
     }
     internal void Finish(Guid id, Guid? cardId = null, Exception? error = null, bool missingNote = false, bool wrote = true)
     {
         Guid key = cardId ?? id;
         if (SendingReviewId == key) { SendingSenseId = null; SendingReviewId = null; }
-        if (error is null or OperationCanceledException) _failures.Remove(key); else _failures[key] = error.Message;
+        if (error is null or OperationCanceledException) _failures.Remove(key); else _failures[key] = DisplayFailure(error);
         if (error is null) { if (!wrote) _unresolved.Add(key); else _unresolved.Remove(key); }
         if (missingNote) _missing.Add(key); else if (error is null) _missing.Remove(key);
         Changed();

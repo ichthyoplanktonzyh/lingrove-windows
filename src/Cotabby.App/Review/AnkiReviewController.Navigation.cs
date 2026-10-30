@@ -38,10 +38,10 @@ internal sealed partial class AnkiReviewController
             }
             if (!Strings(await CallAsync("deckNames", Params(), connection, cancellationToken)).Contains(deck, Cotabby.Core.Text.CanonicalStringComparer.Instance)
                 || await CallAsync("guiDeckOverview", Params(("name", new AnkiValue.Text(deck))), connection, cancellationToken) is not AnkiValue.Boolean { Value: true })
-                throw new AnkiReviewException("Choose a deck and an Anki association.");
+                throw new AnkiReviewException(AnkiReviewFailure.InvalidAssociation);
             _activateAnki(); return null;
         }
-        catch (Exception error) { return error.Message; }
+        catch (Exception error) { return DisplayFailure(error); }
     }
     internal async Task UpdatePresetTemplateAsync(CancellationToken cancellationToken = default)
     { RequireNotebook(); await UpdatePresetTemplateCoreAsync(cancellationToken, null); }
@@ -55,7 +55,7 @@ internal sealed partial class AnkiReviewController
             var fields = await FieldsCoreAsync(AnkiReviewPolicy.PresetName, connection, true, beforeWrite is null ? null : profile, cancellationToken, beforeWrite);
             var templates = await CallAsync("modelTemplates", Params(("modelName", new AnkiValue.Text(AnkiReviewPolicy.PresetName))), connection, cancellationToken);
             if (!Equals(templates, new AnkiValue.Map(AnkiNoteTemplate.LegacyTemplates)) && !Equals(templates, new AnkiValue.Map(AnkiNoteTemplate.Templates)))
-                throw new AnkiReviewException("This template was customized. Manage it in Anki.");
+                throw new AnkiReviewException(AnkiReviewFailure.CustomizedTemplate);
             foreach (string field in ReviewFieldNames().Where(f => !fields.Contains(f, Cotabby.Core.Text.CanonicalStringComparer.Instance)))
             {
                 if (!Same(await ProfileAsync(connection, cancellationToken), profile)) throw Conflict();

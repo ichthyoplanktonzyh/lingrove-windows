@@ -44,7 +44,7 @@ public static partial class ReviewLayoutPolicy
         ReviewResolvedPart Resolve(ReviewCardPart part)
         {
             ReviewResolvedPart Text(string? value) => value is not null && LearningExplanationText.Trim(value).Length != 0
-                ? new ReviewResolvedPart.Text(value) : throw new AnkiReviewException("Card content is missing. Choose its source again. · " + part.Source.Label());
+                ? new ReviewResolvedPart.Text(value) : throw new AnkiReviewException(AnkiReviewFailure.MissingCardContent, part.Source);
             VocabularyContentBlock Caption(VocabularyContentBlock block) => block.Content is VocabularyBlockContent.Image image && !part.ShowCaption
                 ? block with { Content = image with { Caption = "" } } : block;
             switch (part.Source)
@@ -70,7 +70,7 @@ public static partial class ReviewLayoutPolicy
                 default: throw new VocabularyContentValidationException();
             }
         }
-        if (previewBack is null && (layout.Front.Count == 0 || layout.Back.Count == 0)) throw new AnkiReviewException("Add content to both sides of the card.");
+        if (previewBack is null && (layout.Front.Count == 0 || layout.Back.Count == 0)) throw new AnkiReviewException(AnkiReviewFailure.EmptyCardSides);
         ReviewResolvedPart[] front = previewBack == true ? [] : layout.Front.Select(Resolve).ToArray();
         ReviewResolvedPart[] back = previewBack == false ? [] : layout.Back.Select(Resolve).ToArray();
         var blocks = front.Concat(back).OfType<ReviewResolvedPart.Blocks>().SelectMany(part => part.Values).ToArray();

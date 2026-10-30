@@ -171,7 +171,7 @@ internal sealed class WelcomeReadinessView : StackPanel
             if (s.SpeechProvider == LearningSpeechProviderKind.Endpoint && (!EndpointValid(s.SpeechUrl, s.SpeechEndpointModel) || string.IsNullOrWhiteSpace(s.SpeechVoice) || Encoding.UTF8.GetByteCount(s.SpeechVoice) > 256 || Encoding.UTF8.GetByteCount(s.SpeechEndpointModel) > 256)) return InterfaceText.Get("Choose a speech endpoint, model and voice.");
             return null;
         }
-        catch (SpeechException error) { return error.Message; }
+        catch (SpeechException error) { return InterfaceFailureText.For(error); }
         catch { return InterfaceText.Get("Speech configuration is unavailable."); }
     }
     internal Task RetireAsync()

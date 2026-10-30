@@ -244,7 +244,7 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
                 await _admit(async featureToken => { using var linked = CancellationTokenSource.CreateLinkedTokenSource(featureToken, _lifetime.Token); await PresentAsync(linked.Token); });
             }
             catch (OperationCanceledException) { }
-            catch (Exception error) { if (!_closing) { _validation.Text = error.Message; UpdateEnabled(); } }
+            catch (Exception error) { if (!_closing) { _validation.Text = InterfaceFailureText.For(error); UpdateEnabled(); } }
         }
     }
     private async Task LoadAsync(CancellationToken token)
@@ -258,14 +258,14 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
     private async Task PresentAsync(CancellationToken token)
     {
         long version = _previewVersion; if (_session.CardId is not null) { await PresentLayoutAsync(version, token); return; }
-        string? validation = await _session.ValidationMessageAsync(token); ReviewCardContent? content = null; try { content = await _session.ContentAsync(token); } catch (AnkiReviewException error) { validation ??= error.Message; }
+        string? validation = await _session.ValidationMessageAsync(token); ReviewCardContent? content = null; try { content = await _session.ContentAsync(token); } catch (AnkiReviewException error) { validation ??= InterfaceFailureText.For(error); }
         if (version != _previewVersion || _closing) return;
         _validation.Text = validation ?? (_loadedAddress == _session.Controller.Settings.Address ? "" : InterfaceText.Get("Refresh the Anki connection before sending.", "Vocabulary")); _preview.Children.Clear(); if (content is null) { UpdateEnabled(); return; }
         void Line(string label, string value, bool authoredLabel = true) { if (value.Length != 0) _preview.Children.Add(new TextBlock { Text = (authoredLabel ? ReviewText(label) : label) + ": " + value, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 3, 0, 3) }); }
         if ((!_session.CurrentPresetTemplate && !_session.LegacyPresetTemplate) || _session.Plan.FieldOverrides.Count > 0)
         {
             try { var fields = AnkiReviewPolicy.Fields(content, _session.Binding?.OriginSenseId ?? _session.SenseId, _session.Mapping, _session.Plan.FieldOverrides, AnkiReviewPolicy.AudioFields(_session.Plan)); foreach (var field in fields.OrderBy(p => p.Key)) Line(field.Key, field.Value, false); }
-            catch (AnkiReviewException error) { _validation.Text = error.Message; }
+            catch (AnkiReviewException error) { _validation.Text = InterfaceFailureText.For(error); }
             UpdateEnabled(); return;
         }
         bool gap = _cardType.SelectedIndex == 1, back = _side.SelectedIndex == 1;
@@ -302,7 +302,7 @@ internal sealed partial class CanonicalAnkiReviewWindow : Window
         {
             try { await _admit(async featureToken => { using var linked = CancellationTokenSource.CreateLinkedTokenSource(featureToken, _lifetime.Token); await action(linked.Token); }); }
             catch (OperationCanceledException) { }
-            catch (Exception error) { if (!_closing) { _windowError = error.Message; _state.Text = error.Message; _validation.Text = error.Message; } }
+            catch (Exception error) { if (!_closing) { _windowError = InterfaceFailureText.For(error); _state.Text = InterfaceFailureText.For(error); _validation.Text = InterfaceFailureText.For(error); } }
             finally { _operation = null; completion.TrySetResult(); if (_closeWhenDone && !_closing) { _ = RetireAsync(); } else if (!_closing) { try { Fill(); } catch (InvalidOperationException) { _validation.Text = InterfaceText.Get("This sense is no longer available.", "Vocabulary"); } UpdateEnabled(); } }
         }
     }

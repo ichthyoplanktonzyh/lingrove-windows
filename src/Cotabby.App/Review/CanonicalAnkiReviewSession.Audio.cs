@@ -32,15 +32,15 @@ internal sealed partial class CanonicalAnkiReviewSession
     private void RequireAudioDisclosure()
     {
         if (_presentedSpeech is not { } shown || !shown.Matches(Audio.Speech))
-            throw new AnkiReviewException("Speech destination is unavailable or changed. Review the speech settings before continuing.");
+            throw new AnkiReviewException(AnkiReviewFailure.SpeechDestinationChanged);
     }
     private void ValidateAudioMapping(ReviewCardContent content)
     {
         RequireNoAudio();
         if (Plan.AudioKinds?.Contains(ReviewAudioKind.Sentence) == true && content.Sentence.Length == 0)
-            throw new AnkiReviewException("Choose a review example again.");
+            throw new AnkiReviewException(AnkiReviewFailure.MissingExample);
         if (CardId is null && (Plan.AudioKinds ?? new HashSet<ReviewAudioKind>()).Any(kind => !Mapping.ContainsKey(kind.Field())))
-            throw new AnkiReviewException("Map the selected audio fields or update the Lingrove template.");
+            throw new AnkiReviewException(AnkiReviewFailure.AudioFieldsMissing);
     }
     internal async Task PrepareAudioAsync(ReviewAudioKind kind, bool audition, bool force = false, CancellationToken token = default)
     {
@@ -64,7 +64,7 @@ internal sealed partial class CanonicalAnkiReviewSession
                 || !Equals(CanonicalReviewCardPolicy.Content(latest.Entry, latest.Sense, captured.Plan), content)) throw Conflict();
             RequireAudioDisclosure(); if (audition) Audio.Speech!.Audition(result.Audio, Audio.OwnerId, request.Language);
         }
-        catch (Exception error) { if (error is not OperationCanceledException) { Message = error.Message; Changed(); } }
+        catch (Exception error) { if (error is not OperationCanceledException) { Message = Controller.DisplayFailure(error); Changed(); } }
     }
     private async Task<IReadOnlyDictionary<ReviewField, string>> UploadAudioAsync(ReviewCardContent content, AnkiConnection connection, string profile, CancellationToken token)
     {

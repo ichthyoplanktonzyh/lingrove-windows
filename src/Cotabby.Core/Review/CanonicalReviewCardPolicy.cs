@@ -13,7 +13,7 @@ public static class CanonicalReviewCardPolicy
     {
         if (plan.Layout is not null) return LayoutContent(entry, sense, plan, previewBack);
         var example = sense.Examples.FirstOrDefault(value => value.Id == plan.ExampleId);
-        if (plan.ExampleId is not null && example is null) throw new AnkiReviewException("Choose a review example again.");
+        if (plan.ExampleId is not null && example is null) throw new AnkiReviewException(AnkiReviewFailure.MissingExample);
         string contextual = LearningExplanationText.Trim(example?.Meaning ?? "");
         string fallback = contextual.Length == 0 ? sense.Meaning : contextual;
         string preferred = sense.MeaningOrigin == VocabularyMeaningOrigin.User || example is null ? sense.Meaning : fallback;
@@ -21,8 +21,8 @@ public static class CanonicalReviewCardPolicy
         string sentence = example?.Text ?? ""; var ranges = example?.Ranges ?? [];
         var gap = ReviewCardPolicy.Gap(sentence, ranges, entry.Kind); var blocks = plan.IncludeSenseContent == true ? sense.Content ?? [] : [];
         VocabularyContentPolicy.Validate(blocks);
-        if (answer.Length == 0 && !VocabularyContentPolicy.Meaningful(blocks)) throw new AnkiReviewException("Add a review answer before sending.");
-        if ((!plan.Recognition && !plan.Gap) || plan.Gap && gap is null) throw new AnkiReviewException("Choose valid expression positions for a gap card.");
+        if (answer.Length == 0 && !VocabularyContentPolicy.Meaningful(blocks)) throw new AnkiReviewException(AnkiReviewFailure.MissingAnswer);
+        if ((!plan.Recognition && !plan.Gap) || plan.Gap && gap is null) throw new AnkiReviewException(AnkiReviewFailure.InvalidGap);
         var records = example?.Explanations ?? sense.Explanations;
         return new(entry.Expression, answer, sentence, ranges, example?.Translation ?? "", plan.IncludeExplanation ? records.LastOrDefault()?.Result.Explanation ?? "" : "",
             plan.IncludeNotes ? sense.Note : "", gap?.Prompt ?? "", gap?.Answer ?? "", plan.Recognition, plan.Gap) { SenseContent = blocks };
@@ -41,7 +41,7 @@ public static class CanonicalReviewCardPolicy
         ReviewResolvedPart Resolve(ReviewCardPart part)
         {
             ReviewResolvedPart Text(string? value) => value is not null && LearningExplanationText.Trim(value).Length != 0
-                ? new ReviewResolvedPart.Text(value) : throw new AnkiReviewException("Card content is missing. Choose its source again. · " + part.Source.Label());
+                ? new ReviewResolvedPart.Text(value) : throw new AnkiReviewException(AnkiReviewFailure.MissingCardContent, part.Source);
             VocabularyContentBlock Caption(VocabularyContentBlock block) => block.Content is VocabularyBlockContent.Image image && !part.ShowCaption ? block with { Content = image with { Caption = "" } } : block;
             switch (part.Source)
             {
@@ -62,7 +62,7 @@ public static class CanonicalReviewCardPolicy
                 default: throw new VocabularyContentValidationException();
             }
         }
-        if (previewBack is null && (layout.Front.Count == 0 || layout.Back.Count == 0)) throw new AnkiReviewException("Add content to both sides of the card.");
+        if (previewBack is null && (layout.Front.Count == 0 || layout.Back.Count == 0)) throw new AnkiReviewException(AnkiReviewFailure.EmptyCardSides);
         var front = previewBack == true ? [] : layout.Front.Select(Resolve).ToArray(); var back = previewBack == false ? [] : layout.Back.Select(Resolve).ToArray();
         var blocks = front.Concat(back).OfType<ReviewResolvedPart.Blocks>().SelectMany(part => part.Values).ToArray();
         return new(entry.Expression, sense.Meaning, example?.Text ?? "", [], example?.Translation ?? "", "", "", "", "", true, false) { SenseContent = blocks, Front = front, Back = back };

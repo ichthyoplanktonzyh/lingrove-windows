@@ -14,9 +14,9 @@ internal sealed partial class AnkiReviewSession
     internal void ValidateAudioMapping()
     {
         if (Plan.AudioKinds?.Contains(ReviewAudioKind.Sentence) == true && (Content is not { } content || content.Sentence.Length == 0))
-            throw new AnkiReviewException("Choose a review example again.");
+            throw new AnkiReviewException(AnkiReviewFailure.MissingExample);
         foreach (var kind in Plan.AudioKinds ?? new HashSet<ReviewAudioKind>())
-            if (CardId is null && !Mapping.ContainsKey(kind.Field())) throw new AnkiReviewException("Map the selected audio fields or update the Lingrove template.");
+            if (CardId is null && !Mapping.ContainsKey(kind.Field())) throw new AnkiReviewException(AnkiReviewFailure.AudioFieldsMissing);
     }
     internal async Task PrepareAudioAsync(ReviewAudioKind kind, bool audition, bool force = false, CancellationToken cancellationToken = default)
     {
@@ -29,7 +29,7 @@ internal sealed partial class AnkiReviewSession
             _ = await Audio.PrepareAsync(kind, request, force, cancellationToken);
             if (audition) await Audio.AuditionAsync(kind, request, cancellationToken);
         }
-        catch (Exception error) { if (error is not OperationCanceledException) { Message = error.Message; Changed(); } }
+        catch (Exception error) { if (error is not OperationCanceledException) { Message = Controller.DisplayFailure(error); Changed(); } }
     }
     private async Task<IReadOnlyDictionary<ReviewField, string>> UploadAudioAsync(ReviewCardContent content, AnkiConnection connection,
         string profile, CancellationToken cancellationToken)

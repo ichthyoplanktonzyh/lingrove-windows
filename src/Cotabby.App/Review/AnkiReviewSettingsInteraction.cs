@@ -18,7 +18,7 @@ internal sealed class AnkiReviewSettingsInteraction(AnkiReviewFeature feature) :
     internal void ReadKeyOnAppearance()
     {
         try { Key = feature.Settings.ReadKey(); _savedKey = Key; }
-        catch (AnkiReviewException error) { KeyError = error.Message; }
+        catch (AnkiReviewException error) { KeyError = feature.Controller.DisplayFailure(error); }
         Changed();
     }
     internal void SaveKey()
@@ -29,7 +29,7 @@ internal sealed class AnkiReviewSettingsInteraction(AnkiReviewFeature feature) :
             feature.Settings.SaveKey(Key); _savedKey = Key; KeyError = null;
             feature.Controller.InvalidateConnection();
         }
-        catch (AnkiReviewException error) { KeyError = error.Message; }
+        catch (AnkiReviewException error) { KeyError = feature.Controller.DisplayFailure(error); }
         Changed();
     }
     internal Task TestConnectionAsync()

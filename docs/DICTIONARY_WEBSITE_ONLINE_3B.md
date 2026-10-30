@@ -51,8 +51,24 @@ are separate. The MDict isolated WebView, two-slot owner and profile cleanup are
 
 Primary-only implementation/source review follows the maintainer's 2026-10-30 instruction to stop
 delegation. This is not an independent agent review. Targeted checks include 95 portable dictionary
-cases, five fake-HTTP transport cases and the compiled WPF dictionary/settings suite. Rendered the
-real online-offer card and website form/source list in light and dark at 96-DPI output; inspected
-the normal and 480-DIP source list for hierarchy and wrapping. No matching Mac screenshots were
+cases, five fake-HTTP transport cases and 69 compiled WPF dictionary/settings cases. Rendered the
+real online-offer card, plus light/dark website forms and source lists at 96-DPI output; inspected
+the form and 480-DIP source list for hierarchy and wrapping. No matching Mac screenshots were
 available, so IA comparison is source-based. Live HTTPS, physical browser launching, high-DPI and
 screen-reader/keyboard desktop acceptance remain for the maintainer's final unified acceptance.
+
+Full local validation of code commit `2b5aa2ab7c4c23f3d1dd32fc9bb01a6c84c4eb02` on the physical
+Windows x64 development host (merging main at `a13a980` changed no file content):
+
+```powershell
+dotnet build Cotabby.sln --configuration Release --no-restore --nologo -v minimal
+dotnet test tests/Cotabby.Core.Tests/Cotabby.Core.Tests.csproj --configuration Release --no-build --no-restore
+dotnet test tests/Cotabby.App.Tests/Cotabby.App.Tests.csproj --configuration Release --no-build --no-restore
+dotnet test tests/Cotabby.Inference.Tests/Cotabby.Inference.Tests.csproj --configuration Release --no-build --no-restore
+./scripts/test-wpf-dev.ps1 -NoBuild -NoRestore
+```
+
+`LINGROVE_TEST_SYSTEM_SPEECH=0` and `COTABBY_CLIPBOARD_TEST=0`. Build: zero warnings/errors.
+All passed without skips: Core 5,079; App 1,278; Inference 750; WPF 1,047 (3m40s). The WPF helper
+held the named desktop lease. No model, live API, browser launch, user notebook/editor, clipboard
+or audio-device acceptance was executed. Remote required checks are evaluated on the PR's final head.

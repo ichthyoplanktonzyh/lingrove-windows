@@ -12,10 +12,10 @@ internal static class GeneralPane
     public static SettingsPane Build(Rows r) => new("General", "\uE713", "Core toggles and behavior",
         Interface(r),
         new SettingsCard("Status",
-            r.Toggle("Enable Cotabby", "Turn Cotabby off everywhere without quitting the app.",
+            r.Toggle("Enable Lingrove", "Turn Lingrove off everywhere without quitting the app.",
                 s => s.Enabled, (s, v) => s.Enabled = v)
                 .Tagged("on off disable toggle global pause resume active status stop start"),
-            r.Toggle("Open at Login", "Start Cotabby automatically when you sign in to Windows.",
+            r.Toggle("Open at Login", "Start Lingrove automatically when you sign in to Windows.",
                 s => s.LaunchAtLogin, (s, v) => s.LaunchAtLogin = v)
                 .Tagged("startup launch boot start autostart sign in")),
         new SettingsCard("Power",
@@ -42,7 +42,7 @@ internal static class GeneralPane
                 .Tagged("welcome guide tutorial intro help getting started first run")),
         new SettingsCard("Reset",
             r.Action("Reset All Settings",
-                "Restore every Cotabby setting to its original default. "
+                "Restore every Lingrove setting to its original default. "
                 + "This does not change your chosen model or your accepted-word count.",
                 "Reset All Settings…", () => Reset(r.Context))
                 .Tagged("defaults restore factory clear start over revert wipe erase")));
@@ -83,7 +83,7 @@ internal static class GeneralPane
             r.Context.Settings.InterfaceLanguage = choice.Code;
             try { r.Context.Host.SettingsStore.Save(r.Context.Settings); error.Text = ""; }
             catch (Exception failure) when (failure is System.IO.IOException or UnauthorizedAccessException)
-            { r.Context.Settings.InterfaceLanguageValue = previous; error.Text = "Could not save the interface language."; }
+            { r.Context.Settings.InterfaceLanguageValue = previous; error.Text = InterfaceText.Get("Could not save the interface language.", "Localizable"); }
             Refresh();
         };
         r.Context.OnRefresh(Refresh);
@@ -97,8 +97,8 @@ internal static class GeneralPane
     private static void Reset(SettingsContext context)
     {
         var answer = MessageBox.Show(
-            "Every Cotabby setting returns to its original default. This can't be undone.",
-            "Reset all settings to their defaults?",
+            InterfaceText.Get("Every Lingrove setting returns to its original default. This can't be undone.", "Localizable"),
+            InterfaceText.Get("Reset all settings to their defaults?", "Localizable"),
             MessageBoxButton.OKCancel, MessageBoxImage.Warning, MessageBoxResult.Cancel);
         if (answer == MessageBoxResult.OK) context.Host.ResetSettings();
     }
@@ -109,9 +109,9 @@ internal static class GeneralPane
             string app = Environment.ProcessPath ?? throw new CliException(CliErrorCode.Unavailable, "Cannot identify this application.");
             string path = CliCommandInstallation.Install(app);
             MessageBox.Show($"Installed for this user:\n{path}\n\nRun it by its full path, or add its folder to your PATH yourself.",
-                "Command-line tool", MessageBoxButton.OK, MessageBoxImage.Information);
+                InterfaceText.Get("Command-line tool", "Localizable"), MessageBoxButton.OK, MessageBoxImage.Information);
         }
-        catch (CliException error) { MessageBox.Show(error.Message, "Command-line tool", MessageBoxButton.OK, MessageBoxImage.Warning); }
-        catch (Exception) { MessageBox.Show("The command could not be installed.", "Command-line tool", MessageBoxButton.OK, MessageBoxImage.Warning); }
+        catch (CliException error) { MessageBox.Show(error.Message, InterfaceText.Get("Command-line tool", "Localizable"), MessageBoxButton.OK, MessageBoxImage.Warning); }
+        catch (Exception) { MessageBox.Show(InterfaceText.Get("The command could not be installed.", "Localizable"), InterfaceText.Get("Command-line tool", "Localizable"), MessageBoxButton.OK, MessageBoxImage.Warning); }
     }
 }

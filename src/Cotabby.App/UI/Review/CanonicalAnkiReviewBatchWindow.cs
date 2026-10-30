@@ -26,7 +26,7 @@ internal sealed class CanonicalAnkiReviewBatchWindow : Window
     private readonly TextBlock _speechDestination = new() { Name = "canonicalBatchSpeechDestination", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, 10) };
     internal TextBlock SpeechDestination => _speechDestination;
     private readonly TextBlock _destination = new() { TextWrapping = TextWrapping.Wrap }, _message = new() { TextWrapping = TextWrapping.Wrap }, _count = new();
-    private readonly Button _apply = new() { Content = InterfaceText.Get("Apply to selected") }, _reload = new() { Content = "Refresh connection" },
+    private readonly Button _apply = new() { Content = InterfaceText.Get("Apply to selected") }, _reload = new() { Content = InterfaceText.Get("Refresh connection", "Vocabulary") },
         _stop = new() { Content = InterfaceText.Get("Stop") }, _close = new() { Content = InterfaceText.Get("Close"), IsCancel = true }, _send = new() { Content = InterfaceText.Get("Send remaining"), IsDefault = true };
     private ReviewOperationScope? _scope;
     private Task? _aux, _stopWork, _retirement;
@@ -42,7 +42,7 @@ internal sealed class CanonicalAnkiReviewBatchWindow : Window
     internal TextBlock MessageText => _message;
     internal CanonicalAnkiReviewBatchWindow(CanonicalAnkiReviewBatchSession batch, AnkiReviewFeature feature, Action configure, IVocabularyClipboardImageTransfer? clipboard = null, bool allowExternalMedia = true)
     {
-        _allowExternalMedia = allowExternalMedia; _batch = batch; _feature = feature; _configure = configure; _clipboard = clipboard; Title = "Review cards"; Width = 760; Height = 740; MinWidth = 580; MinHeight = 500; WindowStartupLocation = WindowStartupLocation.CenterOwner;
+        _allowExternalMedia = allowExternalMedia; _batch = batch; _feature = feature; _configure = configure; _clipboard = clipboard; Title = InterfaceText.Get("Review cards", "Vocabulary"); Width = 760; Height = 740; MinWidth = 580; MinHeight = 500; WindowStartupLocation = WindowStartupLocation.CenterOwner;
         VocabularyNotebookTheme.Follow(this); var root = new DockPanel { Margin = new Thickness(22) }; Content = root;
         var heading = VocabularyInputControls.Heading(InterfaceText.Get("Review cards")); DockPanel.SetDock(heading, Dock.Top); root.Children.Add(heading);
         DockPanel.SetDock(_speechDestination, Dock.Top); root.Children.Add(_speechDestination);
@@ -74,7 +74,7 @@ internal sealed class CanonicalAnkiReviewBatchWindow : Window
         var shown = ReviewSpeechDisclosure.Capture(_feature.Controller.Speech);
         if (Equals(_shownSpeech, shown) && _speechDestination.Text.Length != 0) return;
         _shownSpeech = shown;
-        _speechDestination.Text = shown is null ? "Speech for review audio: unavailable. Configure speech before preparing audio." : "Speech for review audio: " + shown.Destination;
+        _speechDestination.Text = shown is null ? InterfaceText.Get("Speech for review audio: unavailable. Configure speech before preparing audio.", "Vocabulary") : "Speech for review audio: " + shown.Destination;
         _batch.PresentAudioDisclosure(IsVisible ? shown : null);
     }
     private void SettingsChanged(object? sender, PropertyChangedEventArgs e)
@@ -85,7 +85,7 @@ internal sealed class CanonicalAnkiReviewBatchWindow : Window
     private void BatchChanged(object? sender, PropertyChangedEventArgs e) { if (!_retiring) Render(); }
     private void Render()
     {
-        _destination.Text = _scope is { } scope ? $"{scope.Connection.Endpoint}\nProfile: {scope.Profile}" : "Connection not loaded. Refresh before sending.";
+        _destination.Text = _scope is { } scope ? $"{scope.Connection.Endpoint}\nProfile: {scope.Profile}" : InterfaceText.Get("Connection not loaded. Refresh before sending.", "Vocabulary");
         _count.Text = $"{_batch.CompleteCount} / {_batch.Items.Count}"; _message.Text = _uiError ?? _batch.Message ?? ""; _rows.Children.Clear();
         foreach (var item in _batch.Items)
         {

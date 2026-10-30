@@ -1,10 +1,10 @@
 <p align="center">
-  <img height="150" alt="Inherited Cotabby logo" src="docs/images/logo.png" />
+  <img height="150" alt="Lingrove whale logo" src="docs/images/logo.png" />
 </p>
 
 <h1 align="center">Lingrove for Windows</h1>
 
-<p align="center"><em>A Windows port of Lingrove's local-first autocomplete and language-learning app.</em></p>
+<p align="center"><em>Local-first autocomplete and language learning while you write.</em></p>
 
 <p align="center">
   <a href="LICENSE"><img alt="AGPL v3" src="https://img.shields.io/badge/license-AGPL--3.0-blue.svg" /></a>
@@ -12,174 +12,99 @@
   <img alt="Windows 10 and 11" src="https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-lightgrey" />
 </p>
 
----
+Lingrove has two equally core capabilities: autocomplete while writing and language learning while
+writing. This repository adapts [Lingrove for macOS](https://github.com/ichthyoplanktonzyh/lingrove)
+to Windows/WPF. The behavior, information architecture and presentation-state reference is the
+committed [Mac baseline](docs/MAC_LATEST_BASELINE.md); Windows controls, typography and window
+chrome retain their native character.
 
-Lingrove has two equally core capabilities: inline autocomplete and language learning while you
-write. This repository is an early Windows port forked from
-[Msde-7/cotabby-windows](https://github.com/Msde-7/cotabby-windows), which in turn builds on
-[Cotabby](https://github.com/FuJacob/cotabby) by FuJacob, jam-cai, akramj13, and contributors.
+The port builds on [Msde-7/cotabby-windows](https://github.com/Msde-7/cotabby-windows), which in turn
+builds on [Cotabby](https://github.com/FuJacob/cotabby) by FuJacob, jam-cai, akramj13 and contributors.
+Their attribution and the AGPL-3.0 license remain in place.
 
-The current Windows code contains an inherited Cotabby autocomplete implementation with a WPF tray
-app, Windows UI Automation, local/endpoint inference paths, and portable policy tests. A scoped
-[manual sentence-translation preview](docs/LEARNING_PREVIEW.md) now adapts the stable Mac contracts
-through an independent local learning runtime or an explicitly selected learning endpoint.
-[Local template resolution, token budgeting and model selection](docs/LEARNING_LOCAL_RUNTIME.md)
-adapt the stable Mac behavior. Full capture/replacement, dictionaries, vocabulary notebook, Anki and
-speech remain migration work, and native Windows interaction and model execution are unverified. The runtime and internal project
-names still say Cotabby; Lingrove branding in this documentation does not claim that the app binary,
-settings, or stored data have been rebranded or made compatible with macOS.
+## Current implementation
 
-The [offline lexical index and lazy bundled store](docs/LEARNING_OFFLINE_LEXICON.md) adapt the
-same pinned Mac resource and attribution. [Completed-translation double-click lookup](docs/LEARNING_WORD_PREVIEW.md)
-now connects them to a bundled dictionary card; native hit/focus/placement checks and broader
-system/imported dictionary flows remain incomplete.
-The [contextual query library](docs/LEARNING_CONTEXTUAL_QUERY.md) and
-[word/expression card](docs/LEARNING_CONTEXTUAL_CARD.md) now connect the Mac default sense page,
-exact captured examples and lazy dictionary navigation to the local explanation service.
-The [explanation input, prompt and output rules](docs/LEARNING_EXPLANATION_RULES.md) now have
-Mac-backed portable coverage, including model capability/metadata gates. A local provider now
-connects those rules to an exclusive native lease and complete-response validation. The app now
-owns [independent local settings and runtime](docs/LEARNING_EXPLANATION_RUNTIME.md). The
-[writing sentence card](docs/LEARNING_EXPLANATION_CARD.md) now connects explicit explanation,
-stop and refresh to the [session](docs/LEARNING_EXPLANATION_SESSION.md), preserving complete
-answers through refresh and revalidating the original editor. Native interaction/model execution
-are unverified; the explanation endpoint remains unported.
-The [writing capture adapter](docs/LEARNING_EXPLANATION_RULES.md#writing-capture-to-input) now preserves
-the completed translation's target, exact occurrences and context receipt for the service.
-The library service now adds saved-first lookup, profile/language isolation, complete records and
-the Mac's bounded result cache. Its app-owned controller loads on demand and releases after 60 idle seconds.
-The sentence card now has Mac's explicit [Copy source text / Copy translation](docs/LEARNING_COPY.md)
-footer with immutable document guards; provisional translations cannot be copied.
-Explanation and contextual text now support [mouse selection and context Copy](docs/LEARNING_TEXT_SELECTION.md)
-through that same guarded worker; remaining selection/host interaction gaps are documented.
+- **Autocomplete:** local/explicit endpoint inference, streaming and predictive typing, caret ghost,
+  word/phrase acceptance, app and optional clipboard context, emoji, macros and spelling support.
+- **Writing and expression assistance:** sentence previews and translation, explanations,
+  acknowledged range replacement, original-host return, candidate speech and canonical favorites.
+- **Vocabulary notebook:** a single current-format Store connects capture, creation/import, editing,
+  senses, meanings, categories, usage patterns, images, graph navigation, export and backup/restore.
+- **Review and speech:** independent Anki card preparation and batch operations, mappings and audio
+  preparation; separate system/local/endpoint speech ownership and settings.
+- **Reading and dictionaries:** explicit selection, pointer/UIA and screen-region reading; local
+  Windows OCR for explicit regions; bundled/local MDict sources and explicit online/website actions.
+- **Setup and presentation:** task/model assignment, recommended setup, a seven-scene Home/Welcome
+  walkthrough, interface-language selection, shared opt-in performance history and local CLI mailbox.
 
-The first foundation milestone is documentation, build-and-test CI, and shared behavior fixtures. It
-does not add a Windows installer, downloadable build, artifact upload, release workflow, or model
-download to CI. See the [baseline](docs/BASELINE.md) for what source exists and what remains
-unverified.
+These are implementation checkpoints, with automated and component-render evidence. They are not a
+claim that every editor, IME, speech provider or hardware configuration has passed native acceptance.
+See [feature evidence](docs/PARITY.md) and [Windows host acceptance](docs/WINDOWS_HOST_ACCEPTANCE.md).
 
-## Current development scope
+Remaining work includes pointer/selection visual OCR fallback, language/platform recognition limits,
+some bitmap/drop/dictionary-resource variants, custom review layouts and full interface-language
+coverage. Unsupported states stay explicit. Word, Chrome and Codex are the maintainer's final unified
+host acceptance order; physical DPI, focus, keyboard, clipboard, OCR, models and audio remain distinct
+from compilation and isolated tests.
 
-- **Autocomplete:** existing Core policies, WPF ghost overlay, UI Automation focus tracking,
-  keyboard input, local LLamaSharp inference, optional configured endpoint, app/clipboard context,
-  emoji, macros, and autocorrection. Source and tests exist, but native Windows editor behavior has
-  not yet been verified across hosts.
-- **Language learning:** a disabled-by-default manual current-sentence preview with independent
-  task settings, cancellation, dedicated CPU local inference and an explicit learning chat endpoint.
-  Local model import and catalog downloads require user actions; settings do not load a model.
-  Source/model/style/budget rules follow the pinned Mac. Native capture/IME/card and model execution, replacement,
-  reading/OCR, system/imported/online dictionaries, notebook, Anki and speech remain explicit gaps.
-- **Privacy:** local generation is the default design. A remote endpoint is an explicit user choice;
-  requests must be bounded and tied to the selected task. CI must not download model weights or
-  contact model endpoints. Cloud sync is outside scope.
+## Privacy and local data
 
-The full status and evidence for both feature sets lives in [PARITY.md](docs/PARITY.md). The
-architecture and ownership map is in [ARCHITECTURE.md](ARCHITECTURE.md), and the staged completion
-gates are in [PORTING_PLAN.md](docs/PORTING_PLAN.md).
-The [guarded editor insertion boundary](docs/EDITOR_SAFETY.md) supplies exact capture
-checks, queued-edit cancellation and bounded clipboard leases. Native editor acknowledgement and
-IME handling remain open; long/truncated fields and unsupported clipboard formats fail closed.
+Local generation is the default. A service endpoint is an explicit per-task choice with destination
+disclosure and bounded requests. Screen pixels remain local; recognized text follows the selected
+reading task's destination. Cloud sync is outside this port.
 
-## Repository layout
-
-```text
-src/Cotabby.App/       WPF app, tray, settings, onboarding, composition root
-src/Cotabby.Core/      Portable values, policies, autocomplete orchestration
-src/Cotabby.Inference/ Local llama.cpp/LLamaSharp and endpoint adapters
-src/Cotabby.Win32/     UI Automation, keyboard, insertion, clipboard and Windows services
-tests/                 xUnit portable and inference tests
-resources/             Pinned learning data, source attribution and provenance
-```
-
-The existing `Cotabby` identifiers are retained through the migration. Read [AGENTS.md](AGENTS.md)
-before contributing.
+The Windows runtime keeps existing `Cotabby` namespaces, assemblies, executable names, IPC and
+settings/storage identifiers. User-facing Lingrove branding does not rename those contracts. The
+current notebook uses a fresh, versioned file under the existing Cotabby data root; old files are
+preserved without implicit conversion or cross-OS admission.
 
 ## Build and test
 
-For development on a Windows x64 computer, start with the [Windows handoff guide](docs/WINDOWS_DEVELOPMENT.md)
-and run `scripts/check-windows-dev.ps1` for read-only SDK/runtime diagnostics. It includes a sibling
-read-only Mac source checkout and the first native UIA/IME/caret acceptance workflow.
-
-Use Windows 10 or 11 with the .NET 10 SDK to build and run the WPF app. On macOS, you can run the
-portable Core suite and compare the shared JSON corpus against the pinned Swift policies. This
-checkout has SDK `10.0.402` in the ignored `.dotnet/` directory, and `global.json` selects that SDK.
-On a fresh checkout, install .NET SDK `10.0.402` into `.dotnet/` if it is not already available.
+Use a Windows x64 development host and the .NET SDK selected by [global.json](global.json)
+(`10.0.402`, with its recorded patch roll-forward policy). The [Windows development guide](docs/WINDOWS_DEVELOPMENT.md)
+covers read-only prerequisite checks, runtime setup and source reference access.
 
 ```powershell
-dotnet build Cotabby.sln
-dotnet test Cotabby.sln
-```
-
-On macOS, run these from the repository root. Set `--mac-repo` to a Git checkout containing the
-pinned commit; the verifier reads its source with `git show`, so local edits in that checkout do not
-change the reference:
-
-```sh
-export DOTNET_ROOT="$PWD/.dotnet"
-export PATH="$DOTNET_ROOT:$PATH"
-dotnet --version # 10.0.402
+./scripts/check-windows-dev.ps1
+dotnet build Cotabby.sln --configuration Release
 dotnet test tests/Cotabby.Core.Tests/Cotabby.Core.Tests.csproj --configuration Release
 dotnet test tests/Cotabby.App.Tests/Cotabby.App.Tests.csproj --configuration Release
-python3 scripts/verify-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
-python3 scripts/verify-learning-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
-python3 scripts/verify-learning-local-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
-python3 scripts/verify-learning-lexical-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
-python3 scripts/verify-learning-explanation-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
-python3 scripts/verify-learning-capture-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
-python3 scripts/verify-vocabulary-content-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
-python3 scripts/verify-vocabulary-capture-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
-python3 scripts/verify-vocabulary-models-macos-parity.py --mac-repo /path/to/macOS-lingrove-checkout
+dotnet test tests/Cotabby.Inference.Tests/Cotabby.Inference.Tests.csproj --configuration Release
+./scripts/test-wpf-dev.ps1 -Configuration Release -NoBuild
 ```
 
-The Swift verifiers require Xcode 26 and exercise 17 autocomplete, 64 learning, 45 local-learning,
-34 lexical, 19 dictionary-policy, 68 explanation, 52 explanation-model, 33 writing-capture,
-72 sense-content, 63 usage/capture and 31 notebook/review-model fixture cases/checks, plus pinned
-resource integrity/Codable checks
-against committed pure Mac policies. They do not build or launch the macOS app. Routine validation does not run the
-`Cotabby.Tools.*Smoke` projects: those may require an interactive Windows desktop or downloaded
-model weights.
+The WPF wrapper serializes tests sharing the desktop. Tests use synthetic/owned resources; actual
+user-host acceptance is separate. On macOS, portable Core/App tests and committed Swift verifiers
+check the pinned sources and fixtures without building or running the Mac app.
 
-The [sense-content library](docs/VOCABULARY_CONTENT.md) ports stable text/image block values,
-UTF-8/media metadata budgets and literal review HTML. The [usage/capture values and keys](docs/VOCABULARY_CAPTURE.md)
-retain exact encounter/provenance and share explanation receipts. The [notebook/review values](docs/VOCABULARY_MODELS.md)
-now preserve full sense ownership, retained plans and binding identity. The shared notebook now has durable storage, image preparation, export/backup and graph adapters.
-The [local Anki transport](docs/ANKI_CONNECT_TRANSPORT.md) and
-[review preferences](docs/ANKI_REVIEW_SETTINGS.md) have bounded automated evidence. The
-[Windows Anki credential adapter](docs/ANKI_CREDENTIAL_STORAGE.md) supplies separate exact-key storage.
-The [review controller](docs/ANKI_REVIEW_CONTROLLER.md) now preserves operation scopes, probes,
-status and guarded navigation/template updates. [Review/template persistence](docs/VOCABULARY_REVIEW_TRANSACTIONS.md)
-now supplies card CAS and acknowledged receipt storage. The [review settings adapter](docs/ANKI_REVIEW_SETTINGS_UI.md)
-connects one inert AppHost owner, explicit connection controls and normal-quit drain. Review navigation,
-card preparation UI and the send transaction remain open. The [recording preparation library](docs/REVIEW_AUDIO_PREPARATION.md)
-now preserves sheet-owned cache, busy admission and cancellation with borrowed speech contracts. The [PCM foundation](docs/SPEECH_PCM_FOUNDATION.md)
-now adapts bounded Float32 blocks and playback queue accounting. The [frame decoder](docs/SPEECH_FRAME_DECODER.md)
-adds bounded fragmented helper-stream admission. The [export buffer](docs/SPEECH_EXPORT_BUFFER.md)
-now serializes request-owned audio accumulation/packaging. The [provider metadata rules](docs/SPEECH_PROVIDER_METADATA.md)
-preserve exact Qwen companions, local language support and voice-tag compatibility. [Phrase/context language resolution](docs/SPEECH_LANGUAGE_RESOLUTION.md)
-now preserves evidence and fallback rules. The [voice selector](docs/SPEECH_VOICE_SELECTION.md)
-preserves ranking and compatible preferences given platform collation; installed inventory, Windows recognition/collation and live speech remain work.
+The app executable retains its current name:
 
-Windows CI also executes the [compiled WPF learning-view suite](docs/WPF_VIEW_TESTS.md): actual
-XAML/resource loading, window layout, in-memory rendering, native no-activation styles and
-target-bound routed commands. It starts no product services and accesses no external editor.
+```text
+src/Cotabby.App/bin/Release/net10.0-windows10.0.19041.0/win-x64/Cotabby.exe
+```
 
-Build and unit tests do not validate UI Automation, IME handling, caret placement, clipboard
-restoration, host text insertion, or GPU inference. Those checks need a Windows host and are tracked
-as explicit gates in the [porting plan](docs/PORTING_PLAN.md). Local model files are not CI inputs.
+The independent local speech helper has its own native build and runtime path; an ordinary app build
+does not download it or model weights. The app reports unavailable providers rather than generating
+sample output. Routine CI builds/tests source and pinned parity contracts; it creates no installer,
+downloadable application package, model download, artifact upload or release.
 
-CI job ownership is explicit:
+## Repository map
 
-| Workflow | What it validates | What it does not do |
-| --- | --- | --- |
-| [`ci.yml`](.github/workflows/ci.yml) | Current .NET 10 tree: Windows x64 full build, unit tests and compiled WPF learning views; macOS 26 Core/App tests and the same JSON cases against pinned Swift policies | Does not run model smoke tools, download model weights, upload artifacts, package, or release |
-| [`upstream-baseline.yml`](.github/workflows/upstream-baseline.yml) | Manual recheck of original fork commit `b1e4031c70aca1be21aae2c57b138fde5fc22bb1` on .NET 9 | Does not gate current .NET 10 PRs or validate native app behavior |
+| Location | Responsibility |
+| --- | --- |
+| `src/Cotabby.App` | WPF presentation, tray, settings, onboarding and composition |
+| `src/Cotabby.Core` | Portable values, policies and orchestration |
+| `src/Cotabby.Inference` | Independent model/endpoint boundaries |
+| `src/Cotabby.Win32` | UI Automation, input, insertion, clipboard and Windows effects |
+| `resources` | Pinned learning/language resources, approved brand masters and attribution |
+| `tests` | Portable, boundary, inference and compiled WPF/component checks |
 
-Current workflow results are available in the pull request checks. Recorded hosted and local results,
-with the native validation limits, are in [BASELINE.md](docs/BASELINE.md).
+Read [AGENTS.md](AGENTS.md), [ARCHITECTURE.md](ARCHITECTURE.md) and the relevant module handoff
+before contributing. Mac reference resources are read from committed Git snapshots, never a dirty
+Mac working tree. Historical module evidence retains its own pin until explicitly upgraded.
 
 ## License and attribution
 
-This project is licensed under the [GNU Affero General Public License v3.0](LICENSE), consistent
-with its Cotabby upstream. Preserve the applicable upstream attribution and third-party notices in
-[`THIRD_PARTY_LICENSES.md`](THIRD_PARTY_LICENSES.md). Third-party libraries, dictionaries, emoji
-data, and model weights have their own terms; consult their notices before redistribution.
+This project is licensed under [GNU AGPL-3.0](LICENSE), consistent with its upstream projects.
+Preserve [third-party licenses and notices](THIRD_PARTY_LICENSES.md). Libraries, dictionaries, emoji
+data and model weights have their own terms; consult those notices before redistribution.

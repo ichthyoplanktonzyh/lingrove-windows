@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using Cotabby.App.UI.Controls;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI.Settings.Panes;
 
@@ -8,9 +9,9 @@ internal static class AppsPane
 {
     public const string ProcessNameHint = "Process name (no .exe)";
 
-    public static SettingsPane Build(Rows r) => new("Apps", "\uE71D", "Where Cotabby stays quiet",
+    public static SettingsPane Build(Rows r) => new("Apps", "\uE71D", "Where Lingrove stays quiet",
         new SettingsCard("Disabled Apps",
-            Rows.Note("Cotabby won't autocomplete in these apps."),
+            Rows.Note("Lingrove won't autocomplete in these apps."),
             Rows.Custom(BlockedApps(r.Context)),
             r.Stacked("Disable an App", "Enter the process name of the app, such as notepad.",
                 Ui.AddBox(ProcessNameHint, name => Block(r.Context, name)))
@@ -43,14 +44,14 @@ internal static class AppsPane
             foreach (var app in context.Settings.BlockedApps)
             {
                 if (panel.Children.Count > 0) panel.Children.Add(Ui.Separator());
-                var remove = Ui.Button("Remove", () => context.Change(s => s.BlockedApps.Remove(app)));
+                var remove = Ui.Button(InterfaceText.Get("Remove", "Localizable"), () => context.Change(s => s.BlockedApps.Remove(app)));
                 DockPanel.SetDock(remove, Dock.Right);
                 var name = Ui.Text(app);
                 panel.Children.Add(new DockPanel { MinHeight = 40, Children = { remove, name } });
             }
             if (panel.Children.Count == 0)
             {
-                var empty = Ui.Text("No apps are disabled. Cotabby is active in every supported field.", "Caption");
+                var empty = Ui.Text(InterfaceText.Get("No apps are disabled. Lingrove is active in every supported field.", "Localizable"), "Caption");
                 empty.Margin = new Thickness(0, 12, 0, 12);
                 panel.Children.Add(empty);
             }

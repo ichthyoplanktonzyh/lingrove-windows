@@ -13,16 +13,17 @@
     <AssemblyName>Cotabby</AssemblyName>
     <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">win-x64</RuntimeIdentifier>
     <SelfContained>false</SelfContained>
-    <ApplicationIcon>Assets\Cotabby.ico</ApplicationIcon>
+    <ApplicationIcon>Assets\Lingrove.ico</ApplicationIcon>
+    <Title>Lingrove</Title>
+    <Product>Lingrove</Product>
+    <Description>Local-first autocomplete and language learning for Windows.</Description>
     <Version>0.6.2</Version>
   </PropertyGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="..\..\resources\InterfaceLanguage\*.xcstrings" LogicalName="Cotabby.InterfaceLanguage.%(Filename)%(Extension)" />
-    <Resource Include="Assets\CotabbyLogo.png" />
-    <Resource Include="Assets\MenuBarCatIcon.png" />
-    <Resource Include="Assets\MenuBarCatIcon@3x.png" />
-    <Resource Include="Assets\Cotabby.ico" />
+    <Resource Include="Assets\LingroveLogo.png" />
+    <Resource Include="Assets\Lingrove.ico" />
     <Content Include="..\..\resources\LearningLexicon\learning-expressions*"
              Link="Resources\LearningLexicon\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>

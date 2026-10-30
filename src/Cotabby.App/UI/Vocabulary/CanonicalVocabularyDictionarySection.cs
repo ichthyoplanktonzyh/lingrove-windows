@@ -22,9 +22,9 @@ internal sealed class CanonicalVocabularyDictionarySection : Expander, IDisposab
     private readonly Func<bool> _canAct;
     private readonly StackPanel _body = new(), _definitions = new();
     private readonly WrapPanel _words = new();
-    private readonly Button _back = new() { Content = "Back to expression", HorizontalAlignment = HorizontalAlignment.Left };
+    private readonly Button _back = new() { Content = InterfaceText.Get("Back to expression", "Vocabulary"), HorizontalAlignment = HorizontalAlignment.Left };
     private readonly TextBlock _query = new() { TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 7) };
-    private readonly TextBlock _source = new() { Text = "Bundled expression dictionary · definitions in English", FontSize = 11, TextWrapping = TextWrapping.Wrap };
+    private readonly TextBlock _source = new() { Text = InterfaceText.Get("Bundled expression dictionary · definitions in English", "Vocabulary"), FontSize = 11, TextWrapping = TextWrapping.Wrap };
     private readonly ComboBox _sourcePicker = new() { Margin = new(0, 5, 0, 5), Visibility = Visibility.Collapsed };
     private DictionaryArticleView? _article; private Guid _articleRequest; private bool _updatingSources;
     private sealed record SourceChoice(DictionarySource Source, string Name) { public override string ToString() => Name; }
@@ -101,7 +101,7 @@ internal sealed class CanonicalVocabularyDictionarySection : Expander, IDisposab
             if (state.SelectedSource is { } selected && state.SourceLabels.TryGetValue(selected, out var name)) _source.Text = name;
         }
         finally { _updatingSources = false; }
-        _query.Text = state.Unit is null ? _owner.DictionaryError ?? (_owner.IsPreparingDictionary ? "Looking up…" : "") : "";
+        _query.Text = state.Unit is null ? _owner.DictionaryError ?? (_owner.IsPreparingDictionary ? InterfaceText.Get("Looking up…", "Vocabulary") : "") : "";
         _query.Visibility = _query.Text.Length == 0 ? Visibility.Collapsed : Visibility.Visible;
         _back.Visibility = state.SelectedWord is null && state.ReferenceQuery is null ? Visibility.Collapsed : Visibility.Visible;
         if (state.Unit is null) { _article?.Retire(); _articleRequest = Guid.Empty; }

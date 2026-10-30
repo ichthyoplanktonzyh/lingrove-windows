@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI.Controls;
 
@@ -12,7 +13,7 @@ internal static class Ui
 {
     private static readonly FontFamily IconFont = new("Segoe Fluent Icons, Segoe MDL2 Assets");
 
-    private static readonly Uri LogoUri = new("pack://application:,,,/Cotabby;component/Assets/CotabbyLogo.png");
+    private static readonly Uri LogoUri = new("pack://application:,,,/Cotabby;component/Assets/LingroveLogo.png");
 
     /// <summary>Points the style at a Theme.xaml key. It resolves once the element joins a window.</summary>
     public static T Styled<T>(this T element, string styleKey) where T : FrameworkElement
@@ -50,6 +51,7 @@ internal static class Ui
 
     public static Border Logo(double size) => new()
     {
+        FlowDirection = FlowDirection.LeftToRight,
         Width = size,
         Height = size,
         CornerRadius = new CornerRadius(size * 0.22),
@@ -85,7 +87,7 @@ internal static class Ui
         {
             if (e.Key == Key.Enter) Submit();
         };
-        return Across(box, Button("Add", Submit));
+        return Across(box, Button(InterfaceText.Get("Add"), Submit));
     }
 
     /// <summary>Calls back when the box loses focus or, for a single line box, on Enter.</summary>

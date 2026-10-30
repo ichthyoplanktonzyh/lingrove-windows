@@ -139,7 +139,7 @@ public sealed partial class AppSettings
     /// Reservations for unported reading/vocabulary shortcuts are added when those owners activate.</summary>
     public string? ExpressionAssistShortcutConflict(KeyBinding candidate, string? processName = null)
     {
-        var reservations = new List<(KeyBinding Binding, string Name)> { (GlobalToggle, "Toggle Cotabby") };
+        var reservations = new List<(KeyBinding Binding, string Name)> { (GlobalToggle, "Toggle Lingrove") };
         var overrides = ShortcutOverrides ?? [];
         IEnumerable<string?> processes = processName is null
             ? new string?[] { "" }.Concat(overrides.Select(item => (string?)item.ProcessName))

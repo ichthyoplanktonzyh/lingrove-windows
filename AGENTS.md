@@ -3,16 +3,17 @@
 ## Product scope
 
 Lingrove has two equally core product capabilities: local-first autocomplete while writing and
-language learning while writing. Treat both as first-class product work. The Windows code contains
-the inherited autocomplete port and a scoped manual, read-only sentence-translation preview adapted
-from Mac. Broader learning remains migration work. Do not describe planned or native-unverified
-behavior as shipped or verified; see `docs/LEARNING_PREVIEW.md` for the exact implemented subset.
+language learning while writing. Treat both as first-class product work. The Windows composition
+now connects autocomplete, writing/reading, the canonical notebook, review, speech and local CLI
+at the scopes recorded in `docs/MAC_LATEST_BASELINE.md` and `docs/PARITY.md`. Those current module
+handoffs supersede the early manual-preview-only checkpoint. Remaining feature, localization and
+platform gaps stay explicit; do not describe planned or native-unverified behavior as shipped or verified.
 
 This repository is the Windows port of the macOS Lingrove project and retains its AGPL-3.0 license
 and upstream attribution. During the migration, keep existing `Cotabby` namespaces, assemblies,
 binary names, settings locations, and storage identifiers stable unless a specific migration is
-designed and documented. Lingrove branding in documentation does not mean the Windows runtime has
-been rebranded or that its data is compatible with the macOS app.
+designed and documented. The user-visible product identity is Lingrove; those internal runtime
+contracts retain Cotabby identifiers. Branding does not establish data compatibility with the macOS app.
 
 The maintainer clarified on 2026-10-29 that old-data compatibility is outside this campaign.
 Do not implement legacy Windows conversion or cross-OS binary admission as a prerequisite to

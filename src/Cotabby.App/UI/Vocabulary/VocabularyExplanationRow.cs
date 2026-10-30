@@ -5,6 +5,7 @@ using Cotabby.App.Learning;
 using Cotabby.App.Vocabulary;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Vocabulary;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI.Vocabulary;
 
@@ -28,8 +29,8 @@ internal sealed class VocabularyExplanationRow : StackPanel, IDisposable
     private readonly TextBlock _heading = new() { FontSize = 12 };
     private readonly Button _generate = new() { Width = 28, Height = 26, Padding = new Thickness(2) };
     private readonly TextBox _meaning = Literal(true), _proposal = Literal(true), _prose = Literal(false);
-    private readonly Expander _details = new() { Header = "Details", Margin = new Thickness(0, 8, 0, 0) };
-    private readonly Button _replace = new() { Content = "Replace contextual meaning", HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 4, 0, 4) };
+    private readonly Expander _details = new() { Header = InterfaceText.Get("Details", "Vocabulary"), Margin = new Thickness(0, 8, 0, 0) };
+    private readonly Button _replace = new() { Content = InterfaceText.Get("Replace contextual meaning", "Vocabulary"), HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 4, 0, 4) };
     private readonly TextBlock _status = new() { TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 6, 0, 0), FontSize = 12 };
     private LearningExplanationState? _displayed;
     private LearningExplanationInput? _input;
@@ -62,7 +63,7 @@ internal sealed class VocabularyExplanationRow : StackPanel, IDisposable
         _authoredMeaning = example?.Meaning ?? sense.Meaning;
         _authoredLanguage = example is null ? sense.MeaningLanguage : example.MeaningLanguage;
         _alwaysAuthored = example is null || (example.MeaningOrigin == VocabularyMeaningOrigin.User);
-        _heading.Text = example is null ? "General meaning" : "Meaning in this context";
+        _heading.Text = example is null ? InterfaceText.Get("General meaning", "Vocabulary") : InterfaceText.Get("Meaning in this context", "Vocabulary");
         Render(_session.State);
     }
     private bool Current() => !_disposed && _canAct() && _owner.IsCurrent(_key, _session);
@@ -95,7 +96,7 @@ internal sealed class VocabularyExplanationRow : StackPanel, IDisposable
         Set(_proposal, proposal ? record!.Result.Meaning : "", record?.Language);
         _replace.Visibility = proposal ? Visibility.Visible : Visibility.Collapsed; _replace.IsEnabled = !_adopting;
         Set(_prose, record?.Result.Explanation ?? "", record?.Language);
-        _status.Text = _adopting ? "Saving meaning…" : _adoptionError ?? (state.IsGenerating ? "Explaining…" : state.ErrorMessage ?? "");
+        _status.Text = _adopting ? InterfaceText.Get("Saving meaning…", "Vocabulary") : _adoptionError ?? (state.IsGenerating ? InterfaceText.Get("Explaining…", "Vocabulary") : state.ErrorMessage ?? "");
         _status.Visibility = _status.Text.Length == 0 ? Visibility.Collapsed : Visibility.Visible;
     }
     private void OnGenerate(object sender, RoutedEventArgs args)

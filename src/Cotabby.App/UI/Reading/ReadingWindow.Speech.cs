@@ -4,13 +4,14 @@ using System.Windows.Controls;
 using Cotabby.App.Reading;
 using Cotabby.App.Speech;
 using Cotabby.Core.Speech;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI.Reading;
 
 internal sealed partial class ReadingWindow
 {
-    private readonly Button _sourceSpeech = new() { Content = "Read source", Visibility = Visibility.Collapsed, Focusable = false, Margin = new(0, 0, 8, 0) };
-    private readonly Button _resultSpeech = new() { Content = "Read result", Visibility = Visibility.Collapsed, Focusable = false };
+    private readonly Button _sourceSpeech = new() { Content = InterfaceText.Get("Read source", "Learning"), Visibility = Visibility.Collapsed, Focusable = false, Margin = new(0, 0, 8, 0) };
+    private readonly Button _resultSpeech = new() { Content = InterfaceText.Get("Read result", "Learning"), Visibility = Visibility.Collapsed, Focusable = false };
     private readonly TextBlock _speechStatus = new() { TextWrapping = TextWrapping.Wrap, Margin = new(0, 5, 0, 6), Visibility = Visibility.Collapsed };
     private LearningSpeechController? _speech;
     private Guid _speechOwner;
@@ -39,8 +40,8 @@ internal sealed partial class ReadingWindow
         var state = _speechState; bool source = _speech is not null && state is { Status: not ReadingStatus.Error } && !string.IsNullOrWhiteSpace(state.Selection.Text);
         bool result = _speech is not null && state is { Status: ReadingStatus.Ready } && !string.IsNullOrWhiteSpace(state.Text);
         _sourceSpeech.Visibility = source ? Visibility.Visible : Visibility.Collapsed; _resultSpeech.Visibility = result ? Visibility.Visible : Visibility.Collapsed;
-        _sourceSpeech.Content = _speech?.IsPlaying(SourceSpeechTarget) == true ? "Stop source" : "Read source";
-        _resultSpeech.Content = _speech?.IsPlaying(ResultSpeechTarget) == true ? "Stop result" : "Read result";
+        _sourceSpeech.Content = _speech?.IsPlaying(SourceSpeechTarget) == true ? InterfaceText.Get("Stop source", "Learning") : InterfaceText.Get("Read source", "Learning");
+        _resultSpeech.Content = _speech?.IsPlaying(ResultSpeechTarget) == true ? InterfaceText.Get("Stop result", "Learning") : InterfaceText.Get("Read result", "Learning");
         _speechStatus.Text = _speech?.Error(SourceSpeechTarget) ?? _speech?.Error(ResultSpeechTarget) ?? ((source || result) ? _speech?.DestinationDescription : null) ?? "";
         _speechStatus.Visibility = _speechStatus.Text.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
     }

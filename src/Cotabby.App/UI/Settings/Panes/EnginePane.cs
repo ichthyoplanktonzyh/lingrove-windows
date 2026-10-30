@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using Cotabby.App.Settings;
 using Cotabby.App.UI.Controls;
 using Cotabby.Core.Models;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI.Settings.Panes;
 
@@ -16,7 +17,7 @@ internal static class EnginePane
         void ManageModels()
         {
             if (manager is not null) { manager.Activate(); return; }
-            var note = new TextBlock { Text = "Use Download Models in the engine pane to get recommended autocomplete models.", TextWrapping = TextWrapping.Wrap };
+            var note = new TextBlock { Text = InterfaceText.Get("Use Download Models in the engine pane to get recommended autocomplete models.", "Localizable"), TextWrapping = TextWrapping.Wrap };
             var window = new ModelManagementWindow(context, LocalModelTask.Completion, note, null, context.Refresh);
             window.Owner = Application.Current.Windows.OfType<SettingsWindow>().FirstOrDefault();
             manager = window;

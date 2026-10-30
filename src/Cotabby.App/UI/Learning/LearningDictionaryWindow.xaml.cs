@@ -6,6 +6,7 @@ using Cotabby.Core.Focus;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Vocabulary;
 using Cotabby.App.Vocabulary;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI.Learning;
 
@@ -29,6 +30,10 @@ public partial class LearningDictionaryWindow : Window
     {
         _embeddedExample = embeddedExample;
         InitializeComponent();
+        // This is the empty XAML shell. Bindings, query, definitions and user examples are
+        // populated later and must never pass through a live-tree translation sweep.
+        InterfaceText.TranslateInitialTree(this);
+        InterfaceText.ApplyDirection(this);
         FavoriteButton.FailureChanged += message =>
         { VocabularyStatus.Text = message ?? ""; VocabularyStatus.Visibility = message is null ? Visibility.Collapsed : Visibility.Visible; };
         InstallSelection();

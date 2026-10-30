@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Cotabby.App.Hosting;
 using Cotabby.Core.Suggestions;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI.Controls;
 
@@ -19,7 +20,7 @@ internal sealed class LanguageEditor : StackPanel
     public LanguageEditor(AppHost host)
     {
         _host = host;
-        _addBox = Ui.AddBox("Add a language, e.g. German", Add);
+        _addBox = Ui.AddBox(InterfaceText.Get("Add a language, e.g. German", "Localizable"), Add);
         Children.Add(_chosen);
         Children.Add(_addBox);
         Children.Add(_suggestions);

@@ -4,6 +4,7 @@ using Cotabby.App.Settings;
 using Cotabby.App.UI.Controls;
 using Cotabby.Core.Spelling;
 using Cotabby.Core.Suggestions;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI.Settings.Panes;
 
@@ -30,7 +31,7 @@ internal static class WritingPane
         return new SettingsPane("Writing", "\uE70F", "Length, profile, and corrections",
             new SettingsCard("Length",
                 r.Radios("Length",
-                    "How many words Cotabby aims for per suggestion. Shorter is snappier; "
+                    "How many words Lingrove aims for per suggestion. Shorter is snappier; "
                     + "longer covers more thoughts but takes longer to generate.",
                     Lengths,
                     s => s.UseCustomWordRange ? CustomLength : s.CompletionLengthPreset,
@@ -75,7 +76,7 @@ internal static class WritingPane
                     .Tagged("spacebar trailing whitespace gap separator")),
             new SettingsCard("Profile",
                 r.Text("Name", "Your name and languages are passed to the AI to help personalize your completions.",
-                    "What should Cotabby call you?", s => s.UserName, (s, v) => s.UserName = v.Trim())
+                    "What should Lingrove call you?", s => s.UserName, (s, v) => s.UserName = v.Trim())
                     .Tagged("persona profile you user first name identity"),
                 r.Stacked("Languages",
                     "Languages suggestions should be written in. Support depends on your selected model, "
@@ -98,8 +99,8 @@ internal static class WritingPane
                     .Tagged("automatic autocorrect spelling replace instant")
                     .EnabledWhen(s => s.SuppressCompletionsOnTypo && s.OfferTypoCorrections),
                 r.Stacked("Spelling Dictionaries",
-                    "Choose which bundled dictionaries Cotabby may use for corrections. "
-                    + "With several enabled, Cotabby selects one from the surrounding text.",
+                    "Choose which bundled dictionaries Lingrove may use for corrections. "
+                    + "With several enabled, Lingrove selects one from the surrounding text.",
                     DictionaryChips(context))
                     .Tagged("dictionary language multilingual english german spanish french hebrew italian russian")),
             new SettingsCard("Context",
@@ -159,7 +160,7 @@ internal static class WritingPane
         box.TextChanged += (_, _) => count.Text = $"{box.Text.Length} / {MaxExtendedContextLength} characters";
         r.Bind(box, s => s.ExtendedContext, (s, v) => s.ExtendedContext = v);
 
-        var clear = Ui.Button("Clear", () => r.Context.Change(s => s.ExtendedContext = ""));
+        var clear = Ui.Button(InterfaceText.Get("Clear", "Localizable"), () => r.Context.Change(s => s.ExtendedContext = ""));
         DockPanel.SetDock(clear, Dock.Right);
         count.VerticalAlignment = VerticalAlignment.Center;
         return new StackPanel

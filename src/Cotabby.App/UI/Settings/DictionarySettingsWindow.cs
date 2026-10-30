@@ -6,6 +6,7 @@ using Cotabby.App.Dictionaries;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Win32.Dictionary;
 using Microsoft.Win32;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI.Settings;
 
@@ -15,33 +16,33 @@ internal sealed class DictionarySettingsWindow : Window, IAsyncDisposable
 {
     private readonly DictionarySettings _settings; private readonly MDictLibraryService _service;
     private readonly StackPanel _list = new(); private readonly TextBlock _status = new() { TextWrapping = TextWrapping.Wrap, Margin = new(0, 8, 0, 8) };
-    private readonly Button _import = new() { Content = "Import MDict…", Padding = new(12, 6, 12, 6) };
+    private readonly Button _import = new() { Content = InterfaceText.Get("Import MDict…", "Learning"), Padding = new(12, 6, 12, 6) };
     private readonly CancellationTokenSource _stop = new(); private readonly HashSet<Task> _work = []; private readonly object _gate = new();
     private readonly ComboBox _definition = new() { Margin = new(0, 4, 0, 10) };
     private bool _updatingDefinition;
     private bool _closed, _busy; private Task? _dispose, _cancellation;
     internal DictionarySettingsWindow(DictionarySettings settings, MDictLibraryService service)
     {
-        _settings = settings; _service = service; Title = "Dictionary sources"; Width = 650; Height = 560; MinWidth = 480; MinHeight = 380;
+        _settings = settings; _service = service; Title = InterfaceText.Get("Dictionary sources", "Learning"); Width = 650; Height = 560; MinWidth = 480; MinHeight = 380;
         WindowStartupLocation = WindowStartupLocation.CenterOwner; FontFamily = new System.Windows.Media.FontFamily("Segoe UI Variable, Segoe UI");
         ConfigureTheme(this);
-        var body = new StackPanel { Margin = new(20) }; body.Children.Add(new TextBlock { Text = "Dictionary sources", FontSize = 20, FontWeight = FontWeights.SemiBold });
-        body.Children.Add(new TextBlock { Text = "Choose source priority and languages. Imported files stay in their original location.", TextWrapping = TextWrapping.Wrap, Margin = new(0, 6, 0, 12) });
-        body.Children.Add(new TextBlock { Text = "Preferred definition language" });
+        var body = new StackPanel { Margin = new(20) }; body.Children.Add(new TextBlock { Text = InterfaceText.Get("Dictionary sources", "Learning"), FontSize = 20, FontWeight = FontWeights.SemiBold });
+        body.Children.Add(new TextBlock { Text = InterfaceText.Get("Choose source priority and languages. Imported files stay in their original location.", "Learning"), TextWrapping = TextWrapping.Wrap, Margin = new(0, 6, 0, 12) });
+        body.Children.Add(new TextBlock { Text = InterfaceText.Get("Preferred definition language", "Learning") });
         _definition.ItemsSource = new[] { "System language" }.Concat(LearningLanguages.All.Select(x => x.Label())).ToArray();
         _definition.SelectionChanged += (_, _) => { if (!_updatingDefinition && _definition.SelectedIndex >= 0) Try(() => _settings.SetDefinitionLanguage(_definition.SelectedIndex == 0 ? null : LearningLanguages.All[_definition.SelectedIndex - 1])); };
         body.Children.Add(_definition); body.Children.Add(_list); body.Children.Add(_status); body.Children.Add(_import);
         body.Children.Add(Button("Add lookup website…", () => EditWebsite(new(Guid.NewGuid(), "", "https://"))));
         var recommended = new ComboBox { Margin = new(0, 8, 0, 0), DisplayMemberPath = "Name", ItemsSource = DictionaryWebsiteCatalog.Websites };
-        recommended.ToolTip = "Add a recommended website (it remains disabled until enabled).";
+        recommended.ToolTip = InterfaceText.Get("Add a recommended website (it remains disabled until enabled).", "Learning");
         recommended.SelectionChanged += (_, _) =>
         {
             if (recommended.SelectedItem is not DictionaryWebsite site) return;
             recommended.SelectedItem = null;
             if (!_settings.Configuration.Websites.Any(x => x.Id == site.Id)) Try(() => _settings.SaveWebsite(site));
         };
-        body.Children.Add(new TextBlock { Text = "Recommended websites", Margin = new(0, 8, 0, 0) }); body.Children.Add(recommended);
-        body.Children.Add(new TextBlock { Text = "System Dictionary is macOS-only. Online lookup sends only the selected term after you choose Look up online. Websites open in your browser only when clicked.", TextWrapping = TextWrapping.Wrap, Margin = new(0, 12, 0, 0), FontSize = 11 });
+        body.Children.Add(new TextBlock { Text = InterfaceText.Get("Recommended websites", "Learning"), Margin = new(0, 8, 0, 0) }); body.Children.Add(recommended);
+        body.Children.Add(new TextBlock { Text = InterfaceText.Get("System Dictionary is macOS-only. Online lookup sends only the selected term after you choose Look up online. Websites open in your browser only when clicked.", "Learning"), TextWrapping = TextWrapping.Wrap, Margin = new(0, 12, 0, 0), FontSize = 11 });
         var scroll = new ScrollViewer { Content = body, VerticalScrollBarVisibility = ScrollBarVisibility.Auto };
         scroll.SetResourceReference(BackgroundProperty, "WindowBg"); Content = scroll;
         _import.Click += Import; _settings.Changed += Changed; Closed += (_, _) => Retire(); Render();
@@ -77,7 +78,7 @@ internal sealed class DictionarySettingsWindow : Window, IAsyncDisposable
             var up = Button("↑", () => Try(() => _settings.Move(source, -1)));
             var down = Button("↓", () => Try(() => _settings.Move(source, 1)));
             up.IsEnabled = source != config.Order[0]; down.IsEnabled = source != config.Order[^1];
-            up.ToolTip = "Move source up"; down.ToolTip = "Move source down";
+            up.ToolTip = InterfaceText.Get("Move source up", "Learning"); down.ToolTip = InterfaceText.Get("Move source down", "Learning");
             AutomationProperties.SetName(up, "Move " + config.Name(source) + " up");
             AutomationProperties.SetName(down, "Move " + config.Name(source) + " down");
             controls.Children.Add(up); controls.Children.Add(down);
@@ -94,7 +95,7 @@ internal sealed class DictionarySettingsWindow : Window, IAsyncDisposable
     }
     private static Button Button(string text, Action action)
     { var button = new Button { Content = text, Padding = new(7, 3, 7, 3), Margin = new(3, 0, 0, 0) }; button.Click += (_, _) => action(); return button; }
-    private void Try(Func<bool> action) { try { if (!action()) _status.Text = "This dictionary setting could not be saved."; else _status.Text = ""; } catch { _status.Text = "This dictionary setting could not be saved."; } }
+    private void Try(Func<bool> action) { try { if (!action()) _status.Text = InterfaceText.Get("This dictionary setting could not be saved.", "Learning"); else _status.Text = ""; } catch { _status.Text = InterfaceText.Get("This dictionary setting could not be saved.", "Learning"); } }
     private void EditWebsite(DictionaryWebsite site)
     {
         var window = CreateWebsiteEditor(site); window.ShowDialog();
@@ -102,7 +103,7 @@ internal sealed class DictionarySettingsWindow : Window, IAsyncDisposable
     // The disposable form edits only local controls until its validated Save succeeds.
     internal Window CreateWebsiteEditor(DictionaryWebsite site)
     {
-        var window = new Window { Title = "Lookup website", Owner = this, Width = 480, Height = 440, MinWidth = 380, MinHeight = 380,
+        var window = new Window { Title = InterfaceText.Get("Lookup website", "Learning"), Owner = this, Width = 480, Height = 440, MinWidth = 380, MinHeight = 380,
             WindowStartupLocation = WindowStartupLocation.CenterOwner, FontFamily = FontFamily };
         ConfigureTheme(window);
         var panel = new StackPanel { Margin = new(18) };
@@ -113,12 +114,12 @@ internal sealed class DictionarySettingsWindow : Window, IAsyncDisposable
         ComboBox Pick(LearningLanguage? value) => new() { ItemsSource = options, SelectedIndex = value is null ? 0 : LearningLanguages.All.ToList().IndexOf(value.Value) + 1, Margin = new(0, 3, 0, 8) };
         var entry = Pick(site.Languages?.Entry); var definition = Pick(site.Languages?.Definition);
         AutomationProperties.SetName(entry, "Entry language"); AutomationProperties.SetName(definition, "Definition language");
-        var multi = new CheckBox { Content = "Multilingual entries", IsChecked = site.Languages?.Multilingual == true, Margin = new(0, 0, 0, 8) };
+        var multi = new CheckBox { Content = InterfaceText.Get("Multilingual entries", "Learning"), IsChecked = site.Languages?.Multilingual == true, Margin = new(0, 0, 0, 8) };
         var error = new TextBlock { TextWrapping = TextWrapping.Wrap };
-        panel.Children.Add(new TextBlock { Text = "Name" }); panel.Children.Add(name);
-        panel.Children.Add(new TextBlock { Text = "HTTPS URL with {query}" }); panel.Children.Add(template);
-        panel.Children.Add(new TextBlock { Text = "Entry language" }); panel.Children.Add(entry);
-        panel.Children.Add(new TextBlock { Text = "Definition language" }); panel.Children.Add(definition); panel.Children.Add(multi); panel.Children.Add(error);
+        panel.Children.Add(new TextBlock { Text = InterfaceText.Get("Name", "Learning") }); panel.Children.Add(name);
+        panel.Children.Add(new TextBlock { Text = InterfaceText.Get("HTTPS URL with {query}", "Learning") }); panel.Children.Add(template);
+        panel.Children.Add(new TextBlock { Text = InterfaceText.Get("Entry language", "Learning") }); panel.Children.Add(entry);
+        panel.Children.Add(new TextBlock { Text = InterfaceText.Get("Definition language", "Learning") }); panel.Children.Add(definition); panel.Children.Add(multi); panel.Children.Add(error);
         var actions = new StackPanel { Orientation = Orientation.Horizontal };
         var cancel = Button("Cancel", window.Close); cancel.IsCancel = true; actions.Children.Add(cancel);
         var save = Button("Save", () =>
@@ -127,9 +128,9 @@ internal sealed class DictionarySettingsWindow : Window, IAsyncDisposable
             try
             {
                 if (_settings.SaveWebsite(site with { Name = name.Text.Trim(), Template = template.Text, Languages = new(Get(entry), Get(definition), multi.IsChecked == true) })) window.Close();
-                else error.Text = "Enter a name and valid HTTPS URL containing one {query}.";
+                else error.Text = InterfaceText.Get("Enter a name and valid HTTPS URL containing one {query}.", "Learning");
             }
-            catch { error.Text = "This dictionary setting could not be saved."; }
+            catch { error.Text = InterfaceText.Get("This dictionary setting could not be saved.", "Learning"); }
         });
         save.IsDefault = true; actions.Children.Add(save);
         void Validate() => save.IsEnabled = !string.IsNullOrWhiteSpace(name.Text)
@@ -160,7 +161,7 @@ internal sealed class DictionarySettingsWindow : Window, IAsyncDisposable
     }
     private async Task ImportAsync(string path)
     {
-        _busy = true; _import.IsEnabled = false; _status.Text = "Validating dictionary…"; Render();
+        _busy = true; _import.IsEnabled = false; _status.Text = InterfaceText.Get("Validating dictionary…", "Learning"); Render();
         try
         {
             var book = await _service.ImportAsync(path, _stop.Token);
@@ -172,11 +173,11 @@ internal sealed class DictionarySettingsWindow : Window, IAsyncDisposable
                     var saved = _settings.Configuration.Libraries.FirstOrDefault(x => string.Equals(x.MdxPath, book.MdxPath, StringComparison.OrdinalIgnoreCase));
                     if (saved is not null) EditLanguages(saved);
                 }
-                else _status.Text = "This dictionary setting could not be saved.";
+                else _status.Text = InterfaceText.Get("This dictionary setting could not be saved.", "Learning");
             }
         }
         catch (OperationCanceledException) { }
-        catch { if (!_closed) _status.Text = "The selected dictionary could not be imported."; }
+        catch { if (!_closed) _status.Text = InterfaceText.Get("The selected dictionary could not be imported.", "Learning"); }
         finally { _busy = false; if (!_closed) { _import.IsEnabled = true; Render(); } }
     }
     private void Attach(MDictLibraryDescriptor book)
@@ -187,22 +188,22 @@ internal sealed class DictionarySettingsWindow : Window, IAsyncDisposable
     }
     private async Task AttachAsync(MDictLibraryDescriptor book, string[] paths)
     {
-        _busy = true; _import.IsEnabled = false; _status.Text = "Validating resources…"; Render();
+        _busy = true; _import.IsEnabled = false; _status.Text = InterfaceText.Get("Validating resources…", "Learning"); Render();
         try { var updated = await _service.AttachAsync(book, paths, _stop.Token);
             if (!_closed && !_stop.IsCancellationRequested && _settings.Configuration.Libraries.Any(x => x.Id == book.Id && x.Revision == book.Revision)) Try(() => _settings.Add(updated)); }
         catch (OperationCanceledException) { }
-        catch { if (!_closed) _status.Text = "The selected resource files could not be attached."; }
+        catch { if (!_closed) _status.Text = InterfaceText.Get("The selected resource files could not be attached.", "Learning"); }
         finally { _busy = false; if (!_closed) { _import.IsEnabled = true; Render(); } }
     }
     private void EditLanguages(MDictLibraryDescriptor book)
     {
-        var window = new Window { Title = "Dictionary languages", Owner = this, Width = 380, Height = 300, WindowStartupLocation = WindowStartupLocation.CenterOwner };
+        var window = new Window { Title = InterfaceText.Get("Dictionary languages", "Learning"), Owner = this, Width = 380, Height = 300, WindowStartupLocation = WindowStartupLocation.CenterOwner };
         ConfigureTheme(window);
         var panel = new StackPanel { Margin = new(18) }; var options = new[] { "Unspecified" }.Concat(LearningLanguages.All.Select(x => x.Label())).ToArray();
         ComboBox Pick(LearningLanguage? value) { var combo = new ComboBox { ItemsSource = options, SelectedIndex = value is null ? 0 : LearningLanguages.All.ToList().IndexOf(value.Value) + 1, Margin = new(0, 3, 0, 8) }; return combo; }
         var entry = Pick(book.Languages?.Entry); var definition = Pick(book.Languages?.Definition);
-        var multi = new CheckBox { Content = "Multilingual entries", IsChecked = book.Languages?.Multilingual == true, Margin = new(0, 0, 0, 8) };
-        panel.Children.Add(new TextBlock { Text = "Entry language" }); panel.Children.Add(entry); panel.Children.Add(new TextBlock { Text = "Definition language" }); panel.Children.Add(definition); panel.Children.Add(multi);
+        var multi = new CheckBox { Content = InterfaceText.Get("Multilingual entries", "Learning"), IsChecked = book.Languages?.Multilingual == true, Margin = new(0, 0, 0, 8) };
+        panel.Children.Add(new TextBlock { Text = InterfaceText.Get("Entry language", "Learning") }); panel.Children.Add(entry); panel.Children.Add(new TextBlock { Text = InterfaceText.Get("Definition language", "Learning") }); panel.Children.Add(definition); panel.Children.Add(multi);
         panel.Children.Add(Button("Save", () => { LearningLanguage? Get(ComboBox c) => c.SelectedIndex <= 0 ? null : LearningLanguages.All[c.SelectedIndex - 1];
             Try(() => _settings.SetLanguages(book.Source, new(Get(entry), Get(definition), multi.IsChecked == true))); window.Close(); }));
         window.Content = panel; window.ShowDialog();

@@ -27,13 +27,13 @@ internal sealed class InterfaceLanguageRestartPanel : StackPanel
         _button.IsEnabled = required && _restart() is not null;
         _notice.Text = !required ? "" : _button.IsEnabled
             ? InterfaceText.Get("Restart Lingrove to apply the selected interface language.")
-            : "Restart is unavailable. Quit and reopen the app to apply this language.";
+            : InterfaceText.Get("Restart is unavailable. Quit and reopen the app to apply this language.", "Localizable");
     }
     private async Task RestartAsync()
     {
         if (_restart() is not { } restart) return;
         _button.IsEnabled = false;
         try { await restart(); }
-        catch { _notice.Text = "The app could not restart. Quit and reopen it to apply this language."; _button.IsEnabled = true; }
+        catch { _notice.Text = InterfaceText.Get("The app could not restart. Quit and reopen it to apply this language.", "Localizable"); _button.IsEnabled = true; }
     }
 }

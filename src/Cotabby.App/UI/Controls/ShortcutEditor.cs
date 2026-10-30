@@ -3,6 +3,7 @@ using System.Windows.Controls;
 using Cotabby.App.Settings;
 using KeyBinding = Cotabby.Core.Input.KeyBinding;
 using KeyModifiers = Cotabby.Core.Input.KeyModifiers;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI.Controls;
 
@@ -16,7 +17,7 @@ internal sealed class GlobalShortcut
         new("Accept Entire Suggestion", KeyBinding.Backtick, s => s.AcceptAll, (s, key) => s.AcceptAll = key);
 
     public static GlobalShortcut Toggle { get; } =
-        new("Toggle Cotabby", KeyBinding.Unbound, s => s.GlobalToggle, (s, key) => s.GlobalToggle = key);
+        new("Toggle Lingrove", KeyBinding.Unbound, s => s.GlobalToggle, (s, key) => s.GlobalToggle = key);
 
     public static GlobalShortcut LearningTranslation { get; } =
         new("Translate Current Sentence", new KeyBinding(0x54, KeyModifiers.Alt, "Alt+T"),
@@ -127,8 +128,8 @@ internal sealed class ShortcutEditor : StackPanel
 
         _recorder = new KeyRecorder { Conflict = candidate => shortcut.Conflict(settings(), candidate) };
         _recorder.Recorded += binding => change(s => shortcut.Set(s, binding));
-        _reset = Ui.Button("Reset", () => change(s => shortcut.Set(s, shortcut.Default)));
-        _clear = Ui.Button("Clear", () => change(s => shortcut.Set(s, KeyBinding.Unbound)));
+        _reset = Ui.Button(InterfaceText.Get("Reset", "Localizable"), () => change(s => shortcut.Set(s, shortcut.Default)));
+        _clear = Ui.Button(InterfaceText.Get("Clear", "Localizable"), () => change(s => shortcut.Set(s, KeyBinding.Unbound)));
         _reset.Margin = _clear.Margin = new Thickness(8, 0, 0, 0);
 
         if (shortcut == GlobalShortcut.ExpressionAssist)

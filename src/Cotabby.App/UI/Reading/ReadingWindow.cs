@@ -9,6 +9,7 @@ using Cotabby.Core.Focus;
 using Cotabby.App.UI.Vocabulary;
 using Cotabby.App.Vocabulary;
 using Cotabby.Core.Vocabulary;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI.Reading;
 
@@ -23,12 +24,12 @@ internal sealed partial class ReadingWindow : Window, IReadingPresentation
     private readonly TextBlock _status = new() { TextWrapping = TextWrapping.Wrap };
     private readonly TextBlock _result = new() { TextWrapping = TextWrapping.Wrap, Margin = new(0, 8, 0, 8) };
     private readonly ProgressBar _progress = new() { IsIndeterminate = true, Height = 3, Margin = new(0, 6, 0, 6) };
-    private readonly Button _dictionary = new() { Content = "Dictionary", Padding = new(10, 4, 10, 4), Visibility = Visibility.Collapsed };
-    private readonly Button _details = new() { Content = "Explain usage", Padding = new(10, 4, 10, 4), Margin = new(8, 0, 0, 0), Visibility = Visibility.Collapsed };
-    private readonly Button _configure = new() { Content = "Configure model", Padding = new(10, 4, 10, 4), Margin = new(8, 0, 0, 0), Visibility = Visibility.Collapsed };
-    private readonly Button _retry = new() { Content = "Retry", Padding = new(10, 4, 10, 4), Margin = new(8, 0, 0, 0), Visibility = Visibility.Collapsed };
-    private readonly Button _copy = new() { Content = "Copy result", Padding = new(10, 4, 10, 4), Margin = new(8, 0, 0, 0), Visibility = Visibility.Collapsed };
-    private readonly Button _copySource = new() { Content = "Copy source", Padding = new(10, 4, 10, 4), Margin = new(8, 0, 0, 0), Visibility = Visibility.Collapsed };
+    private readonly Button _dictionary = new() { Content = InterfaceText.Get("Dictionary", "Learning"), Padding = new(10, 4, 10, 4), Visibility = Visibility.Collapsed };
+    private readonly Button _details = new() { Content = InterfaceText.Get("Explain usage", "Learning"), Padding = new(10, 4, 10, 4), Margin = new(8, 0, 0, 0), Visibility = Visibility.Collapsed };
+    private readonly Button _configure = new() { Content = InterfaceText.Get("Configure model", "Learning"), Padding = new(10, 4, 10, 4), Margin = new(8, 0, 0, 0), Visibility = Visibility.Collapsed };
+    private readonly Button _retry = new() { Content = InterfaceText.Get("Retry", "Learning"), Padding = new(10, 4, 10, 4), Margin = new(8, 0, 0, 0), Visibility = Visibility.Collapsed };
+    private readonly Button _copy = new() { Content = InterfaceText.Get("Copy result", "Learning"), Padding = new(10, 4, 10, 4), Margin = new(8, 0, 0, 0), Visibility = Visibility.Collapsed };
+    private readonly Button _copySource = new() { Content = InterfaceText.Get("Copy source", "Learning"), Padding = new(10, 4, 10, 4), Margin = new(8, 0, 0, 0), Visibility = Visibility.Collapsed };
     private ScreenRect _anchor;
     internal event Action? DismissRequested;
     internal event Action? DictionaryRequested;
@@ -36,7 +37,7 @@ internal sealed partial class ReadingWindow : Window, IReadingPresentation
     internal event Action? ConfigureRequested;
     internal event Action? RetryRequested;
     internal event Action<bool>? CopyRequested;
-    internal void SetDetailsExpanded(bool expanded) => _details.Content = expanded ? "Hide details" : "Explain usage";
+    internal void SetDetailsExpanded(bool expanded) => _details.Content = InterfaceText.Get(expanded ? "Hide details" : "Explain usage", "Learning");
 
     internal ReadingWindow()
     {
@@ -44,6 +45,7 @@ internal sealed partial class ReadingWindow : Window, IReadingPresentation
         ShowActivated = false; ShowInTaskbar = false; WindowStyle = WindowStyle.None; ResizeMode = ResizeMode.NoResize;
         Background = Brushes.Transparent; AllowsTransparency = true; Topmost = true;
         FontFamily = new FontFamily("Segoe UI Variable, Segoe UI"); FontSize = 13;
+        InterfaceText.ApplyDirection(this);
         Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("/Cotabby;component/UI/Theme.xaml", UriKind.Relative) });
         WindowTheme.Follow(this);
         _heading.SetResourceReference(TextBlock.ForegroundProperty, "TextPrimary");
@@ -66,7 +68,7 @@ internal sealed partial class ReadingWindow : Window, IReadingPresentation
         var actions = new WrapPanel { Orientation = Orientation.Horizontal };
         actions.Children.Add(_dictionary); actions.Children.Add(_details); actions.Children.Add(_retry);
         actions.Children.Add(_configure); actions.Children.Add(_copySource); actions.Children.Add(_copy); stack.Children.Add(actions);
-        var close = new Button { Content = "Close", HorizontalAlignment = HorizontalAlignment.Right, Padding = new(12, 4, 12, 4) };
+        var close = new Button { Content = InterfaceText.Get("Close", "Learning"), HorizontalAlignment = HorizontalAlignment.Right, Padding = new(12, 4, 12, 4) };
         close.Focusable = false; close.SetResourceReference(StyleProperty, "Btn");
         close.Click += (_, _) => DismissRequested?.Invoke(); stack.Children.Add(close);
         var card = new Border { CornerRadius = new(10), BorderThickness = new(1), Padding = new(16),
@@ -85,19 +87,19 @@ internal sealed partial class ReadingWindow : Window, IReadingPresentation
     }
     public void Update(ReadingState state)
     {
-        _heading.Text = state.Selection.Source switch
+        _heading.Text = InterfaceText.Get(state.Selection.Source switch
         {
             Cotabby.Core.LanguageLearning.Reading.ReadingSourceKind.Pointer => state.Route.IsTranslation ? "Text under pointer" : "Word or phrase under pointer",
             Cotabby.Core.LanguageLearning.Reading.ReadingSourceKind.Screenshot => state.Route.IsTranslation ? "Screen region translation" : "Word or phrase in screen region",
             _ => state.Route.IsTranslation ? "Selected text translation" : "Selected word or phrase",
-        };
+        }, "Learning");
         _destination.Text = state.Destination;
         _source.Text = state.Selection.Text;
         _status.Text = state.Status switch
         {
-            ReadingStatus.Loading => "Preparing…", ReadingStatus.Translating => "Translating…",
-            ReadingStatus.Lookup => "Looking up…", ReadingStatus.Ready => "Ready",
-            _ => state.Message ?? "Could not complete the request.",
+            ReadingStatus.Loading => InterfaceText.Get("Preparing…", "Learning"), ReadingStatus.Translating => InterfaceText.Get("Translating…", "Learning"),
+            ReadingStatus.Lookup => InterfaceText.Get("Looking up…", "Learning"), ReadingStatus.Ready => InterfaceText.Get("Ready", "Learning"),
+            _ => state.Message ?? InterfaceText.Get("Could not complete the request.", "Learning"),
         };
         _progress.Visibility = state.Status is ReadingStatus.Loading or ReadingStatus.Translating or ReadingStatus.Lookup
             ? Visibility.Visible : Visibility.Collapsed;
@@ -111,14 +113,14 @@ internal sealed partial class ReadingWindow : Window, IReadingPresentation
         _copySource.Visibility = !string.IsNullOrWhiteSpace(state.Selection.Text) ? Visibility.Visible : Visibility.Collapsed;
         if (IsVisible) { UpdateLayout(); LearningPanelPlacement.Position(this, _anchor); }
     }
-    internal void ShowCopyOutcome(bool copied) => _status.Text = copied ? "Copied" : "Could not copy. Try again.";
+    internal void ShowCopyOutcome(bool copied) => _status.Text = InterfaceText.Get(copied ? "Copied" : "Could not copy. Try again.", "Learning");
     internal void BindVocabulary(IWritingVocabularyStore store, VocabularyCapture capture, Func<bool> current, Func<Task<bool>> preflight) =>
         _favorite.Bind(store, capture, current, preflight);
     internal void ClearVocabulary() => _favorite.Clear();
     internal Task FavoriteWork => _favorite.LastOperation;
     public void ShowCaptureError(string message)
     {
-        _heading.Text = "Reading unavailable"; _source.Text = ""; _destination.Text = "";
+        _heading.Text = InterfaceText.Get("Reading unavailable", "Learning"); _source.Text = ""; _destination.Text = "";
         _result.Text = ""; _status.Text = message; _progress.Visibility = Visibility.Collapsed; ClearSpeech();
         Show(); UpdateLayout(); LearningPanelPlacement.Position(this, ScreenRect.Empty);
     }

@@ -30,13 +30,13 @@ internal sealed class WelcomeDonePage : Grid
         Keys = new TextBlock { FontSize = 13, HorizontalAlignment = HorizontalAlignment.Center, TextAlignment = TextAlignment.Center, TextWrapping = TextWrapping.Wrap, MaxWidth = 400, Margin = new Thickness(0, 6, 0, 0) };
         Keys.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondary"); Body.Children.Add(Keys);
         ReadinessHost = new ContentControl { Margin = new Thickness(0, 10, 0, 0) }; Body.Children.Add(ReadinessHost);
-        Body.Children.Add(new TextBlock { Text = InterfaceText.Get("Cotabby lives in your system tray"), FontSize = 13, FontWeight = FontWeights.SemiBold, HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 14, 0, 0), TextWrapping = TextWrapping.Wrap, TextAlignment = TextAlignment.Center });
-        var hint = new TextBlock { Text = InterfaceText.Get("Click the cat to pause suggestions, switch models, or open Settings."), FontSize = 12, HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 4, 0, 0), MaxWidth = 430, TextWrapping = TextWrapping.Wrap, TextAlignment = TextAlignment.Center };
+        Body.Children.Add(new TextBlock { Text = InterfaceText.Get("Lingrove lives in your system tray"), FontSize = 13, FontWeight = FontWeights.SemiBold, HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 14, 0, 0), TextWrapping = TextWrapping.Wrap, TextAlignment = TextAlignment.Center });
+        var hint = new TextBlock { Text = InterfaceText.Get("Click the whale to pause suggestions, switch models, or open Settings."), FontSize = 12, HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 4, 0, 0), MaxWidth = 430, TextWrapping = TextWrapping.Wrap, TextAlignment = TextAlignment.Center };
         hint.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondary"); Body.Children.Add(hint);
         Scroller = new ScrollViewer { VerticalScrollBarVisibility = ScrollBarVisibility.Auto, HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled, Content = Body, CanContentScroll = false };
         Children.Add(Scroller);
         var footer = new StackPanel { Margin = new Thickness(0, 6, 0, 0) }; Grid.SetRow(footer, 1);
-        FinishButton = new Button { Content = InterfaceText.Get("Start Using Cotabby"), Height = 40, FontSize = 14, Margin = new Thickness(24, 0, 24, 0) };
+        FinishButton = new Button { Content = InterfaceText.Get("Start Using Lingrove", "Learning"), Height = 40, FontSize = 14, Margin = new Thickness(24, 0, 24, 0) };
         FinishButton.SetResourceReference(StyleProperty, "AccentBtn"); FinishButton.Click += (_, _) => FinishRequested?.Invoke();
         BackButton = new Button { Content = InterfaceText.Get("Back"), HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 8, 0, 0) };
         BackButton.SetResourceReference(StyleProperty, "LinkBtn"); BackButton.Click += (_, _) => BackRequested?.Invoke();

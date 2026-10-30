@@ -5,6 +5,7 @@ using Cotabby.App.Settings;
 using Cotabby.App.UI.Review;
 using Cotabby.Core.Review;
 using Cotabby.Core.Vocabulary;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI;
 
@@ -31,16 +32,16 @@ internal sealed class LearningShowcaseReview : StackPanel, IAsyncDisposable
         _store = store; _capture = capture;
         var settings = new AppSettings();
         _feature = AnkiReviewFeature.CreateConnectionSettings(() => settings, () => { }, new SampleAnki(), new Credentials(), speech: speech, canonicalStore: store.Backend);
-        Children.Add(new TextBlock { Text = "Sample Anki · Changes stay in this example", FontSize = 11, Margin = new Thickness(0, 0, 0, 6) });
+        Children.Add(new TextBlock { Text = InterfaceText.Get("Sample Anki · Changes stay in this example", "Localizable"), FontSize = 11, Margin = new Thickness(0, 0, 0, 6) });
         var sides = new WrapPanel { Margin = new Thickness(0, 0, 0, 6) };
         for (int index = 0; index < 2; index++)
         {
-            int side = index; var button = new Button { Content = side == 0 ? "Front" : "Back", Margin = new Thickness(0, 0, 6, 0) };
+            int side = index; var button = new Button { Content = side == 0 ? InterfaceText.Get("Front", "Localizable") : InterfaceText.Get("Back", "Localizable"), Margin = new Thickness(0, 0, 6, 0) };
             button.SetResourceReference(StyleProperty, "Btn"); button.Click += (_, _) => { if (_window is not null) _window.SideBox.SelectedIndex = side; }; sides.Children.Add(button);
         }
         Children.Add(sides); Children.Add(_editor); Children.Add(_message);
-        var review = new Button { Content = "Review in Anki", HorizontalAlignment = HorizontalAlignment.Left };
-        review.Click += async (_, _) => { try { await ShowStepAsync(3); } catch { if (!_closed) _message.Text = "The sample review could not be opened."; } };
+        var review = new Button { Content = InterfaceText.Get("Review in Anki", "Localizable"), HorizontalAlignment = HorizontalAlignment.Left };
+        review.Click += async (_, _) => { try { await ShowStepAsync(3); } catch { if (!_closed) _message.Text = InterfaceText.Get("The sample review could not be opened.", "Localizable"); } };
         Children.Add(review);
     }
     private async Task PrepareAsync()
@@ -70,12 +71,12 @@ internal sealed class LearningShowcaseReview : StackPanel, IAsyncDisposable
             if (step == 2 || _session.Binding is null)
             {
                 bool sent = await _session.SendAsync(cancellationToken: token);
-                if (!sent) { _message.Text = _session.Message ?? "The sample card could not be added."; return; }
+                if (!sent) { _message.Text = _session.Message ?? InterfaceText.Get("The sample card could not be added.", "Localizable"); return; }
             }
             if (_closed || revision != _revision || step != 3 || _session.Binding is not { } binding) return;
             var error = await _feature.Controller.ReviewCanonicalDeckAsync(binding,
                 _ => Task.FromResult(!_closed && revision == _revision && Equals(binding, _session.Binding)), token);
-            if (!_closed && revision == _revision) _message.Text = error ?? "Review destination: Anki · sample deck";
+            if (!_closed && revision == _revision) _message.Text = error ?? InterfaceText.Get("Review destination: Anki · sample deck", "Localizable");
         });
     }
     public async ValueTask DisposeAsync()

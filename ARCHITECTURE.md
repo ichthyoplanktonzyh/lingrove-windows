@@ -1,9 +1,10 @@
 # Lingrove for Windows Architecture
 
 This is a maintainer map for the Windows port. The source and binaries still use Cotabby identifiers
-during migration. The repository contains the inherited autocomplete implementation and a scoped
-manual read-only translation preview. Other learning flows below remain migration targets; native
-Windows host behavior is unverified. See [the preview port record](docs/LEARNING_PREVIEW.md).
+during migration. Current composition connects the autocomplete and learning workflows recorded in
+[the latest checkpoint](docs/MAC_LATEST_BASELINE.md); the original
+[manual preview record](docs/LEARNING_PREVIEW.md) retains its historical subset. Native Windows host
+acceptance and the explicitly listed remaining modules are separate from source implementation.
 
 ## Architecture authority
 

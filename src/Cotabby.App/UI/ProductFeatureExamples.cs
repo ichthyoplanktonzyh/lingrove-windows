@@ -60,7 +60,7 @@ internal sealed class ProductFeatureExamples : TabControl
             catch
             {
                 _retired = true; IsEnabled = true;
-                Content = new TextBlock { Text = "The example could not finish closing. Close this window to dismiss it.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(20) };
+                Content = new TextBlock { Text = InterfaceText.Get("The example could not finish closing. Close this window to dismiss it.", "Localizable"), TextWrapping = TextWrapping.Wrap, Margin = new Thickness(20) };
                 return;
             }
             _retired = true;

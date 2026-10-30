@@ -62,6 +62,7 @@ public partial class WelcomeWindow : Window
         Activated += (_, _) => _readiness.Refresh();
         Closing += OnRetiring;
         InterfaceText.ApplyDirection(this);
+        Title = InterfaceText.Get("Welcome to Lingrove", "Learning");
         InterfaceText.TranslateInitialTree(this);
         StepWelcome.Children.Add(ProductFeatureExamples.WelcomeChoices(() => _host.Settings.ExpressionAssistTrigger, current: () => _host.Settings));
         _host.SettingsApplied += HostSettingsApplied;
@@ -70,8 +71,8 @@ public partial class WelcomeWindow : Window
 
         var permissions = new StackPanel { VerticalAlignment = VerticalAlignment.Center, Visibility = Visibility.Collapsed };
         permissions.Children.Add(new TextBlock { Text = InterfaceText.Get("Permissions"), FontSize = 20, FontWeight = FontWeights.SemiBold });
-        permissions.Children.Add(new TextBlock { Text = "Use Lingrove in a compatible editor. If that editor runs as an administrator, Lingrove may need the same privilege level.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 12, 0, 0) });
-        permissions.Children.Add(new TextBlock { Text = "Text stays local unless you explicitly configure and use an endpoint.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 12, 0, 0) });
+        permissions.Children.Add(new TextBlock { Text = InterfaceText.Get("Use Lingrove in a compatible editor. If that editor runs as an administrator, Lingrove may need the same privilege level.", "Localizable"), TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 12, 0, 0) });
+        permissions.Children.Add(new TextBlock { Text = InterfaceText.Get("Text stays local unless you explicitly configure and use an endpoint.", "Localizable"), TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 12, 0, 0) });
         ((Panel)StepWelcome.Parent).Children.Add(permissions);
         _steps = [StepWelcome, permissions, StepRecommended, StepTemplates, StepProfile, StepKeys, StepDone];
         var recommendation = new RecommendedSetupView(host);
@@ -166,7 +167,7 @@ public partial class WelcomeWindow : Window
         StepCaption.Text = $"Step {progressIndex} of 4";
         ContinueButton.Content =
             step == StepWelcome ? InterfaceText.Get("Get Started")
-            : step == StepDone ? InterfaceText.Get("Start Using Cotabby")
+            : step == StepDone ? InterfaceText.Get("Start Using Lingrove")
             : InterfaceText.Get("Continue");
         // Hidden rather than collapsed so the footer height never jumps between steps.
         BackButton.Visibility = step == StepWelcome ? Visibility.Hidden : Visibility.Visible;

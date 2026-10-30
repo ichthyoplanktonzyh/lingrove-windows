@@ -9,6 +9,8 @@ using Cotabby.Core.Models;
 using Cotabby.Core.Suggestions;
 using Cotabby.Inference;
 using H.NotifyIcon;
+using Cotabby.App.Branding;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.Tray;
 
@@ -19,11 +21,11 @@ public sealed class TrayController : IDisposable
     private readonly TaskbarIcon _tray;
     private readonly MenuItem _statusItem = new() { IsEnabled = false };
     private readonly MenuItem _wordCountItem = new() { IsEnabled = false };
-    private readonly MenuItem _enabledItem = new() { Header = "Enabled", IsCheckable = true };
-    private readonly MenuItem _pauseMenu = new() { Header = "Pause" };
-    private readonly MenuItem _resumeItem = new() { Header = "Resume" };
-    private readonly MenuItem _modelMenu = new() { Header = "Model" };
-    private readonly MenuItem _lengthMenu = new() { Header = "Completion length" };
+    private readonly MenuItem _enabledItem = new() { Header = InterfaceText.Get("Enabled"), IsCheckable = true };
+    private readonly MenuItem _pauseMenu = new() { Header = InterfaceText.Get("Pause") };
+    private readonly MenuItem _resumeItem = new() { Header = InterfaceText.Get("Resume") };
+    private readonly MenuItem _modelMenu = new() { Header = InterfaceText.Get("Model") };
+    private readonly MenuItem _lengthMenu = new() { Header = InterfaceText.Get("Completion length") };
     private string? _statusOverride;
     private readonly CompletionStatusGate _statusGate = new();
     private CompletionStatusGate.Token? _statusToken;
@@ -32,8 +34,8 @@ public sealed class TrayController : IDisposable
     public TrayController(AppHost host)
     {
         _host = host;
-        _tray = new TaskbarIcon { ToolTipText = "Cotabby" };
-        using (var icon = Application.GetResourceStream(new Uri("pack://application:,,,/Assets/Cotabby.ico"))!.Stream)
+        _tray = new TaskbarIcon { ToolTipText = AppBrand.Name };
+        using (var icon = Application.GetResourceStream(new Uri("pack://application:,,,/Assets/Lingrove.ico"))!.Stream)
         {
             _tray.Icon = new Icon(icon);
         }
@@ -44,13 +46,13 @@ public sealed class TrayController : IDisposable
         _resumeItem.Click += (_, _) => Update(s => s.Pause = null);
         foreach (var duration in Enum.GetValues<PauseDuration>())
         {
-            var item = new MenuItem { Header = PauseState.MenuLabel(duration) };
+            var item = new MenuItem { Header = InterfaceText.Get(PauseState.MenuLabel(duration)) };
             item.Click += (_, _) => Update(s => s.Pause = PauseState.For(duration, DateTimeOffset.Now));
             _pauseMenu.Items.Add(item);
         }
         foreach (var preset in WordCountPreset.All)
         {
-            var item = new MenuItem { Header = preset.Label, Tag = preset.Id };
+            var item = new MenuItem { Header = InterfaceText.Get(preset.Label), Tag = preset.Id };
             item.Click += (_, _) => Update(s =>
             {
                 s.CompletionLengthPreset = preset.Id;
@@ -59,15 +61,15 @@ public sealed class TrayController : IDisposable
             _lengthMenu.Items.Add(item);
         }
 
-        var settingsItem = new MenuItem { Header = "Settings…" };
+        var settingsItem = new MenuItem { Header = InterfaceText.Get("Settings…") };
         settingsItem.Click += (_, _) => SettingsWindow.ShowOrFocus(host);
-        var translateItem = new MenuItem { Header = "Translate Current Sentence…" };
+        var translateItem = new MenuItem { Header = InterfaceText.Get("Translate Current Sentence…") };
         translateItem.Click += (_, _) => host.LearningPreview.RequestFromCurrentField();
-        var vocabularyItem = new MenuItem { Header = "Vocabulary…" };
+        var vocabularyItem = new MenuItem { Header = InterfaceText.Get("Vocabulary…") };
         vocabularyItem.Click += (_, _) => host.VocabularyWindow.Show();
-        var welcomeItem = new MenuItem { Header = "Run welcome again…" };
+        var welcomeItem = new MenuItem { Header = InterfaceText.Get("Run welcome again…") };
         welcomeItem.Click += (_, _) => WelcomeWindow.ShowFor(host);
-        var quitItem = new MenuItem { Header = "Quit Cotabby" };
+        var quitItem = new MenuItem { Header = InterfaceText.Get("Quit Lingrove", "Learning") };
         quitItem.Click += async (_, _) => await ((App)Application.Current).RequestShutdownAsync();
 
         var menu = new ContextMenu();
@@ -117,15 +119,15 @@ public sealed class TrayController : IDisposable
         bool paused = settings.Pause?.IsActive(now) == true;
 
         _statusItem.Header = _statusOverride
-            ?? (!settings.Enabled ? "Cotabby is off"
-                : paused ? settings.Pause!.StatusText(now)
-                : settings.Engine == EngineKind.Endpoint ? $"Endpoint · {settings.EndpointModel}"
-                : _host.AdmittedLocalModel is { } active ? $"Ready · {ModelDisplayText.Name(active.FileName)}"
-                : "No model loaded");
-        _tray.ToolTipText = ModelDisplayText.Safe($"Cotabby · {_statusItem.Header}", maximumUtf16: 120);
+            ?? (!settings.Enabled ? InterfaceText.Get("Lingrove is off")
+                : paused ? PausePresentation.Status(settings.Pause, now)
+                : settings.Engine == EngineKind.Endpoint ? InterfaceText.Format("Endpoint · {0}", settings.EndpointModel)
+                : _host.AdmittedLocalModel is { } active ? InterfaceText.Format("Ready · {0}", ModelDisplayText.Name(active.FileName))
+                : InterfaceText.Get("No model loaded"));
+        _tray.ToolTipText = ModelDisplayText.Safe($"{AppBrand.Name} · {_statusItem.Header}", maximumUtf16: 120);
 
         long words = _host.Coordinator.Metrics.WordsAccepted;
-        _wordCountItem.Header = $"{words:N0} words completed";
+        _wordCountItem.Header = InterfaceText.Format("{0:N0} words completed", words);
         _wordCountItem.Visibility = settings.ShowTrayWordCount && words > 0 ? Visibility.Visible : Visibility.Collapsed;
 
         _enabledItem.IsChecked = settings.Enabled;
@@ -158,15 +160,15 @@ public sealed class TrayController : IDisposable
             SettingsWindow.ShowOrFocus(_host);
             return;
         }
-        if (BeginCompletionStatus("Loading model…") is not { } status) return;
+        if (BeginCompletionStatus(InterfaceText.Get("Loading model…")) is not { } status) return;
         try
         {
             bool ready = await _host.EnsureModelReadyAsync(null, CancellationToken.None);
-            PublishCompletionStatus(status, ready ? null : "The selected model is unavailable.");
+            PublishCompletionStatus(status, ready ? null : InterfaceText.Get("The selected model is unavailable."));
         }
         catch (Exception ex)
         {
-            PublishCompletionStatus(status, "Model load failed: " + ModelDisplayText.Safe(ex.Message));
+            PublishCompletionStatus(status, InterfaceText.Format("Model load failed: {0}", ModelDisplayText.Safe(ex.Message)));
         }
     }
 

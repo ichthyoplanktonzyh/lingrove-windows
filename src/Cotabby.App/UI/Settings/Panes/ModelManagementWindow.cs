@@ -40,11 +40,11 @@ internal sealed class ModelManagementView : DockPanel
         DockPanel.SetDock(header, Dock.Top); Children.Add(header);
         var divider = new Separator { Margin = new Thickness(0) }; DockPanel.SetDock(divider, Dock.Top); Children.Add(divider);
         var body = new StackPanel { Margin = new Thickness(20) };
-        body.Children.Add(new TextBlock { Text = "Installed models", FontSize = 13, FontWeight = FontWeights.SemiBold });
+        body.Children.Add(new TextBlock { Text = InterfaceText.Get("Installed models", "Localizable"), FontSize = 13, FontWeight = FontWeights.SemiBold });
         body.Children.Add(Status); body.Children.Add(_installed);
         _customDisclosure = new Expander { Header = InterfaceText.Get("Custom models"), Content = _custom, Margin = new Thickness(0, 12, 0, 12) };
         body.Children.Add(_customDisclosure);
-        body.Children.Add(new TextBlock { Text = "Recommended models", FontSize = 12, Foreground = SystemColors.GrayTextBrush, Margin = new Thickness(0, 10, 0, 8) });
+        body.Children.Add(new TextBlock { Text = InterfaceText.Get("Recommended models", "Localizable"), FontSize = 12, Foreground = SystemColors.GrayTextBrush, Margin = new Thickness(0, 10, 0, 8) });
         body.Children.Add(recommendations);
         var actions = new WrapPanel { Margin = new Thickness(0, 12, 0, 0) };
         if (import is not null) actions.Children.Add(ActionButton("Add Your Own", import));
@@ -77,7 +77,7 @@ internal sealed class ModelManagementView : DockPanel
             _installed.Children.Insert(0, new TextBlock { Text = ModelDisplayText.Unavailable(selected, task),
                 Foreground = SystemColors.GrayTextBrush, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 6, 0, 6) });
         _customDisclosure.Visibility = _custom.Children.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
-        if (_installed.Children.Count == 0) _installed.Children.Add(new TextBlock { Text = "No models available for this task.", Foreground = SystemColors.GrayTextBrush, Margin = new Thickness(0, 6, 0, 6) });
+        if (_installed.Children.Count == 0) _installed.Children.Add(new TextBlock { Text = InterfaceText.Get("No models available for this task.", "Localizable"), Foreground = SystemColors.GrayTextBrush, Margin = new Thickness(0, 6, 0, 6) });
     }
 
     private static FrameworkElement ModelRow(LearningInstalledModel model, bool selected, bool inUse, Action action, string actionLabel = "Select", string? directory = null, string? source = null, Action? delete = null)
@@ -155,13 +155,13 @@ internal sealed class ModelManagementWindow : Window
     };
     internal async void Refresh()
     {
-        _view.Status.Text = "Loading models…";
+        _view.Status.Text = InterfaceText.Get("Loading models…", "Localizable");
         await _scan.RunAsync(() => _context.Host.LearningModels.GetInstalledModelsAsync(_lifetime.Token), models =>
         {
             _context.Host.ReconcileCompletionSelection(models);
             _view.ShowModels(models, _context.Settings, _task, Selected(), _context.Host.LearningModels.ModelsDirectory, _context.Host.Runtime.ActiveModel?.FileName);
             _view.Status.Text = _notice;
-        }, () => _view.Status.Text = "Models could not be listed. Refresh to try again.", _lifetime.Token);
+        }, () => _view.Status.Text = InterfaceText.Get("Models could not be listed. Refresh to try again.", "Localizable"), _lifetime.Token);
     }
     internal void Report(string text) { _operationVersion++; SetNotice(text); }
     private void SetNotice(string text) { _notice = text; _view.Status.Text = text; }
@@ -236,6 +236,6 @@ internal sealed class ModelManagementWindow : Window
             if (!_lifetime.IsCancellationRequested) Ui.OpenPath(directory);
         }
         catch (OperationCanceledException) { }
-        catch (Exception) { _view.Status.Text = "Could not open the models folder."; }
+        catch (Exception) { _view.Status.Text = InterfaceText.Get("Could not open the models folder.", "Localizable"); }
     }
 }

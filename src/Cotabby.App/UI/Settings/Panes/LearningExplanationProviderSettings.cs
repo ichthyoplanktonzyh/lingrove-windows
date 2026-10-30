@@ -7,6 +7,7 @@ using Cotabby.App.Settings;
 using Cotabby.App.UI.Controls;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Inference.OpenAICompatible;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI.Settings.Panes;
 
@@ -54,15 +55,15 @@ internal sealed class LearningExplanationProviderSettings : StackPanel
         AutomationProperties.SetName(OutputTokens, "Explanation output tokens"); AutomationProperties.SetName(Temperature, "Explanation temperature"); AutomationProperties.SetName(TopP, "Explanation top P");
         Backend.ItemsSource = new[] { "Local model", "OpenAI-compatible endpoint" }; Backend.SelectionChanged += (_, _) =>
         { if (!_updating && !_current().LearningExplanationPowerSwitching && Backend.SelectedIndex >= 0) Mutate(s => s.LearningExplanationBackend = Backend.SelectedIndex == 1 ? LearningModelBackend.Endpoint : LearningModelBackend.Local); };
-        RefreshModels = Ui.Button("Test / Refresh models", BeginRefresh);
+        RefreshModels = Ui.Button(InterfaceText.Get("Test / Refresh models", "Localizable"), BeginRefresh);
         Children.Add(Line("Run using", Backend)); Children.Add(Destination); Children.Add(_local); Children.Add(_endpoint);
         _endpoint.Children.Add(Line("Server URL", Url)); _endpoint.Children.Add(Line("Model", Model, Models));
         _endpoint.Children.Add(Line("Connection", RefreshModels)); _endpoint.Children.Add(Status);
-        _endpoint.Children.Add(new TextBlock { Text = "Local is the default. Selecting this endpoint sends the selected text or expression description, bounded context and requested languages to the destination shown above.", TextWrapping = TextWrapping.Wrap, Margin = new(0, 6, 0, 6) });
-        _endpoint.Children.Add(Line("API key", Key, Ui.Button("Save", () => StoreKey(Key.Password)), Ui.Button("Clear", () => StoreKey(null))));
+        _endpoint.Children.Add(new TextBlock { Text = InterfaceText.Get("Local is the default. Selecting this endpoint sends the selected text or expression description, bounded context and requested languages to the destination shown above.", "Localizable"), TextWrapping = TextWrapping.Wrap, Margin = new(0, 6, 0, 6) });
+        _endpoint.Children.Add(Line("API key", Key, Ui.Button(InterfaceText.Get("Save", "Localizable"), () => StoreKey(Key.Password)), Ui.Button(InterfaceText.Get("Clear", "Localizable"), () => StoreKey(null))));
         _endpoint.Children.Add(Line("Context tokens", ContextTokens)); _endpoint.Children.Add(Line("Output tokens", OutputTokens));
         _endpoint.Children.Add(Line("Temperature", Temperature)); _endpoint.Children.Add(Line("Top P", TopP));
-        _endpoint.Children.Add(new TextBlock { Text = "Leave sampling fields empty to use recommended values.", TextWrapping = TextWrapping.Wrap, Margin = new(0, 4, 0, 4) });
+        _endpoint.Children.Add(new TextBlock { Text = InterfaceText.Get("Leave sampling fields empty to use recommended values.", "Localizable"), TextWrapping = TextWrapping.Wrap, Margin = new(0, 4, 0, 4) });
         BindDestinationText(Url, (s, text) => s.LearningExplanationEndpointBaseUrl = text.Trim(), manualOnly: false);
         BindDestinationText(Model, (s, text) => s.LearningExplanationEndpointModel = text.Trim(), manualOnly: true);
         Models.SelectionChanged += (_, _) => { if (!_updating && !_current().LearningExplanationPowerSwitching && Models.SelectedItem is string model) Mutate(s => s.LearningExplanationEndpointModel = model); };
@@ -153,15 +154,15 @@ internal sealed class LearningExplanationProviderSettings : StackPanel
     internal void StoreKey(string? value)
     {
         if (_disposed || _current().LearningExplanationActiveSelection.Backend != LearningModelBackend.Endpoint) return;
-        try { bool changed = _saveKey(value); Key.Clear(); if (changed) { _keyChanged(); Retire(); } Status.Text = value is null ? "Key cleared." : "Key saved."; Refresh(); }
-        catch { Status.Text = "Unable to update the explanation key."; }
+        try { bool changed = _saveKey(value); Key.Clear(); if (changed) { _keyChanged(); Retire(); } Status.Text = value is null ? InterfaceText.Get("Key cleared.", "Localizable") : InterfaceText.Get("Key saved.", "Localizable"); Refresh(); }
+        catch { Status.Text = InterfaceText.Get("Unable to update the explanation key.", "Localizable"); }
     }
     internal void BeginRefresh()
     {
         if (_disposed || _current().LearningExplanationActiveSelection.Backend != LearningModelBackend.Endpoint) return;
         Retire(); var request = new CancellationTokenSource(); _request = request;
         var snapshot = _current().LearningExplanationSnapshot(); long revision = _revision;
-        Status.Text = "Connecting…"; RefreshModels.IsEnabled = false;
+        Status.Text = InterfaceText.Get("Connecting…", "Localizable"); RefreshModels.IsEnabled = false;
         try { _ = Observe(_run(async shutdown =>
         {
             using var linked = CancellationTokenSource.CreateLinkedTokenSource(request.Token, shutdown);
@@ -170,18 +171,18 @@ internal sealed class LearningExplanationProviderSettings : StackPanel
                 var result = await _fetch(snapshot, linked.Token);
                 if (!Current(revision, snapshot, linked.Token)) return;
                 _updating = true; try { Models.ItemsSource = result.Select(x => x.Id).ToArray(); Models.SelectedItem = snapshot.EndpointModel; } finally { _updating = false; }
-                Status.Text = result.Count == 0 ? "Connected. No models were returned." : "Connected. Choose a model or enter one manually.";
+                Status.Text = result.Count == 0 ? InterfaceText.Get("Connected. No models were returned.", "Localizable") : InterfaceText.Get("Connected. Choose a model or enter one manually.", "Localizable");
             }
             catch (OperationCanceledException) { }
-            catch { if (Current(revision, snapshot, linked.Token)) Status.Text = "Unable to connect to the explanation endpoint."; }
+            catch { if (Current(revision, snapshot, linked.Token)) Status.Text = InterfaceText.Get("Unable to connect to the explanation endpoint.", "Localizable"); }
             finally { if (Current(revision, snapshot, linked.Token)) RefreshModels.IsEnabled = true; }
         })); }
-        catch { Status.Text = "Explanation endpoint settings are unavailable."; RefreshModels.IsEnabled = true; }
+        catch { Status.Text = InterfaceText.Get("Explanation endpoint settings are unavailable.", "Localizable"); RefreshModels.IsEnabled = true; }
     }
     private bool Current(long revision, LearningModelSnapshot snapshot, CancellationToken token) => !_disposed && !token.IsCancellationRequested
         && revision == _revision && _current().LearningExplanationSnapshot() == snapshot;
     private static async Task Observe(Task work) { try { await work; } catch { } }
-    private void Retire() { ++_revision; var old = _request; _request = null; if (old is not null) _ = CancelAndDisposeAsync(old); RefreshModels.IsEnabled = true; Models.ItemsSource = null; Status.Text = "Not connected."; }
+    private void Retire() { ++_revision; var old = _request; _request = null; if (old is not null) _ = CancelAndDisposeAsync(old); RefreshModels.IsEnabled = true; Models.ItemsSource = null; Status.Text = InterfaceText.Get("Not connected.", "Localizable"); }
     private static async Task CancelAndDisposeAsync(CancellationTokenSource source) { try { await source.CancelAsync(); } catch { } finally { source.Dispose(); } }
     internal void Close() { if (_disposed) return; _disposed = true; Retire(); Key.Clear(); }
 }

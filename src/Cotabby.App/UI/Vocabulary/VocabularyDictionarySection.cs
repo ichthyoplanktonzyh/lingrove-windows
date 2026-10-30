@@ -5,6 +5,7 @@ using Cotabby.App.UI.Learning;
 using Cotabby.App.Vocabulary;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Vocabulary;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI.Vocabulary;
 
@@ -20,7 +21,7 @@ internal sealed class VocabularyDictionarySection : Expander, IDisposable
     private readonly Func<bool> _canAct;
     private readonly StackPanel _body = new(), _definitions = new();
     private readonly WrapPanel _words = new();
-    private readonly Button _back = new() { Content = "Back to expression", HorizontalAlignment = HorizontalAlignment.Left };
+    private readonly Button _back = new() { Content = InterfaceText.Get("Back to expression", "Vocabulary"), HorizontalAlignment = HorizontalAlignment.Left };
     private readonly TextBlock _query = new() { TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 7) };
     private readonly TextBlock _attribution = new() { FontSize = 10, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 7, 0, 0) };
     private readonly ScrollViewer _viewport;
@@ -38,8 +39,8 @@ internal sealed class VocabularyDictionarySection : Expander, IDisposable
     internal VocabularyDictionarySection(VocabularyNotebookSession owner, VocabularyEntry entry, Func<bool> canAct)
     {
         _owner = owner; _entry = entry; _senseId = owner.SenseId; _canAct = canAct; _token = _presentation.Token;
-        Header = "Dictionary"; Margin = new Thickness(0, 14, 0, 0);
-        var source = new TextBlock { Text = "Bundled expression dictionary · definitions in English", FontSize = 11, TextWrapping = TextWrapping.Wrap };
+        Header = InterfaceText.Get("Dictionary", "Vocabulary"); Margin = new Thickness(0, 14, 0, 0);
+        var source = new TextBlock { Text = InterfaceText.Get("Bundled expression dictionary · definitions in English", "Vocabulary"), FontSize = 11, TextWrapping = TextWrapping.Wrap };
         source.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondary"); _attribution.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondary");
         _viewport = new ScrollViewer { Content = _definitions, VerticalScrollBarVisibility = ScrollBarVisibility.Auto, HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled, Height = 120 };
         _body.Children.Add(source); _body.Children.Add(_query); _body.Children.Add(_back); _body.Children.Add(_words); _body.Children.Add(_viewport); _body.Children.Add(_attribution); Content = _body;
@@ -86,7 +87,7 @@ internal sealed class VocabularyDictionarySection : Expander, IDisposable
     private void Render(LearningDictionaryState state)
     {
         if (_disposed) return; _displayed = state; _definitions.Children.Clear(); _words.Children.Clear(); _attribution.Inlines.Clear();
-        _query.Text = state.Unit is null ? _owner.DictionaryError ?? (_owner.IsPreparingDictionary ? "Looking up…" : "") : "";
+        _query.Text = state.Unit is null ? _owner.DictionaryError ?? (_owner.IsPreparingDictionary ? InterfaceText.Get("Looking up…", "Vocabulary") : "") : "";
         _query.Visibility = _query.Text.Length == 0 ? Visibility.Collapsed : Visibility.Visible;
         _back.Visibility = state.SelectedWord is null ? Visibility.Collapsed : Visibility.Visible;
         if (state.Unit is { } unit)

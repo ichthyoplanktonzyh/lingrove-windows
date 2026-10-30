@@ -7,6 +7,7 @@ using Cotabby.App.Hosting;
 using Cotabby.App.Settings;
 using Cotabby.App.UI.Controls;
 using Cotabby.Core.Macros;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI.Settings.Panes;
 
@@ -28,7 +29,7 @@ internal static class HomePane
             new SettingsCard(null, Rows.Custom(Branding.Identity("Write faster, everywhere you type."))),
             new SettingsCard("Explore Lingrove", Rows.Custom(new ProductFeatureExamples(() => context.Settings.ExpressionAssistTrigger, current: () => context.Settings))),
             new SettingsCard("Status",
-                r.Labeled("Cotabby", "Suggests the next words as you type in any app. Press your accept key to take them.", status),
+                r.Labeled("Lingrove", "Suggests the next words as you type in any app. Press your accept key to take them.", status),
                 r.Labeled("Words Completed", "Words you have accepted from suggestions so far.", words)),
             new SettingsCard("Quick Settings", Rows.Custom(QuickLinks(context, otherPanes))),
             new SettingsCard("Macros", Rows.Custom(MacroReference())));
@@ -38,17 +39,17 @@ internal static class HomePane
     private static (bool Ready, string Text) Status(AppHost host)
     {
         var settings = host.Settings;
-        if (!settings.Enabled) return (false, "Cotabby is off");
-        if (settings.Pause?.StatusText(DateTimeOffset.Now) is { } paused) return (false, paused);
+        if (!settings.Enabled) return (false, InterfaceText.Get("Lingrove is off"));
+        if (PausePresentation.Status(settings.Pause, DateTimeOffset.Now) is { } paused) return (false, paused);
         if (settings.Engine == EngineKind.Endpoint)
         {
             return settings.EndpointModel.Length > 0
-                ? (true, $"Ready · {settings.EndpointModel}")
-                : (false, "No endpoint model selected");
+                ? (true, InterfaceText.Format("Ready · {0}", settings.EndpointModel))
+                : (false, InterfaceText.Get("No endpoint model selected"));
         }
         return host.AdmittedLocalModel is { } model
-            ? (true, $"Ready · {ModelDisplayText.Name(model.FileName)}")
-            : (false, "No model loaded");
+            ? (true, InterfaceText.Format("Ready · {0}", ModelDisplayText.Name(model.FileName)))
+            : (false, InterfaceText.Get("No model loaded"));
     }
 
     private static UniformGrid QuickLinks(SettingsContext context, IReadOnlyList<SettingsPane> panes)
@@ -82,7 +83,7 @@ internal static class HomePane
             Background = Brushes.Transparent,
             Cursor = Cursors.Hand,
             MinHeight = 44,
-            Children = { chevron, Ui.Text("All macros") },
+            Children = { chevron, Ui.Text(InterfaceText.Get("All macros", "Localizable")) },
         };
         chevron.Margin = new Thickness(2, 0, 10, 0);
         var body = new StackPanel { Visibility = Visibility.Collapsed, Margin = new Thickness(0, 0, 0, 10) };

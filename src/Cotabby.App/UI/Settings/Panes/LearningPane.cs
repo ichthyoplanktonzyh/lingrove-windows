@@ -7,6 +7,7 @@ using Cotabby.App.UI.Controls;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.ExpressionAssist;
 using Cotabby.Inference.OpenAICompatible;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI.Settings.Panes;
 
@@ -40,9 +41,9 @@ internal static class LearningPane
         var review = new AnkiReviewSettingsSection(context.Host.Review);
         context.Closed += review.Close;
         Button? configureSpeech = null;
-        configureSpeech = Ui.Button("Configure speech…", () => context.Host.ShowSpeechSettings(Window.GetWindow(configureSpeech!)));
+        configureSpeech = Ui.Button(InterfaceText.Get("Configure speech…", "Localizable"), () => context.Host.ShowSpeechSettings(Window.GetWindow(configureSpeech!)));
         Button? configureDictionary = null;
-        configureDictionary = Ui.Button("Manage dictionaries…", () => openDictionary?.Invoke(Window.GetWindow(configureDictionary!)));
+        configureDictionary = Ui.Button(InterfaceText.Get("Manage dictionaries…", "Localizable"), () => openDictionary?.Invoke(Window.GetWindow(configureDictionary!)));
         configureDictionary.IsEnabled = openDictionary is not null;
         var destination = Ui.Text("", "Caption");
         destination.Margin = new Thickness(0, 10, 0, 0);
@@ -72,7 +73,7 @@ internal static class LearningPane
                 rows.Combo("Reading Target Language", "Independent of the writing translation direction.", Languages,
                     s => s.LearningReadingTargetLanguage, (s, v) => s.LearningReadingTargetLanguage = v),
                 rows.Labeled("Reading Shortcuts and Apps", "Allow each reading source for an app and configure its shortcut in Shortcuts.",
-                    Ui.Button("Configure shortcuts and apps", () => context.Navigate(ShortcutsPane.Build(rows)))),
+                    Ui.Button(InterfaceText.Get("Configure shortcuts and apps", "Localizable"), () => context.Navigate(ShortcutsPane.Build(rows)))),
                 Rows.Note("Reading uses the translation or AI explanation provider below. The destination appears before each request. The bundled dictionary is also available. Windows OCR requires a supported language installed in Windows settings.")),
             new SettingsCard("Anki review",
                 new SettingsRow("Anki review", "Connection, default deck and saved card templates", review)
@@ -87,7 +88,7 @@ internal static class LearningPane
                     s => s.LearningTargetLanguage, (s, v) => s.LearningTargetLanguage = v)
                     .Tagged("expression target language shared translation"),
                 rows.Labeled("Expression Shortcut", "Configure a shortcut in Shortcuts.",
-                    Ui.Button("Configure shortcut", () => context.Navigate(ShortcutsPane.Build(rows))))
+                    Ui.Button(InterfaceText.Get("Configure shortcut", "Localizable"), () => context.Navigate(ShortcutsPane.Build(rows))))
                     .Tagged("expression assistance shortcut keybind"),
                 Rows.Note("Uses the independent AI explanation provider below. The configured destination is shown before a request; the translation endpoint is not used.")),
             new SettingsCard("Writing translation",
@@ -178,7 +179,7 @@ internal static class LearningPane
             if (!input.IsKeyboardFocused) input.Text = trigger;
             validation.Text = ExpressionAssistPolicy.TriggerError(trigger)
                 ?? (trigger.Any(character => character > 0x7F)
-                    ? "This Windows version supports ASCII trigger symbols. Use ?? or configure the shortcut." : "");
+                    ? InterfaceText.Get("This Windows version supports ASCII trigger symbols. Use ?? or configure the shortcut.", "Localizable") : "");
             validation.Visibility = validation.Text.Length == 0 ? Visibility.Collapsed : Visibility.Visible;
         });
         return rows.Stacked("Trigger Symbols", "Type the symbols, then describe what you mean in the expression window.",
@@ -339,7 +340,7 @@ internal static class LearningPane
         }
 
         var note = Ui.Text(
-            "With one source selected, translations use that direction. Multiple-source detection is not yet available on this Windows build; choose one source to translate.",
+            InterfaceText.Get("With one source selected, translations use that direction. Multiple-source detection is not yet available on this Windows build; choose one source to translate.", "Localizable"),
             "Caption");
         note.Margin = new Thickness(0, 8, 0, 0);
         note.TextWrapping = TextWrapping.Wrap;
@@ -366,14 +367,14 @@ internal static class LearningPane
     {
         var key = new PasswordBox { Width = 240 }.Styled("PasswordInput");
         var status = Ui.Text("", "Caption");
-        var save = Ui.Button("Save", () => StoreKey(context, key, status, save: true));
-        var clear = Ui.Button("Clear", () => StoreKey(context, key, status, save: false));
+        var save = Ui.Button(InterfaceText.Get("Save", "Localizable"), () => StoreKey(context, key, status, save: true));
+        var clear = Ui.Button(InterfaceText.Get("Clear", "Localizable"), () => StoreKey(context, key, status, save: false));
         context.OnRefresh(() =>
         {
             if (ActiveTranslationBackend(context.Settings) == LearningTranslationBackend.Endpoint)
                 ShowKeyStatus(context, status);
             else
-                status.Text = "The separate endpoint credential is not read or used while Local is selected.";
+                status.Text = InterfaceText.Get("The separate endpoint credential is not read or used while Local is selected.", "Localizable");
         });
         return new SettingsRow("Learning API Key",
             "Optional bearer token stored separately from autocomplete credentials.",
@@ -390,12 +391,12 @@ internal static class LearningPane
             key.Clear();
             context.Host.LearningCredentialsChanged();
             status.Text = hasKey
-                ? "A learning API key is stored with Windows user encryption."
-                : "No learning API key is stored.";
+                ? InterfaceText.Get("A learning API key is stored with Windows user encryption.", "Localizable")
+                : InterfaceText.Get("No learning API key is stored.", "Localizable");
         }
         catch (Exception ex) when (ex is CryptographicException or IOException or UnauthorizedAccessException)
         {
-            status.Text = "Could not update the learning API key.";
+            status.Text = InterfaceText.Get("Could not update the learning API key.", "Localizable");
         }
     }
 
@@ -404,12 +405,12 @@ internal static class LearningPane
         try
         {
             status.Text = context.Host.LearningEndpointCredentials.ReadApiKey() is null
-                ? "No learning API key is stored."
-                : "A learning API key is stored with Windows user encryption.";
+                ? InterfaceText.Get("No learning API key is stored.", "Localizable")
+                : InterfaceText.Get("A learning API key is stored with Windows user encryption.", "Localizable");
         }
         catch (Exception ex) when (ex is CryptographicException or IOException or UnauthorizedAccessException)
         {
-            status.Text = "The learning API key could not be read.";
+            status.Text = InterfaceText.Get("The learning API key could not be read.", "Localizable");
         }
     }
 
@@ -443,11 +444,11 @@ internal static class LearningPane
 
             if (settings.LearningTranslationActiveEndpointEnabled)
             {
-                destination.Text += " The endpoint is opted in for translation requests.";
+                destination.Text += InterfaceText.Get(" The endpoint is opted in for translation requests.", "Localizable");
             }
             else
             {
-                destination.Text += " Endpoint sending is off.";
+                destination.Text += InterfaceText.Get(" Endpoint sending is off.", "Localizable");
             }
         }
         catch (OpenAICompatibleEndpointException ex)

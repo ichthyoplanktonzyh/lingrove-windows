@@ -40,8 +40,11 @@ public partial class App : Application
             _singleInstance.Dispose();
             _singleInstance = null;
             if (!cliStartup)
-                MessageBox.Show("Cotabby is already running. Check the system tray.",
-                    "Cotabby", MessageBoxButton.OK, MessageBoxImage.Information);
+            {
+                InterfaceText.Initialize(null);
+                MessageBox.Show(InterfaceText.Get("Lingrove is already running. Check the system tray."),
+                    Branding.AppBrand.Name, MessageBoxButton.OK, MessageBoxImage.Information);
+            }
             Shutdown();
             return;
         }
@@ -86,14 +89,14 @@ public partial class App : Application
         try
         {
             host.ReconcileCompletionSelection();
-            status = tray.BeginCompletionStatus("Loading model…");
+            status = tray.BeginCompletionStatus(InterfaceText.Get("Loading model…"));
             if (status is not { } current) return;
             bool loaded = await host.TryLoadCachedAsync();
-            tray.PublishCompletionStatus(current, loaded ? null : "No model yet. Open Settings to download one.");
+            tray.PublishCompletionStatus(current, loaded ? null : InterfaceText.Get("No model yet. Open Settings to download one."));
         }
         catch (Exception ex)
         {
-            if (status is { } current) tray.PublishCompletionStatus(current, "Model load failed: " + ModelDisplayText.Safe(ex.Message));
+            if (status is { } current) tray.PublishCompletionStatus(current, InterfaceText.Format("Model load failed: {0}", ModelDisplayText.Safe(ex.Message)));
         }
     }
 
@@ -148,13 +151,13 @@ public partial class App : Application
                     catch (Exception error)
                     {
                         _host?.LogError(error, "Application restart failed.");
-                        MessageBox.Show("Could not restart Lingrove. Please open the application again.",
-                            "Lingrove", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show(InterfaceText.Get("Could not restart Lingrove. Please open the application again.", "Localizable"),
+                            InterfaceText.Get("Lingrove", "Localizable"), MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
                 else if (restart)
-                    MessageBox.Show("Lingrove could not finish restarting. Please open the application again.",
-                        "Lingrove", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(InterfaceText.Get("Lingrove could not finish restarting. Please open the application again.", "Localizable"),
+                        InterfaceText.Get("Lingrove", "Localizable"), MessageBoxButton.OK, MessageBoxImage.Error);
                 completion.TrySetResult(true);
                 Shutdown();
             }

@@ -81,7 +81,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow
     private static Button SenseButton(string text, string name, bool enabled)
     {
         var button = new Button { Name = name, Content = text, IsEnabled = enabled, Padding = new Thickness(10, 5, 10, 5), Margin = new Thickness(0, 0, 8, 8) };
-        if (!enabled) button.ToolTip = "This action is unavailable while the notebook is busy or the store does not support it.";
+        if (!enabled) button.ToolTip = InterfaceText.Get("This action is unavailable while the notebook is busy or the store does not support it.", "Vocabulary");
         VocabularyNotebookTheme.Button(button); return button;
     }
     private static MenuItem SenseMenuItem(string title, Guid? target)

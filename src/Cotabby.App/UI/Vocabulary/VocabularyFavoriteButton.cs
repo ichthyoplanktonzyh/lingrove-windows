@@ -5,6 +5,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using Cotabby.App.Vocabulary;
 using Cotabby.Core.Vocabulary;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI.Vocabulary;
 
@@ -68,7 +69,7 @@ public sealed class VocabularyFavoriteButton : Button
         bool saved = _store.Contains(_capture), pending = _store.IsPending(_capture);
         IsEnabled = _store.IsLoaded && !pending && _preflightBinding != _binding && Current(_binding);
         Content = pending ? new ProgressBar { Width = 18, Height = 3, IsIndeterminate = true } : Icon(saved);
-        ToolTip = _failure ?? (!_store.IsLoaded ? _store.ErrorMessage ?? "Loading vocabulary…" : saved ? ToggleSavedOnClick ? "Remove this saved usage" : "Saved · Show actions" : "Save to vocabulary");
+        ToolTip = _failure ?? (!_store.IsLoaded ? _store.ErrorMessage ?? InterfaceText.Get("Loading vocabulary…", "Vocabulary") : saved ? ToggleSavedOnClick ? InterfaceText.Get("Remove this saved usage", "Vocabulary") : InterfaceText.Get("Saved · Show actions", "Vocabulary") : InterfaceText.Get("Save to vocabulary", "Vocabulary"));
         AutomationProperties.SetName(this, saved && ToggleSavedOnClick ? "Remove this saved usage" : "Save to vocabulary");
         AutomationProperties.SetItemStatus(this, !_store.IsLoaded ? (_store.ErrorMessage is null ? "Loading…" : "Unavailable") : pending ? "Saving…" : saved ? "Saved" : "Not saved");
         var detail = _failure ?? (!_store.IsLoaded ? _store.ErrorMessage : null);
@@ -93,10 +94,10 @@ public sealed class VocabularyFavoriteButton : Button
         // Notebook navigation will register the source-equivalent route in its own UI slice.
         if (_store.OpenSelection is not null)
         {
-            var show = new MenuItem { Header = "Show in vocabulary", Focusable = false };
+            var show = new MenuItem { Header = InterfaceText.Get("Show in vocabulary", "Vocabulary"), Focusable = false };
             show.Click += (_, _) => { if (Current(binding)) _store!.Show(_capture!); }; menu.Items.Add(show);
         }
-        var remove = new MenuItem { Header = "Remove this saved usage", Focusable = false };
+        var remove = new MenuItem { Header = InterfaceText.Get("Remove this saved usage", "Vocabulary"), Focusable = false };
         remove.Click += (_, _) => { if (Current(binding)) LastOperation = ChangeAfterPreflightAsync(binding, remove: true); };
         menu.Items.Add(remove); ContextMenu = menu; menu.IsOpen = true;
     }

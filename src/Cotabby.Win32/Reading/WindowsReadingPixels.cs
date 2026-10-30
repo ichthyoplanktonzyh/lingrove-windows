@@ -83,6 +83,14 @@ internal static class WindowsReadingPixels
     }
     private static bool Overlap(Rect a, Rect b) => a.Left < b.Right && b.Left < a.Right && a.Top < b.Bottom && b.Top < a.Bottom;
     private static bool Valid(Rect value) => value.Right > value.Left && value.Bottom > value.Top;
+    internal static ScreenRect? DisplayAt(System.Drawing.Point point)
+    {
+        if (point.X == int.MaxValue || point.Y == int.MaxValue) return null;
+        var rect = new Rect { Left = point.X, Top = point.Y, Right = point.X + 1, Bottom = point.Y + 1 };
+        var monitor = MonitorFromRect(in rect, 0); var info = new MonitorInfo { Size = (uint)Marshal.SizeOf<MonitorInfo>() };
+        return monitor != 0 && GetMonitorInfo(monitor, ref info) && Valid(info.Monitor)
+            ? new(info.Monitor.Left, info.Monitor.Top, (double)info.Monitor.Right - info.Monitor.Left, (double)info.Monitor.Bottom - info.Monitor.Top) : null;
+    }
     private static bool NoOwnWindows(Rect crop, Func<bool> permit)
     {
         bool safe = true;

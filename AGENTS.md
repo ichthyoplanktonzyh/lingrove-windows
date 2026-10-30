@@ -39,7 +39,9 @@ none establishes complete native parity. The
 shares this Store, launches one private mailbox, freezes interface language before window construction
 and drains content-free history after task owners. The
 [explicit-region upgrade](docs/READING_EXPLICIT_REGION_3B.md) adds origin-window screenshot acquisition
-without an editable-field requirement; pointer/selection visual fallback and native acceptance remain open.
+without an editable-field requirement. The [pointer OCR upgrade](docs/READING_POINTER_OCR_3B.md)
+adds an explicit OCR-first pointer route with strict UIA fallback; selection visual enrichment and
+native acceptance remain open.
 
 ## Migration principle: adapt the frozen macOS product
 

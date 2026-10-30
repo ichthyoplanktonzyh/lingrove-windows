@@ -32,8 +32,8 @@ Their attribution and the AGPL-3.0 license remain in place.
   senses, meanings, categories, usage patterns, images, graph navigation, export and backup/restore.
 - **Review and speech:** independent Anki card preparation and batch operations, mappings and audio
   preparation; separate system/local/endpoint speech ownership and settings.
-- **Reading and dictionaries:** explicit selection, pointer/UIA and screen-region reading; local
-  Windows OCR for explicit regions; bundled/local MDict sources and explicit online/website actions.
+- **Reading and dictionaries:** explicit selection, OCR-first pointer reading with strict UIA fallback,
+  and screen-region reading; bundled/local MDict sources and explicit online/website actions.
 - **Setup and presentation:** task/model assignment, recommended setup, a seven-scene Home/Welcome
   walkthrough, interface-language selection, shared opt-in performance history and local CLI mailbox.
 
@@ -41,7 +41,7 @@ These are implementation checkpoints, with automated and component-render eviden
 claim that every editor, IME, speech provider or hardware configuration has passed native acceptance.
 See [feature evidence](docs/PARITY.md) and [Windows host acceptance](docs/WINDOWS_HOST_ACCEPTANCE.md).
 
-Remaining work includes pointer/selection visual OCR fallback, language/platform recognition limits,
+Remaining work includes selection visual-context enrichment, language/platform recognition limits,
 some bitmap/drop/dictionary-resource variants, custom review layouts and full interface-language
 coverage. Unsupported states stay explicit. Word, Chrome and Codex are the maintainer's final unified
 host acceptance order; physical DPI, focus, keyboard, clipboard, OCR, models and audio remain distinct

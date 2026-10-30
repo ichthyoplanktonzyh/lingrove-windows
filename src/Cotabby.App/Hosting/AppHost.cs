@@ -334,10 +334,15 @@ public sealed class AppHost : IAsyncDisposable
         {
             _nativeReading = new Win32ReadingSelectionReader(nativeFocus, _hook);
             _readingOrigin = new Win32ReadingOriginTracker(nativeFocus);
+            _readingWindowSource = new Win32ReadingWindowSource(nativeFocus, _hook, _readingOrigin);
+            var nativeReadingSource = new NativeReadingSelectionReader(_nativeReading);
+            var readingOcr = new WindowsReadingOcr();
+            var readingSource = new ReadingSourceReader(nativeReadingSource, new NativeReadingVisualPointerReader(_readingWindowSource,
+                () => _readingOrigin.Current, nativeReadingSource, readingOcr, _performance.Observe));
             var lexical = _services.GetRequiredService<IcuLearningLexicalText>();
             var sentences = (IcuLearningEvidenceSentenceTokenizer)_services.GetRequiredService<ILearningEvidenceSentenceTokenizer>();
             _reading = new ReadingApplication(overlay.Dispatcher, _hook, () => OperatingSystem.IsWindowsVersionAtLeast(8, 1) ? _readingOrigin.Current : null,
-                new NativeReadingSelectionReader(_nativeReading), (text, language) => language is { } known
+                readingSource, (text, language) => language is { } known
                     ? lexical.Words(text, known) : lexical.WordsUnknown(text),
                 Dictionaries.Router,
                 (input, token) => LearningExplanation.GenerateReadingLookupAsync(input, null,
@@ -354,8 +359,7 @@ public sealed class AppHost : IAsyncDisposable
             _reading.AttachPerformance(_performance.Observe);
             _readingPointer = new ReadingPointerMonitor();
             _reading.AttachPointer(_readingPointer);
-            _readingWindowSource = new Win32ReadingWindowSource(nativeFocus, _hook, _readingOrigin);
-            _reading.AttachScreen(new NativeReadingScreenReader(_readingWindowSource, new WindowsReadingOcr(), _performance.Observe));
+            _reading.AttachScreen(new NativeReadingScreenReader(_readingWindowSource, readingOcr, _performance.Observe));
         }
 
         SystemEvents.PowerModeChanged += OnPowerModeChanged;

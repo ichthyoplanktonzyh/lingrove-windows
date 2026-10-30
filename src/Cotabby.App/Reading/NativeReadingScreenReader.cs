@@ -130,8 +130,9 @@ internal sealed class NativeReadingScreenReader : IReadingScreenReader
         public void Retire() => native.Retire();
         public ValueTask DisposeAsync() => native.DisposeAsync();
     }
-    private sealed class WindowGuard(Win32ReadingWindowLease native) : IReadingScreenGuard
+    internal sealed class WindowGuard(Win32ReadingWindowLease native) : IReadingVisualGuard
     {
+        public ReadingVisualFrame? Frame => native.PointerFrame;
         public ReadingScreenGuardEvidence? Evidence => native.Evidence;
         public bool IsLive => native.IsLive;
         public event Action? Invalidated { add => native.Invalidated += value; remove => native.Invalidated -= value; }

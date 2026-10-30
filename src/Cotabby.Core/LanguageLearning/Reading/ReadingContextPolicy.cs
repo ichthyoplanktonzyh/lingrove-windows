@@ -78,7 +78,7 @@ public static class ReadingContextPolicy
             : FoundationText.TrimWhitespaceAndNewlines(suffix).Length == 0 ? window.Right : ReadingBoundary.Unknown;
         return new(scoped, targetStart - begin, trimmed.Length, left, right, window.Method);
     }
-    private static bool HasTerminator(string text) => Terminator.IsMatch(text);
+    internal static bool HasTerminator(string text) => Terminator.IsMatch(text);
     private static bool Complete(ReadingBoundary boundary) => boundary is ReadingBoundary.Container or ReadingBoundary.Sentence;
     private static ReadingAcquisitionWindow TrimArtificialEdges(ReadingAcquisitionWindow window)
     {

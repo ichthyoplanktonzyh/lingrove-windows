@@ -14,6 +14,11 @@ namespace Cotabby.Win32.Reading;
 public sealed class WindowsReadingOcr : IReadingOcr
 {
     private const long MaximumPixels = 16_000_000;
+    internal static int? MaximumDimension()
+    {
+        try { uint value = OcrEngine.MaxImageDimension; return value is >= 4 and <= 32768 ? (int)value : null; }
+        catch (Exception error) when (error is not OutOfMemoryException) { return null; }
+    }
     public async Task<IReadOnlyList<ReadingOcrLine>> RecognizeAsync(ReadingBitmap bitmap, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(bitmap); cancellationToken.ThrowIfCancellationRequested();

@@ -13,7 +13,7 @@ internal sealed record ReadingScreenSecurity(int ProcessId, string RuntimeId);
 // metadata and focused identity on the existing MTA; never request a field's value or selected text.
 internal sealed unsafe partial class UiaTextEditEvidence
 {
-    internal ReadingScreenSecurity? ReadScreenSecurity(int originProcess, nint originWindow, Func<bool> permit)
+    internal ReadingScreenSecurity? ReadScreenSecurity(int originProcess, nint originWindow, Func<bool> permit, System.Drawing.Point? pointer = null)
     {
         int live = 1; ReadingScreenSecurity? result = null;
         bool Allowed() => Volatile.Read(ref live) != 0 && permit();
@@ -26,18 +26,61 @@ internal sealed unsafe partial class UiaTextEditEvidence
                 var security = ReadScreenSecurityCore(element, originProcess, originWindow, Allowed);
                 if (security is null || !Allowed() || _automation->GetFocusedElement(&current).Failed || current is null || !Allowed()) return;
                 var fresh = ReadScreenSecurityCore(current, originProcess, originWindow, Allowed);
-                if (fresh == security && Allowed()) result = fresh;
+                if (fresh != security || !Allowed()) return;
+                if (pointer is { } point)
+                {
+                    var hit = ReadPointerSecurity(point, originProcess, Allowed);
+                    if (hit is null || !Allowed() || ReadPointerSecurity(point, originProcess, Allowed) != hit || !Allowed()) return;
+                    fresh = fresh with { RuntimeId = fresh.RuntimeId + "/point/" + hit.RuntimeId };
+                }
+                if (Allowed()) result = fresh;
             }
             finally { if (current is not null) current->Release(); if (element is not null) element->Release(); }
         });
         Interlocked.Exchange(ref live, 0); return complete ? result : null;
     }
-    private static ReadingScreenSecurity? ReadScreenSecurityCore(IUIAutomationElement* element, int originProcess, nint originWindow, Func<bool> allowed)
+    private ReadingScreenSecurity? ReadPointerSecurity(System.Drawing.Point point, int pid, Func<bool> allowed)
+    {
+        IUIAutomationElement* element = null;
+        try
+        {
+            if (!allowed() || _automation is null || _automation->ElementFromPoint(point, &element).Failed || element is null || !allowed()) return null;
+            nint pointedWindow = ReadingWindowTopology.PointWindow(pid, point);
+            if (pointedWindow == 0 || !allowed()) return null;
+            if (!PointerWindowAdmitted(element, pointedWindow, allowed)) return null;
+            var receipt = ReadScreenSecurityCore(element, pid, pointedWindow, allowed, windowAdmitted: true);
+            return receipt is not null
+                && ReadingNotSecurePath(element, receipt.ProcessId, allowed) && allowed()
+                && ReadingWindowTopology.PointWindow(pid, point) == pointedWindow ? receipt : null;
+        }
+        finally { if (element is not null) element->Release(); }
+    }
+    private bool PointerWindowAdmitted(IUIAutomationElement* element, nint window, Func<bool> allowed)
+    {
+        IUIAutomationTreeWalker* walker = null; IUIAutomationElement* current = null;
+        try
+        {
+            if (!allowed() || _automation->get_RawViewWalker(&walker).Failed || walker is null || !allowed()) return false;
+            element->AddRef(); current = element;
+            for (int depth = 0; depth < 7 && current is not null; depth++)
+            {
+                HWND handle = default;
+                if (!allowed() || current->get_CurrentNativeWindowHandle(&handle).Failed || !allowed()) return false;
+                if (handle.Value is not null) return ReadingWindowTopology.IsOriginDescendant(window, (nint)handle.Value) && allowed();
+                IUIAutomationElement* parent = null;
+                if (walker->GetParentElement(current, &parent).Failed || !allowed()) { if (parent is not null) parent->Release(); return false; }
+                current->Release(); current = parent;
+            }
+            return false;
+        }
+        finally { if (current is not null) current->Release(); if (walker is not null) walker->Release(); }
+    }
+    private static ReadingScreenSecurity? ReadScreenSecurityCore(IUIAutomationElement* element, int originProcess, nint originWindow, Func<bool> allowed, bool windowAdmitted = false)
     {
         int pid = 0; BOOL password = default;
         if (!allowed() || element->get_CurrentProcessId(&pid).Failed || pid <= 0 || !allowed()
             || element->get_CurrentIsPassword(&password).Failed || password || !allowed()) return null;
-        if (pid != originProcess)
+        if (pid != originProcess && !windowAdmitted)
         {
             // Browser providers can live in a child process. A real native descendant HWND may
             // establish that relationship; missing or unrelated evidence stays unavailable.

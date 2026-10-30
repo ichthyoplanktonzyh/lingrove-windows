@@ -49,7 +49,9 @@ now composes selection affordances, bounded context, pointer reading and restric
 local automation through the same Store, launch-time interface language and shared opt-in request history.
 The [explicit-region reading upgrade](READING_EXPLICIT_REGION_3B.md) removes the editable-field
 requirement for the screenshot command and retains origin-window/privacy evidence through local OCR.
-Remaining media variants, pointer/selection visual fallback and physical acceptance stay incomplete.
+The [pointer OCR upgrade](READING_POINTER_OCR_3B.md) connects explicit visual-first acquisition,
+one-frame spatial context and the strict UIA fallback. Selection visual enrichment, remaining media
+variants and physical acceptance stay incomplete.
 This is an implementation
 checkpoint with scoped automated/render evidence, not full native desktop parity.
 

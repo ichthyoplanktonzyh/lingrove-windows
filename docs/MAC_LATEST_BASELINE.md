@@ -112,7 +112,14 @@ the initial gap audit; its initial Windows gap descriptions are historical. Curr
   and routes all production ASCII/shortcut writes through the same acknowledged native transaction;
   all four final-head checks passed at `b6135301c0e1905286aeed91b9b0de49ad069b2a` before merge as
   `27f711e`. Physical host acceptance remains separate.
-- Remaining work includes pointer/selection visual OCR fallback, canonical custom review layouts,
+- #150 merged [project identity and Mac interface-resource integration](PROJECT_BRAND_INTERFACE_3B.md),
+  reusing approved Lingrove artwork and the original localization catalogs while keeping Cotabby
+  runtime/storage contracts. All four checks passed at `6763bc04001d3a6c29fda64b64b82e677a5256af`
+  before merge as `86f435b`. This is a presentation checkpoint; remaining language coverage stays open.
+- The [pointer OCR upgrade](READING_POINTER_OCR_3B.md) connects explicit visual-first reading,
+  one-frame spatial/UTF-16 context and origin-guarded UIA fallback. Its final local/CI evidence is
+  tracked in the implementation PR; native desktop acceptance remains separate.
+- Remaining work includes selection visual enrichment, canonical custom review layouts,
   full interface-language coverage, native automatic language
   confidence, Apple's unavailable system dictionary and the explicitly documented media/native gaps.
   Internal components are not evidence that those flows are complete. Existing older libraries

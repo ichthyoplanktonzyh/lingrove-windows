@@ -55,7 +55,7 @@ internal sealed class LearningLocalModels : StackPanel
         _template.Styled("Combo");
         _contextTokens.Styled("Input");
         _template.ItemsSource = LearningChatTemplatePolicy.AvailableFor(role)
-            .Select(template => new TemplateChoice(template, template.Label())).ToArray();
+            .Select(template => new TemplateChoice(template, InterfaceText.Get(template.Label(), "Learning"))).ToArray();
         _template.DisplayMemberPath = "Label";
         _template.SelectedValuePath = "Value";
         _installed.SelectedValuePath = "Value";
@@ -64,9 +64,9 @@ internal sealed class LearningLocalModels : StackPanel
             Setters = { new Setter(IsEnabledProperty, new Binding(nameof(ModelChoice.IsSelectable))) },
         };
 
-        Children.Add(SettingLine("Installed model", _installed, Ui.Button(InterfaceText.Get("Refresh", "Localizable"), RefreshInstalledAsync)));
+        Children.Add(SettingLine("Local model", _installed, Ui.Button(InterfaceText.Get("Refresh", "Localizable"), RefreshInstalledAsync)));
         Children.Add(SettingLine("Instruction template", _template));
-        Children.Add(SettingLine("Context tokens", _contextTokens));
+        Children.Add(SettingLine("Total context tokens", _contextTokens));
         if (role == LearningModelRole.Explanation)
         {
             _outputTokens.Styled("Input");
@@ -79,9 +79,9 @@ internal sealed class LearningLocalModels : StackPanel
         Children.Add(Ui.Button(InterfaceText.Get("Manage models", "Localizable"), OpenModelManager));
 
         var deferredNote = Ui.Text(
-            role == LearningModelRole.Translation
+            InterfaceText.Get(role == LearningModelRole.Translation
                 ? "Local translation runs on the CPU and uses each model family's recommended generation settings. Use Add Your Own to import a GGUF into this folder."
-                : "AI explanation uses its own general instruction model. It loads on request and releases memory after a minute of inactivity.",
+                : "AI explanation uses its own general instruction model. It loads on request and releases memory after a minute of inactivity."),
             "Caption");
         deferredNote.TextWrapping = TextWrapping.Wrap;
         deferredNote.Margin = new Thickness(0, 4, 0, 8);
@@ -125,7 +125,7 @@ internal sealed class LearningLocalModels : StackPanel
 
     private static FrameworkElement SettingLine(string title, params FrameworkElement[] controls)
     {
-        var label = Ui.Text(title, "RowLabel");
+        var label = Ui.Text(InterfaceText.Get(title), "RowLabel");
         label.Width = 140;
         label.VerticalAlignment = VerticalAlignment.Center;
         var row = new StackPanel { Orientation = Orientation.Horizontal, Children = { label } };
@@ -146,7 +146,7 @@ internal sealed class LearningLocalModels : StackPanel
         foreach (var model in Catalog)
         {
             var status = Ui.Text("", "Caption");
-            _transferStatuses.Bind(model.Filename, status, $"{model.ApproximateSizeInGigabytes:0.00} GB");
+            _transferStatuses.Bind(model.Filename, status, InterfaceText.Format("{0:F2} GB", model.ApproximateSizeInGigabytes));
             status.TextWrapping = TextWrapping.Wrap;
             var get = Ui.Button(InterfaceText.Get("Get", "Localizable"), () => _ = DownloadModelAsync(model));
             var title = new TextBlock { Text = model.DisplayName, FontWeight = FontWeights.SemiBold };
@@ -176,7 +176,7 @@ internal sealed class LearningLocalModels : StackPanel
             _installed.Items.Clear();
             // Mac's empty picker sentinel clears only the role selection, retaining installed
             // files and per-model preferences for later reuse.
-            _installed.Items.Add(new ModelChoice("", "Choose a model", true));
+            _installed.Items.Add(new ModelChoice("", InterfaceText.Get("Choose a model"), true));
             var modelName = SelectedModel;
             if (!string.IsNullOrEmpty(modelName)
                 && !_models.Any(model => string.Equals(model.Filename, modelName, StringComparison.OrdinalIgnoreCase)))
@@ -303,7 +303,7 @@ internal sealed class LearningLocalModels : StackPanel
         {
             _models = models.ToArray();
             UpdateControls();
-            _installedStatus.Text = $"{_models.Length} installed GGUF model(s). Weights load only on request.";
+            _installedStatus.Text = InterfaceText.Format("Installed GGUF models: {0:N0}. Weights load only on request.", _models.Length);
         }, () => _installedStatus.Text = InterfaceText.Get("The installed learning models could not be listed.", "Localizable"), _lifetime.Token);
     }
 
@@ -324,10 +324,10 @@ internal sealed class LearningLocalModels : StackPanel
         {
             if (_lifetime.IsCancellationRequested || !ReferenceEquals(_activeTransfer, transfer)) return;
             SetTransferStatus(model, update.Completed
-                ? "Installed and checksum verified."
+                ? InterfaceText.Get("Installed and checksum verified.")
                 : update.TotalBytes is > 0
-                    ? $"Downloading · {update.BytesDownloaded * 100 / update.TotalBytes.Value}%"
-                    : $"Downloading · {update.BytesDownloaded / 1_000_000:N0} MB");
+                    ? InterfaceText.Format("Downloading · {0}%", update.BytesDownloaded * 100 / update.TotalBytes.Value)
+                    : InterfaceText.Format("Downloading · {0:N0} MB", update.BytesDownloaded / 1_000_000));
         });
 
         try
@@ -335,18 +335,18 @@ internal sealed class LearningLocalModels : StackPanel
             await _context.Host.LearningModels.DownloadAsync(model, progress, transfer.Token, () =>
                 Dispatcher.InvokeAsync(() => _context.Host.AcknowledgeModelMetadata(settings => { settings.RecordLocalModelTask(model.Filename, ModelTask); settings.RecordLocalModelSource(model.Filename, model.DownloadUrl); })).Task);
             if (_lifetime.IsCancellationRequested) return;
-            SetTransferStatus(model, "Installed and checksum verified.");
+            SetTransferStatus(model, InterfaceText.Get("Installed and checksum verified."));
             RefreshInstalledAsync();
             _managerWindow?.Refresh();
         }
         catch (OperationCanceledException) when (transfer.IsCancellationRequested)
         {
-            if (!_lifetime.IsCancellationRequested) SetTransferStatus(model, "Download cancelled.");
+            if (!_lifetime.IsCancellationRequested) SetTransferStatus(model, InterfaceText.Get("Download cancelled."));
         }
         catch (Exception)
         {
             if (!_lifetime.IsCancellationRequested)
-                SetTransferStatus(model, "The model could not be downloaded or verified. Retry after checking the connection and free disk space.");
+                SetTransferStatus(model, InterfaceText.Get("The model could not be downloaded or verified. Retry after checking the connection and free disk space."));
         }
         finally
         {
@@ -361,8 +361,8 @@ internal sealed class LearningLocalModels : StackPanel
         if (_busy || _lifetime.IsCancellationRequested) return;
         var dialog = new OpenFileDialog
         {
-            Title = "Add Learning GGUF Models",
-            Filter = "GGUF models (*.gguf)|*.gguf",
+            Title = InterfaceText.Get("Add GGUF Models"),
+            Filter = InterfaceText.Get("GGUF models (*.gguf)") + "|*.gguf",
             Multiselect = true,
             CheckFileExists = true,
         };
@@ -390,7 +390,7 @@ internal sealed class LearningLocalModels : StackPanel
             var result = await _context.Host.LearningModels.ImportAsync(accepted, transfer.Token,
                 filename => Dispatcher.InvokeAsync(() => _context.Host.AcknowledgeModelMetadata(settings => settings.ClearLocalModelSource(filename))).Task);
             if (_lifetime.IsCancellationRequested) return;
-            _installedStatus.Text = $"{(result.Cancelled ? "Import cancelled. " : "")}Imported {result.Imported}; skipped {result.Skipped}; failed {result.Failed}; incompatible {files.Length - accepted.Length}.";
+            _installedStatus.Text = (result.Cancelled ? InterfaceText.Get("Import cancelled.") + " " : "") + InterfaceText.Format("Imported {0:N0}; skipped {1:N0}; failed {2:N0}; incompatible {3:N0}.", result.Imported, result.Skipped, result.Failed, files.Length - accepted.Length);
             _managerWindow?.Report(_installedStatus.Text);
             RefreshInstalledAsync();
             _managerWindow?.Refresh();

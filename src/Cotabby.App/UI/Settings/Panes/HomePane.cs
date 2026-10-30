@@ -22,7 +22,7 @@ internal static class HomePane
         {
             var (ready, text) = Status(context.Host);
             status.Set(ready, text);
-            words.Text = $"{context.Host.Coordinator.Metrics.WordsAccepted:N0}";
+            words.Text = context.Host.Coordinator.Metrics.WordsAccepted.ToString("N0", InterfaceText.Culture);
         });
 
         return new SettingsPane("Home", "\uE80F", "Overview and status",
@@ -59,7 +59,7 @@ internal static class HomePane
         {
             var icon = Ui.Icon(pane.Glyph, 16).Themed(TextBlock.ForegroundProperty, "AccentBrush");
             icon.Width = 28;
-            var text = new StackPanel { Children = { Ui.Text(pane.Title), Ui.Text(pane.Summary, "Caption") } };
+            var text = new StackPanel { Children = { Ui.Text(InterfaceText.Get(pane.Title)), Ui.Text(InterfaceText.Get(pane.Summary), "Caption") } };
             var link = new Border
             {
                 CornerRadius = new CornerRadius(8),
@@ -102,10 +102,10 @@ internal static class HomePane
     {
         foreach (var group in MacroReferenceCatalog.Build(MacroEngine.Standard()))
         {
-            var title = new TextBlock { Text = group.Title, FontSize = 13, FontWeight = FontWeights.SemiBold };
+            var title = new TextBlock { Text = InterfaceText.Get(group.Title), FontSize = 13, FontWeight = FontWeights.SemiBold };
             title.Margin = new Thickness(0, 10, 0, 2);
             body.Children.Add(title);
-            body.Children.Add(Ui.Text(group.Summary, "Caption"));
+            body.Children.Add(Ui.Text(InterfaceText.Get(group.Summary), "Caption"));
             foreach (var example in group.Examples)
             {
                 var input = Ui.Text("/" + example.Input, "Mono");

@@ -40,6 +40,9 @@ none establishes complete native parity. The
 [reading/CLI/interface composition](docs/WINDOWS_READING_CLI_INTERFACE_CHECKPOINT_20261030.md)
 shares this Store, launches one private mailbox, freezes interface language before window construction
 and drains content-free history after task owners. The
+[language coverage upgrade](docs/INTERFACE_LANGUAGE_COVERAGE_3B.md) adds the complete 15-locale
+Windows supplement, native quantity forms and current-path presentation while keeping user and
+provider values outside interface lookups. Additional authored copy and search behavior remain tracked. The
 [explicit-region upgrade](docs/READING_EXPLICIT_REGION_3B.md) adds origin-window screenshot acquisition
 without an editable-field requirement. The [pointer OCR upgrade](docs/READING_POINTER_OCR_3B.md)
 adds an explicit OCR-first pointer route with strict UIA fallback. The

@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Text;
 using System.Windows.Controls;
 using Cotabby.Core.Models;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI.Settings.Panes;
 
@@ -10,8 +11,8 @@ internal static class ModelDisplayText
 {
     private const int MaximumScalars = 256;
     internal static string Name(string filename) => LocalModelCatalog.Descriptor(filename)?.Name ?? Safe(filename);
-    internal static string Unavailable(string filename, LocalModelTask task) => Name(filename) +
-        (LocalModelTaskPolicy.Supports(filename, task) ? " (file unavailable)" : " · not compatible with this task");
+    internal static string Unavailable(string filename, LocalModelTask task) => InterfaceText.Format(
+        LocalModelTaskPolicy.Supports(filename, task) ? "{0} (file unavailable)" : "{0} · not compatible with this task", Name(filename));
     internal static string Safe(string? value, int maximumScalars = MaximumScalars, int maximumUtf16 = 512)
     {
         if (string.IsNullOrEmpty(value)) return "";
@@ -71,5 +72,5 @@ internal sealed class ModelTransferStatusStore
         _statuses[filename] = text;
         if (_labels.TryGetValue(filename, out var label)) label.Text = text;
     }
-    internal void Start(string filename) => Set(filename, Starting);
+    internal void Start(string filename) => Set(filename, InterfaceText.Get(Starting));
 }

@@ -36,9 +36,10 @@ arguments are inserted; an argument containing braces, a former product name or 
 is not interpreted as another template or translated.
 
 Sixteen review-specific Windows supplement keys have English plus all fourteen other supported
-interface locales. The supplement now contains 134 keys; the remaining 118 keys retain their
-earlier English/Simplified-Chinese/Traditional-Chinese coverage. The three upstream catalogs are
-unchanged. This is review presentation progress, not complete all-window internationalization.
+interface locales. At this checkpoint the supplement contained 134 keys, with the remaining 118
+still partial. The [subsequent language upgrade](INTERFACE_LANGUAGE_COVERAGE_3B.md) completes that
+language pack and connects further UI/quantity states. The three upstream catalogs remain
+unchanged; all-window internationalization is still independently tracked.
 
 The view retains the notebook's Segoe UI Variable/Segoe UI typography, shared theme, native WPF
 chrome, scroll/resize behavior, keyboard/default/cancel commands and launch-time RTL direction.

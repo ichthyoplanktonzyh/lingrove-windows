@@ -34,6 +34,8 @@ internal sealed class ReadingRegionPicker : Window, IDisposable
         _canvas.Children.Add(_shade); _canvas.Children.Add(_selection);
         _canvas.SizeChanged += (_, _) => UpdateShade();
         var instructions = new Border { Background = new SolidColorBrush(Color.FromArgb(220, 25, 25, 25)),
+            // Keep the physical-pixel canvas in LTR coordinates; only the instruction reads RTL.
+            FlowDirection = InterfaceText.Locale == "ar" ? FlowDirection.RightToLeft : FlowDirection.LeftToRight,
             CornerRadius = new CornerRadius(8), Padding = new Thickness(12, 8, 12, 8), IsHitTestVisible = false,
             Child = new TextBlock { Text = InterfaceText.Get("Select a region to read · Esc or right-click to cancel\nWindows OCR runs on this device; screen pixels are not sent to a model.", "Learning"),
                 Foreground = Brushes.White, FontFamily = new FontFamily("Segoe UI Variable, Segoe UI"), FontSize = 13, TextWrapping = TextWrapping.Wrap } };

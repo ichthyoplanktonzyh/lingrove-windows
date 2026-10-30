@@ -44,7 +44,7 @@ internal sealed class Rows(SettingsContext context)
 
     public static SettingsRow Note(string text)
     {
-        var note = Ui.Text(text, "Caption");
+        var note = Ui.Text(InterfaceText.Get(text), "Caption");
         note.Margin = new Thickness(0, 12, 0, 12);
         return Custom(note);
     }

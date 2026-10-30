@@ -88,8 +88,8 @@ internal sealed class ModelManagementView : DockPanel
         var detail = new Expander { Header = InterfaceText.Get("Model details"), FontSize = 11, Foreground = SystemColors.GrayTextBrush };
         var descriptor = LocalModelCatalog.Descriptor(model.Filename);
         var lines = new List<string> { ModelDisplayText.Safe(model.Filename) };
-        if (descriptor is not null) lines.Add("Quantization: " + descriptor.Quantization);
-        if (!string.IsNullOrEmpty(source)) lines.Add("Model source: " + ModelDisplayText.Safe(source));
+        if (descriptor is not null) lines.Add(InterfaceText.Get("Quantization") + ": " + descriptor.Quantization);
+        if (!string.IsNullOrEmpty(source)) lines.Add(InterfaceText.Get("Model source") + ": " + ModelDisplayText.Safe(source));
         if (!string.IsNullOrEmpty(directory)) lines.Add(ModelDisplayText.Safe(System.IO.Path.Combine(directory, model.Filename)));
         detail.Content = new TextBlock { Text = string.Join("\n", lines), TextWrapping = TextWrapping.Wrap, FontFamily = new FontFamily("Consolas") };
         details.Children.Add(detail);
@@ -101,16 +101,16 @@ internal sealed class ModelManagementView : DockPanel
         if (!selected && !inUse && delete is not null)
         {
             var remove = ActionButton("Delete", delete);
-            AutomationProperties.SetName(remove, "Delete " + ModelDisplayText.Safe(model.Filename));
+            AutomationProperties.SetName(remove, InterfaceText.Get("Delete") + " · " + ModelDisplayText.Safe(model.Filename));
             trailing = new StackPanel { Orientation = Orientation.Horizontal, Children = { trailing, remove } };
         }
-        AutomationProperties.SetName(trailing, selected ? "Selected" : inUse ? "In Use" : actionLabel + " " + ModelDisplayText.Safe(model.Filename));
+        AutomationProperties.SetName(trailing, selected ? InterfaceText.Get("Selected") : inUse ? InterfaceText.Get("In Use") : InterfaceText.Get(actionLabel) + " · " + ModelDisplayText.Safe(model.Filename));
         DockPanel.SetDock(trailing, Dock.Right); row.Children.Add(trailing); row.Children.Add(details);
         return row;
     }
     private static Button ActionButton(string text, Action action)
     {
-        var button = new Button { Content = text, Margin = new Thickness(0, 0, 8, 0), Padding = new Thickness(10, 4, 10, 4) };
+        var button = new Button { Content = InterfaceText.Get(text), Margin = new Thickness(0, 0, 8, 0), Padding = new Thickness(10, 4, 10, 4) };
         button.Click += (_, _) => action(); return button;
     }
 }
@@ -188,7 +188,7 @@ internal sealed class ModelManagementWindow : Window
     private async void ImportCompletion()
     {
         if (_importing) return;
-        var dialog = new OpenFileDialog { Title = "Add GGUF Models", Filter = "GGUF models (*.gguf)|*.gguf", Multiselect = true, CheckFileExists = true };
+        var dialog = new OpenFileDialog { Title = InterfaceText.Get("Add GGUF Models"), Filter = InterfaceText.Get("GGUF models (*.gguf)") + "|*.gguf", Multiselect = true, CheckFileExists = true };
         if (dialog.ShowDialog(this) != true) return;
         var accepted = dialog.FileNames.Where(path => LocalModelTaskPolicy.Supports(Path.GetFileName(path), _task)).ToArray();
         if (accepted.Length == 0) { Report("This model is not compatible with this task. Choose another model."); return; }

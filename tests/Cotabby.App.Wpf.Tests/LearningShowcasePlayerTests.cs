@@ -21,6 +21,7 @@ public sealed class LearningShowcasePlayerTests(WpfDispatcher dispatcher)
         host.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("/Cotabby;component/UI/Theme.xaml", UriKind.Relative) });
         WindowTheme.ApplyPalette(host.Resources, dark);
         host.SetResourceReference(Control.BackgroundProperty, "WindowBg"); host.SetResourceReference(Control.ForegroundProperty, "TextPrimary");
+        ((ScrollViewer)host.Content).SetResourceReference(Control.BackgroundProperty, "WindowBg");
         host.Show();
         try
         {
@@ -46,6 +47,10 @@ public sealed class LearningShowcasePlayerTests(WpfDispatcher dispatcher)
                     }
                 }
             }
+            host.Hide(); await player.Retirement;
+            Assert.Null(player.SceneContent);
+            host.Show(); await player.Mounted; await player.StageWork;
+            Assert.NotNull(player.SceneContent);
         }
         finally { host.Close(); await player.DisposeAsync(); }
     });

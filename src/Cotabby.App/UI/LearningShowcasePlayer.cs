@@ -74,9 +74,13 @@ internal sealed class LearningShowcasePlayer : StackPanel, IAsyncDisposable
             MouseEnter += (_, _) => { _playback.Hover(true, !SystemParameters.ClientAreaAnimation); RefreshControls(); };
             MouseLeave += (_, _) => { _playback.Hover(false, !SystemParameters.ClientAreaAnimation); RefreshControls(); };
         }
-        Loaded += (_, _) => { if (!_disposed) { MountedPlayers.Add(this); Mounted = MountAsync(); } };
+        Loaded += (_, _) => { if (!_disposed && !_mounted) { MountedPlayers.Add(this); Mounted = MountAsync(); } };
         Unloaded += (_, _) => Unmount();
-        IsVisibleChanged += (_, _) => { if (!IsVisible) { _playback.Pause(); RefreshControls(); } };
+        IsVisibleChanged += (_, _) =>
+        {
+            if (!IsVisible) { Unmount(); RefreshControls(); }
+            else if (IsLoaded && !_disposed && !_mounted) { MountedPlayers.Add(this); Mounted = MountAsync(); }
+        };
         RefreshControls();
     }
 

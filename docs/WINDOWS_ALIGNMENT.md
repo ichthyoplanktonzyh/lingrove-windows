@@ -40,6 +40,14 @@ maintainer explicitly changes this instruction. The team table below records the
 not the current execution model. Further work uses direct source review and executable validation
 by the primary, retaining the existing required CI and final physical acceptance boundaries.
 
+The maintainer reiterated on 2026-10-30 that further delivery must use complete functional blocks,
+including behavior, UI, production entries/settings and regression validation. Do not split the
+remaining gaps into small standalone library deliveries. The installed .NET team skills are
+`csharp-expert`, `msbuild`, `dotnet-pinvoke` and `test-anti-patterns`, pinned to upstream
+`dotnet/skills` commit `95e7d0cb7994d47b5789baa68e13f7a2f348b956`. Load only the skill appropriate
+to the current work; they do not authorize delegates, a UI-framework migration, architecture
+replacement or changes to the committed Mac behavior contract.
+
 The primary agent orchestrates three implementation delegates, all using `gpt-6.1-terra` with
 `high` reasoning for subsequent dispatches, as clarified by the maintainer on 2026-10-29. Existing
 running assignments may finish their checkpoint before the next dispatch adopts this setting.

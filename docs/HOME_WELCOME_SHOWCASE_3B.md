@@ -91,3 +91,17 @@ Physical mouse/keyboard, reduced-motion setting changes while mounted, mixed DPI
 actual SAPI playback/export, and final Word/Chrome/Codex acceptance remain unverified. These checks
 use synthetic/sample data, fake Anki and silent speech, with no user editor, clipboard, screenshot,
 model, live HTTP request or production notebook. No installer, model download or release is created.
+
+Final production code `e6363631b4e1e1d209df6bc5c8c4d02819935870` compiled in Release with zero
+warnings/errors. With `LINGROVE_TEST_SYSTEM_SPEECH=0` and `COTABBY_CLIPBOARD_TEST=0`, the complete
+suites ran sequentially and passed without skips: Core 5,079; App 1,278; Inference 750; WPF 1,058
+(3m49s). Commands were `dotnet build Cotabby.sln --configuration Release --no-restore`,
+`dotnet test tests/<suite>/<suite>.csproj --configuration Release --no-build --no-restore` for
+Core/App/Inference, and `./scripts/test-wpf-dev.ps1 -NoBuild -NoRestore` for the desktop lease.
+The rendering harness supplies the window background to the captured client control so transparent
+areas retain the actual light/dark backdrop; this is component rendering, not desktop capture.
+Final review also found that collapsing a retained Home pane does not necessarily raise WPF
+Unloaded. Visibility retirement now disposes the sample scope as well as stopping autoplay, and
+showing it again mounts only after retirement completes. The seven-scene/window group passed 3/3
+again with explicit hide/remount and both welcome-close paths. This follow-up changes no model,
+notebook or transport policy; the final PR's four required CI jobs still gate merge.

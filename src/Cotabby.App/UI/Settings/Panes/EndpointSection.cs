@@ -82,7 +82,7 @@ internal sealed class EndpointSection
         {
             var settings = _context.Settings;
             useDefault.IsEnabled = settings.EndpointBaseUrl != OpenAICompatibleEndpointConfiguration.DefaultBaseUrl;
-            warning.Text = Validate(out var configuration) ?? configuration?.PrivacyWarning ?? "";
+            warning.Text = Validate(out var configuration) ?? (configuration is null ? null : EndpointInterfaceText.Privacy(configuration.HostScope)) ?? "";
             warning.Visibility = warning.Text.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
         });
 
@@ -140,7 +140,7 @@ internal sealed class EndpointSection
         catch (OpenAICompatibleEndpointException ex)
         {
             configuration = null;
-            return ex.Message;
+            return EndpointInterfaceText.Error(ex.Error);
         }
     }
 

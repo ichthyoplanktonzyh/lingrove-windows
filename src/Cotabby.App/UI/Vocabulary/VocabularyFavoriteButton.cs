@@ -34,7 +34,7 @@ public sealed class VocabularyFavoriteButton : Button
         Width = Height = 28; Padding = new Thickness(4); Focusable = false; Background = Brushes.Transparent; BorderThickness = new Thickness(0);
         Visibility = Visibility.Collapsed; Click += OnClick;
         Unloaded += (_, _) => Clear();
-        AutomationProperties.SetName(this, "Save to vocabulary");
+        AutomationProperties.SetName(this, InterfaceText.Get("Save to vocabulary", "Vocabulary"));
     }
     internal void Bind(IWritingVocabularyStore store, VocabularyCapture capture, Func<bool> canAct, Func<Task<bool>>? preflight = null)
     {
@@ -70,8 +70,8 @@ public sealed class VocabularyFavoriteButton : Button
         IsEnabled = _store.IsLoaded && !pending && _preflightBinding != _binding && Current(_binding);
         Content = pending ? new ProgressBar { Width = 18, Height = 3, IsIndeterminate = true } : Icon(saved);
         ToolTip = _failure ?? (!_store.IsLoaded ? _store.ErrorMessage ?? InterfaceText.Get("Loading vocabulary…", "Vocabulary") : saved ? ToggleSavedOnClick ? InterfaceText.Get("Remove this saved usage", "Vocabulary") : InterfaceText.Get("Saved · Show actions", "Vocabulary") : InterfaceText.Get("Save to vocabulary", "Vocabulary"));
-        AutomationProperties.SetName(this, saved && ToggleSavedOnClick ? "Remove this saved usage" : "Save to vocabulary");
-        AutomationProperties.SetItemStatus(this, !_store.IsLoaded ? (_store.ErrorMessage is null ? "Loading…" : "Unavailable") : pending ? "Saving…" : saved ? "Saved" : "Not saved");
+        AutomationProperties.SetName(this, InterfaceText.Get(saved && ToggleSavedOnClick ? "Remove this saved usage" : "Save to vocabulary", "Vocabulary"));
+        AutomationProperties.SetItemStatus(this, InterfaceText.Get(!_store.IsLoaded ? (_store.ErrorMessage is null ? "Loading…" : "Unavailable") : pending ? "Saving…" : saved ? "Saved" : "Not saved", "Vocabulary"));
         var detail = _failure ?? (!_store.IsLoaded ? _store.ErrorMessage : null);
         AutomationProperties.SetHelpText(this, detail ?? ""); FailureChanged?.Invoke(detail);
     }

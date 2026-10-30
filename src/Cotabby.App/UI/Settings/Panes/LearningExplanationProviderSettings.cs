@@ -49,17 +49,16 @@ internal sealed class LearningExplanationProviderSettings : StackPanel
         _current = current; _change = change; _run = run; _fetch = fetch; _saveKey = saveKey; _keyChanged = keyChanged; _local = local;
         Backend.Styled("Combo"); Models.Styled("Combo"); Key.Styled("PasswordInput");
         foreach (var box in new[] { Url, Model, ContextTokens, OutputTokens, Temperature, TopP }) box.Styled("Input");
-        AutomationProperties.SetName(Backend, "Explanation provider"); AutomationProperties.SetName(Url, "Explanation server URL");
-        AutomationProperties.SetName(Model, "Explanation model identifier"); AutomationProperties.SetName(Models, "Discovered explanation models");
-        AutomationProperties.SetName(Key, "Explanation API key"); AutomationProperties.SetName(ContextTokens, "Explanation context tokens");
-        AutomationProperties.SetName(OutputTokens, "Explanation output tokens"); AutomationProperties.SetName(Temperature, "Explanation temperature"); AutomationProperties.SetName(TopP, "Explanation top P");
-        Backend.ItemsSource = new[] { "Local model", "OpenAI-compatible endpoint" }; Backend.SelectionChanged += (_, _) =>
+        void Name(DependencyObject control, string label) => AutomationProperties.SetName(control, InterfaceText.Get("AI explanation", "Learning") + " · " + InterfaceText.Get(label));
+        Name(Backend, "Run using"); Name(Url, "Server URL"); Name(Model, "Endpoint model identifier"); Name(Models, "Models found on the server");
+        Name(Key, "API Key"); Name(ContextTokens, "Context budget"); Name(OutputTokens, "Output length"); Name(Temperature, "Temperature"); Name(TopP, "Top P");
+        Backend.ItemsSource = new[] { InterfaceText.Get("Local model"), InterfaceText.Get("OpenAI-compatible endpoint") }; Backend.SelectionChanged += (_, _) =>
         { if (!_updating && !_current().LearningExplanationPowerSwitching && Backend.SelectedIndex >= 0) Mutate(s => s.LearningExplanationBackend = Backend.SelectedIndex == 1 ? LearningModelBackend.Endpoint : LearningModelBackend.Local); };
         RefreshModels = Ui.Button(InterfaceText.Get("Test / Refresh models", "Localizable"), BeginRefresh);
         Children.Add(Line("Run using", Backend)); Children.Add(Destination); Children.Add(_local); Children.Add(_endpoint);
         _endpoint.Children.Add(Line("Server URL", Url)); _endpoint.Children.Add(Line("Model", Model, Models));
         _endpoint.Children.Add(Line("Connection", RefreshModels)); _endpoint.Children.Add(Status);
-        _endpoint.Children.Add(new TextBlock { Text = InterfaceText.Get("Local is the default. Selecting this endpoint sends the selected text or expression description, bounded context and requested languages to the destination shown above.", "Localizable"), TextWrapping = TextWrapping.Wrap, Margin = new(0, 6, 0, 6) });
+        _endpoint.Children.Add(new TextBlock { Text = InterfaceText.Get("With this endpoint, the service receives the chosen text or expression description, bounded surrounding text, and the requested languages for explanation or expression assistance.", "Learning"), TextWrapping = TextWrapping.Wrap, Margin = new(0, 6, 0, 6) });
         _endpoint.Children.Add(Line("API key", Key, Ui.Button(InterfaceText.Get("Save", "Localizable"), () => StoreKey(Key.Password)), Ui.Button(InterfaceText.Get("Clear", "Localizable"), () => StoreKey(null))));
         _endpoint.Children.Add(Line("Context tokens", ContextTokens)); _endpoint.Children.Add(Line("Output tokens", OutputTokens));
         _endpoint.Children.Add(Line("Temperature", Temperature)); _endpoint.Children.Add(Line("Top P", TopP));
@@ -78,7 +77,7 @@ internal sealed class LearningExplanationProviderSettings : StackPanel
         var row = new Grid { Margin = new(0, 4, 0, 4) };
         row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(140) });
         row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-        row.Children.Add(new TextBlock { Text = label, VerticalAlignment = VerticalAlignment.Top });
+        row.Children.Add(new TextBlock { Text = InterfaceText.Get(label), VerticalAlignment = VerticalAlignment.Top });
         var panel = new WrapPanel { Orientation = Orientation.Horizontal }; Grid.SetColumn(panel, 1);
         foreach (var value in values) { value.Margin = new(0, 0, 6, 4); panel.Children.Add(value); }
         row.Children.Add(panel); return row;
@@ -129,8 +128,8 @@ internal sealed class LearningExplanationProviderSettings : StackPanel
             Model.IsEnabled = Models.IsEnabled = !settings.LearningExplanationPowerSwitching;
             _local.Visibility = endpoint ? Visibility.Collapsed : Visibility.Visible;
             _endpoint.Visibility = endpoint ? Visibility.Visible : Visibility.Collapsed;
-            Destination.Text = endpoint ? "Explanation destination: " + DestinationUrl(snapshot) + " · " + (string.IsNullOrWhiteSpace(snapshot.EndpointModel) ? "No model selected" : snapshot.EndpointModel)
-                : "Explanation destination: local model · " + (string.IsNullOrWhiteSpace(snapshot.LocalModel) ? "No model selected" : snapshot.LocalModel);
+            // Inspecting an address before choosing a model does not admit generation.
+            Destination.Text = LearningModelDestinationText.Explanation(snapshot, allowEmptyModel: true);
             Set(Url, settings.LearningExplanationEndpointBaseUrl); Set(Model, snapshot.EndpointModel);
             Set(ContextTokens, settings.EffectiveLearningExplanationEndpointContextTokens.ToString(CultureInfo.InvariantCulture));
             var generation = settings.EffectiveLearningExplanationEndpointGenerationProfile;
@@ -139,16 +138,6 @@ internal sealed class LearningExplanationProviderSettings : StackPanel
             Set(TopP, generation.Sampling.TopP?.ToString(CultureInfo.InvariantCulture) ?? "");
         }
         finally { _updating = false; }
-    }
-    private static string DestinationUrl(LearningModelSnapshot snapshot)
-    {
-        try
-        {
-            var endpoint = new OpenAICompatibleEndpointConfiguration(snapshot.BaseUrl, snapshot.EndpointModel, OpenAICompatibleApiMode.ChatCompletions);
-            string scope = endpoint.HostScope switch { OpenAICompatibleHostScope.Loopback => "this PC", OpenAICompatibleHostScope.LocalNetwork => "local network", _ => "remote service" };
-            return endpoint.BaseUrl.AbsoluteUri + " (" + scope + ")";
-        }
-        catch { return "Invalid endpoint address"; }
     }
     private static void Set(TextBox box, string value) { if (!box.IsKeyboardFocusWithin) box.Text = value; }
     internal void StoreKey(string? value)

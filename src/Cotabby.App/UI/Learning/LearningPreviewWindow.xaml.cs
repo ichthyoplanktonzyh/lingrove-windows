@@ -162,18 +162,18 @@ public partial class LearningPreviewWindow : Window
         bool ready = state.Status == LearningPreviewStatus.Ready && state.Result is not null;
         string? visibleTranslation = ready ? state.Result : loading ? state.PartialResult : null;
         bool hasProvisionalText = loading && !string.IsNullOrEmpty(visibleTranslation);
-        TitleText.Text = "Sentence translation";
-        StatusText.Text = loading ? "Translating…" : ready ? "Translation preview" : "Could not translate";
+        TitleText.Text = InterfaceText.Get("Sentence translation");
+        StatusText.Text = InterfaceText.Get(loading ? "Translating…" : ready ? "Translation preview" : "Could not translate");
         Progress.Visibility = loading ? Visibility.Visible : Visibility.Collapsed;
         ResultSection.Visibility = ready || hasProvisionalText ? Visibility.Visible : Visibility.Collapsed;
-        ResultLabel.Text = hasProvisionalText ? "TRANSLATION · PREVIEW" : "TRANSLATION";
+        ResultLabel.Text = InterfaceText.Get(hasProvisionalText ? "TRANSLATION · PREVIEW" : "TRANSLATION");
         PresentTranslation(state, visibleTranslation ?? string.Empty);
         SourceText.FlowDirection = state.Options?.SourceLanguage == LearningLanguage.Arabic
             ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
         ErrorText.Text = ready ? "" : state.ErrorMessage ?? "";
         ErrorText.Visibility = ErrorText.Text.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
         RetryButton.Visibility = !loading && !ready && canRetry ? Visibility.Visible : Visibility.Collapsed;
-        CancelButton.Content = loading ? "Cancel" : "Close";
+        CancelButton.Content = InterfaceText.Get(loading ? "Cancel" : "Close");
 
         ApplyPresentation();
 
@@ -186,7 +186,7 @@ public partial class LearningPreviewWindow : Window
         ResultText.FlowDirection = state.Options?.TargetLanguage == LearningLanguage.Arabic
             ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
         ResultText.ToolTip = state.Status == LearningPreviewStatus.Ready && state.UnitStage == LearningUnitStage.Ready
-            ? "Double-click a word or expression to look it up" : null;
+            ? InterfaceText.Get("Double-click a word or expression to look it up") : null;
         if (state.Status != LearningPreviewStatus.Ready || state.UnitStage != LearningUnitStage.Ready)
         {
             ResultText.Inlines.Add(new Run(text));
@@ -242,8 +242,8 @@ public partial class LearningPreviewWindow : Window
         RetryButton.Visibility = Visibility.Collapsed;
         ErrorText.Text = message;
         ErrorText.Visibility = Visibility.Visible;
-        TitleText.Text = "Sentence preview unavailable";
-        StatusText.Text = "No text was sent.";
+        TitleText.Text = InterfaceText.Get("Sentence preview unavailable");
+        StatusText.Text = InterfaceText.Get("No text was sent.");
         CancelButton.Content = InterfaceText.Get("Close");
         ApplyPresentation();
         PresentAt(anchor);

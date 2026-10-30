@@ -64,17 +64,18 @@ internal static class LearningPane
                 rows.Toggle("Selection Icon", "Show a reading icon after selecting text in an allowed app.",
                     s => s.LearningReadingIconEnabled, (s, v) => s.LearningReadingIconEnabled = v)
                     .Tagged("selection icon reading"),
-                rows.Toggle("Read Text Under Pointer", "Use the pointer shortcut on a supported focused field in an allowed app.",
+                rows.Toggle("Read Text Under Pointer", "Point at a word and use the pointer translation shortcut.",
                     s => s.LearningReadingPointerEnabled, (s, v) => s.LearningReadingPointerEnabled = v)
                     .Tagged("pointer reading"),
-                rows.Toggle("Read Screen Region", "Choose a region inside a supported non-secure text field; uses local Windows OCR.",
+                rows.Toggle("Read Screen Region", "Choose a screen region to extract its text and translate it.",
                     s => s.LearningReadingScreenshotEnabled, (s, v) => s.LearningReadingScreenshotEnabled = v)
                     .Tagged("screen region screenshot OCR reading"),
                 rows.Combo("Reading Target Language", "Independent of the writing translation direction.", Languages,
                     s => s.LearningReadingTargetLanguage, (s, v) => s.LearningReadingTargetLanguage = v),
                 rows.Labeled("Reading Shortcuts and Apps", "Allow each reading source for an app and configure its shortcut in Shortcuts.",
                     Ui.Button(InterfaceText.Get("Configure shortcuts and apps", "Localizable"), () => context.Navigate(ShortcutsPane.Build(rows)))),
-                Rows.Note("Reading uses the translation or AI explanation provider below. The destination appears before each request. The bundled dictionary is also available. Windows OCR requires a supported language installed in Windows settings.")),
+                Rows.Note("Reading uses the providers below or the bundled dictionary. Each request shows its destination."),
+                Rows.Note("Windows OCR runs locally and requires a supported recognition language.")),
             new SettingsCard("Anki review",
                 new SettingsRow("Anki review", "Connection, default deck and saved card templates", review)
                     .Tagged("anki review ankiConnect address API key connection deck note type templates")),
@@ -177,9 +178,9 @@ internal static class LearningPane
         {
             var trigger = context.Settings.ExpressionAssistTrigger ?? "??";
             if (!input.IsKeyboardFocused) input.Text = trigger;
-            validation.Text = ExpressionAssistPolicy.TriggerError(trigger)
-                ?? (trigger.Any(character => character > 0x7F)
-                    ? InterfaceText.Get("This Windows version supports ASCII trigger symbols. Use ?? or configure the shortcut.", "Localizable") : "");
+            // The policy admits Unicode punctuation/symbol triggers. Native insertion still
+            // requires current range evidence; settings do not impose an obsolete ASCII gate.
+            validation.Text = ExpressionAssistPolicy.TriggerError(trigger) is { } error ? InterfaceText.Get(error, "Learning") : "";
             validation.Visibility = validation.Text.Length == 0 ? Visibility.Collapsed : Visibility.Visible;
         });
         return rows.Stacked("Trigger Symbols", "Type the symbols, then describe what you mean in the expression window.",
@@ -340,7 +341,7 @@ internal static class LearningPane
         }
 
         var note = Ui.Text(
-            InterfaceText.Get("With one source selected, translations use that direction. Multiple-source detection is not yet available on this Windows build; choose one source to translate.", "Localizable"),
+            InterfaceText.Get("Multiple-source detection is unavailable. Choose one source language."),
             "Caption");
         note.Margin = new Thickness(0, 8, 0, 0);
         note.TextWrapping = TextWrapping.Wrap;
@@ -350,7 +351,7 @@ internal static class LearningPane
         context.OnRefresh(() =>
         {
             var selected = context.Settings.EffectiveLearningSourceLanguages;
-            expander.Header = $"{selected.Count} selected";
+            expander.Header = InterfaceText.Format("{0:N0} selected", selected.Count);
             foreach (var (language, checkbox) in checkboxes)
             {
                 checkbox.IsChecked = selected.Contains(language);
@@ -359,7 +360,7 @@ internal static class LearningPane
         });
 
         return rows.Stacked("Source Languages",
-            "Choose one source language to translate. Multiple-source detection is not yet available on this Windows build.", expander)
+            "Multiple-source detection is unavailable. Choose one source language.", expander)
             .Tagged("source language languages detection automatic chinese english spanish french german japanese korean hindi arabic");
     }
 
@@ -414,46 +415,8 @@ internal static class LearningPane
         }
     }
 
-    private static void UpdateDestination(AppSettings settings, TextBlock destination)
-    {
-        try
-        {
-            string payload = settings.LearningReferenceMode == LearningReferenceMode.Draft
-                ? "The captured sentence, selected style and bounded draft reference are sent."
-                : "The captured sentence and selected style are sent.";
-            var configuration = new OpenAICompatibleEndpointConfiguration(
-                settings.LearningEndpointBaseUrl,
-                settings.LearningTranslationActiveSelection.EndpointModel,
-                OpenAICompatibleApiMode.ChatCompletions);
-            if (configuration.ModelName.Length == 0)
-            {
-                    destination.Text = settings.LearningTranslationActiveEndpointEnabled
-                    ? $"Learning requests will use {configuration.BaseUrl}; enter a model before translating. {payload}"
-                    : $"If enabled, learning requests will use {configuration.BaseUrl}. {payload}";
-            }
-            else
-            {
-                var scope = configuration.HostScope switch
-                {
-                    OpenAICompatibleHostScope.Loopback => "This endpoint is on this PC.",
-                    OpenAICompatibleHostScope.LocalNetwork => "This endpoint is on your local network.",
-                    _ => "This endpoint is outside this PC; the captured sentence will leave the device.",
-                };
-                destination.Text = $"Learning destination: {configuration.BaseUrl} · {configuration.ModelName}. {payload} {scope}";
-            }
-
-            if (settings.LearningTranslationActiveEndpointEnabled)
-            {
-                destination.Text += InterfaceText.Get(" The endpoint is opted in for translation requests.", "Localizable");
-            }
-            else
-            {
-                destination.Text += InterfaceText.Get(" Endpoint sending is off.", "Localizable");
-            }
-        }
-        catch (OpenAICompatibleEndpointException ex)
-        {
-            destination.Text = ex.Message + " Learning endpoint requests remain unavailable until this is fixed.";
-        }
-    }
+    private static void UpdateDestination(AppSettings settings, TextBlock destination) =>
+        destination.Text = Cotabby.App.Learning.LearningModelDestinationText.TranslationSettings(
+            settings.LearningEndpointBaseUrl, settings.LearningTranslationActiveSelection.EndpointModel,
+            settings.LearningTranslationActiveEndpointEnabled, settings.LearningReferenceMode == LearningReferenceMode.Draft);
 }

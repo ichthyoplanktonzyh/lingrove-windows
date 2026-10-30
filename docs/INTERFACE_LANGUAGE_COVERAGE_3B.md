@@ -102,3 +102,9 @@ keyboard opening, guarded target reveal and arrival pulse, with one additional s
 legacy XAML notebook is not the production notebook and its labels do not prove a current-path gap.
 Full internationalization and the wider alignment goal remain open. Word, Chrome, Codex and
 physical desktop/input/provider acceptance retain the consolidated maintainer gate.
+
+The subsequent [active learning state/destination module](LEARNING_INTERFACE_STATES_3B.md)
+connects live writing/dictionary/speech/favorite accessibility copy, typed endpoint warnings and
+current reading/trigger guidance. It brings the supplement to 244 keys in 15 locales while
+preserving the three original Mac catalogs and existing translations. Its remaining copy inventory
+and native acceptance limits stay explicit.

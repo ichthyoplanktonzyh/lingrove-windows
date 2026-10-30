@@ -4,6 +4,7 @@ using Cotabby.App.Settings;
 
 namespace Cotabby.App.Wpf.Tests;
 
+[Collection("WPF views")]
 public sealed class LearningModelDestinationTextTests
 {
     [Fact]

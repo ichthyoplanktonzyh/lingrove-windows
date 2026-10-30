@@ -140,6 +140,10 @@ the initial gap audit; its initial Windows gap descriptions are historical. Curr
 - The [settings-search module](SETTINGS_SEARCH_3B.md) adapts the 3b token/relevance/fuzzy rules,
   locale folding, keyboard opening, original-row reveal and guarded arrival state. Its additional
   unavailable-state key brings the supplement to 191 keys; broader copy coverage remains open.
+- [Active learning state and destination localization](LEARNING_INTERFACE_STATES_3B.md) connects
+  live writing/dictionary/favorite accessibility state, typed endpoint warnings, speech destination
+  formatting and current reading/trigger guidance. The supplement now has 244 keys in 15 locales;
+  remaining settings/auxiliary copy and native acceptance stay open.
 - Remaining work includes native host/provider acceptance,
   full interface-language coverage, native automatic language
   confidence, Apple's unavailable system dictionary and the explicitly documented media/native gaps.

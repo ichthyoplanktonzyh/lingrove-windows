@@ -135,6 +135,11 @@ the initial gap audit; its initial Windows gap descriptions are historical. Curr
 - The [interface language coverage](INTERFACE_LANGUAGE_COVERAGE_3B.md) completes the earlier
   partial language pack (190 supplement keys, 15 locales), reuses 32 finite Mac source-key adapters
   and connects settings/Home/model/notebook labels, native count forms and raw-value guards.
+- #155 merged that interface-language checkpoint after all four checks passed at
+  `f176fea03b9c5aa73a4ddc1035371c3c606456be`, as `3d81676`.
+- The [settings-search module](SETTINGS_SEARCH_3B.md) adapts the 3b token/relevance/fuzzy rules,
+  locale folding, keyboard opening, original-row reveal and guarded arrival state. Its additional
+  unavailable-state key brings the supplement to 191 keys; broader copy coverage remains open.
 - Remaining work includes native host/provider acceptance,
   full interface-language coverage, native automatic language
   confidence, Apple's unavailable system dictionary and the explicitly documented media/native gaps.

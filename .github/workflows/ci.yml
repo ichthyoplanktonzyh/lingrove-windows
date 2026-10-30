@@ -196,8 +196,11 @@ jobs:
             Lingrove/Models/CLI/CLIProtocol.swift
             Lingrove/Models/CLI/CLICaptureModels.swift
             Lingrove/Support/Vocabulary/VocabularyCLIPlan.swift
+            Lingrove/Support/Settings/SettingsSearchRanker.swift
       - name: Compare CLI fingerprint, stable IDs and ranges with 3b Swift
         run: python3 scripts/verify-cli-3b-macos-parity.py --mac-repo .mac-cli-3b
+      - name: Compare settings search scoring and Foundation text with 3b Swift
+        run: python3 scripts/verify-settings-search-3b-macos-parity.py --mac-repo .mac-cli-3b
       - name: Read the frozen vocabulary reference independently of historical fixtures
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:

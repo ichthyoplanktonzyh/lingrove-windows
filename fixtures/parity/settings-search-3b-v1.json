@@ -1,0 +1,1038 @@
+{
+  "version": 1,
+  "macReference": "3b53402f2cbc196b0398d133177fd80006d165b2",
+  "sourceSha256": "6f026f198d36c343b048db7f51d0818143f7cfa4ab2f4dc8854e7dde6a17123b",
+  "cases": [
+    {
+      "id": "title-exact",
+      "locale": "en_US",
+      "query": "ghost",
+      "items": [
+        {
+          "id": "x",
+          "title": "Ghost",
+          "keywords": [],
+          "group": "",
+          "summary": ""
+        }
+      ],
+      "expected": [
+        {
+          "id": "x",
+          "score": 155
+        }
+      ]
+    },
+    {
+      "id": "title-prefix",
+      "locale": "en_US",
+      "query": "gho",
+      "items": [
+        {
+          "id": "x",
+          "title": "Ghost Text",
+          "keywords": [],
+          "group": "",
+          "summary": ""
+        }
+      ],
+      "expected": [
+        {
+          "id": "x",
+          "score": 105
+        }
+      ]
+    },
+    {
+      "id": "title-reverse",
+      "locale": "en_US",
+      "query": "ghosts",
+      "items": [
+        {
+          "id": "x",
+          "title": "Ghost",
+          "keywords": [],
+          "group": "",
+          "summary": ""
+        }
+      ],
+      "expected": [
+        {
+          "id": "x",
+          "score": 105
+        }
+      ]
+    },
+    {
+      "id": "word-prefix",
+      "locale": "en_US",
+      "query": "text",
+      "items": [
+        {
+          "id": "x",
+          "title": "Ghost Text",
+          "keywords": [],
+          "group": "",
+          "summary": ""
+        }
+      ],
+      "expected": [
+        {
+          "id": "x",
+          "score": 95
+        }
+      ]
+    },
+    {
+      "id": "substring",
+      "locale": "en_US",
+      "query": "ost",
+      "items": [
+        {
+          "id": "x",
+          "title": "Ghost",
+          "keywords": [],
+          "group": "",
+          "summary": ""
+        }
+      ],
+      "expected": [
+        {
+          "id": "x",
+          "score": 75
+        }
+      ]
+    },
+    {
+      "id": "subsequence",
+      "locale": "en_US",
+      "query": "gst",
+      "items": [
+        {
+          "id": "x",
+          "title": "Ghost",
+          "keywords": [],
+          "group": "",
+          "summary": ""
+        }
+      ],
+      "expected": [
+        {
+          "id": "x",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "id": "keyword-exact",
+      "locale": "en_US",
+      "query": "transparency",
+      "items": [
+        {
+          "id": "x",
+          "title": "Opacity",
+          "keywords": [
+            "transparency"
+          ],
+          "group": "",
+          "summary": ""
+        }
+      ],
+      "expected": [
+        {
+          "id": "x",
+          "score": 70
+        }
+      ]
+    },
+    {
+      "id": "keyword-prefix",
+      "locale": "en_US",
+      "query": "trans",
+      "items": [
+        {
+          "id": "x",
+          "title": "Opacity",
+          "keywords": [
+            "transparency"
+          ],
+          "group": "",
+          "summary": ""
+        }
+      ],
+      "expected": [
+        {
+          "id": "x",
+          "score": 55
+        }
+      ]
+    },
+    {
+      "id": "keyword-word",
+      "locale": "en_US",
+      "query": "model",
+      "items": [
+        {
+          "id": "x",
+          "title": "Weights",
+          "keywords": [
+            "local model"
+          ],
+          "group": "",
+          "summary": ""
+        }
+      ],
+      "expected": [
+        {
+          "id": "x",
+          "score": 50
+        }
+      ]
+    },
+    {
+      "id": "keyword-substring",
+      "locale": "en_US",
+      "query": "ansp",
+      "items": [
+        {
+          "id": "x",
+          "title": "Opacity",
+          "keywords": [
+            "transparency"
+          ],
+          "group": "",
+          "summary": ""
+        }
+      ],
+      "expected": [
+        {
+          "id": "x",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "id": "keyword-fuzzy",
+      "locale": "en_US",
+      "query": "trnsp",
+      "items": [
+        {
+          "id": "x",
+          "title": "Opacity",
+          "keywords": [
+            "transparency"
+          ],
+          "group": "",
+          "summary": ""
+        }
+      ],
+      "expected": [
+        {
+          "id": "x",
+          "score": 12
+        }
+      ]
+    },
+    {
+      "id": "group-exact",
+      "locale": "en_US",
+      "query": "emoji",
+      "items": [
+        {
+          "id": "x",
+          "title": "Skin Tone",
+          "keywords": [],
+          "group": "Emoji",
+          "summary": ""
+        }
+      ],
+      "expected": [
+        {
+          "id": "x",
+          "score": 35
+        }
+      ]
+    },
+    {
+      "id": "group-prefix",
+      "locale": "en_US",
+      "query": "emo",
+      "items": [
+        {
+          "id": "x",
+          "title": "Skin Tone",
+          "keywords": [],
+          "group": "Emoji",
+          "summary": ""
+        }
+      ],
+      "expected": [
+        {
+          "id": "x",
+          "score": 30
+        }
+      ]
+    },
+    {
+      "id": "group-word",
+      "locale": "en_US",
+      "query": "view",
+      "items": [
+        {
+          "id": "x",
+          "title": "Size",
+          "keywords": [],
+          "group": "Editor view",
+          "summary": ""
+        }
+      ],
+      "expected": [
+        {
+          "id": "x",
+          "score": 25
+        }
+      ]
+    },
+    {
+      "id": "group-substring",
+      "locale": "en_US",
+      "query": "iew",
+      "items": [
+        {
+          "id": "x",
+          "title": "Size",
+          "keywords": [],
+          "group": "Editor view",
+          "summary": ""
+        }
+      ],
+      "expected": [
+        {
+          "id": "x",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "id": "summary-prefix",
+      "locale": "en_US",
+      "query": "miss",
+      "items": [
+        {
+          "id": "x",
+          "title": "Typo Guard",
+          "keywords": [],
+          "group": "",
+          "summary": "Misspelled words"
+        }
+      ],
+      "expected": [
+        {
+          "id": "x",
+          "score": 30
+        }
+      ]
+    },
+    {
+      "id": "summary-word",
+      "locale": "en_US",
+      "query": "miss",
+      "items": [
+        {
+          "id": "x",
+          "title": "Typo Guard",
+          "keywords": [],
+          "group": "",
+          "summary": "Hide when misspelled"
+        }
+      ],
+      "expected": [
+        {
+          "id": "x",
+          "score": 30
+        }
+      ]
+    },
+    {
+      "id": "summary-substring",
+      "locale": "en_US",
+      "query": "spell",
+      "items": [
+        {
+          "id": "x",
+          "title": "Typo Guard",
+          "keywords": [],
+          "group": "",
+          "summary": "Hide when misspelled"
+        }
+      ],
+      "expected": [
+        {
+          "id": "x",
+          "score": 18
+        }
+      ]
+    },
+    {
+      "id": "diacritics",
+      "locale": "en_US",
+      "query": "cafe",
+      "items": [
+        {
+          "id": "x",
+          "title": "Café",
+          "keywords": [],
+          "group": "",
+          "summary": ""
+        }
+      ],
+      "expected": [
+        {
+          "id": "x",
+          "score": 155
+        }
+      ]
+    },
+    {
+      "id": "best-field-reset",
+      "locale": "en_US",
+      "query": "ost",
+      "items": [
+        {
+          "id": "x",
+          "title": "Ghost",
+          "keywords": [
+            "ost"
+          ],
+          "group": "",
+          "summary": ""
+        }
+      ],
+      "expected": [
+        {
+          "id": "x",
+          "score": 70
+        }
+      ]
+    },
+    {
+      "id": "title-tie-retains-cohesion",
+      "locale": "en_US",
+      "query": "gst",
+      "items": [
+        {
+          "id": "x",
+          "title": "Ghost",
+          "keywords": [],
+          "group": "Common gst settings",
+          "summary": ""
+        }
+      ],
+      "expected": [
+        {
+          "id": "x",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "id": "multi-title-cohesion",
+      "locale": "en_US",
+      "query": "ghost size",
+      "items": [
+        {
+          "id": "split",
+          "title": "Ghost Text",
+          "keywords": [
+            "size"
+          ],
+          "group": "",
+          "summary": ""
+        },
+        {
+          "id": "all",
+          "title": "Ghost Text Size",
+          "keywords": [],
+          "group": "",
+          "summary": ""
+        }
+      ],
+      "expected": [
+        {
+          "id": "all",
+          "score": 185
+        },
+        {
+          "id": "split",
+          "score": 160
+        }
+      ]
+    },
+    {
+      "id": "exact-title-beats-longer",
+      "locale": "en_US",
+      "query": "accept word",
+      "items": [
+        {
+          "id": "long",
+          "title": "Accept Punctuation With Word",
+          "keywords": [],
+          "group": "",
+          "summary": ""
+        },
+        {
+          "id": "exact",
+          "title": "Accept Word",
+          "keywords": [],
+          "group": "",
+          "summary": ""
+        }
+      ],
+      "expected": [
+        {
+          "id": "exact",
+          "score": 225
+        },
+        {
+          "id": "long",
+          "score": 185
+        }
+      ]
+    },
+    {
+      "id": "every-token-required",
+      "locale": "en_US",
+      "query": "ghost spaceship",
+      "items": [
+        {
+          "id": "x",
+          "title": "Ghost Text Size",
+          "keywords": [],
+          "group": "",
+          "summary": ""
+        }
+      ],
+      "expected": []
+    },
+    {
+      "id": "short-no-fuzzy",
+      "locale": "en_US",
+      "query": "gt",
+      "items": [
+        {
+          "id": "x",
+          "title": "Ghost",
+          "keywords": [],
+          "group": "",
+          "summary": ""
+        }
+      ],
+      "expected": []
+    },
+    {
+      "id": "group-no-fuzzy",
+      "locale": "en_US",
+      "query": "eoj",
+      "items": [
+        {
+          "id": "x",
+          "title": "Skin",
+          "keywords": [],
+          "group": "Emoji",
+          "summary": ""
+        }
+      ],
+      "expected": []
+    },
+    {
+      "id": "summary-no-fuzzy",
+      "locale": "en_US",
+      "query": "mspl",
+      "items": [
+        {
+          "id": "x",
+          "title": "Typing",
+          "keywords": [],
+          "group": "",
+          "summary": "misspelled"
+        }
+      ],
+      "expected": []
+    },
+    {
+      "id": "stable-ties",
+      "locale": "en_US",
+      "query": "ghost",
+      "items": [
+        {
+          "id": "a",
+          "title": "Ghost Color",
+          "keywords": [],
+          "group": "",
+          "summary": ""
+        },
+        {
+          "id": "b",
+          "title": "Ghost Size",
+          "keywords": [],
+          "group": "",
+          "summary": ""
+        }
+      ],
+      "expected": [
+        {
+          "id": "a",
+          "score": 105
+        },
+        {
+          "id": "b",
+          "score": 105
+        }
+      ]
+    },
+    {
+      "id": "stable-ties-reversed",
+      "locale": "en_US",
+      "query": "ghost",
+      "items": [
+        {
+          "id": "b",
+          "title": "Ghost Size",
+          "keywords": [],
+          "group": "",
+          "summary": ""
+        },
+        {
+          "id": "a",
+          "title": "Ghost Color",
+          "keywords": [],
+          "group": "",
+          "summary": ""
+        }
+      ],
+      "expected": [
+        {
+          "id": "b",
+          "score": 105
+        },
+        {
+          "id": "a",
+          "score": 105
+        }
+      ]
+    },
+    {
+      "id": "blank",
+      "locale": "en_US",
+      "query": "",
+      "items": [
+        {
+          "id": "x",
+          "title": "Ghost",
+          "keywords": [],
+          "group": "",
+          "summary": ""
+        }
+      ],
+      "expected": []
+    },
+    {
+      "id": "unicode-whitespace",
+      "locale": "en_US",
+      "query": " \t\r\n   ",
+      "items": [
+        {
+          "id": "x",
+          "title": "Ghost",
+          "keywords": [],
+          "group": "",
+          "summary": ""
+        }
+      ],
+      "expected": []
+    },
+    {
+      "id": "eight-tokens",
+      "locale": "en_US",
+      "query": "ghost ghost ghost ghost ghost ghost ghost ghost zzzz",
+      "items": [
+        {
+          "id": "x",
+          "title": "Ghost",
+          "keywords": [],
+          "group": "",
+          "summary": ""
+        }
+      ],
+      "expected": [
+        {
+          "id": "x",
+          "score": 815
+        }
+      ]
+    },
+    {
+      "id": "nonadjacent-tokens",
+      "locale": "en_US",
+      "query": "ghost size",
+      "items": [
+        {
+          "id": "x",
+          "title": "Ghost Text Size",
+          "keywords": [],
+          "group": "",
+          "summary": ""
+        }
+      ],
+      "expected": [
+        {
+          "id": "x",
+          "score": 185
+        }
+      ]
+    },
+    {
+      "id": "cross-fields",
+      "locale": "en_US",
+      "query": "emoji battery",
+      "items": [
+        {
+          "id": "x",
+          "title": "Emoji Picker",
+          "keywords": [
+            "battery"
+          ],
+          "group": "",
+          "summary": ""
+        },
+        {
+          "id": "miss",
+          "title": "Emoji Picker",
+          "keywords": [],
+          "group": "",
+          "summary": ""
+        }
+      ],
+      "expected": [
+        {
+          "id": "x",
+          "score": 160
+        }
+      ]
+    },
+    {
+      "id": "empty-title-keywords",
+      "locale": "en_US",
+      "query": "hello",
+      "items": [
+        {
+          "id": "x",
+          "title": "",
+          "keywords": [
+            "hello"
+          ],
+          "group": "",
+          "summary": ""
+        }
+      ],
+      "expected": [
+        {
+          "id": "x",
+          "score": 70
+        }
+      ]
+    },
+    {
+      "id": "punctuation-token",
+      "locale": "en_US",
+      "query": "??",
+      "items": [
+        {
+          "id": "x",
+          "title": "??",
+          "keywords": [],
+          "group": "",
+          "summary": ""
+        },
+        {
+          "id": "no",
+          "title": "question",
+          "keywords": [],
+          "group": "",
+          "summary": ""
+        }
+      ],
+      "expected": [
+        {
+          "id": "x",
+          "score": 155
+        }
+      ]
+    },
+    {
+      "id": "sharp-s",
+      "locale": "en_US",
+      "query": "strasse",
+      "items": [
+        {
+          "id": "x",
+          "title": "Straße",
+          "keywords": [],
+          "group": "",
+          "summary": ""
+        }
+      ],
+      "expected": [
+        {
+          "id": "x",
+          "score": 155
+        }
+      ]
+    },
+    {
+      "id": "kana-voicing-retained",
+      "locale": "en_US",
+      "query": "かか",
+      "items": [
+        {
+          "id": "x",
+          "title": "かが",
+          "keywords": [],
+          "group": "",
+          "summary": ""
+        }
+      ],
+      "expected": []
+    },
+    {
+      "id": "supplementary-short-token",
+      "locale": "en_US",
+      "query": "a😀",
+      "items": [
+        {
+          "id": "x",
+          "title": "a x 😀",
+          "keywords": [],
+          "group": "",
+          "summary": ""
+        }
+      ],
+      "expected": []
+    },
+    {
+      "id": "canonical-equivalence",
+      "locale": "en_US",
+      "query": "ガ",
+      "items": [
+        {
+          "id": "x",
+          "title": "ガ",
+          "keywords": [],
+          "group": "",
+          "summary": ""
+        }
+      ],
+      "expected": [
+        {
+          "id": "x",
+          "score": 155
+        }
+      ]
+    },
+    {
+      "id": "native-title",
+      "locale": "zh_CN",
+      "query": "界面 语言",
+      "items": [
+        {
+          "id": "x",
+          "title": "界面语言",
+          "keywords": [],
+          "group": "",
+          "summary": ""
+        }
+      ],
+      "expected": [
+        {
+          "id": "x",
+          "score": 165
+        }
+      ]
+    },
+    {
+      "id": "arabic-marks-retained",
+      "locale": "ar_SA",
+      "query": "عرب",
+      "items": [
+        {
+          "id": "x",
+          "title": "عَرَب",
+          "keywords": [],
+          "group": "",
+          "summary": ""
+        }
+      ],
+      "expected": []
+    },
+    {
+      "id": "turkish-source",
+      "locale": "tr_TR",
+      "query": "ı",
+      "items": [
+        {
+          "id": "x",
+          "title": "I",
+          "keywords": [],
+          "group": "",
+          "summary": ""
+        }
+      ],
+      "expected": [
+        {
+          "id": "x",
+          "score": 155
+        }
+      ]
+    }
+  ],
+  "folds": [
+    {
+      "id": "ascii",
+      "locale": "en_US",
+      "text": "Ghost Text",
+      "expected": "ghost text"
+    },
+    {
+      "id": "accent",
+      "locale": "en_US",
+      "text": "Café",
+      "expected": "cafe"
+    },
+    {
+      "id": "decomposed",
+      "locale": "en_US",
+      "text": "CAFÉ",
+      "expected": "cafe"
+    },
+    {
+      "id": "sharp",
+      "locale": "en_US",
+      "text": "Straße",
+      "expected": "strasse"
+    },
+    {
+      "id": "root-I",
+      "locale": "en_US",
+      "text": "Iİıi",
+      "expected": "iiıi"
+    },
+    {
+      "id": "root-dot",
+      "locale": "en_US",
+      "text": "İ",
+      "expected": "i"
+    },
+    {
+      "id": "sigma",
+      "locale": "en_US",
+      "text": "Σ ς σ",
+      "expected": "σ σ σ"
+    },
+    {
+      "id": "width",
+      "locale": "en_US",
+      "text": "ＡＢＣ",
+      "expected": "ａｂｃ"
+    },
+    {
+      "id": "ligature",
+      "locale": "en_US",
+      "text": "ﬃ",
+      "expected": "ffi"
+    },
+    {
+      "id": "retained-latin",
+      "locale": "en_US",
+      "text": "æøłð",
+      "expected": "æøłð"
+    },
+    {
+      "id": "canonical",
+      "locale": "en_US",
+      "text": "KÅ",
+      "expected": "ka"
+    },
+    {
+      "id": "kana",
+      "locale": "en_US",
+      "text": "ガかが",
+      "expected": "ガかが"
+    },
+    {
+      "id": "hangul",
+      "locale": "en_US",
+      "text": "각",
+      "expected": "각"
+    },
+    {
+      "id": "nukta",
+      "locale": "en_US",
+      "text": "क़",
+      "expected": "क़"
+    },
+    {
+      "id": "marks",
+      "locale": "en_US",
+      "text": "áͅ",
+      "expected": "a"
+    },
+    {
+      "id": "standalone-mark",
+      "locale": "en_US",
+      "text": "́",
+      "expected": "́"
+    },
+    {
+      "id": "arabic",
+      "locale": "en_US",
+      "text": "عَرَبِيّ",
+      "expected": "عَرَبِيّ"
+    },
+    {
+      "id": "emoji",
+      "locale": "en_US",
+      "text": "👍🏽 👨‍👩‍👧",
+      "expected": "👍🏽 👨‍👩‍👧"
+    },
+    {
+      "id": "null",
+      "locale": "en_US",
+      "text": "A\u0000B",
+      "expected": "a\u0000b"
+    },
+    {
+      "id": "turkic-I",
+      "locale": "tr_TR",
+      "text": "I",
+      "expected": "ı"
+    },
+    {
+      "id": "turkic-precomposed-dot",
+      "locale": "tr_TR",
+      "text": "İ",
+      "expected": "ı"
+    },
+    {
+      "id": "turkic-combining-dot",
+      "locale": "tr_TR",
+      "text": "İ",
+      "expected": "i"
+    },
+    {
+      "id": "turkic-word",
+      "locale": "tr_TR",
+      "text": "TITLE",
+      "expected": "tıtle"
+    }
+  ]
+}

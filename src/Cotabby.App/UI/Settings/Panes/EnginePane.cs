@@ -77,7 +77,7 @@ internal static class EnginePane
             var folder = ModelCatalog.DefaultLocalDirectory();
             Directory.CreateDirectory(folder);
             Ui.OpenPath(folder);
-        })
+        }, subtitleIsContent: true)
         .Tagged("path directory open reveal location storage downloaded files");
 
     private static IEnumerable<SettingsCard> Local(params SettingsCard[] cards) =>

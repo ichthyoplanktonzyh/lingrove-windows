@@ -11,10 +11,11 @@ namespace Cotabby.App.UI.Settings;
 internal sealed record SettingsRow(string Title, string Subtitle, FrameworkElement View)
 {
     public string Keywords { get; init; } = "";
+    public bool SubtitleIsContent { get; init; }
     // Navigation and English search aliases retain authored keys. Display/search additionally
     // use the same launch-locale labels as the row, so saved pane identities never change.
     public string DisplayTitle => InterfaceText.Get(Title);
-    public string DisplaySubtitle => InterfaceText.Get(Subtitle);
+    public string DisplaySubtitle => SubtitleIsContent ? Subtitle : InterfaceText.Get(Subtitle);
     public Func<AppSettings, bool>? Visible { get; init; }
     public Func<AppSettings, bool>? Enabled { get; init; }
 
@@ -24,13 +25,7 @@ internal sealed record SettingsRow(string Title, string Subtitle, FrameworkEleme
 
     public SettingsRow EnabledWhen(Func<AppSettings, bool> enabled) => this with { Enabled = enabled };
 
-    public bool Matches(string query) =>
-        Title.Length > 0
-        && (Title.Contains(query, StringComparison.OrdinalIgnoreCase)
-            || Subtitle.Contains(query, StringComparison.OrdinalIgnoreCase)
-            || DisplayTitle.Contains(query, StringComparison.OrdinalIgnoreCase)
-            || DisplaySubtitle.Contains(query, StringComparison.OrdinalIgnoreCase)
-            || Keywords.Contains(query, StringComparison.OrdinalIgnoreCase));
+    public bool Matches(string query) => Title.Length > 0 && SettingsSearchPresentation.Matches(this, query);
 }
 
 /// <summary>A bordered group of rows under an optional header.</summary>

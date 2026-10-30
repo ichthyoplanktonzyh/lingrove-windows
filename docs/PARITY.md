@@ -1,5 +1,10 @@
 # Feature Parity and Evidence
 
+The current [settings-search adaptation](SETTINGS_SEARCH_3B.md) maps the 3b ranker and navigation
+to Core, Windows ICU and WPF, including localized matching, keyboard opening, original-row reveal
+and arrival lifetime. Its source/oracle, component checks and remaining native gates are recorded
+separately; the historical baseline matrix below retains its references.
+
 This matrix starts from the Windows fork baseline `b1e4031c70aca1be21aae2c57b138fde5fc22bb1` and
 compares it with the committed macOS reference `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`. It also
 records the initial foundation branch's shared JSON corpus and its test evidence. The source paths

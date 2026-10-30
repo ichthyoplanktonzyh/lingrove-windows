@@ -79,3 +79,11 @@ cases and the existing Windows speech-provider cases. The injected SAPI/decoder 
 their original tokens and never opened native voices or devices; both produced the expected
 Chinese fixed event text rather than the substituted private diagnostic. The PCM callback test
 also checks its enum-owned message before the existing joined shutdown assertions.
+
+The first independent full run at `7fe43b0` passed 1,240 tests and exposed one stale unavailable-
+editor assertion requiring the obsolete word "ASCII". The production 3b Unicode admission was
+already covered separately; this fake throws NotSupportedException for its editor capability.
+The assertion now requires the complete current shortcut-recovery message and retains its hidden-
+panel/inactive-session checks. No admission, write, cancellation or policy expectation changed.
+The corrected single case passed. Portable App regression at the same production source head
+passed **1,278/1,278**, zero failures/skips.

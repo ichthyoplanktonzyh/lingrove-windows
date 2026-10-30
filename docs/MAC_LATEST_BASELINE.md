@@ -164,6 +164,11 @@ the initial gap audit; its initial Windows gap descriptions are historical. Curr
   382 keys in 15 locales and connects further dynamic/card/import/semantic/auxiliary labels. Long
   settings descriptions and additional finite messages remain incomplete.
 
+- #160 merged active workflow interface copy after all four checks passed at
+  `b704f1481b124a952e9c5aae236e8fca389caf74`, as `1b3ba62`, with independent WPF 1234/1234.
+- The [settings metadata batch](SETTINGS_INTERFACE_COPY_3B.md) supplies all 70 remaining keys in
+  the finite row/subtitle/card-header inventory, extending the supplement to 452 keys in 15 locales.
+  Broader auxiliary/domain copy remains scoped separately.
 - Remaining work includes native host/provider acceptance,
   full interface-language coverage, native automatic language
   confidence, Apple's unavailable system dictionary and the explicitly documented media/native gaps.

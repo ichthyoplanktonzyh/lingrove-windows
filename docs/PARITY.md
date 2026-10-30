@@ -1,5 +1,9 @@
 # Feature Parity and Evidence
 
+The [settings metadata copy batch](SETTINGS_INTERFACE_COPY_3B.md) completes the finite active
+title/subtitle/card-header inventory in 15 locales through the existing WPF/search adapters.
+Broader auxiliary/domain-message and native acceptance scope remains separately recorded.
+
 The [active workflow interface pass](ACTIVE_WORKFLOW_INTERFACE_3B.md) extends localized card updates,
 onboarding, semantic actions, import, graph and auxiliary dialogs while keeping study/provider values
 literal. Its 15-locale resources, component checks and remaining copy/native scope are recorded there.

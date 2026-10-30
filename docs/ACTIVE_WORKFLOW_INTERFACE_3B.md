@@ -1,5 +1,8 @@
 # Active workflow interface copy and localized state updates
 
+The subsequent [settings metadata copy batch](SETTINGS_INTERFACE_COPY_3B.md) supplies the remaining
+70 inventoried row/card keys, extending this historical 382-key checkpoint to 452 supplement entries.
+
 Reference: Mac `3b53402f2cbc196b0398d133177fd80006d165b2`, read from committed Git objects.
 This extends [the learning-state checkpoint](LEARNING_INTERFACE_STATES_3B.md). It is another
 connected interface pass, not a declaration of complete internationalization or native acceptance.

@@ -1,5 +1,8 @@
 # Settings metadata and card-header interface copy
 
+The following [auxiliary interface pass](AUXILIARY_INTERFACE_COPY_3B.md) extends this historical
+452-key resource checkpoint to 463 entries and connects the listed remaining auxiliary paths.
+
 Reference: Mac `3b53402f2cbc196b0398d133177fd80006d165b2`, committed
 `Lingrove/Resources/{Localizable,Learning,Vocabulary}.xcstrings`, and the Windows settings
 adapters already mapped in [settings search](SETTINGS_SEARCH_3B.md) and

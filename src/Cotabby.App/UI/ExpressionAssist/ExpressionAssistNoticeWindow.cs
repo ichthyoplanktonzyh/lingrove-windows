@@ -64,7 +64,7 @@ internal sealed class ExpressionAssistNoticeWindow : Window
         {
             var text = new NonactivatingSelectableText { Name = "expressionNoticeCandidate", Text = candidate, DocumentIdentity = new object(), TextWrapping = TextWrapping.Wrap, FontSize = 14, FontWeight = FontWeights.SemiBold, Margin = new Thickness(0, 10, 0, 0) };
             text.CopyRequested += (_, args) => { args.Handled = true; if (IsVisible && args.Lease.IsCurrent) CopyText(args.Lease.Text, false); };
-            text.SetResourceReference(TextBlock.ForegroundProperty, "TextPrimary"); AutomationProperties.SetName(text, "Candidate: " + candidate); body.Children.Add(text);
+            text.SetResourceReference(TextBlock.ForegroundProperty, "TextPrimary"); AutomationProperties.SetName(text, InterfaceText.Format("Candidate: {0}", candidate)); body.Children.Add(text);
         }
         _copiedTimer.Tick += (_, _) => { _copiedTimer.Stop(); if (!_closed) Close(); };
     }

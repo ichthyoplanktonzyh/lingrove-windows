@@ -1,4 +1,5 @@
 using System.Globalization;
+using Cotabby.App.Localization;
 using System.Windows;
 using System.Windows.Media;
 using Cotabby.Core.Vocabulary;
@@ -11,6 +12,13 @@ namespace Cotabby.App.UI.Vocabulary;
 /// creating a visual control for every particle. Camera changes never mutate worker positions.</summary>
 internal sealed partial class VocabularyGraphCanvas
 {
+    // Only the finite relationship chrome enters the interface catalog. Node labels remain
+    // literal study/user content and retain their own direction evidence and world coordinates.
+    internal static string RelationshipLabel(VocabularyGraphEdgeKind kind) => InterfaceText.Get(kind switch
+    {
+        VocabularyGraphEdgeKind.Narrower => "More specific than", VocabularyGraphEdgeKind.Opposite => "Opposite",
+        VocabularyGraphEdgeKind.Related => "Related", _ => ""
+    }, "Vocabulary");
     private Dictionary<VocabularyGraphNodeId, WindowsTextDirection> _labelDirections = [];
     private void RefreshLabelDirections() => _labelDirections = _snapshot.Nodes.ToDictionary(node => node.Id, node => WindowsTextBaseDirection.Detect(node.Label));
     private FlowDirection LabelDirection(VocabularyGraphNodeId id) => _labelDirections.GetValueOrDefault(id) switch
@@ -30,7 +38,7 @@ internal sealed partial class VocabularyGraphCanvas
             bool highlighted = _snapshot.IsMeaningGraph ? related.Contains(edge.Source) && related.Contains(edge.Target) : edge.Source.EntryId == focused; double alpha = _hovered is not null && !highlighted ? .2 : edge.IsUnexplored ? .36 : 1;
             var pen = new Pen(WithOpacity(Brush(highlighted ? "AccentBrush" : "CardBorder", SystemColors.GrayTextBrush), alpha), _applied.LinkWidth); if (edge.IsUnexplored || edge.Kind is VocabularyGraphEdgeKind.Opposite or VocabularyGraphEdgeKind.Related) pen.DashStyle = DashStyles.Dash;
             var a = Screen(start); var b = Screen(end); if (_snapshot.IsMeaningGraph && edge.Kind is VocabularyGraphEdgeKind.Taxonomy or VocabularyGraphEdgeKind.ExpressesContent or VocabularyGraphEdgeKind.RealizesFunction) { var geometry = new StreamGeometry(); using (var context = geometry.Open()) { context.BeginFigure(a, false, false); double middle = (a.X + b.X) / 2; context.BezierTo(new(middle, a.Y), new(middle, b.Y), b, true, false); } drawing.DrawGeometry(null, pen, geometry); } else drawing.DrawLine(pen, a, b);
-            if (_snapshot.IsMeaningGraph && edge.Kind is VocabularyGraphEdgeKind.Narrower or VocabularyGraphEdgeKind.Opposite or VocabularyGraphEdgeKind.Related && (highlighted || _applied.Labels == VocabularyGraphLabels.All || _presentation.Camera.Scale > .8)) { var label = new FormattedText(edge.Kind.ToString(), CultureInfo.CurrentUICulture, FlowDirection, new Typeface(SystemFonts.MessageFontFamily, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal), 10, Brush("TextSecondary", SystemColors.GrayTextBrush), VisualTreeHelper.GetDpi(this).PixelsPerDip); drawing.DrawText(label, new((a.X + b.X) / 2 + 5, (a.Y + b.Y) / 2 + 3)); }
+            if (_snapshot.IsMeaningGraph && edge.Kind is VocabularyGraphEdgeKind.Narrower or VocabularyGraphEdgeKind.Opposite or VocabularyGraphEdgeKind.Related && (highlighted || _applied.Labels == VocabularyGraphLabels.All || _presentation.Camera.Scale > .8)) { var label = new FormattedText(RelationshipLabel(edge.Kind), InterfaceText.Culture, FlowDirection, new Typeface(SystemFonts.MessageFontFamily, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal), 10, Brush("TextSecondary", SystemColors.GrayTextBrush), VisualTreeHelper.GetDpi(this).PixelsPerDip); drawing.DrawText(label, new((a.X + b.X) / 2 + 5, (a.Y + b.Y) / 2 + 3)); }
             if (_snapshot.IsMeaningGraph && edge.Kind == VocabularyGraphEdgeKind.Narrower && (highlighted || _applied.Labels == VocabularyGraphLabels.All || _presentation.Camera.Scale > .8)) { var vector = b - a; if (vector.Length > 30) { vector.Normalize(); var tip = b - vector * 14; var side = new Vector(-vector.Y, vector.X) * 4; drawing.DrawLine(pen, tip - vector * 8 + side, tip); drawing.DrawLine(pen, tip - vector * 8 - side, tip); } }
         }
         var cull = new Rect(-160, -55, ActualWidth + 320, ActualHeight + 110);

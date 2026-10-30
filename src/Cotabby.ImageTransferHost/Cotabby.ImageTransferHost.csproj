@@ -14,6 +14,7 @@
     <Compile Include="..\Cotabby.Win32\Clipboard\ClipboardNativeMethods.cs" Link="ClipboardNativeMethods.cs" />
     <Compile Include="..\Cotabby.Win32\Vocabulary\VocabularyClipboardImageReader.cs" Link="VocabularyClipboardImageReader.cs" />
     <Compile Include="..\Cotabby.Win32\Vocabulary\VocabularyClipboardDib.cs" Link="VocabularyClipboardDib.cs" />
+    <Compile Include="..\Cotabby.Win32\Vocabulary\VocabularyClipboardBitmap.cs" Link="VocabularyClipboardBitmap.cs" />
     <Compile Include="..\Cotabby.Win32\Vocabulary\VocabularyImageTransferProtocol.cs" Link="VocabularyImageTransferProtocol.cs" />
     <Compile Include="..\Cotabby.Win32\Vocabulary\VocabularyOleImageReader.cs" Link="VocabularyOleImageReader.cs" />
   </ItemGroup>

@@ -144,6 +144,14 @@ the initial gap audit; its initial Windows gap descriptions are historical. Curr
   live writing/dictionary/favorite accessibility state, typed endpoint warnings, speech destination
   formatting and current reading/trigger guidance. The supplement now has 244 keys in 15 locales;
   remaining settings/auxiliary copy and native acceptance stay open.
+- #156 merged the settings-search module after all four checks passed at
+  `7ab05b9b117ac9fca09589217fb68239cb7d2d1e`, as `3bcccb0`; the original Foundation ranker passed
+  all 68 observations across four locale processes after the measured default-I correction.
+- #157 merged active learning state/destination localization after all four checks passed at
+  `ec8083aaf24e34704cda2454d8e7398b412bb6b1`, as `a8ee9c4`, with independent WPF 1215/1215.
+- The [native bitmap input](VOCABULARY_BITMAP_INPUT_3B.md) adapts bounded CF_BITMAP/TYMED_GDI
+  through the existing transfer helper, WIC and canonical Store. Corrupt-existing-media repair
+  and physical producer/color acceptance remain explicit gaps.
 - Remaining work includes native host/provider acceptance,
   full interface-language coverage, native automatic language
   confidence, Apple's unavailable system dictionary and the explicitly documented media/native gaps.

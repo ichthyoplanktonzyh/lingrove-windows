@@ -28,7 +28,7 @@ public static class OleDropWindow
             if (RegisterClassExW(ref windowClass) == 0) return 2;
             hwnd = CreateWindowExW(0, WindowClass, label, 0x50000000, 0, 0, 1, 1, new IntPtr(parent), IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
             if (hwnd == IntPtr.Zero) return 2;
-            using var output = Console.OpenStandardOutput(); var target = new Target(output, GetCurrentThreadId());
+            using var output = Console.OpenStandardOutput(); var target = new Target(output, GetCurrentThreadId(), test);
             targetPointer = Marshal.GetComInterfaceForObject(target, typeof(IDropTarget));
             if (RegisterDragDrop(hwnd, targetPointer) < 0) return 2; registered = true;
             byte[] ready = Encoding.ASCII.GetBytes("READY " + hwnd.ToInt64().ToString(CultureInfo.InvariantCulture) + "\n"); output.Write(ready); output.Flush();
@@ -94,7 +94,7 @@ public static class OleDropWindow
         [PreserveSig] int Drop([MarshalAs(UnmanagedType.Interface)] IDataObject data, uint keys, Point point, ref uint effect);
     }
     [ComVisible(true), ClassInterface(ClassInterfaceType.None)]
-    public sealed class Target(Stream output, uint ownerThread) : IDropTarget
+    public sealed class Target(Stream output, uint ownerThread, bool diagnostic = false) : IDropTarget
     {
         private int _admitted;
         private int _accepted;
@@ -112,7 +112,12 @@ public static class OleDropWindow
                 byte[]? bytes = VocabularyOleImageReader.Read(data);
                 VocabularyImageTransferProtocol.Write(output, bytes); if (bytes is null) effect = 0;
             }
-            catch { effect = 0; try { VocabularyImageTransferProtocol.Write(output, null, failed: true); } catch { } }
+            catch (Exception error)
+            {
+                effect = 0;
+                if (diagnostic) Console.Error.WriteLine(error.GetType().Name + " " + error.HResult.ToString("X8", CultureInfo.InvariantCulture));
+                try { VocabularyImageTransferProtocol.Write(output, null, failed: true); } catch { }
+            }
             finally { _ = PostThreadMessageW(ownerThread, 0x0012, UIntPtr.Zero, IntPtr.Zero); }
             return 0;
         }

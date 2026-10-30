@@ -11,6 +11,31 @@ namespace Cotabby.App.Wpf.Tests;
 [Collection("WPF views")]
 public sealed class CanonicalVocabularyMediaTests(WpfDispatcher dispatcher)
 {
+    [Fact]
+    public Task NativeBitmapUsesExistingPreparationCommitAndReopen() => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "canonical-bitmap-" + Guid.NewGuid().ToString("N"));
+        string file = Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName); VocabularyPreparedImage image;
+        try
+        {
+            using var bitmap = new Cotabby.Tests.Shared.VocabularyBitmapFixture();
+            byte[] encoded = VocabularyClipboardBitmap.Read(bitmap.Handle);
+            await using (var store = FrozenVocabularyStoreFactory.Create(file, false))
+            {
+                image = await store.PrepareImageAsync(encoded);
+                Assert.Equal(3, image.Reference.Width); Assert.Equal(2, image.Reference.Height);
+                Assert.Equal(new byte[] { 137, 80, 78, 71, 13, 10, 26, 10 }, image.CopyBytes()[..8]);
+                var before = await store.ReadAsync();
+                var committed = await store.SaveTemplateAsync(Template(image.Reference), Supplied(image));
+                Assert.Equal(before.Revision + 1, committed.Revision);
+                Assert.Equal(image.CopyBytes(), await store.ReadImageAsync(image.Reference));
+            }
+            await using var reopened = await FrozenVocabularyStoreFactory.OpenAsync(file, installBundledClassification: false);
+            Assert.Equal(image.CopyBytes(), await reopened.ReadImageAsync(image.Reference));
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    });
+
     private sealed class CancelAfterWrite(IOwnedVocabularyImageStorage inner, CancellationTokenSource cancellation) : IOwnedVocabularyImageStorage
     {
         public VocabularyPreparedImage Prepare(ReadOnlySpan<byte> data, CancellationToken token) => inner.Prepare(data, token);

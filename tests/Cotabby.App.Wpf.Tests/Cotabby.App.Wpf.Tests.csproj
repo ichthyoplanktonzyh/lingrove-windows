@@ -16,6 +16,7 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
     <Using Include="Xunit" />
     <Compile Include="..\Shared\VocabularyDibFixture.cs" Link="Shared\VocabularyDibFixture.cs" />
+    <Compile Include="..\Shared\VocabularyBitmapFixture.cs" Link="Shared\VocabularyBitmapFixture.cs" />
     <ProjectReference Include="..\..\src\Cotabby.App\Cotabby.App.csproj" />
     <Compile Include="..\Shared\VocabularyReferenceGraph.cs" Link="Shared\VocabularyReferenceGraph.cs" />
     <None Include="..\..\fixtures\parity\vocabulary-notebook-session-v1.json"

@@ -45,13 +45,16 @@ internal sealed class SpeechFeature : IAsyncDisposable
         _dispatcher = Dispatcher.CurrentDispatcher; ModelDirectory = modelDirectory; History = history;
         var settings = new LearningSpeechSettings(current, persist, credentials);
         var telemetry = new SpeechTelemetry(emit ?? ((_, _, _) => { }), history, () => current().PerformanceTrackingEnabled);
-        _system = new(); _encoded = new(); _renderer = WindowsSpeechRendering.CreateRenderer(); _pcm = new(_renderer);
+        _system = new(key => InterfaceText.Get(key, "Learning")); _encoded = new(key => InterfaceText.Get(key, "Learning"));
+        _renderer = WindowsSpeechRendering.CreateRenderer();
+        _pcm = new(_renderer, failure => InterfaceFailureText.For(new SpeechException(failure)));
         var local = new LocalSpeechRuntime(new WindowsSpeechProcessFactory(), new WindowsSpeechMemoryPressure(),
             events: value => _dispatcher.InvokeAsync(() => telemetry.Receive(value)).Task);
         _generator = new(local, new SpeechEndpointClient());
         Controller = new(settings, telemetry, _system, _generator, _encoded, new WindowsSpeechPCMInputAdapter(_pcm),
             systemExporter, new WindowsSpeechAudioCodec(), _ => new Dictionary<string, double>(),
-            StringComparer.CurrentCulture, modelDirectory, () => _models ??= new(ModelDirectory, _dispatcher), format: InterfaceText.Format);
+            StringComparer.CurrentCulture, modelDirectory, () => _models ??= new(ModelDirectory, _dispatcher),
+            format: (key, values) => InterfaceText.FormatFrom("Learning", key, values), failureText: InterfaceFailureText.For);
     }
     internal SpeechModelFiles Models => (SpeechModelFiles)Controller.ModelDownloads;
     public ValueTask DisposeAsync() { lock (_gate) return new(_retirement ??= RetireAsync()); }

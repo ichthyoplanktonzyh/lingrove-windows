@@ -1,3 +1,4 @@
+using Cotabby.App.Localization;
 using System.ComponentModel;
 using System.Windows.Threading;
 using Cotabby.App.Speech;
@@ -59,7 +60,7 @@ internal sealed class ExpressionAssistCandidateTools : IAsyncDisposable
         }).ToArray());
         if (_closed || revision != _revision || !ReferenceEquals(result, _result)) return;
         _captures = captures;
-        PreparationError = captures.Any(capture => capture is null) ? "Some expressions cannot be saved because their language or context could not be verified." : null;
+        PreparationError = captures.Any(capture => capture is null) ? InterfaceText.Get("Some expressions cannot be saved because their language or context could not be verified.", "Learning") : null;
         Changed?.Invoke();
     }
     internal bool Current(int index, ExpressionAssistCandidate candidate) => !_closed && _canAct()

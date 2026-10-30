@@ -136,7 +136,10 @@ public sealed class ExpressionAssistSessionTests(WpfDispatcher dispatcher)
         await using var session = new ExpressionAssistSession(Dispatcher.CurrentDispatcher, new UnsupportedEditor(), panel,
             (_, _) => throw new InvalidOperationException(), () => (LearningLanguage.English, LearningLanguage.Chinese));
         session.Begin("？？"); await Until(() => panel.Unavailable is not null);
-        Assert.Contains("ASCII", panel.Unavailable); Assert.False(panel.Visible); Assert.False(session.IsActive);
+        // The 3b policy admits fullwidth markers; this fake refuses the editor capability.
+        // Recovery must not revive the obsolete ASCII-only platform restriction.
+        Assert.Equal("This trigger is not supported here. Use the expression shortcut.", panel.Unavailable);
+        Assert.False(panel.Visible); Assert.False(session.IsActive);
     });
 
     [Fact]

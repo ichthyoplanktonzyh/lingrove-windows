@@ -53,7 +53,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow
                 try { window.ShowDialog(); } finally { await window.RetireAsync(); _reviewBatchWindow = null; }
             }
             catch (OperationCanceledException) { }
-            catch (Exception error) { if (!_retiring) _actionError = error.Message; }
+            catch (Exception error) { if (!_retiring) _actionError = InterfaceFailureText.For(error); }
             finally
             {
                 _reviewBatchWindow = null; _reviewBatchCancellation = null; cancellation.Dispose(); _reviewBatchCompletion = null; _modalDone = null;

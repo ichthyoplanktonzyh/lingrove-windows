@@ -1,3 +1,4 @@
+using Cotabby.App.Localization;
 using System.Net.Http;
 using System.IO;
 using System.Security.Cryptography;
@@ -38,20 +39,20 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
     internal void SuspendForInlineFeature() => DismissPreview();
     private static readonly TimeSpan CapturePollInterval = TimeSpan.FromMilliseconds(400);
     private static readonly ILearningTranslationEngine UnavailableLocalEngine = new UnavailableLocalLearningTranslationEngine();
-    private const string SecureFieldMessage = "Sentence translation is unavailable in secure fields.";
-    private const string OwnFieldMessage = "Lingrove does not translate text from its own windows.";
-    private const string BlockedAppMessage = "Sentence translation is disabled in this app.";
-    private const string TerminalFieldMessage = "Sentence translation is unavailable in terminal apps.";
-    private const string SelectedTextMessage = "The selected text cannot be verified. Select the committed source text again.";
-    private const string IncompleteTextMessage = "The editor did not expose the complete field text, so the current sentence cannot be verified.";
-    private const string UnreliableSelectionMessage = "The editor did not expose a reliable caret position for this sentence.";
-    private const string CompositionMessage = "Finish composing text in a supported editor before translating this sentence.";
-    private const string UnsupportedFieldMessage = "Focus a supported text field and try the sentence shortcut again.";
-    private const string ChangedFieldMessage = "The sentence changed before its preview could open. Try again.";
-    private const string SameLanguageMessage = "Choose different source and target languages in Learning settings.";
-    private const string NoSourceLanguageMessage = "Select at least one source language in Learning settings.";
-    private const string MultiSourceDetectorUnavailableMessage = "Choose one source language to translate. Multiple-language detection is not available on this Windows build.";
-    private const string UncertainSourceLanguageMessage = "The source language is uncertain. Choose one source language or select a clearer sentence.";
+    private static string SecureFieldMessage => InterfaceText.Get("Sentence translation is unavailable in secure fields.", "Learning");
+    private static string OwnFieldMessage => InterfaceText.Get("Lingrove does not translate text from its own windows.", "Learning");
+    private static string BlockedAppMessage => InterfaceText.Get("Sentence translation is disabled in this app.", "Learning");
+    private static string TerminalFieldMessage => InterfaceText.Get("Sentence translation is unavailable in terminal apps.", "Learning");
+    private static string SelectedTextMessage => InterfaceText.Get("The selected text cannot be verified. Select the committed source text again.", "Learning");
+    private static string IncompleteTextMessage => InterfaceText.Get("The editor did not expose the complete field text, so the current sentence cannot be verified.", "Learning");
+    private static string UnreliableSelectionMessage => InterfaceText.Get("The editor did not expose a reliable caret position for this sentence.", "Learning");
+    private static string CompositionMessage => InterfaceText.Get("Finish composing text in a supported editor before translating this sentence.", "Learning");
+    private static string UnsupportedFieldMessage => InterfaceText.Get("Focus a supported text field and try the sentence shortcut again.", "Learning");
+    private static string ChangedFieldMessage => InterfaceText.Get("The sentence changed before its preview could open. Try again.", "Learning");
+    private static string SameLanguageMessage => InterfaceText.Get("Choose different source and target languages in Learning settings.", "Learning");
+    private static string NoSourceLanguageMessage => InterfaceText.Get("Select at least one source language in Learning settings.", "Learning");
+    private static string MultiSourceDetectorUnavailableMessage => InterfaceText.Get("Choose one source language to translate. Multiple-language detection is not available on this Windows build.", "Learning");
+    private static string UncertainSourceLanguageMessage => InterfaceText.Get("The source language is uncertain. Choose one source language or select a clearer sentence.", "Learning");
 
     private readonly IKeyboardHook _hook;
     private readonly IFocusTracker _focus;
@@ -201,7 +202,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
             BeginIntent();
             var anchor = _focus.Current?.CaretRect ?? ScreenRect.Empty;
             EnsureWindow().ShowCaptureFailure(
-                "Sentence translation is off. Enable it in Learning settings before requesting a preview.", anchor);
+                InterfaceText.Get("Sentence translation is off. Enable it in Learning settings before requesting a preview.", "Learning"), anchor);
             return;
         }
 
@@ -536,7 +537,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         }
         catch (LearningTranslationException error)
         {
-            return new CaptureAttempt(null, error.Message, field.CaretRect);
+            return new CaptureAttempt(null, InterfaceFailureText.For(error), field.CaretRect);
         }
         catch (Exception)
         {
@@ -576,7 +577,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
     private string? LearningAvailabilityFailure(LearningRuntimeSettings settings)
     {
         if (!settings.TranslationEnabled)
-            return "Sentence translation is off. Enable it in Learning settings before requesting a preview.";
+            return InterfaceText.Get("Sentence translation is off. Enable it in Learning settings before requesting a preview.", "Learning");
         return SharedAvailabilityFailure(settings);
     }
 
@@ -586,7 +587,13 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
     private string? SharedAvailabilityFailure(LearningRuntimeSettings settings)
     {
         bool batterySaverOn = settings.AvailabilitySettings.PauseOnBatterySaver && _batterySaverOn();
-        return SuggestionAvailability.DisabledReason(settings.AvailabilitySettings, DateTimeOffset.Now, batterySaverOn);
+        return SuggestionAvailability.DisabledReason(settings.AvailabilitySettings, DateTimeOffset.Now, batterySaverOn) switch
+        {
+            "Cotabby is turned off." => InterfaceText.Get("Lingrove is turned off.", "Learning"),
+            "Cotabby is temporarily paused." => InterfaceText.Get("Lingrove is temporarily paused.", "Learning"),
+            "Cotabby is paused because battery saver is on." => InterfaceText.Get("Lingrove is paused because battery saver is on.", "Learning"),
+            var message => message,
+        };
     }
 
     private bool IsBatterySaverPauseActive(LearningRuntimeSettings settings) =>

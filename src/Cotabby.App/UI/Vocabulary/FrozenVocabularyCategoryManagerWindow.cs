@@ -89,7 +89,7 @@ internal sealed class FrozenVocabularyCategoryManagerWindow : Window
     {
         try { var current = await reader.ReadAsync(_readCancellation.Token); if (!_retiring) Accept(current); }
         catch (OperationCanceledException) when (_readCancellation.IsCancellationRequested) { }
-        catch (Exception error) { if (!_retiring) _error.Text = error.Message; }
+        catch (Exception error) { if (!_retiring) _error.Text = InterfaceFailureText.For(error); }
     }
     private void QueueSnapshot(FrozenVocabularyImportSnapshot value)
     {
@@ -137,7 +137,7 @@ internal sealed class FrozenVocabularyCategoryManagerWindow : Window
     {
         _busy = true; _error.Text = ""; Render(); var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously); _mutation = completion.Task;
         try { var snapshot = await _store.UpdateClassificationAsync(edited, baseline, CancellationToken.None); if (!_retiring) Accept(snapshot); }
-        catch (Exception error) { if (!_retiring) _error.Text = error.Message; }
+        catch (Exception error) { if (!_retiring) _error.Text = InterfaceFailureText.For(error); }
         finally { _busy = false; _mutation = null; try { Render(); } finally { completion.TrySetResult(); } }
     }
     private void OnClosing(object? sender, CancelEventArgs e) { if (!_allowClose && (_busy || _childDone is not null || _retiring)) e.Cancel = true; }

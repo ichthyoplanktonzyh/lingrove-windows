@@ -44,7 +44,7 @@ internal abstract class FrozenVocabularySemanticFormWindow : Window
     {
         if (!_save.IsEnabled) return; _saving = true; _failure.Text = ""; UpdateAdmission();
         try { await SubmitAsync(); Saved = true; }
-        catch (Exception error) { if (!_retiring) _failure.Text = error.Message; }
+        catch (Exception error) { if (!_retiring) _failure.Text = InterfaceFailureText.For(error); }
         finally { _saving = false; UpdateAdmission(); }
         if (Saved && !_retiring) Close();
     }

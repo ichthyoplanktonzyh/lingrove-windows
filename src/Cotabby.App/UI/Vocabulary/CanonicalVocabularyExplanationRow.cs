@@ -94,8 +94,8 @@ internal sealed class CanonicalVocabularyExplanationRow : StackPanel, IDisposabl
         _modelDestination.Text = LearningModelDestinationText.Explanation(_owner.Profile);
         var action = LearningExplanationCardPolicy.Action(state, _owner.IsConfigured);
         _generate.Content = state.IsGenerating ? "■" : "✦"; _generate.IsEnabled = action != LearningExplanationCardAction.None;
-        string label = LearningExplanationCardPolicy.Label(state, _owner.IsConfigured);
-        _generate.ToolTip = state.ErrorMessage is not null && _owner.IsConfigured && !state.IsGenerating ? label + "\n" + state.ErrorMessage : label;
+        string label = InterfaceText.Get(LearningExplanationCardPolicy.Label(state, _owner.IsConfigured), "Learning");
+        _generate.ToolTip = state.ErrorMessage is not null && _owner.IsConfigured && !state.IsGenerating ? label + "\n" + InterfaceFailureText.ExplanationState(state.ErrorMessage) : label;
         System.Windows.Automation.AutomationProperties.SetName(_generate, label);
         string? supplied = !_standalone && (_alwaysAuthored || state.Record is null) ? _authoredMeaning : null;
         Set(_meaning, supplied ?? state.Record?.Result.Meaning ?? "", supplied is null ? state.Record?.Language : _authoredLanguage);
@@ -107,7 +107,7 @@ internal sealed class CanonicalVocabularyExplanationRow : StackPanel, IDisposabl
         Set(_proposal, proposal ? record!.Result.Meaning : "", record?.Language);
         _replace.Visibility = proposal ? Visibility.Visible : Visibility.Collapsed; _replace.IsEnabled = !_adopting;
         Set(_prose, record?.Result.Explanation ?? "", record?.Language);
-        _status.Text = _adopting ? InterfaceText.Get("Saving meaning…", "Vocabulary") : _adoptionError ?? (state.IsGenerating ? InterfaceText.Get("Explaining…", "Vocabulary") : state.ErrorMessage ?? (_owner.HasUnavailableSavedRecord(_key) ? InterfaceText.Get("A saved explanation has a date unavailable for display on Windows.", "Vocabulary") : ""));
+        _status.Text = _adopting ? InterfaceText.Get("Saving meaning…", "Vocabulary") : _adoptionError ?? (state.IsGenerating ? InterfaceText.Get("Explaining…", "Vocabulary") : InterfaceFailureText.ExplanationState(state.ErrorMessage) ?? (_owner.HasUnavailableSavedRecord(_key) ? InterfaceText.Get("A saved explanation has a date unavailable for display on Windows.", "Vocabulary") : ""));
         _status.Visibility = _status.Text.Length == 0 ? Visibility.Collapsed : Visibility.Visible;
     }
     private void OnGenerate(object sender, RoutedEventArgs args)
@@ -144,7 +144,7 @@ internal sealed class CanonicalVocabularyExplanationRow : StackPanel, IDisposabl
             {
                 if (!owner.TryGetTarget(out var row) || row._disposed) return;
                 row._adopting = false;
-                if (row._session.State.Input == record.Input) row._adoptionError = saved ? null : "The contextual meaning could not be updated.";
+                if (row._session.State.Input == record.Input) row._adoptionError = saved ? null : InterfaceText.Get("The contextual meaning could not be updated.", "Vocabulary");
                 if (row.Current()) row.Render(row._session.State);
             }, DispatcherPriority.DataBind, token).Task.ConfigureAwait(false);
         }

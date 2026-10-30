@@ -175,6 +175,15 @@ the initial gap audit; its initial Windows gap descriptions are historical. Curr
 - The [Windows development build](WINDOWS_DEV_BUILD_3B.md) explicitly builds, checks and embeds
   the independent CPU speech helper into the existing app-relative runtime path. It creates no
   installer, release or uploaded artifact, and downloads no model weights.
+- #163 merged the combined auxiliary interface/OLE lifetime and developer-build candidate after
+  all four checks passed at `8e5d5ec1b8aecd506708d26fede91addc3a5f9a3`, as `8cae34d`.
+  It includes the complete #162 ancestor (`82ceb4b`), independently reviewed with WPF 1236/1236;
+  GitHub also marked that ancestor PR merged. The independent developer command passed all 14
+  model-free native checks. Its superseded duplicate Mac attempt is not the combined validation.
+- The [workflow failure interface pass](WORKFLOW_FAILURE_INTERFACE_3B.md) connects typed and fixed
+  status/error messages across current writing, reading, expression, speech and notebook paths.
+  All prior resources remain intact; 55 authored keys bring the Windows supplement to 518 in
+  fifteen locales. Further fixed review/controller copy and physical acceptance remain distinct.
 - Remaining work includes native host/provider acceptance,
   full interface-language coverage, native automatic language
   confidence, Apple's unavailable system dictionary and the explicitly documented media/native gaps.

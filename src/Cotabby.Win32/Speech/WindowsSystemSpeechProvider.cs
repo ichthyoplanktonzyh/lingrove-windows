@@ -14,6 +14,8 @@ public sealed class WindowsSystemSpeechProvider : ISpeechProviding, IAsyncDispos
     private readonly SynchronizationContext _context = SynchronizationContext.Current
         ?? throw new InvalidOperationException("Speech requires a UI context.");
     private readonly object _gate = new();
+    // Only fixed adapter-owned literals reach this optional presentation callback.
+    private readonly Func<string, string> _failureText = key => key;
     private sealed record Pending(string Text, string VoiceId, double Rate, SpeechPlaybackToken Token, Func<bool>? Admission);
     private Pending? _pending;
     private Task? _pump;
@@ -26,9 +28,12 @@ public sealed class WindowsSystemSpeechProvider : ISpeechProviding, IAsyncDispos
     public Action<SpeechProviderEvent>? EventHandler { get; set; }
 
     public WindowsSystemSpeechProvider() { _catalog = Catalog; _speak = SpeakCore; }
+    public WindowsSystemSpeechProvider(Func<string, string> failureText) : this()
+    { _failureText = failureText ?? throw new ArgumentNullException(nameof(failureText)); }
     internal WindowsSystemSpeechProvider(Func<IReadOnlyList<SpeechVoice>> catalog,
-        Action<string, string, double, SpeechPlaybackToken, CancellationToken, Func<bool>?> speak)
-    { _catalog = catalog; _speak = speak; }
+        Action<string, string, double, SpeechPlaybackToken, CancellationToken, Func<bool>?> speak,
+        Func<string, string>? failureText = null)
+    { _catalog = catalog; _speak = speak; _failureText = failureText ?? (key => key); }
 
     public IReadOnlyList<SpeechVoice> RefreshVoices()
     {
@@ -65,7 +70,7 @@ public sealed class WindowsSystemSpeechProvider : ISpeechProviding, IAsyncDispos
                 await WindowsSpeechMta.RunAsync(() => { SpeechAdmission.Require(item.Admission); _speak(item.Text, item.VoiceId, item.Rate, item.Token, cancellation.Token, item.Admission); return true; }, CancellationToken.None).ConfigureAwait(false);
             }
             catch (OperationCanceledException) { Post(new SpeechProviderEvent.Cancelled(item.Token)); }
-            catch { Post(new SpeechProviderEvent.Failed(item.Token, "Unable to play the selected system voice.")); }
+            catch { Post(new SpeechProviderEvent.Failed(item.Token, _failureText("Unable to play the selected system voice."))); }
             finally { lock (_gate) { if (ReferenceEquals(_active, cancellation)) _active = null; if (_token == item.Token && _pending is null) _token = null; } cancellation.Dispose(); }
         }
     }
@@ -121,7 +126,7 @@ public sealed class WindowsSystemSpeechProvider : ISpeechProviding, IAsyncDispos
             cancellation.ThrowIfCancellationRequested(); Post(new SpeechProviderEvent.Finished(token));
         }
         catch (OperationCanceledException) { Post(new SpeechProviderEvent.Cancelled(token)); }
-        catch (Exception) { Post(new SpeechProviderEvent.Failed(token, "Unable to play the selected system voice.")); }
+        catch (Exception) { Post(new SpeechProviderEvent.Failed(token, _failureText("Unable to play the selected system voice."))); }
         finally { Release(selected); Release(voices); Release(synth); }
     }
     private static void Release(object? value) { if (value is not null && Marshal.IsComObject(value)) Marshal.FinalReleaseComObject(value); }

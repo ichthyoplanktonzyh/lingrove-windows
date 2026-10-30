@@ -74,7 +74,7 @@ internal sealed class FrozenVocabularyBrowserSession : IDisposable
     private async Task LoadCoreAsync()
     {
         Verify(); try { var snapshot = await _store.ReadAsync(_load.Token); if (Active) Accept(snapshot); }
-        catch (Exception error) { if (Active && error is not OperationCanceledException) { Loading = false; Failure = error.Message; Notify(); } }
+        catch (Exception error) { if (Active && error is not OperationCanceledException) { Loading = false; Failure = Cotabby.App.Localization.InterfaceFailureText.For(error); Notify(); } }
     }
     internal async Task RevealAsync(VocabularyInputResult result)
     {

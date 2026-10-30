@@ -117,14 +117,16 @@ public sealed class SpeechPCMPlayerTests
         using var ui = new BatchUiContext();
         await ui.RunAsync(async deadline =>
         {
-            var renderer = new GatedRenderer(); var player = new SpeechPCMPlayer(renderer); var events = new List<SpeechProviderEvent>(); int owner = Environment.CurrentManagedThreadId;
+            var renderer = new GatedRenderer(); var player = new SpeechPCMPlayer(renderer, failure =>
+            { Assert.Equal(SpeechFailure.InvalidAudio, failure); return "Localized invalid audio"; });
+            var events = new List<SpeechProviderEvent>(); int owner = Environment.CurrentManagedThreadId;
             player.EventHandler = e => { Assert.Equal(owner, Environment.CurrentManagedThreadId); events.Add(e); };
             var token = new SpeechPlaybackToken(); player.Begin(24000, 1, token);
             try
             {
                 await WaitAsync(() => renderer.Preparations.Count == 1, deadline);
                 await Task.Run(() => renderer.Preparations[0].Invalidated(), deadline);
-                Assert.IsType<SpeechProviderEvent.Failed>(Assert.Single(events));
+                Assert.Equal("Localized invalid audio", Assert.IsType<SpeechProviderEvent.Failed>(Assert.Single(events)).Message);
                 player.Shutdown(); var drain = player.DrainAsync(); Assert.False(drain.IsCompleted);
                 renderer.ReleaseAll(); await drain;
                 Assert.Contains(renderer.Stops, stop => stop.Release); Assert.Empty(renderer.Enqueues);

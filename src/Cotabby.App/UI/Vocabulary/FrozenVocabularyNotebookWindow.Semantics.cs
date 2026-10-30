@@ -231,7 +231,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow
         if (!CanSemantic || _store is not ICanonicalVocabularySemanticStore store) return;
         long epoch = _actionSelectionEpoch; _semanticBusy = true; var done = _semanticCompletion = new(TaskCreationOptions.RunContinuationsAsynchronously); _actionError = null;
         try { _session.Refresh(); await store.UpdateSemanticsAsync(edited, baseline, CancellationToken.None); if (!_retiring) await _session.LoadAsync(); }
-        catch (Exception e) { if (!_retiring && epoch == _actionSelectionEpoch) _actionError = e.Message; }
+        catch (Exception e) { if (!_retiring && epoch == _actionSelectionEpoch) _actionError = InterfaceFailureText.For(e); }
         finally { _semanticBusy = false; _semanticCompletion = null; try { if (!_retiring) _session.Refresh(); } finally { done.TrySetResult(); } }
     }
 }

@@ -1,4 +1,5 @@
 using System.IO;
+using Cotabby.App.Localization;
 using System.Windows.Threading;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Vocabulary.Frozen;
@@ -28,7 +29,7 @@ internal sealed class CanonicalVocabularyFeature : IAsyncDisposable
         IVocabularyNotebookListPreferences listPreferences, IReadOnlyList<LearningLanguage> preferredLanguages)
     {
         _backend = FrozenVocabularyStoreFactory.Create(path);
-        Writing = new(_backend, ui);
+        Writing = new(_backend, ui, failure => InterfaceFailureText.For(new Cotabby.Core.Vocabulary.VocabularyException(failure)));
         Window = new(_backend, dispatcher, new WindowsVocabularyWordListReader(), listPreferences, preferredLanguages);
         Window.AttachClipboard(_clipboard);
         Writing.OpenSelection = Window.Show;

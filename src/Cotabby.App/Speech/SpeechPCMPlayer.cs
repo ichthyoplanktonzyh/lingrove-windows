@@ -13,6 +13,7 @@ namespace Cotabby.App.Speech;
 internal sealed class SpeechPCMPlayer : ISpeechPCMPlaying
 {
     private readonly ISpeechPCMRendering _renderer;
+    private readonly Func<SpeechFailure, string> _failureText;
     private readonly SynchronizationContext _context;
     private readonly int _ownerThread;
     private readonly HashSet<OwnedWork> _work = [];
@@ -35,8 +36,9 @@ internal sealed class SpeechPCMPlayer : ISpeechPCMPlaying
         set { RequireOwner(); _eventHandler = value; }
     }
 
-    internal SpeechPCMPlayer(ISpeechPCMRendering renderer)
+    internal SpeechPCMPlayer(ISpeechPCMRendering renderer, Func<SpeechFailure, string>? failureText = null)
     {
+        _failureText = failureText ?? (failure => new SpeechException(failure).Message);
         _context = SynchronizationContext.Current ?? throw new InvalidOperationException("PCM playback requires a serial UI context.");
         _ownerThread = Environment.CurrentManagedThreadId;
         _renderer = renderer;
@@ -178,7 +180,7 @@ internal sealed class SpeechPCMPlayer : ISpeechPCMPlaying
     private void Failed(SpeechPlaybackToken token)
     {
         if (_token != token) return;
-        Stop(); _eventHandler?.Invoke(new SpeechProviderEvent.Failed(token, InvalidAudio().Message));
+        Stop(); _eventHandler?.Invoke(new SpeechProviderEvent.Failed(token, _failureText(SpeechFailure.InvalidAudio)));
     }
     private static SpeechException InvalidAudio() => new(SpeechFailure.InvalidAudio);
     private void RequireOwner()

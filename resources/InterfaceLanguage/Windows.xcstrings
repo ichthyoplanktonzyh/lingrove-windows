@@ -43826,6 +43826,5231 @@
           }
         }
       }
+    },
+    "This field cannot safely replace this sentence here. Copy the translation instead.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This field cannot safely replace this sentence here. Copy the translation instead."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此输入框无法在此安全替换句子。请改为复制译文。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此輸入框無法在此安全取代句子。請改為複製譯文。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "この入力欄では文を安全に置換できません。翻訳をコピーしてください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 입력란에서는 문장을 안전하게 바꿀 수 없습니다. 번역을 복사하세요."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce champ ne permet pas de remplacer cette phrase en toute sécurité. Copiez la traduction."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In diesem Feld lässt sich der Satz hier nicht sicher ersetzen. Kopieren Sie die Übersetzung."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Este campo no permite sustituir la oración de forma segura aquí. Copia la traducción."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Este campo não permite substituir a frase com segurança aqui. Copie a tradução."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Questo campo non consente di sostituire la frase in sicurezza qui. Copia la traduzione."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "В этом поле нельзя безопасно заменить предложение. Скопируйте перевод."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا يمكن استبدال هذه الجملة بأمان في هذا الحقل. انسخ الترجمة بدلاً من ذلك."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "इस फ़ील्ड में इस वाक्य को सुरक्षित रूप से बदला नहीं जा सकता। इसके बजाय अनुवाद कॉपी करें।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bidang ini tidak dapat mengganti kalimat dengan aman di sini. Salin terjemahannya."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu alanda bu cümle güvenle değiştirilemiyor. Bunun yerine çeviriyi kopyalayın."
+          }
+        }
+      }
+    },
+    "Could not verify the replacement. Check the editor; use Copy instead of replacing again.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not verify the replacement. Check the editor; use Copy instead of replacing again."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法确认替换结果。请检查编辑器；使用复制，不要再次替换。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法確認取代結果。請檢查編輯器；使用複製，不要再次取代。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "置換結果を確認できませんでした。エディターを確認し、再度置換せずコピーしてください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "바꾸기 결과를 확인할 수 없습니다. 편집기를 확인하고 다시 바꾸지 말고 복사하세요."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le remplacement n’a pas pu être vérifié. Vérifiez l’éditeur ; utilisez Copier sans réessayer le remplacement."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das Ersetzen konnte nicht bestätigt werden. Prüfen Sie den Editor; verwenden Sie Kopieren statt erneut zu ersetzen."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se pudo verificar la sustitución. Revisa el editor; usa Copiar en lugar de volver a sustituir."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não foi possível verificar a substituição. Confira o editor; use Copiar em vez de substituir novamente."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossibile verificare la sostituzione. Controlla l’editor; usa Copia invece di sostituire di nuovo."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не удалось проверить замену. Проверьте редактор; используйте копирование, не повторяя замену."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّر التحقق من الاستبدال. افحص المحرر واستخدم النسخ بدلاً من إعادة الاستبدال."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "बदलाव की पुष्टि नहीं हो सकी। संपादक जाँचें; दोबारा बदलने के बजाय कॉपी करें।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Penggantian tidak dapat diverifikasi. Periksa editor; gunakan Salin alih-alih mengganti lagi."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Değiştirme doğrulanamadı. Düzenleyiciyi kontrol edin; tekrar değiştirmek yerine Kopyala’yı kullanın."
+          }
+        }
+      }
+    },
+    "This editor could not safely select the source. No text was replaced. Copy the translation or select the source again.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This editor could not safely select the source. No text was replaced. Copy the translation or select the source again."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此编辑器无法安全选中原文。未替换任何文字。请复制译文或重新选择原文。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此編輯器無法安全選取原文。未取代任何文字。請複製譯文或重新選取原文。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このエディターでは原文を安全に選択できませんでした。文字は置換されていません。翻訳をコピーするか、原文を選び直してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 편집기에서는 원문을 안전하게 선택할 수 없습니다. 텍스트는 바뀌지 않았습니다. 번역을 복사하거나 원문을 다시 선택하세요."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cet éditeur n’a pas pu sélectionner le texte source en toute sécurité. Aucun texte n’a été remplacé. Copiez la traduction ou sélectionnez à nouveau la source."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieser Editor konnte den Ausgangstext nicht sicher auswählen. Es wurde kein Text ersetzt. Kopieren Sie die Übersetzung oder wählen Sie den Ausgangstext erneut aus."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Este editor no pudo seleccionar el original de forma segura. No se sustituyó ningún texto. Copia la traducción o vuelve a seleccionar el original."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Este editor não conseguiu selecionar o original com segurança. Nenhum texto foi substituído. Copie a tradução ou selecione o original novamente."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Questo editor non ha potuto selezionare il testo originale in sicurezza. Nessun testo è stato sostituito. Copia la traduzione o seleziona di nuovo l’originale."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Редактор не смог безопасно выделить исходный текст. Текст не заменён. Скопируйте перевод или выделите оригинал заново."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّر على هذا المحرر تحديد النص الأصلي بأمان. لم يُستبدل أي نص. انسخ الترجمة أو أعد تحديد النص الأصلي."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "यह संपादक मूल पाठ को सुरक्षित रूप से नहीं चुन सका। कोई पाठ नहीं बदला गया। अनुवाद कॉपी करें या मूल पाठ फिर चुनें।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Editor ini tidak dapat memilih teks sumber dengan aman. Tidak ada teks yang diganti. Salin terjemahan atau pilih sumber lagi."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu düzenleyici kaynak metni güvenle seçemedi. Hiçbir metin değiştirilmedi. Çeviriyi kopyalayın veya kaynağı yeniden seçin."
+          }
+        }
+      }
+    },
+    "Sentence translation is unavailable in secure fields.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sentence translation is unavailable in secure fields."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "安全输入框中无法使用句子翻译。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "安全輸入框中無法使用句子翻譯。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "保護された入力欄では文の翻訳を利用できません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "보안 입력란에서는 문장 번역을 사용할 수 없습니다."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La traduction de phrases est indisponible dans les champs sécurisés."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In geschützten Feldern ist die Satzübersetzung nicht verfügbar."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La traducción de oraciones no está disponible en campos seguros."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A tradução de frases não está disponível em campos seguros."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La traduzione delle frasi non è disponibile nei campi protetti."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Перевод предложений недоступен в защищённых полях."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ترجمة الجمل غير متاحة في الحقول الآمنة."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "सुरक्षित फ़ील्ड में वाक्य अनुवाद उपलब्ध नहीं है।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terjemahan kalimat tidak tersedia di bidang aman."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Güvenli alanlarda cümle çevirisi kullanılamaz."
+          }
+        }
+      }
+    },
+    "Lingrove does not translate text from its own windows.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove does not translate text from its own windows."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove 不翻译其自身窗口中的文字。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove 不翻譯其自身視窗中的文字。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove 自身のウィンドウの文字は翻訳しません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove는 자체 창의 텍스트를 번역하지 않습니다."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove ne traduit pas le texte de ses propres fenêtres."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove übersetzt keinen Text aus seinen eigenen Fenstern."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove no traduce el texto de sus propias ventanas."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Lingrove não traduz o texto de suas próprias janelas."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove non traduce il testo delle proprie finestre."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove не переводит текст в собственных окнах."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا يترجم Lingrove النص من نوافذه الخاصة."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove अपनी विंडो के पाठ का अनुवाद नहीं करता।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove tidak menerjemahkan teks dari jendelanya sendiri."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove kendi pencerelerindeki metni çevirmez."
+          }
+        }
+      }
+    },
+    "Sentence translation is disabled in this app.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sentence translation is disabled in this app."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此应用中已停用句子翻译。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此應用程式中已停用句子翻譯。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このアプリでは文の翻訳が無効です。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 앱에서는 문장 번역이 비활성화되어 있습니다."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La traduction de phrases est désactivée dans cette application."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Satzübersetzung ist in dieser App deaktiviert."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La traducción de oraciones está desactivada en esta aplicación."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A tradução de frases está desativada neste aplicativo."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La traduzione delle frasi è disattivata in questa app."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Перевод предложений отключён в этом приложении."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ترجمة الجمل معطلة في هذا التطبيق."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "इस ऐप में वाक्य अनुवाद बंद है।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terjemahan kalimat dinonaktifkan di aplikasi ini."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu uygulamada cümle çevirisi devre dışıdır."
+          }
+        }
+      }
+    },
+    "Sentence translation is unavailable in terminal apps.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sentence translation is unavailable in terminal apps."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "终端应用中无法使用句子翻译。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "終端機應用程式中無法使用句子翻譯。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ターミナルアプリでは文の翻訳を利用できません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "터미널 앱에서는 문장 번역을 사용할 수 없습니다."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La traduction de phrases est indisponible dans les applications de terminal."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In Terminal-Apps ist die Satzübersetzung nicht verfügbar."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La traducción de oraciones no está disponible en aplicaciones de terminal."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A tradução de frases não está disponível em aplicativos de terminal."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La traduzione delle frasi non è disponibile nelle app di terminale."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Перевод предложений недоступен в терминальных приложениях."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ترجمة الجمل غير متاحة في تطبيقات الطرفية."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "टर्मिनल ऐप में वाक्य अनुवाद उपलब्ध नहीं है।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terjemahan kalimat tidak tersedia di aplikasi terminal."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terminal uygulamalarında cümle çevirisi kullanılamaz."
+          }
+        }
+      }
+    },
+    "The selected text cannot be verified. Select the committed source text again.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The selected text cannot be verified. Select the committed source text again."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法确认选中的文字。请重新选择已提交的原文。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法確認選取的文字。請重新選取已提交的原文。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "選択した文字を確認できません。確定済みの原文を選び直してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "선택한 텍스트를 확인할 수 없습니다. 입력이 확정된 원문을 다시 선택하세요."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le texte sélectionné n’a pas pu être vérifié. Sélectionnez à nouveau le texte source dont la saisie est validée."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der ausgewählte Text konnte nicht bestätigt werden. Wählen Sie den bereits bestätigten Ausgangstext erneut aus."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se puede verificar el texto seleccionado. Vuelve a seleccionar el texto original cuya entrada ya esté confirmada."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não foi possível verificar o texto selecionado. Selecione novamente o original cuja digitação já esteja confirmada."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossibile verificare il testo selezionato. Seleziona di nuovo il testo originale la cui immissione è già confermata."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не удалось проверить выделенный текст. Заново выделите исходный текст с завершённым вводом."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّر التحقق من النص المحدد. أعد تحديد النص الأصلي بعد تثبيت إدخاله."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "चुने गए पाठ की पुष्टि नहीं हो सकती। पुष्टि किया हुआ मूल पाठ फिर चुनें।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Teks yang dipilih tidak dapat diverifikasi. Pilih lagi teks sumber yang pengetikannya telah dikonfirmasi."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seçili metin doğrulanamıyor. Girişi tamamlanmış kaynak metni yeniden seçin."
+          }
+        }
+      }
+    },
+    "The editor did not expose the complete field text, so the current sentence cannot be verified.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The editor did not expose the complete field text, so the current sentence cannot be verified."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "编辑器未提供完整的输入框文字，无法确认当前句子。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "編輯器未提供完整的輸入框文字，無法確認目前句子。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "エディターが入力欄の全文を公開していないため、現在の文を確認できません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "편집기가 입력란의 전체 텍스트를 제공하지 않아 현재 문장을 확인할 수 없습니다."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’éditeur n’a pas fourni tout le texte du champ ; la phrase actuelle ne peut pas être vérifiée."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Editor hat nicht den vollständigen Feldtext bereitgestellt; der aktuelle Satz lässt sich daher nicht bestätigen."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El editor no proporcionó todo el texto del campo, por lo que no se puede verificar la oración actual."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O editor não forneceu todo o texto do campo, então não é possível verificar a frase atual."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’editor non ha fornito tutto il testo del campo, quindi non è possibile verificare la frase attuale."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Редактор не предоставил весь текст поля, поэтому текущее предложение нельзя проверить."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لم يوفّر المحرر النص الكامل للحقل، لذا لا يمكن التحقق من الجملة الحالية."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "संपादक ने फ़ील्ड का पूरा पाठ नहीं दिया, इसलिए मौजूदा वाक्य की पुष्टि नहीं हो सकती।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Editor tidak menyediakan seluruh teks bidang, sehingga kalimat saat ini tidak dapat diverifikasi."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Düzenleyici alandaki metnin tamamını sunmadığından geçerli cümle doğrulanamıyor."
+          }
+        }
+      }
+    },
+    "The editor did not expose a reliable caret position for this sentence.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The editor did not expose a reliable caret position for this sentence."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "编辑器未提供此句子可靠的光标位置。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "編輯器未提供此句子可靠的游標位置。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "エディターからこの文の信頼できるカーソル位置を取得できませんでした。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "편집기가 이 문장의 신뢰할 수 있는 커서 위치를 제공하지 않았습니다."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’éditeur n’a pas fourni de position fiable du curseur pour cette phrase."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Editor hat keine verlässliche Cursorposition für diesen Satz bereitgestellt."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El editor no proporcionó una posición fiable del cursor para esta oración."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O editor não forneceu uma posição confiável do cursor para esta frase."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’editor non ha fornito una posizione affidabile del cursore per questa frase."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Редактор не предоставил достоверную позицию курсора для этого предложения."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لم يوفّر المحرر موضعًا موثوقًا لمؤشر الكتابة في هذه الجملة."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "संपादक ने इस वाक्य के लिए विश्वसनीय कर्सर स्थिति नहीं दी।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Editor tidak menyediakan posisi kursor yang andal untuk kalimat ini."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Düzenleyici bu cümle için güvenilir bir imleç konumu sunmadı."
+          }
+        }
+      }
+    },
+    "Finish composing text in a supported editor before translating this sentence.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finish composing text in a supported editor before translating this sentence."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请先在支持的编辑器中完成输入，再翻译此句子。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "請先在支援的編輯器中完成輸入，再翻譯此句子。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "対応するエディターで文字の入力を確定してから、この文を翻訳してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "지원되는 편집기에서 입력을 확정한 후 이 문장을 번역하세요."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terminez la composition du texte dans un éditeur compatible avant de traduire cette phrase."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schließen Sie die Texteingabe in einem unterstützten Editor ab, bevor Sie diesen Satz übersetzen."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Termina de componer el texto en un editor compatible antes de traducir esta oración."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conclua a composição do texto em um editor compatível antes de traduzir esta frase."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Termina la composizione del testo in un editor supportato prima di tradurre questa frase."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Завершите ввод текста в поддерживаемом редакторе, прежде чем переводить предложение."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أكمل تركيب النص في محرر مدعوم قبل ترجمة هذه الجملة."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "इस वाक्य का अनुवाद करने से पहले समर्थित संपादक में पाठ लिखना पूरा करें।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selesaikan penyusunan teks di editor yang didukung sebelum menerjemahkan kalimat ini."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu cümleyi çevirmeden önce desteklenen bir düzenleyicide metin girişini tamamlayın."
+          }
+        }
+      }
+    },
+    "Focus a supported text field and try the sentence shortcut again.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Focus a supported text field and try the sentence shortcut again."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请聚焦支持的输入框，然后重试句子快捷键。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "請聚焦支援的輸入框，然後重試句子快速鍵。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "対応する入力欄にフォーカスし、文のショートカットを再試行してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "지원되는 입력란에 초점을 맞춘 후 문장 단축키를 다시 누르세요."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Activez un champ de texte compatible, puis réessayez le raccourci de phrase."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aktivieren Sie ein unterstütztes Textfeld und versuchen Sie das Satz-Tastenkürzel erneut."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Activa un campo de texto compatible y vuelve a probar el atajo de oración."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ative um campo de texto compatível e tente o atalho de frase novamente."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Attiva un campo di testo supportato e riprova la scorciatoia per le frasi."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Переведите фокус в поддерживаемое текстовое поле и повторите сочетание клавиш для предложения."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "انقل التركيز إلى حقل نص مدعوم ثم أعد تجربة اختصار الجملة."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "समर्थित पाठ फ़ील्ड पर फ़ोकस करें और वाक्य शॉर्टकट फिर आज़माएँ।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fokuskan bidang teks yang didukung lalu coba pintasan kalimat lagi."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Desteklenen bir metin alanına odaklanın ve cümle kısayolunu tekrar deneyin."
+          }
+        }
+      }
+    },
+    "The sentence changed before its preview could open. Try again.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The sentence changed before its preview could open. Try again."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "预览打开前句子已发生变化。请重试。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "預覽開啟前句子已發生變更。請重試。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "プレビューが開く前に文が変更されました。再試行してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "미리보기가 열리기 전에 문장이 변경되었습니다. 다시 시도하세요."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La phrase a changé avant l’ouverture de l’aperçu. Réessayez."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Satz wurde vor dem Öffnen der Vorschau geändert. Versuchen Sie es erneut."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La oración cambió antes de abrirse la vista previa. Inténtalo de nuevo."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A frase mudou antes de a prévia abrir. Tente novamente."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La frase è cambiata prima dell’apertura dell’anteprima. Riprova."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Предложение изменилось до открытия предпросмотра. Повторите попытку."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تغيّرت الجملة قبل فتح المعاينة. حاول مجددًا."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "पूर्वावलोकन खुलने से पहले वाक्य बदल गया। फिर कोशिश करें।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kalimat berubah sebelum pratinjau terbuka. Coba lagi."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Önizleme açılmadan önce cümle değişti. Tekrar deneyin."
+          }
+        }
+      }
+    },
+    "Choose different source and target languages in Learning settings.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose different source and target languages in Learning settings."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请在学习设置中选择不同的源语言和目标语言。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "請在學習設定中選擇不同的來源語言與目標語言。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "学習設定で異なる翻訳元言語と翻訳先言語を選んでください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "학습 설정에서 서로 다른 원문 언어와 번역 언어를 선택하세요."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisissez des langues source et cible différentes dans les réglages d’apprentissage."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wählen Sie in den Lerneinstellungen unterschiedliche Ausgangs- und Zielsprachen."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elige idiomas de origen y destino diferentes en los ajustes de aprendizaje."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Escolha idiomas de origem e destino diferentes nas configurações de aprendizado."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scegli lingue di origine e destinazione diverse nelle impostazioni di apprendimento."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Выберите разные исходный и целевой языки в настройках обучения."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اختر لغتين مختلفتين للمصدر والهدف في إعدادات التعلم."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "सीखने की सेटिंग में अलग-अलग स्रोत और लक्ष्य भाषाएँ चुनें।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pilih bahasa sumber dan target yang berbeda di pengaturan pembelajaran."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Öğrenme ayarlarında farklı kaynak ve hedef diller seçin."
+          }
+        }
+      }
+    },
+    "Select at least one source language in Learning settings.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Select at least one source language in Learning settings."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请在学习设置中至少选择一种源语言。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "請在學習設定中至少選擇一種來源語言。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "学習設定で翻訳元言語を少なくとも1つ選んでください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "학습 설정에서 원문 언어를 하나 이상 선택하세요."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sélectionnez au moins une langue source dans les réglages d’apprentissage."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wählen Sie in den Lerneinstellungen mindestens eine Ausgangssprache."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selecciona al menos un idioma de origen en los ajustes de aprendizaje."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selecione pelo menos um idioma de origem nas configurações de aprendizado."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seleziona almeno una lingua di origine nelle impostazioni di apprendimento."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Выберите хотя бы один исходный язык в настройках обучения."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حدد لغة مصدر واحدة على الأقل في إعدادات التعلم."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "सीखने की सेटिंग में कम से कम एक स्रोत भाषा चुनें।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pilih setidaknya satu bahasa sumber di pengaturan pembelajaran."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Öğrenme ayarlarında en az bir kaynak dil seçin."
+          }
+        }
+      }
+    },
+    "Choose one source language to translate. Multiple-language detection is not available on this Windows build.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose one source language to translate. Multiple-language detection is not available on this Windows build."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请选择一种源语言进行翻译。此 Windows 版本不支持多语言检测。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "請選擇一種來源語言進行翻譯。此 Windows 版本不支援多語言偵測。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "翻訳元言語を1つ選んでください。この Windows ビルドでは複数言語の検出を利用できません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "번역할 원문 언어를 하나 선택하세요. 이 Windows 빌드에서는 여러 언어 감지를 사용할 수 없습니다."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisissez une langue source à traduire. Cette version Windows ne permet pas la détection multilingue."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wählen Sie eine Ausgangssprache zum Übersetzen. Diese Windows-Version unterstützt keine Erkennung mehrerer Sprachen."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elige un idioma de origen para traducir. Esta versión de Windows no admite la detección multilingüe."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Escolha um idioma de origem para traduzir. Esta versão do Windows não oferece detecção de vários idiomas."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scegli una lingua di origine da tradurre. Questa versione di Windows non supporta il rilevamento multilingue."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Выберите один исходный язык для перевода. В этой сборке Windows определение нескольких языков недоступно."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اختر لغة مصدر واحدة للترجمة. اكتشاف لغات متعددة غير متاح في إصدار Windows هذا."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "अनुवाद के लिए एक स्रोत भाषा चुनें। इस Windows बिल्ड में कई भाषाओं की पहचान उपलब्ध नहीं है।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pilih satu bahasa sumber untuk diterjemahkan. Deteksi beberapa bahasa tidak tersedia pada build Windows ini."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çevirmek için bir kaynak dil seçin. Bu Windows derlemesinde çoklu dil algılama kullanılamaz."
+          }
+        }
+      }
+    },
+    "The source language is uncertain. Choose one source language or select a clearer sentence.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The source language is uncertain. Choose one source language or select a clearer sentence."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法确定源语言。请选择一种源语言，或选择更明确的句子。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法確定來源語言。請選擇一種來源語言，或選擇更明確的句子。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "翻訳元言語を特定できません。言語を1つ選ぶか、より明確な文を選んでください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "원문 언어가 불확실합니다. 원문 언어를 하나 선택하거나 더 명확한 문장을 선택하세요."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La langue source est incertaine. Choisissez une langue source ou une phrase plus claire."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Ausgangssprache ist unklar. Wählen Sie eine Ausgangssprache oder einen eindeutigeren Satz."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El idioma de origen es incierto. Elige uno o selecciona una oración más clara."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O idioma de origem é incerto. Escolha um idioma ou selecione uma frase mais clara."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La lingua di origine è incerta. Scegli una lingua o seleziona una frase più chiara."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Исходный язык не определён однозначно. Выберите один язык или более понятное предложение."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لغة المصدر غير مؤكدة. اختر لغة مصدر واحدة أو حدد جملة أوضح."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "स्रोत भाषा स्पष्ट नहीं है। एक स्रोत भाषा चुनें या अधिक स्पष्ट वाक्य चुनें।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bahasa sumber belum pasti. Pilih satu bahasa sumber atau kalimat yang lebih jelas."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaynak dil belirsiz. Bir kaynak dil veya daha anlaşılır bir cümle seçin."
+          }
+        }
+      }
+    },
+    "Sentence translation is off. Enable it in Learning settings before requesting a preview.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sentence translation is off. Enable it in Learning settings before requesting a preview."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "句子翻译已关闭。请先在学习设置中启用，再请求预览。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "句子翻譯已關閉。請先在學習設定中啟用，再要求預覽。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "文の翻訳はオフです。プレビューを要求する前に学習設定で有効にしてください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "문장 번역이 꺼져 있습니다. 미리보기를 요청하기 전에 학습 설정에서 켜세요."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La traduction de phrases est désactivée. Activez-la dans les réglages d’apprentissage avant de demander un aperçu."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Satzübersetzung ist ausgeschaltet. Aktivieren Sie sie in den Lerneinstellungen, bevor Sie eine Vorschau anfordern."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La traducción de oraciones está desactivada. Actívala en los ajustes de aprendizaje antes de solicitar una vista previa."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A tradução de frases está desativada. Ative-a nas configurações de aprendizado antes de solicitar uma prévia."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La traduzione delle frasi è disattivata. Attivala nelle impostazioni di apprendimento prima di richiedere un’anteprima."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Перевод предложений отключён. Включите его в настройках обучения перед запросом предпросмотра."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ترجمة الجمل متوقفة. فعّلها في إعدادات التعلم قبل طلب المعاينة."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "वाक्य अनुवाद बंद है। पूर्वावलोकन माँगने से पहले इसे सीखने की सेटिंग में चालू करें।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terjemahan kalimat nonaktif. Aktifkan di pengaturan pembelajaran sebelum meminta pratinjau."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cümle çevirisi kapalı. Önizleme istemeden önce öğrenme ayarlarında etkinleştirin."
+          }
+        }
+      }
+    },
+    "Lingrove is turned off.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove is turned off."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove 已关闭。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove 已關閉。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove はオフです。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove가 꺼져 있습니다."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove est désactivé."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove ist ausgeschaltet."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove está desactivado."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Lingrove está desativado."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove è disattivato."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove выключен."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove متوقف."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove बंद है।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove nonaktif."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove kapalı."
+          }
+        }
+      }
+    },
+    "Lingrove is temporarily paused.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove is temporarily paused."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove 已暂时暂停。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove 已暫時暫停。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove は一時停止中です。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove가 일시 중지되었습니다."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove est temporairement en pause."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove ist vorübergehend pausiert."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove está en pausa temporalmente."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Lingrove está temporariamente pausado."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove è temporaneamente in pausa."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove временно приостановлен."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove متوقف مؤقتًا."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove अस्थायी रूप से रुका हुआ है।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove dijeda sementara."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove geçici olarak duraklatıldı."
+          }
+        }
+      }
+    },
+    "Lingrove is paused because battery saver is on.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove is paused because battery saver is on."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "节电模式已开启，Lingrove 已暂停。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "省電模式已開啟，Lingrove 已暫停。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "省電力モードが有効なため、Lingrove は一時停止中です。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "배터리 절약 모드가 켜져 있어 Lingrove가 일시 중지되었습니다."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove est en pause car l’économiseur de batterie est activé."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove pausiert, weil der Energiesparmodus aktiviert ist."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove está en pausa porque el ahorro de batería está activado."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Lingrove está pausado porque a economia de bateria está ativada."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove è in pausa perché il risparmio energetico è attivo."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove приостановлен из-за включённого режима экономии заряда."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove متوقف مؤقتًا لأن موفر البطارية مفعّل."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "बैटरी सेवर चालू होने के कारण Lingrove रुका हुआ है।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lingrove dijeda karena penghemat baterai aktif."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pil tasarrufu açık olduğu için Lingrove duraklatıldı."
+          }
+        }
+      }
+    },
+    "Text under the pointer cannot be verified in this app.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Text under the pointer cannot be verified in this app."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法在此应用中确认指针下的文字。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法在此應用程式中確認指標下的文字。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このアプリではポインター下の文字を確認できません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 앱에서는 포인터 아래의 텍스트를 확인할 수 없습니다."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le texte sous le pointeur ne peut pas être vérifié dans cette application."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Text unter dem Zeiger lässt sich in dieser App nicht bestätigen."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se puede verificar el texto bajo el puntero en esta aplicación."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não é possível verificar o texto sob o ponteiro neste aplicativo."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossibile verificare il testo sotto il puntatore in questa app."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "В этом приложении нельзя проверить текст под указателем."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا يمكن التحقق من النص تحت المؤشر في هذا التطبيق."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "इस ऐप में पॉइंटर के नीचे के पाठ की पुष्टि नहीं हो सकती।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Teks di bawah penunjuk tidak dapat diverifikasi di aplikasi ini."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu uygulamada işaretçinin altındaki metin doğrulanamıyor."
+          }
+        }
+      }
+    },
+    "The screen region could not be verified or Windows OCR is unavailable.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The screen region could not be verified or Windows OCR is unavailable."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法确认屏幕区域，或 Windows OCR 不可用。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法確認螢幕區域，或 Windows OCR 無法使用。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "画面領域を確認できないか、Windows OCR を利用できません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "화면 영역을 확인할 수 없거나 Windows OCR을 사용할 수 없습니다."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La zone d’écran n’a pas pu être vérifiée ou l’OCR Windows est indisponible."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Bildschirmbereich konnte nicht bestätigt werden oder Windows-OCR ist nicht verfügbar."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se pudo verificar la región de pantalla o el OCR de Windows no está disponible."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não foi possível verificar a região da tela ou o OCR do Windows está indisponível."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossibile verificare l’area dello schermo oppure l’OCR di Windows non è disponibile."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не удалось проверить область экрана либо Windows OCR недоступен."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّر التحقق من منطقة الشاشة أو أن Windows OCR غير متاح."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "स्क्रीन क्षेत्र की पुष्टि नहीं हो सकी या Windows OCR उपलब्ध नहीं है।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wilayah layar tidak dapat diverifikasi atau Windows OCR tidak tersedia."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ekran bölgesi doğrulanamadı veya Windows OCR kullanılamıyor."
+          }
+        }
+      }
+    },
+    "Selected text is unavailable in this app.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selected text is unavailable in this app."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此应用中无法获取选中的文字。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此應用程式中無法取得選取的文字。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このアプリでは選択した文字を取得できません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 앱에서는 선택한 텍스트를 가져올 수 없습니다."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le texte sélectionné est indisponible dans cette application."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der ausgewählte Text ist in dieser App nicht verfügbar."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El texto seleccionado no está disponible en esta aplicación."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O texto selecionado está indisponível neste aplicativo."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il testo selezionato non è disponibile in questa app."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Выделенный текст недоступен в этом приложении."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "النص المحدد غير متاح في هذا التطبيق."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "इस ऐप में चुना गया पाठ उपलब्ध नहीं है।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Teks yang dipilih tidak tersedia di aplikasi ini."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu uygulamada seçili metin kullanılamıyor."
+          }
+        }
+      }
+    },
+    "Configure and explicitly select a destination for this reading task.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Configure and explicitly select a destination for this reading task."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请为此阅读任务配置并明确选择处理目标。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "請為此閱讀工作設定並明確選擇處理目標。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "この読み取りタスクの処理先を設定し、明示的に選んでください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 읽기 작업의 처리 대상을 설정하고 명시적으로 선택하세요."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Configurez et choisissez explicitement une destination pour cette tâche de lecture."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Konfigurieren und wählen Sie ausdrücklich ein Ziel für diese Leseaufgabe."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Configura y selecciona explícitamente un destino para esta tarea de lectura."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Configure e selecione explicitamente um destino para esta tarefa de leitura."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Configura e seleziona esplicitamente una destinazione per questa attività di lettura."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Настройте и явно выберите назначение для этой задачи чтения."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اضبط وجهة لمهمة القراءة هذه وحددها صراحةً."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "इस पठन कार्य के लिए गंतव्य कॉन्फ़िगर करें और उसे स्पष्ट रूप से चुनें।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Konfigurasikan dan pilih tujuan secara eksplisit untuk tugas membaca ini."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu okuma görevi için bir hedef yapılandırın ve açıkça seçin."
+          }
+        }
+      }
+    },
+    "Windows OCR is unavailable. Install a supported OCR language in Windows settings.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Windows OCR is unavailable. Install a supported OCR language in Windows settings."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Windows OCR 不可用。请在 Windows 设置中安装支持的 OCR 语言。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Windows OCR 無法使用。請在 Windows 設定中安裝支援的 OCR 語言。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Windows OCR を利用できません。Windows の設定で対応する OCR 言語をインストールしてください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Windows OCR을 사용할 수 없습니다. Windows 설정에서 지원되는 OCR 언어를 설치하세요."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’OCR Windows est indisponible. Installez une langue OCR compatible dans les paramètres Windows."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Windows-OCR ist nicht verfügbar. Installieren Sie in den Windows-Einstellungen eine unterstützte OCR-Sprache."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El OCR de Windows no está disponible. Instala un idioma OCR compatible en la configuración de Windows."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O OCR do Windows está indisponível. Instale um idioma de OCR compatível nas configurações do Windows."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’OCR di Windows non è disponibile. Installa una lingua OCR supportata nelle impostazioni di Windows."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Windows OCR недоступен. Установите поддерживаемый язык OCR в параметрах Windows."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Windows OCR غير متاح. ثبّت لغة OCR مدعومة من إعدادات Windows."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Windows OCR उपलब्ध नहीं है। Windows सेटिंग में समर्थित OCR भाषा इंस्टॉल करें।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Windows OCR tidak tersedia. Instal bahasa OCR yang didukung di pengaturan Windows."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Windows OCR kullanılamıyor. Windows ayarlarından desteklenen bir OCR dili yükleyin."
+          }
+        }
+      }
+    },
+    "The screen region could not be verified or Windows OCR could not complete.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The screen region could not be verified or Windows OCR could not complete."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法确认屏幕区域，或 Windows OCR 未能完成。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法確認螢幕區域，或 Windows OCR 未能完成。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "画面領域を確認できないか、Windows OCR が完了しませんでした。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "화면 영역을 확인할 수 없거나 Windows OCR이 완료되지 않았습니다."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La zone d’écran n’a pas pu être vérifiée ou l’OCR Windows n’a pas abouti."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Bildschirmbereich konnte nicht bestätigt werden oder Windows-OCR wurde nicht abgeschlossen."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se pudo verificar la región de pantalla o el OCR de Windows no pudo terminar."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não foi possível verificar a região da tela ou o OCR do Windows não foi concluído."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossibile verificare l’area dello schermo oppure l’OCR di Windows non è stato completato."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не удалось проверить область экрана либо Windows OCR не смог завершить работу."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّر التحقق من منطقة الشاشة أو لم يتمكن Windows OCR من إكمال العمل."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "स्क्रीन क्षेत्र की पुष्टि नहीं हो सकी या Windows OCR पूरा नहीं हो सका।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wilayah layar tidak dapat diverifikasi atau Windows OCR tidak dapat menyelesaikan proses."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ekran bölgesi doğrulanamadı veya Windows OCR tamamlanamadı."
+          }
+        }
+      }
+    },
+    "Some expressions cannot be saved because their language or context could not be verified.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Some expressions cannot be saved because their language or context could not be verified."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "部分表达的语言或上下文无法确认，因此无法保存。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "部分表達的語言或上下文無法確認，因此無法儲存。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "言語または文脈を確認できないため、一部の表現を保存できません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "언어나 문맥을 확인할 수 없어 일부 표현을 저장할 수 없습니다."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Certaines expressions ne peuvent pas être enregistrées car leur langue ou leur contexte n’a pas pu être vérifié."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Einige Ausdrücke können nicht gespeichert werden, da ihre Sprache oder ihr Kontext nicht bestätigt werden konnte."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se pueden guardar algunas expresiones porque no se pudo verificar su idioma o contexto."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Algumas expressões não podem ser salvas porque seu idioma ou contexto não pôde ser verificado."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alcune espressioni non possono essere salvate perché non è stato possibile verificarne la lingua o il contesto."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Некоторые выражения нельзя сохранить, так как не удалось проверить их язык или контекст."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا يمكن حفظ بعض التعبيرات لأن لغتها أو سياقها لم يُتحقق منهما."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "कुछ अभिव्यक्तियाँ सहेजी नहीं जा सकतीं क्योंकि उनकी भाषा या संदर्भ की पुष्टि नहीं हो सकी।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beberapa ungkapan tidak dapat disimpan karena bahasa atau konteksnya tidak dapat diverifikasi."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dilleri veya bağlamları doğrulanamadığından bazı ifadeler kaydedilemiyor."
+          }
+        }
+      }
+    },
+    "Choose an AI explanation model in Learning settings.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose an AI explanation model in Learning settings."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请在学习设置中选择 AI 讲解模型。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "請在學習設定中選擇 AI 講解模型。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "学習設定で AI 解説モデルを選んでください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "학습 설정에서 AI 설명 모델을 선택하세요."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisissez un modèle d’explication IA dans les réglages d’apprentissage."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wählen Sie in den Lerneinstellungen ein KI-Erklärungsmodell."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elige un modelo de explicación con IA en los ajustes de aprendizaje."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Escolha um modelo de explicação por IA nas configurações de aprendizado."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scegli un modello di spiegazione IA nelle impostazioni di apprendimento."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Выберите модель ИИ для объяснений в настройках обучения."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اختر نموذج شرح بالذكاء الاصطناعي في إعدادات التعلم."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "सीखने की सेटिंग में AI व्याख्या मॉडल चुनें।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pilih model penjelasan AI di pengaturan pembelajaran."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Öğrenme ayarlarında bir yapay zekâ açıklama modeli seçin."
+          }
+        }
+      }
+    },
+    "Expression assistance could not complete. Press Enter to retry.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Expression assistance could not complete. Press Enter to retry."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "表达辅助未能完成。按 Enter 重试。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "表達輔助未能完成。按 Enter 重試。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "表現アシストが完了しませんでした。Enter キーで再試行してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "표현 지원이 완료되지 않았습니다. Enter를 눌러 다시 시도하세요."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’aide à l’expression n’a pas abouti. Appuyez sur Entrée pour réessayer."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Formulierungshilfe konnte nicht abgeschlossen werden. Drücken Sie zum Wiederholen die Eingabetaste."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La asistencia de expresión no pudo terminar. Pulsa Intro para reintentar."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A assistência de expressão não pôde ser concluída. Pressione Enter para tentar novamente."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’assistenza all’espressione non è stata completata. Premi Invio per riprovare."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Помощник выражений не смог завершить работу. Нажмите Enter для повторной попытки."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّر إكمال مساعد التعبير. اضغط Enter للمحاولة مجددًا."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "अभिव्यक्ति सहायता पूरी नहीं हो सकी। फिर कोशिश करने के लिए Enter दबाएँ।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bantuan ungkapan tidak dapat diselesaikan. Tekan Enter untuk mencoba lagi."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İfade yardımı tamamlanamadı. Yeniden denemek için Enter’a basın."
+          }
+        }
+      }
+    },
+    "The contextual meaning could not be updated.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The contextual meaning could not be updated."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法更新语境释义。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法更新語境釋義。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "文脈に応じた意味を更新できませんでした。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "문맥상 의미를 업데이트할 수 없습니다."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le sens contextuel n’a pas pu être mis à jour."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die kontextbezogene Bedeutung konnte nicht aktualisiert werden."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se pudo actualizar el significado contextual."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não foi possível atualizar o significado contextual."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossibile aggiornare il significato contestuale."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не удалось обновить контекстное значение."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّر تحديث المعنى السياقي."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "संदर्भगत अर्थ अपडेट नहीं हो सका।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Makna kontekstual tidak dapat diperbarui."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bağlamsal anlam güncellenemedi."
+          }
+        }
+      }
+    },
+    "The word list could not be imported.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The word list could not be imported."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法导入词表。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法匯入詞表。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "単語リストをインポートできませんでした。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "단어 목록을 가져올 수 없습니다."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La liste de mots n’a pas pu être importée."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Wortliste konnte nicht importiert werden."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se pudo importar la lista de palabras."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não foi possível importar a lista de palavras."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossibile importare l’elenco di parole."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не удалось импортировать список слов."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّر استيراد قائمة الكلمات."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "शब्द सूची आयात नहीं हो सकी।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Daftar kata tidak dapat diimpor."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sözcük listesi içe aktarılamadı."
+          }
+        }
+      }
+    },
+    "The translation request could not be identified.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The translation request could not be identified."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法识别翻译请求。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法識別翻譯要求。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "翻訳リクエストを識別できませんでした。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "번역 요청을 식별할 수 없습니다."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La demande de traduction n’a pas pu être identifiée."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Übersetzungsanfrage konnte nicht zugeordnet werden."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se pudo identificar la solicitud de traducción."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não foi possível identificar a solicitação de tradução."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossibile identificare la richiesta di traduzione."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не удалось определить запрос на перевод."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّر تحديد طلب الترجمة."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "अनुवाद अनुरोध की पहचान नहीं हो सकी।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Permintaan terjemahan tidak dapat diidentifikasi."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çeviri isteği tanımlanamadı."
+          }
+        }
+      }
+    },
+    "The translation model budget is invalid.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The translation model budget is invalid."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "翻译模型的预算无效。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "翻譯模型的預算無效。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "翻訳モデルの予算が無効です。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "번역 모델의 예산이 유효하지 않습니다."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le budget du modèle de traduction est invalide."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das Budget des Übersetzungsmodells ist ungültig."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El presupuesto del modelo de traducción no es válido."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O orçamento do modelo de tradução é inválido."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il budget del modello di traduzione non è valido."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Бюджет модели перевода недопустим."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ميزانية نموذج الترجمة غير صالحة."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "अनुवाद मॉडल का बजट अमान्य है।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anggaran model terjemahan tidak valid."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çeviri modelinin bütçesi geçersiz."
+          }
+        }
+      }
+    },
+    "The translation settings could not be applied.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The translation settings could not be applied."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法应用翻译设置。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法套用翻譯設定。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "翻訳設定を適用できませんでした。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "번역 설정을 적용할 수 없습니다."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les réglages de traduction n’ont pas pu être appliqués."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Übersetzungseinstellungen konnten nicht angewendet werden."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se pudieron aplicar los ajustes de traducción."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não foi possível aplicar as configurações de tradução."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossibile applicare le impostazioni di traduzione."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не удалось применить настройки перевода."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّر تطبيق إعدادات الترجمة."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "अनुवाद सेटिंग लागू नहीं हो सकीं।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pengaturan terjemahan tidak dapat diterapkan."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çeviri ayarları uygulanamadı."
+          }
+        }
+      }
+    },
+    "Sentence boundaries are unavailable for this field. Select text manually.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sentence boundaries are unavailable for this field. Select text manually."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此输入框无法提供句子边界。请手动选择文字。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此輸入框無法提供句子邊界。請手動選取文字。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "この入力欄では文の境界を取得できません。文字を手動で選択してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 입력란에서는 문장 경계를 알 수 없습니다. 텍스트를 직접 선택하세요."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les limites de phrases sont indisponibles pour ce champ. Sélectionnez le texte manuellement."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Für dieses Feld sind keine Satzgrenzen verfügbar. Wählen Sie den Text manuell aus."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Los límites de oraciones no están disponibles para este campo. Selecciona el texto manualmente."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Os limites das frases estão indisponíveis para este campo. Selecione o texto manualmente."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I confini delle frasi non sono disponibili per questo campo. Seleziona il testo manualmente."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Границы предложений недоступны для этого поля. Выделите текст вручную."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حدود الجمل غير متاحة لهذا الحقل. حدد النص يدويًا."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "इस फ़ील्ड में वाक्य की सीमाएँ उपलब्ध नहीं हैं। पाठ स्वयं चुनें।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Batas kalimat tidak tersedia untuk bidang ini. Pilih teks secara manual."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu alan için cümle sınırları kullanılamıyor. Metni elle seçin."
+          }
+        }
+      }
+    },
+    "Choose and configure a translation endpoint before requesting a translation.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose and configure a translation endpoint before requesting a translation."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请先选择并配置翻译端点，再请求翻译。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "請先選擇並設定翻譯端點，再要求翻譯。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "翻訳を要求する前に翻訳エンドポイントを選択して設定してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "번역을 요청하기 전에 번역 엔드포인트를 선택하고 설정하세요."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisissez et configurez un point de terminaison de traduction avant de demander une traduction."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wählen und konfigurieren Sie einen Übersetzungsendpunkt, bevor Sie eine Übersetzung anfordern."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elige y configura un punto de conexión de traducción antes de solicitar una traducción."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Escolha e configure um endpoint de tradução antes de solicitar uma tradução."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scegli e configura un endpoint di traduzione prima di richiedere una traduzione."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Выберите и настройте конечную точку перевода перед запросом перевода."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اختر نقطة نهاية للترجمة واضبطها قبل طلب الترجمة."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "अनुवाद माँगने से पहले अनुवाद एंडपॉइंट चुनें और कॉन्फ़िगर करें।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pilih dan konfigurasikan endpoint terjemahan sebelum meminta terjemahan."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çeviri istemeden önce bir çeviri uç noktası seçip yapılandırın."
+          }
+        }
+      }
+    },
+    "The translation endpoint could not complete the request. Check the translation settings and try again.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The translation endpoint could not complete the request. Check the translation settings and try again."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "翻译端点未能完成请求。请检查翻译设置后重试。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "翻譯端點未能完成要求。請檢查翻譯設定後重試。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "翻訳エンドポイントがリクエストを完了できませんでした。翻訳設定を確認して再試行してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "번역 엔드포인트가 요청을 완료하지 못했습니다. 번역 설정을 확인하고 다시 시도하세요."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le point de terminaison de traduction n’a pas pu traiter la demande. Vérifiez les réglages de traduction et réessayez."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Übersetzungsendpunkt konnte die Anfrage nicht abschließen. Prüfen Sie die Übersetzungseinstellungen und versuchen Sie es erneut."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El punto de conexión de traducción no pudo completar la solicitud. Revisa los ajustes de traducción y reintenta."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O endpoint de tradução não conseguiu concluir a solicitação. Confira as configurações de tradução e tente novamente."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’endpoint di traduzione non ha completato la richiesta. Controlla le impostazioni di traduzione e riprova."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Конечная точка перевода не смогла выполнить запрос. Проверьте настройки перевода и повторите попытку."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّر على نقطة نهاية الترجمة إكمال الطلب. افحص إعدادات الترجمة وحاول مجددًا."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "अनुवाद एंडपॉइंट अनुरोध पूरा नहीं कर सका। अनुवाद सेटिंग जाँचें और फिर कोशिश करें।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Endpoint terjemahan tidak dapat menyelesaikan permintaan. Periksa pengaturan terjemahan dan coba lagi."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çeviri uç noktası isteği tamamlayamadı. Çeviri ayarlarını kontrol edip tekrar deneyin."
+          }
+        }
+      }
+    },
+    "The explanation could not be completed. Check the explanation settings and try again.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The explanation could not be completed. Check the explanation settings and try again."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "讲解未能完成。请检查讲解设置后重试。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "講解未能完成。請檢查講解設定後重試。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "解説が完了しませんでした。解説設定を確認して再試行してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "설명이 완료되지 않았습니다. 설명 설정을 확인하고 다시 시도하세요."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’explication n’a pas abouti. Vérifiez les réglages d’explication et réessayez."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Erklärung konnte nicht abgeschlossen werden. Prüfen Sie die Erklärungseinstellungen und versuchen Sie es erneut."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se pudo completar la explicación. Revisa los ajustes de explicación y reintenta."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A explicação não pôde ser concluída. Confira as configurações de explicação e tente novamente."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La spiegazione non è stata completata. Controlla le impostazioni di spiegazione e riprova."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не удалось завершить объяснение. Проверьте настройки объяснений и повторите попытку."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّر إكمال الشرح. افحص إعدادات الشرح وحاول مجددًا."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "व्याख्या पूरी नहीं हो सकी। व्याख्या सेटिंग जाँचें और फिर कोशिश करें।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Penjelasan tidak dapat diselesaikan. Periksa pengaturan penjelasan dan coba lagi."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Açıklama tamamlanamadı. Açıklama ayarlarını kontrol edip tekrar deneyin."
+          }
+        }
+      }
+    },
+    "The translation engine is not ready. Check the translation settings.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The translation engine is not ready. Check the translation settings."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "翻译引擎尚未就绪。请检查翻译设置。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "翻譯引擎尚未就緒。請檢查翻譯設定。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "翻訳エンジンの準備ができていません。翻訳設定を確認してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "번역 엔진이 준비되지 않았습니다. 번역 설정을 확인하세요."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le moteur de traduction n’est pas prêt. Vérifiez les réglages de traduction."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Übersetzungsengine ist nicht bereit. Prüfen Sie die Übersetzungseinstellungen."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El motor de traducción no está listo. Revisa los ajustes de traducción."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O mecanismo de tradução não está pronto. Confira as configurações de tradução."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il motore di traduzione non è pronto. Controlla le impostazioni di traduzione."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Механизм перевода не готов. Проверьте настройки перевода."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "محرك الترجمة غير جاهز. افحص إعدادات الترجمة."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "अनुवाद इंजन तैयार नहीं है। अनुवाद सेटिंग जाँचें।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mesin terjemahan belum siap. Periksa pengaturan terjemahan."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çeviri motoru hazır değil. Çeviri ayarlarını kontrol edin."
+          }
+        }
+      }
+    },
+    "Translation failed. Check the translation settings and try again.": {
+      "comment": "Windows-specific fixed failure presentation at Mac reference 3b53402; authored translations. External diagnostics and task content remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Translation failed. Check the translation settings and try again."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "翻译失败。请检查翻译设置后重试。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "翻譯失敗。請檢查翻譯設定後重試。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "翻訳に失敗しました。翻訳設定を確認して再試行してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "번역에 실패했습니다. 번역 설정을 확인하고 다시 시도하세요."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La traduction a échoué. Vérifiez les réglages de traduction et réessayez."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Übersetzung ist fehlgeschlagen. Prüfen Sie die Übersetzungseinstellungen und versuchen Sie es erneut."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La traducción falló. Revisa los ajustes de traducción y reintenta."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A tradução falhou. Confira as configurações de tradução e tente novamente."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Traduzione non riuscita. Controlla le impostazioni di traduzione e riprova."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Перевод не выполнен. Проверьте настройки перевода и повторите попытку."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فشلت الترجمة. افحص إعدادات الترجمة وحاول مجددًا."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "अनुवाद विफल हुआ। अनुवाद सेटिंग जाँचें और फिर कोशिश करें।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terjemahan gagal. Periksa pengaturan terjemahan dan coba lagi."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çeviri başarısız oldu. Çeviri ayarlarını kontrol edip tekrar deneyin."
+          }
+        }
+      }
+    },
+    "Unable to play the selected system voice.": {
+      "comment": "Fixed Windows speech/dictionary presentation and supported-trigger guidance at Mac 3b53402. Authored translations; external diagnostics, URLs and dictionary entries remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unable to play the selected system voice."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法播放所选系统语音。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法播放所選系統語音。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "選択したシステム音声を再生できません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "선택한 시스템 음성을 재생할 수 없습니다."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible de lire la voix système sélectionnée."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die ausgewählte Systemstimme kann nicht wiedergegeben werden."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se puede reproducir la voz del sistema seleccionada."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não é possível reproduzir a voz do sistema selecionada."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossibile riprodurre la voce di sistema selezionata."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не удалось воспроизвести выбранный системный голос."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّر تشغيل صوت النظام المحدد."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "चुनी गई सिस्टम आवाज़ नहीं चलाई जा सकी।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suara sistem yang dipilih tidak dapat diputar."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seçilen sistem sesi çalınamıyor."
+          }
+        }
+      }
+    },
+    "Unable to play the speech audio.": {
+      "comment": "Fixed Windows speech/dictionary presentation and supported-trigger guidance at Mac 3b53402. Authored translations; external diagnostics, URLs and dictionary entries remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unable to play the speech audio."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法播放语音音频。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法播放語音音訊。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "読み上げ音声を再生できません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "음성 오디오를 재생할 수 없습니다."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible de lire l’audio vocal."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das Sprachaudio kann nicht wiedergegeben werden."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se puede reproducir el audio de voz."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não é possível reproduzir o áudio de fala."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossibile riprodurre l’audio vocale."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не удалось воспроизвести речевое аудио."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّر تشغيل الصوت المنطوق."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "वाक् ऑडियो नहीं चलाया जा सका।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Audio ucapan tidak dapat diputar."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Konuşma sesi çalınamıyor."
+          }
+        }
+      }
+    },
+    "This trigger is not supported here. Use the expression shortcut.": {
+      "comment": "Fixed Windows speech/dictionary presentation and supported-trigger guidance at Mac 3b53402. Authored translations; external diagnostics, URLs and dictionary entries remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This trigger is not supported here. Use the expression shortcut."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此处不支持该触发符。请使用表达辅助快捷键。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此處不支援該觸發符。請使用表達輔助快速鍵。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ここではこのトリガーを使用できません。表現アシストのショートカットを使用してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "여기서는 이 트리거를 사용할 수 없습니다. 표현 지원 단축키를 사용하세요."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce déclencheur n’est pas pris en charge ici. Utilisez le raccourci d’aide à l’expression."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieser Auslöser wird hier nicht unterstützt. Verwenden Sie das Tastenkürzel für die Formulierungshilfe."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Este activador no se admite aquí. Usa el atajo de asistencia de expresión."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Este gatilho não é compatível aqui. Use o atalho de assistência de expressão."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Questo attivatore non è supportato qui. Usa la scorciatoia di assistenza all’espressione."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Этот триггер здесь не поддерживается. Используйте сочетание клавиш помощника выражений."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هذا المشغّل غير مدعوم هنا. استخدم اختصار مساعد التعبير."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "यह ट्रिगर यहाँ समर्थित नहीं है। अभिव्यक्ति सहायता शॉर्टकट इस्तेमाल करें।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pemicu ini tidak didukung di sini. Gunakan pintasan bantuan ungkapan."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu tetikleyici burada desteklenmiyor. İfade yardımı kısayolunu kullanın."
+          }
+        }
+      }
+    },
+    "This dictionary reference is unavailable.": {
+      "comment": "Fixed Windows speech/dictionary presentation and supported-trigger guidance at Mac 3b53402. Authored translations; external diagnostics, URLs and dictionary entries remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This dictionary reference is unavailable."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此词典引用不可用。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此詞典參照無法使用。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "この辞書の参照は利用できません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 사전 참조를 사용할 수 없습니다."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cette référence de dictionnaire est indisponible."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieser Wörterbuchverweis ist nicht verfügbar."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Esta referencia de diccionario no está disponible."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Esta referência de dicionário está indisponível."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Questo riferimento del dizionario non è disponibile."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Эта ссылка на словарь недоступна."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مرجع القاموس هذا غير متاح."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "यह शब्दकोश संदर्भ उपलब्ध नहीं है।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Referensi kamus ini tidak tersedia."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu sözlük başvurusu kullanılamıyor."
+          }
+        }
+      }
+    },
+    "The selected dictionary is unavailable.": {
+      "comment": "Fixed Windows speech/dictionary presentation and supported-trigger guidance at Mac 3b53402. Authored translations; external diagnostics, URLs and dictionary entries remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The selected dictionary is unavailable."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "所选词典不可用。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "所選詞典無法使用。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "選択した辞書を利用できません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "선택한 사전을 사용할 수 없습니다."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le dictionnaire sélectionné est indisponible."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das ausgewählte Wörterbuch ist nicht verfügbar."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El diccionario seleccionado no está disponible."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O dicionário selecionado está indisponível."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il dizionario selezionato non è disponibile."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Выбранный словарь недоступен."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "القاموس المحدد غير متاح."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "चुना गया शब्दकोश उपलब्ध नहीं है।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kamus yang dipilih tidak tersedia."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seçilen sözlük kullanılamıyor."
+          }
+        }
+      }
+    },
+    "The local expression dictionary is unavailable.": {
+      "comment": "Fixed Windows speech/dictionary presentation and supported-trigger guidance at Mac 3b53402. Authored translations; external diagnostics, URLs and dictionary entries remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The local expression dictionary is unavailable."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "本地表达词典不可用。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "本機表達詞典無法使用。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ローカル表現辞書を利用できません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "로컬 표현 사전을 사용할 수 없습니다."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le dictionnaire local d’expressions est indisponible."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das lokale Ausdruckswörterbuch ist nicht verfügbar."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El diccionario local de expresiones no está disponible."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O dicionário local de expressões está indisponível."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il dizionario locale delle espressioni non è disponibile."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Локальный словарь выражений недоступен."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "قاموس التعبيرات المحلي غير متاح."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "स्थानीय अभिव्यक्ति शब्दकोश उपलब्ध नहीं है।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kamus ungkapan lokal tidak tersedia."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yerel ifade sözlüğü kullanılamıyor."
+          }
+        }
+      }
+    },
+    "The local expression dictionary could not be read.": {
+      "comment": "Fixed Windows speech/dictionary presentation and supported-trigger guidance at Mac 3b53402. Authored translations; external diagnostics, URLs and dictionary entries remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The local expression dictionary could not be read."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法读取本地表达词典。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法讀取本機表達詞典。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ローカル表現辞書を読み込めませんでした。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "로컬 표현 사전을 읽을 수 없습니다."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le dictionnaire local d’expressions n’a pas pu être lu."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das lokale Ausdruckswörterbuch konnte nicht gelesen werden."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se pudo leer el diccionario local de expresiones."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não foi possível ler o dicionário local de expressões."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossibile leggere il dizionario locale delle espressioni."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не удалось прочитать локальный словарь выражений."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّرت قراءة قاموس التعبيرات المحلي."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "स्थानीय अभिव्यक्ति शब्दकोश पढ़ा नहीं जा सका।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kamus ungkapan lokal tidak dapat dibaca."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yerel ifade sözlüğü okunamadı."
+          }
+        }
+      }
+    },
+    "The dictionary could not complete this lookup.": {
+      "comment": "Fixed Windows speech/dictionary presentation and supported-trigger guidance at Mac 3b53402. Authored translations; external diagnostics, URLs and dictionary entries remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The dictionary could not complete this lookup."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "词典未能完成此次查询。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "詞典未能完成此次查詢。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "辞書の検索が完了しませんでした。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "사전 조회를 완료할 수 없습니다."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le dictionnaire n’a pas pu terminer cette recherche."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das Wörterbuch konnte diese Suche nicht abschließen."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El diccionario no pudo completar esta consulta."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O dicionário não conseguiu concluir esta consulta."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il dizionario non ha potuto completare questa ricerca."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Словарь не смог завершить этот поиск."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّر على القاموس إكمال هذا البحث."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "शब्दकोश यह खोज पूरी नहीं कर सका।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kamus tidak dapat menyelesaikan pencarian ini."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sözlük bu aramayı tamamlayamadı."
+          }
+        }
+      }
+    },
+    "Online English dictionary · {0}": {
+      "comment": "Fixed Windows speech/dictionary presentation and supported-trigger guidance at Mac 3b53402. Authored translations; external diagnostics, URLs and dictionary entries remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Online English dictionary · {0}"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在线英语词典 · {0}"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "線上英語詞典 · {0}"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "オンライン英語辞書 · {0}"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "온라인 영어 사전 · {0}"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dictionnaire anglais en ligne · {0}"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Online-Englischwörterbuch · {0}"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diccionario de inglés en línea · {0}"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dicionário de inglês online · {0}"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dizionario inglese online · {0}"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Онлайн-словарь английского языка · {0}"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "قاموس إنجليزي عبر الإنترنت · {0}"
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ऑनलाइन अंग्रेज़ी शब्दकोश · {0}"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kamus bahasa Inggris daring · {0}"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çevrimiçi İngilizce sözlük · {0}"
+          }
+        }
+      }
+    },
+    "Only this lookup term is sent to this destination.": {
+      "comment": "Fixed Windows speech/dictionary presentation and supported-trigger guidance at Mac 3b53402. Authored translations; external diagnostics, URLs and dictionary entries remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Only this lookup term is sent to this destination."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "仅将此次查询词发送到此目的地。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "僅將此次查詢詞傳送到此目的地。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "この検索語だけをこの送信先に送ります。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 조회어만 이 대상으로 전송합니다."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seul ce terme de recherche est envoyé à cette destination."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nur dieser Suchbegriff wird an dieses Ziel gesendet."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Solo se envía este término de consulta a este destino."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Somente este termo de consulta é enviado a este destino."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Solo questo termine di ricerca viene inviato a questa destinazione."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "По этому адресу отправляется только этот поисковый запрос."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يُرسل مصطلح البحث هذا فقط إلى هذه الوجهة."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "केवल यह खोज शब्द इस गंतव्य पर भेजा जाता है।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hanya istilah pencarian ini yang dikirim ke tujuan ini."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu hedefe yalnızca bu arama terimi gönderilir."
+          }
+        }
+      }
+    },
+    "Online English dictionary · {0} · Sends only this lookup term": {
+      "comment": "Fixed Windows speech/dictionary presentation and supported-trigger guidance at Mac 3b53402. Authored translations; external diagnostics, URLs and dictionary entries remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Online English dictionary · {0} · Sends only this lookup term"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在线英语词典 · {0} · 仅发送此次查询词"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "線上英語詞典 · {0} · 僅傳送此次查詢詞"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "オンライン英語辞書 · {0} · この検索語だけを送信"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "온라인 영어 사전 · {0} · 이 조회어만 전송"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dictionnaire anglais en ligne · {0} · Envoie uniquement ce terme"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Online-Englischwörterbuch · {0} · Sendet nur diesen Suchbegriff"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diccionario de inglés en línea · {0} · Solo envía este término"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dicionário de inglês online · {0} · Envia somente este termo"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dizionario inglese online · {0} · Invia solo questo termine"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Онлайн-словарь английского языка · {0} · Отправляет только искомое слово"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "قاموس إنجليزي عبر الإنترنت · {0} · يرسل مصطلح البحث هذا فقط"
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ऑनलाइन अंग्रेज़ी शब्दकोश · {0} · केवल यह खोज शब्द भेजता है"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kamus bahasa Inggris daring · {0} · Hanya mengirim istilah ini"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çevrimiçi İngilizce sözlük · {0} · Yalnızca bu arama terimini gönderir"
+          }
+        }
+      }
+    },
+    "Rich dictionary display is unavailable.": {
+      "comment": "Fixed Windows speech/dictionary presentation and supported-trigger guidance at Mac 3b53402. Authored translations; external diagnostics, URLs and dictionary entries remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rich dictionary display is unavailable."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "富文本词典显示不可用。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "豐富格式詞典顯示無法使用。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "リッチ形式の辞書表示を利用できません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "서식 있는 사전 표시를 사용할 수 없습니다."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’affichage enrichi du dictionnaire est indisponible."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die formatierte Wörterbuchanzeige ist nicht verfügbar."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La visualización enriquecida del diccionario no está disponible."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A exibição formatada do dicionário está indisponível."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La visualizzazione formattata del dizionario non è disponibile."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Форматированное отображение словаря недоступно."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عرض القاموس المنسق غير متاح."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "शब्दकोश का समृद्ध स्वरूप वाला प्रदर्शन उपलब्ध नहीं है।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tampilan kamus berformat tidak tersedia."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Biçimlendirilmiş sözlük görünümü kullanılamıyor."
+          }
+        }
+      }
+    },
+    "This opens in your browser and sends the lookup term to the website.": {
+      "comment": "Fixed Windows speech/dictionary presentation and supported-trigger guidance at Mac 3b53402. Authored translations; external diagnostics, URLs and dictionary entries remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This opens in your browser and sends the lookup term to the website."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此操作会在浏览器中打开，并将查询词发送到该网站。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此操作會在瀏覽器中開啟，並將查詢詞傳送到該網站。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ブラウザーで開き、検索語をこのウェブサイトに送信します。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "브라우저에서 열고 조회어를 해당 웹사이트로 전송합니다."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cela ouvre votre navigateur et envoie le terme recherché au site web."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dies öffnet Ihren Browser und sendet den Suchbegriff an die Website."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Esto abre el navegador y envía el término consultado al sitio web."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Isso abre o navegador e envia o termo consultado ao site."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Si apre nel browser e invia il termine cercato al sito web."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Это откроет браузер и отправит искомое слово на сайт."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يفتح هذا المتصفح ويرسل مصطلح البحث إلى الموقع."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "यह ब्राउज़र खोलता है और खोज शब्द वेबसाइट को भेजता है।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ini membuka peramban dan mengirim istilah pencarian ke situs web."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu, tarayıcınızı açar ve arama terimini web sitesine gönderir."
+          }
+        }
+      }
+    },
+    "No definition for this word was found in the available dictionary.": {
+      "comment": "Fixed Windows speech/dictionary presentation and supported-trigger guidance at Mac 3b53402. Authored translations; external diagnostics, URLs and dictionary entries remain literal.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No definition for this word was found in the available dictionary."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "可用词典中未找到此词的释义。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "可用詞典中未找到此詞的釋義。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "利用可能な辞書にこの単語の定義が見つかりませんでした。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "사용 가능한 사전에서 이 단어의 뜻을 찾지 못했습니다."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucune définition de ce mot n’a été trouvée dans le dictionnaire disponible."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Für dieses Wort wurde im verfügbaren Wörterbuch keine Definition gefunden."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se encontró una definición de esta palabra en el diccionario disponible."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nenhuma definição desta palavra foi encontrada no dicionário disponível."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nessuna definizione di questa parola trovata nel dizionario disponibile."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "В доступном словаре не найдено определение этого слова."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لم يُعثر على تعريف لهذه الكلمة في القاموس المتاح."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "उपलब्ध शब्दकोश में इस शब्द की परिभाषा नहीं मिली।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tidak ditemukan definisi kata ini dalam kamus yang tersedia."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kullanılabilir sözlükte bu sözcüğün tanımı bulunamadı."
+          }
+        }
+      }
     }
   },
   "version": "1.0"

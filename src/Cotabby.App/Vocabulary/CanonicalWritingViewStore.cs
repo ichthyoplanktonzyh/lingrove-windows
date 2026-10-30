@@ -11,6 +11,7 @@ internal sealed class CanonicalWritingViewStore : IWritingVocabularyStore, IAsyn
 {
     private readonly ICanonicalVocabularyStore _backend;
     private readonly SynchronizationContext _ui;
+    private readonly Func<VocabularyFailure, string> _failureText;
     private readonly IDisposable _subscription;
     private readonly object _gate = new();
     private readonly Dictionary<string, int> _pending = [];
@@ -23,8 +24,10 @@ internal sealed class CanonicalWritingViewStore : IWritingVocabularyStore, IAsyn
     private bool _loaded, _closing;
     private Task? _load, _disposal;
 
-    internal CanonicalWritingViewStore(ICanonicalVocabularyStore backend, SynchronizationContext ui)
+    internal CanonicalWritingViewStore(ICanonicalVocabularyStore backend, SynchronizationContext ui,
+        Func<VocabularyFailure, string>? failureText = null)
     {
+        _failureText = failureText ?? (failure => new VocabularyException(failure).Message);
         _backend = backend ?? throw new ArgumentNullException(nameof(backend));
         _ui = ui ?? throw new ArgumentNullException(nameof(ui));
         _subscription = _backend.Subscribe(Apply);
@@ -146,7 +149,7 @@ internal sealed class CanonicalWritingViewStore : IWritingVocabularyStore, IAsyn
             // A newer acknowledged observer may have arrived while a read was failing.
             if (unavailable && _loaded && _snapshot is { } current && current.Revision >= acknowledgedRevision) return;
             if (unavailable) _loaded = false;
-            _error = (error as VocabularyException ?? new VocabularyException(VocabularyFailure.InvalidArchive)).Message;
+            _error = _failureText((error as VocabularyException)?.Failure ?? VocabularyFailure.InvalidArchive);
         }
         Notify();
     }

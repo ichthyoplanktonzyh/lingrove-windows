@@ -54,7 +54,7 @@ internal sealed class FrozenVocabularyMeaningCategoryWindow : FrozenVocabularyCl
             }
         }
         catch (OperationCanceledException) when (Retiring) { }
-        catch (Exception error) { if (!Retiring) Failure.Text = error.Message; }
+        catch (Exception error) { if (!Retiring) Failure.Text = InterfaceFailureText.For(error); }
         finally { Child = null; ChildDone = null; try { UpdateAdmission(); } finally { done.TrySetResult(); } }
     }
 }

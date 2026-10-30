@@ -103,11 +103,15 @@ the initial gap audit; its initial Windows gap descriptions are historical. Curr
 - #147 merged [expression candidate tools](EXPRESSION_CANDIDATE_TOOLS_3B.md), connecting independent
   row speech and canonical favorites with stable generated context/provenance. All four final-head
   checks passed at `c243bb3441ecf1bb967c18f67f43b44ad4b0a247` before merge as `1569ac4`.
-- The [explicit-region reading candidate](READING_EXPLICIT_REGION_3B.md) removes the editable-field
+- #148 merged [explicit-region reading](READING_EXPLICIT_REGION_3B.md), removing the editable-field
   prerequisite for the screenshot command while retaining native security/composition admission,
-  origin/window freshness, local OCR and existing reading/Store ownership. Its CI is a separate gate.
-- Remaining work includes pointer/selection visual OCR fallback, non-ASCII native expression
-  triggers, native automatic language
+  origin/window freshness, local OCR and existing reading/Store ownership. All four final-head checks
+  passed at `d5bd6830eb99d3d6b08634013bd7eb48e7226dfb` before merge as `69f5a73`.
+- The [literal Unicode trigger candidate](EXPRESSION_UNICODE_TRIGGER_3B.md) connects policy-admitted
+  fullwidth/symbol markers to one-shot exact native range selection for acceptance and cancellation,
+  and routes all production ASCII/shortcut writes through the same acknowledged native transaction;
+  its CI and physical host acceptance remain separate gates.
+- Remaining work includes pointer/selection visual OCR fallback, native automatic language
   confidence, Apple's unavailable system dictionary and the explicitly documented media/native gaps.
   Internal components are not evidence that those flows are complete. Existing older libraries
   retain explicit references and are reused only after checking the current consumer contract.

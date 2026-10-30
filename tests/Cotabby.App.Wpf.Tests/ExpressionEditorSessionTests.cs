@@ -4,6 +4,7 @@ using Cotabby.Core.ExpressionAssist;
 using Cotabby.Core.Focus;
 using Cotabby.Core.Input;
 using Cotabby.Core.Insertion;
+using Cotabby.Core.LanguageLearning;
 using Cotabby.Win32.ExpressionAssist;
 using Cotabby.Win32.Focus;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -13,6 +14,96 @@ namespace Cotabby.App.Wpf.Tests;
 [SupportedOSPlatform("windows8.1")]
 public sealed class ExpressionEditorSessionTests
 {
+    [Theory]
+    [InlineData("abc??after", 5, 0, "??")]
+    [InlineData("a😀b", 1, 2, null)]
+    [InlineData("ab", 1, 0, null)]
+    public async Task NativeAdapterUsesOneShotRangeCommitForAsciiSelectionAndEmptyCaret(string text, int start, int length, string? trigger)
+    {
+        await using var fixture = new Fixture(text, new(start, length), trigger);
+        fixture.Effects.UsesNativeRangeCommit = true;
+        Assert.True(fixture.Session.EnterPanel()); Assert.True(fixture.Session.BeginReturn());
+        Assert.Equal(ExpressionEditOutcome.Verified, await fixture.Session.ResumeAndReplaceAsync("X", default));
+        var source = fixture.Session.Receipt.ReplacementRange;
+        Assert.Equal(text.Remove(source.Start, source.Length).Insert(source.Start, "X"), fixture.Effects.Value);
+        Assert.Equal(1, fixture.Effects.RangeCalls); Assert.Equal(1, fixture.Effects.Dispatched);
+        Assert.Equal(0, fixture.Effects.LastBackspaces);
+    }
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task UnicodeCommitKeepsSecureAndCredentialFieldAdmissionAtDispatch(bool credentialLabel)
+    {
+        await using var fixture = new Fixture("abc？？", new(5, 0), "？？");
+        fixture.Effects.BeforeSend = () =>
+        {
+            fixture.Sensitive = !credentialLabel; fixture.CredentialLabel = credentialLabel;
+            var changed = fixture.Focus.RefreshGuarded(() => true); Assert.NotNull(changed);
+            Assert.True(credentialLabel ? CredentialFieldDetector.IsCredentialField(changed) : changed.IsSecure);
+        };
+        Assert.True(fixture.Session.EnterPanel()); Assert.True(fixture.Session.BeginReturn());
+        Assert.Equal(ExpressionEditOutcome.Unverified, await fixture.Session.ResumeAndReplaceAsync("X", default));
+        Assert.Equal(0, fixture.Effects.Dispatched); Assert.Equal("abc？？", fixture.Effects.Value);
+    }
+    [Theory]
+    [InlineData("？？")]
+    [InlineData("😀😀")]
+    public async Task NativeEntryAcceptsConfiguredUnicodeBeforeTheUnavailableTargetBoundary(string trigger)
+    {
+        await using var fixture = new Fixture(); int reads = fixture.FocusReads;
+        await using var editor = new Win32ExpressionEditor(fixture.Focus, fixture.Keyboard, fixture.Gate);
+        Assert.Null(await editor.CaptureAsync(trigger, 0, () => false, null, default));
+        Assert.Equal(reads, fixture.FocusReads);
+    }
+
+    [Fact]
+    public async Task RetirementJoinsAnAcceptedRangeCommitAndCannotPublishItsLateSuccess()
+    {
+        await using var fixture = new Fixture("abc？？", new(5, 0), "？？");
+        fixture.Effects.RangeHeld = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        Assert.True(fixture.Session.EnterPanel()); Assert.True(fixture.Session.BeginReturn());
+        var edit = fixture.Session.ResumeAndReplaceAsync("X", default);
+        await fixture.Effects.RangeEntered.Task;
+        var disposal = fixture.Session.DisposeAsync().AsTask(); Assert.False(disposal.IsCompleted);
+        fixture.Effects.RangeHeld.SetResult(ExpressionEditOutcome.Verified);
+        Assert.Equal(ExpressionEditOutcome.Unverified, await edit); await disposal;
+    }
+
+    [Fact]
+    public async Task UnicodePasteLosingOwnershipCannotSendOrFallBackAndStillRestoresTheLease()
+    {
+        await using var fixture = new Fixture("abc？？", new(5, 0), "？？");
+        fixture.Effects.BeforeSend = () => fixture.Effects.Lease.Current = false;
+        Assert.True(fixture.Session.EnterPanel()); Assert.True(fixture.Session.BeginReturn());
+        Assert.Equal(ExpressionEditOutcome.Unverified, await fixture.Session.ResumeAndReplaceAsync(new string('x', 25), default));
+        Assert.Equal(1, fixture.Effects.RangeCalls); Assert.Equal(0, fixture.Effects.Dispatched);
+        Assert.True(fixture.Effects.Lease.Disposed); Assert.Equal("abc？？", fixture.Effects.Value);
+    }
+    [Theory]
+    [InlineData("？？", "X")]
+    [InlineData("？？", "")]
+    [InlineData("😀😀", "日")]
+    public async Task UnicodeTriggerTransfersToOneExactRangeCommit(string trigger, string replacement)
+    {
+        await using var fixture = new Fixture("before" + trigger + "after", new(6 + trigger.Length, 0), trigger);
+        Assert.True(fixture.Session.EnterPanel()); Assert.True(fixture.Session.BeginReturn());
+        Assert.Equal(ExpressionEditOutcome.Verified, await fixture.Session.ResumeAndReplaceAsync(replacement, default));
+        Assert.Equal("before" + replacement + "after", fixture.Effects.Value);
+        Assert.Equal(new LearningTextRange(6, trigger.Length), fixture.Effects.LastRange);
+        Assert.Equal(1, fixture.Effects.RangeCalls); Assert.Equal(1, fixture.Effects.Dispatched);
+        Assert.Equal(replacement.Length == 0 ? 1 : 0, fixture.Effects.LastBackspaces);
+    }
+
+    [Fact]
+    public async Task UnicodeRangeRefusalOrRetirementNeverFallsBackToCaretDeletion()
+    {
+        await using var fixture = new Fixture("abc？？", new(5, 0), "？？");
+        fixture.Effects.RejectRange = true;
+        Assert.True(fixture.Session.EnterPanel()); Assert.True(fixture.Session.BeginReturn());
+        Assert.Equal(ExpressionEditOutcome.Rejected, await fixture.Session.ResumeAndReplaceAsync("X", default));
+        Assert.Equal(1, fixture.Effects.RangeCalls); Assert.Equal(0, fixture.Effects.Dispatched);
+        Assert.Equal("abc？？", fixture.Effects.Value);
+    }
     [Fact]
     public async Task InstructionPermitUsesDirectRetainedEvidenceBeforeNotification()
     {
@@ -397,12 +488,14 @@ public sealed class ExpressionEditorSessionTests
         public readonly ExpressionEditorSession Session;
         public int FocusReads;
         public int HostPid = 42, PanelPid = Environment.ProcessId;
+        public bool Sensitive, CredentialLabel;
         public Action? BeforeFocusRead;
         public Fixture(string value = "abc??", ExpressionEditorRange? selection = null, string? trigger = "??")
         {
             Effects.Value = value; Effects.Selection = selection ?? new(value.Length, 0);
             Focus = new UiaFocusTracker(NullLogger<UiaFocusTracker>.Instance, new FakeFocusOwner(), _ => { }, _ => { },
-                _ => { Interlocked.Increment(ref FocusReads); BeforeFocusRead?.Invoke(); return Field(Effects.Value, Effects.Selection, 2); });
+                _ => { Interlocked.Increment(ref FocusReads); BeforeFocusRead?.Invoke(); return Field(Effects.Value, Effects.Selection, 2)
+                    with { IsSecure = Sensitive, IsSingleLine = CredentialLabel, Label = CredentialLabel ? "password" : "" }; });
             Focus.Start();
             var initial = new ExpressionEditorObservation(42, "field", 1, 1, value, Effects.Selection, false, true, InputCompositionState.Clear, 1);
             var receipt = ExpressionEditorReceiptPolicy.Capture(initial, trigger)!;
@@ -422,12 +515,18 @@ public sealed class ExpressionEditorSessionTests
 
     private sealed class FakeEffects : IExpressionSessionEffects
     {
+        public bool UsesNativeRangeCommit { get; set; }
         public nint Foreground { get; set; } = 20;
         public string Value = "abc??";
         public ExpressionEditorRange Selection = new(5, 0);
         public int Dispatched;
         public int LastBackspaces;
         public bool Partial;
+        public bool RejectRange;
+        public int RangeCalls;
+        public LearningTextRange LastRange;
+        public TaskCompletionSource<ExpressionEditOutcome>? RangeHeld;
+        public readonly TaskCompletionSource RangeEntered = new(TaskCreationOptions.RunContinuationsAsynchronously);
         public Action? BeforeSend;
         public Action? BeforeRead;
         public readonly FakeLease Lease = new();
@@ -444,12 +543,24 @@ public sealed class ExpressionEditorSessionTests
             if (!authorized()) return false;
             Dispatched++;
             LastBackspaces = backspaces;
-            int start = Selection.Start - backspaces;
-            Value = Value.Remove(start, Selection.Length + backspaces).Insert(start, text);
+            int deletedBefore = Selection.Length > 0 && backspaces > 0 ? backspaces - 1 : backspaces;
+            int start = Selection.Start - deletedBefore;
+            Value = Value.Remove(start, Selection.Length + deletedBefore).Insert(start, text);
             Selection = new(start + text.Length, 0);
             return !Partial;
         }
         public bool SendPaste(FocusedField field, int backspaces, Func<bool> authorized) => SendUnicode(field, backspaces, new string('x', 25), authorized);
+        public Task<ExpressionEditOutcome> ReplaceRangeAsync(long token, long version, FocusedField field, LearningTextRange range,
+            string source, string expected, Func<bool> permit, Func<Func<bool>, bool> dispatch)
+        {
+            RangeCalls++; LastRange = range;
+            RangeEntered.TrySetResult();
+            if (RangeHeld is not null) return RangeHeld.Task;
+            if (RejectRange || !permit()) return Task.FromResult(ExpressionEditOutcome.Rejected);
+            Assert.Equal(source, Value.Substring(range.Location, range.Length)); Selection = new(range.Location, range.Length);
+            bool sent = dispatch(permit);
+            return Task.FromResult(sent && Value == expected ? ExpressionEditOutcome.Verified : ExpressionEditOutcome.Unverified);
+        }
     }
     private sealed class FakeLease : IClipboardPasteLease
     {

@@ -16,6 +16,9 @@ public sealed class SuggestionCoordinatorContextTests : CoordinatorHarness
     {
         _clipboard = clipboard;
         Engine.Completion = _ => " starts soon";
+        // These cases assert context on a new request. Predict-ahead may instead reuse and
+        // rebase the first in-flight request; streaming/rebasing has its own coordinator suite.
+        Coordinator.Settings = SuggestionSettings.Default with { PredictAheadWhileTyping = false };
     }
 
     private async Task<SuggestionRequest> RequestFor(string prefix)
@@ -26,17 +29,21 @@ public sealed class SuggestionCoordinatorContextTests : CoordinatorHarness
     }
 
     private void EnableClipboardContext() =>
-        Coordinator.Settings = SuggestionSettings.Default with { ClipboardContext = true };
+        Coordinator.Settings = Coordinator.Settings with { ClipboardContext = true };
+
+    // Match the real hook's UI owner: observe each key before its host edit, without an
+    // independent test thread letting the pump process a batch of already-applied host edits.
+    private Task TypeOnUiAsync(string text) => RunOnUiAsync(() => Type(text));
 
     [Fact]
     public async Task Clipboard_AFreshRelevantCopyReachesTheRequest()
     {
         EnableClipboardContext();
-        Type("the meeting");
+        await TypeOnUiAsync("the meeting");
         await RequestFor("the meeting");
 
         _clipboard.Copy($"  {Agenda}\n");
-        Type(" now");
+        await TypeOnUiAsync(" now");
 
         Assert.Equal(Agenda, (await RequestFor("the meeting now")).ClipboardContext);
     }
@@ -45,11 +52,11 @@ public sealed class SuggestionCoordinatorContextTests : CoordinatorHarness
     public async Task Clipboard_AFreshCopyUnrelatedToTheTextStaysOut()
     {
         EnableClipboardContext();
-        Type("the meeting");
+        await TypeOnUiAsync("the meeting");
         await RequestFor("the meeting");
 
         _clipboard.Copy("SELECT * FROM users");
-        Type(" now");
+        await TypeOnUiAsync(" now");
 
         Assert.Equal("", (await RequestFor("the meeting now")).ClipboardContext);
     }
@@ -58,9 +65,9 @@ public sealed class SuggestionCoordinatorContextTests : CoordinatorHarness
     public async Task Clipboard_TextCopiedBeforeStartupStaysOut()
     {
         EnableClipboardContext();
-        Type("the meeting");
+        await TypeOnUiAsync("the meeting");
         await RequestFor("the meeting");
-        Type(" now");
+        await TypeOnUiAsync(" now");
         await RequestFor("the meeting now");
 
         Assert.All(Engine.Requests, request => Assert.Equal("", request.ClipboardContext));
@@ -69,11 +76,11 @@ public sealed class SuggestionCoordinatorContextTests : CoordinatorHarness
     [Fact]
     public async Task Clipboard_IsNeverReadWhileTheSettingIsOff()
     {
-        Type("the meeting");
+        await TypeOnUiAsync("the meeting");
         await RequestFor("the meeting");
 
         _clipboard.Copy(Agenda);
-        Type(" now");
+        await TypeOnUiAsync(" now");
 
         Assert.Equal("", (await RequestFor("the meeting now")).ClipboardContext);
         Assert.Equal(0, _clipboard.Reads);
@@ -83,14 +90,14 @@ public sealed class SuggestionCoordinatorContextTests : CoordinatorHarness
     public async Task Clipboard_AnAcceptedCopyIsNotReadAgainForTheSameHost()
     {
         EnableClipboardContext();
-        Type("the meeting");
+        await TypeOnUiAsync("the meeting");
         await RequestFor("the meeting");
         _clipboard.Copy(Agenda);
-        Type(" now");
+        await TypeOnUiAsync(" now");
         await RequestFor("the meeting now");
         int reads = _clipboard.Reads;
 
-        Type("!");
+        await TypeOnUiAsync("!");
 
         Assert.Equal(Agenda, (await RequestFor("the meeting now!")).ClipboardContext);
         Assert.Equal(reads, _clipboard.Reads);
@@ -101,7 +108,7 @@ public sealed class SuggestionCoordinatorContextTests : CoordinatorHarness
     {
         Focus.Focus(Fields.Text("", process: "slack") with { WindowTitle = "design - Slack", HelpText = "Message #design" });
 
-        Type("sounds good");
+        await TypeOnUiAsync("sounds good");
 
         Assert.Equal(
             ["Format: chat; App: slack; Title: design; Field: Message #design."],
@@ -113,7 +120,7 @@ public sealed class SuggestionCoordinatorContextTests : CoordinatorHarness
     {
         Focus.Focus(Fields.Text("", process: "Code") with { WindowTitle = "Program.cs - Visual Studio Code" });
 
-        Type("returns the");
+        await TypeOnUiAsync("returns the");
 
         Assert.Empty((await RequestFor("returns the")).SurfaceLines);
     }

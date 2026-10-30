@@ -7,6 +7,7 @@ using Cotabby.Win32.Insertion;
 using Cotabby.Win32.Interop;
 using Cotabby.Win32.Focus;
 using Cotabby.Core.ExpressionAssist;
+using Cotabby.Core.LanguageLearning;
 
 namespace Cotabby.Win32.ExpressionAssist;
 
@@ -14,16 +15,25 @@ namespace Cotabby.Win32.ExpressionAssist;
 // while the session retains all admission, focus, receipt and one-shot responsibilities.
 internal interface IExpressionSessionEffects
 {
+    // Only historical internal effect doubles use the default. The sealed Windows production
+    // adapter always transfers its receipt; native refusal is never a legacy-write fallback.
+    bool UsesNativeRangeCommit => false;
     nint Foreground { get; }
     bool Activate(nint host);
     UiaExpressionSelectionReader.ValueSelection? Read(AutomationElement? element, long token, Func<bool> allowed);
     Task<IClipboardPasteLease?> PreparePasteAsync(string text, CancellationToken ct);
     bool SendUnicode(FocusedField field, int backspaces, string text, Func<bool> authorized);
     bool SendPaste(FocusedField field, int backspaces, Func<bool> authorized);
+    // Caller already owns the shared gate/clipboard lease. The native owner consumes the retained
+    // receipt once, selects the literal range, dispatches once and acknowledges the resulting value.
+    Task<ExpressionEditOutcome> ReplaceRangeAsync(long token, long retainedVersion, FocusedField field,
+        LearningTextRange range, string source, string expected, Func<bool> permit, Func<Func<bool>, bool> dispatch) =>
+        Task.FromResult(ExpressionEditOutcome.Rejected);
 }
 
 internal sealed class Win32ExpressionSessionEffects(ClipboardTextReader? clipboard, IExpressionRetainedEvidence composition) : IExpressionSessionEffects
 {
+    public bool UsesNativeRangeCommit => true;
     private readonly KeySender _sender = new();
     private readonly Win32ClipboardPasteLeaseFactory _clipboard = new(clipboard);
     public nint Foreground => NativeMethods.GetForegroundWindow();
@@ -39,6 +49,11 @@ internal sealed class Win32ExpressionSessionEffects(ClipboardTextReader? clipboa
         _sender.SendUnicodeEdit(field, backspaces, text, authorized);
     public bool SendPaste(FocusedField field, int backspaces, Func<bool> authorized) =>
         _sender.SendPasteEdit(field, backspaces, authorized);
+    public Task<ExpressionEditOutcome> ReplaceRangeAsync(long token, long retainedVersion, FocusedField field,
+        LearningTextRange range, string source, string expected, Func<bool> permit, Func<Func<bool>, bool> dispatch) =>
+        composition is UiaTextEditEvidence native
+            ? native.ReplaceExpressionRangeAsync(token, retainedVersion, field, range, source, expected, permit, dispatch)
+            : Task.FromResult(ExpressionEditOutcome.Rejected);
     [DllImport("user32.dll", SetLastError = true)] [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool SetForegroundWindow(nint handle);
 }

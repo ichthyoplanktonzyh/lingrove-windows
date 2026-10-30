@@ -104,9 +104,11 @@ public sealed class UiaExpressionSelectionReaderTests(WpfDispatcher dispatcher)
         Assert.Equal(1, selection.Value.Start);
         Assert.Equal(2, selection.Value.Length);
         Assert.NotNull(read.Window);
-        Assert.Equal("ab!", read.Window.Value.Text);
+        Assert.Equal("a😀b!", read.Window.Value.Text);
         Assert.Equal(1, read.Window.Value.Caret);
         Assert.True(read.Window.Value.HasSelection);
+        Assert.Equal(2, read.Window.Value.SelectionLength);
+        Assert.True(read.Window.Value.SupportsRangeReplacement);
         box.Select(box.Text.Length, 0);
         var caret = await owner.ReadOwnedDescendantForTest(handle, id, () => true);
         Assert.NotNull(caret.Selection);

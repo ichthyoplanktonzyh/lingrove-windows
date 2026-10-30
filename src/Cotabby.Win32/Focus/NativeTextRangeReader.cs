@@ -4,6 +4,8 @@ using Cotabby.Core.Focus;
 using Windows.Win32.Foundation;
 using Windows.Win32.System.Com;
 using Windows.Win32.UI.Accessibility;
+using Windows.Win32;
+using Windows.Win32.System.Variant;
 
 namespace Cotabby.Win32.Focus;
 
@@ -11,7 +13,8 @@ namespace Cotabby.Win32.Focus;
 internal static unsafe class NativeTextRangeReader
 {
     internal readonly record struct ValueSelection(string Value, int Start, int Length);
-    internal readonly record struct Window(string Text, int Caret, bool HasSelection, bool ReliableSelection, bool Truncated);
+    internal readonly record struct Window(string Text, int Caret, bool HasSelection, bool ReliableSelection, bool Truncated,
+        int SelectionLength = 0, bool SupportsRangeReplacement = false);
 
     // Read the prefix with an explicit limit and reject it if it cannot establish the caret seam.
     internal static Window? ReadWindow(IUIAutomationElement* element, Func<bool> allowed)
@@ -48,8 +51,11 @@ internal static unsafe class NativeTextRangeReader
             int selectedComparison = 0;
             if (selected->CompareEndpoints(TextPatternRangeEndpoint.TextPatternRangeEndpoint_Start, selected,
                 TextPatternRangeEndpoint.TextPatternRangeEndpoint_End, &selectedComparison).Failed || !allowed()) return null;
+            string? middle = selectedComparison == 0 ? "" : Text(selected, ExpressionEditorReceiptPolicy.MaximumValueUtf16Units + 1, allowed);
+            if (middle is null || middle.Length > ExpressionEditorReceiptPolicy.MaximumValueUtf16Units || !allowed()) return null;
             var (prefix, suffix, truncated) = FocusTextWindowPolicy.Bound(left, right);
-            return new(prefix + suffix, prefix.Length, selectedComparison != 0, count == 1, truncated);
+            return new(prefix + middle + suffix, prefix.Length, selectedComparison != 0, count == 1, truncated,
+                middle.Length, count == 1 && !truncated && IsWritable(document, allowed));
         }
         finally
         {
@@ -122,7 +128,19 @@ internal static unsafe class NativeTextRangeReader
         }
     }
 
-    private static string? Text(IUIAutomationTextRange* range, int max, Func<bool> allowed)
+    internal static bool IsWritable(IUIAutomationTextRange* range, Func<bool> allowed)
+    {
+        VARIANT value = default;
+        try
+        {
+            return allowed() && range->GetAttributeValue(UIA_TEXTATTRIBUTE_ID.UIA_IsReadOnlyAttributeId, &value).Succeeded
+                && allowed() && value.Anonymous.Anonymous.vt == VARENUM.VT_BOOL
+                && value.Anonymous.Anonymous.Anonymous.boolVal == 0;
+        }
+        finally { SpeechNativeMethods.VariantClear(&value); }
+    }
+
+    internal static string? Text(IUIAutomationTextRange* range, int max, Func<bool> allowed)
     {
         BSTR value = default;
         try

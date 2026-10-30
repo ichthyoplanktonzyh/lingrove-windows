@@ -81,6 +81,9 @@ internal sealed class KeySender : IKeyboardEditDispatcher, IConditionalKeyboardE
         // checks before entering the backend too; this last predicate check narrows that race to
         // the small interval between this call and SendInput.
         if (beforeSend is not null && !beforeSend()) return false;
+        // A native range receipt may require a host read. Activation can change during that
+        // read, so foreground must still match after the final receipt, adjacent to SendInput.
+        if (!IsTargetForeground(target)) return false;
 
         // Windows can accept only a prefix of the batch. Retrying the suffix could delete more
         // text or duplicate an insertion in a different host state, so any partial count fails.

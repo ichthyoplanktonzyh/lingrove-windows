@@ -33,8 +33,9 @@ focus tracker and insertion gate. An explicit replacement withdraws the ghost su
 other inline captures while pending. The guarded path rechecks the direct nonblocking request
 permit after queueing, around clipboard preparation and at final native dispatch. Existing paste
 format preservation, concurrent user-copy handling and default insertion callers remain intact.
-The Windows write subset is a complete, unselected field and a printable-ASCII source sentence
-ending at its captured caret. Other ranges are explicitly unavailable; Unicode output is supported.
+The later [range transaction](WRITING_RANGE_REPLACEMENT_3B.md) now admits exact selected text and
+Unicode sentence ranges around a middle caret when the native provider exposes sufficient evidence.
+The original caret-ending ASCII policy remains for historical tests and other insertion callers.
 No whole rich field is rewritten or retried as a workaround.
 
 Dispatch is not success. The owner checks the same field/epoch/composition receipt and exact expected
@@ -79,6 +80,7 @@ the primary inspected them for destination disclosure, hierarchy and legibility.
 keeps its header actions and removes the redundant lower Close action. No corresponding Mac image
 was available; these renders do not establish physical desktop or DPI acceptance.
 
-Wider selected/middle/Unicode source replacement remains work. Multiple-source language confidence remains
-unavailable. This does not establish real Word/Chrome/Codex behavior, rich-editor acknowledgement,
+Selected/middle/Unicode source replacement now follows the separately documented range transaction.
+Multiple-source language confidence remains unavailable. This does not establish real
+Word/Chrome/Codex behavior, rich-editor acknowledgement,
 IME compatibility, mixed DPI or accessibility; those remain the final unified native acceptance.

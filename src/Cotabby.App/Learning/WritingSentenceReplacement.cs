@@ -6,10 +6,12 @@ namespace Cotabby.App.Learning;
 
 internal enum WritingReplacementOutcome { Rejected, Verified, Unverified }
 
-/// <summary>One bounded caret-ending sentence edit. Implementations must not interpret native
+/// <summary>One bounded sentence/selection edit. Implementations must not interpret native
 /// dispatch as acknowledgement or retry an ambiguous edit.</summary>
 internal interface IWritingSentenceReplacement : IAsyncDisposable
 {
+    bool CanReplace(FocusedField field, LearningTextRange range, string source, string replacement) =>
+        WritingSentenceReplacementPolicy.CanReplace(field, range, source, replacement);
     Task<WritingReplacementOutcome> ReplaceAsync(FocusedField field, LearningTextRange range, string source,
         string replacement, Func<bool> permit, CancellationToken cancellationToken);
 }
@@ -17,8 +19,12 @@ internal interface IWritingSentenceReplacement : IAsyncDisposable
 /// <summary>App-owned transaction coordinator borrowing the existing shared inserter and focus
 /// owner. The predicate is caller-owned, atomic and nonblocking; guarded reads run off the UI thread.</summary>
 internal sealed class WritingSentenceReplacement(IConditionalTextInserter inserter, Func<Func<bool>, FocusedField?> refresh,
-    Func<TimeSpan, CancellationToken, Task>? wait = null) : IWritingSentenceReplacement
+    Func<TimeSpan, CancellationToken, Task>? wait = null, IRangeTextInserter? ranges = null) : IWritingSentenceReplacement
 {
+    public bool CanReplace(FocusedField field, LearningTextRange range, string source, string replacement) =>
+        ranges is not null
+            ? WritingRangeReplacementPolicy.CanReplace(field, range, source, replacement)
+            : WritingSentenceReplacementPolicy.CanReplace(field, range, source, replacement);
     private readonly object _gate = new(); private readonly CancellationTokenSource _stop = new();
     private readonly HashSet<Task> _work = []; private bool _closed; private Task? _dispose;
     private readonly Func<TimeSpan, CancellationToken, Task> _wait = wait ?? Task.Delay;
@@ -31,7 +37,7 @@ internal sealed class WritingSentenceReplacement(IConditionalTextInserter insert
         _ = CompleteAsync(); return completion.Task;
         async Task CompleteAsync()
         {
-            try { completion.TrySetResult(await RunAsync(field, range, source, replacement, permit, cancellationToken).ConfigureAwait(false)); }
+            try { completion.TrySetResult(await Task.Run(() => RunAsync(field, range, source, replacement, permit, cancellationToken), CancellationToken.None).ConfigureAwait(false)); }
             catch { completion.TrySetResult(WritingReplacementOutcome.Unverified); }
             finally { lock (_gate) _work.Remove(completion.Task); }
         }
@@ -41,9 +47,19 @@ internal sealed class WritingSentenceReplacement(IConditionalTextInserter insert
     {
         using var linked = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _stop.Token);
         bool Allowed() { try { return !linked.IsCancellationRequested && permit(); } catch { return false; } }
-        if (!Allowed() || !WritingSentenceReplacementPolicy.CanReplace(field, range, source, replacement)) return WritingReplacementOutcome.Rejected;
+        if (!Allowed() || !CanReplace(field, range, source, replacement)) return WritingReplacementOutcome.Rejected;
+        bool useRange = ranges is not null;
         bool dispatched;
-        try { dispatched = await inserter.ReplaceWithPermitAsync(field, range.Length, replacement, Allowed, linked.Token).ConfigureAwait(false); }
+        try
+        {
+            if (useRange)
+            {
+                var result = await ranges!.ReplaceRangeAsync(field, range, source, replacement, Allowed, linked.Token).ConfigureAwait(false);
+                if (result == RangeEditDispatch.Rejected) return WritingReplacementOutcome.Rejected;
+                dispatched = result == RangeEditDispatch.Dispatched;
+            }
+            else dispatched = await inserter.ReplaceWithPermitAsync(field, range.Length, replacement, Allowed, linked.Token).ConfigureAwait(false);
+        }
         catch { return WritingReplacementOutcome.Unverified; }
         // False may follow a partial native batch. It is not safe to retry or report rejection.
         if (!dispatched) return WritingReplacementOutcome.Unverified;
@@ -57,7 +73,8 @@ internal sealed class WritingSentenceReplacement(IConditionalTextInserter insert
             try { current = await Task.Run(() => refresh(Allowed), CancellationToken.None).ConfigureAwait(false); }
             catch { return WritingReplacementOutcome.Unverified; }
             if (!Allowed()) return WritingReplacementOutcome.Unverified;
-            if (WritingSentenceReplacementPolicy.IsAcknowledged(field, range, source, replacement, current)) return WritingReplacementOutcome.Verified;
+            if (useRange ? WritingRangeReplacementPolicy.IsAcknowledged(field, range, source, replacement, current)
+                : WritingSentenceReplacementPolicy.IsAcknowledged(field, range, source, replacement, current)) return WritingReplacementOutcome.Verified;
         }
         return WritingReplacementOutcome.Unverified;
     }

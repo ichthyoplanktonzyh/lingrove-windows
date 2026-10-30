@@ -10,13 +10,14 @@ internal sealed partial class LearningPreviewController
     private IWritingSentenceReplacement? _replacement;
     private Task? _replacementWork;
     private long _replacementEpoch;
-    private bool _replacementInProgress, _replacementBlocked, _expanded = true;
+    private bool _replacementInProgress, _replacementBlocked, _replacementRejected, _expanded = true;
     private string? _presentedRequestId, _readyReplacementRequestId;
     private FocusedField? _observedField;
     private FocusedField? _recoveryField;
     private readonly HashSet<Task> _automaticWork = [];
     private const string ReplacementUnavailable = "This field cannot safely replace this sentence here. Copy the translation instead.";
     private const string ReplacementUnverified = "Could not verify the replacement. Check the editor; use Copy instead of replacing again.";
+    private const string ReplacementRejected = "This editor could not safely select the source. No text was replaced. Copy the translation or select the source again.";
     internal Action? BeforeReplacement { get; set; }
     internal bool IsReplacing => Volatile.Read(ref _replacementInProgress);
 
@@ -51,11 +52,11 @@ internal sealed partial class LearningPreviewController
         _dispatcher.VerifyAccess(); CapturedSentence capture; LearningPreviewState state; IWritingSentenceReplacement owner; long epoch;
         lock (_gate)
         {
-            if (_disposed || !_intentActive || _replacementInProgress || _replacementBlocked || _activeRequestId != requestId
+            if (_disposed || !_intentActive || _replacementInProgress || _replacementBlocked || _replacementRejected || _activeRequestId != requestId
                 || _activeCapture is not { } active || _replacement is not { } replacementOwner
                 || _coordinator.State is not { Status: LearningPreviewStatus.Ready, Result: { Length: > 0 } } current
                 || current.RequestId != requestId || !MatchesCapture(current, active)
-                || !WritingSentenceReplacementPolicy.CanReplace(active.Field, active.Range, active.Source, current.Result)) return;
+                || !replacementOwner.CanReplace(active.Field, active.Range, active.Source, current.Result)) return;
             capture = active; state = current; owner = replacementOwner; epoch = Interlocked.Read(ref _replacementEpoch);
             // AppHost withdraws any ghost suggestion before the shared insertion owner is used.
             // This application-local callback performs no editor read or native write.
@@ -73,7 +74,7 @@ internal sealed partial class LearningPreviewController
             if (_disposed || !_intentActive || _activeRequestId != requestId || _activeCapture is null) return;
             capture = _activeCapture; state = _coordinator.State;
             if (state.RequestId != requestId || state.Status != LearningPreviewStatus.Ready || state.Result is not { Length: > 0 }) return;
-            if (_replacement is null || !WritingSentenceReplacementPolicy.CanReplace(capture.Field, capture.Range, capture.Source, state.Result))
+            if (_replacement is null || !_replacement.CanReplace(capture.Field, capture.Range, capture.Source, state.Result))
             { _expanded = true; _window?.ShowExpanded(true); UpdateReplacementPresentation(state, capture); return; }
         }
         ReplacePreview(requestId);
@@ -105,9 +106,14 @@ internal sealed partial class LearningPreviewController
                 if (_disposed || !_intentActive || Interlocked.Read(ref _replacementEpoch) != epoch
                     || _activeRequestId != state.RequestId || !ReferenceEquals(_activeCapture, capture)) return;
                 if (outcome == WritingReplacementOutcome.Verified) { DismissPreview(); return; }
+                if (outcome == WritingReplacementOutcome.Rejected)
+                {
+                    _replacementRejected = true; _expanded = true;
+                    Volatile.Write(ref _readyReplacementRequestId, null); _window?.ShowExpanded(true);
+                }
                 if (outcome == WritingReplacementOutcome.Unverified)
                 {
-                    if (recovery is null || !Cotabby.Core.Insertion.InsertionTargetPolicy.IsSameField(capture.Field, recovery)
+                    if (recovery is null || !WritingRangeReplacementPolicy.SameField(capture.Field, recovery)
                         || FieldCaptureFailure(recovery, capture.Settings) is not null) { CancelAndHide(); return; }
                     _recoveryField = recovery; _replacementBlocked = true; _expanded = true;
                     Volatile.Write(ref _readyReplacementRequestId, null); _window?.ShowExpanded(true);
@@ -120,13 +126,13 @@ internal sealed partial class LearningPreviewController
     {
         _dispatcher.VerifyAccess();
         bool can = state.Status == LearningPreviewStatus.Ready && state.Result is { Length: > 0 }
-            && _replacement is not null && !_replacementBlocked
-            && WritingSentenceReplacementPolicy.CanReplace(capture.Field, capture.Range, capture.Source, state.Result);
+            && _replacement is not null && !_replacementBlocked && !_replacementRejected
+            && _replacement.CanReplace(capture.Field, capture.Range, capture.Source, state.Result);
         _window?.ShowExpanded(_expanded);
         _window?.ShowTranslationDestination(LearningModelDestinationText.Translation(capture.Settings.Backend,
             capture.Settings.EndpointBaseUrl, capture.TranslationOptions.ModelName, capture.Settings.ReferenceMode == LearningReferenceMode.Draft));
         _window?.ShowPreviousTranslation(_currentPreviousSentence?.Translation);
-        _window?.ShowReplacementState(can, _replacementInProgress, _replacementBlocked ? ReplacementUnverified
+        _window?.ShowReplacementState(can, _replacementInProgress, _replacementBlocked ? ReplacementUnverified : _replacementRejected ? ReplacementRejected
             : state.Status == LearningPreviewStatus.Ready && !can ? ReplacementUnavailable : null);
     }
     private bool ReplacementPending(long intent) { lock (_gate) return _replacementInProgress && _intentGeneration == intent; }

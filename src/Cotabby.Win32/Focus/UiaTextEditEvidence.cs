@@ -516,7 +516,8 @@ internal sealed unsafe partial class UiaTextEditEvidence : ICompositionEvidenceO
         return result.Task;
     }
 
-    internal Task<(NativeTextRangeReader.ValueSelection? Selection, NativeTextRangeReader.Window? Window)> ReadOwnedDescendantForTest(nint handle, string runtimeId, Func<bool> allowed, Func<bool>? readerAllowed = null)
+    internal Task<(NativeTextRangeReader.ValueSelection? Selection, NativeTextRangeReader.Window? Window)> ReadOwnedDescendantForTest(nint handle, string runtimeId, Func<bool> allowed, Func<bool>? readerAllowed = null,
+        Action<nint>? inspectOwnedElement = null)
     {
         var completion = new TaskCompletionSource<(NativeTextRangeReader.ValueSelection?, NativeTextRangeReader.Window?)>(TaskCreationOptions.RunContinuationsAsynchronously);
         if (handle == 0 || Cotabby.Win32.Interop.NativeMethods.GetWindowThreadProcessId(handle, out uint pid) == 0 || pid != (uint)Environment.ProcessId)
@@ -546,6 +547,7 @@ internal sealed unsafe partial class UiaTextEditEvidence : ICompositionEvidenceO
                                 var permit = readerAllowed ?? allowed;
                                 var selection = NativeTextRangeReader.Read(element, permit);
                                 var window = permit() ? NativeTextRangeReader.ReadWindow(element, permit) : null;
+                                if (permit()) inspectOwnedElement?.Invoke((nint)element);
                                 completion.TrySetResult((selection, window)); return;
                             }
                             if (!allowed()) break;

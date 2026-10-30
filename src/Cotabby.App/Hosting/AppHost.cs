@@ -253,7 +253,9 @@ public sealed class AppHost : IAsyncDisposable
         _hook = _services.GetRequiredService<IKeyboardHook>();
         var focus = _services.GetRequiredService<IFocusTracker>();
         var inserter = _services.GetRequiredService<ITextInserter>();
-        _writingReplacement = new WritingSentenceReplacement((IConditionalTextInserter)inserter, ((UiaFocusTracker)focus).RefreshGuarded);
+        _writingReplacement = new WritingSentenceReplacement((IConditionalTextInserter)inserter, ((UiaFocusTracker)focus).RefreshGuarded,
+            ranges: new Win32RangeTextInserter((UiaFocusTracker)focus, _services.GetRequiredService<InsertionTransactionGate>(),
+                _services.GetRequiredService<ClipboardTextReader>()));
 
         Endpoint = new OpenAICompatibleSuggestionEngine(
             EndpointClient, EndpointCredentials, EndpointSettings,

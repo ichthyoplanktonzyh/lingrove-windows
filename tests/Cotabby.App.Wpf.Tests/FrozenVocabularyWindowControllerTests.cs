@@ -135,6 +135,7 @@ public sealed class FrozenVocabularyWindowControllerTests(WpfDispatcher dispatch
         var completed = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         _ = window.Dispatcher.BeginInvoke(async () =>
         {
+            Exception? failure = null;
             try
             {
                 var child = Application.Current.Windows.OfType<VocabularyWordListImportWindow>().Single();
@@ -143,9 +144,17 @@ public sealed class FrozenVocabularyWindowControllerTests(WpfDispatcher dispatch
                 Find<CheckBox>(child, "vocabularyImportHeader").IsChecked = false;
                 await Until(() => Volatile.Read(ref tracked.PreviewCalls) >= 2);
                 var retirement = window.RetireAsync(); Assert.False(retirement.IsCompleted); Assert.True(tracked.LastPreviewToken.IsCancellationRequested);
-                tracked.PreviewGate!.SetResult(); await retirement.WaitAsync(TimeSpan.FromSeconds(10)); completed.SetResult();
+                tracked.PreviewGate!.SetResult(); await retirement.WaitAsync(TimeSpan.FromSeconds(10));
             }
-            catch (Exception error) { completed.SetException(error); }
+            catch (Exception error) { failure = error; }
+            finally
+            {
+                // RaiseEvent enters ShowDialog synchronously. Release even a noncooperative
+                // provider and close the modal on failure so the original assertion is observable.
+                tracked.PreviewGate!.TrySetResult();
+                try { await window.RetireAsync(); } catch (Exception error) { failure ??= error; }
+                if (failure is null) completed.TrySetResult(); else completed.TrySetException(failure);
+            }
         });
         try
         {

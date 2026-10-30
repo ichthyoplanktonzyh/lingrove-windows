@@ -100,3 +100,11 @@ After the label correction and removal of the extra host read from detached favo
 rebuilt WPF expression/favorite/showcase group passed 59/59 again. The updated session regression
 asserts that favorite validation makes no additional editor read and is still revoked by query/IME
 retirement; the view regression checks the complete accessible label with and without a base form.
+
+The first Windows CI head exposed an existing import-settings lifecycle failure. Its modal test
+only reported a 30-second timeout because its exception path left ShowDialog open. After releasing
+the held provider and retiring the window on every callback exit, the exact case exposed a null
+DataContext during ComboBox settings rebuild in `VocabularyInputControls.KindLabelConverter`.
+That converter now renders empty transient/non-kind values safely; valid enum labels are unchanged.
+The exact case passed after repair, and the complete notebook-controller/reading-boundary group
+passed 23/23. No timeout, test skip, Store behavior, fixture expectation or Mac pin was relaxed.

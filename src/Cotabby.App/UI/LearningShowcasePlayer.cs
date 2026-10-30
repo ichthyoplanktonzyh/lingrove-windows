@@ -194,7 +194,10 @@ internal sealed class LearningShowcasePlayer : StackPanel, IAsyncDisposable
             Store.Writing.OpenSelection = selection => { if (selection is { } target) OpenSaved?.Invoke(target); };
             _speechOwner = new LearningShowcaseSpeech(silentSpeech); _speech = _speechOwner.CreateController();
             _vocabulary = new(Store, () => (_review ??= new LearningShowcaseReview(Store, _speech, _phrase)).Feature, _explainer, new LearningShowcaseDictionary()); _vocabulary.Interacted += Interact;
-            _expression = new(trigger); _expression.Interacted += Interact; _expression.Inserted += () => Inserted?.Invoke();
+            var expressionCaptures = new VocabularyCaptureFactory(new Cotabby.Win32.Text.IcuLearningLexicalText(),
+                new Cotabby.Win32.Text.IcuLearningEvidenceSentenceTokenizer());
+            _expression = new(trigger, Store.Writing, expressionCaptures, _speech);
+            _expression.Interacted += Interact; _expression.Inserted += () => Inserted?.Invoke();
             _card = _preview.TakeExampleCard(); _preview.AttachSpeech(_speech); _writing.Children.Add(_editor); _writing.Children.Add(_silentNote); _writing.Children.Add(_card);
             var sources = new WrapPanel();
             string[] labels = ["Selected text", "Text under pointer", "Screen region"];
@@ -243,6 +246,7 @@ internal sealed class LearningShowcasePlayer : StackPanel, IAsyncDisposable
             CloseMenu(_preview); CloseMenu(_dictionaryView);
             _explanation.Cancel();
             _speech.Stop();
+            if (scene != 1) _expression.Suspend();
             if (scene != 3 && _dictionaryActive) { _dictionaryActive = false; ++_dictionaryEpoch; _dictionary.Close(); _dictionaryView.HideCard(); }
             if (scene == 1) { _expression.SetStep(step); return _expression; }
             if (scene == 3)
@@ -361,7 +365,7 @@ internal sealed class LearningShowcasePlayer : StackPanel, IAsyncDisposable
             if (_closed) return; _closed = true; CloseMenu(_preview); CloseMenu(_dictionaryView); _preview.RetireExample(); _dictionary.Close(); _dictionaryView.HideCard();
             var errors = new List<Exception>();
             async Task Join(Func<ValueTask> dispose) { try { await dispose(); } catch (Exception error) { errors.Add(error); } }
-            await Join(_dictionary.DisposeAsync); await Join(_explanation.DisposeAsync);
+            await Join(_dictionary.DisposeAsync); await Join(_explanation.DisposeAsync); await Join(_expression.DisposeAsync);
             Task[] work; lock (_work) work = _work.ToArray(); try { await Task.WhenAll(work); } catch { }
             await Join(_vocabulary.DisposeAsync);
             if (_review is not null) await Join(_review.DisposeAsync);

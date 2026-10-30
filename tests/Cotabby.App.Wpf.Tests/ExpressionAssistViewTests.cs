@@ -175,6 +175,8 @@ public sealed class ExpressionAssistViewTests(WpfDispatcher dispatcher)
             ExpressionAssistCandidate? chosen = null; view.Accept += candidate => chosen = candidate;
             var buttons = Descendants<Button>(view).ToArray();
             Assert.Equal(2, buttons.Length); Assert.All(buttons, button => Assert.False(button.Focusable));
+            Assert.Equal("rule out caching. Base form: rule out. 排除缓存", System.Windows.Automation.AutomationProperties.GetName(buttons[0]));
+            Assert.Equal("exclude caching. 另一种说法", System.Windows.Automation.AutomationProperties.GetName(buttons[1]));
             Click(buttons[1]); Assert.Equal("exclude caching", chosen?.Text);
             if (Environment.GetEnvironmentVariable("LINGROVE_EXPRESSION_VIEW_RENDER") is { Length: > 0 } path)
             {

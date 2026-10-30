@@ -26,7 +26,7 @@ public static class CanonicalWritingPolicy
                 Live.VocabularyExampleCompleteness.Unknown => R.VocabularyExampleCompleteness.Unknown, _ => throw Invalid() }, value.Meaning,
             SourceDate.FromWindows(value.CreatedAt))
         {
-            SourceKind = VocabularySourceKind.Captured, TranslationLanguage = value.TranslationLanguage,
+            SourceKind = value.SourceKind, TranslationLanguage = value.TranslationLanguage,
             TranslationVariants = value.TranslationVariants, MeaningLanguage = value.MeaningLanguage,
             MeaningOrigin = value.MeaningOrigin, SourceApplicationId = value.SourceApplicationId,
             Explanations = value.Explanations.Select(FromLive).ToArray(),

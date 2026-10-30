@@ -33,6 +33,8 @@ internal interface IExpressionAssistPanel
     bool IsVisible { get; }
     Task ShowAsync(ExpressionEditorReceipt receipt, string initialQuery, Func<bool> mayActivate);
     void Update(ExpressionAssistResult? result, string? message, bool loading);
+    void Update(ExpressionAssistResult? result, string? message, bool loading, ExpressionAssistRequest request) => Update(result, message, loading);
+    ValueTask DrainCandidateActionsAsync() => ValueTask.CompletedTask;
     void Hide(bool restoringHost);
     void ShowFailure(string candidate, string message);
     void ShowUnavailable(string message);
@@ -157,11 +159,11 @@ internal sealed class ExpressionAssistSession : IAsyncDisposable
             if (receipt.IsTrigger) request = request with { SelectedText = "" };
             request = request with { Admission = () => !token.IsCancellationRequested
                 && Interlocked.Read(ref _revision) == revision && capture.CanTransmitRequest };
-            _panel.Update(null, null, true);
+            _panel.Update(null, null, true, request);
             var result = await _generate(request, token);
             if (!Current(capture, revision, token)) return;
             if (!await capture.IsUnchangedAsync(token)) { if (Current(capture, revision, token)) Invalidate(); return; }
-            if (Current(capture, revision, token)) { _result = result; _panel.Update(result, result.Clarification, false); }
+            if (Current(capture, revision, token)) { _result = result; _panel.Update(result, result.Clarification, false, request); }
         }
         catch (OperationCanceledException) { }
         catch (LearningTranslationException error) when (error.Failure == LearningTranslationFailure.LocalModelNotConfigured)
@@ -173,6 +175,15 @@ internal sealed class ExpressionAssistSession : IAsyncDisposable
     {
         Verify();
         if (_result?.Candidates.Contains(candidate) == true) Finish(candidate.Text);
+    }
+    internal bool CanUseCandidateTools => !_disposed && !_acquiring && !_committing && !_composing && _capture is not null
+        && _sessionCancellation?.IsCancellationRequested == false && _panel.IsVisible && _panel.OwnsKeyboard;
+    internal Task<bool> ValidateCandidateAsync(ExpressionAssistCandidate candidate)
+    {
+        Verify();
+        // Mac's panel saves the already displayed hypothetical candidate, not a new editor
+        // capture. Query/panel/session retirement invalidates it; saving itself performs no UIA IO.
+        return Task.FromResult(CanUseCandidateTools && _result?.Candidates.Contains(candidate) == true);
     }
     internal void Cancel() { Verify(); Finish(null); }
     internal void FocusLost() { Verify(); if (!_acquiring && !_committing) Invalidate(); }
@@ -255,5 +266,6 @@ internal sealed class ExpressionAssistSession : IAsyncDisposable
             try { await Task.WhenAll(tasks); } catch { }
             foreach (var task in tasks) _work.Remove(task);
         }
+        await _panel.DrainCandidateActionsAsync();
     }
 }

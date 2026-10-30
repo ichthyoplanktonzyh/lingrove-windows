@@ -37,8 +37,9 @@ their focus read and before publishing; already-started native reads cannot be i
 This activates a limited implementation, not completed physical parity. TextEdit composition must
 be positively clear; unsupported providers fail closed. Non-ASCII triggers are explicitly unsupported
 by the native adapter. Real editor/IME/provider events, focus return, clipboard preservation,
-SendInput, mixed DPI, accessibility and model-backed output remain native acceptance work. Speech,
-favorite-row actions and expression endpoints remain unavailable. Native effects tests use fake
+SendInput, mixed DPI, accessibility and model-backed output remain native acceptance work. Later
+task endpoint integration and the [current candidate speech/favorites](EXPRESSION_CANDIDATE_TOOLS_3B.md)
+extend this initial checkpoint; their scope and verification stay separate. Native effects tests use fake
 effects or hidden owned windows, never a user's editor. Application adapter tests use synthetic
 events and denied commands, and never open an active input panel or load a model.
 

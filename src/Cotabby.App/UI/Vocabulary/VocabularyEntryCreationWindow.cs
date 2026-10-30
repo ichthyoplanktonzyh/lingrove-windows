@@ -86,7 +86,9 @@ internal static class VocabularyInputControls
     private sealed record Option(string Label, object? Value) { public override string ToString() => Label; }
     private sealed class KindLabelConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) => InterfaceText.Get(value.ToString() ?? "");
+        // Detaching/rebuilding a ComboBox can clear a presenter's DataContext before its binding.
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) =>
+            value is VocabularyEntryKind kind ? InterfaceText.Get(kind.ToString()) : "";
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotSupportedException();
     }
     internal static ComboBox Languages(bool optional, LearningLanguage? selected)

@@ -9,6 +9,37 @@ namespace Cotabby.App.Wpf.Tests;
 [Collection("WPF views")]
 public sealed class ExpressionAssistSessionTests(WpfDispatcher dispatcher)
 {
+    [Fact]
+    public Task ResultCarriesTheExactFrozenRequestAndDetachedFavoriteNeedsNoNewHostRead() => dispatcher.RunAsync(async () =>
+    {
+        var editor = new Editor(false); var panel = new Panel(); var candidate = new ExpressionAssistCandidate("rule out", "排除", null);
+        ExpressionAssistRequest? generated = null;
+        await using var session = new ExpressionAssistSession(Dispatcher.CurrentDispatcher, editor, panel,
+            (request, _) => { generated = request; return Task.FromResult(new ExpressionAssistResult([candidate], null)); },
+            () => (LearningLanguage.English, LearningLanguage.Chinese));
+        session.Begin(null); await Until(() => panel.Visible);
+        session.QueryChanged("排除", false); session.Submit(); await Until(() => panel.Result is not null);
+        Assert.Same(generated, panel.Request); Assert.Equal("排除", panel.Request!.Query);
+        int reads = editor.Session.Reads;
+        Assert.True(await session.ValidateCandidateAsync(candidate));
+        editor.Session.Unchanged = false; Assert.True(await session.ValidateCandidateAsync(candidate));
+        Assert.Equal(reads, editor.Session.Reads);
+        session.QueryChanged("new query", true); Assert.False(await session.ValidateCandidateAsync(candidate));
+        Assert.Equal(0, editor.Session.Writes);
+    });
+
+    [Fact]
+    public Task SessionShutdownJoinsItsPanelsAcceptedCandidateActionsExactlyOnce() => dispatcher.RunAsync(async () =>
+    {
+        var held = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var panel = new Panel { CandidateDrain = held.Task };
+        var session = new ExpressionAssistSession(Dispatcher.CurrentDispatcher, new Editor(false), panel,
+            (_, _) => Task.FromResult(new ExpressionAssistResult([], null)), () => (LearningLanguage.English, LearningLanguage.Chinese));
+        session.Begin(null); await Until(() => panel.Visible);
+        var disposal = session.DisposeAsync().AsTask(); await Until(() => panel.DrainCalls == 1);
+        Assert.False(disposal.IsCompleted); held.SetResult(); await disposal;
+        await session.DisposeAsync(); Assert.Equal(1, panel.DrainCalls);
+    });
     private static async Task Until(Func<bool> predicate)
     {
         for (int i = 0; i < 100 && !predicate(); i++) await Task.Delay(10);
@@ -179,9 +210,9 @@ public sealed class ExpressionAssistSessionTests(WpfDispatcher dispatcher)
         public event Action? Invalidated;
         public void Invalidate() { Live = false; Invalidated?.Invoke(); }
         public bool InvalidateOnWrite, VerifyWrite = true;
-        public int Writes; public string? Written; public bool ReturnBegun; public bool Unchanged = true;
+        public int Writes, Reads; public string? Written; public bool ReturnBegun; public bool Unchanged = true;
         public bool EnterPanel() => true;
-        public Task<bool> IsUnchangedAsync(CancellationToken ct) => Task.FromResult(Unchanged);
+        public Task<bool> IsUnchangedAsync(CancellationToken ct) { Reads++; return Task.FromResult(Unchanged); }
         public bool BeginReturn() { ReturnBegun = true; return true; }
         public Task<bool> ResumeAndReplaceAsync(string text, CancellationToken ct)
         { Writes++; Written = text; if (InvalidateOnWrite) Invalidate(); return Task.FromResult(VerifyWrite); }
@@ -193,9 +224,13 @@ public sealed class ExpressionAssistSessionTests(WpfDispatcher dispatcher)
         public nint WindowHandle => 1; public bool OwnsKeyboard => Visible; public bool IsVisible => Visible;
         public bool Visible; public ExpressionAssistResult? Result; public string? Unavailable; public string? Message;
         public Action? BeforeShow; public int Shows, Failures;
+        internal ExpressionAssistRequest? Request; internal Task CandidateDrain = Task.CompletedTask; internal int DrainCalls;
         public Task ShowAsync(ExpressionEditorReceipt receipt, string query, Func<bool> mayActivate)
         { BeforeShow?.Invoke(); if (mayActivate()) { Visible = true; Shows++; } return Task.CompletedTask; }
         public void Update(ExpressionAssistResult? result, string? message, bool loading) { Result = result; Message = message; }
+        public void Update(ExpressionAssistResult? result, string? message, bool loading, ExpressionAssistRequest request)
+        { Request = request; Update(result, message, loading); }
+        public ValueTask DrainCandidateActionsAsync() { DrainCalls++; return new(CandidateDrain); }
         public void Hide(bool restoringHost) => Visible = false;
         public void ShowFailure(string candidate, string message) => Failures++;
         public void ShowUnavailable(string message) => Unavailable = message;

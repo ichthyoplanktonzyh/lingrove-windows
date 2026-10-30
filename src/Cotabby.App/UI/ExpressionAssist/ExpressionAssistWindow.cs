@@ -7,6 +7,9 @@ using Cotabby.Core.ExpressionAssist;
 using Cotabby.Core.Focus;
 using Cotabby.App.UI.Learning;
 using Microsoft.Win32;
+using Cotabby.App.Speech;
+using Cotabby.App.Vocabulary;
+using Cotabby.Core.Vocabulary;
 
 namespace Cotabby.App.UI.ExpressionAssist;
 
@@ -22,6 +25,8 @@ internal sealed class ExpressionAssistWindow : Window, IExpressionAssistPanel
     private int _ownsKeyboard;
     private bool _closing, _hiding;
     private ExpressionAssistSession? _session;
+    private ExpressionAssistCandidateTools? _candidateTools;
+    private bool _toolsPlacementQueued;
 
     internal ExpressionAssistWindow(ScreenRect caret, Action<string, string> showFailure, Action<string> showUnavailable)
     {
@@ -68,6 +73,27 @@ internal sealed class ExpressionAssistWindow : Window, IExpressionAssistPanel
     }
 
     internal void Bind(ExpressionAssistSession session) => _session = session;
+    internal void AttachCandidateTools(IWritingVocabularyStore? vocabulary, VocabularyCaptureFactory? captures, LearningSpeechController? speech)
+    {
+        Dispatcher.VerifyAccess();
+        if (_candidateTools is not null) throw new InvalidOperationException("Candidate tools are already attached.");
+        _candidateTools = new(Dispatcher, vocabulary, captures, speech,
+            () => IsVisible && _session?.CanUseCandidateTools == true && !_view.IsComposing,
+            candidate => _session?.ValidateCandidateAsync(candidate) ?? Task.FromResult(false));
+        _view.AttachTools(_candidateTools);
+        _candidateTools.Changed += CandidateToolsChanged;
+    }
+    private void CandidateToolsChanged()
+    {
+        if (_toolsPlacementQueued || _closing || !IsVisible || Dispatcher.HasShutdownStarted) return;
+        _toolsPlacementQueued = true;
+        Dispatcher.BeginInvoke(DispatcherPriority.Loaded, () =>
+        {
+            _toolsPlacementQueued = false;
+            if (_closing || !IsVisible) return;
+            UpdateLayout(); LearningPanelPlacement.Position(this, _anchor);
+        });
+    }
     private void ApplyAnchorHeight() => MaxHeight = LearningPanelPlacement.WorkAreaHeightDip(this, _anchor);
     internal ExpressionAssistView View => _view;
     nint IExpressionAssistPanel.WindowHandle => _handle;
@@ -84,12 +110,26 @@ internal sealed class ExpressionAssistWindow : Window, IExpressionAssistPanel
     }
     void IExpressionAssistPanel.Update(ExpressionAssistResult? result, string? message, bool loading)
     {
+        _candidateTools?.Update(null, result);
         _view.Update(result, message, loading);
         if (IsVisible) { UpdateLayout(); LearningPanelPlacement.Position(this, _anchor); }
+    }
+    void IExpressionAssistPanel.Update(ExpressionAssistResult? result, string? message, bool loading, ExpressionAssistRequest request)
+    {
+        _candidateTools?.Update(request, result);
+        _view.Update(result, message, loading);
+        if (IsVisible) { UpdateLayout(); LearningPanelPlacement.Position(this, _anchor); }
+    }
+    ValueTask IExpressionAssistPanel.DrainCandidateActionsAsync()
+    {
+        _view.DetachTools();
+        if (_candidateTools is not null) _candidateTools.Changed -= CandidateToolsChanged;
+        return _candidateTools?.DisposeAsync() ?? ValueTask.CompletedTask;
     }
     void IExpressionAssistPanel.Hide(bool restoringHost)
     {
         _view.ResetComposition();
+        _candidateTools?.Update(null, null); _view.Update(null, null, false);
         if (_closing) return;
         _hiding = true;
         try { Volatile.Write(ref _ownsKeyboard, 0); Hide(); }

@@ -282,7 +282,8 @@ public sealed class AppHost : IAsyncDisposable
             expressionAdapter,
             (request, token) => LearningExplanation.GenerateExpressionAsync(request,
                 _services.GetRequiredService<IcuLearningLexicalText>().Lowercase, token),
-            () => { Coordinator?.InvalidateSession(); LearningPreview?.SuspendForInlineFeature(); });
+            () => { Coordinator?.InvalidateSession(); LearningPreview?.SuspendForInlineFeature(); },
+            _notebook.Writing, _services.GetRequiredService<VocabularyCaptureFactory>(), Speech.Controller);
 
         // Inline features subscribe to the hook first so they see each key before the coordinator.
         EmojiPicker = new EmojiPickerController(

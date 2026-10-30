@@ -70,6 +70,10 @@ public sealed record VocabularyExample
     public string Meaning { get; init; }
     public LearningLanguage? MeaningLanguage { get; init; }
     public VocabularyMeaningOrigin MeaningOrigin { get; init; }
+    /// <summary>Current-format capture provenance. The historical DTO codec retains its old shape;
+    /// only the canonical writing adapter admits this value into the current notebook.</summary>
+    [JsonIgnore]
+    public Resources.VocabularySourceKind SourceKind { get; init; } = Resources.VocabularySourceKind.Captured;
     /// <summary>Mac appBundleIdentifier counterpart; a caller supplies identity, never an AX/UIA handle.</summary>
     public string? SourceApplicationId { get; init; }
     public DateTimeOffset CreatedAt { get; }
@@ -77,13 +81,14 @@ public sealed record VocabularyExample
     { get => _explanations; init => _explanations = Array.AsReadOnly(value.ToArray()); }
 
     public VocabularyExample CopiedWithNewId() => new(Guid.NewGuid(), Text, Translation, Ranges, Completeness,
-        Meaning, CreatedAt, TranslationLanguage, TranslationVariants, MeaningLanguage, MeaningOrigin, SourceApplicationId, Explanations);
+        Meaning, CreatedAt, TranslationLanguage, TranslationVariants, MeaningLanguage, MeaningOrigin, SourceApplicationId, Explanations)
+        { SourceKind = SourceKind };
 
     public bool Equals(VocabularyExample? other) => other is not null && Id == other.Id && Same(Text, other.Text)
         && Same(Translation, other.Translation) && TranslationLanguage == other.TranslationLanguage
         && TranslationVariants.SequenceEqual(other.TranslationVariants) && Ranges.SequenceEqual(other.Ranges)
         && Completeness == other.Completeness && Same(Meaning, other.Meaning) && MeaningLanguage == other.MeaningLanguage
-        && MeaningOrigin == other.MeaningOrigin && Same(SourceApplicationId, other.SourceApplicationId)
+        && MeaningOrigin == other.MeaningOrigin && SourceKind == other.SourceKind && Same(SourceApplicationId, other.SourceApplicationId)
         && CreatedAt == other.CreatedAt && Explanations.SequenceEqual(other.Explanations);
     public override int GetHashCode()
     {
@@ -91,7 +96,7 @@ public sealed record VocabularyExample
         hash.Add(Id); hash.Add(Text, CanonicalStringComparer.Instance); hash.Add(Translation, CanonicalStringComparer.Instance);
         hash.Add(TranslationLanguage); foreach (var value in TranslationVariants) hash.Add(value);
         foreach (var value in Ranges) hash.Add(value);
-        hash.Add(Completeness); hash.Add(Meaning, CanonicalStringComparer.Instance); hash.Add(MeaningLanguage); hash.Add(MeaningOrigin);
+        hash.Add(Completeness); hash.Add(Meaning, CanonicalStringComparer.Instance); hash.Add(MeaningLanguage); hash.Add(MeaningOrigin); hash.Add(SourceKind);
         hash.Add(SourceApplicationId is null ? 0 : CanonicalStringComparer.Instance.GetHashCode(SourceApplicationId)); hash.Add(CreatedAt);
         foreach (var value in Explanations) hash.Add(value);
         return hash.ToHashCode();

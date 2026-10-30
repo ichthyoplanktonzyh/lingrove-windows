@@ -40,6 +40,12 @@ maintainer explicitly changes this instruction. The team table below records the
 not the current execution model. Further work uses direct source review and executable validation
 by the primary, retaining the existing required CI and final physical acceptance boundaries.
 
+Later on 2026-10-30 the maintainer reauthorized independent review and testing delegates only,
+using `gpt-6-luna` with `max` reasoning. The primary still writes all code. End each bounded review
+and use a fresh agent for the next functional block; do not accumulate unrelated modules in one
+reviewer's context. Share exact commit targets and coordinate shared build outputs/desktop leases.
+The earlier implementation-delegate table remains historical.
+
 The maintainer reiterated on 2026-10-30 that further delivery must use complete functional blocks,
 including behavior, UI, production entries/settings and regression validation. Do not split the
 remaining gaps into small standalone library deliveries. The installed .NET team skills are
@@ -91,9 +97,9 @@ handed to the maintainer, rather than blocking development on interim desktop au
    stable identity and single-owner data/runtime contracts.
 3. Run appropriate narrow checks and a Release build. Broaden checks when changes or unresolved
    concerns require them. Keep historical fixture expectations and pins intact.
-4. Preserve independent review already recorded for earlier modules. Under the maintainer's later
-   solo-work instruction, the primary reviews further edits against committed Mac contracts and
-   meaningful tests without assigning another agent. Do not represent that as independent review.
+4. Preserve independent review already recorded for earlier modules. Primary-only review is not
+   independent review. Under the latest instruction, fresh Luna/max delegates may independently
+   review/test complete blocks; implementation and review fixes remain the primary's responsibility.
 5. Integrate acknowledged checkpoints, run final-head required CI, then merge scoped PRs under the
    existing maintainer authorization. Missing remote authentication does not prevent isolated local
    work, but no push/PR/merge is claimed without successful remote evidence.

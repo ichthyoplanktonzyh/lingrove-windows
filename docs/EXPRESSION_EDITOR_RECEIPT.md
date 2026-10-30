@@ -1,5 +1,9 @@
 # Expression editor receipt boundary (in progress)
 
+The [literal Unicode trigger upgrade](EXPRESSION_UNICODE_TRIGGER_3B.md) supersedes this historical
+checkpoint's printable-ASCII marker restriction. Its exact range commit retains the original receipt,
+round-trip, clipboard and one-shot ownership contracts. Physical acceptance remains separate.
+
 Reference: Mac `35b7fbe5c788c5524936ade1dfb7c89a3a285b04`,
 `Lingrove/Services/ExpressionAssist/ExpressionAssistEditor.swift`,
 `Lingrove/Support/ExpressionAssist/ExpressionAssistFocusPolicy.swift`,

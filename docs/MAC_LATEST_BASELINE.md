@@ -106,8 +106,10 @@ the initial gap audit; its initial Windows gap descriptions are historical. Curr
 - The [explicit-region reading candidate](READING_EXPLICIT_REGION_3B.md) removes the editable-field
   prerequisite for the screenshot command while retaining native security/composition admission,
   origin/window freshness, local OCR and existing reading/Store ownership. Its CI is a separate gate.
-- Remaining work includes pointer/selection visual OCR fallback, non-ASCII native expression
-  triggers, native automatic language
+- The [literal Unicode trigger candidate](EXPRESSION_UNICODE_TRIGGER_3B.md) connects policy-admitted
+  fullwidth/symbol markers to one-shot exact native range selection for acceptance and cancellation;
+  its CI and physical host acceptance remain separate gates.
+- Remaining work includes pointer/selection visual OCR fallback, native automatic language
   confidence, Apple's unavailable system dictionary and the explicitly documented media/native gaps.
   Internal components are not evidence that those flows are complete. Existing older libraries
   retain explicit references and are reused only after checking the current consumer contract.

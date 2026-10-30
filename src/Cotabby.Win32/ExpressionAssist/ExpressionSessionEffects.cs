@@ -7,6 +7,7 @@ using Cotabby.Win32.Insertion;
 using Cotabby.Win32.Interop;
 using Cotabby.Win32.Focus;
 using Cotabby.Core.ExpressionAssist;
+using Cotabby.Core.LanguageLearning;
 
 namespace Cotabby.Win32.ExpressionAssist;
 
@@ -20,6 +21,11 @@ internal interface IExpressionSessionEffects
     Task<IClipboardPasteLease?> PreparePasteAsync(string text, CancellationToken ct);
     bool SendUnicode(FocusedField field, int backspaces, string text, Func<bool> authorized);
     bool SendPaste(FocusedField field, int backspaces, Func<bool> authorized);
+    // Caller already owns the shared gate/clipboard lease. The native owner consumes the retained
+    // receipt once, selects the literal range, dispatches once and acknowledges the resulting value.
+    Task<ExpressionEditOutcome> ReplaceRangeAsync(long token, long retainedVersion, FocusedField field,
+        LearningTextRange range, string source, string expected, Func<bool> permit, Func<Func<bool>, bool> dispatch) =>
+        Task.FromResult(ExpressionEditOutcome.Rejected);
 }
 
 internal sealed class Win32ExpressionSessionEffects(ClipboardTextReader? clipboard, IExpressionRetainedEvidence composition) : IExpressionSessionEffects
@@ -39,6 +45,11 @@ internal sealed class Win32ExpressionSessionEffects(ClipboardTextReader? clipboa
         _sender.SendUnicodeEdit(field, backspaces, text, authorized);
     public bool SendPaste(FocusedField field, int backspaces, Func<bool> authorized) =>
         _sender.SendPasteEdit(field, backspaces, authorized);
+    public Task<ExpressionEditOutcome> ReplaceRangeAsync(long token, long retainedVersion, FocusedField field,
+        LearningTextRange range, string source, string expected, Func<bool> permit, Func<Func<bool>, bool> dispatch) =>
+        composition is UiaTextEditEvidence native
+            ? native.ReplaceExpressionRangeAsync(token, retainedVersion, field, range, source, expected, permit, dispatch)
+            : Task.FromResult(ExpressionEditOutcome.Rejected);
     [DllImport("user32.dll", SetLastError = true)] [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool SetForegroundWindow(nint handle);
 }

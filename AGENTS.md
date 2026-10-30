@@ -128,6 +128,9 @@ coordinators focused on sequencing, cancellation, and current UI state.
 The [latest autocomplete output module](docs/AUTOCOMPLETE_OUTPUT_CURRENT.md) explicitly upgrades
 normalization to the latest recorded Mac target. Preserve newline evidence through prompt/prefix
 cleanup and decide spacing only at the surviving seam; the old shared corpus retains its own pin.
+The [literal Unicode expression trigger module](docs/EXPRESSION_UNICODE_TRIGGER_3B.md) retains
+exact marker ranges across panel return and one-shot native commit; never convert UTF-16 marker
+length into a Backspace count. Physical editor/IME/input acceptance remains separate.
 
 ## Safety and privacy invariants
 

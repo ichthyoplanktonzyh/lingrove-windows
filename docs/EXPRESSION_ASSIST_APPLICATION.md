@@ -1,5 +1,9 @@
 # Expression assistance application composition
 
+The later [literal Unicode trigger module](EXPRESSION_UNICODE_TRIGGER_3B.md) upgrades the native
+ASCII-only trigger constraint recorded below; its reference and validation are separate from this
+historical application-composition checkpoint.
+
 Reference: frozen Mac `35b7fbe5c788c5524936ade1dfb7c89a3a285b04`, particularly
 `Lingrove/App/Core/LingroveAppEnvironment.swift`,
 `App/Coordinators/InlineFeatures/ExpressionAssistCoordinator.swift`,

@@ -18,7 +18,21 @@ public sealed class ExpressionReplacementPlanTests
         var cancel = ExpressionReplacementPlan.Create(receipt, "")!;
         Assert.Equal(2, cancel.Backspaces);
         Assert.Equal("abcd", cancel.ExpectedValue);
-        Assert.Null(ExpressionReplacementPlan.Create(ExpressionEditorReceiptPolicy.Capture(Field("字？？", 3, 0), "？？")!, "x"));
+        Assert.False(plan.RequiresRangeSelection);
+    }
+
+    [Theory]
+    [InlineData("？？", "x")]
+    [InlineData("？？", "")]
+    [InlineData("😀😀", "字")]
+    [InlineData("⁇⁇", "")]
+    public void UnicodeTriggerUsesItsLiteralRangeForInsertionAndCancel(string trigger, string replacement)
+    {
+        string text = "a" + trigger + "b";
+        var receipt = ExpressionEditorReceiptPolicy.Capture(Field(text, 1 + trigger.Length, 0), trigger)!;
+        var plan = ExpressionReplacementPlan.Create(receipt, replacement)!;
+        Assert.True(plan.RequiresRangeSelection); Assert.Equal(0, plan.Backspaces);
+        Assert.Equal("a" + replacement + "b", plan.ExpectedValue);
     }
 
     [Fact]

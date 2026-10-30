@@ -70,6 +70,9 @@ The [current expression candidate tools](EXPRESSION_CANDIDATE_TOOLS_3B.md) conne
 and acknowledged Save/exact Remove to the same production speech/Store owners, preserve generated
 example and AI meaning provenance, and use those controls in the isolated Home/Welcome example.
 Native trigger/editor, audio/device and physical UI acceptance remain separately scoped.
+The [literal Unicode trigger adaptation](EXPRESSION_UNICODE_TRIGGER_3B.md) connects fullwidth and
+other policy-admitted symbol markers to acknowledged native range commits for acceptance and cancel;
+physical host/IME/input acceptance remains open.
 
 ## Status meanings
 

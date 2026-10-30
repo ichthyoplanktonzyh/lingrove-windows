@@ -8,6 +8,7 @@ using Cotabby.Win32.Clipboard;
 using Cotabby.Win32.Focus;
 using Cotabby.Win32.Insertion;
 using Cotabby.Win32.Interop;
+using Cotabby.Core.LanguageLearning;
 
 namespace Cotabby.Win32.ExpressionAssist;
 
@@ -45,8 +46,8 @@ public sealed class Win32ExpressionEditor : IAsyncDisposable
         Func<bool> panelOwnsKeyboard, int? initiatingVirtualKey, CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(panelOwnsKeyboard);
-        if (trigger is not null && (trigger.Length == 0 || trigger.Any(c => c < 0x20 || c > 0x7e)))
-            throw new NotSupportedException("This trigger cannot be safely replaced in this Windows editor. Use an ASCII trigger or the shortcut.");
+        if (trigger is not null && ExpressionAssistPolicy.TriggerError(trigger) is { } triggerError)
+            throw new ArgumentException(triggerError, nameof(trigger));
         if (panelHwnd == 0 || NativeMethods.GetWindowThreadProcessId(panelHwnd, out uint panelPid) == 0
             || panelPid != (uint)Environment.ProcessId || _focus.ExpressionCompositionOwner is not { } composition) return null;
         ExpressionEditorSession session;
@@ -399,6 +400,32 @@ public sealed class ExpressionEditorSession : IAsyncDisposable
                 _phase = Phase.Dispatching;
             }
             if (ct.IsCancellationRequested) return ExpressionEditOutcome.Rejected;
+            if (plan.RequiresRangeSelection)
+            {
+                var captured = current.Value;
+                var field = captured.Field with { Text = captured.Observation.Value,
+                    CaretOffset = captured.Observation.Selection.Start, SelectionLength = captured.Observation.Selection.Length };
+                bool RangePermit()
+                {
+                    lock (_sync) return IsLive() && _phase == Phase.Dispatching && !ct.IsCancellationRequested && _effects.Foreground == _host
+                        && _focus.Current is { IsSecure: false, Composition: InputCompositionState.Clear } live
+                        && !CredentialFieldDetector.IsCredentialField(live) && live.ProcessId == field.ProcessId
+                        && live.FieldId == field.FieldId && live.FocusChangeSequence == field.FocusChangeSequence
+                        && live.CompositionSequence == field.CompositionSequence && IsLive();
+                }
+                var outcome = await _effects.ReplaceRangeAsync(_retainedToken, captured.Observation.CompositionSequence, field,
+                    new LearningTextRange(saved.ReplacementRange.Start, saved.ReplacementRange.Length), saved.Source, plan.ExpectedValue, RangePermit,
+                    selectionPermit =>
+                    {
+                        bool Allowed() => RangePermit() && selectionPermit() && (lease is null || lease.IsCurrent);
+                        if (!Allowed()) return false;
+                        // A single Backspace deletes the positively acknowledged selection on
+                        // cancel; it never interprets the trigger's UTF-16 length as a key count.
+                        if (lease is null) return _effects.SendUnicode(field, replacement.Length == 0 ? 1 : 0, replacement, Allowed);
+                        mayHavePasted = true; return _effects.SendPaste(field, 0, Allowed);
+                    }).ConfigureAwait(false);
+                return outcome == ExpressionEditOutcome.Verified && !RangePermit() ? ExpressionEditOutcome.Unverified : outcome;
+            }
             bool dispatched;
             bool StillAuthorized()
             {

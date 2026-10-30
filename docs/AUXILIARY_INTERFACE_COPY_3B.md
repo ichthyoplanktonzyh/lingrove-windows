@@ -1,5 +1,9 @@
 # Auxiliary interface copy and model-window theme
 
+The complete regression also exposed and corrected the shared
+[OLE helper STA/lifetime race](VOCABULARY_OLE_STA_LIFETIME.md). Its native dispatch/ordering evidence
+and the initially failed run are recorded separately; they are part of this final candidate.
+
 Reference: Mac `3b53402f2cbc196b0398d133177fd80006d165b2`, committed Git objects.
 This follows [active workflow copy](ACTIVE_WORKFLOW_INTERFACE_3B.md) and
 [settings metadata](SETTINGS_INTERFACE_COPY_3B.md), preserving their finite scope/evidence.

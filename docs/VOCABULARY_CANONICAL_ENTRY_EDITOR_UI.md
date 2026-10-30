@@ -27,4 +27,11 @@ and the physical acceptance above remain distinct checks.
 
 Reference `3b53402f2cbc196b0398d133177fd80006d165b2`: `Lingrove/UI/Vocabulary/VocabularyContentEditor.swift`, `VocabularyEntryEditor.swift`, `VocabularyContentView.swift`, and `Lingrove/Services/Vocabulary/VocabularyImageTransfer.swift`. The Windows editor retains the source single-import admission, 64-block and content budgets, draft pruning and fixed failure, captured clipboard sequence, and acknowledged Save/Cancel. The application feature owns one cancellable `WindowsVocabularyClipboardTransfer` and drains the window before the transfer and Store. The canonical image view owns visible pixels, cancels stale loads, closes enlargement on retirement and joins admitted media work; refresh reconstructs views against the acknowledged Store.
 
-Windows adapts the provider drop to existing Unicode Shell file paths only; virtual files and pixel-only drag providers are not supported. Clipboard supports the bounded encoded and DIB formats documented in `VOCABULARY_IMAGE_PASTE.md` and `VOCABULARY_CLIPBOARD_DIB.md`; compressed/profiled DIB variants remain unavailable. STA fixtures use injected clipboard offers and isolated media/SQLite, never the user's clipboard. Light, dark and simulated high-contrast renders are component evidence only; real system high contrast, physical drag/clipboard producers, keyboard focus and accessibility remain for desktop acceptance.
+The current [isolated OLE drop surface](VOCABULARY_CANONICAL_MEDIA_3B.md) accepts the first admitted
+existing-file path, virtual-file descriptor/content, encoded image or listed DIB representation.
+Its RLE4/RLE8 and embedded ICC adapters and the later [CF_BITMAP/TYMED_GDI input](VOCABULARY_BITMAP_INPUT_3B.md)
+supersede this editor checkpoint's initial file-only restriction. Other layouts, linked profiles,
+OLE media and native color/producer coverage retain those modules' explicit limits. STA fixtures
+use synthetic offers and isolated media/SQLite, never the user's clipboard. Light, dark and
+simulated high-contrast renders are component evidence; actual system high contrast, physical
+drag/clipboard producers, keyboard focus and accessibility remain for desktop acceptance.

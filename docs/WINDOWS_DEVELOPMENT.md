@@ -40,8 +40,9 @@ powershell -NoProfile -ExecutionPolicy RemoteSigned -File .\scripts\check-window
 也不读取生词本。`-Json` 输出机器可读结果；`-RequireNative` 将原生工具缺失视为失败。
 Windows SDK 检查头文件和 x64 库是否存在，完整可用性仍由实际原生编译确认。调用 .NET CLI 时在当前
 进程暂时关闭其遥测，结束后恢复原值，不修改用户或机器环境变量。
-Python 只检查 launcher 是否存在，避免新版安装管理器自动获取解释器；原生工作前自行确认已安装的
-Python 版本。上面的 `-ExecutionPolicy RemoteSigned` 只作用于该次子进程，允许执行 Git 检出后的本地脚本；
+默认只检查 Python launcher 是否存在，避免新版安装管理器自动获取解释器。已有解释器但没有 `py`
+时可传入 `-PythonExecutable C:\Tools\Python312\python.exe -RequireNative`，只验证该已安装程序的版本；
+WindowsApps 别名不会被调用。实际路径按本机替换。上面的 `-ExecutionPolicy RemoteSigned` 只作用于该次子进程，允许执行 Git 检出后的本地脚本；
 脚本本身不改变执行策略，也不修改用户或机器的持久化策略。组织组策略仍优先；受管理机器应遵循其批准的脚本运行方式。
 
 建议把 Mac 源码取到旁边作为只读 Git 参考，不在 Windows 编译 Mac App：

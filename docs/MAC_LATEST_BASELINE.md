@@ -188,11 +188,15 @@ the initial gap audit; its initial Windows gap descriptions are historical. Curr
   Anki/review inventory through typed owned categories and the shared controller. Four additions
   bring the Windows supplement to 522 in fifteen locales; internal synchronization values and
   unknown diagnostics retain their original contracts.
-- Remaining work includes native host/provider acceptance,
-  full interface-language coverage, native automatic language
-  confidence, Apple's unavailable system dictionary and the explicitly documented media/native gaps.
-  Internal components are not evidence that those flows are complete. Existing older libraries
-  retain explicit references and are reused only after checking the current consumer contract.
+- #164 merged workflow failure presentation after all four final-head checks passed at
+  `e505cc75b40bdb19d2923a5b85d218b0b6c76ab2`, as `9062354`, with independent WPF 1241/1241
+  and App 1278/1278 on its production-identical preceding head.
+- The [acceptance candidate](WINDOWS_ACCEPTANCE_CANDIDATE_3B.md) separates remaining unimplemented
+  automatic-language confidence and corrupt-existing-image repair from the Apple dictionary,
+  supported media/provider subset differences and final native host checks. The named finite
+  workflow/review copy inventories are connected in 15 locales; further translation claims need
+  a concrete caller/key rather than an open-ended historical backlog. Older libraries retain
+  their explicit references and are reused only after checking the current consumer contract.
 
 After the maintainer's delivery adjustment, implementation owners carry each active user flow
 through its settings, entry and production adapters. Internal commits use targeted validation;

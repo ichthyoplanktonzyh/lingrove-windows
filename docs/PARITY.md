@@ -33,8 +33,11 @@ This matrix starts from the Windows fork baseline `b1e4031c70aca1be21aae2c57b138
 compares it with the committed macOS reference `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`. It also
 records the initial foundation branch's shared JSON corpus and its test evidence. The source paths
 are reference points, not a claim that every Windows behavior has been validated. The Windows tree
-still uses Cotabby names. The current learning addition is the scoped manual read-only preview
-recorded in [LEARNING_PREVIEW.md](LEARNING_PREVIEW.md); the wider learning product remains incomplete.
+retains Cotabby internal contracts. The early manual read-only preview in
+[LEARNING_PREVIEW.md](LEARNING_PREVIEW.md) is historical; current production writing/reading,
+notebook/review and speech composition is recorded by the latest handoffs above and
+[the acceptance candidate](WINDOWS_ACCEPTANCE_CANDIDATE_3B.md). Source integration and the
+historical matrix do not establish native acceptance or erase the named remaining limitations.
 
 The maintainer advanced the campaign to latest Mac functionality, currently resolved as
 `3b53402f2cbc196b0398d133177fd80006d165b2`, recorded in

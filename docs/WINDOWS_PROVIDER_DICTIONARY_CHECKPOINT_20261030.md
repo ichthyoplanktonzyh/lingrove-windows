@@ -79,13 +79,19 @@ No installer, release, downloadable package or CI build artifact is produced.
 
 ## Explicit remaining work
 
-The new writing-card automatic/collapsed/replacement workflow and the complete Home/Welcome learning
-showcase remain separate active modules. A dispatched native edit is not an acknowledged replacement.
-Multiple-source statistical language confidence has no selected Windows provider. Apple system and
-online/website dictionaries, loose adjacent dictionary resources, some bitmap/drop variants and
-damaged-existing-media repair retain their documented unsupported states. In particular, uncertain
-WebView initialization/process exit retains its profile and one of two admission slots; a restart
-may be required. A configured endpoint is not proof of connectivity or model quality.
+This section records the checkpoint's later scope, not a new implementation backlog. Subsequent
+[writing/replacement](WRITING_RANGE_REPLACEMENT_3B.md), [Home/Welcome showcase](HOME_WELCOME_SHOWCASE_3B.md),
+[online/website dictionaries](DICTIONARY_WEBSITE_ONLINE_3B.md) and
+[loose MDict resources](MDICT_LOCAL_RESOURCES_3B.md) are connected. A dispatched native edit is still
+distinct from an acknowledged replacement. [Current media input](VOCABULARY_CANONICAL_MEDIA_3B.md)
+and [native bitmaps](VOCABULARY_BITMAP_INPUT_3B.md) supersede the older blanket drop/bitmap refusal.
+
+Multiple-source statistical language confidence has no selected Windows provider. Apple's system
+dictionary, other explicitly unsupported image layouts and corrupt-existing-media repair retain
+their documented limits. Uncertain WebView initialization/process exit can retain its profile and
+one of two admission slots; a restart may be required. A configured endpoint is not proof of
+connectivity or model quality. See the [current acceptance handoff](WINDOWS_ACCEPTANCE_CANDIDATE_3B.md)
+for the finite residuals and the maintainer's consolidated native checks.
 
 Windows renders follow WPF/Segoe UI and shared palette conventions; pixel equality with Mac is not
 required. Component images were reviewed, including dark and short expression views and narrow

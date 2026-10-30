@@ -31,6 +31,10 @@ physical composition; injected text does not establish IME acceptance.
 
 For writing translation/expression assistance, explicitly select the task's local model or visible
 endpoint, verify loading/error/dismissal/focus behavior, and inspect the original selection after
-acceptance. Readonly selected-text reading stays pending until its production adapter and entry are
-integrated. Check 100%, 150% and 200% scale, keyboard navigation and real high contrast separately.
+acceptance. Selected-text, pointer and explicit-region reading now have production entries and
+their scoped UIA/OCR adapters; execute their native checks rather than treating integration as
+pending. Check 100%, 150% and 200% scale, keyboard navigation and real high contrast separately.
 Codex checks use an unsent draft only. Record refusal versus functional success independently.
+
+The [current acceptance candidate](WINDOWS_ACCEPTANCE_CANDIDATE_3B.md) consolidates the runnable
+development command, latest implementation records, known limitations and this final host order.

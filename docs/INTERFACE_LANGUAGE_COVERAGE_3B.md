@@ -95,9 +95,10 @@ are isolated/synthetic; no user screen, clipboard, editor, notebook, model or au
 
 Remaining internationalization work includes a complete inventory of additional authored settings,
 auxiliary-window and typed-domain status/error copy, and their format/RTL/accessibility states.
-Unknown OS/provider/remote errors remain raw diagnostic content. The Mac
-`Support/Settings/SettingsSearchRanker.swift` adds token/fuzzy/relevance rules beyond this Windows
-row search; those deterministic search behaviors are a separate explicit gap. The disconnected
+Unknown OS/provider/remote errors remain raw diagnostic content. The subsequent
+[settings-search module](SETTINGS_SEARCH_3B.md) adds the committed Mac token/fuzzy/relevance rules,
+keyboard opening, guarded target reveal and arrival pulse, with one additional supplement key
+(191 total). Its own source/oracle evidence is recorded separately. The disconnected
 legacy XAML notebook is not the production notebook and its labels do not prove a current-path gap.
 Full internationalization and the wider alignment goal remain open. Word, Chrome, Codex and
 physical desktop/input/provider acceptance retain the consolidated maintainer gate.

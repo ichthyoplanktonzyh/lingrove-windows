@@ -44,6 +44,7 @@ public partial class SettingsWindow : Window
             }
         }
         Detail.Children.Add(_results);
+        SettingsSearchPresentation.BindSubmission(SearchBox, () => _results.Content as Panel);
 
         host.SettingsApplied += _context.Refresh;
         // A model can finish loading from the tray while the window is in the background.
@@ -117,6 +118,7 @@ public partial class SettingsWindow : Window
     {
         base.OnClosed(e);
         _host.SettingsApplied -= _context.Refresh;
+        foreach (var view in _panes) view.ClearReveal();
         _context.Close();
         _instance = null;
     }
@@ -135,16 +137,18 @@ public partial class SettingsWindow : Window
         };
     }
 
-    private void Navigate(SettingsPane pane) => NavList.SelectedIndex = _panes.FindIndex(view => view.Pane == pane);
+    private void Navigate(SettingsPane pane)
+    { foreach (var view in _panes) view.ClearReveal(); NavList.SelectedIndex = _panes.FindIndex(view => view.Pane == pane); }
 
-    private void OnNavChanged(object sender, SelectionChangedEventArgs e) => ShowDetail();
+    private void OnNavChanged(object sender, SelectionChangedEventArgs e)
+    { foreach (var view in _panes) view.ClearReveal(); ShowDetail(); }
 
     private void OnSearchChanged(object sender, TextChangedEventArgs e) => ShowDetail();
 
     /// <summary>Shows the search results while there is a query, and the selected pane otherwise.</summary>
     private void ShowDetail()
     {
-        var query = SearchBox.Text.Trim();
+        var query = SettingsSearchPresentation.Query(SearchBox.Text);
         bool searching = query.Length > 0;
         if (searching) _results.Content = Results(query);
         _results.Visibility = Shown(searching);
@@ -154,18 +158,23 @@ public partial class SettingsWindow : Window
     private StackPanel Results(string query)
     {
         var list = new StackPanel { Margin = new Thickness(28, 22, 28, 28), MaxWidth = 660 };
-        var matches = _panes
-            .SelectMany(view => view.Pane.Cards.SelectMany(card => card.Rows).Select(row => (view.Pane, Row: row)))
-            .Where(match => match.Row.Matches(query))
-            // Title matches read as more relevant than a hit in the description or keywords.
-            .OrderByDescending(match => match.Row.DisplayTitle.Contains(query, StringComparison.OrdinalIgnoreCase)
-                || match.Row.Title.Contains(query, StringComparison.OrdinalIgnoreCase));
-        foreach (var (pane, row) in matches) list.Children.Add(Result(pane, row));
+        IReadOnlyList<SettingsSearchHit> matches;
+        try { matches = SettingsSearchPresentation.Find(query, _panes.Select(view => view.Pane).ToArray()); }
+        catch (Exception error) when (error is DllNotFoundException or EntryPointNotFoundException or BadImageFormatException or ArgumentException or Cotabby.Win32.Localization.WindowsSettingsSearchUnavailableException)
+        { list.Children.Add(Ui.Text(InterfaceText.Get("Windows search text services are unavailable."), "Caption")); return list; }
+        foreach (var match in matches) list.Children.Add(Result(match.Pane, match.Row));
         if (list.Children.Count == 0) list.Children.Add(Ui.Text(InterfaceText.Format("No settings match “%@”", query), "Caption"));
         return list;
     }
 
-    private Border Result(SettingsPane pane, SettingsRow row)
+    private Button Result(SettingsPane pane, SettingsRow row) => BuildSearchResult(pane, row, (targetPane, targetRow) =>
+    {
+        SearchBox.Text = "";
+        Navigate(targetPane);
+        _panes.First(view => view.Pane == targetPane).Reveal(targetRow);
+    });
+
+    internal static Button BuildSearchResult(SettingsPane pane, SettingsRow row, Action<SettingsPane, SettingsRow> select)
     {
         var paneName = Ui.Text(InterfaceText.Get(pane.Title), "Caption");
         paneName.VerticalAlignment = VerticalAlignment.Center;
@@ -182,14 +191,12 @@ public partial class SettingsWindow : Window
                 Children = { paneName, new StackPanel { Children = { Ui.Text(row.DisplayTitle), Ui.Text(row.DisplaySubtitle, "Caption") } } },
             },
         }.Styled("Card");
-        result.MouseLeftButtonUp += (_, _) =>
-        {
-            SearchBox.Text = "";
-            Navigate(pane);
-            // The row can only scroll into view once its pane has been laid out.
-            Dispatcher.BeginInvoke(() => row.View.BringIntoView(), DispatcherPriority.Loaded);
-        };
-        return result;
+        var action = new Button { Content = result, Padding = new Thickness(0), BorderThickness = new Thickness(0),
+            Background = System.Windows.Media.Brushes.Transparent, HorizontalContentAlignment = HorizontalAlignment.Stretch };
+        System.Windows.Automation.AutomationProperties.SetName(action, row.DisplayTitle + " · " + InterfaceText.Get(pane.Title));
+        System.Windows.Automation.AutomationProperties.SetHelpText(action, row.DisplaySubtitle);
+        action.Click += (_, _) => select(pane, row);
+        return action;
     }
 
     private static Visibility Shown(bool visible) => visible ? Visibility.Visible : Visibility.Collapsed;

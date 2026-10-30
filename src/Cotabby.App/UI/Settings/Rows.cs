@@ -16,9 +16,9 @@ internal sealed class Rows(SettingsContext context)
     public SettingsContext Context => context;
 
     /// <summary>A row with its label on the left and a control on the right.</summary>
-    public SettingsRow Labeled(string title, string subtitle, FrameworkElement control)
+    public SettingsRow Labeled(string title, string subtitle, FrameworkElement control, bool subtitleIsContent = false)
     {
-        var label = Label(title, subtitle);
+        var label = Label(title, subtitle, subtitleIsContent);
         label.Margin = new Thickness(0, 9, 16, 9);
         label.VerticalAlignment = VerticalAlignment.Center;
         control.HorizontalAlignment = HorizontalAlignment.Right;
@@ -28,7 +28,7 @@ internal sealed class Rows(SettingsContext context)
         var grid = new Grid { Children = { label, control } }.Styled("SettingRow");
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-        return new SettingsRow(title, subtitle, grid);
+        return new SettingsRow(title, subtitle, grid) { SubtitleIsContent = subtitleIsContent };
     }
 
     /// <summary>A row with its label above content that needs the full width.</summary>
@@ -191,15 +191,15 @@ internal sealed class Rows(SettingsContext context)
         return Labeled(shortcut.Name, subtitle, editor);
     }
 
-    public SettingsRow Action(string title, string subtitle, string buttonLabel, Action onClick) =>
-        Labeled(title, subtitle, Ui.Button(InterfaceText.Get(buttonLabel), onClick));
+    public SettingsRow Action(string title, string subtitle, string buttonLabel, Action onClick, bool subtitleIsContent = false) =>
+        Labeled(title, subtitle, Ui.Button(InterfaceText.Get(buttonLabel), onClick), subtitleIsContent);
 
-    private static StackPanel Label(string title, string subtitle)
+    private static StackPanel Label(string title, string subtitle, bool subtitleIsContent = false)
     {
         var label = new StackPanel { Children = { Ui.Text(InterfaceText.Get(title)) } };
         if (subtitle.Length > 0)
         {
-            var caption = Ui.Text(InterfaceText.Get(subtitle), "Caption");
+            var caption = Ui.Text(subtitleIsContent ? subtitle : InterfaceText.Get(subtitle), "Caption");
             caption.Margin = new Thickness(0, 2, 0, 0);
             label.Children.Add(caption);
         }

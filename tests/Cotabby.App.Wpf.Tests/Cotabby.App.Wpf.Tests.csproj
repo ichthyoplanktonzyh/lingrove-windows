@@ -8,6 +8,7 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="..\..\fixtures\parity\settings-search-3b-v1.json" Link="fixtures\parity\settings-search-3b-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <Compile Include="..\Shared\AnkiReviewTestEffects.cs" Link="Shared\AnkiReviewTestEffects.cs" />
     <Compile Include="..\Shared\AnkiReviewSessionEffects.cs" Link="Shared\AnkiReviewSessionEffects.cs" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />

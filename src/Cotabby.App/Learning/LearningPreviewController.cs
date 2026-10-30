@@ -16,6 +16,8 @@ using Cotabby.Core.Support.Runtime;
 using Cotabby.Inference.LanguageLearning;
 using Cotabby.Inference.LanguageLearning.Local;
 using Cotabby.Inference.OpenAICompatible;
+using Cotabby.Win32.Focus;
+using Cotabby.Win32.Text;
 using Microsoft.Extensions.Logging;
 
 namespace Cotabby.App.Learning;
@@ -33,7 +35,7 @@ namespace Cotabby.App.Learning;
 internal sealed partial class LearningPreviewController : IAsyncDisposable
 {
     internal Func<bool>? InlineCaptureActive { get; set; }
-    internal void SuspendForInlineFeature() => CancelAndHide();
+    internal void SuspendForInlineFeature() => DismissPreview();
     private static readonly TimeSpan CapturePollInterval = TimeSpan.FromMilliseconds(400);
     private static readonly ILearningTranslationEngine UnavailableLocalEngine = new UnavailableLocalLearningTranslationEngine();
     private const string SecureFieldMessage = "Sentence translation is unavailable in secure fields.";
@@ -144,7 +146,10 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
             if (_disposed) return;
             var previous = _settings;
             if (previous is not null && !previous.HasSameTranslationInputs(next))
+            {
                 retired = RetireIntentLocked();
+                _writingHistory = null; _currentPreviousSentence = null;
+            }
             Volatile.Write(ref _settings, next);
             // Retirement, provider publication and native resource intent share capture admission.
             // A new hotkey sees all three together; old planner tokens are already cancelled.
@@ -174,7 +179,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         if (IsBatterySaverPauseActive(settings))
         {
             _coordinator.ClearCache();
-            CancelAndHide();
+            DismissPreview();
         }
         ReconcileLocalResources();
     }
@@ -217,10 +222,13 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
     /// <summary>Removes the hook before app shutdown and drains the coordinator's bounded work set.</summary>
     public async ValueTask DisposeAsync()
     {
+        Task? replacementWork; Task[] automaticWork;
         lock (_gate)
         {
             if (_disposed) return;
             _disposed = true;
+            replacementWork = _replacementWork;
+            automaticWork = _automaticWork.ToArray();
             Interlocked.Increment(ref _stateValidationGeneration);
             _pendingLoadingState = null;
             _loadingStateDispatchQueued = false;
@@ -233,6 +241,8 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         if (_dictionarySession is not null) _dictionarySession.StateChanged -= OnDictionaryStateChanged;
         if (_explanationSession is not null) _explanationSession.StateChanged -= OnExplanationStateChanged;
         CancelCurrentState();
+        if (replacementWork is not null) try { await replacementWork.ConfigureAwait(false); } catch { }
+        try { await Task.WhenAll(automaticWork).ConfigureAwait(false); } catch { }
 
         Task articleShutdown = Task.CompletedTask;
         if (_dispatcher.CheckAccess())
@@ -269,7 +279,8 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         var input = args.Event;
         var settings = Volatile.Read(ref _settings);
         var focused = _focus.Current;
-        bool matchesLearningChord = input.IsKeyDown && !input.IsRepeat && !args.Suppress
+        lock (_gate) _observedField ??= focused;
+        bool matchesLearningChord = input.IsKeyDown && !args.Suppress
             && settings is { TranslationEnabled: true, ShortcutConflicts: false }
             && settings.Shortcut.Matches(input);
         var isLearningAvailable = matchesLearningChord && IsLearningAvailable(settings!);
@@ -281,11 +292,27 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         if (isLearningChord)
         {
             args.Suppress = true;
+            if (input.IsRepeat) return;
+            if (Volatile.Read(ref _presentedRequestId) is { } displayed && IsCurrentRequest(displayed))
+            { _ = _dispatcher.BeginInvoke(() => ExpandPreview(displayed), DispatcherPriority.Background); return; }
             var origin = focused;
             var anchor = focused!.CaretRect;
             BeginCaptureIntentFromHook(settings!, CaptureOrigin.From(origin), anchor);
             return;
         }
+
+        if (input.IsKeyDown && !args.Suppress && settings is { TranslationEnabled: true, ReplacementShortcutConflicts: false }
+            && settings.ReplacementShortcut.Matches(input) && IsLearningAvailable(settings)
+            && focused is not null && FieldEnvironmentFailure(focused, settings) is null
+            && Volatile.Read(ref _readyReplacementRequestId) is { } replacement && IsCurrentRequest(replacement))
+        {
+            args.Suppress = true;
+            if (!input.IsRepeat) _ = _dispatcher.BeginInvoke(() => ReplaceFromShortcut(replacement), DispatcherPriority.Background);
+            return;
+        }
+        if (input.IsKeyDown && !input.IsRepeat && !args.Suppress && input.Kind == KeyKind.Escape
+            && Volatile.Read(ref _presentedRequestId) is { } preview && IsCurrentRequest(preview))
+        { args.Suppress = true; _ = _dispatcher.BeginInvoke(() => EscapePreview(preview), DispatcherPriority.Background); return; }
 
         if (!input.IsKeyDown || !IsIntentActive()) return;
         if (args.Suppress || InvalidatesCapture(input))
@@ -320,6 +347,9 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         {
             if (_disposed) return -1;
             generation = ++_intentGeneration;
+            Interlocked.Increment(ref _replacementEpoch);
+            _replacementBlocked = false; _recoveryField = null; _expanded = true;
+            Volatile.Write(ref _presentedRequestId, null); Volatile.Write(ref _readyReplacementRequestId, null);
             Interlocked.Increment(ref _stateValidationGeneration);
             _pendingLoadingState = null;
             _loadingStateDispatchQueued = false;
@@ -348,15 +378,16 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
     }
 
     private async Task CaptureAndStartAsync(
-        long generation, LearningRuntimeSettings settings, CaptureOrigin? origin, ScreenRect fallbackAnchor)
+        long generation, LearningRuntimeSettings settings, CaptureOrigin? origin, ScreenRect fallbackAnchor, bool automatic = false)
     {
         if (generation < 0 || RetireForInlineCapture(generation) || !IsCurrentIntent(generation)) return;
 
-        var attempt = await Task.Run(() => Capture(settings, origin, generation)).ConfigureAwait(false);
+        var attempt = await Task.Run(() => Capture(settings, origin, generation, automatic)).ConfigureAwait(false);
         if (RetireForInlineCapture(generation) || !IsCurrentIntent(generation)) return;
 
         if (attempt.Capture is null)
         {
+            if (automatic) { await _dispatcher.InvokeAsync(() => { if (IsCurrentIntent(generation)) CancelAndHide(); }); return; }
             await _dispatcher.InvokeAsync(() =>
             {
                 if (RetireForInlineCapture(generation) || !IsCurrentIntent(generation)) return;
@@ -412,7 +443,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         await _dispatcher.InvokeAsync(() => { if (!RetireForInlineCapture(generation)) BeginPreview(generation, capture); }, DispatcherPriority.Background);
     }
 
-    private CaptureAttempt Capture(LearningRuntimeSettings settings, CaptureOrigin? origin, long generation)
+    private CaptureAttempt Capture(LearningRuntimeSettings settings, CaptureOrigin? origin, long generation, bool automatic)
     {
         if (RetireForInlineCapture(generation) || !IsCurrentIntent(generation)) return new CaptureAttempt(null, null, ScreenRect.Empty);
         var availabilityFailure = LearningAvailabilityFailure(settings);
@@ -439,7 +470,9 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
             // UIA is a cross-process call that can stall on a host. This method is only reached
             // from Task.Run, never from the low-level hook or the WPF dispatcher.
             if (RetireForInlineCapture(generation) || !IsCurrentIntent(generation)) return new CaptureAttempt(null, null, ScreenRect.Empty);
-            field = _focus.Refresh();
+            long epoch = Interlocked.Read(ref _replacementEpoch);
+            bool Permit() => !Volatile.Read(ref _disposed) && Interlocked.Read(ref _replacementEpoch) == epoch;
+            field = _focus is UiaFocusTracker tracker ? tracker.RefreshGuarded(Permit) : Permit() ? _focus.Refresh() : null;
         }
         catch (Exception)
         {
@@ -492,10 +525,14 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
 
             if (sourceLanguage is null)
                 return new CaptureAttempt(null, UncertainSourceLanguageMessage, field.CaretRect);
+            if (automatic && !IcuWritingScriptEvidence.Accepts(source, sourceLanguage.Value))
+                return new CaptureAttempt(null, null, field.CaretRect);
 
+            var input = LearningTranslationInput.Captured(field.Text, range, source, settings.ReferenceMode);
             return new CaptureAttempt(
                 new CapturedSentence(field, range, source, settings,
-                    settings.Options with { SourceLanguage = sourceLanguage.Value }), null, field.CaretRect);
+                    settings.Options with { SourceLanguage = sourceLanguage.Value, ReferenceBefore = input.ReferenceBefore,
+                        ReferenceAfter = input.ReferenceAfter }), null, field.CaretRect);
         }
         catch (LearningTranslationException error)
         {
@@ -652,10 +689,13 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
             }
         }
         if (!CurrentSettings()) return false;
+        long epoch = Interlocked.Read(ref _replacementEpoch);
+        bool Permit() => !Volatile.Read(ref _disposed) && Interlocked.Read(ref _replacementEpoch) == epoch;
         try
         {
-            var current = _focus.Refresh();
+            var current = _focus is UiaFocusTracker tracker ? tracker.RefreshGuarded(Permit) : Permit() ? _focus.Refresh() : null;
             return current is not null
+                && Permit()
                 && SameCapturedField(capture.Field, current)
                 && FieldCaptureFailure(current, capture.Settings) is null
                 && CurrentSettings();
@@ -717,6 +757,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
             if (previousCapture?.Lifetime is { } previousLifetime) _ = previousLifetime.Retire();
             _pendingOrigin = null;
             _activeCapture = capture;
+            _currentPreviousSentence = PreviousSentenceLocked(capture);
             // Begin the Core request while holding the intent gate. A concurrent key/focus
             // invalidation then either wins before this point or cancels the request after it has
             // an identity; it cannot slip between a freshness check and request creation.
@@ -807,6 +848,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
             while (!cancellationToken.IsCancellationRequested)
             {
                 await Task.Delay(CapturePollInterval, cancellationToken).ConfigureAwait(false);
+                if (ReplacementPending(generation)) continue;
                 if (!IsLearningAvailable(capture.Settings))
                 {
                     ClearCacheIfBatterySaverPaused(capture.Settings);
@@ -817,9 +859,10 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
                     return;
                 }
 
-                bool current = await Task.Run(() => IsCaptureCurrent(capture), cancellationToken).ConfigureAwait(false);
+                bool current = await Task.Run(() => RecoveryPending(generation) ? RecoveryCaptureCurrent(capture) : IsCaptureCurrent(capture), cancellationToken).ConfigureAwait(false);
                 if (!current)
                 {
+                    if (ReplacementPending(generation)) continue;
                     ClearCacheIfBatterySaverPaused(capture.Settings);
                     _ = _dispatcher.BeginInvoke(() =>
                     {
@@ -894,6 +937,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         }
 
         if (state is null || _coordinator.State != state) return;
+        if (!_expanded && string.IsNullOrWhiteSpace(state.PartialResult)) return;
 
         CapturedSentence? capture;
         lock (_gate)
@@ -929,6 +973,8 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         // PartialResult is intentionally provisional and cannot authorize a write. The read-only
         // card may display it while the 400 ms off-thread capture monitor continues full UIA reads.
         EnsureWindow().ShowState(state, capture.Field.CaretRect, canRetry: false);
+        Volatile.Write(ref _presentedRequestId, state.RequestId); Volatile.Write(ref _readyReplacementRequestId, null);
+        UpdateReplacementPresentation(state, capture);
     }
 
     private void ValidateAndRenderTerminalState(LearningPreviewState state, long validation)
@@ -999,6 +1045,10 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
 
             EnsureWindow().ShowState(state, capture.Field.CaretRect,
                 canRetry: state.Status == LearningPreviewStatus.Failed);
+            Volatile.Write(ref _presentedRequestId, state.RequestId);
+            Volatile.Write(ref _readyReplacementRequestId, state.Status == LearningPreviewStatus.Ready ? state.RequestId : null);
+            UpdateReplacementPresentation(state, capture);
+            RememberCompleteSentence(state, capture);
             PrepareSentenceExplanation(state, capture, intent);
             PrepareSentenceVocabulary(state, capture, intent);
         }, DispatcherPriority.Background);
@@ -1057,10 +1107,19 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
     {
         CapturedSentence? capture;
         CaptureOrigin? origin;
+        FocusedField? previous;
         lock (_gate)
         {
+            previous = _observedField; _observedField = WritingCommittedMutationPolicy.BaselineAfter(previous, field);
+            if (_writingHistory is { } history && (field is null || !HistoryFieldMatches(history, field)))
+            { _writingHistory = null; _currentPreviousSentence = null; }
             capture = _activeCapture;
             origin = _pendingOrigin;
+            if (_replacementInProgress && capture is not null && field is not null
+                && capture.Field.ProcessId == field.ProcessId && capture.Field.FieldId == field.FieldId
+                && capture.Field.FocusChangeSequence == field.FocusChangeSequence && !field.IsSecure
+                && CompositionEvidencePolicy.IsSameReceipt(capture.Field, field)) return;
+            if (_replacementBlocked && _recoveryField is { } recovered && field is not null && SameCapturedField(recovered, field)) return;
         }
 
         if ((capture is not null && (field is null
@@ -1070,6 +1129,11 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         {
             CancelAndHide();
         }
+        var settings = Volatile.Read(ref _settings);
+        if (field is not null && !field.IsSingleLine && settings is { AutomaticPreview: true }
+            && WritingCommittedMutationPolicy.HasMutation(previous, field) && IsLearningAvailable(settings)
+            && FieldCaptureFailure(field, settings) is null)
+            ScheduleAutomatic(field, settings);
     }
 
     private void CancelAndHide()
@@ -1084,6 +1148,8 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
     private RetiredIntent RetireIntentLocked()
     {
         var generation = ++_intentGeneration;
+        Interlocked.Increment(ref _replacementEpoch);
+        Volatile.Write(ref _presentedRequestId, null); Volatile.Write(ref _readyReplacementRequestId, null);
         Interlocked.Increment(ref _stateValidationGeneration);
         _pendingLoadingState = null;
         _loadingStateDispatchQueued = false;
@@ -1093,6 +1159,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         if (capture?.Lifetime is { } lifetime) _ = lifetime.Retire();
         _activeCapture = null;
         _activeRequestId = null;
+        _recoveryField = null; _replacementBlocked = false;
         RetireDictionaryLocked();
         RetireExplanationLocked();
         return new RetiredIntent(generation, capture);
@@ -1177,8 +1244,10 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         _window = new LearningPreviewWindow();
         if (_speechController is not null) _window.AttachSpeech(_speechController);
         _window.RetryRequested += RetryCurrentCapture;
-        _window.CancelRequested += CancelAndHide;
-        _window.DismissRequested += CancelAndHide;
+        _window.CancelRequested += DismissPreview;
+        _window.DismissRequested += DismissPreview;
+        _window.ExpandRequested += ExpandPreview;
+        _window.ReplaceRequested += ReplacePreview;
         _window.LookupRequested += OnDictionaryLookupRequested;
         _window.ExplanationRequested += OnExplanationRequested;
         _window.CopyRequested += OnCopyRequested;
@@ -1338,6 +1407,10 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         bool EndpointEnabled,
         KeyBinding Shortcut,
         bool ShortcutConflicts,
+        bool AutomaticPreview,
+        LearningReferenceMode ReferenceMode,
+        KeyBinding ReplacementShortcut,
+        bool ReplacementShortcutConflicts,
         string EndpointBaseUrl,
         IReadOnlyList<LearningLanguage> SourceLanguages,
         LearningTranslationOptions Options,
@@ -1366,6 +1439,8 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
 
         public bool HasSameTranslationInputs(LearningRuntimeSettings other) =>
             TranslationEnabled == other.TranslationEnabled
+            && AutomaticPreview == other.AutomaticPreview
+            && ReferenceMode == other.ReferenceMode
             && AvailabilitySettings.Enabled == other.AvailabilitySettings.Enabled
             && AvailabilitySettings.Pause == other.AvailabilitySettings.Pause
             && AvailabilitySettings.PauseOnBatterySaver == other.AvailabilitySettings.PauseOnBatterySaver
@@ -1475,6 +1550,10 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
                 settings.LearningTranslationActiveEndpointEnabled,
                 settings.LearningTranslationShortcut,
                 GlobalShortcut.LearningTranslation.Conflict(settings, settings.LearningTranslationShortcut) is not null,
+                settings.LearningSentencePreviewEnabled,
+                settings.LearningReferenceMode,
+                settings.LearningReplacementShortcut,
+                GlobalShortcut.LearningReplacement.Conflict(settings, settings.LearningReplacementShortcut) is not null,
                 endpointBaseUrl,
                 sourceLanguages,
                 options,

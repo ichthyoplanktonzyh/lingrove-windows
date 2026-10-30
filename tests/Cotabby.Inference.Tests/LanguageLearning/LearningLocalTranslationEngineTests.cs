@@ -1,6 +1,7 @@
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Inference.LanguageLearning.Local;
 using LLama.Native;
+using System.Text.Json;
 
 namespace Cotabby.Inference.Tests.LanguageLearning;
 
@@ -8,6 +9,32 @@ public sealed class LearningLocalTranslationEngineTests
 {
     private static readonly TimeSpan TestTimeout = TimeSpan.FromSeconds(5);
     private const string Source = "Please close the window before you leave.";
+
+    [Fact]
+    public async Task DraftSearchGeneratesWithWinningTokensRatherThanTheLastOversizedProbe()
+    {
+        var options = Options(contextTokens: 4096) with { ReferenceBefore = new string('a', 200), ReferenceAfter = new string('b', 200) };
+        int output = ModelContextBudget.TranslationOutputTokens(Source, options.ContextTokens);
+        int allowance = ModelContextBudget.InputAllowance(4096, output, false);
+        var framing = LearningLocalPrompt.GetSegments(LearningChatTemplate.Llama3, "");
+        int frameCount = framing.TrustedPrefix.Length + framing.TrustedSuffix.Length;
+        static int ReferenceCount(string text)
+        {
+            const string marker = "REFERENCE EXCERPTS (JSON):\n";
+            int start = text.IndexOf(marker, StringComparison.Ordinal); if (start < 0) return -1;
+            start += marker.Length; int end = text.IndexOf("\n\nTARGET TRANSLATION TASK:\n", start, StringComparison.Ordinal);
+            using var json = JsonDocument.Parse(text[start..end]);
+            return json.RootElement.GetProperty("before_target").GetString()!.Length + json.RootElement.GetProperty("after_target").GetString()!.Length;
+        }
+        var operation = new FakeLocalOperation(new LearningGgufMetadata("llama"), 4096)
+        { LiteralTokenCountForText = text => ReferenceCount(text) is var length && length >= 0 ? allowance - frameCount - 100 + length : 1 };
+        await using var engine = new LearningLocalTranslationEngine(new("local.gguf", LearningChatTemplate.Llama3, 4096), new FakeLocalRuntime(operation));
+        var request = await engine.PlanAsync("draft", Source, options, default);
+        Assert.Equal(100, ReferenceCount(request.Prompt.Prompt)); Assert.NotEqual(operation.LiteralInputs.Last(), request.Prompt.Prompt);
+        Assert.Equal(options, request.Options);
+        await engine.TranslateAsync(request, default);
+        Assert.Equal(allowance, operation.LastPromptTokens!.Count); Assert.Equal(1, operation.GenerateCount);
+    }
 
     [Theory]
     [InlineData(false)] [InlineData(true)]
@@ -433,6 +460,7 @@ public sealed class LearningLocalTranslationEngineTests
         public bool WaitForGenerationRelease { get; init; }
         public bool WaitForCleanupAfterCancellation { get; init; }
         public int? LiteralTokenCountOverride { get; init; }
+        public Func<string, int>? LiteralTokenCountForText { get; init; }
         public Action? OnLiteralTokenization { get; init; }
         public string Output { get; init; } = "Translated result.";
         public LearningLocalRuntimeException? GenerationFailure { get; init; }
@@ -453,7 +481,7 @@ public sealed class LearningLocalTranslationEngineTests
         {
             LiteralInputs.Add(text);
             OnLiteralTokenization?.Invoke();
-            return Tokens(LiteralTokenCountOverride ?? text.Length);
+            return Tokens(LiteralTokenCountForText?.Invoke(text) ?? LiteralTokenCountOverride ?? text.Length);
         }
 
         public async Task<string> GenerateAsync(

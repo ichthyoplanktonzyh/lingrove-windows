@@ -23,8 +23,10 @@ internal static class ShortcutsPane
                 "Turn Cotabby on or off from anywhere without opening the system tray.")
                 .Tagged("global on off hotkey pause enable disable keybind binding"),
             r.Shortcut(GlobalShortcut.LearningTranslation,
-                "Manually translate the current sentence into a read-only preview. The key is ignored while translation is disabled or conflicts with another shortcut.")
+                "Translate the current sentence or expand its preview. The key is ignored while translation is disabled or conflicts with another shortcut.")
                 .Tagged("learning translate sentence translation hotkey option alt t keybind binding"),
+            r.Shortcut(GlobalShortcut.LearningReplacement, "Replace a complete translation only when the original editor range can be safely verified.")
+                .Tagged("replace translation sentence shortcut keybind"),
             r.Shortcut(GlobalShortcut.ExpressionAssist,
                 "Describe an expression at the caret or use the selected text. Choose a modifier shortcut; Enter and Escape are reserved.")
                 .Tagged("expression term assistance meaning shortcut keybind hotkey"),

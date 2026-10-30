@@ -103,6 +103,7 @@ public sealed class AppHost : IAsyncDisposable
     internal Cotabby.App.Dictionaries.DictionaryFeature Dictionaries { get; }
     private readonly IAsyncDisposable? _expressionEditor;
     private readonly ExpressionAssistApplication _expressions;
+    private readonly IWritingSentenceReplacement _writingReplacement;
     private readonly Win32ReadingSelectionReader? _nativeReading;
     private readonly Win32ReadingOriginTracker? _readingOrigin;
     private readonly ReadingApplication? _reading;
@@ -252,6 +253,7 @@ public sealed class AppHost : IAsyncDisposable
         _hook = _services.GetRequiredService<IKeyboardHook>();
         var focus = _services.GetRequiredService<IFocusTracker>();
         var inserter = _services.GetRequiredService<ITextInserter>();
+        _writingReplacement = new WritingSentenceReplacement((IConditionalTextInserter)inserter, ((UiaFocusTracker)focus).RefreshGuarded);
 
         Endpoint = new OpenAICompatibleSuggestionEngine(
             EndpointClient, EndpointCredentials, EndpointSettings,
@@ -296,8 +298,8 @@ public sealed class AppHost : IAsyncDisposable
             clipboard: _services.GetRequiredService<ClipboardTextReader>());
         _suggestionApplication = new SuggestionSettingsApplication(Coordinator, _completion);
         Coordinator.EnsureLocalReady = EnsureSelectedCompletionReadyAsync;
-        Coordinator.InlineCaptureActive = () => _expressions.IsActive || _reading?.IsActive == true || EmojiPicker.IsCapturing || Macros.IsCapturing;
-        EmojiPicker.CanCapture = Macros.CanCapture = field => !_expressions.IsActive && _reading?.IsActive != true && Coordinator.IsAvailableIn(field);
+        Coordinator.InlineCaptureActive = () => _expressions.IsActive || _reading?.IsActive == true || LearningPreview?.IsReplacing == true || EmojiPicker.IsCapturing || Macros.IsCapturing;
+        EmojiPicker.CanCapture = Macros.CanCapture = field => !_expressions.IsActive && _reading?.IsActive != true && LearningPreview?.IsReplacing != true && Coordinator.IsAvailableIn(field);
         EmojiPicker.CommitKeyFor = Macros.CommitKeyFor = Coordinator.AcceptWordKeyFor;
         Coordinator.Metrics.Restore(Settings.WordsAccepted);
         LearningPreview = new LearningPreviewController(
@@ -318,10 +320,12 @@ public sealed class AppHost : IAsyncDisposable
             clipboardWriter: _services.GetRequiredService<IClipboardTextWriter>(),
             vocabulary: Vocabulary,
             vocabularyCaptures: _services.GetRequiredService<VocabularyCaptureFactory>());
+        LearningPreview.AttachReplacement(_writingReplacement);
+        LearningPreview.BeforeReplacement = Coordinator.InvalidateSession;
         LearningPreview.AttachSpeech(Speech.Controller);
         LearningPreview.AttachPerformanceHistory(_performance);
-        LearningPreview.InlineCaptureActive = () => _expressions.IsActive || _reading?.IsActive == true;
-        _expressions.OtherInlineActive = () => _reading?.IsActive == true;
+        LearningPreview.InlineCaptureActive = () => _expressions.IsActive || _reading?.IsActive == true || EmojiPicker.IsCapturing || Macros.IsCapturing;
+        _expressions.OtherInlineActive = () => _reading?.IsActive == true || LearningPreview.IsReplacing;
         if (OperatingSystem.IsWindowsVersionAtLeast(8, 1))
         {
             _nativeReading = new Win32ReadingSelectionReader(nativeFocus, _hook);
@@ -340,7 +344,7 @@ public sealed class AppHost : IAsyncDisposable
                 (text, language) => language is { } known ? sentences.Tokenize(text, known) : sentences.TokenizeUnknown(text),
                 LearningPreview.ReadingTranslator,
                 () => { Coordinator.InvalidateSession(); LearningPreview.SuspendForInlineFeature(); },
-                () => _expressions.IsActive || EmojiPicker.IsCapturing || Macros.IsCapturing);
+                () => _expressions.IsActive || LearningPreview.IsReplacing || EmojiPicker.IsCapturing || Macros.IsCapturing);
             _reading.AttachSpeech(Speech.Controller);
             _reading.AttachDetails(LearningExplanation.GenerateReadingLookupDetailsAsync);
             _reading.AttachPerformance(_performance.Observe);
@@ -804,7 +808,11 @@ public sealed class AppHost : IAsyncDisposable
         finally
         {
             try { if (_expressionEditor is not null) await _expressionEditor.DisposeAsync().ConfigureAwait(false); }
-            finally { await LearningPreview.DisposeAsync().ConfigureAwait(false); }
+            finally
+            {
+                try { await LearningPreview.DisposeAsync().ConfigureAwait(false); }
+                finally { await _writingReplacement.DisposeAsync().ConfigureAwait(false); }
+            }
         }
     }
 

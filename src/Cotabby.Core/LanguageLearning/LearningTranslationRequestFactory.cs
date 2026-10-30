@@ -60,6 +60,13 @@ public static class LearningTranslationRequestFactory
             actualContextWindowTokens: actualContextWindowTokens, estimated: false, count: exactTokenCount);
     }
 
+    /// <summary>Local exact planning retains the winning token payload while draft-reference
+    /// binary search probes other candidates. No losing token array can be used for generation.</summary>
+    public static (LearningTranslationRequest Request, T Payload) CreatePlanned<T>(string requestId, string source,
+        LearningTranslationOptions options, LearningTranslationPrompt.Family family, int actualContextWindowTokens,
+        Func<string, (int Count, T Payload)> measure) => CreateCorePlanned(requestId, source, options, family,
+            preserveOptions: true, actualContextWindowTokens, estimated: false, measure);
+
     private static LearningTranslationRequest CreateCore(
         string requestId,
         string source,
@@ -70,6 +77,16 @@ public static class LearningTranslationRequestFactory
         bool estimated,
         Func<string, int>? count)
     {
+        count ??= ModelContextBudget.EstimatedTokens;
+        return CreateCorePlanned(requestId, source, options, family, preserveOptions, actualContextWindowTokens,
+            estimated, text => (count(text), false)).Request;
+    }
+
+    private static (LearningTranslationRequest Request, T Payload) CreateCorePlanned<T>(
+        string requestId, string source, LearningTranslationOptions options, LearningTranslationPrompt.Family? family,
+        bool preserveOptions, int? actualContextWindowTokens, bool estimated, Func<string, (int Count, T Payload)> measure)
+    {
+        ArgumentNullException.ThrowIfNull(measure);
         if (string.IsNullOrWhiteSpace(requestId))
             throw new LearningTranslationException(LearningTranslationFailure.InvalidRequestId);
         if (source is null)
@@ -79,7 +96,7 @@ public static class LearningTranslationRequestFactory
         {
             throw new LearningTranslationException(LearningTranslationFailure.InvalidContextBudget);
         }
-        if (options.ModelName is null || options.Style is null ||
+        if (options.ModelName is null || options.Style is null || options.ReferenceBefore is null || options.ReferenceAfter is null ||
             (options.SourceLanguage is { } sourceLanguage && !Enum.IsDefined(sourceLanguage)) || !Enum.IsDefined(options.TargetLanguage) ||
             !Enum.IsDefined(options.Style.Register))
         {
@@ -100,21 +117,25 @@ public static class LearningTranslationRequestFactory
             ? Math.Min(frozenOptions.ContextTokens, actual)
             : frozenOptions.ContextTokens;
         var promptFamily = family ?? LearningTranslationPrompt.ForEndpointModel(frozenOptions.ModelName);
-        var measurement = count;
-        if (!estimated && measurement is { } exactMeasurement)
+        bool bareMeasurement = true;
+        (int Count, T Payload) Measure(string promptText)
         {
-            measurement = promptText =>
+            var measured = measure(promptText);
+            if (!estimated)
             {
-                var inputTokens = exactMeasurement(promptText);
-                if (inputTokens <= 0)
+                if (measured.Count <= 0)
                     throw ModelContextBudget.OversizedTarget();
-                if (promptFamily == LearningTranslationPrompt.Family.TranslateGemma && inputTokens > 2_048)
+                // Preserve the historical bare-target specialist failure. Oversized references
+                // are measured normally so the 3b planner can shrink them under the same cap.
+                if (bareMeasurement && promptFamily == LearningTranslationPrompt.Family.TranslateGemma && measured.Count > 2_048)
                     throw new LearningTranslationException(LearningTranslationFailure.TranslateGemmaInputTooLarge);
-                return inputTokens;
-            };
+            }
+            bareMeasurement = false;
+            return measured;
         }
-        var input = new LearningTranslationInput(source, frozenOptions.Style);
-        var prompt = LearningTranslationBudget.Prompt(
+        var input = new LearningTranslationInput(source, frozenOptions.Style)
+        { ReferenceBefore = frozenOptions.ReferenceBefore, ReferenceAfter = frozenOptions.ReferenceAfter };
+        var plan = LearningTranslationBudget.PlanPrompt(
             input,
             frozenOptions.SourceLanguage,
             frozenOptions.TargetLanguage,
@@ -122,7 +143,8 @@ public static class LearningTranslationRequestFactory
             total: planningContextTokens,
             output: outputTokens,
             estimated: estimated,
-            count: measurement);
+            measure: Measure);
+        var prompt = plan.Request;
 
         if (family is null)
         {
@@ -131,7 +153,7 @@ public static class LearningTranslationRequestFactory
             { Temperature = sampling.Temperature ?? prompt.Sampling.Temperature, TopP = sampling.TopP ?? prompt.Sampling.TopP } };
         }
 
-        return new LearningTranslationRequest(requestId, source,
-            preserveOptions ? options : frozenOptions, prompt, outputTokens);
+        return (new LearningTranslationRequest(requestId, source,
+            preserveOptions ? options : frozenOptions, prompt, outputTokens), plan.Payload);
     }
 }

@@ -76,15 +76,22 @@ the initial gap audit; its initial Windows gap descriptions are historical. Curr
 - #140 merged pointer/icon/context/restricted-OCR reading, the private CLI mailbox, launch-time
   interface languages and shared performance history. #141 preserved all 68 original Mac verifiers
   while scheduling at most two concurrently; all four final-head checks passed for both PRs.
-- The next integrated candidate connects independent explanation endpoints and settings, both
+- #142 merged independent explanation endpoints and settings, both
   learning roles' battery/AC profiles, local MDict sources and rich articles, isolated native image
   drops, current autocomplete streaming/prediction and onboarding task readiness. Module references,
-  scoped limitations and validation are recorded in their handoffs; final-head CI remains required.
+  scoped limitations and validation are recorded in their handoffs. All four final-head CI jobs
+  passed at `09f2e797d950f64283858197392ccc051f26b6f2` before merge as `210dabe`.
   Physical acceptance remains the maintainer's final unified round.
 - Remaining work includes the complete Home/Welcome learning showcase, native automatic language
   confidence, unavailable dictionary providers and the explicitly documented media/native gaps.
   Internal components are not evidence that those flows are complete. Existing older libraries
   retain explicit references and are reused only after checking the current consumer contract.
+
+The next writing candidate connects automatic previews, compact/expanded controls, guarded
+same-document replacement/acknowledgement, recovery Copy, explicit budgeted draft references and
+evidence-backed previous-sentence display. Its [handoff](WRITING_TRANSLATION_3B.md) records local
+full-suite results and the explicit caret-ending ASCII replacement subset. It is not native host
+acceptance or complete Unicode/range parity.
 
 After the maintainer's delivery adjustment, implementation owners carry each active user flow
 through its settings, entry and production adapters. Internal commits use targeted validation;

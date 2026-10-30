@@ -11,7 +11,7 @@ namespace Cotabby.Win32.Insertion;
 /// cancellation ordering; this facade supplies the shared Windows focus tracker and platform
 /// adapter while keeping existing macro, emoji, and suggestion callers on one guarded path.
 /// </summary>
-public sealed class SendInputTextInserter : ITextInserter
+public sealed class SendInputTextInserter : ITextInserter, IConditionalTextInserter
 {
     private readonly ILogger<SendInputTextInserter> _logger;
     private readonly GuardedTextInserter _guardedInserter;
@@ -39,6 +39,9 @@ public sealed class SendInputTextInserter : ITextInserter
         LogRejectedEdit(replaced, target);
         return replaced;
     }
+
+    public Task<bool> ReplaceWithPermitAsync(FocusedField target, int deleteCount, string text, Func<bool> permit, CancellationToken ct) =>
+        _guardedInserter.ReplaceWithPermitAsync(target, deleteCount, text, permit, ct);
 
     private void LogRejectedEdit(bool succeeded, FocusedField target)
     {

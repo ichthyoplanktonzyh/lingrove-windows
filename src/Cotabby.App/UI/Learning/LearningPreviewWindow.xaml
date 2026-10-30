@@ -31,10 +31,14 @@
                     <Button x:Name="CloseButton" DockPanel.Dock="Right" Content="×" Width="28" Height="28" Focusable="False"
                             Padding="0" FontSize="18" Background="Transparent" BorderThickness="0"
                             Foreground="{DynamicResource TextSecondary}" Click="OnCloseClick" />
-                    <vocabulary:VocabularyFavoriteButton x:Name="FavoriteButton" DockPanel.Dock="Right" />
-                    <Button x:Name="ExplanationButton" DockPanel.Dock="Right" Content="✦" Width="28" Height="28" Focusable="False"
+                    <Button x:Name="ExpandButton" DockPanel.Dock="Right" Content="⌃" Width="28" Height="28" Focusable="False"
+                            Padding="0" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource TextSecondary}" Click="OnExpandClick" ToolTip="Collapse" />
+                    <Button x:Name="ReplaceButton" DockPanel.Dock="Right" Content="⇄" Width="28" Height="28" Focusable="False"
+                            Padding="0" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource TextSecondary}" Click="OnReplaceClick" ToolTip="Replace" IsEnabled="False" />
+                    <Border x:Name="FavoriteContainer" DockPanel.Dock="Right"><vocabulary:VocabularyFavoriteButton x:Name="FavoriteButton" /></Border>
+                    <Border x:Name="ExplanationContainer" DockPanel.Dock="Right"><Button x:Name="ExplanationButton" Content="✦" Width="28" Height="28" Focusable="False"
                             Padding="0" FontSize="16" Background="Transparent" BorderThickness="0"
-                            Foreground="{DynamicResource AccentBrush}" Click="OnExplanationClick" Visibility="Collapsed" />
+                            Foreground="{DynamicResource AccentBrush}" Click="OnExplanationClick" Visibility="Collapsed" /></Border>
                     <TextBlock x:Name="TitleText" Text="Sentence translation" FontSize="15" FontWeight="SemiBold"
                                Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center" />
                 </DockPanel>
@@ -43,7 +47,12 @@
                            Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,9" />
                 <TextBlock x:Name="DirectionText" FontSize="11" Foreground="{DynamicResource TextSecondary}"
                            Margin="0,0,0,9" Visibility="Collapsed" />
+                <ScrollViewer x:Name="TranslationDestinationSection" MaxHeight="48" VerticalScrollBarVisibility="Auto" Visibility="Collapsed" Margin="0,0,0,8">
+                    <TextBlock x:Name="TranslationDestination" TextWrapping="Wrap" FontSize="11" Foreground="{DynamicResource TextSecondary}" />
+                </ScrollViewer>
                 <ProgressBar x:Name="Progress" Height="3" IsIndeterminate="True" Margin="0,0,0,12" />
+                <TextBlock x:Name="ReplacementReason" FontSize="11" TextWrapping="Wrap" Foreground="{DynamicResource TextSecondary}" Visibility="Collapsed" Margin="0,0,0,8" />
+                <TextBlock x:Name="PreviousTranslation" FontSize="11" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource TextSecondary}" Visibility="Collapsed" Margin="0,0,0,8" />
 
                 <StackPanel x:Name="SourceSection" Margin="0,0,0,12">
                     <Button x:Name="SourceSpeechButton" Content="🔊" ToolTip="Read source aloud" HorizontalAlignment="Right" Focusable="False" Visibility="Collapsed" />

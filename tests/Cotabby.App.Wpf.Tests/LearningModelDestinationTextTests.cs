@@ -1,10 +1,21 @@
 using Cotabby.App.Learning;
 using Cotabby.Core.LanguageLearning;
+using Cotabby.App.Settings;
 
 namespace Cotabby.App.Wpf.Tests;
 
 public sealed class LearningModelDestinationTextTests
 {
+    [Fact]
+    public void WritingDestinationDisclosesDraftModeAndRejectsSecretUrlComponents()
+    {
+        string endpoint = LearningModelDestinationText.Translation(LearningTranslationBackend.Endpoint, "https://owned.invalid/v1", "model", true);
+        Assert.Contains("https://owned.invalid/v1", endpoint); Assert.Contains("Draft reference", endpoint);
+        Assert.DoesNotContain("owned-secret", LearningModelDestinationText.Translation(LearningTranslationBackend.Endpoint,
+            "https://name:owned-secret@owned.invalid/v1", "model", true));
+        Assert.DoesNotContain("dormant.invalid", LearningModelDestinationText.Translation(LearningTranslationBackend.Local,
+            "https://dormant.invalid/v1", "local.gguf", false));
+    }
     [Fact]
     public void SelectedEndpointIsDisclosedWithTheActualNormalizedDestination()
     {

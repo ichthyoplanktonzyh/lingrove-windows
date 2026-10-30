@@ -97,9 +97,7 @@ public sealed class LearningLocalTranslationEngine :
             var planningOptions = LearningTranslationPrompt.SupportsStyleInstructions(profile.Family)
                 ? options
                 : options with { Style = new LearningTranslationStyle() };
-            IReadOnlyList<LLamaToken>? promptTokens = null;
-
-            int CountExactPromptTokens(string renderedPrompt)
+            (int Count, IReadOnlyList<LLamaToken> Payload) MeasureExactPromptTokens(string renderedPrompt)
             {
                 ThrowIfCancelled();
                 var segments = LearningLocalPrompt.GetSegments(profile.Template, renderedPrompt);
@@ -114,18 +112,18 @@ public sealed class LearningLocalTranslationEngine :
                 CopyTokens(prefix, tokenPlan, ref index);
                 CopyTokens(body, tokenPlan, ref index);
                 CopyTokens(suffix, tokenPlan, ref index);
-                promptTokens = tokenPlan;
-                return tokenPlan.Length;
+                return (tokenPlan.Length, tokenPlan);
             }
 
-            var request = LearningTranslationRequestFactory.Create(
+            var plan = LearningTranslationRequestFactory.CreatePlanned(
                 requestId,
                 source,
                 planningOptions,
                 profile.Family,
                 activeOperation.ContextWindowTokens,
-                CountExactPromptTokens);
-            request = request with { Options = options };
+                MeasureExactPromptTokens);
+            var request = plan.Request with { Options = options };
+            var promptTokens = plan.Payload;
 
             ThrowIfCancelled();
             if (promptTokens is null)

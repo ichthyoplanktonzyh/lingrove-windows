@@ -24,4 +24,7 @@ public sealed record LearningTranslationOptions
 
     /// <summary>Endpoint-only temperature and top-p overrides captured for this destination.</summary>
     public LearningModelSamplingOverrides EndpointSampling { get; init; } = new();
+    /// <summary>Request-local, explicitly selected draft evidence; never an editor handle or write range.</summary>
+    public string ReferenceBefore { get; init; } = "";
+    public string ReferenceAfter { get; init; } = "";
 }

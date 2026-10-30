@@ -79,7 +79,7 @@ public partial class SettingsWindow : Window
         int index = window._panes.FindIndex(view => view.Pane.Title == paneTitle);
         if (index < 0) return;
         window.NavList.SelectedIndex = index;
-        string cardTitle = task switch { ReadinessTask.Completion => "Engine", ReadinessTask.Translation => "Manual sentence preview", _ => "AI explanation model" };
+        string cardTitle = task switch { ReadinessTask.Completion => "Engine", ReadinessTask.Translation => "Writing translation", _ => "AI explanation model" };
         var row = window._panes[index].Pane.Cards.FirstOrDefault(card => card.Header == cardTitle)?.Rows.FirstOrDefault();
         if (row is not null) window.Dispatcher.BeginInvoke(() => row.View.BringIntoView(), DispatcherPriority.Loaded);
     }

@@ -40,6 +40,7 @@
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.Explanation.cs" Link="AppSettings\AppSettings.Explanation.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.ExplanationEndpoint.cs" Link="AppSettings\AppSettings.ExplanationEndpoint.cs" />
     <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.LearningPower.cs" Link="AppSettings\AppSettings.LearningPower.cs" />
+    <Compile Include="..\..\src\Cotabby.App\Settings\AppSettings.WritingTranslation.cs" Link="AppSettings\AppSettings.WritingTranslation.cs" />
     <Compile Include="..\..\src\Cotabby.App\Learning\LearningModelCatalogManager.cs" Link="AppLearning\LearningModelCatalogManager.cs" />
   </ItemGroup>
 

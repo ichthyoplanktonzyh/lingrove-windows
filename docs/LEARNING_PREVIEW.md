@@ -1,5 +1,9 @@
 # macOS sentence-preview adaptation
 
+This document records the historical manual read-only slice. The unmerged current writing-flow
+adaptation is recorded separately in [WRITING_TRANSLATION_3B.md](WRITING_TRANSLATION_3B.md); its
+new behavior does not change the historical fixture pins or establish native acceptance.
+
 This stage ports the manual, read-only sentence translation preview from stable macOS Lingrove at
 `43ba08833a4b373b9b82bd4b4fc168ee18c3cd6f`. That implementation and its tests define the behavior;
 the Windows files adapt the existing responsibilities to C#, WPF and Windows text segmentation.

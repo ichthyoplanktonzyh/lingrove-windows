@@ -9,6 +9,7 @@ namespace Cotabby.App.Reading;
 internal interface IReadingVisualGuard : IReadingScreenGuard
 {
     ReadingVisualFrame? Frame { get; }
+    ScreenRect? ForegroundBounds => null;
 }
 
 /// <summary>Mac 3b SourceReader's explicit OCR-first pointer route. The existing window owner
@@ -116,12 +117,16 @@ internal sealed class NativeReadingVisualPointerReader : IReadingPointerReader
     }
 }
 
-/// <summary>Selection remains the existing fast UIA path; only an explicit pointer action enters
-/// visual acquisition. Passive selection icons never trigger a screenshot.</summary>
-internal sealed class ReadingSourceReader(NativeReadingSelectionReader selection, IReadingPointerReader pointer)
+/// <summary>Initial/passive selection remains the fast UIA path. Only explicit activation can
+/// request optional selection enrichment; passive selection icons never trigger a screenshot.</summary>
+internal sealed class ReadingSourceReader(NativeReadingSelectionReader selection, IReadingPointerReader pointer, ReadingSelectionVisualEnricher? enrichment = null)
     : IReadingSelectionReader, IReadingPointerReader, IReadingPendingKeyOwner
 {
     public void ArmPendingActivationKey(int key) => selection.ArmPendingActivationKey(key);
-    public Task<IReadingSelectionLease?> CaptureAsync(CancellationToken token, int? key = null) => selection.CaptureAsync(token, key);
+    public async Task<IReadingSelectionLease?> CaptureAsync(CancellationToken token, int? key = null)
+    {
+        var lease = await selection.CaptureAsync(token, key);
+        return lease is null || enrichment is null ? lease : enrichment.Wrap(lease);
+    }
     public Task<IReadingSelectionLease?> CapturePointerAsync(int x, int y, CancellationToken token, int? key = null) => pointer.CapturePointerAsync(x, y, token, key);
 }

@@ -338,7 +338,8 @@ public sealed class AppHost : IAsyncDisposable
             var nativeReadingSource = new NativeReadingSelectionReader(_nativeReading);
             var readingOcr = new WindowsReadingOcr();
             var readingSource = new ReadingSourceReader(nativeReadingSource, new NativeReadingVisualPointerReader(_readingWindowSource,
-                () => _readingOrigin.Current, nativeReadingSource, readingOcr, _performance.Observe));
+                () => _readingOrigin.Current, nativeReadingSource, readingOcr, _performance.Observe),
+                new ReadingSelectionVisualEnricher(_readingWindowSource, () => _readingOrigin.Current, readingOcr, _performance.Observe));
             var lexical = _services.GetRequiredService<IcuLearningLexicalText>();
             var sentences = (IcuLearningEvidenceSentenceTokenizer)_services.GetRequiredService<ILearningEvidenceSentenceTokenizer>();
             _reading = new ReadingApplication(overlay.Dispatcher, _hook, () => OperatingSystem.IsWindowsVersionAtLeast(8, 1) ? _readingOrigin.Current : null,

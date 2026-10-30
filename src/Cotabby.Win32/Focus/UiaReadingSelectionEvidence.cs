@@ -31,9 +31,11 @@ internal sealed unsafe partial class UiaTextEditEvidence : IReadingSelectionEvid
         internal int Active = 1;
         internal long Version = 1;
         internal int ProcessId;
+        internal int ProviderProcessId;
         internal string FieldId = "";
         internal nint Host;
         internal string Text = "";
+        internal ScreenRect? SelectionBounds;
         internal bool Ready;
         internal bool OwnedTest;
         internal System.Drawing.Point? Pointer;
@@ -41,6 +43,11 @@ internal sealed unsafe partial class UiaTextEditEvidence : IReadingSelectionEvid
         internal nint FieldWindow;
         internal int FieldLeft, FieldTop, FieldRight, FieldBottom;
         internal IUIAutomationElement* Element;
+        internal IUIAutomationElement* FocusedElement;
+        internal bool ReadOnly;
+        internal bool FocusAdmitted, RequireReadOnlyTarget;
+        internal int FocusResult;
+        internal Func<string?>? OwnedFocus;
         internal IUIAutomationTextEditPattern* Edit;
         internal IUIAutomationTextPattern* TextPattern;
         internal IUIAutomationTextRange* Range;
@@ -60,10 +67,11 @@ internal sealed unsafe partial class UiaTextEditEvidence : IReadingSelectionEvid
         CaptureReadingCore(host, pid, point, false, allowed, invalidated, false);
     public ReadingLease? CaptureScreenGuard(nint host, int pid, Func<bool> allowed, Action invalidated) =>
         CaptureReadingCore(host, pid, null, true, allowed, invalidated, false);
-    private ReadingLease? CaptureReadingCore(nint host, int pid, System.Drawing.Point? pointer, bool screenGuard, Func<bool> allowed, Action invalidated, bool ownedTest)
+    private ReadingLease? CaptureReadingCore(nint host, int pid, System.Drawing.Point? pointer, bool screenGuard, Func<bool> allowed, Action invalidated, bool ownedTest,
+        string? ownedRuntimeId = null, string? ownedPointId = null, Func<string?>? ownedFocus = null)
     {
         if (ownedTest && (Native.GetWindowThreadProcessId(host, out uint ownerPid) == 0 || ownerPid != (uint)Environment.ProcessId || pid != Environment.ProcessId)) return null;
-        var lease = new ReadingLease(invalidated) { Host = host, ProcessId = pid, OwnedTest = ownedTest, Pointer = pointer, ScreenGuard = screenGuard };
+        var lease = new ReadingLease(invalidated) { Host = host, ProcessId = pid, OwnedTest = ownedTest, Pointer = pointer, ScreenGuard = screenGuard, OwnedFocus = ownedFocus };
         bool Allowed() => Volatile.Read(ref lease.Active) != 0 && allowed() && (ownedTest || Native.GetForegroundWindow() == host);
         bool ok = ExecuteTextRead(() =>
         {
@@ -71,30 +79,53 @@ internal sealed unsafe partial class UiaTextEditEvidence : IReadingSelectionEvid
             RetireReadingCore();
             if (!Allowed()) return;
             _reading = lease;
-            IUIAutomationElement* element = null;
+            IUIAutomationElement* element = null; IUIAutomationElement* pointed = null;
             try
             {
                 if (!Allowed()) return;
-                var elementResult = ownedTest
-                    ? _automation->ElementFromHandle(new HWND(host), &element)
-                    : _automation->GetFocusedElement(&element);
-                if (elementResult.Failed || element is null || !Allowed()) return;
-                lease.Element = element; element = null;
+                if (ownedTest && ownedFocus is not null)
+                { if (ownedFocus() is { } id) element = OwnedReadingRoot(host, id, Allowed); }
+                else if (ownedTest && ownedRuntimeId is not null) element = OwnedReadingRoot(host, ownedRuntimeId, Allowed);
+                else
+                {
+                    var elementResult = ownedTest ? _automation->ElementFromHandle(new HWND(host), &element) : _automation->GetFocusedElement(&element);
+                    lease.FocusResult = (int)elementResult;
+                    if (elementResult.Failed && element is not null) { element->Release(); element = null; }
+                }
+                if (!Allowed()) return;
+                lease.FocusedElement = element; element = null;
+                // Resolve both roots before walking either, as on Mac. Missing/foreign focus
+                // can locate only a positively readonly target through the independently bound point.
+                if (pointer is null && !screenGuard)
+                {
+                    if (ownedTest && ownedPointId is not null) pointed = OwnedReadingRoot(host, ownedPointId, Allowed);
+                    else if (!ownedTest && Cotabby.Win32.Reading.ReadingPointerMonitor.CurrentPosition() is { } cursor)
+                        _automation->ElementFromPoint(new System.Drawing.Point(cursor.X, cursor.Y), &pointed);
+                }
                 if (pointer is { } point)
                 {
                     IUIAutomationElement* hit = null;
                     try
                     {
                         BOOL same = default;
-                        if (_automation->ElementFromPoint(point, &hit).Failed || hit is null || !Allowed()
-                            || _automation->CompareElements(lease.Element, hit, &same).Failed || !same || !Allowed()) return;
+                        if (lease.FocusedElement is null || _automation->ElementFromPoint(point, &hit).Failed || hit is null || !Allowed()
+                            || _automation->CompareElements(lease.FocusedElement, hit, &same).Failed || !same || !Allowed()) return;
                     }
                     finally { if (hit is not null) hit->Release(); }
                 }
-                int actual = 0;
-                if (lease.Element->get_CurrentProcessId(&actual).Failed || actual != pid || !Allowed()) return;
-                lease.FieldId = RuntimeId(lease.Element) ?? "";
-                if (string.IsNullOrEmpty(lease.FieldId) || !Allowed() || !ReadingNotSecurePath(lease.Element, pid, Allowed)) return;
+                long deadline = System.Diagnostics.Stopwatch.GetTimestamp() + (long)(System.Diagnostics.Stopwatch.Frequency * .25);
+                bool SearchPermit() => Allowed() && System.Diagnostics.Stopwatch.GetTimestamp() < deadline;
+                var found = ReadingCandidate.Unavailable;
+                if (lease.FocusedElement is not null && ReadingCandidateBelongs(lease.FocusedElement, host, pid, SearchPermit, out _))
+                {
+                    if (!ReadingRootAllowed(lease.FocusedElement, host, pid, SearchPermit)) return;
+                    lease.FocusAdmitted = true;
+                    found = FindReadingCandidate(lease, lease.FocusedElement, pointer is null && !screenGuard, SearchPermit);
+                }
+                else if (pointer is not null || screenGuard) return;
+                if (found == ReadingCandidate.Unavailable && pointed is not null && ReadingRootAllowed(pointed, host, pid, SearchPermit))
+                { lease.RequireReadOnlyTarget = !lease.FocusAdmitted; found = FindReadingCandidate(lease, pointed, true, SearchPermit); }
+                if (found != ReadingCandidate.Ready || !Allowed()) return;
                 if (screenGuard)
                 {
                     HWND fieldWindow = default; RECT bounds = default;
@@ -106,27 +137,20 @@ internal sealed unsafe partial class UiaTextEditEvidence : IReadingSelectionEvid
                     lease.FieldWindow = (nint)fieldWindow.Value;
                     lease.FieldLeft = bounds.left; lease.FieldTop = bounds.top; lease.FieldRight = bounds.right; lease.FieldBottom = bounds.bottom;
                 }
-                Guid editId = IUIAutomationTextEditPattern.IID_Guid;
-                IUIAutomationTextEditPattern* edit = null;
-                var editResult = lease.Element->GetCurrentPatternAs(UIA_PATTERN_ID.UIA_TextEditPatternId, &editId, (void**)&edit);
-                lease.Edit = edit;
-                if (editResult.Failed || edit is null || !Allowed()) return;
-                Guid textId = IUIAutomationTextPattern.IID_Guid;
-                IUIAutomationTextPattern* textPattern = null;
-                var textResult = lease.Element->GetCurrentPatternAs(UIA_PATTERN_ID.UIA_TextPatternId, &textId, (void**)&textPattern);
-                lease.TextPattern = textPattern;
-                if (textResult.Failed || textPattern is null || !Allowed()) return;
                 Action change = () => RetireReading(lease);
-                lease.Composition = Callback.CreateReading(this, change);
-                lease.Finalized = Callback.CreateReading(this, change);
+                if (lease.Edit is not null)
+                {
+                    lease.Composition = Callback.CreateReading(this, change);
+                    lease.Finalized = Callback.CreateReading(this, change);
+                    if (!Allowed() || _automation->AddTextEditTextChangedEventHandler(lease.Element, TreeScope.TreeScope_Element,
+                        TextEditChangeType.TextEditChangeType_Composition, null, lease.Composition).Failed) return;
+                    lease.AddedComposition = true;
+                    if (!Allowed() || _automation->AddTextEditTextChangedEventHandler(lease.Element, TreeScope.TreeScope_Element,
+                        TextEditChangeType.TextEditChangeType_CompositionFinalized, null, lease.Finalized).Failed) return;
+                    lease.AddedFinalized = true;
+                }
                 lease.Changed = RetainedEventCallback.CreateReading(this, change);
                 lease.Selection = RetainedEventCallback.CreateReading(this, change);
-                if (!Allowed() || _automation->AddTextEditTextChangedEventHandler(lease.Element, TreeScope.TreeScope_Element,
-                    TextEditChangeType.TextEditChangeType_Composition, null, lease.Composition).Failed) return;
-                lease.AddedComposition = true;
-                if (!Allowed() || _automation->AddTextEditTextChangedEventHandler(lease.Element, TreeScope.TreeScope_Element,
-                    TextEditChangeType.TextEditChangeType_CompositionFinalized, null, lease.Finalized).Failed) return;
-                lease.AddedFinalized = true;
                 if (!Allowed() || _automation->AddAutomationEventHandler(UIA_EVENT_ID.UIA_Text_TextChangedEventId, lease.Element,
                     TreeScope.TreeScope_Element, null, lease.Changed).Failed) return;
                 lease.AddedChanged = true;
@@ -135,22 +159,12 @@ internal sealed unsafe partial class UiaTextEditEvidence : IReadingSelectionEvid
                 lease.AddedSelection = true;
                 if (!Allowed() || !ReadingClear(lease, Allowed)) return;
                 if (lease.ScreenGuard) { lease.Ready = ReadingCurrentCore(lease, Allowed); return; }
-                IUIAutomationTextRange* selected = null;
-                try
-                {
-                    selected = CurrentReadingRange(lease, Allowed);
-                    if (selected is null || !Allowed()) return;
-                    IUIAutomationTextRange* range = null;
-                    var cloneResult = selected->Clone(&range);
-                    lease.Range = range;
-                    if (cloneResult.Failed || range is null || !Allowed()) return;
-                    lease.Text = ReadingText(selected, Allowed) ?? "";
-                    if (lease.Text.Length == 0 || !Allowed() || !ReadingCurrentCore(lease, Allowed)) return;
-                    lease.Ready = true;
-                }
-                finally { if (selected is not null) selected->Release(); }
+                if (!Allowed() || !ReadingCurrentCore(lease, Allowed)) return;
+                if (pointer is null) lease.SelectionBounds = ReadingRangeBounds(lease.Range, Allowed);
+                if (!Allowed() || !ReadingCurrentCore(lease, Allowed)) return;
+                lease.Ready = true;
             }
-            finally { if (element is not null) element->Release(); }
+            finally { if (pointed is not null) pointed->Release(); if (element is not null) element->Release(); }
         });
         if (!ok || !lease.Ready || !Allowed()) { RetireReading(lease); return null; }
         return lease;
@@ -190,6 +204,7 @@ internal sealed unsafe partial class UiaTextEditEvidence : IReadingSelectionEvid
         if (lease.TextPattern is not null) lease.TextPattern->Release();
         if (lease.Edit is not null) lease.Edit->Release();
         if (lease.Element is not null) lease.Element->Release();
+        if (lease.FocusedElement is not null) lease.FocusedElement->Release();
         lease.Text = "";
     }
 
@@ -201,12 +216,21 @@ internal sealed unsafe partial class UiaTextEditEvidence : IReadingSelectionEvid
         try
         {
             long before = Interlocked.Read(ref lease.Version);
-            if (!allowed() || !ReadingNotSecurePath(lease.Element, lease.ProcessId, allowed) || !allowed()) return false;
-            if (!lease.OwnedTest)
+            if (!allowed() || !ReadingCandidateBelongs(lease.Element, lease.Host, lease.ProcessId, allowed, out int actual)
+                || actual != lease.ProviderProcessId || !ReadingNotSecurePath(lease.Element, actual, allowed) || !allowed()) return false;
+            if (!lease.OwnedTest || lease.OwnedFocus is not null)
             {
-                if (_automation->GetFocusedElement(&focused).Failed || focused is null || !allowed()) return false;
-                BOOL same = default;
-                if (_automation->CompareElements(lease.Element, focused, &same).Failed || !same || !allowed()) return false;
+                int result = 0;
+                if (lease.OwnedFocus is not null) { if (lease.OwnedFocus() is { } id) focused = OwnedReadingRoot(lease.Host, id, allowed); }
+                else result = (int)_automation->GetFocusedElement(&focused);
+                if (!allowed() || result != lease.FocusResult || (lease.FocusedElement is null) != (focused is null)) return false;
+                if (focused is not null)
+                {
+                    BOOL same = default;
+                    if (_automation->CompareElements(lease.FocusedElement, focused, &same).Failed || !same || !allowed()) return false;
+                    if (lease.FocusAdmitted && !ReadingRootAllowed(focused, lease.Host, lease.ProcessId, allowed)) return false;
+                    if (!lease.FocusAdmitted && ReadingCandidateBelongs(focused, lease.Host, lease.ProcessId, allowed, out _)) return false;
+                }
             }
             if (lease.Pointer is { } point)
             {
@@ -230,8 +254,10 @@ internal sealed unsafe partial class UiaTextEditEvidence : IReadingSelectionEvid
                 TextPatternRangeEndpoint.TextPatternRangeEndpoint_Start, &start).Failed || start != 0 || !allowed()) return false;
             if (selected->CompareEndpoints(TextPatternRangeEndpoint.TextPatternRangeEndpoint_End, lease.Range,
                 TextPatternRangeEndpoint.TextPatternRangeEndpoint_End, &end).Failed || end != 0 || !allowed()) return false;
+            if ((lease.ReadOnly || lease.RequireReadOnlyTarget) && !RangeReadOnly(selected, allowed)) return false;
             string? text = ReadingText(selected, allowed);
             return allowed() && string.Equals(text, lease.Text, StringComparison.Ordinal)
+                && (lease.SelectionBounds is null || ReadingRangeBounds(selected, allowed) == lease.SelectionBounds)
                 && ReadingClear(lease, allowed) && allowed() && before == Interlocked.Read(ref lease.Version);
         }
         finally { if (selected is not null) selected->Release(); if (focused is not null) focused->Release(); if (hit is not null) hit->Release(); }
@@ -243,7 +269,10 @@ internal sealed unsafe partial class UiaTextEditEvidence : IReadingSelectionEvid
         try
         {
             long version = Interlocked.Read(ref lease.Version);
+            if (lease.Edit is null) return lease.ReadOnly && allowed() && ReadingReadOnly(lease, allowed)
+                && allowed() && version == Interlocked.Read(ref lease.Version);
             return allowed() && lease.Edit->GetActiveComposition(&composition).Succeeded && composition is null
+                && (!lease.RequireReadOnlyTarget || ReadingReadOnlyRanges(lease, allowed))
                 && allowed() && version == Interlocked.Read(ref lease.Version);
         }
         finally { if (composition is not null) composition->Release(); }

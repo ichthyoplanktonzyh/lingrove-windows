@@ -85,6 +85,31 @@ public sealed class ReadingSessionTests(WpfDispatcher dispatcher)
         }
         finally { pending.TrySetResult("done"); }
     });
+    [Theory]
+    [InlineData(false)] [InlineData(true)]
+    public Task VisualPreparationRunsOnTheDispatcherAndClearsBeforeSendOrCancellation(bool cancel) => dispatcher.RunAsync(async () =>
+    {
+        var reader = new Reader(); var panel = new Panel(); int sends = 0;
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously); var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        reader.Lease.VisualEnrich = (token, pixelsReady) => Task.Run(async () =>
+        {
+            await pixelsReady(new(500, 300, new(0, 0, 1000, 800), new(0, 0, 1000, 600), 1)); entered.SetResult();
+            await release.Task; token.ThrowIfCancellationRequested();
+        });
+        await using var session = new ReadingSession(Dispatcher.CurrentDispatcher, reader, panel,
+            _ => new(null, ReadingLanguageEvidence.Unavailable), (_, _) => 2,
+            (_, _, _, _, _) => { Assert.False(panel.Preparing); sends++; return Task.FromResult("done"); }, (_, _, _, _, _, _) => Task.CompletedTask);
+        try
+        {
+            session.Begin(Settings); await entered.Task.WaitAsync(TimeSpan.FromSeconds(5)); Assert.True(panel.Preparing); Assert.False(panel.Shown); Assert.Equal(0, sends);
+            if (cancel) { session.Dismiss(); Assert.False(panel.Preparing); }
+            release.SetResult();
+            if (cancel) { await session.DisposeAsync(); Assert.Equal(0, sends); }
+            else { await Until(() => panel.Last?.Status == ReadingStatus.Ready); Assert.Equal(1, sends); }
+            Assert.False(panel.Preparing); Assert.Equal(1, panel.Preparations);
+        }
+        finally { release.TrySetResult(); }
+    });
     private static readonly ReadingSelection Selection = new(Guid.NewGuid(), "Hello world!", 123, "field", 1, 0, 12, false, true, InputCompositionState.Clear, 1, ScreenRect.Empty);
     private static readonly ReadingSettings Settings = new(true, true, true, LearningLanguage.Chinese,
         new("unused label", true, true, "https://example.test/v1"), new("Local lookup", false, true), 1);
@@ -256,21 +281,27 @@ public sealed class ReadingSessionTests(WpfDispatcher dispatcher)
         public bool IsLive => !Retired;
         public ReadingSelection Value = ReadingSessionTests.Selection;
         public Func<CancellationToken, Task>? Enrich;
+        public Func<CancellationToken, Func<ReadingVisualFrame, Task>, Task>? VisualEnrich;
         public ReadingSelection Selection => Value; public bool Retired;
         public event Action? Invalidated;
         public void Invalidate() => Invalidated?.Invoke();
         public Action? SnapshotInvalidation() => Invalidated;
         public Task<bool> IsCurrentAsync(CancellationToken token) => Task.FromResult(!Retired);
         public Task EnrichAsync(CancellationToken token) => Enrich?.Invoke(token) ?? Task.CompletedTask;
+        public Task EnrichAsync(CancellationToken token, Func<ReadingVisualFrame, Task> pixelsReady) => VisualEnrich?.Invoke(token, pixelsReady) ?? EnrichAsync(token);
         public void Retire() => Retired = true;
         public ValueTask DisposeAsync() => ValueTask.CompletedTask;
     }
     private sealed class Panel : IReadingPresentation
     {
-        public bool Shown; public ReadingState? Last; public int Updates;
+        private readonly Dispatcher _owner = Dispatcher.CurrentDispatcher;
+        public bool Shown, Preparing; public ReadingState? Last; public int Updates, Preparations;
+        public void ShowPreparation(ReadingSelection selection, ReadingVisualFrame frame)
+        { Assert.True(_owner.CheckAccess()); Preparing = true; Preparations++; }
+        public void HidePreparation() => Preparing = false;
         public Task ShowAsync(ReadingState state) { Shown = true; Last = state; return Task.CompletedTask; }
         public void Update(ReadingState state) { Updates++; Last = state; }
         public void ShowCaptureError(string message) { }
-        public void Hide() => Shown = false;
+        public void Hide() { Shown = false; Preparing = false; }
     }
 }

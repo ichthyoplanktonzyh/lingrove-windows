@@ -14,7 +14,10 @@ internal interface IReadingSelectionLease : IAsyncDisposable
     event Action? Invalidated;
     Task<bool> IsCurrentAsync(CancellationToken token);
     Task EnrichAsync(CancellationToken token) => Task.CompletedTask;
+    Task EnrichAsync(CancellationToken token, Func<ReadingVisualFrame, Task> pixelsReady) => EnrichAsync(token);
     void ArmActivationKey(int virtualKey) { }
+    void BindGesture(ReadingSelectionGesture gesture) { }
+    int? PendingActivationKey => null;
     void Retire();
 }
 internal interface IReadingSelectionReader
@@ -57,6 +60,8 @@ internal interface IReadingPresentation
     Task ShowAsync(ReadingState state);
     void Update(ReadingState state);
     void ShowCaptureError(string message);
+    void ShowPreparation(ReadingSelection selection, ReadingVisualFrame frame) { }
+    void HidePreparation() { }
     void Hide();
 }
 
@@ -138,7 +143,16 @@ internal sealed class ReadingSession : IAsyncDisposable
             ReadingSelectionPolicy.ValidateReceipt(selection);
             if (!await capture.IsCurrentAsync(token) || !Current(revision, token)) { if (Current(revision, token)) Dismiss(); return; }
             // Context is read only after the explicit action consumes this retained occurrence.
-            await capture.EnrichAsync(token);
+            try
+            {
+                await capture.EnrichAsync(token, frame =>
+                {
+                    if (_dispatcher.HasShutdownStarted || _dispatcher.HasShutdownFinished) return Task.CompletedTask;
+                    return _dispatcher.InvokeAsync(() =>
+                    { if (Current(revision, token) && capture.IsLive) _presentation.ShowPreparation(selection, frame); }).Task;
+                });
+            }
+            finally { _presentation.HidePreparation(); }
             if (!Current(revision, token)) return;
             if (!await capture.IsCurrentAsync(token)) { if (Current(revision, token)) Dismiss(); return; }
             selection = capture.Selection with { Admission = () => capture.IsLive && !token.IsCancellationRequested };

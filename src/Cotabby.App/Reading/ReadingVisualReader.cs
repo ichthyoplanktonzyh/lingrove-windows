@@ -7,7 +7,7 @@ namespace Cotabby.App.Reading;
 /// <summary>3b VisualReader: one captured frame, at most two original-resolution OCR crops.
 /// The caller owns the origin lease; every await revalidates it. No second screenshot, text repair,
 /// model, clipboard or persistent image belongs to this coordinator.</summary>
-internal sealed class ReadingVisualReader(IReadingOcr ocr, ReadingVisualContext context)
+internal sealed partial class ReadingVisualReader(IReadingOcr ocr, ReadingVisualContext context)
 {
     internal sealed record Result(string Text, ScreenRect Anchor, ReadingContext? Context, int Passes);
     private sealed record Candidate(ReadingVisualWord Word, ScreenRect Anchor, ReadingVisualContext.Block? Block, bool NeedsExpansion);
@@ -69,7 +69,9 @@ internal sealed class ReadingVisualReader(IReadingOcr ocr, ReadingVisualContext 
         var overlap = Intersect(previous.Anchor, candidate.Anchor);
         double area = Math.Min(previous.Anchor.Width * previous.Anchor.Height, candidate.Anchor.Width * candidate.Anchor.Height);
         if (!string.Equals(previous.Word.Text, candidate.Word.Text, StringComparison.Ordinal) || overlap.Width * overlap.Height < area * .5) return previous;
-        // Windows supplies no confidence. Do not manufacture a value for the optional Mac comparison.
+        // Windows supplies no confidence; retain the source comparison when a provider has it.
+        if (candidate.Block?.Confidence is double confidence && previous.Block?.Confidence is double oldConfidence
+            && confidence < .5 && oldConfidence - confidence > .3) return previous;
         if (Complete(candidate.Block?.Context) != Complete(previous.Block?.Context)) return Complete(candidate.Block?.Context) ? candidate : previous;
         return (candidate.Block?.Context?.Text.Length ?? 0) >= (previous.Block?.Context?.Text.Length ?? 0) ? candidate : previous;
     }

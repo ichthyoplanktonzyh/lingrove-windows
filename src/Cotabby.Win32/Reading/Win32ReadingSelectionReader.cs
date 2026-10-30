@@ -39,7 +39,7 @@ public sealed class Win32ReadingSelectionReader : IAsyncDisposable
         CaptureCoreAsync(null, true, cancellationToken, initiatingVirtualKey);
     private async Task<Win32ReadingSelectionLease?> CaptureCoreAsync(System.Drawing.Point? pointer, bool screenGuard, CancellationToken cancellationToken, int? initiatingVirtualKey)
     {
-        if (_focus.ExpressionCompositionOwner is not { } owner) return null;
+        if (_focus.ExpressionCompositionOwner is not { } owner || _focus.Current is { IsSecure: true } or { Composition: InputCompositionState.Composing }) return null;
         long epoch = _focus.ActiveFocusEpoch;
         nint host = Native.GetForegroundWindow();
         if (epoch <= 0 || host == 0 || Native.GetWindowThreadProcessId(host, out uint pid) == 0
@@ -150,8 +150,9 @@ public sealed class Win32ReadingSelectionLease : IAsyncDisposable
     internal static bool InNotificationFor(object group) => ReferenceEquals(_notifying?.NotificationGroup, group);
     /// <summary>Nonblocking receipt eligibility, independent of notification delivery.</summary>
     public bool IsLive => Volatile.Read(ref _retired) == 0 && _currentEpoch() == _epoch
+        && _focus.Current is not ({ IsSecure: true } or { Composition: InputCompositionState.Composing })
         && _foreground() == _host && _windowProcess(_host) == _pid
-        && ((_pointer is null && !_screenGuard) || (_initialFrame is { } frame && _currentFrame(_host) == frame))
+        && (_initialFrame is { } frame ? _currentFrame(_host) == frame : _pointer is null && !_screenGuard)
         && (Volatile.Read(ref _capturing) != 0 || (Volatile.Read(ref _native) is { } native && Volatile.Read(ref native.Active) != 0
             && (!_screenGuard || (native.FieldWindow != 0 && (native.FieldWindow == _host || _isChild(_host, native.FieldWindow)) && _windowProcess(native.FieldWindow) == _pid
                 && _currentFrame(native.FieldWindow) == new HostFrame(native.FieldLeft, native.FieldTop, native.FieldRight, native.FieldBottom)))));
@@ -165,7 +166,7 @@ public sealed class Win32ReadingSelectionLease : IAsyncDisposable
         _currentEpoch = currentEpoch ?? (() => _focus.ActiveFocusEpoch);
         _currentFrame = currentFrame ?? WindowFrame;
         _isChild = isChild ?? IsChild;
-        _initialFrame = pointer is not null || screenGuard ? _currentFrame(host) : null;
+        _initialFrame = _currentFrame(host);
         _foreground = foreground ?? (() => Native.GetForegroundWindow());
         _windowProcess = windowProcess ?? (hwnd => Native.GetWindowThreadProcessId(hwnd, out uint process) == 0 ? 0 : (int)process);
         _focus.FocusTransition += OnFocus;
@@ -173,6 +174,9 @@ public sealed class Win32ReadingSelectionLease : IAsyncDisposable
     }
 
     public ReadingSelection Selection => _selection ?? throw new InvalidOperationException("Selection is unavailable.");
+    public int? PendingActivationKey => Volatile.Read(ref _activationUp) is > 0 and var up ? up
+        : Volatile.Read(ref _activationDown) is > 0 and var down ? down
+        : Volatile.Read(ref _initialKeyUp) == 1 ? _initialKey : null;
     public ReadingScreenGuardEvidence? ScreenGuardEvidence
     {
         get
@@ -222,7 +226,8 @@ public sealed class Win32ReadingSelectionLease : IAsyncDisposable
                 _selection = new(Guid.NewGuid(), native.Text, _pid, native.FieldId, _epoch, null, native.Text.Length,
                     false, true, InputCompositionState.Clear, native.Version,
                     _pointer is { } p ? new ScreenRect(p.X, p.Y, 1, 1) : ScreenRect.Empty, SelectionAnchorId: native.Anchor)
-                    { CapturedAt = capturedAt, Source = _pointer is null ? ReadingSourceKind.Selection : ReadingSourceKind.Pointer };
+                    { CapturedAt = capturedAt, Source = _pointer is null ? ReadingSourceKind.Selection : ReadingSourceKind.Pointer, SelectionBounds = native.SelectionBounds,
+                        OriginWindowBounds = _initialFrame is { } frame ? new(frame.Left, frame.Top, (double)frame.Right - frame.Left, (double)frame.Bottom - frame.Top) : null };
                 ReadingSelectionPolicy.ValidateReceipt(_selection);
                 Volatile.Write(ref _capturing, 0);
                 return IsLive;
@@ -254,8 +259,8 @@ public sealed class Win32ReadingSelectionLease : IAsyncDisposable
                     }
                     catch (Exception) { /* Unsupported context remains unavailable. */ }
                     lock (_gate)
-                        if (context is not null && Permit() && ReferenceEquals(_native, native) && ReferenceEquals(_selection, selection))
-                            _selection = selection with { Context = context };
+                        if (Permit() && ReferenceEquals(_native, native) && ReferenceEquals(_selection, selection))
+                            _selection = selection with { Context = context ?? selection.Context };
                 }, CancellationToken.None);
                 Track(_enrichment);
             }
@@ -263,6 +268,14 @@ public sealed class Win32ReadingSelectionLease : IAsyncDisposable
         }
         try { await task.WaitAsync(TimeSpan.FromMilliseconds(180), ct).ConfigureAwait(false); }
         catch (TimeoutException) { /* The tracked MTA work is joined during disposal. */ }
+    }
+
+    /// <summary>Bind observation-only gesture metadata to this exact receipt, without native reads.</summary>
+    public void BindGesture(ReadingSelectionGesture gesture)
+    {
+        lock (_gate)
+            if (IsLive && _selection is { Source: ReadingSourceKind.Selection } selection && gesture.SelectionId == selection.Id)
+                _selection = selection with { Gesture = gesture };
     }
 
     /// <summary>Captures one explicitly selected crop only after the field and its retained

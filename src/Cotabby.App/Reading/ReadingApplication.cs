@@ -213,6 +213,7 @@ internal sealed class ReadingApplication : IAsyncDisposable
         Retire(); _beforeCapture();
         var presentation = new ReadingPresentation(_dispatcher, _dictionary, _basicLookup, _detailsLookup, _configure, _clipboard,
             _vocabulary, _sentences, preferences.LookupLanguage, _detailsRecord);
+        if (_icon is not null) presentation.AttachPreparation(_icon);
         if (_speechController is not null) presentation.AttachSpeech(_speechController);
         IReadingSelectionReader reader = existing is not null ? new CapturedReader(existing) : screen && _screenReader is not null ? _screenReader
             : pointer is { } point && _reader is IReadingPointerReader pointerReader ? new PointerReader(pointerReader, point) : _reader;
@@ -321,6 +322,9 @@ internal sealed class ReadingApplication : IAsyncDisposable
         public event Action? Invalidated { add => inner.Invalidated += value; remove => inner.Invalidated -= value; }
         public Task<bool> IsCurrentAsync(CancellationToken token) => inner.IsCurrentAsync(token);
         public Task EnrichAsync(CancellationToken token) => inner.EnrichAsync(token);
+        public Task EnrichAsync(CancellationToken token, Func<ReadingVisualFrame, Task> pixelsReady) => inner.EnrichAsync(token, pixelsReady);
+        public int? PendingActivationKey => inner.PendingActivationKey;
+        public void BindGesture(ReadingSelectionGesture gesture) => inner.BindGesture(gesture);
         public void ArmActivationKey(int virtualKey) => inner.ArmActivationKey(virtualKey);
         public void Retire() => inner.Retire();
         public ValueTask DisposeAsync() => inner.DisposeAsync();

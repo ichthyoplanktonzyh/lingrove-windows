@@ -16,6 +16,8 @@ internal sealed partial class ReadingPresentation : IReadingPresentation, IAsync
 {
     private readonly Dispatcher _dispatcher;
     private readonly ReadingWindow _reading = new();
+    private ReadingAffordanceWindow? _preparation;
+    private readonly object _preparationOwner = new();
     private readonly LearningDictionaryWindow _dictionary = new();
     private readonly LearningDictionarySession _session;
     private readonly object _gate = new();
@@ -51,6 +53,9 @@ internal sealed partial class ReadingPresentation : IReadingPresentation, IAsync
     internal event Action? Hidden;
     internal ReadingWindow ReadingCard => _reading;
     internal LearningDictionaryWindow DictionaryCard => _dictionary;
+    internal void AttachPreparation(ReadingAffordanceWindow surface) => _preparation = surface;
+    public void ShowPreparation(ReadingSelection selection, ReadingVisualFrame frame) => _preparation?.ShowProgress(selection, frame, _preparationOwner);
+    public void HidePreparation() => _preparation?.HideProgress(_preparationOwner);
 
     internal ReadingPresentation(Dispatcher dispatcher, ILearningDictionaryProviding dictionary,
         Func<ReadingLookupInput, CancellationToken, Task<ReadingLookupResult>> basicLookup,
@@ -99,7 +104,7 @@ internal sealed partial class ReadingPresentation : IReadingPresentation, IAsync
     public void ShowCaptureError(string message) { StopSpeech(); _readingState = null; _reading.ShowCaptureError(message); }
     public void Hide()
     {
-        _dispatcher.VerifyAccess(); StopSpeech();
+        _dispatcher.VerifyAccess(); HidePreparation(); StopSpeech();
         ++_revision; Interlocked.Increment(ref _copyRevision); _current = null; _selection = null; _input = null; _basic = null; _details = null;
         Interlocked.Increment(ref _favoriteRevision); _favoriteCapture = null; _favoriteCurrent = null; _reading.ClearVocabulary();
         _detailsExpanded = false; _reading.SetDetailsExpanded(false); _readingState = null; _dictionaryMode = false;

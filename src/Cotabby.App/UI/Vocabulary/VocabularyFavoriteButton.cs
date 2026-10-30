@@ -25,6 +25,9 @@ public sealed class VocabularyFavoriteButton : Button
     private readonly ResourceDictionary _icons = new() { Source = new Uri("/Cotabby;component/UI/Vocabulary/VocabularyIcons.xaml", UriKind.Relative) };
     internal event Action<string?>? FailureChanged;
     internal Task LastOperation { get; private set; } = Task.CompletedTask;
+    /// <summary>Expression candidate rows use Mac's direct Save/Remove toggle; ordinary writing
+    /// cards retain their saved-item navigation menu.</summary>
+    internal bool ToggleSavedOnClick { get; set; }
     public VocabularyFavoriteButton()
     {
         Width = Height = 28; Padding = new Thickness(4); Focusable = false; Background = Brushes.Transparent; BorderThickness = new Thickness(0);
@@ -65,7 +68,8 @@ public sealed class VocabularyFavoriteButton : Button
         bool saved = _store.Contains(_capture), pending = _store.IsPending(_capture);
         IsEnabled = _store.IsLoaded && !pending && _preflightBinding != _binding && Current(_binding);
         Content = pending ? new ProgressBar { Width = 18, Height = 3, IsIndeterminate = true } : Icon(saved);
-        ToolTip = _failure ?? (!_store.IsLoaded ? _store.ErrorMessage ?? "Loading vocabulary…" : saved ? "Saved · Show actions" : "Save to vocabulary");
+        ToolTip = _failure ?? (!_store.IsLoaded ? _store.ErrorMessage ?? "Loading vocabulary…" : saved ? ToggleSavedOnClick ? "Remove this saved usage" : "Saved · Show actions" : "Save to vocabulary");
+        AutomationProperties.SetName(this, saved && ToggleSavedOnClick ? "Remove this saved usage" : "Save to vocabulary");
         AutomationProperties.SetItemStatus(this, !_store.IsLoaded ? (_store.ErrorMessage is null ? "Loading…" : "Unavailable") : pending ? "Saving…" : saved ? "Saved" : "Not saved");
         var detail = _failure ?? (!_store.IsLoaded ? _store.ErrorMessage : null);
         AutomationProperties.SetHelpText(this, detail ?? ""); FailureChanged?.Invoke(detail);
@@ -84,6 +88,7 @@ public sealed class VocabularyFavoriteButton : Button
         long binding = _binding;
         if (!Current(binding) || _preflightBinding == binding || !_store!.IsLoaded || _store.IsPending(_capture!)) return;
         if (!_store.Contains(_capture!)) { LastOperation = ChangeAfterPreflightAsync(binding, remove: false); return; }
+        if (ToggleSavedOnClick) { LastOperation = ChangeAfterPreflightAsync(binding, remove: true); return; }
         var menu = new ContextMenu { PlacementTarget = this, Focusable = false };
         // Notebook navigation will register the source-equivalent route in its own UI slice.
         if (_store.OpenSelection is not null)

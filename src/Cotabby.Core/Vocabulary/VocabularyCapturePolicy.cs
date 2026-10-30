@@ -56,7 +56,7 @@ public static class VocabularyCapturePolicy
             || !LearningExplanationText.Fits(capture.Expression, MaximumTextBytes) || Normalized(capture.Expression).Length == 0)
             throw new VocabularyContentValidationException();
         if (capture.Example is not { } example) return;
-        if (!Enum.IsDefined(example.Completeness) || !Enum.IsDefined(example.MeaningOrigin)
+        if (!Enum.IsDefined(example.Completeness) || !Enum.IsDefined(example.MeaningOrigin) || !Enum.IsDefined(example.SourceKind)
             || !ValidLanguage(example.MeaningLanguage) || !ValidLanguage(example.TranslationLanguage) || string.IsNullOrEmpty(example.Text)
             || !example.TranslationVariants.All(meaning => meaning is not null && ValidLanguage(meaning.Language))
             || !example.Explanations.All(SupportedRecordEnums)

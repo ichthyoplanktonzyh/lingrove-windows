@@ -64,6 +64,11 @@ The [Home/Welcome examples](HOME_WELCOME_SHOWCASE_3B.md) now connect their compl
 walkthrough and explicit example windows using real components and isolated in-memory owners.
 Illustrated reading acquisition and sample replacement are not native host feature acceptance.
 
+The [current expression candidate tools](EXPRESSION_CANDIDATE_TOOLS_3B.md) connect explicit row speech
+and acknowledged Save/exact Remove to the same production speech/Store owners, preserve generated
+example and AI meaning provenance, and use those controls in the isolated Home/Welcome example.
+Native trigger/editor, audio/device and physical UI acceptance remain separately scoped.
+
 ## Status meanings
 
 The [expression assistance application composition](EXPRESSION_ASSIST_APPLICATION.md) connects

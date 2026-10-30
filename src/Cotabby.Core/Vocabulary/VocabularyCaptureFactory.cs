@@ -1,5 +1,6 @@
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Text;
+using Cotabby.Core.ExpressionAssist;
 
 namespace Cotabby.Core.Vocabulary;
 
@@ -15,6 +16,32 @@ public sealed class VocabularyCaptureFactory(ILearningLexicalText lexicalText, I
     private readonly ILearningLexicalText _lexicalText = lexicalText ?? throw new ArgumentNullException(nameof(lexicalText));
     private readonly ILearningEvidenceSentenceTokenizer _sentences = sentenceTokenizer ?? throw new ArgumentNullException(nameof(sentenceTokenizer));
     private readonly TimeProvider _clock = clock ?? TimeProvider.System;
+    /// <summary>Mac 3b expressionAssist: canonical base form, generated hypothetical encounter,
+    /// exact surface range and AI meaning. This does not claim the host accepted an insertion.</summary>
+    public VocabularyCapture? FromExpressionAssist(ExpressionAssistCandidate candidate, ExpressionAssistRequest request,
+        string? sourceApplicationId = null)
+    {
+        ArgumentNullException.ThrowIfNull(candidate); ArgumentNullException.ThrowIfNull(request);
+        string surface = FoundationText.TrimWhitespaceAndNewlines(candidate.Text);
+        if (surface.Length == 0 || LearningLanguages.FromCode(request.TargetLanguage) is not { } language) return null;
+        string form = FoundationText.TrimWhitespaceAndNewlines(candidate.DictionaryForm ?? "");
+        string canonical = form.Length == 0 ? surface : form;
+        var meaningLanguage = LearningLanguages.FromCode(request.ExplanationLanguage);
+        string meaning = FoundationText.TrimWhitespaceAndNewlines(candidate.Hint);
+        var kind = WordCount(canonical, language) <= 1 ? VocabularyEntryKind.Word : VocabularyEntryKind.Expression;
+        VocabularyExample? example = null;
+        if (FoundationText.TrimWhitespaceAndNewlines(request.LeftContext).Length > 0
+            || FoundationText.TrimWhitespaceAndNewlines(request.RightContext).Length > 0)
+        {
+            string full = request.LeftContext + candidate.Text + request.RightContext;
+            int offset = candidate.Text.IndexOf(surface, StringComparison.Ordinal);
+            if (offset >= 0)
+                example = Example(full, [new(request.LeftContext.Length + offset, surface.Length)], language, sourceApplicationId);
+            if (example is not null) example = example with { SourceKind = Resources.VocabularySourceKind.Generated,
+                MeaningOrigin = VocabularyMeaningOrigin.Ai, Meaning = meaning, MeaningLanguage = meaning.Length == 0 ? null : meaningLanguage };
+        }
+        return new(canonical, canonical, language, kind, meaning, meaning.Length == 0 ? null : meaningLanguage, example);
+    }
     public VocabularyCapture? FromWritingSentencePreview(LearningPreviewState presentation, string? sourceApplicationId = null)
     {
         ArgumentNullException.ThrowIfNull(presentation);

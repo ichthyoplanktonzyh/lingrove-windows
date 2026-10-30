@@ -286,6 +286,9 @@ public static class VocabularyPayloadCodec
     private static void ValidateValue(object value, Type type, TextBudget? budget = null)
     {
         type = Nullable.GetUnderlyingType(type) ?? type;
+        // The old entry-owned codec has no provenance field. Keep its pinned captured shape,
+        // and refuse a current generated intent rather than silently dropping its source kind.
+        if (value is VocabularyExample usage && usage.SourceKind != R.VocabularySourceKind.Captured) throw new JsonException();
         if (value is string text) { int length = StrictUtf8.GetByteCount(text); budget?.Add(length); return; }
         if (value is Enum member) { if (!Enum.IsDefined(type, member)) throw new JsonException(); return; }
         if (value is VocabularyBlockContent.Text block)
@@ -345,6 +348,7 @@ public static class VocabularyPayloadCodec
         || type == typeof(R.VocabularyMeaningNode) && name == nameof(R.VocabularyMeaningNode.Title)
         || type == typeof(R.VocabularyCategoryOverride) && name == nameof(R.VocabularyCategoryOverride.Id)
         || type == typeof(VocabularyEntry) && name is nameof(VocabularyEntry.Examples) or nameof(VocabularyEntry.Explanations)
+        || type == typeof(VocabularyExample) && name == nameof(VocabularyExample.SourceKind)
         || type == typeof(VocabularySense) && name == nameof(VocabularySense.ReviewLayouts)
         || type == typeof(VocabularyMeaning) && name == nameof(VocabularyMeaning.Id)
         || type == typeof(VocabularyImageReference) && name == nameof(VocabularyImageReference.Filename)

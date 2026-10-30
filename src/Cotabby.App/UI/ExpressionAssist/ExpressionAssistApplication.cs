@@ -5,6 +5,9 @@ using Cotabby.Core.Focus;
 using Cotabby.Core.Input;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Core.Suggestions;
+using Cotabby.App.Speech;
+using Cotabby.App.Vocabulary;
+using Cotabby.Core.Vocabulary;
 
 namespace Cotabby.App.UI.ExpressionAssist;
 
@@ -25,7 +28,8 @@ internal sealed class ExpressionAssistApplication : IAsyncDisposable
     internal ExpressionAssistApplication(Dispatcher dispatcher, IFocusTracker focus, IKeyboardHook hook,
         Func<Func<bool>, FocusedField?> guardedRefresh, IExpressionAssistEditor editor,
         Func<ExpressionAssistRequest, CancellationToken, Task<ExpressionAssistResult>> generate,
-        Action beforePresent)
+        Action beforePresent, IWritingVocabularyStore? vocabulary = null, VocabularyCaptureFactory? captures = null,
+        LearningSpeechController? speech = null)
     {
         dispatcher.VerifyAccess(); _dispatcher = dispatcher;
         _feature = new(dispatcher, focus, hook, guardedRefresh, field =>
@@ -42,6 +46,7 @@ internal sealed class ExpressionAssistApplication : IAsyncDisposable
                 return (preferences.Target, preferences.Explanation);
             });
             window.Bind(session);
+            if (vocabulary is not null || speech is not null) window.AttachCandidateTools(vocabulary, captures, speech);
             return (session, window.Close);
         }, (field, settings) => field is null || Volatile.Read(ref _preferences).Shortcuts.ExpressionAssistShortcutConflict(
             new(settings.ShortcutKey, settings.ShortcutModifiers, ""), field.ProcessName) is not null,

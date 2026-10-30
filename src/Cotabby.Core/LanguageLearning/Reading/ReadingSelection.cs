@@ -20,10 +20,16 @@ public sealed record ReadingSelection(Guid Id, string Text, int ProcessId, strin
     public ReadingScreenReceipt? ScreenReceipt { get; init; }
 }
 
-public sealed record ReadingScreenReceipt(Guid EvidenceId, ScreenRect FieldBounds, ScreenRect DisplayBounds, ScreenRect Region);
+public sealed record ReadingScreenReceipt(Guid EvidenceId, ScreenRect FieldBounds, ScreenRect DisplayBounds, ScreenRect Region)
+{
+    /// <summary>Explicit visual acquisition has an origin window, not an editable field or caret.
+    /// FieldBounds retains the older name for the permitted capture surface, which may be a display.</summary>
+    public ReadingVisualOrigin? WindowOrigin { get; init; }
+}
+public sealed record ReadingVisualOrigin(Guid Id, ScreenRect WindowBounds);
 
 public enum ReadingBoundary { Container, LayoutBlock, Sentence, Crop, Unknown, Deadline }
-public enum ReadingContextMethod { Characters, Block, Paragraph, Sentence, MarkerWindow, MarkerWalk }
+public enum ReadingContextMethod { Characters, Block, Paragraph, Sentence, MarkerWindow, MarkerWalk, Ocr }
 
 /// <summary>One verified occurrence in a bounded context. Offsets are UTF-16, not a text search.</summary>
 public sealed record ReadingContext(string Text, int TargetStart, int TargetLength, ReadingBoundary Left,

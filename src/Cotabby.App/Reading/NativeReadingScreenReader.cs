@@ -3,10 +3,11 @@ using Cotabby.Core.Focus;
 using Cotabby.Core.LanguageLearning.Reading;
 using Cotabby.Win32.Reading;
 using Cotabby.Core.Runtime.Metrics;
+using Cotabby.Win32.Text;
 
 namespace Cotabby.App.Reading;
 
-/// <summary>Explicit field-bounded screen reading. The native owner retains field proof; the
+/// <summary>Explicit screen reading. The native owner retains field or origin-window proof; the
 /// picker selects geometry only, and pixels stay request-owned until Windows OCR completes.</summary>
 internal interface IReadingScreenGuard : IAsyncDisposable
 {
@@ -26,6 +27,9 @@ internal sealed class NativeReadingScreenReader : IReadingScreenReader
     private readonly Func<DateTimeOffset> _clock;
     internal NativeReadingScreenReader(Win32ReadingSelectionReader owner, IReadingOcr ocr, Action<PerformanceRequestObservation>? observe = null)
         : this(async (token, key) => { var lease = await owner.CaptureScreenGuardAsync(token, key); return lease is null ? null : new Guard(lease); },
+            async (bounds, token) => { using var picker = new ReadingRegionPicker(bounds); return await picker.SelectAsync(token); }, ocr, observe) { }
+    internal NativeReadingScreenReader(Win32ReadingWindowSource owner, IReadingOcr ocr, Action<PerformanceRequestObservation>? observe = null)
+        : this(async (token, key) => { var lease = await owner.CaptureAsync(token, key); return lease is null ? null : new WindowGuard(lease); },
             async (bounds, token) => { using var picker = new ReadingRegionPicker(bounds); return await picker.SelectAsync(token); }, ocr, observe) { }
     internal NativeReadingScreenReader(Func<CancellationToken, int?, Task<IReadingScreenGuard?>> acquire,
         Func<ScreenRect, CancellationToken, Task<ScreenRect?>> pick, IReadingOcr ocr, Action<PerformanceRequestObservation>? observe = null,
@@ -79,11 +83,18 @@ internal sealed class NativeReadingScreenReader : IReadingScreenReader
                 }
                 if (!guard.IsLive || request.IsCancellationRequested || guard.Evidence != proof
                     || !await guard.IsCurrentAsync(request.Token) || !guard.IsLive) throw new OperationCanceledException();
+                // The full OCR target is retained. Crop boundaries never certify surrounding
+                // sentences, and Windows OCR exposes no confidence score to manufacture here.
+                var context = await Task.Run(() => ReadingContextPolicy.Resolve(
+                    new(text, 0, text.Length, ReadingBoundary.Crop, ReadingBoundary.Crop, ReadingContextMethod.Ocr), text,
+                    new IcuLearningEvidenceSentenceTokenizer().TokenizeUnknown), CancellationToken.None);
+                if (!guard.IsLive || request.IsCancellationRequested || !await guard.IsCurrentAsync(request.Token) || !guard.IsLive)
+                    throw new OperationCanceledException();
                 var selection = new ReadingSelection(Guid.NewGuid(), text, proof.ProcessId, proof.FieldId, proof.FocusEpoch,
-                    null, text.Length, false, true, InputCompositionState.Clear, proof.CompositionSequence, region.Value)
+                    null, text.Length, false, true, proof.WindowOrigin is null ? InputCompositionState.Clear : InputCompositionState.Unknown, proof.CompositionSequence, region.Value, context)
                 {
                     Source = ReadingSourceKind.Screenshot,
-                    ScreenReceipt = new(Guid.NewGuid(), proof.FieldBounds, pixels.DisplayBounds, region.Value),
+                    ScreenReceipt = new(Guid.NewGuid(), proof.FieldBounds, pixels.DisplayBounds, region.Value) { WindowOrigin = proof.WindowOrigin },
                     CapturedAt = capturedAt,
                 };
                 ReadingSelectionPolicy.ValidateReceipt(selection);
@@ -112,6 +123,16 @@ internal sealed class NativeReadingScreenReader : IReadingScreenReader
     private sealed class Guard(Win32ReadingSelectionLease native) : IReadingScreenGuard
     {
         public ReadingScreenGuardEvidence? Evidence => native.ScreenGuardEvidence;
+        public bool IsLive => native.IsLive;
+        public event Action? Invalidated { add => native.Invalidated += value; remove => native.Invalidated -= value; }
+        public Task<bool> IsCurrentAsync(CancellationToken token) => native.IsCurrentAsync(token);
+        public Task<ReadingScreenPixels?> CaptureRegionAsync(ScreenRect region, CancellationToken token) => native.CaptureRegionAsync(region, token);
+        public void Retire() => native.Retire();
+        public ValueTask DisposeAsync() => native.DisposeAsync();
+    }
+    private sealed class WindowGuard(Win32ReadingWindowLease native) : IReadingScreenGuard
+    {
+        public ReadingScreenGuardEvidence? Evidence => native.Evidence;
         public bool IsLive => native.IsLive;
         public event Action? Invalidated { add => native.Invalidated += value; remove => native.Invalidated -= value; }
         public Task<bool> IsCurrentAsync(CancellationToken token) => native.IsCurrentAsync(token);

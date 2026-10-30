@@ -476,7 +476,7 @@ internal sealed unsafe partial class UiaTextEditEvidence : ICompositionEvidenceO
 
     // This diagnostic is deliberately limited to a handle owned by this process. It never asks
     // UIA for the focused element and does not read text or authorize a composition receipt.
-    internal Task<UiaOwnedElementResult> ProbeOwnedHandleForTest(nint handle)
+    internal Task<UiaOwnedElementResult> ProbeOwnedHandleForTest(nint handle, Action<nint>? inspectOwnedElement = null)
     {
         var result = new TaskCompletionSource<UiaOwnedElementResult>(TaskCreationOptions.RunContinuationsAsynchronously);
         if (handle == 0 || Cotabby.Win32.Interop.NativeMethods.GetWindowThreadProcessId(handle, out uint pid) == 0 || pid != (uint)Environment.ProcessId)
@@ -488,7 +488,7 @@ internal sealed unsafe partial class UiaTextEditEvidence : ICompositionEvidenceO
         {
             _queue.Add(() =>
             {
-                try { result.TrySetResult(ProbeOwnedHandleCore(handle)); }
+                try { result.TrySetResult(ProbeOwnedHandleCore(handle, inspectOwnedElement)); }
                 catch (Exception ex) { result.TrySetException(ex); }
             });
         }
@@ -611,7 +611,7 @@ internal sealed unsafe partial class UiaTextEditEvidence : ICompositionEvidenceO
         }
     }
 
-    private UiaOwnedElementResult ProbeOwnedHandleCore(nint handle)
+    private UiaOwnedElementResult ProbeOwnedHandleCore(nint handle, Action<nint>? inspectOwnedElement)
     {
         if (_automation is null) return new(unchecked((int)0x80004005), null, null, false, null, null, null, null, null, null);
         IUIAutomationElement* element = null;
@@ -619,7 +619,8 @@ internal sealed unsafe partial class UiaTextEditEvidence : ICompositionEvidenceO
         {
             HRESULT hr = _automation->ElementFromHandle(new Windows.Win32.Foundation.HWND(handle), &element);
             if (hr.Failed || element is null) return new((int)hr, null, null, false, null, null, null, null, null, null);
-            return ProbeOwnedElementCore(element, (int)hr);
+            var result = ProbeOwnedElementCore(element, (int)hr);
+            inspectOwnedElement?.Invoke((nint)element); return result;
         }
         finally { if (element is not null) element->Release(); }
     }

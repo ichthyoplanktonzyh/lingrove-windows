@@ -10,7 +10,10 @@ using Native = Cotabby.Win32.Interop.NativeMethods;
 namespace Cotabby.Win32.Reading;
 
 /// <summary>Focused-field evidence only; this value does not authorize pixel capture for a region.</summary>
-public sealed record ReadingScreenGuardEvidence(int ProcessId, string FieldId, long FocusEpoch, long CompositionSequence, ScreenRect FieldBounds);
+public sealed record ReadingScreenGuardEvidence(int ProcessId, string FieldId, long FocusEpoch, long CompositionSequence, ScreenRect FieldBounds)
+{
+    public ReadingVisualOrigin? WindowOrigin { get; init; }
+}
 public sealed record ReadingScreenPixels(ReadingBitmap Bitmap, ScreenRect DisplayBounds);
 
 /// <summary>Request-scoped selected-text capture. It borrows the existing focus, keyboard and UIA owners.</summary>

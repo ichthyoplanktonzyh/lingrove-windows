@@ -36,8 +36,9 @@ same Store. Graph, export, speech/audio and reading each retain their scoped imp
 none establishes complete native parity. The
 [reading/CLI/interface composition](docs/WINDOWS_READING_CLI_INTERFACE_CHECKPOINT_20261030.md)
 shares this Store, launches one private mailbox, freezes interface language before window construction
-and drains content-free history after task owners. Screenshot reading is limited to a verified field
-region; original-source system dictionary and autocomplete streaming gaps remain separately tracked.
+and drains content-free history after task owners. The
+[explicit-region upgrade](docs/READING_EXPLICIT_REGION_3B.md) adds origin-window screenshot acquisition
+without an editable-field requirement; pointer/selection visual fallback and native acceptance remain open.
 
 ## Migration principle: adapt the frozen macOS product
 

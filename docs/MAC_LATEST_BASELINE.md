@@ -86,25 +86,42 @@ the initial gap audit; its initial Windows gap descriptions are historical. Curr
   compact/expanded controls, acknowledged replacement, recovery Copy, explicit budgeted draft
   references and evidence-backed previous-sentence display. All four final-head CI jobs passed at
   `d5f0e52a54aefad88a16965424e6de68d4e6eef4` before merge as `889196d`.
-  The caret-ending ASCII-source replacement subset remains explicit; physical editor acceptance
-  and complete Unicode/selected-range replacement are still open.
+  Its initial caret-ending ASCII-source subset was subsequently upgraded in #146; physical
+  editor acceptance remains separate from that source implementation.
 - #144 merged [online and website dictionaries](DICTIONARY_WEBSITE_ONLINE_3B.md), connecting
   explicit online offers/retry and browser destinations across floating cards and notebook, with
   shared settings, bounded HTTP cancellation/drain and website editing. All four final-head checks
   passed at `926ceaf6d937c7d02968a3cfb79862e2c9543a4c` before merge as `ded4be4`.
-- The [Home/Welcome showcase candidate](HOME_WELCOME_SHOWCASE_3B.md) connects both production
+- #145 merged the [Home/Welcome showcase](HOME_WELCOME_SHOWCASE_3B.md), connecting both production
   entries to the same seven-scene player, real cards/notebook/review and private sample owners.
-  Full local validation passed; final-head remote CI and physical acceptance remain separate gates.
-- Remaining work includes wider writing replacement, native automatic language
+  All four final-head checks passed at `1018a9e7d96dee042f7a2a759b6599e1db6e9cf2` before merge as
+  `9ad2a88`. Physical acceptance remains separate.
+- #146 merged [writing range replacement](WRITING_RANGE_REPLACEMENT_3B.md), adding exact native
+  selected/middle/Unicode scopes, independent selection/value acknowledgements and Copy recovery.
+  All four final-head checks passed at `8042fa87daabfb63f140fe148845c1403e0e8bba` before merge as
+  `eb51556`. Unsupported providers and physical editor acceptance remain explicit.
+- #147 merged [expression candidate tools](EXPRESSION_CANDIDATE_TOOLS_3B.md), connecting independent
+  row speech and canonical favorites with stable generated context/provenance. All four final-head
+  checks passed at `c243bb3441ecf1bb967c18f67f43b44ad4b0a247` before merge as `1569ac4`.
+- The [explicit-region reading candidate](READING_EXPLICIT_REGION_3B.md) removes the editable-field
+  prerequisite for the screenshot command while retaining native security/composition admission,
+  origin/window freshness, local OCR and existing reading/Store ownership. Its CI is a separate gate.
+- Remaining work includes pointer/selection visual OCR fallback, non-ASCII native expression
+  triggers, native automatic language
   confidence, Apple's unavailable system dictionary and the explicitly documented media/native gaps.
   Internal components are not evidence that those flows are complete. Existing older libraries
   retain explicit references and are reused only after checking the current consumer contract.
 
 After the maintainer's delivery adjustment, implementation owners carry each active user flow
 through its settings, entry and production adapters. Internal commits use targeted validation;
-since the later 2026-10-30 instruction, the primary alone implements and reviews new changes, with
-required CI gating each complete candidate. Physical host acceptance belongs
+since the later 2026-10-30 instruction, the primary alone implements new changes. The maintainer
+subsequently authorized fresh `gpt-6-luna`/max agents for independent review/testing only, replaced
+between modules. Required CI gates each complete candidate. Physical host acceptance belongs
 to the maintainer using the [Windows host checklist](WINDOWS_HOST_ACCEPTANCE.md).
+
+The following source inventory and original gap wording record the initial latest-Mac audit.
+Completed module handoffs above and in [PARITY.md](PARITY.md) supersede those historical gaps;
+the inventory must not be read as today's implementation completion list.
 
 | Area | Latest source responsibility and required Windows alignment |
 | --- | --- |
@@ -136,7 +153,7 @@ remain required.
 The maintainer's 2026-10-29 clarification preserves behavior, IA, content hierarchy and state
 expression while allowing attractive Windows/WPF visual design; Mac pixel identity is not required.
 
-## Next implementation order
+## Original implementation order (historical)
 
 1. Preserve the autocomplete newline/echo adaptation merged in #107. Complete frozen
    task-compatible model assignment in the existing model-management owners;
@@ -154,8 +171,9 @@ expression while allowing attractive Windows/WPF visual design; Mac pixel identi
 
 This order follows frozen Mac ownership and dependencies. It does not authorize a replacement
 product design, new hosted transmission or automatic classification. The maintainer subsequently
-ended delegation: the primary now implements and reviews whole functional blocks alone. Earlier
-team records are historical evidence, not a requirement to start another agent. Merge reviewed
+ended implementation delegation: the primary now writes whole functional blocks alone, with the
+subsequently authorized Luna/max independent review/testing only. Earlier implementation team
+records are historical evidence, not a requirement to start another coding agent. Merge reviewed
 final-head green checkpoints to `main`.
 Ordinary rounds create no installer, downloadable package, release, model download or VM. Windows
 UIA/IME/insertion, ghost pixels, actual Anki, installed voices/audio and hardware/model quality still

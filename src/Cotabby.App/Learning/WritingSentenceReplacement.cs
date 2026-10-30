@@ -26,7 +26,7 @@ internal sealed class WritingSentenceReplacement(IConditionalTextInserter insert
             ? WritingRangeReplacementPolicy.CanReplace(field, range, source, replacement)
             : WritingSentenceReplacementPolicy.CanReplace(field, range, source, replacement);
     private readonly object _gate = new(); private readonly CancellationTokenSource _stop = new();
-    private readonly HashSet<Task> _work = []; private bool _closed; private Task? _dispose;
+    private readonly HashSet<Task> _work = []; private volatile bool _closed; private Task? _dispose;
     private readonly Func<TimeSpan, CancellationToken, Task> _wait = wait ?? Task.Delay;
     public Task<WritingReplacementOutcome> ReplaceAsync(FocusedField field, LearningTextRange range, string source,
         string replacement, Func<bool> permit, CancellationToken cancellationToken)
@@ -46,7 +46,13 @@ internal sealed class WritingSentenceReplacement(IConditionalTextInserter insert
         string replacement, Func<bool> permit, CancellationToken cancellationToken)
     {
         using var linked = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _stop.Token);
-        bool Allowed() { try { return !linked.IsCancellationRequested && permit(); } catch { return false; } }
+        // CancelAsync publishes cancellation before its linked-token callbacks run. Retirement
+        // must revoke native admission synchronously, including a permit that retires us itself.
+        bool Allowed()
+        {
+            try { return !_closed && !linked.IsCancellationRequested && permit() && !_closed && !linked.IsCancellationRequested; }
+            catch { return false; }
+        }
         if (!Allowed() || !CanReplace(field, range, source, replacement)) return WritingReplacementOutcome.Rejected;
         bool useRange = ranges is not null;
         bool dispatched;

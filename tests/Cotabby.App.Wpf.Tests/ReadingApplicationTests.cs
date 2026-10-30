@@ -83,15 +83,18 @@ public sealed class ReadingApplicationTests(WpfDispatcher dispatcher)
         Assert.Equal(1, generation); Assert.Equal((14, 19), reader.Point); Assert.Equal(0, reader.Calls);
         await app.DisposeAsync();
     });
-    [Fact]
-    public Task ScreenShortcutUsesItsOwnGrantAndScreenshotReceipt() => dispatcher.RunAsync(async () =>
+    [Theory]
+    [InlineData(false)] [InlineData(true)]
+    public Task ScreenShortcutUsesItsOwnGrantAndScreenshotReceipt(bool visualOrigin) => dispatcher.RunAsync(async () =>
     {
-        var focus = new Focus(); var hook = new Hook(); var selectionReader = new Reader(); var screen = new ScreenReader(); int generation = 0;
+        var focus = new Focus(); var hook = new Hook(); var selectionReader = new Reader(); var screen = new ScreenReader { VisualOrigin = visualOrigin }; int generation = 0;
         var app = new ReadingApplication(Dispatcher.CurrentDispatcher, hook, () => focus.Value, selectionReader,
             (_, _) => [new("Hello", new(0, 5)), new("world", new(6, 5))], new Dictionary(),
             (_, _) => throw new InvalidOperationException(), (_, _, _) => throw new InvalidOperationException(), () => { },
             new Clipboard(), new ReadingVocabularyStoreFake(), (_, _) => [],
-            (_, _) => (receipt, _, _, _, _) => { Assert.Equal(ReadingSourceKind.Screenshot, receipt.Source); generation++; return Task.FromResult("translated"); }, () => { }, () => false);
+            (_, _) => (receipt, _, _, _, _) => { Assert.Equal(ReadingSourceKind.Screenshot, receipt.Source);
+                if (visualOrigin) { Assert.Equal("", receipt.FieldId); Assert.Equal(InputCompositionState.Unknown, receipt.Composition); Assert.NotNull(receipt.ScreenReceipt!.WindowOrigin); }
+                generation++; return Task.FromResult("translated"); }, () => { }, () => false);
         app.AttachScreen(screen);
         var settings = new AppSettings { LearningReadingScreenshotEnabled = true, LearningTranslationEnabled = true };
         var chord = KeyModifiers.Control | KeyModifiers.Alt | KeyModifiers.Shift;
@@ -100,6 +103,21 @@ public sealed class ReadingApplicationTests(WpfDispatcher dispatcher)
         Assert.True(hook.Emit(chord).Suppress);
         for (int i = 0; i < 100 && generation == 0; i++) await Task.Delay(10);
         Assert.Equal(1, generation); Assert.Equal(1, screen.Calls); Assert.Equal(0, selectionReader.Calls); await app.DisposeAsync();
+    });
+    [Fact]
+    public Task EscapeWhileSelectingConsumesOnlyThePickerCancellationAndNeverInvokesAModel() => dispatcher.RunAsync(async () =>
+    {
+        var focus = new Focus(); var hook = new Hook(); var reader = new Reader(); var screen = new HoldingScreenReader(); int models = 0;
+        var app = new ReadingApplication(Dispatcher.CurrentDispatcher, hook, () => focus.Value, reader,
+            (_, _) => [], new Dictionary(), (_, _) => { models++; throw new InvalidOperationException(); },
+            (_, _, _) => throw new InvalidOperationException(), () => { }, new Clipboard(), new ReadingVocabularyStoreFake(), (_, _) => [],
+            (_, _) => (_, _, _, _, _) => { models++; throw new InvalidOperationException(); }, () => { }, () => false);
+        app.AttachScreen(screen);
+        app.ApplySettings(new AppSettings { LearningReadingScreenshotEnabled = true, LearningTranslationEnabled = true,
+            ShortcutOverrides = [new() { ProcessName = "editor", ScreenshotReadingAllowed = true }] }, 0, false);
+        Assert.True(hook.Emit(KeyModifiers.Control | KeyModifiers.Alt | KeyModifiers.Shift).Suppress);
+        await screen.Entered.Task.WaitAsync(TimeSpan.FromSeconds(5)); Assert.True(hook.Escape().Suppress);
+        await app.DisposeAsync(); Assert.Equal(0, models); Assert.Equal(0, reader.Calls); Assert.False(screen.IsSelectingRegion);
     });
     [Fact]
     public Task CapturedDifferentProcessCannotReachModel() => dispatcher.RunAsync(async () =>
@@ -187,6 +205,8 @@ public sealed class ReadingApplicationTests(WpfDispatcher dispatcher)
     private sealed class Hook : IKeyboardHook
     {
         public event EventHandler<KeyEventArgs>? KeyEvent;
+        internal KeyEventArgs Escape()
+        { var args = new KeyEventArgs(new() { Kind = KeyKind.Escape, Character = '\0', VirtualKey = 0x1B, IsKeyDown = true }); KeyEvent?.Invoke(this, args); return args; }
         public KeyEventArgs Emit(KeyModifiers modifiers = KeyModifiers.Alt | KeyModifiers.Shift) { var args = new KeyEventArgs(new() { Kind = KeyKind.Shortcut, Character = '\0',
             VirtualKey = 0x54, Modifiers = modifiers, IsKeyDown = true }); KeyEvent?.Invoke(this, args); return args; }
         public void Start() { } public void Stop() { } public void Dispose() { }
@@ -210,13 +230,26 @@ public sealed class ReadingApplicationTests(WpfDispatcher dispatcher)
     }
     private sealed class ScreenReader : IReadingScreenReader
     {
-        public int Calls; public bool IsSelectingRegion => false;
+        public int Calls; public bool VisualOrigin; public bool IsSelectingRegion => false;
         public Task<IReadingSelectionLease?> CaptureAsync(CancellationToken token, int? initiatingVirtualKey = null)
         {
             Calls++; var lease = new Lease();
             lease.Selection = lease.Selection with { Source = ReadingSourceKind.Screenshot, SelectionStart = null,
                 ScreenReceipt = new(Guid.NewGuid(), new(0, 0, 100, 100), new(0, 0, 100, 100), new(10, 10, 20, 20)) };
+            if (VisualOrigin) lease.Selection = lease.Selection with { FieldId = "", Composition = InputCompositionState.Unknown, CompositionSequence = 0,
+                ScreenReceipt = lease.Selection.ScreenReceipt! with { WindowOrigin = new(Guid.NewGuid(), new(0, 0, 80, 80)) } };
             return Task.FromResult<IReadingSelectionLease?>(lease);
+        }
+    }
+    private sealed class HoldingScreenReader : IReadingScreenReader
+    {
+        public bool IsSelectingRegion { get; private set; }
+        internal TaskCompletionSource Entered = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        public async Task<IReadingSelectionLease?> CaptureAsync(CancellationToken token, int? initiatingVirtualKey = null)
+        {
+            IsSelectingRegion = true; Entered.SetResult();
+            try { await Task.Delay(Timeout.InfiniteTimeSpan, token); return null; }
+            finally { IsSelectingRegion = false; }
         }
     }
     private sealed class Clipboard : Cotabby.Core.Context.IClipboardTextWriter

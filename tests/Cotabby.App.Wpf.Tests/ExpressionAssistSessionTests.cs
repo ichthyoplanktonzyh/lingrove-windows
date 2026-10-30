@@ -10,7 +10,7 @@ namespace Cotabby.App.Wpf.Tests;
 public sealed class ExpressionAssistSessionTests(WpfDispatcher dispatcher)
 {
     [Fact]
-    public Task ResultCarriesTheExactFrozenRequestAndFavoritePreflightRejectsAChangedHost() => dispatcher.RunAsync(async () =>
+    public Task ResultCarriesTheExactFrozenRequestAndDetachedFavoriteNeedsNoNewHostRead() => dispatcher.RunAsync(async () =>
     {
         var editor = new Editor(false); var panel = new Panel(); var candidate = new ExpressionAssistCandidate("rule out", "排除", null);
         ExpressionAssistRequest? generated = null;
@@ -20,8 +20,10 @@ public sealed class ExpressionAssistSessionTests(WpfDispatcher dispatcher)
         session.Begin(null); await Until(() => panel.Visible);
         session.QueryChanged("排除", false); session.Submit(); await Until(() => panel.Result is not null);
         Assert.Same(generated, panel.Request); Assert.Equal("排除", panel.Request!.Query);
+        int reads = editor.Session.Reads;
         Assert.True(await session.ValidateCandidateAsync(candidate));
-        editor.Session.Unchanged = false; Assert.False(await session.ValidateCandidateAsync(candidate));
+        editor.Session.Unchanged = false; Assert.True(await session.ValidateCandidateAsync(candidate));
+        Assert.Equal(reads, editor.Session.Reads);
         session.QueryChanged("new query", true); Assert.False(await session.ValidateCandidateAsync(candidate));
         Assert.Equal(0, editor.Session.Writes);
     });
@@ -208,9 +210,9 @@ public sealed class ExpressionAssistSessionTests(WpfDispatcher dispatcher)
         public event Action? Invalidated;
         public void Invalidate() { Live = false; Invalidated?.Invoke(); }
         public bool InvalidateOnWrite, VerifyWrite = true;
-        public int Writes; public string? Written; public bool ReturnBegun; public bool Unchanged = true;
+        public int Writes, Reads; public string? Written; public bool ReturnBegun; public bool Unchanged = true;
         public bool EnterPanel() => true;
-        public Task<bool> IsUnchangedAsync(CancellationToken ct) => Task.FromResult(Unchanged);
+        public Task<bool> IsUnchangedAsync(CancellationToken ct) { Reads++; return Task.FromResult(Unchanged); }
         public bool BeginReturn() { ReturnBegun = true; return true; }
         public Task<bool> ResumeAndReplaceAsync(string text, CancellationToken ct)
         { Writes++; Written = text; if (InvalidateOnWrite) Invalidate(); return Task.FromResult(VerifyWrite); }

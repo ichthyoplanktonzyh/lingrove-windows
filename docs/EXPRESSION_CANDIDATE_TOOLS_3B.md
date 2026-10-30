@@ -36,9 +36,13 @@ update without reactivating the host. This adapts IA/state, not Mac pixels or a 
 `ExpressionAssistCandidateTools` prepares detached captures once per request/result on a worker.
 Old preparation cannot bind a new result, and navigation or Store notifications cannot regenerate
 its encounter UUID. Native/editor handles and the request admission callback never enter a capture.
-Store actions revalidate the live candidate/host before admission; accepted writes finish and join
+Store actions revalidate the live candidate/request/panel before admission; accepted writes finish and join
 even if the presentation closes. The session drains its panel's candidate actions before retirement.
 No view creates or disposes another production Store, inference runtime or audio service.
+Like the Mac panel's favorite action, Save uses its detached generated context and does not recapture
+the host or require another unchanged-editor read. Native editor validation still guards model
+request/result boundaries and actual insertion. A changed query, IME or retired panel cannot save
+an old result.
 
 The Core factory ports the original rule: a nonempty dictionary form is canonical; otherwise use
 trimmed insertion text. At most one lexical word is a Word, otherwise an Expression. A hypothetical
@@ -84,3 +88,15 @@ in-memory databases, with no user editor/notebook/clipboard, actual audio, model
 Non-ASCII native triggers, provider-specific focus/IME/insertion, actual speech/model/device output,
 physical mouse hit testing, mixed DPI and screen readers remain final unified native acceptance.
 This module does not supply arbitrary-screen OCR or source-language confidence recognition.
+
+Integrated source `e2bd96583061b80bea05c8af10388bb5107146d4` compiled in Release with zero
+warnings/errors and passed the complete suites sequentially, without skips: Core 5,101; App 1,278;
+Inference 751; WPF 1,084 (4m). An independent fresh `gpt-6-luna`/max reviewer found that the explicit
+UIA candidate name omitted the visible base form. The row name now includes insertion text, distinct
+base form and hint, omitting absent parts, as the Mac VoiceOver label does. Focused final-source
+checks and independent verification are recorded after this correction.
+
+After the label correction and removal of the extra host read from detached favorites, the same
+rebuilt WPF expression/favorite/showcase group passed 59/59 again. The updated session regression
+asserts that favorite validation makes no additional editor read and is still revoked by query/IME
+retirement; the view regression checks the complete accessible label with and without a base form.

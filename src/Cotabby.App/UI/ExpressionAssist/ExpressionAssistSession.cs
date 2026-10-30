@@ -178,13 +178,12 @@ internal sealed class ExpressionAssistSession : IAsyncDisposable
     }
     internal bool CanUseCandidateTools => !_disposed && !_acquiring && !_committing && !_composing && _capture is not null
         && _sessionCancellation?.IsCancellationRequested == false && _panel.IsVisible && _panel.OwnsKeyboard;
-    internal async Task<bool> ValidateCandidateAsync(ExpressionAssistCandidate candidate)
+    internal Task<bool> ValidateCandidateAsync(ExpressionAssistCandidate candidate)
     {
         Verify();
-        if (!CanUseCandidateTools || _result?.Candidates.Contains(candidate) != true || _capture is not { } capture) return false;
-        long revision = _revision; var token = _sessionCancellation!.Token;
-        try { return await capture.IsUnchangedAsync(token) && Current(capture, revision, token) && _result?.Candidates.Contains(candidate) == true; }
-        catch { return false; }
+        // Mac's panel saves the already displayed hypothetical candidate, not a new editor
+        // capture. Query/panel/session retirement invalidates it; saving itself performs no UIA IO.
+        return Task.FromResult(CanUseCandidateTools && _result?.Candidates.Contains(candidate) == true);
     }
     internal void Cancel() { Verify(); Finish(null); }
     internal void FocusLost() { Verify(); if (!_acquiring && !_committing) Invalidate(); }

@@ -125,12 +125,14 @@ internal sealed class ExpressionAssistView : Border
         for (int i = 0; i < _candidates.Count; i++)
         {
             int index = i; var candidate = _candidates[i];
+            string baseForm = Cotabby.Core.Text.FoundationText.TrimWhitespaceAndNewlines(candidate.DictionaryForm ?? "");
+            bool showsBaseForm = baseForm.Length > 0 && !string.Equals(baseForm, candidate.Text.Trim(), StringComparison.OrdinalIgnoreCase);
+            string baseFormLabel = showsBaseForm ? "Base form: " + baseForm : "";
             var content = new StackPanel();
             content.Children.Add(new TextBlock { Text = $"{(i == _selected ? "↵" : (i + 1).ToString())}  {candidate.Text}",
                 FontWeight = FontWeights.SemiBold, TextWrapping = TextWrapping.Wrap });
-            if (!string.IsNullOrWhiteSpace(candidate.DictionaryForm) &&
-                !string.Equals(candidate.DictionaryForm.Trim(), candidate.Text.Trim(), StringComparison.OrdinalIgnoreCase))
-                content.Children.Add(new TextBlock { Text = "Base form: " + candidate.DictionaryForm,
+            if (showsBaseForm)
+                content.Children.Add(new TextBlock { Text = baseFormLabel,
                     FontSize = 11, TextWrapping = TextWrapping.Wrap, Margin = new(20, 2, 0, 0) });
             if (!string.IsNullOrWhiteSpace(candidate.Hint))
                 content.Children.Add(new TextBlock { Text = candidate.Hint, FontSize = 12,
@@ -141,7 +143,8 @@ internal sealed class ExpressionAssistView : Border
                 Padding = new Thickness(8), Margin = new Thickness(0, 2, 0, 0), BorderThickness = new Thickness(1) };
             button.SetResourceReference(StyleProperty, "ExpressionInsertButton");
             button.Background = Brushes.Transparent; button.BorderThickness = new Thickness(0);
-            AutomationProperties.SetName(button, candidate.Text + ". " + candidate.Hint);
+            AutomationProperties.SetName(button, string.Join(". ", new[] { candidate.Text, baseFormLabel, candidate.Hint }
+                .Where(part => !string.IsNullOrWhiteSpace(part))));
             button.Click += (_, _) => { if (!_composing && index < _candidates.Count) Accept?.Invoke(_candidates[index]); };
             var row = new Grid(); row.ColumnDefinitions.Add(new() { Width = new GridLength(1, GridUnitType.Star) });
             row.ColumnDefinitions.Add(new() { Width = GridLength.Auto }); row.Children.Add(button);

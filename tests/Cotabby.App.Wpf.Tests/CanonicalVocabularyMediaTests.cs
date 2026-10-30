@@ -223,7 +223,7 @@ public sealed class CanonicalVocabularyMediaTests(WpfDispatcher dispatcher)
         finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
     });
     [Fact]
-    public Task CorruptExistingLeafIsNotRepairedByPathReplacement() => dispatcher.RunAsync(async () =>
+    public Task CorruptExistingLeafIsAtomicallyRepairedForAcknowledgedMetadata() => dispatcher.RunAsync(async () =>
     {
         string root = Path.Combine(Path.GetTempPath(), "canonical-media-" + Guid.NewGuid().ToString("N"));
         string file = Path.Combine(root, FrozenVocabularyStoreFactory.CanonicalFileName);
@@ -235,8 +235,9 @@ public sealed class CanonicalVocabularyMediaTests(WpfDispatcher dispatcher)
             var before = await store.SaveTemplateAsync(template, Supplied(image));
             string path = Path.Combine(media, image.Reference.Filename); byte[] corrupt = [7, 8, 9];
             File.WriteAllBytes(path, corrupt);
-            await Assert.ThrowsAsync<VocabularyException>(() => store.SaveTemplateAsync(Template(image.Reference), Supplied(image)));
-            Assert.Equal(corrupt, File.ReadAllBytes(path)); Assert.Equal(before, await store.ReadAsync());
+            var added = Template(image.Reference); var after = await store.SaveTemplateAsync(added, Supplied(image));
+            Assert.Equal(image.CopyBytes(), File.ReadAllBytes(path)); Assert.True(after.Revision > before.Revision);
+            Assert.Contains(after.Document.ReviewTemplates!, value => value.Id == added.Id);
         }
         finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
     });

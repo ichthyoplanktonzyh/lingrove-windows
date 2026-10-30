@@ -12,8 +12,9 @@ Review and template writes retain supplied detached images before admission. Und
 span the Store reads the latest graph, builds its draft, validates content and the 128 MiB unique
 media limit, stages or verifies new references, checks cancellation and commits SQL. Failure rolls
 back only files created by that attempt, identified by their actual Windows volume/file ID. Existing
-valid files survive. Corrupt existing media is rejected: replacing it safely by handle has not yet
-been implemented, so the source's repair behavior is an explicit gap.
+valid files survive. The subsequent [owned-media repair](VOCABULARY_OWNED_MEDIA_REPAIR_3B.md)
+adds identity-bound atomic repair of corrupt existing media on supported local NTFS/TxF;
+unavailable capability and conflicting handles continue to fail closed.
 After SQL acknowledgement, files with no remaining filename reference are removed best-effort and
 the revision is published. A cleanup failure cannot undo an acknowledged write. The reference walk
 includes collection content, current and preserved plans of legacy review and independent cards,

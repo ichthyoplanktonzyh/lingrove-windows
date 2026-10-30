@@ -17,7 +17,9 @@ after its size was checked. Hash names are derived only after Core metadata admi
 `Write` validates a detached byte copy before filesystem mutation. A matching existing image is
 reused without changing its timestamp. New files stage with a protected current-user ACL from
 creation, flush before atomic same-volume publication, and return `true`. An existing corrupt
-regular private file can be atomically repaired, returning `false`. This distinction preserves the
+regular private file can be atomically repaired on supported local NTFS/TxF, returning `false`;
+see the subsequent [identity-bound repair](VOCABULARY_OWNED_MEDIA_REPAIR_3B.md) for the shared
+file-backed writer, exact newer reference and fail-closed capability limits. This preserves the
 Mac transaction rule: a later metadata failure removes newly created media but retains repairs.
 No-overwrite publication handles a concurrent winner by checking its actual bytes; an unsafe leaf
 is never repaired. Random staging files are cleaned on success or failure. `Remove` is best effort;

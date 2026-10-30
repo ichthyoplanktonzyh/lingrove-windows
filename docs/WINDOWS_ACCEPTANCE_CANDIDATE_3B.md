@@ -61,17 +61,16 @@ final-head CI and merge records remain distinct from these local results.
 | --- | --- |
 | Automatic language confidence | No production confidence provider is registered. Multiple eligible writing source languages fail closed and request one explicit source; Windows ELS relevance ordering is not substituted for Mac probabilities. Speech keeps its documented fixed-language/card-context fallback. See [the detector audit](LEARNING_LOCAL_LANGUAGE_DETECTION_AUDIT.md). |
 | Apple system dictionary | Dictionary.framework is unavailable. Bundled definitions, MDict with admitted adjacent resources, explicit online lookup and website offers are connected; they do not establish the Apple provider's complete coverage. |
-| Corrupt existing image repair | The current canonical WriteOwned rejects corrupt bytes already at the expected digest leaf. Mac permits atomic repair from validated backup and retains it after later SQL failure. Windows has not implemented the corresponding verified-target replacement; failure preserves the previous graph/file and reports no successful restore. This is a real incomplete behavior. |
+| Corrupt existing image repair | [Identity-bound repair](VOCABULARY_OWNED_MEDIA_REPAIR_3B.md) now connects validated backup/save repair on supported local NTFS/TxF and retains it after later SQL failure/cancellation. Unavailable TxF, EFS/network storage or conflicting handles fail closed; no universal filesystem support or power-loss guarantee is claimed. |
 | Image/provider subset | Current virtual-file/encoded/DIB/OLE input includes RLE4/RLE8, embedded ICC and opaque CF_BITMAP/TYMED_GDI. Other layouts, linked V5 profiles, other OLE media and full native color/producer coverage remain unsupported or unverified. See [current media](VOCABULARY_CANONICAL_MEDIA_3B.md) and [bitmap input](VOCABULARY_BITMAP_INPUT_3B.md). |
 | MDict/platform lifetime | In-root symlinks/cloud placeholders, unsupported redirected/UNC volume mappings and exact Mac companion collation remain limits. A WebView2 initialization/process retirement that cannot be joined may retain its private profile/admission slot; restart can be required. See [MDict resources](MDICT_LOCAL_RESOURCES_3B.md) and the [provider checkpoint](WINDOWS_PROVIDER_DICTIONARY_CHECKPOINT_20261030.md). |
 | Native acceptance | Actual host input, IME, insertion, screenshots/OCR quality, Anki, configured models/endpoints and audio hardware remain unverified until the maintainer's consolidated checks below. Local/CI component success does not establish them. |
 
-The current native rename API accepts a source handle and target name, without an expected target
-file-ID field ([FILE_RENAME_INFO](https://learn.microsoft.com/en-us/windows/win32/api/winbase/ns-winbase-file_rename_info),
-[SetFileInformationByHandle](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-setfileinformationbyhandle)).
-A handle-bound quarantine/publish sequence could avoid overwriting a raced object, but introduces
-a namespace/crash interval; it has not been substituted for the Mac atomic contract. This records
-the current adapter gap, not a proof that every possible Windows repair strategy is impossible.
+Ordinary native rename has no expected-target-ID field. The repair adapter uses an optional
+local filesystem transaction to preserve verified-object atomic publication; no nontransactional
+quarantine/publish fallback is used. Microsoft discourages new TxF dependencies because future
+availability is uncertain; supported capability and safe refusal remain distinct from universal
+Mac filesystem parity. The module record details the tested boundaries and native API constraints.
 
 ## Consolidated maintainer acceptance
 

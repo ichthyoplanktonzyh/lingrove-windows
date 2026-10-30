@@ -18,6 +18,7 @@ internal sealed class FrozenVocabularyUsagePatternEditorWindow : FrozenVocabular
     internal FrozenVocabularyUsagePatternEditorWindow(ICanonicalVocabularySemanticStore store, VocabularySemanticIndex baseline, Guid senseId, R.VocabularyUsagePattern? pattern = null)
         : base(store, baseline, "Edit usage pattern")
     {
+        _formality.ItemTemplate = InterfaceEnumLabels.Create<R.VocabularyPatternFormality>(value => value.ToString(), "Vocabulary"); _medium.ItemTemplate = InterfaceEnumLabels.Create<R.VocabularyPatternMedium>(value => value.ToString(), "Vocabulary");
         _pattern = pattern ?? new(senseId, ""); _template.Text = _pattern.Template; _template.IsReadOnly = _pattern.Slots.Count > 0; _note.Text = _pattern.Note; _region.Text = _pattern.Region; _collocations.Text = string.Join("\n", _pattern.Collocations); _formality.SelectedItem = _pattern.Formality; _medium.SelectedItem = _pattern.Medium;
         Fields.Children.Add(VocabularyInputControls.Group(("Usage pattern", _template), ("Usage note", _note)));
         var details = new Expander { Name = "patternDetails", Header = InterfaceText.Get("Details"), Margin = new Thickness(0, 12, 0, 0), Content = VocabularyInputControls.Group(("Formality", _formality), ("Medium", _medium), ("Region or dialect", _region), ("Collocations", _collocations)) }; VocabularyNotebookTheme.Brush(details, Control.ForegroundProperty, "TextPrimary"); Fields.Children.Add(details);

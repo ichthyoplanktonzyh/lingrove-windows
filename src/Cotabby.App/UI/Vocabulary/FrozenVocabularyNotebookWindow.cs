@@ -63,7 +63,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
         _store = store; _reader = reader; _owner = new(store); _hideOnClose = hideOnClose; _exampleNoExternalFiles = exampleNoExternalFiles; _listPreferences = listPreferences; var search = new Search();
         _session = new(Dispatcher, store, search) { PreferredLanguages = preferredLanguages ?? VocabularyMeaningLabelPolicy.PreferredLanguages(null, [CultureInfo.CurrentUICulture.Name]) };
         _session.Detailed = listPreferences?.Density == "detailed";
-        _pickFile = exampleNoExternalFiles ? (() => null) : pickFile ?? (() => { var dialog = new OpenFileDialog { Filter = "Word lists (*.csv;*.txt)|*.csv;*.txt", Multiselect = false }; return dialog.ShowDialog(this) == true ? dialog.FileName : null; });
+        _pickFile = exampleNoExternalFiles ? (() => null) : pickFile ?? (() => { var dialog = new OpenFileDialog { Filter = InterfaceText.Get("Word lists (*.csv;*.txt)") + "|*.csv;*.txt", Multiselect = false }; return dialog.ShowDialog(this) == true ? dialog.FileName : null; });
         Title = InterfaceText.Get("Vocabulary notebook", "Vocabulary"); Width = 1100; Height = 720; MinWidth = 760; MinHeight = 460; VocabularyNotebookTheme.Follow(this);
         var root = new DockPanel(); VocabularyNotebookTheme.Brush(root, Panel.BackgroundProperty, "WindowBg"); Content = root;
         var toolbar = new WrapPanel { Margin = new Thickness(20, 16, 20, 8), Orientation = Orientation.Horizontal };
@@ -363,7 +363,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
                 foreach (var meaning in sense.StandaloneMeanings.Concat(sense.AlternateMeanings)) if (meaning.Text.Length > 0) panel.Children.Add(Caption(meaning.Text + (meaning.Language is { } language ? "  ·  " + language.Name() : "")));
         if (sense.Content is { Count: > 0 })
         {
-            Section(panel, "Explanation");
+            Section(panel, InterfaceText.Get("Sense explanation", "Vocabulary"));
             foreach (var block in sense.Content)
                 if (block.Content is VocabularyBlockContent.Text text) panel.Children.Add(Paragraph(text.Value.Text));
                 else if (block.Content is VocabularyBlockContent.Image image) { if (_store is ICanonicalVocabularyMediaStore media) { var view = new CanonicalVocabularyImageView(media, image.Reference, caption: image.Caption); _detailImages.Add(view); panel.Children.Add(view); if (image.Caption.Length > 0) panel.Children.Add(Caption(image.Caption)); } else panel.Children.Add(Caption(InterfaceText.Get("Image unavailable"))); }
@@ -372,9 +372,9 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
         if (sense.Tags.Count > 0) panel.Children.Add(Caption(string.Join("  ·  ", sense.Tags)));
         AddSenseMappingSection(panel, new(entry.Id, sense.Id));
         RenderReviewSection(panel, entry, sense);
-        if (sense.Examples.Count > 0) { Section(panel, "Examples"); foreach (var example in sense.Examples) { panel.Children.Add(Paragraph(example.Text)); if (example.Translation.Length > 0) panel.Children.Add(Caption(example.Translation)); foreach (var translation in example.TranslationVariants) panel.Children.Add(Caption(translation.Text)); AddLearningRow(panel, entry, sense, example); panel.Children.Add(MoveUsageButton(entry, sense, example)); } }
+        if (sense.Examples.Count > 0) { Section(panel, InterfaceText.Get("Examples and translations", "Vocabulary")); foreach (var example in sense.Examples) { panel.Children.Add(Paragraph(example.Text)); if (example.Translation.Length > 0) panel.Children.Add(Caption(example.Translation)); foreach (var translation in example.TranslationVariants) panel.Children.Add(Caption(translation.Text)); AddLearningRow(panel, entry, sense, example); panel.Children.Add(MoveUsageButton(entry, sense, example)); } }
         AddLearningDictionary(panel, entry, sense);
-        if (_senseMutating) panel.Children.Add(Caption("Updating vocabulary…"));
+        if (_senseMutating) panel.Children.Add(Caption(InterfaceText.Get("Updating vocabulary…")));
         if (_actionError is { } error) panel.Children.Add(VocabularyNotebookTheme.Brush(new TextBlock { Name = "frozenSenseActionError", Text = error, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 12, 0, 0) }, TextBlock.ForegroundProperty, "OrangeBrush"));
         var actions = new WrapPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 18, 0, 0) };
         var edit = new Button { Name = "frozenNotebookEdit", Content = InterfaceText.Get("Edit"), IsEnabled = !_senseMutating && !_semanticBusy && _store is ICanonicalVocabularyEditorStore && _store is ICanonicalVocabularyMediaStore, Margin = new Thickness(0, 0, 8, 0) };
@@ -393,7 +393,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
         var matches = _session.Scoped.SelectMany(e => e.Senses.Where(s => ids.Contains(s.Id)).Select(s => new VocabularySelection(e.Id, s.Id))).ToArray();
         if (matches.Length == 0) panel.Children.Add(Caption(InterfaceText.Get("No matching expressions"))); else foreach (var selection in matches) AddSenseCard(panel, selection);
         var relations = VocabularyMeaningBrowserProjection.ConfirmedRelations(doc.Semantics).Where(r => r.SourceId == node.Id || r.TargetId == node.Id).ToArray();
-        if (relations.Length > 0) { Section(panel, InterfaceText.Get("Related meanings")); foreach (var relation in relations) { var target = doc.Semantics.Nodes.FirstOrDefault(n => n.Id == (relation.SourceId == node.Id ? relation.TargetId : relation.SourceId)); if (target is null) continue; var button = new Button { Content = relation.Kind + "  ·  " + VocabularyMeaningLabelPolicy.Title(target, _session.PreferredLanguages), HorizontalContentAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 3, 0, 3), Padding = new Thickness(10) }; VocabularyNotebookTheme.CardButton(button); button.Click += (_, _) => { ++_actionSelectionEpoch; _session.Category = "all"; _session.Destination = new(VocabularyMeaningDestinationKind.Node, target.Id); _session.Refresh(); }; panel.Children.Add(button); } }
+        if (relations.Length > 0) { Section(panel, InterfaceText.Get("Related meanings")); foreach (var relation in relations) { var target = doc.Semantics.Nodes.FirstOrDefault(n => n.Id == (relation.SourceId == node.Id ? relation.TargetId : relation.SourceId)); if (target is null) continue; var button = new Button { Content = InterfaceText.Get(relation.Kind switch { R.VocabularyMeaningRelationKind.Narrower => "More specific than", R.VocabularyMeaningRelationKind.Opposite => "Opposite", _ => "Related" }, "Vocabulary") + "  ·  " + VocabularyMeaningLabelPolicy.Title(target, _session.PreferredLanguages), HorizontalContentAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 3, 0, 3), Padding = new Thickness(10) }; VocabularyNotebookTheme.CardButton(button); button.Click += (_, _) => { ++_actionSelectionEpoch; _session.Category = "all"; _session.Destination = new(VocabularyMeaningDestinationKind.Node, target.Id); _session.Refresh(); }; panel.Children.Add(button); } }
         var cueIds = doc.Semantics.CueTargets.Where(x => x.NodeId == node.Id && x.Provenance.Status == R.VocabularySemanticStatus.Confirmed).Select(x => x.CueId).ToHashSet();
         var cues = doc.Semantics.Cues.Where(x => cueIds.Contains(x.Id)).Select(x => x.Text).ToArray();
         if (node.Provenance.Source.Length > 0 || node.Roles.Count > 0 || cues.Length > 0) { Section(panel, InterfaceText.Get("Details")); if (cues.Length > 0) panel.Children.Add(Caption(string.Join(" · ", cues))); foreach (var role in node.Roles) panel.Children.Add(Caption(role.Name + "  " + role.Description)); if (node.Provenance.Source.Length > 0) panel.Children.Add(Caption(node.Provenance.Source)); }
@@ -425,7 +425,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
         if (sense.Meaning.Length > 0) return sense.Meaning;
         foreach (var block in sense.Content ?? []) if (block.Content is VocabularyBlockContent.Text text && !string.IsNullOrWhiteSpace(text.Value.Text)) return text.Value.Text;
         if (sense.Examples.FirstOrDefault(e => e.Meaning.Length > 0) is { } example) return example.Meaning;
-        return (sense.Content ?? []).Any(b => b.Content is VocabularyBlockContent.Image) ? "Image explanation" : "Meaning pending";
+        return (sense.Content ?? []).Any(b => b.Content is VocabularyBlockContent.Image) ? InterfaceText.Get("Image explanation", "Vocabulary") : InterfaceText.Get("Meaning pending", "Vocabulary");
     }
     private static string LanguageLabel(LearningLanguage? language) => language?.Name() ?? "Unspecified";
     private static void Heading(Panel p, string value) => p.Children.Add(new TextBlock { Text = value, FontSize = 28, FontWeight = FontWeights.Bold, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, 8) });

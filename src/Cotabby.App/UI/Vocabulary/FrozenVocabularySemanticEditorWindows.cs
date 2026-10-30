@@ -85,7 +85,7 @@ internal sealed class FrozenVocabularyMeaningEditorWindow : FrozenVocabularySema
         Fields.Children.Add(VocabularyInputControls.Caption("Label language: " + (_label.Language?.Name() ?? "Unspecified")));
         if (_isNew)
         {
-            _kind.ItemsSource = new[] { new KindChoice("Things and situations", R.VocabularyMeaningNodeKind.Concept), new KindChoice("Requests, suggestions and attitudes", R.VocabularyMeaningNodeKind.Function) }; _kind.DisplayMemberPath = "Label"; _kind.SelectedValuePath = "Value"; _kind.SelectedValue = _node.Kind;
+            _kind.ItemsSource = new[] { new KindChoice(InterfaceText.Get("Things and situations", "Vocabulary"), R.VocabularyMeaningNodeKind.Concept), new KindChoice(InterfaceText.Get("Requests, suggestions and attitudes", "Vocabulary"), R.VocabularyMeaningNodeKind.Function) }; _kind.DisplayMemberPath = "Label"; _kind.SelectedValuePath = "Value"; _kind.SelectedValue = _node.Kind;
             Fields.Children.Add(VocabularyInputControls.Group(("Use this to describe", _kind)));
         }
         if (_draft is not null)

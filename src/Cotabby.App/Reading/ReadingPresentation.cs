@@ -1,4 +1,5 @@
 using System.Windows.Threading;
+using Cotabby.App.Localization;
 using Cotabby.App.UI.Learning;
 using Cotabby.App.UI.Reading;
 using Cotabby.App.Learning;
@@ -148,7 +149,7 @@ internal sealed partial class ReadingPresentation : IReadingPresentation, IAsync
         catch
         {
             if (await StillCurrentAsync(revision, token) && _readingState is { } state)
-                Update(state with { Status = ReadingStatus.Error, Message = "Could not look up this meaning. Check the AI explanation model, or use Dictionary." });
+                Update(state with { Status = ReadingStatus.Error, Message = InterfaceText.Get("Could not look up this meaning. Check the AI explanation model, or use Dictionary.") });
         }
         finally { _basicRunning = false; }
     }
@@ -260,7 +261,7 @@ internal sealed partial class ReadingPresentation : IReadingPresentation, IAsync
         catch
         {
             if (await StillCurrentAsync(revision, token) && _readingState is { } state)
-                Update(state with { Status = ReadingStatus.Error, Text = basic.Meaning, Message = "Could not explain this usage. Check the local AI explanation model." });
+                Update(state with { Status = ReadingStatus.Error, Text = basic.Meaning, Message = InterfaceText.Get("Could not explain this usage. Check the local AI explanation model.") });
         }
     }
 

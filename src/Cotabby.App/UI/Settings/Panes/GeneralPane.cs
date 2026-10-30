@@ -68,7 +68,7 @@ internal static class GeneralPane
                 string? selected = stored is null ? null : InterfaceLanguagePolicy.Normalize(stored) ?? stored;
                 var visible = choices.ToList();
                 if (stored is not null && InterfaceLanguagePolicy.Normalize(stored) is null)
-                    visible.Insert(0, new(stored, $"{InterfaceText.Get("Existing app language")}: {stored}"));
+                    visible.Insert(0, new(stored, InterfaceText.Format("Existing app language: %@", stored)));
                 combo.ItemsSource = visible;
                 combo.SelectedItem = visible.First(x => x.Code == selected);
                 restart.Update(selected != InterfaceText.LaunchSelection);
@@ -108,7 +108,7 @@ internal static class GeneralPane
         {
             string app = Environment.ProcessPath ?? throw new CliException(CliErrorCode.Unavailable, "Cannot identify this application.");
             string path = CliCommandInstallation.Install(app);
-            MessageBox.Show($"Installed for this user:\n{path}\n\nRun it by its full path, or add its folder to your PATH yourself.",
+            MessageBox.Show(InterfaceText.Format("Installed for this user:\n{0}\n\nRun it by its full path, or add its folder to your PATH yourself.", path),
                 InterfaceText.Get("Command-line tool", "Localizable"), MessageBoxButton.OK, MessageBoxImage.Information);
         }
         catch (CliException error) { MessageBox.Show(error.Message, InterfaceText.Get("Command-line tool", "Localizable"), MessageBoxButton.OK, MessageBoxImage.Warning); }

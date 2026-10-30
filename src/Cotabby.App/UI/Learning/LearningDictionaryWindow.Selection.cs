@@ -1,4 +1,5 @@
 using System.Windows;
+using Cotabby.App.Localization;
 using Cotabby.App.UI.Controls;
 using Cotabby.Core.LanguageLearning;
 
@@ -39,7 +40,7 @@ public partial class LearningDictionaryWindow
         Dispatcher.VerifyAccess();
         if (!IsVisible || !lease.IsCurrent || _state is not { Page: LearningDictionaryPage.Contextual } state
             || !Equals(lease.DocumentIdentity, state.TargetIdentity)) return;
-        CopyStatus.Text = copied ? "Copied." : "Could not copy. The clipboard may be busy; try again.";
+        CopyStatus.Text = InterfaceText.Get(copied ? "Copied" : "Could not copy. The clipboard may be busy; try again.");
         CopyStatus.Visibility = Visibility.Visible;
         UpdateLayout(); LearningPanelPlacement.Position(this, _anchor);
     }

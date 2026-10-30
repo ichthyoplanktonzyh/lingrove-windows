@@ -52,9 +52,9 @@ internal sealed class VocabularyGraphView : Grid
         Slider(form, "GraphLinkWidth", "Link thickness", .5, 3, s => s.LinkWidth, (s, v) => s with { LinkWidth = v });
         form.Children.Add(Label("Labels"));
         _labels = new ComboBox { Name = "GraphLabels", DisplayMemberPath = nameof(LabelOption.Title), SelectedValuePath = nameof(LabelOption.Value), Margin = new(0, 4, 0, 10),
-            ItemsSource = new[] { new LabelOption(VocabularyGraphLabels.Automatic, "Automatic"), new(VocabularyGraphLabels.All, "All labels"), new(VocabularyGraphLabels.Focused, "Focused labels") } };
+            ItemsSource = new[] { new LabelOption(VocabularyGraphLabels.Automatic, InterfaceText.Get("Automatic", "Vocabulary")), new(VocabularyGraphLabels.All, InterfaceText.Get("All labels", "Vocabulary")), new(VocabularyGraphLabels.Focused, InterfaceText.Get("Focused labels", "Vocabulary")) } };
         _labels.SetResourceReference(StyleProperty, "Combo");
-        AutomationProperties.SetName(_labels, "Labels"); RegisterName(_labels.Name, _labels); form.Children.Add(_labels);
+        AutomationProperties.SetName(_labels, InterfaceText.Get("Labels", "Vocabulary")); RegisterName(_labels.Name, _labels); form.Children.Add(_labels);
         _labels.SelectionChanged += (_, _) => { if (!_refreshing && _labels.SelectedValue is VocabularyGraphLabels labels) _presentation.Settings = _presentation.Settings with { Labels = labels }; };
         form.Children.Add(Title("Forces"));
         Slider(form, "GraphCenter", "Center force", 0, .08, s => s.Center, (s, v) => s with { Center = v });
@@ -115,18 +115,18 @@ internal sealed class VocabularyGraphView : Grid
     }
     private Button Button(string name, string content, string label, Action action)
     {
-        var button = new Button { Name = name, Content = content, ToolTip = label, Padding = new(7, 4, 7, 4), Margin = new(1) };
+        var button = new Button { Name = name, Content = InterfaceText.Get(content, "Vocabulary"), ToolTip = InterfaceText.Get(label, "Vocabulary"), Padding = new(7, 4, 7, 4), Margin = new(1) };
         button.SetResourceReference(StyleProperty, "Btn");
-        AutomationProperties.SetName(button, label); RegisterName(name, button); button.Click += (_, _) => { if (!_retired) action(); }; return button;
+        AutomationProperties.SetName(button, InterfaceText.Get(label, "Vocabulary")); RegisterName(name, button); button.Click += (_, _) => { if (!_retired) action(); }; return button;
     }
-    private static TextBlock Label(string text) => new() { Text = text, FontSize = 11, VerticalAlignment = VerticalAlignment.Center };
-    private static TextBlock Title(string text) => new() { Text = text, FontWeight = FontWeights.SemiBold, Margin = new(0, 4, 0, 8) };
+    private static TextBlock Label(string text) => new() { Text = InterfaceText.Get(text, "Vocabulary"), FontSize = 11, VerticalAlignment = VerticalAlignment.Center };
+    private static TextBlock Title(string text) => new() { Text = InterfaceText.Get(text, "Vocabulary"), FontWeight = FontWeights.SemiBold, Margin = new(0, 4, 0, 8) };
     private void Slider(Panel form, string name, string label, double min, double max, Func<VocabularyGraphSettings, double> read, Func<VocabularyGraphSettings, double, VocabularyGraphSettings> change)
     {
         form.Children.Add(Label(label));
         var slider = new Slider { Name = name, Minimum = min, Maximum = max, Margin = new(0, 4, 0, 10) };
         slider.SetResourceReference(StyleProperty, "ModernSlider");
-        AutomationProperties.SetName(slider, label); RegisterName(name, slider); _sliders.Add((slider, read)); form.Children.Add(slider);
+        AutomationProperties.SetName(slider, InterfaceText.Get(label, "Vocabulary")); RegisterName(name, slider); _sliders.Add((slider, read)); form.Children.Add(slider);
         slider.ValueChanged += (_, e) => { if (!_refreshing && !_retired) _presentation.Settings = change(_presentation.Settings, e.NewValue); };
     }
 }

@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Documents;
 using Cotabby.App.Learning;
+using Cotabby.App.Localization;
 using Cotabby.Core.LanguageLearning;
 
 namespace Cotabby.App.UI.Learning;
@@ -30,22 +31,22 @@ public partial class LearningDictionaryWindow
             bool contextual = state.Page == LearningDictionaryPage.Contextual;
             ContextualContent.Visibility = contextual ? Visibility.Visible : Visibility.Collapsed;
             PageButtons.Visibility = state.HasContextualExplanation ? Visibility.Visible : Visibility.Collapsed;
-            ContextualPageButton.Content = LearningDictionaryCardPolicy.ContextualLabel(_contextInput);
+            ContextualPageButton.Content = InterfaceText.Get(LearningDictionaryCardPolicy.ContextualLabel(_contextInput));
             ContextualPageButton.FontWeight = contextual ? FontWeights.SemiBold : FontWeights.Normal;
             DictionaryPageButton.FontWeight = contextual ? FontWeights.Normal : FontWeights.SemiBold;
-            System.Windows.Automation.AutomationProperties.SetItemStatus(ContextualPageButton, contextual ? "Selected" : "");
-            System.Windows.Automation.AutomationProperties.SetItemStatus(DictionaryPageButton, contextual ? "" : "Selected");
-            string sourceLabel = state.Language is { } source ? source.Label() : "Unknown language";
+            System.Windows.Automation.AutomationProperties.SetItemStatus(ContextualPageButton, contextual ? InterfaceText.Get("Selected") : "");
+            System.Windows.Automation.AutomationProperties.SetItemStatus(DictionaryPageButton, contextual ? "" : InterfaceText.Get("Selected"));
+            string sourceLabel = state.Language is { } source ? InterfaceText.Get(source.Label()) : InterfaceText.Get("Unknown language");
             SubtitleText.Text = contextual ? state.ExplanationLanguage is { } language && language != state.Language
-                ? $"{sourceLabel} → {language.Label()}" : sourceLabel
-                : state.SelectedSource is { } selected ? state.SourceLabels.GetValueOrDefault(selected, "Dictionary")
-                    : "Bundled expression dictionary · definitions in English";
+                ? $"{sourceLabel} → {InterfaceText.Get(language.Label())}" : sourceLabel
+                : state.SelectedSource is { } selected ? state.SourceLabels.GetValueOrDefault(selected, InterfaceText.Get("Dictionary"))
+                    : InterfaceText.Get("Bundled expression dictionary · definitions in English");
             var action = explanation is null ? LearningExplanationCardAction.None
                 : LearningExplanationCardPolicy.Action(explanation, state.ExplanationConfigured);
             ExplanationButton.Visibility = state.HasContextualExplanation ? Visibility.Visible : Visibility.Collapsed;
             ExplanationButton.IsEnabled = action != LearningExplanationCardAction.None;
             ExplanationButton.Content = explanation?.IsGenerating == true ? "■" : "✦";
-            string label = explanation is null ? "AI explanation" : LearningExplanationCardPolicy.Label(explanation, state.ExplanationConfigured);
+            string label = InterfaceText.Get(explanation is null ? "AI explanation" : LearningExplanationCardPolicy.Label(explanation, state.ExplanationConfigured));
             ExplanationButton.ToolTip = explanation?.ErrorMessage is not null && state.ExplanationConfigured && !explanation.IsGenerating
                 ? label + "\n" + explanation.ErrorMessage : label;
             System.Windows.Automation.AutomationProperties.SetName(ExplanationButton, label);
@@ -56,7 +57,7 @@ public partial class LearningDictionaryWindow
             ContextualMeaning.FlowDirection = ExplanationProse.FlowDirection = state.ExplanationLanguage == LearningLanguage.Arabic
                 ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
             ExplanationProgress.Visibility = explanation?.IsGenerating == true ? Visibility.Visible : Visibility.Collapsed;
-            ExplanationStatus.Text = explanation?.IsGenerating == true ? "Explaining…" : explanation?.ErrorMessage ?? string.Empty;
+            ExplanationStatus.Text = explanation?.IsGenerating == true ? InterfaceText.Get("Explaining…") : explanation?.ErrorMessage ?? string.Empty;
             ExplanationStatus.Visibility = ExplanationStatus.Text.Length == 0 ? Visibility.Collapsed : Visibility.Visible;
             PresentExample();
             ContextualExampleTranslation.SetLiteralText(exampleTranslation?.Text ?? string.Empty);
@@ -65,7 +66,7 @@ public partial class LearningDictionaryWindow
                 ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
             ContextualExampleTranslation.Visibility = DictionaryExampleTranslation.Visibility = exampleTranslation is null
                 ? Visibility.Collapsed : Visibility.Visible;
-            if (contextual) AttributionText.Text = explanation?.Record?.Model ?? "AI explanation";
+            if (contextual) AttributionText.Text = explanation?.Record?.Model ?? InterfaceText.Get("AI explanation");
         }
         finally { _presentingContext = false; }
     }

@@ -164,7 +164,7 @@ public partial class WelcomeWindow : Window
 
         var step = _steps[_step];
         NormalFooter.Visibility = step == StepDone ? Visibility.Collapsed : Visibility.Visible;
-        StepCaption.Text = $"Step {progressIndex} of 4";
+        StepCaption.Text = InterfaceText.Format("Step %lld of %lld", progressIndex, 4);
         ContinueButton.Content =
             step == StepWelcome ? InterfaceText.Get("Get Started")
             : step == StepDone ? InterfaceText.Get("Start Using Lingrove")
@@ -236,9 +236,9 @@ public partial class WelcomeWindow : Window
             return;
         }
         bool ready = ModelDownloader.IsCached(model);
-        TemplateStatusText.Text = !_templateChosen ? "Choose a model to configure it, or continue without changes." : ready
-            ? "Model ready"
-            : $"Will download {model.ApproxSizeBytes / 1_000_000_000.0:0.#} GB on Continue";
+        TemplateStatusText.Text = !_templateChosen ? InterfaceText.Get("Choose a model to configure it, or continue without changes.") : ready
+            ? InterfaceText.Get("Model ready")
+            : InterfaceText.Format("Will download {0:F1} GB on Continue", model.ApproxSizeBytes / 1_000_000_000.0);
         TemplateStatusText.SetResourceReference(TextBlock.ForegroundProperty, ready ? "GreenBrush" : "TextSecondary");
     }
 
@@ -349,7 +349,7 @@ public partial class WelcomeWindow : Window
                 VerticalAlignment = VerticalAlignment.Center,
             };
             _shortcuts.Add(editor);
-            ShortcutRows.Children.Add(new Grid { Children = { Ui.Text(shortcut.Name), editor } }.Styled("SettingRow"));
+            ShortcutRows.Children.Add(new Grid { Children = { Ui.Text(InterfaceText.Get(shortcut.Name)), editor } }.Styled("SettingRow"));
             ShortcutRows.Children.Add(Ui.Separator());
         }
         RefreshShortcuts();
@@ -385,10 +385,10 @@ public partial class WelcomeWindow : Window
         string fullKey = GlobalShortcut.AcceptAll.Label(settings);
         return (word, full) switch
         {
-            (true, true) => $"Start typing anywhere.\nPress {wordKey} to accept a word, {fullKey} for the full suggestion.",
-            (true, false) => $"Start typing anywhere.\nPress {wordKey} to accept.",
-            (false, true) => $"Start typing anywhere.\nPress {fullKey} to accept the full suggestion.",
-            _ => "Start typing anywhere.",
+            (true, true) => InterfaceText.Format("Start typing anywhere.\nPress %@ to accept a word, %@ for the full suggestion.", wordKey, fullKey),
+            (true, false) => InterfaceText.Format("Start typing anywhere.\nPress %@ to accept.", wordKey),
+            (false, true) => InterfaceText.Format("Start typing anywhere.\nPress {0} to accept the full suggestion.", fullKey),
+            _ => InterfaceText.Get("Start typing anywhere."),
         };
     }
 }

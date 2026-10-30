@@ -1,5 +1,9 @@
 # Feature Parity and Evidence
 
+The [active workflow interface pass](ACTIVE_WORKFLOW_INTERFACE_3B.md) extends localized card updates,
+onboarding, semantic actions, import, graph and auxiliary dialogs while keeping study/provider values
+literal. Its 15-locale resources, component checks and remaining copy/native scope are recorded there.
+
 The current [settings-search adaptation](SETTINGS_SEARCH_3B.md) maps the 3b ranker and navigation
 to Core, Windows ICU and WPF, including localized matching, keyboard opening, original-row reveal
 and arrival lifetime. Its source/oracle, component checks and remaining native gates are recorded

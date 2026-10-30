@@ -158,6 +158,12 @@ the initial gap audit; its initial Windows gap descriptions are historical. Curr
 - The [MDict local-file/resource module](MDICT_LOCAL_RESOURCES_3B.md) connects adjacent CSS/images/
   fonts and handle-based source/root admission, correcting the earlier path-open reparse overclaim.
   In-root symlinks, unsupported volume mappings and native collation remain explicit limitations.
+- #159 merged MDict local resources after all four checks passed at
+  `a92525d42b8dcc7a9e7e8e0615ea9b692bd0b108`, as `f897c87`, with independent WPF 1230/1230.
+- The [active workflow interface pass](ACTIVE_WORKFLOW_INTERFACE_3B.md) expands the supplement to
+  382 keys in 15 locales and connects further dynamic/card/import/semantic/auxiliary labels. Long
+  settings descriptions and additional finite messages remain incomplete.
+
 - Remaining work includes native host/provider acceptance,
   full interface-language coverage, native automatic language
   confidence, Apple's unavailable system dictionary and the explicitly documented media/native gaps.

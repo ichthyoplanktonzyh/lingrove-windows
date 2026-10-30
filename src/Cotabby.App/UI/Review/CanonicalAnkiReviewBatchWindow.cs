@@ -52,7 +52,7 @@ internal sealed class CanonicalAnkiReviewBatchWindow : Window
         var buttons = VocabularyInputControls.Footer(_stop, _close, _send); footer.Children.Add(buttons);
         var form = new StackPanel(); root.Children.Add(new ScrollViewer { VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Content = form });
         form.Children.Add(VocabularyInputControls.Group(("Destination", _destination), ("", _reload), ("Deck", _deck), ("", _apply)));
-        form.Children.Add(VocabularyInputControls.Caption("Leave the deck empty to keep each plan."));
+        form.Children.Add(VocabularyInputControls.Caption(InterfaceText.Get("Deck (leave empty to keep each plan)", "Vocabulary")));
         if (_batch.EmptySenseCount > 0) form.Children.Add(VocabularyInputControls.Caption(InterfaceText.Get("Some selected senses have no cards. Add cards in the notebook first.")));
         form.Children.Add(_rows); form.Children.Add(_message);
         foreach (var button in new[] { _apply, _reload, _stop }) VocabularyNotebookTheme.Button(button); VocabularyNotebookTheme.Brush(_message, TextBlock.ForegroundProperty, "OrangeBrush");
@@ -74,7 +74,7 @@ internal sealed class CanonicalAnkiReviewBatchWindow : Window
         var shown = ReviewSpeechDisclosure.Capture(_feature.Controller.Speech);
         if (Equals(_shownSpeech, shown) && _speechDestination.Text.Length != 0) return;
         _shownSpeech = shown;
-        _speechDestination.Text = shown is null ? InterfaceText.Get("Speech for review audio: unavailable. Configure speech before preparing audio.", "Vocabulary") : "Speech for review audio: " + shown.Destination;
+        _speechDestination.Text = shown is null ? InterfaceText.Get("Speech for review audio: unavailable. Configure speech before preparing audio.", "Vocabulary") : InterfaceText.Format("Speech for review audio: {0}", shown.Destination);
         _batch.PresentAudioDisclosure(IsVisible ? shown : null);
     }
     private void SettingsChanged(object? sender, PropertyChangedEventArgs e)
@@ -85,16 +85,16 @@ internal sealed class CanonicalAnkiReviewBatchWindow : Window
     private void BatchChanged(object? sender, PropertyChangedEventArgs e) { if (!_retiring) Render(); }
     private void Render()
     {
-        _destination.Text = _scope is { } scope ? $"{scope.Connection.Endpoint}\nProfile: {scope.Profile}" : InterfaceText.Get("Connection not loaded. Refresh before sending.", "Vocabulary");
-        _count.Text = $"{_batch.CompleteCount} / {_batch.Items.Count}"; _message.Text = _uiError ?? _batch.Message ?? ""; _rows.Children.Clear();
+        _destination.Text = _scope is { } scope ? scope.Connection.Endpoint + "\n" + InterfaceText.Get("Profile", "Localizable") + ": " + scope.Profile : InterfaceText.Get("Connection not loaded. Refresh before sending.", "Vocabulary");
+        _count.Text = InterfaceText.Format("{0:N0} / {1:N0}", _batch.CompleteCount, _batch.Items.Count); _message.Text = _uiError ?? _batch.Message ?? ""; _rows.Children.Clear();
         foreach (var item in _batch.Items)
         {
             var panel = new StackPanel(); panel.Children.Add(new TextBlock { Text = item.Expression, FontWeight = FontWeights.SemiBold, TextWrapping = TextWrapping.Wrap });
-            panel.Children.Add(VocabularyInputControls.Caption(item.Meaning)); panel.Children.Add(VocabularyInputControls.Caption(item.Status.Label()));
+            panel.Children.Add(VocabularyInputControls.Caption(item.Meaning)); panel.Children.Add(VocabularyInputControls.Caption(InterfaceText.Get(item.Status.Label(), "Vocabulary")));
             if (item.Message is { Length: > 0 } issue) panel.Children.Add(VocabularyInputControls.Caption(issue));
             var actions = new WrapPanel(); var prepare = Button(InterfaceText.Get("Prepare"), () => StartAux(token => PrepareAsync(item.Id, token))); prepare.IsEnabled = !_retiring && !_batch.Busy && _aux is null && item.Status != ReviewBatchStatus.Unavailable; actions.Children.Add(prepare);
             if (item.Status is ReviewBatchStatus.Failed or ReviewBatchStatus.Cancelled or ReviewBatchStatus.Attention)
-            { var retry = Button(InterfaceText.Get("Retry"), () => StartAux(token => StartBatchAsync(item.Id, token))); retry.IsEnabled = !_retiring && !_batch.Busy && _aux is null && _scope is not null; actions.Children.Add(retry); }
+            { var retry = Button(InterfaceText.Get("Retry", "Vocabulary"), () => StartAux(token => StartBatchAsync(item.Id, token))); retry.IsEnabled = !_retiring && !_batch.Busy && _aux is null && _scope is not null; actions.Children.Add(retry); }
             panel.Children.Add(actions);
             var card = new Border { Child = panel, BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(9), Padding = new Thickness(14), Margin = new Thickness(0, 0, 0, 12) };
             VocabularyNotebookTheme.Brush(card, Border.BackgroundProperty, "CardBg"); VocabularyNotebookTheme.Brush(card, Border.BorderBrushProperty, "CardBorder"); _rows.Children.Add(card);

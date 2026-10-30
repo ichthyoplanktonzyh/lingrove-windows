@@ -40,8 +40,8 @@ internal sealed partial class FrozenVocabularyNotebookWindow
     private void AddSenseActions(Panel panel, F.VocabularyEntry entry, F.VocabularySense sense)
     {
         var source = new VocabularySelection(entry.Id, sense.Id); long epoch = _actionSelectionEpoch; bool enabled = CanSenseAct(source, epoch);
-        var create = SenseButton("New sense", "frozenNewSense", enabled); create.Click += (_, _) => LastOperation = Track(SenseActionAsync(source, epoch, async store => (await store.CreateSenseAsync(entry.Id, CancellationToken.None)).SenseId, true)); panel.Children.Add(create);
-        var merge = SenseButton("Merge sense", "frozenMergeSense", enabled && entry.Senses.Count > 1); merge.Click += (_, _) =>
+        var create = SenseButton(InterfaceText.Get("New sense", "Vocabulary"), "frozenNewSense", enabled); create.Click += (_, _) => LastOperation = Track(SenseActionAsync(source, epoch, async store => (await store.CreateSenseAsync(entry.Id, CancellationToken.None)).SenseId, true)); panel.Children.Add(create);
+        var merge = SenseButton(InterfaceText.Get("Merge sense", "Vocabulary"), "frozenMergeSense", enabled && entry.Senses.Count > 1); merge.Click += (_, _) =>
         {
             if (!CanSenseAct(source, epoch)) return; var menu = NewSenseMenu(merge); long menuEpoch = _actionMenuEpoch;
             foreach (var target in entry.Senses.Where(s => s.Id != sense.Id))
@@ -54,13 +54,13 @@ internal sealed partial class FrozenVocabularyNotebookWindow
             }
             menu.IsOpen = true;
         }; panel.Children.Add(merge);
-        var delete = SenseButton("Delete", "frozenDeleteSense", enabled); delete.Click += (_, _) => LastOperation = Track(DeleteSenseAsync(source, epoch)); panel.Children.Add(delete);
+        var delete = SenseButton(InterfaceText.Get("Delete", "Vocabulary"), "frozenDeleteSense", enabled); delete.Click += (_, _) => LastOperation = Track(DeleteSenseAsync(source, epoch)); panel.Children.Add(delete);
     }
     private Button MoveUsageButton(F.VocabularyEntry entry, F.VocabularySense sense, F.VocabularyExample example)
     {
         var source = new VocabularySelection(entry.Id, sense.Id); long epoch = _actionSelectionEpoch;
-        var button = SenseButton("Move usage", "frozenMoveUsage", CanSenseAct(source, epoch)); button.Tag = example.Id; button.HorizontalAlignment = HorizontalAlignment.Left;
-        System.Windows.Automation.AutomationProperties.SetName(button, "Move usage: " + example.Text);
+        var button = SenseButton(InterfaceText.Get("Move usage", "Vocabulary"), "frozenMoveUsage", CanSenseAct(source, epoch)); button.Tag = example.Id; button.HorizontalAlignment = HorizontalAlignment.Left;
+        System.Windows.Automation.AutomationProperties.SetName(button, InterfaceText.Format("Move usage: {0}", example.Text));
         button.Click += (_, _) =>
         {
             if (!CanSenseAct(source, epoch) || !_session.Entries.Any(e => e.Id == entry.Id && e.Senses.Any(s => s.Id == sense.Id && s.Examples.Any(x => x.Id == example.Id)))) return;
@@ -74,7 +74,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow
                 }; menu.Items.Add(item);
             }
             foreach (var target in entry.Senses.Where(s => s.Id != sense.Id)) Add(SenseTitle(target), target.Id);
-            Add("New sense", null); menu.IsOpen = true;
+            Add(InterfaceText.Get("New sense", "Vocabulary"), null); menu.IsOpen = true;
         };
         return button;
     }
@@ -139,8 +139,8 @@ internal sealed class FrozenVocabularyDeleteSenseWindow : Window
     {
         Title = InterfaceText.Get("Vocabulary"); Width = 410; SizeToContent = SizeToContent.Height; ResizeMode = ResizeMode.NoResize; ShowInTaskbar = false; WindowStartupLocation = WindowStartupLocation.CenterOwner; VocabularyNotebookTheme.Follow(this);
         var root = new StackPanel { Margin = new Thickness(20) }; Content = root; root.Children.Add(new TextBlock { Text = InterfaceText.Get("Remove from vocabulary?"), FontSize = 18, FontWeight = FontWeights.SemiBold, TextWrapping = TextWrapping.Wrap });
-        root.Children.Add(VocabularyInputControls.Caption("The saved sense will be removed from your notebook."));
-        var cancel = new Button { Name = "frozenDeleteCancel", Content = InterfaceText.Get("Cancel"), IsCancel = true, IsDefault = true, MinWidth = 85 }; var delete = new Button { Name = "frozenDeleteConfirm", Content = InterfaceText.Get("Delete"), MinWidth = 85 }; cancel.Click += (_, _) => DialogResult = false; delete.Click += (_, _) => DialogResult = true;
+        root.Children.Add(VocabularyInputControls.Caption(InterfaceText.Get("The saved sense will be removed from your notebook.")));
+        var cancel = new Button { Name = "frozenDeleteCancel", Content = InterfaceText.Get("Cancel"), IsCancel = true, IsDefault = true, MinWidth = 85 }; var delete = new Button { Name = "frozenDeleteConfirm", Content = InterfaceText.Get("Delete", "Vocabulary"), MinWidth = 85 }; cancel.Click += (_, _) => DialogResult = false; delete.Click += (_, _) => DialogResult = true;
         root.Children.Add(VocabularyInputControls.Footer(cancel, delete));
     }
 }

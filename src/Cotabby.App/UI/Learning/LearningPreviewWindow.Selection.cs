@@ -1,4 +1,5 @@
 using System.Windows;
+using Cotabby.App.Localization;
 using Cotabby.App.UI.Controls;
 using Cotabby.Core.LanguageLearning;
 
@@ -27,7 +28,7 @@ public partial class LearningPreviewWindow
         Dispatcher.VerifyAccess();
         if (!IsVisible || !lease.IsCurrent || _displayedPreview is not { Status: LearningPreviewStatus.Ready } document
             || !Equals(lease.DocumentIdentity, document.RequestId)) return;
-        CopyStatus.Text = copied ? "Copied." : "Could not copy. The clipboard may be busy; try again.";
+        CopyStatus.Text = InterfaceText.Get(copied ? "Copied" : "Could not copy. The clipboard may be busy; try again.");
         CopyStatus.Visibility = Visibility.Visible;
         PresentAt(_copyAnchor);
     }

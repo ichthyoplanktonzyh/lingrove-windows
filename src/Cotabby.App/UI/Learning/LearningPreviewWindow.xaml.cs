@@ -36,7 +36,7 @@ public partial class LearningPreviewWindow : Window
     {
         _embeddedExample = embeddedExample;
         InitializeComponent();
-        InterfaceText.TranslateInitialTree(this);
+        InterfaceText.TranslateInitialTree(this); InterfaceText.ApplyDirection(this);
         System.Windows.Automation.AutomationProperties.SetName(CloseButton, InterfaceText.Get("Dismiss"));
         CloseButton.ToolTip = InterfaceText.Get("Dismiss");
         FavoriteButton.FailureChanged += message =>
@@ -102,7 +102,7 @@ public partial class LearningPreviewWindow : Window
         bool error = _displayedPreview is null || _displayedPreview.Status is LearningPreviewStatus.Failed or LearningPreviewStatus.Cancelled;
         bool ready = _displayedPreview is { Status: LearningPreviewStatus.Ready, Result: not null };
         if (!error && _displayedPreview?.Options is { } options)
-            TitleText.Text = _expanded ? "Sentence translation" : options.TargetLanguage.Label().Split(" (", 2)[0];
+            TitleText.Text = _expanded ? InterfaceText.Get("Sentence translation") : options.TargetLanguage.Label().Split(" (", 2)[0];
         StatusText.Visibility = _expanded || error ? Visibility.Visible : Visibility.Collapsed;
         ResultLabel.Visibility = _expanded ? Visibility.Visible : Visibility.Collapsed;
         SourceSection.Visibility = !error && _expanded ? Visibility.Visible : Visibility.Collapsed;
@@ -110,14 +110,14 @@ public partial class LearningPreviewWindow : Window
         PreviousTranslation.Text = _previousTranslation ?? "";
         PreviousTranslation.Visibility = !error && !_expanded && !string.IsNullOrEmpty(_previousTranslation) ? Visibility.Visible : Visibility.Collapsed;
         ExpandButton.Visibility = ReplaceButton.Visibility = error ? Visibility.Collapsed : Visibility.Visible;
-        ExpandButton.Content = _expanded ? "⌃" : "⌄"; ExpandButton.ToolTip = _expanded ? "Collapse" : "Expand";
-        System.Windows.Automation.AutomationProperties.SetName(ExpandButton, _expanded ? "Collapse" : "Expand");
+        ExpandButton.Content = _expanded ? "⌃" : "⌄"; ExpandButton.ToolTip = InterfaceText.Get(_expanded ? "Collapse" : "Expand");
+        System.Windows.Automation.AutomationProperties.SetName(ExpandButton, InterfaceText.Get(_expanded ? "Collapse" : "Expand"));
         ReplaceButton.Content = _isCommitting ? "…" : "⇄";
         ReplaceButton.IsEnabled = ready && _canReplace && !_isCommitting;
         // Compact presentation hides destination disclosure, so it must not offer an action
         // that could send text to that undisclosed destination. The bound controls retain state.
         ExplanationContainer.Visibility = FavoriteContainer.Visibility = !error ? Visibility.Visible : Visibility.Collapsed;
-        System.Windows.Automation.AutomationProperties.SetName(ReplaceButton, _isCommitting ? "Replacing" : "Replace");
+        System.Windows.Automation.AutomationProperties.SetName(ReplaceButton, InterfaceText.Get(_isCommitting ? "Replacing" : "Replace"));
         ReplacementReason.Visibility = !error && ReplacementReason.Text.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
         CopyActions.Visibility = !_embeddedExample && _expanded && CopyActions.Children.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
         CancelButton.Visibility = _expanded || error ? Visibility.Visible : Visibility.Collapsed;
@@ -154,7 +154,7 @@ public partial class LearningPreviewWindow : Window
         SourceSection.Visibility = state.Status == LearningPreviewStatus.Failed ? Visibility.Collapsed : Visibility.Visible;
         SourceText.Text = state.Source;
         DirectionText.Text = state.Options is { SourceLanguage: { } source } options
-            ? $"{source.Label()}  →  {options.TargetLanguage.Label()}"
+            ? $"{InterfaceText.Get(source.Label())}  →  {InterfaceText.Get(options.TargetLanguage.Label())}"
             : "";
         DirectionText.Visibility = DirectionText.Text.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
 
@@ -286,7 +286,7 @@ public partial class LearningPreviewWindow : Window
             || _displayedPreview.Status != LearningPreviewStatus.Ready) return;
         _displayedExplanation = state;
         var action = LearningExplanationCardPolicy.Action(state, configured);
-        string label = LearningExplanationCardPolicy.Label(state, configured);
+        string label = InterfaceText.Get(LearningExplanationCardPolicy.Label(state, configured));
         ExplanationButton.Visibility = action == LearningExplanationCardAction.None ? Visibility.Collapsed : Visibility.Visible;
         ExplanationButton.Content = state.IsGenerating ? "■" : "✦";
         ExplanationDestination.Text = LearningModelDestinationText.Explanation(profile);
@@ -303,7 +303,7 @@ public partial class LearningPreviewWindow : Window
         ExplanationResult.FlowDirection = state.Record?.Language == LearningLanguage.Arabic
             ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
         ExplanationProgress.Visibility = state.IsGenerating ? Visibility.Visible : Visibility.Collapsed;
-        ExplanationStatus.Text = state.IsGenerating ? "Explaining…" : state.ErrorMessage ?? string.Empty;
+        ExplanationStatus.Text = state.IsGenerating ? InterfaceText.Get("Explaining…") : state.ErrorMessage ?? string.Empty;
         ExplanationStatus.Visibility = ExplanationStatus.Text.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
         ApplyPresentation();
         PresentAt(anchor);

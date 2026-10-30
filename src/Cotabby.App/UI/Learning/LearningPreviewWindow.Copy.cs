@@ -3,6 +3,7 @@ using System.Windows.Automation;
 using System.Windows.Controls;
 using Cotabby.Core.Focus;
 using Cotabby.Core.LanguageLearning;
+using Cotabby.App.Localization;
 
 namespace Cotabby.App.UI.Learning;
 
@@ -46,6 +47,7 @@ public partial class LearningPreviewWindow
 
     private Button CopyButton(LearningPreviewCopyRequest request, string label)
     {
+        label = InterfaceText.Get(label);
         var button = new Button { Content = label, Focusable = false, Padding = new Thickness(8, 5, 8, 5), Margin = new Thickness(0, 0, 8, 0) };
         button.SetResourceReference(Control.BackgroundProperty, "KeycapBg");
         button.SetResourceReference(Control.BorderBrushProperty, "CardBorder");
@@ -63,7 +65,7 @@ public partial class LearningPreviewWindow
     {
         Dispatcher.VerifyAccess();
         if (!IsVisible || LearningPreviewCopyPolicy.Text(request, _displayedPreview) is null) return;
-        CopyStatus.Text = copied ? "Copied." : "Could not copy. The clipboard may be busy; try again.";
+        CopyStatus.Text = InterfaceText.Get(copied ? "Copied" : "Could not copy. The clipboard may be busy; try again.");
         CopyStatus.Visibility = Visibility.Visible;
         PresentAt(_copyAnchor);
     }

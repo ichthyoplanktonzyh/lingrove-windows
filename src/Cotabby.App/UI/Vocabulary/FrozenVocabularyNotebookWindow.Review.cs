@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using Cotabby.App.Localization;
 using System.Windows.Controls;
 using Cotabby.App.Review;
 using Cotabby.App.UI.Review;
@@ -33,7 +34,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow
     private void RenderReviewSection(StackPanel panel, F.VocabularyEntry entry, F.VocabularySense sense)
     {
         if (_reviewSection is { } section) panel.Children.Add(section.Render(entry, sense));
-        else panel.Children.Add(VocabularyInputControls.Caption("Review cards are unavailable."));
+        else panel.Children.Add(VocabularyInputControls.Caption(InterfaceText.Get("Review cards are unavailable.")));
     }
     internal void OpenReviewBatch(IReadOnlyList<VocabularySelection> selections)
     {

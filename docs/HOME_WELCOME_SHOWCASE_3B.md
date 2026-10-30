@@ -105,3 +105,10 @@ Unloaded. Visibility retirement now disposes the sample scope as well as stoppin
 showing it again mounts only after retirement completes. The seven-scene/window group passed 3/3
 again with explicit hide/remount and both welcome-close paths. This follow-up changes no model,
 notebook or transport policy; the final PR's four required CI jobs still gate merge.
+
+The first Windows CI run passed Core/App/Inference and all but one WPF test. The existing
+`ReleasedTransientFileLockRetriesNativeCleanupAndReturnsSlot` failed during WebView initialization,
+before its file-lock assertions. Its assertion now reports the existing safe exception type and
+HRESULT, matching the neighboring native initialization check. The exact case passed in three
+fresh local test processes. The remote root cause remains unconfirmed; production timeouts,
+profile cleanup, admission bounds and test requirements are unchanged.

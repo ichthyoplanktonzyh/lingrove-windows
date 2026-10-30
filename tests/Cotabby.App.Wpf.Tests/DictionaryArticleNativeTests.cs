@@ -24,7 +24,8 @@ public sealed class DictionaryArticleNativeTests(WpfDispatcher dispatcher)
         {
             window.Show(); await view.ShowAsync(new("<p>synthetic</p>", "synthetic", "Fixture", Guid.NewGuid()),
                 (_, _) => Task.FromResult<DictionaryResource?>(null), () => true, CancellationToken.None);
-            Assert.NotNull(Assert.Single(view.Children.OfType<WebView2CompositionControl>()).CoreWebView2);
+            Assert.True(Assert.Single(view.Children.OfType<WebView2CompositionControl>()).CoreWebView2 is not null,
+                "Native WebView initialization: " + (view.InitializationFailure ?? "no failure code reported"));
             string leaf = Path.Combine(view.ProfilePath, "test-lock"); File.WriteAllText(leaf, "synthetic");
             held = new FileStream(leaf, FileMode.Open, FileAccess.Read, FileShare.None);
             window.Close(); await view.DisposeAsync();

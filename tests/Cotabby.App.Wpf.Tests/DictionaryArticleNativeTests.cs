@@ -11,13 +11,19 @@ namespace Cotabby.App.Wpf.Tests;
 [Collection("WPF views")]
 public sealed class DictionaryArticleNativeTests(WpfDispatcher dispatcher)
 {
+    // These cases test real resource routing/retirement, not a cold machine's startup speed.
+    // No retry or success assertion is bypassed; the product's default remains ten seconds.
+    private static Task AwaitInstalledRuntime(Task native, CancellationToken token) =>
+        native.WaitAsync(TimeSpan.FromSeconds(45), token);
+
     [Fact]
     public Task ReleasedTransientFileLockRetriesNativeCleanupAndReturnsSlot() => dispatcher.RunAsync(async () =>
     {
         string parent = Path.Combine(Path.GetTempPath(), "lingrove-native-profile-test-" + Guid.NewGuid().ToString("N"));
         VocabularyWindowsFile.CreateParentDirectory(parent); var slots = new DictionaryArticleAdmission();
         var retry = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-        var view = new DictionaryArticleView(slots: slots, profileParent: parent, cleanupRetryObserved: () => retry.TrySetResult());
+        var view = new DictionaryArticleView(slots: slots, profileParent: parent, cleanupRetryObserved: () => retry.TrySetResult(),
+            waitForNative: AwaitInstalledRuntime);
         var window = new Window { Width = 360, Height = 240, Content = view, ShowInTaskbar = false };
         FileStream? held = null;
         try
@@ -61,14 +67,14 @@ public sealed class DictionaryArticleNativeTests(WpfDispatcher dispatcher)
         var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var view = new DictionaryArticleView(controllerBarrier: () => { entered.TrySetResult(); return release.Task; },
-            slots: new DictionaryArticleAdmission(), profileParent: parent);
+            slots: new DictionaryArticleAdmission(), profileParent: parent, waitForNative: AwaitInstalledRuntime);
         var window = new Window { Width = 360, Height = 240, Content = view, ShowInTaskbar = false };
         int loads = 0;
         try
         {
             window.Show(); Task show = view.ShowAsync(new("<img src=\"late.png\">", "", "Fixture", Guid.NewGuid()),
                 (_, _) => { loads++; return Task.FromResult<DictionaryResource?>(null); }, () => true, CancellationToken.None);
-            await entered.Task.WaitAsync(TimeSpan.FromSeconds(10));
+            await entered.Task.WaitAsync(TimeSpan.FromSeconds(45));
             window.Close(); await view.DisposeAsync(); await show;
             Assert.False(view.ProfileCleanup.IsCompleted); release.SetResult();
             await view.ProfileCleanup.WaitAsync(TimeSpan.FromSeconds(15)); Assert.False(Directory.Exists(view.ProfilePath)); Assert.Equal(0, loads);
@@ -90,7 +96,7 @@ public sealed class DictionaryArticleNativeTests(WpfDispatcher dispatcher)
         {
             for (int index = 0; index < 3; index++)
             {
-                var view = new DictionaryArticleView(slots: slots, profileParent: parent);
+                var view = new DictionaryArticleView(slots: slots, profileParent: parent, waitForNative: AwaitInstalledRuntime);
                 var window = new Window { Width = 360, Height = 240, Content = view, ShowInTaskbar = false };
                 var requested = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
                 try
@@ -115,6 +121,30 @@ public sealed class DictionaryArticleNativeTests(WpfDispatcher dispatcher)
 
     // The test alone owns these synthetic folders. Production has no pathname-based cleanup.
     private static DictionaryProfileEffects TestEffects => new(path => Directory.Delete(path, true), File.GetAttributes, () => Task.Delay(250));
+
+    [Fact]
+    public Task TimedOutNativeWorkRetainsProfileAndAdmissionUntilItActuallyFinishes() => dispatcher.RunAsync(async () =>
+    {
+        var pending = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var slots = new DictionaryArticleAdmission(); int loads = 0;
+        var view = new DictionaryArticleView(environmentBarrier: () => pending.Task, slots: slots,
+            profileEffects: TestEffects, runtimeVersion: () => "synthetic runtime",
+            waitForNative: (_, _) => Task.FromException(new TimeoutException()));
+        try
+        {
+            await view.ShowAsync(new("private fixture article", "", "Fixture", Guid.NewGuid()),
+                (_, _) => { loads++; return Task.FromResult<DictionaryResource?>(null); }, () => true, CancellationToken.None);
+            Assert.Equal("TimeoutException 0x80131505", view.InitializationFailure); Assert.Equal(0, loads);
+            Assert.Null(Assert.Single(view.Children.OfType<WebView2CompositionControl>()).CoreWebView2);
+            Assert.DoesNotContain("private fixture article", Assert.Single(view.Children.OfType<TextBlock>()).Text);
+            await view.DisposeAsync(); Assert.False(view.ProfileCleanup.IsCompleted); Assert.True(Directory.Exists(view.ProfilePath));
+            using (var remaining = slots.TryAcquire()) { Assert.NotNull(remaining); Assert.Null(slots.TryAcquire()); }
+            pending.SetResult(); await view.ProfileCleanup.WaitAsync(TimeSpan.FromSeconds(15));
+            Assert.False(Directory.Exists(view.ProfilePath));
+            using var first = slots.TryAcquire(); using var second = slots.TryAcquire(); Assert.NotNull(first); Assert.NotNull(second);
+        }
+        finally { pending.TrySetResult(); await view.DisposeAsync(); await view.ProfileCleanup.WaitAsync(TimeSpan.FromSeconds(15)); }
+    });
 
     [Fact]
     public Task ReplacedProfileDirectoryIsNeverDeleted() => dispatcher.RunAsync(async () =>
@@ -246,7 +276,7 @@ public sealed class DictionaryArticleNativeTests(WpfDispatcher dispatcher)
     [Fact]
     public Task RetirementDrainsAnAlreadyAcceptedResource() => dispatcher.RunAsync(async () =>
     {
-        var view = new DictionaryArticleView(profileEffects: TestEffects);
+        var view = new DictionaryArticleView(profileEffects: TestEffects, waitForNative: AwaitInstalledRuntime);
         var window = new Window { Width = 360, Height = 240, Content = view, ShowInTaskbar = false };
         var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var release = new TaskCompletionSource<DictionaryResource?>(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -266,7 +296,7 @@ public sealed class DictionaryArticleNativeTests(WpfDispatcher dispatcher)
     [Fact]
     public Task SyntheticArticleUsesPrivateRuntimeAndAuthorizedLocalResource() => dispatcher.RunAsync(async () =>
     {
-        var view = new DictionaryArticleView(profileEffects: TestEffects);
+        var view = new DictionaryArticleView(profileEffects: TestEffects, waitForNative: AwaitInstalledRuntime);
         var window = new Window { Width = 360, Height = 240, Content = view, ShowInTaskbar = false };
         var requested = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
         var id = Guid.NewGuid();
@@ -295,7 +325,7 @@ public sealed class DictionaryArticleNativeTests(WpfDispatcher dispatcher)
         string books = Path.Combine(root, "books"), profiles = Path.Combine(root, "profiles"); Directory.CreateDirectory(books);
         VocabularyWindowsFile.CreateParentDirectory(profiles);
         await using var service = new Cotabby.Win32.Dictionary.MDictLibraryService(s => s.ToLowerInvariant());
-        var view = new DictionaryArticleView(profileParent: profiles);
+        var view = new DictionaryArticleView(profileParent: profiles, waitForNative: AwaitInstalledRuntime);
         var window = new Window { Width = 360, Height = 240, Content = view, ShowInTaskbar = false };
         var received = new TaskCompletionSource<DictionaryResource>(TaskCreationOptions.RunContinuationsAsynchronously);
         try

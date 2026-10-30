@@ -78,3 +78,11 @@ localized-standard companion collation remain separate gates. Windows uses Shell
 [numeric filename ordering](https://learn.microsoft.com/en-us/windows/win32/api/shlwapi/nf-shlwapi-strcmplogicalw)
 for import priority, so part 2 precedes part 10. This is an OS-adapted filename offer, not canonical
 sorting; exact native collation equality and full dictionary parity are not claimed.
+
+PR #167's first Windows CI passed 1253 WPF cases but a native cleanup fixture failed during
+WebView initialization at the product's ten-second deadline. Native lifecycle/resource-routing
+fixtures now inject their own bounded 45-second wait; the production wait remains ten seconds.
+No test retries or skips are added. A deterministic injected timeout separately verifies that
+uncompleted native work retains its profile/admission until it actually finishes and cleanup
+returns both slots. The revised dictionary/media group passed 26/26; exact final-head full
+regression and CI outcomes are recorded in the PR.

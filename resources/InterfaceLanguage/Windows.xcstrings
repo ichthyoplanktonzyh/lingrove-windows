@@ -37843,7 +37843,7 @@
       }
     },
     "Suggest Within Words": {
-      "comment": "Finite Windows settings caption adapter from Localizable.xcstrings / Suggest while typing a word. Mac reference 3b53402f2cbc196b0398d133177fd80006d165b2. Windows translation controls retain their existing task owner.",
+      "comment": "Finite Windows settings caption adapter from Localizable.xcstrings / \"Suggest while typing a word\". Mac reference 3b53402f2cbc196b0398d133177fd80006d165b2. Windows translation controls retain their existing task owner.",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -37938,7 +37938,7 @@
       }
     },
     "Suggestion Style": {
-      "comment": "Finite Windows settings caption adapter from Localizable.xcstrings / Suggestion Display. Mac reference 3b53402f2cbc196b0398d133177fd80006d165b2. Windows translation controls retain their existing task owner.",
+      "comment": "Finite Windows settings caption adapter from Localizable.xcstrings / \"Suggestion Display\". Mac reference 3b53402f2cbc196b0398d133177fd80006d165b2. Windows translation controls retain their existing task owner.",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -38033,7 +38033,7 @@
       }
     },
     "Command Line": {
-      "comment": "Finite Windows settings caption adapter from Vocabulary.xcstrings / Command-line tools. Mac reference 3b53402f2cbc196b0398d133177fd80006d165b2. Windows translation controls retain their existing task owner.",
+      "comment": "Finite Windows settings caption adapter from Vocabulary.xcstrings / \"Command-line tools\". Mac reference 3b53402f2cbc196b0398d133177fd80006d165b2. Windows translation controls retain their existing task owner.",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -38128,7 +38128,7 @@
       }
     },
     "Learning endpoint": {
-      "comment": "Finite Windows settings caption adapter from Windows.xcstrings / Translation endpoint. Mac reference 3b53402f2cbc196b0398d133177fd80006d165b2. Windows translation controls retain their existing task owner.",
+      "comment": "Finite Windows settings caption adapter from Windows.xcstrings / \"Translation endpoint\". Mac reference 3b53402f2cbc196b0398d133177fd80006d165b2. Windows translation controls retain their existing task owner.",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -38223,7 +38223,7 @@
       }
     },
     "Local learning model": {
-      "comment": "Finite Windows settings caption adapter from Windows.xcstrings / Local translation model. Mac reference 3b53402f2cbc196b0398d133177fd80006d165b2. Windows translation controls retain their existing task owner.",
+      "comment": "Finite Windows settings caption adapter from Windows.xcstrings / \"Local translation model\". Mac reference 3b53402f2cbc196b0398d133177fd80006d165b2. Windows translation controls retain their existing task owner.",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -38318,7 +38318,7 @@
       }
     },
     "Macros": {
-      "comment": "Finite Windows settings caption adapter from Localizable.xcstrings / Inline Macros. Mac reference 3b53402f2cbc196b0398d133177fd80006d165b2. Windows translation controls retain their existing task owner.",
+      "comment": "Finite Windows settings caption adapter from Localizable.xcstrings / \"Inline Macros\". Mac reference 3b53402f2cbc196b0398d133177fd80006d165b2. Windows translation controls retain their existing task owner.",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -38413,7 +38413,7 @@
       }
     },
     "Terminals": {
-      "comment": "Finite Windows settings caption adapter from Localizable.xcstrings / Integrated Terminals. Mac reference 3b53402f2cbc196b0398d133177fd80006d165b2. Windows translation controls retain their existing task owner.",
+      "comment": "Finite Windows settings caption adapter from Localizable.xcstrings / \"Integrated Terminals\". Mac reference 3b53402f2cbc196b0398d133177fd80006d165b2. Windows translation controls retain their existing task owner.",
       "localizations": {
         "en": {
           "stringUnit": {

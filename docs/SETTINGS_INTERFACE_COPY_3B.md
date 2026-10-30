@@ -20,8 +20,9 @@ and `PaneView.CardView` now resolve their translated values. The existing search
 localized labels while retaining English aliases and excluding content-marked paths. No view factory,
 runtime rule, default, setting identifier or owner is changed by this resource batch.
 
-Sixteen finite adapters reuse committed Mac labels/guidance, with table, exact source key and full
-reference in each resource comment. The curated-model guidance composes the original download and
+Fourteen finite adapters reuse committed Mac labels/guidance; two reuse existing Windows task
+captions derived from Mac resources. Each comment names its table, exact source key and reference.
+The curated-model guidance composes the original download and
 explicit-selection instructions. The Windows translation-only model/endpoint cards reuse their
 existing task captions rather than implying that their owner configures other tasks. Fifty-four
 Windows labels/descriptions are authored here, preserving modifier/reserved-key rules, verified-range

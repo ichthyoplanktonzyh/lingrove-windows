@@ -400,7 +400,7 @@ public sealed class ExpressionEditorSession : IAsyncDisposable
                 _phase = Phase.Dispatching;
             }
             if (ct.IsCancellationRequested) return ExpressionEditOutcome.Rejected;
-            if (plan.RequiresRangeSelection)
+            if (plan.RequiresRangeSelection || _effects.UsesNativeRangeCommit)
             {
                 var captured = current.Value;
                 var field = captured.Field with { Text = captured.Observation.Value,

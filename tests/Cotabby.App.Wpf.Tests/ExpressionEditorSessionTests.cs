@@ -15,6 +15,21 @@ namespace Cotabby.App.Wpf.Tests;
 public sealed class ExpressionEditorSessionTests
 {
     [Theory]
+    [InlineData("abc??after", 5, 0, "??")]
+    [InlineData("a😀b", 1, 2, null)]
+    [InlineData("ab", 1, 0, null)]
+    public async Task NativeAdapterUsesOneShotRangeCommitForAsciiSelectionAndEmptyCaret(string text, int start, int length, string? trigger)
+    {
+        await using var fixture = new Fixture(text, new(start, length), trigger);
+        fixture.Effects.UsesNativeRangeCommit = true;
+        Assert.True(fixture.Session.EnterPanel()); Assert.True(fixture.Session.BeginReturn());
+        Assert.Equal(ExpressionEditOutcome.Verified, await fixture.Session.ResumeAndReplaceAsync("X", default));
+        var source = fixture.Session.Receipt.ReplacementRange;
+        Assert.Equal(text.Remove(source.Start, source.Length).Insert(source.Start, "X"), fixture.Effects.Value);
+        Assert.Equal(1, fixture.Effects.RangeCalls); Assert.Equal(1, fixture.Effects.Dispatched);
+        Assert.Equal(0, fixture.Effects.LastBackspaces);
+    }
+    [Theory]
     [InlineData(false)]
     [InlineData(true)]
     public async Task UnicodeCommitKeepsSecureAndCredentialFieldAdmissionAtDispatch(bool credentialLabel)
@@ -500,6 +515,7 @@ public sealed class ExpressionEditorSessionTests
 
     private sealed class FakeEffects : IExpressionSessionEffects
     {
+        public bool UsesNativeRangeCommit { get; set; }
         public nint Foreground { get; set; } = 20;
         public string Value = "abc??";
         public ExpressionEditorRange Selection = new(5, 0);

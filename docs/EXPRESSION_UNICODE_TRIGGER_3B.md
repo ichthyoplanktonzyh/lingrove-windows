@@ -1,7 +1,7 @@
-# Literal Unicode expression triggers
+# Native expression commits and literal Unicode triggers
 
 Reference: committed Mac `3b53402f2cbc196b0398d133177fd80006d165b2`. This upgrades the
-ASCII-trigger restriction in the older [native receipt](EXPRESSION_EDITOR_RECEIPT.md) and
+native commit/ASCII-trigger restriction in the older [native receipt](EXPRESSION_EDITOR_RECEIPT.md) and
 [application composition](EXPRESSION_ASSIST_APPLICATION.md), without changing their historical pins.
 
 ## Committed reference
@@ -32,6 +32,12 @@ Windows/WPF visual adaptation and its rendered evidence remain applicable.
 `ExpressionReplacementPlan` computes the exact expected value for Unicode triggers and explicitly
 requests native range selection. It never represents UTF-16 length as a Backspace count. The native
 capture entry accepts triggers already admitted by the same punctuation/symbol policy.
+The production effects adapter also routes ASCII markers, shortcut selections and an empty shortcut
+caret through this same native commit. Original retained text-change subscriptions would otherwise
+retire the session on its own successful write before acknowledgement. Already-selected and
+zero-length scopes preserve their real native selection and need no additional Select call.
+Historical effect-test adapters keep their existing ASCII-plan/dispatch checks; the sealed production
+adapter always opts into the native range commit and never falls back to caret deletion on refusal.
 
 The existing session still proves two stable original-host observations and takes the shared edit
 gate. Any clipboard lease is prepared before selection and retained until the transaction completes.
@@ -66,25 +72,25 @@ accepted native action or release its gate/clipboard early.
 ## Validation and limits
 
 Seven Core planning checks cover ASCII behavior, literal fullwidth/emoji/symbol replacement and
-cancel, grapheme/scalar admission, exact expected values and bounded outputs. Forty-eight focused
-WPF checks cover the real session and existing views/subscriptions, including Unicode insertion,
+cancel, grapheme/scalar admission, exact expected values and bounded outputs. Fifty-one focused
+Windows checks cover the real session and native subscriptions, including Unicode insertion,
 cancel, unavailable targets without focus reads, range refusal without fallback, paste ownership and
 retirement draining a noncooperative accepted commit.
 
-Five native cases use a hidden owned RichEdit, the real UIA range selector, original subscriptions
+Eight native cases use a hidden owned RichEdit, the real UIA range selector, original subscriptions
 and expected-value acknowledgement. A callback synchronously edits only that owned control; repeated
-trigger occurrences, emoji, empty replacement, partial dispatch and a retired receipt are covered.
+trigger occurrences, emoji, empty replacement, partial dispatch, ASCII, selected-source, empty-caret
+insertion and a retired receipt are covered.
 They do not activate an editor, invoke SendInput, read the clipboard or use a model/network.
 The dispatcher remains free while the native owner releases providers and joins callbacks.
 
-A fresh Luna/max independent review found no confirmed P1/P2 and independently passed the 43
-fake/hidden-owned expression/native checks and seven Core planning checks without build/restore.
-The primary also passed all 48 focused checks including the five existing component view tests.
-Final source additionally preserves secure/credential admission in the range dispatch permit,
-with two controlled changes immediately before dispatch. A second fresh Luna/max final review
-found no confirmed P1/P2 and independently passed 45 fake/hidden-owned checks plus seven Core cases.
+Fresh Luna/max reviewers independently checked the module; the final review found no confirmed
+P1/P2 and independently passed 51 fake/hidden-owned checks plus seven Core cases without build/restore.
+Final source preserves secure/credential admission in the range dispatch permit, with two controlled
+changes immediately before dispatch. The primary's full suite also includes the existing component
+views; actual input and clipboard delivery remain separate from these isolated checks.
 Integrated Release compilation passed with zero warnings/errors; complete sequential Core 5,108,
-portable App 1,278, Inference 751 and final-source WPF 1,117 passed without skips. Remote final-head
+portable App 1,278, Inference 751 and final-source WPF 1,123 passed without skips. Remote final-head
 CI remains the merge gate.
 
 Actual Word, Chrome and Codex provider behavior, focus return, IME, native keyboard/clipboard delivery,

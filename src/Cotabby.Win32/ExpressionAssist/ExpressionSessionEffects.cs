@@ -15,6 +15,9 @@ namespace Cotabby.Win32.ExpressionAssist;
 // while the session retains all admission, focus, receipt and one-shot responsibilities.
 internal interface IExpressionSessionEffects
 {
+    // Only historical internal effect doubles use the default. The sealed Windows production
+    // adapter always transfers its receipt; native refusal is never a legacy-write fallback.
+    bool UsesNativeRangeCommit => false;
     nint Foreground { get; }
     bool Activate(nint host);
     UiaExpressionSelectionReader.ValueSelection? Read(AutomationElement? element, long token, Func<bool> allowed);
@@ -30,6 +33,7 @@ internal interface IExpressionSessionEffects
 
 internal sealed class Win32ExpressionSessionEffects(ClipboardTextReader? clipboard, IExpressionRetainedEvidence composition) : IExpressionSessionEffects
 {
+    public bool UsesNativeRangeCommit => true;
     private readonly KeySender _sender = new();
     private readonly Win32ClipboardPasteLeaseFactory _clipboard = new(clipboard);
     public nint Foreground => NativeMethods.GetForegroundWindow();

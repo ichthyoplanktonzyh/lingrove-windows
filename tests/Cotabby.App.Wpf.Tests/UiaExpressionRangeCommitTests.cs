@@ -19,16 +19,21 @@ public sealed class UiaExpressionRangeCommitTests(WpfDispatcher dispatcher)
     [InlineData("？？", "", false)]
     [InlineData("😀😀", "日", false)]
     [InlineData("？？", "X", true)]
+    [InlineData("??", "X", false)]
+    [InlineData("selected", "X", false)]
+    [InlineData("", "X", false)]
     public Task OwnedRangeCommitConsumesItsNotificationReceiptAndAcknowledgesExactValue(string trigger, string replacement, bool partial) => dispatcher.RunAsync(async () =>
     {
         using var fixture = new NativeFixture();
         string prefix = "repeat？？ / before"; string authored = prefix + trigger + "after";
-        Assert.True(SetWindowText(fixture.Edit, authored)); SetSelection(fixture.Edit, 0x00B1, prefix.Length + trigger.Length, prefix.Length + trigger.Length);
+        bool selected = trigger == "selected";
+        int caret = selected ? prefix.Length : prefix.Length + trigger.Length;
+        Assert.True(SetWindowText(fixture.Edit, authored)); SetSelection(fixture.Edit, 0x00B1, caret, prefix.Length + trigger.Length);
         await using var lifetime = new NativeOwner(); var owner = lifetime.Native;
         NativeTextRangeReader.ValueSelection? original = null;
         var info = await owner.ProbeOwnedHandleForTest(fixture.Edit,
             element => original = UiaTextEditEvidence.ReadOwnedExpressionValueForTest(element));
-        Assert.NotNull(original); Assert.Equal(prefix.Length + trigger.Length, original.Value.Start); Assert.Equal(0, original.Value.Length);
+        Assert.NotNull(original); Assert.Equal(caret, original.Value.Start); Assert.Equal(selected ? trigger.Length : 0, original.Value.Length);
         int invalidated = 0;
         var token = await owner.RegisterOwnedRetainedForTest(fixture.Edit, info.RuntimeId!, () => Interlocked.Increment(ref invalidated)); Assert.NotNull(token);
         var composition = await owner.ObserveOwnedRetainedForTest(token.Value); Assert.Equal(InputCompositionState.Clear, composition.Item1);

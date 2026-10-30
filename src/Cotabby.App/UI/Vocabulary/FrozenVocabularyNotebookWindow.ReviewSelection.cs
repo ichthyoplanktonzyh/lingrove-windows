@@ -36,7 +36,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow
     private void UpdateReviewSelection()
     {
         _reviewSelectionBar.Visibility = _selectingReviewSenses ? Visibility.Visible : Visibility.Collapsed;
-        _reviewSelectionCount.Text = $"{_reviewSelections.Count} selected"; _clearReview.IsEnabled = _reviewSelections.Count > 0;
+        _reviewSelectionCount.Text = InterfaceText.Format("{0:N0} selected", _reviewSelections.Count); _clearReview.IsEnabled = _reviewSelections.Count > 0;
         _prepareSelected.IsEnabled = _reviewSelections.Count > 0 && _reviewFeature is not null && !_retiring && _modalDone is null;
         _exportSelected.IsEnabled = _reviewSelections.Count > 0 && !_retiring && _modalDone is null && _store is F.ICanonicalVocabularyExportStore;
         _selectVisible.IsEnabled = _session.Visible.Count > 0 && !_retiring; _selectReview.IsEnabled = !_retiring && (_reviewFeature is not null || _store is F.ICanonicalVocabularyExportStore);

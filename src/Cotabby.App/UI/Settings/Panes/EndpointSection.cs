@@ -161,12 +161,20 @@ internal sealed class EndpointSection
     private void ShowConnection()
     {
         var state = _connection.State;
-        _status.Set(state is OpenAICompatibleConnectionState.Ready, state.Summary);
+        _status.Set(state is OpenAICompatibleConnectionState.Ready, ConnectionSummary(state));
         _test.IsEnabled = state is not OpenAICompatibleConnectionState.Connecting;
         _discovered.ItemsSource = _connection.Models.Select(model => model.Id).ToList();
         _discovered.IsEnabled = _connection.Models.Count > 0;
         SelectDiscovered();
     }
+
+    internal static string ConnectionSummary(OpenAICompatibleConnectionState state) => state switch
+    {
+        OpenAICompatibleConnectionState.Idle => InterfaceText.Get("Not connected"),
+        OpenAICompatibleConnectionState.Connecting => InterfaceText.Get("Connecting…"),
+        OpenAICompatibleConnectionState.Ready ready => InterfaceText.Quantity("Connected · %lld models", ready.ModelCount),
+        _ => state.Summary, // Endpoint failure details are content, never translation keys.
+    };
 
     private void SelectDiscovered() => _discovered.SelectedItem = _context.Settings.EndpointModel;
 

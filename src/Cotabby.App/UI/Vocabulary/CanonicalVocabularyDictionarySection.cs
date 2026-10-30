@@ -44,7 +44,7 @@ internal sealed class CanonicalVocabularyDictionarySection : Expander, IDisposab
     internal CanonicalVocabularyDictionarySection(CanonicalNotebookLearningSession owner, VocabularyEntry entry, Func<bool> canAct)
     {
         _owner = owner; _entry = entry; _senseId = owner.SenseId; _canAct = canAct; _token = _presentation.Token;
-        Header = InterfaceText.Get("Dictionary"); Margin = new Thickness(0, 14, 0, 0);
+        Header = InterfaceText.Get("Dictionary", "Vocabulary"); Margin = new Thickness(0, 14, 0, 0);
         _source.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondary"); _attribution.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondary");
         _viewport = new ScrollViewer { Content = _definitions, VerticalScrollBarVisibility = ScrollBarVisibility.Auto, HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled, Height = 120 };
         _body.Children.Add(_source); _body.Children.Add(_sourcePicker); _body.Children.Add(_query); _body.Children.Add(_back); _body.Children.Add(_words); _body.Children.Add(_viewport); _body.Children.Add(_attribution); Content = _body;

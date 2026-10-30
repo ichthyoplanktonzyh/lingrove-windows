@@ -44,12 +44,13 @@ internal sealed class LearningPowerControls : StackPanel
         {
             int slot = index;
             var row = new StackPanel { Margin = new Thickness(0, 8, 0, 0) };
-            row.Children.Add(Ui.Text(index == 0 ? "On battery" : "Plugged in", "RowLabel"));
+            row.Children.Add(Ui.Text(InterfaceText.Get(index == 0 ? "On battery" : "Plugged in", "Learning"), "RowLabel"));
             _backends[index].Styled("Combo"); _models[index].Styled("Combo"); _templates[index].Styled("Combo"); _endpoints[index].Styled("Input");
             _backends[index].ItemsSource = new[] { LearningModelBackend.Local, LearningModelBackend.Endpoint };
+            _backends[index].ItemTemplate = InterfaceEnumLabels.Create<LearningModelBackend>(value => value == LearningModelBackend.Local ? "Local model" : "Endpoint", "Learning");
             _backends[index].SelectionChanged += (_, _) => EditBackend(slot);
             _models[index].SelectionChanged += (_, _) => EditModel(slot);
-            _templates[index].ItemsSource = LearningChatTemplatePolicy.AvailableFor(role).Select(value => new TemplateOption(value, value.Label())).ToArray();
+            _templates[index].ItemsSource = LearningChatTemplatePolicy.AvailableFor(role).Select(value => new TemplateOption(value, InterfaceText.Get(value.Label(), "Learning"))).ToArray();
             _templates[index].DisplayMemberPath = nameof(TemplateOption.Label); _templates[index].SelectedValuePath = nameof(TemplateOption.Value);
             _templates[index].SelectionChanged += (_, _) => EditTemplate(slot);
             _endpoints[index].LostKeyboardFocus += (_, _) => EditEndpoint(slot);
@@ -57,14 +58,14 @@ internal sealed class LearningPowerControls : StackPanel
                 ("Instruction template", _templates[index]), ("Endpoint model identifier", _endpoints[index]) };
             foreach (var (label, element) in controls)
             {
-                var caption = Ui.Text(label, "Caption"); caption.Margin = new Thickness(0, 5, 0, 0);
+                var caption = Ui.Text(InterfaceText.Get(label), "Caption"); caption.Margin = new Thickness(0, 5, 0, 0);
                 caption.SetBinding(VisibilityProperty, new Binding(nameof(Visibility)) { Source = element });
                 row.Children.Add(caption); element.Margin = new Thickness(0, 2, 0, 0); row.Children.Add(element);
             }
-            System.Windows.Automation.AutomationProperties.SetName(_endpoints[index], index == 0 ? "On battery endpoint model" : "Plugged in endpoint model");
-            System.Windows.Automation.AutomationProperties.SetName(_backends[index], index == 0 ? "On battery engine" : "Plugged in engine");
-            System.Windows.Automation.AutomationProperties.SetName(_models[index], index == 0 ? "On battery model" : "Plugged in model");
-            System.Windows.Automation.AutomationProperties.SetName(_templates[index], index == 0 ? "On battery instruction template" : "Plugged in instruction template");
+            System.Windows.Automation.AutomationProperties.SetName(_endpoints[index], InterfaceText.Get(index == 0 ? "On battery" : "Plugged in", "Learning") + " · " + InterfaceText.Get("Endpoint model identifier"));
+            System.Windows.Automation.AutomationProperties.SetName(_backends[index], InterfaceText.Get(index == 0 ? "On battery" : "Plugged in", "Learning") + " · " + InterfaceText.Get("Engine"));
+            System.Windows.Automation.AutomationProperties.SetName(_models[index], InterfaceText.Get(index == 0 ? "On battery" : "Plugged in", "Learning") + " · " + InterfaceText.Get("Local model"));
+            System.Windows.Automation.AutomationProperties.SetName(_templates[index], InterfaceText.Get(index == 0 ? "On battery" : "Plugged in", "Learning") + " · " + InterfaceText.Get("Instruction template"));
             _choices.Children.Add(row);
         }
         var note = Ui.Text(InterfaceText.Get("Endpoint profiles use this task's connection address and credential. Model choices do not change autocomplete or the other learning task.", "Localizable"), "Caption");

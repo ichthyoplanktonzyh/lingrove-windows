@@ -121,14 +121,20 @@ the initial gap audit; its initial Windows gap descriptions are historical. Curr
   `48d17270b7e8de77f2f7cbbf0b80df17fde1af1e` before merge as `c62af01`; the first Mac runner
   disconnected without assertion output and its failed job passed on rerun. Native acceptance
   remains separate.
-- The [selection OCR upgrade](READING_SELECTION_OCR_3B.md) connects optional original-range visual
-  context, native/gesture geometry, compound lifetime and preparation state; final-head CI remains
-  its separate gate. The [read-only provider upgrade](READING_READONLY_PROVIDERS_3B.md) adds
-  positive TextPattern-only documents and bounded ancestor roots, with editable IME refusal intact.
-- The [current review preparation](ANKI_REVIEW_PREPARATION_3B.md) admits default/preserved layouts
+- #153 merged the [selection OCR upgrade](READING_SELECTION_OCR_3B.md) and
+  [read-only provider upgrade](READING_READONLY_PROVIDERS_3B.md), retaining exact native ranges,
+  visual/gesture geometry, preparation state, bounded ancestor roots and editable IME refusal.
+  All four checks passed on combined head `e5d295663bd502756c8b75572ea4e61c0814b20e` before
+  merge as `1ac5041`; #152 was subsumed by that reviewed/validated descendant. Its earlier Mac
+  runner-disconnected attempt and redundant rerun do not replace the successful combined checks.
+- #154 merged [current review preparation](ANKI_REVIEW_PREPARATION_3B.md), admitting default/preserved layouts
   through the existing session/Store, shares typed side previews and reuses Mac review labels with
   sixteen supplement keys in all fifteen interface locales. Independent-card media, review audio
   and settings template removal were already connected; earlier broader gap wording is superseded.
+  All four checks passed at `f4e7f5ed02b054d02a1f10bad2f061ed92ca5ed0` before merge as `ce522a6`.
+- The [interface language coverage](INTERFACE_LANGUAGE_COVERAGE_3B.md) completes the earlier
+  partial language pack (190 supplement keys, 15 locales), reuses 32 finite Mac source-key adapters
+  and connects settings/Home/model/notebook labels, native count forms and raw-value guards.
 - Remaining work includes native host/provider acceptance,
   full interface-language coverage, native automatic language
   confidence, Apple's unavailable system dictionary and the explicitly documented media/native gaps.

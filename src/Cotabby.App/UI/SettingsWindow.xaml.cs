@@ -158,15 +158,16 @@ public partial class SettingsWindow : Window
             .SelectMany(view => view.Pane.Cards.SelectMany(card => card.Rows).Select(row => (view.Pane, Row: row)))
             .Where(match => match.Row.Matches(query))
             // Title matches read as more relevant than a hit in the description or keywords.
-            .OrderByDescending(match => match.Row.Title.Contains(query, StringComparison.OrdinalIgnoreCase));
+            .OrderByDescending(match => match.Row.DisplayTitle.Contains(query, StringComparison.OrdinalIgnoreCase)
+                || match.Row.Title.Contains(query, StringComparison.OrdinalIgnoreCase));
         foreach (var (pane, row) in matches) list.Children.Add(Result(pane, row));
-        if (list.Children.Count == 0) list.Children.Add(Ui.Text($"No settings match \u201C{query}\u201D.", "Caption"));
+        if (list.Children.Count == 0) list.Children.Add(Ui.Text(InterfaceText.Format("No settings match “%@”", query), "Caption"));
         return list;
     }
 
     private Border Result(SettingsPane pane, SettingsRow row)
     {
-        var paneName = Ui.Text(pane.Title, "Caption");
+        var paneName = Ui.Text(InterfaceText.Get(pane.Title), "Caption");
         paneName.VerticalAlignment = VerticalAlignment.Center;
         paneName.Margin = new Thickness(12, 0, 0, 0);
         DockPanel.SetDock(paneName, Dock.Right);
@@ -178,7 +179,7 @@ public partial class SettingsWindow : Window
             Cursor = Cursors.Hand,
             Child = new DockPanel
             {
-                Children = { paneName, new StackPanel { Children = { Ui.Text(row.Title), Ui.Text(row.Subtitle, "Caption") } } },
+                Children = { paneName, new StackPanel { Children = { Ui.Text(row.DisplayTitle), Ui.Text(row.DisplaySubtitle, "Caption") } } },
             },
         }.Styled("Card");
         result.MouseLeftButtonUp += (_, _) =>

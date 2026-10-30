@@ -55,7 +55,7 @@ internal sealed class ModelList : StackPanel
         }
         if (_error is not null)
         {
-            var error = Ui.Text("Could not prepare the model. " + _error, "Caption")
+            var error = Ui.Text(InterfaceText.Get("Could not prepare the model.") + " " + _error, "Caption")
                 .Themed(TextBlock.ForegroundProperty, "OrangeBrush");
             error.Margin = new Thickness(0, 4, 0, 10);
             Children.Add(error);
@@ -177,7 +177,7 @@ internal sealed class ModelList : StackPanel
         {
             bool ready = await _context.Host.EnsureModelReadyAsync(progress, transfer.Token);
             if (!ready && !_closed && _statusGate.IsCurrent(token, _context.Host.CompletionStatusEpoch))
-                _error = "The selected model is unavailable.";
+                _error = InterfaceText.Get("The selected model is unavailable.");
         }
         catch (OperationCanceledException)
         {
@@ -216,11 +216,11 @@ internal sealed class ModelList : StackPanel
         {
             long total = _progress.TotalBytes!.Value;
             _progressBar.Value = (double)_progress.BytesDownloaded / total;
-            _progressLabel.Text = $"{_progress.BytesDownloaded * 100 / total}%";
+            _progressLabel.Text = InterfaceText.Format("{0}%", _progress.BytesDownloaded * 100 / total);
         }
         else
         {
-            _progressLabel.Text = $"{_progress.BytesDownloaded / 1024 / 1024:N0} MB";
+            _progressLabel.Text = InterfaceText.Format("{0:N0} MB", _progress.BytesDownloaded / 1024 / 1024);
         }
     }
 }

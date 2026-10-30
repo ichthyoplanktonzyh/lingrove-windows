@@ -72,12 +72,12 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
         { VocabularyNotebookTheme.Button(button, button == _add); button.Margin = new Thickness(0, 0, 8, 8); toolbar.Children.Add(button); }
         DockPanel.SetDock(toolbar, Dock.Top); root.Children.Add(toolbar);
         var filters = new WrapPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(18, 0, 18, 6) };
-        _organization.Items.Add("By entry"); _organization.Items.Add("By meaning"); _organization.SelectedIndex = 0;
-        _language.Items.Add(new LanguageChoice("All languages", null)); foreach (var value in LearningLanguages.All) _language.Items.Add(new LanguageChoice(value.Name(), value)); _language.SelectedIndex = 0;
-        _tag.Items.Add(new TagChoice("All tags", "")); _tag.SelectedIndex = 0;
-        _sort.Items.Add("Newest first"); _sort.Items.Add("Oldest first"); _sort.SelectedIndex = 0; _density.Items.Add("Compact"); _density.Items.Add("Detailed"); _density.SelectedIndex = 0;
-        System.Windows.Automation.AutomationProperties.SetName(_query, "Search vocabulary"); System.Windows.Automation.AutomationProperties.SetName(_language, "Language filter"); System.Windows.Automation.AutomationProperties.SetName(_tag, "Tag filter"); System.Windows.Automation.AutomationProperties.SetName(_organization, "Browse organization"); System.Windows.Automation.AutomationProperties.SetName(_sort, "Sort order"); System.Windows.Automation.AutomationProperties.SetName(_density, "List density");
-        VocabularyNotebookTheme.Input(_query); _query.Tag = "Search vocabulary"; foreach (var box in new[] { _organization, _language, _tag, _sort, _density }) VocabularyNotebookTheme.Combo(box);
+        _organization.Items.Add(InterfaceText.Get("By entry", "Vocabulary")); _organization.Items.Add(InterfaceText.Get("By meaning", "Vocabulary")); _organization.SelectedIndex = 0;
+        _language.Items.Add(new LanguageChoice(InterfaceText.Get("All languages", "Vocabulary"), null)); foreach (var value in LearningLanguages.All) _language.Items.Add(new LanguageChoice(value.Name(), value)); _language.SelectedIndex = 0;
+        _tag.Items.Add(new TagChoice(InterfaceText.Get("All tags", "Vocabulary"), "")); _tag.SelectedIndex = 0;
+        _sort.Items.Add(InterfaceText.Get("Newest first", "Vocabulary")); _sort.Items.Add(InterfaceText.Get("Oldest first", "Vocabulary")); _sort.SelectedIndex = 0; _density.Items.Add(InterfaceText.Get("Compact", "Vocabulary")); _density.Items.Add(InterfaceText.Get("Detailed", "Vocabulary")); _density.SelectedIndex = 0;
+        System.Windows.Automation.AutomationProperties.SetName(_query, InterfaceText.Get("Search vocabulary", "Vocabulary")); System.Windows.Automation.AutomationProperties.SetName(_language, InterfaceText.Get("Language filter", "Vocabulary")); System.Windows.Automation.AutomationProperties.SetName(_tag, InterfaceText.Get("Tag filter", "Vocabulary")); System.Windows.Automation.AutomationProperties.SetName(_organization, InterfaceText.Get("Browse organization", "Vocabulary")); System.Windows.Automation.AutomationProperties.SetName(_sort, InterfaceText.Get("Sort order", "Vocabulary")); System.Windows.Automation.AutomationProperties.SetName(_density, InterfaceText.Get("List density", "Vocabulary"));
+        VocabularyNotebookTheme.Input(_query); _query.Tag = InterfaceText.Get("Search vocabulary", "Vocabulary"); foreach (var box in new[] { _organization, _language, _tag, _sort, _density }) VocabularyNotebookTheme.Combo(box);
         foreach (var control in new FrameworkElement[] { _organization, _query, _language, _tag, _sort, _density }) { control.Margin = new Thickness(0, 0, 8, 6); filters.Children.Add(control); }
         DockPanel.SetDock(filters, Dock.Top); root.Children.Add(filters); root.Children.Add(_content); InitializeReviewSelection(toolbar, root); InitializeCanonicalExport(toolbar); InitializeCanonicalBackup(toolbar);
         ScrollViewer.SetHorizontalScrollBarVisibility(_entries, ScrollBarVisibility.Disabled); VocabularyNotebookTheme.Brush(_entries, Control.BackgroundProperty, "SidebarBg"); VocabularyNotebookTheme.Brush(_entries, Control.ForegroundProperty, "TextPrimary");
@@ -232,7 +232,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
             _language.SelectedItem = _language.Items.Cast<LanguageChoice>().First(x => x.Value == _session.Language);
             var tags = _session.Entries.SelectMany(e => e.Senses).SelectMany(s => s.Tags).Distinct().Order(StringComparer.CurrentCultureIgnoreCase).ToArray();
             if (_session.Tag.Length > 0 && !tags.Contains(_session.Tag)) _session.Tag = "";
-            _tag.Items.Clear(); _tag.Items.Add(new TagChoice("All tags", "")); foreach (var tag in tags) _tag.Items.Add(new TagChoice(tag, tag)); _tag.SelectedItem = _tag.Items.Cast<TagChoice>().First(x => x.Value == _session.Tag);
+            _tag.Items.Clear(); _tag.Items.Add(new TagChoice(InterfaceText.Get("All tags", "Vocabulary"), "")); foreach (var tag in tags) _tag.Items.Add(new TagChoice(tag, tag)); _tag.SelectedItem = _tag.Items.Cast<TagChoice>().First(x => x.Value == _session.Tag);
             _add.IsEnabled = !_session.Loading && _session.Failure is null; _import.IsEnabled = !_exampleNoExternalFiles && _add.IsEnabled; _categoryToggle.Visibility = Visibility.Collapsed; _newMeaning.Visibility = _session.MeaningMode ? Visibility.Visible : Visibility.Collapsed; _newMeaning.IsEnabled = CanSemantic && _store is ICanonicalVocabularyMeaningOrganizationStore; _categories.AllowEditing = CanSemantic;
             _sort.Visibility = _density.Visibility = _graphMode ? Visibility.Collapsed : Visibility.Visible;
             foreach (var image in _detailImages) _ = Track(image.RetireAsync()); _detailImages.Clear();
@@ -242,8 +242,8 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
                 || learningEntry.Senses.FirstOrDefault(x => x.Id == selected.SenseId) is not { } learningSense) SelectLearning(null, null);
             else SelectLearning(learningEntry, learningSense);
             _content.Children.Clear(); _content.ColumnDefinitions.Clear();
-            if (_session.Loading) { _content.Children.Add(State("Loading vocabulary…")); return; }
-            if (_session.Failure is { } failure) { _content.Children.Add(State("Could not load vocabulary\n" + failure, error: true)); return; }
+            if (_session.Loading) { _content.Children.Add(State(InterfaceText.Get("Loading vocabulary…", "Vocabulary"))); return; }
+            if (_session.Failure is { } failure) { _content.Children.Add(State(InterfaceText.Get("Could not load vocabulary", "Vocabulary") + "\n" + failure, error: true)); return; }
             _graphButton.Content = _graphMode ? InterfaceText.Get("List", "Vocabulary") : InterfaceText.Get("Graph", "Vocabulary"); if (!_session.MeaningMode && _session.Entries.Count == 0) { _content.Children.Add(Empty()); return; }
             if (_graphMode) { BuildGraphLayout(); return; }
             if (_session.MeaningMode) BuildMeaningLayout(); else BuildEntryLayout();
@@ -326,22 +326,22 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
         else if (_session.MeaningMode && _session.Destination is { Kind: VocabularyMeaningDestinationKind.Node, NodeId: { } nodeId } && _session.Snapshot!.Document.Semantics.Nodes.FirstOrDefault(n => n.Id == nodeId) is { } node)
             MeaningDetail(panel, node);
         else if (_session.MeaningMode && _session.Destination is { Kind: VocabularyMeaningDestinationKind.Unclassified })
-        { Heading(panel, "Other expressions"); panel.Children.Add(NewMeaningButton()); foreach (var selection in _session.Unclassified) AddSenseCard(panel, selection); }
+        { Heading(panel, InterfaceText.Get("Other expressions", "Vocabulary")); panel.Children.Add(NewMeaningButton()); foreach (var selection in _session.Unclassified) AddSenseCard(panel, selection); }
         else if ((!_session.MeaningMode || _session.Destination?.Kind == VocabularyMeaningDestinationKind.Sense) && _session.Selection is { } selected && _session.Entries.FirstOrDefault(e => e.Id == selected.EntryId) is { } entry && entry.Senses.FirstOrDefault(s => s.Id == selected.SenseId) is { } sense)
         { if (_session.MeaningMode) Breadcrumb(panel); SenseDetail(panel, entry, sense); }
         else if (_session.MeaningMode)
         {
-            Heading(panel, "Browse by meaning"); panel.Children.Add(NewMeaningButton());
-            if (_session.Unclassified.Count > 0) { var button = new Button { Content = $"Other expressions ({_session.Unclassified.Count})", HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 10, 0, 0) }; VocabularyNotebookTheme.Button(button); button.Click += (_, _) => { ++_actionSelectionEpoch; _session.Destination = new(VocabularyMeaningDestinationKind.Unclassified); _session.Refresh(); }; panel.Children.Add(button); }
+            Heading(panel, InterfaceText.Get("Browse by meaning", "Vocabulary")); panel.Children.Add(NewMeaningButton());
+            if (_session.Unclassified.Count > 0) { var button = new Button { Content = InterfaceText.Format("Other expressions ({0:N0})", _session.Unclassified.Count), HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 10, 0, 0) }; VocabularyNotebookTheme.Button(button); button.Click += (_, _) => { ++_actionSelectionEpoch; _session.Destination = new(VocabularyMeaningDestinationKind.Unclassified); _session.Refresh(); }; panel.Children.Add(button); }
         }
-        else panel.Children.Add(State("Select an expression"));
+        else panel.Children.Add(State(InterfaceText.Get("Select an expression", "Vocabulary")));
         return VocabularyNotebookTheme.Brush(new ScrollViewer { Name = "frozenNotebookDetail", VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Content = panel }, Control.BackgroundProperty, "CardBg");
     }
     private void Breadcrumb(StackPanel panel)
     {
         Guid? nodeId = _session.Destination?.NodeId; var node = _session.Snapshot!.Document.Semantics.Nodes.FirstOrDefault(n => n.Id == nodeId);
         var bar = new WrapPanel { Margin = new Thickness(0, 0, 0, 14) };
-        var back = new Button { Name = "frozenMeaningBack", Content = "‹  " + (node is null ? "Other expressions" : VocabularyMeaningLabelPolicy.Title(node, _session.PreferredLanguages)), Padding = new Thickness(8, 4, 8, 4) };
+        var back = new Button { Name = "frozenMeaningBack", Content = "‹  " + (node is null ? InterfaceText.Get("Other expressions", "Vocabulary") : VocabularyMeaningLabelPolicy.Title(node, _session.PreferredLanguages)), Padding = new Thickness(8, 4, 8, 4) };
         VocabularyNotebookTheme.Button(back); back.Click += (_, _) => { ++_actionSelectionEpoch; _session.Destination = node is null ? new(VocabularyMeaningDestinationKind.Unclassified) : new(VocabularyMeaningDestinationKind.Node, node.Id); _session.Refresh(); }; bar.Children.Add(back);
         if (node is not null)
         {

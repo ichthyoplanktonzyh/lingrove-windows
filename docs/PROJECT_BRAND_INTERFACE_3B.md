@@ -59,9 +59,10 @@ acceptance. No real model, endpoint, editor, clipboard or taskbar installation i
 
 The Windows supplement initially translated its platform-specific keys in English, Simplified
 Chinese and Traditional Chinese. The [review preparation upgrade](ANKI_REVIEW_PREPARATION_3B.md)
-now supplies sixteen review keys in all fifteen interface locales and removes the default/preserved
-layout refusal; the other 118 supplement keys still need the remaining language translations.
-All-window fixed-state/format/plural coverage, further resource-key reuse, RTL/native accessibility
-and physical UI acceptance remain in the active alignment goal. Reading visual fallback and other
+supplies sixteen review keys in all fifteen interface locales and removes the default/preserved
+layout refusal. The [language coverage upgrade](INTERFACE_LANGUAGE_COVERAGE_3B.md) completes the
+earlier 118 partial keys, brings the supplement to 190 fully covered keys, and connects native
+plural forms plus further current UI states. Additional authored copy, typed-domain messages,
+RTL/native accessibility and physical UI acceptance remain in the active alignment goal. Reading visual fallback and other
 platform/media gaps retain their own module records. Do not label this checkpoint as complete Mac
 parity or full localization.

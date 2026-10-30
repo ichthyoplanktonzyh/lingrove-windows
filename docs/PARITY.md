@@ -47,6 +47,10 @@ The [current export flow](VOCABULARY_CANONICAL_EXPORT.md),
 The [current review preparation](ANKI_REVIEW_PREPARATION_3B.md) removes the extra WPF default/preserved
 layout refusal and connects typed side previews without changing model/mapping/card identity;
 it also records current review label coverage and supersedes stale media/template gap claims.
+The [language coverage upgrade](INTERFACE_LANGUAGE_COVERAGE_3B.md) completes the Windows supplement's
+15-locale coverage, adds Windows ICU quantity selection from unchanged Mac plural resources,
+and connects further current settings/Home/model/canonical-notebook states while preserving raw
+user/provider values. Further fixed-copy/domain-message coverage and Mac search ranking remain open.
 The [reading/CLI/interface checkpoint](WINDOWS_READING_CLI_INTERFACE_CHECKPOINT_20261030.md)
 now composes selection affordances, bounded context, pointer reading and restricted field-region OCR,
 local automation through the same Store, launch-time interface language and shared opt-in request history.

@@ -40,11 +40,41 @@ public sealed class CliLargeGraphTests(ITestOutputHelper output)
     [Fact]
     public async Task LargeBatchCanBeCancelledBeforePublication()
     {
-        var (document, batch) = Corpus(); string fingerprint = CliIdentity.Fingerprint(batch); using var cancellation = new CancellationTokenSource();
-        var task = Task.Run(() => CliBatchPlan.Create(batch, document, 0, fingerprint, new F.SourceDate(2), new Dictionary<string, VocabularyPreparedImage>(), cancellation.Token));
-        cancellation.CancelAfter(TimeSpan.FromMilliseconds(50));
-        await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await task.WaitAsync(TimeSpan.FromSeconds(30)));
+        var (document, capture) = Corpus();
+        var input = capture.CopyValue();
+        input["operations"]!.AsArray().Insert(0, new JsonObject
+        {
+            ["add"] = new JsonObject { ["expression"] = "first", ["language"] = "en", ["kind"] = "word", ["meaning"] = "initial" }
+        });
+        var batch = CliInputContract.DecodeBatch(Encoding.UTF8.GetBytes(input.ToJsonString()));
+        string fingerprint = CliIdentity.Fingerprint(batch);
+        using var cancellation = new CancellationTokenSource();
+        // Enumerating prepared media happens after the first add has been planned. Cancel at
+        // this real collaborator boundary, before the remaining thousand-example capture;
+        // a 50ms timer can fire after completion or be starved by the planning worker.
+        var images = new CancellingImages(cancellation.Cancel);
+        var task = Task.Run(() => CliBatchPlan.Create(batch, document, 0, fingerprint, new F.SourceDate(2), images, cancellation.Token));
+        var error = await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await task.WaitAsync(TimeSpan.FromSeconds(30)));
+        Assert.Equal(cancellation.Token, error.CancellationToken);
+        Assert.True(images.Enumerated);
         Assert.Equal(5000, document.Sources.Count); Assert.Empty(document.Catalog);
+    }
+
+    private sealed class CancellingImages(Action cancel) : IReadOnlyDictionary<string, VocabularyPreparedImage>
+    {
+        internal bool Enumerated { get; private set; }
+        public int Count => 0;
+        public IEnumerable<string> Keys => [];
+        public IEnumerable<VocabularyPreparedImage> Values => [];
+        public VocabularyPreparedImage this[string key] => throw new KeyNotFoundException();
+        public bool ContainsKey(string key) => false;
+        public bool TryGetValue(string key, out VocabularyPreparedImage value) { value = null!; return false; }
+        public IEnumerator<KeyValuePair<string, VocabularyPreparedImage>> GetEnumerator()
+        {
+            Enumerated = true; cancel();
+            return Enumerable.Empty<KeyValuePair<string, VocabularyPreparedImage>>().GetEnumerator();
+        }
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
     }
     [Fact]
     public void ManyOperationsReuseTheTypedGraph()

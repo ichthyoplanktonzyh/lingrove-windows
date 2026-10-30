@@ -38,7 +38,8 @@ public partial class LearningDictionaryWindow
             string sourceLabel = state.Language is { } source ? source.Label() : "Unknown language";
             SubtitleText.Text = contextual ? state.ExplanationLanguage is { } language && language != state.Language
                 ? $"{sourceLabel} → {language.Label()}" : sourceLabel
-                : "Bundled expression dictionary · definitions in English";
+                : state.SelectedSource is { } selected ? state.SourceLabels.GetValueOrDefault(selected, "Dictionary")
+                    : "Bundled expression dictionary · definitions in English";
             var action = explanation is null ? LearningExplanationCardAction.None
                 : LearningExplanationCardPolicy.Action(explanation, state.ExplanationConfigured);
             ExplanationButton.Visibility = state.HasContextualExplanation ? Visibility.Visible : Visibility.Collapsed;

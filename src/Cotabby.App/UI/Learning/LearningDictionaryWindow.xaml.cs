@@ -64,7 +64,6 @@ public partial class LearningDictionaryWindow : Window
             var choices = state.AvailableSources.Select(source => new SourceChoice(source, state.SourceLabels.GetValueOrDefault(source, source.RawValue))).ToArray();
             SourcePicker.ItemsSource = choices; SourcePicker.SelectedItem = choices.FirstOrDefault(x => x.Source == state.SelectedSource);
             SourcePicker.Visibility = choices.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
-            if (state.SelectedSource is { } selected && state.SourceLabels.TryGetValue(selected, out var name)) SubtitleText.Text = name;
         }
         finally { _updatingSources = false; }
         TitleText.FlowDirection = WordButtons.FlowDirection = state.Language == LearningLanguage.Arabic
@@ -89,6 +88,8 @@ public partial class LearningDictionaryWindow : Window
         DefinitionContent.Visibility = contextual ? Visibility.Collapsed : Visibility.Visible;
         if (contextual) { _article?.Retire(); _articleRequest = Guid.Empty; DefinitionContent.Children.Clear(); }
         else PresentDefinitions(state);
+        AttributionText.Visibility = new TextRange(AttributionText.ContentStart, AttributionText.ContentEnd).IsEmpty
+            ? Visibility.Collapsed : Visibility.Visible;
         MeasureBody();
         if (!IsVisible) Show();
         UpdateLayout();
@@ -98,13 +99,20 @@ public partial class LearningDictionaryWindow : Window
     private void PresentDefinitions(LearningDictionaryState state)
     {
         if (state.Result is not LearningDictionaryResult.Article article || article.ResourceLibrary is null || _session is null)
-        { _article?.Retire(); _articleRequest = Guid.Empty; LearningDictionaryDefinitions.Populate(DefinitionContent, AttributionText, state); return; }
+        {
+            _article?.Retire(); _articleRequest = Guid.Empty;
+            bool Current() => IsVisible && ReferenceEquals(_state, state) && _session?.State.RequestIdentity == state.RequestIdentity
+                && (_permit?.Invoke() ?? false);
+            LearningDictionaryDefinitions.Populate(DefinitionContent, AttributionText, state,
+                () => { if (Current()) _ = _session!.ConfirmOnlineAsync(state.RequestIdentity); }, Current);
+            return;
+        }
         if (_article is null)
         {
             _article = new DictionaryArticleView { Height = 200 };
             _article.ReferenceRequested += query => { if (_state is { } current) ReferenceRequested?.Invoke(query, current.TargetIdentity); };
         }
-        DefinitionContent.Children.Clear(); DefinitionContent.Children.Add(_article); AttributionText.Inlines.Clear();
+        DefinitionContent.Children.Clear(); DefinitionContent.Children.Add(_article); AttributionText.Text = article.SourceName;
         if (_articleRequest == state.RequestIdentity) return; _articleRequest = state.RequestIdentity;
         Guid request = state.RequestIdentity;
         _ = _article.ShowAsync(article, (path, token) => _session.LoadResourceAsync(path, article.ResourceLibrary!.Value, request, token),

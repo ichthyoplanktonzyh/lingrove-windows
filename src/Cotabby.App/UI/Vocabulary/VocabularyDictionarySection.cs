@@ -100,7 +100,9 @@ internal sealed class VocabularyDictionarySection : Expander, IDisposable
                     button.Click += (_, _) => { if (Current() && IsExpanded && ReferenceEquals(state, _owner.Dictionary.State)) LastNavigation = _owner.Dictionary.SelectWordAsync(word, state.TargetIdentity); };
                     _words.Children.Add(button);
                 }
-            LearningDictionaryDefinitions.Populate(_definitions, _attribution, state);
+            LearningDictionaryDefinitions.Populate(_definitions, _attribution, state,
+                () => LastNavigation = _owner.Dictionary.ConfirmOnlineAsync(state.RequestIdentity),
+                () => Current() && IsExpanded && ReferenceEquals(state, _owner.Dictionary.State));
         }
         double width = Math.Max(1, ActualWidth > 0 ? ActualWidth - SystemParameters.VerticalScrollBarWidth : 400);
         _definitions.Measure(new Size(width, double.PositiveInfinity));

@@ -82,20 +82,25 @@ the initial gap audit; its initial Windows gap descriptions are historical. Curr
   scoped limitations and validation are recorded in their handoffs. All four final-head CI jobs
   passed at `09f2e797d950f64283858197392ccc051f26b6f2` before merge as `210dabe`.
   Physical acceptance remains the maintainer's final unified round.
+- #143 merged [automatic writing previews and sentence operations](WRITING_TRANSLATION_3B.md):
+  compact/expanded controls, acknowledged replacement, recovery Copy, explicit budgeted draft
+  references and evidence-backed previous-sentence display. All four final-head CI jobs passed at
+  `d5f0e52a54aefad88a16965424e6de68d4e6eef4` before merge as `889196d`.
+  The caret-ending ASCII-source replacement subset remains explicit; physical editor acceptance
+  and complete Unicode/selected-range replacement are still open.
+- The [online and website dictionary candidate](DICTIONARY_WEBSITE_ONLINE_3B.md) now connects
+  explicit online offers/retry and browser destinations across floating cards and notebook, with
+  shared settings, bounded HTTP cancellation/drain and website editing. Remote CI remains separate
+  from the recorded local checks and renders.
 - Remaining work includes the complete Home/Welcome learning showcase, native automatic language
-  confidence, unavailable dictionary providers and the explicitly documented media/native gaps.
+  confidence, Apple's unavailable system dictionary and the explicitly documented media/native gaps.
   Internal components are not evidence that those flows are complete. Existing older libraries
   retain explicit references and are reused only after checking the current consumer contract.
 
-The next writing candidate connects automatic previews, compact/expanded controls, guarded
-same-document replacement/acknowledgement, recovery Copy, explicit budgeted draft references and
-evidence-backed previous-sentence display. Its [handoff](WRITING_TRANSLATION_3B.md) records local
-full-suite results and the explicit caret-ending ASCII replacement subset. It is not native host
-acceptance or complete Unicode/range parity.
-
 After the maintainer's delivery adjustment, implementation owners carry each active user flow
 through its settings, entry and production adapters. Internal commits use targeted validation;
-independent review and required CI gate the complete candidate. Physical host acceptance belongs
+since the later 2026-10-30 instruction, the primary alone implements and reviews new changes, with
+required CI gating each complete candidate. Physical host acceptance belongs
 to the maintainer using the [Windows host checklist](WINDOWS_HOST_ACCEPTANCE.md).
 
 | Area | Latest source responsibility and required Windows alignment |

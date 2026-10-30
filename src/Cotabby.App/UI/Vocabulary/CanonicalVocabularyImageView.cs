@@ -39,13 +39,13 @@ internal sealed class CanonicalVocabularyImageView : Border, IDisposable
         _store = store; _reference = reference; _draft = draft;
         _open = new Button { Content = _image, ToolTip = InterfaceText.Get("Enlarge image", "Vocabulary"), Padding = new Thickness(0),
             BorderThickness = new Thickness(0), Background = Brushes.Transparent, Visibility = Visibility.Collapsed };
-        AutomationProperties.SetName(_open, "Enlarge image"); _open.Click += (_, _) => Enlarge();
+        AutomationProperties.SetName(_open, InterfaceText.Get("Enlarge image", "Vocabulary")); _open.Click += (_, _) => Enlarge();
         var content = new StackPanel(); content.Children.Add(_status); content.Children.Add(_open); Child = content; SetCaption(caption);
         Loaded += (_, _) => Resume(); Unloaded += (_, _) => Suspend();
         IsVisibleChanged += (_, _) => { if (IsVisible) Resume(); else Suspend(); };
     }
     internal void SetCaption(string caption)
-    { Dispatcher.VerifyAccess(); AutomationProperties.SetName(this, caption.Length == 0 ? "Image" : caption); }
+    { Dispatcher.VerifyAccess(); AutomationProperties.SetName(this, caption.Length == 0 ? InterfaceText.Get("Image", "Vocabulary") : caption); }
     private void Resume()
     {
         Dispatcher.VerifyAccess();

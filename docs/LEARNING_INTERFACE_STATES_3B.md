@@ -1,5 +1,9 @@
 # Active learning interface states and destination copy
 
+The subsequent [active workflow copy pass](ACTIVE_WORKFLOW_INTERFACE_3B.md) extends this historical
+244-key checkpoint to 382 supplement keys and fixes further dynamic/auxiliary paths. Counts and
+remaining-scope notes below describe this earlier module, not the full current interface inventory.
+
 Reference: Mac `3b53402f2cbc196b0398d133177fd80006d165b2`, read from committed Git objects.
 This module follows `Lingrove/UI/InlineFeatures/LearningSentenceCard.swift`,
 `Lingrove/UI/Settings/Panes/ExpressionAssistSettingsSection.swift`,

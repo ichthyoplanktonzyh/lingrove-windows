@@ -67,7 +67,7 @@ internal sealed class ExpressionAssistView : Border
             VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Margin = new Thickness(0, 0, 0, 8) });
         var prompt = new TextBlock { Text = InterfaceText.Get("Describe an expression or concept"), FontSize = 12, Margin = new Thickness(0, 0, 0, 4) };
         prompt.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondary"); body.Children.Add(prompt);
-        AutomationProperties.SetName(_query, "Describe an expression or concept");
+        AutomationProperties.SetName(_query, InterfaceText.Get("Describe an expression or concept", "Learning"));
         _query.ToolTip = InterfaceText.Get("Describe an expression or concept", "Learning");
         body.Children.Add(_query);
         AutomationProperties.SetLiveSetting(_status, AutomationLiveSetting.Polite);

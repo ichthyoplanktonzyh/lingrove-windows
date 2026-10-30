@@ -36,7 +36,7 @@ internal sealed class ModelManagementView : DockPanel
         var header = new DockPanel { Margin = new Thickness(20) };
         DockPanel.SetDock(Done, Dock.Right); header.Children.Add(Done);
         header.Children.Add(new StackPanel { Children = { new TextBlock { Text = InterfaceText.Get("Manage models"), FontSize = 16, FontWeight = FontWeights.SemiBold },
-            new TextBlock { Text = taskLabel, FontSize = 12, Foreground = SystemColors.GrayTextBrush, Margin = new Thickness(0, 4, 0, 0) } } });
+            new TextBlock { Text = InterfaceText.Get(taskLabel), FontSize = 12, Foreground = SystemColors.GrayTextBrush, Margin = new Thickness(0, 4, 0, 0) } } });
         DockPanel.SetDock(header, Dock.Top); Children.Add(header);
         var divider = new Separator { Margin = new Thickness(0) }; DockPanel.SetDock(divider, Dock.Top); Children.Add(divider);
         var body = new StackPanel { Margin = new Thickness(20) };
@@ -141,7 +141,7 @@ internal sealed class ModelManagementWindow : Window
         _view.SelectRequested += Select;
         _view.AssignRequested += Assign;
         _view.DeleteRequested += Delete;
-        Content = _view;
+        Content = _view; InterfaceText.ApplyDirection(this);
         Loaded += (_, _) => Refresh();
         Closed += (_, _) => { _scan.Close(); _lifetime.Cancel(); _lifetime.Dispose(); _parentRefresh(); };
     }
@@ -191,27 +191,27 @@ internal sealed class ModelManagementWindow : Window
         var dialog = new OpenFileDialog { Title = InterfaceText.Get("Add GGUF Models"), Filter = InterfaceText.Get("GGUF models (*.gguf)") + "|*.gguf", Multiselect = true, CheckFileExists = true };
         if (dialog.ShowDialog(this) != true) return;
         var accepted = dialog.FileNames.Where(path => LocalModelTaskPolicy.Supports(Path.GetFileName(path), _task)).ToArray();
-        if (accepted.Length == 0) { Report("This model is not compatible with this task. Choose another model."); return; }
+        if (accepted.Length == 0) { Report(InterfaceText.Get("This model is not compatible with this task. Choose another model.")); return; }
         _context.Change(settings => { foreach (var path in accepted) settings.RecordLocalModelTask(Path.GetFileName(path), _task); });
         using var transfer = CancellationTokenSource.CreateLinkedTokenSource(_lifetime.Token);
-        _completionImport = transfer; _importing = true; SetTransferBusy(true); int version = ++_operationVersion; SetNotice("Importing selected GGUF files…");
+        _completionImport = transfer; _importing = true; SetTransferBusy(true); int version = ++_operationVersion; SetNotice(InterfaceText.Get("Importing selected GGUF files…"));
         try
         {
             var result = await _context.Host.LearningModels.ImportAsync(accepted, transfer.Token,
                 filename => Dispatcher.InvokeAsync(() => _context.Host.AcknowledgeModelMetadata(settings => settings.ClearLocalModelSource(filename))).Task);
-            if (!_lifetime.IsCancellationRequested) { ReportCurrent(version, $"{(result.Cancelled ? "Import cancelled. " : "")}Imported {result.Imported}; skipped {result.Skipped}; failed {result.Failed}; incompatible {dialog.FileNames.Length - accepted.Length}."); Refresh(); _parentRefresh(); }
+            if (!_lifetime.IsCancellationRequested) { ReportCurrent(version, (result.Cancelled ? InterfaceText.Get("Import cancelled.") + " " : "") + InterfaceText.Format("Imported {0:N0}; skipped {1:N0}; failed {2:N0}; incompatible {3:N0}.", result.Imported, result.Skipped, result.Failed, dialog.FileNames.Length - accepted.Length)); Refresh(); _parentRefresh(); }
         }
-        catch (OperationCanceledException) { ReportCurrent(version, "Import cancelled."); }
-        catch (Exception) { ReportCurrent(version, "The selected model files could not be imported."); }
+        catch (OperationCanceledException) { ReportCurrent(version, InterfaceText.Get("Import cancelled.")); }
+        catch (Exception) { ReportCurrent(version, InterfaceText.Get("The selected model files could not be imported.")); }
         finally { _completionImport = null; _importing = false; if (!_lifetime.IsCancellationRequested) SetTransferBusy(false); }
     }
     private void CancelCompletionImport() => _completionImport?.Cancel();
 
     private async void Delete(string filename)
     {
-        if (MessageBox.Show(this, $"Remove {ModelDisplayText.Name(filename)} from the local models folder?", "Delete model?",
+        if (MessageBox.Show(this, InterfaceText.Format("Remove %@ from Lingrove's local models folder?", ModelDisplayText.Name(filename)), InterfaceText.Get("Delete model?"),
             MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes) return;
-        int version = ++_operationVersion; SetNotice("Deleting model…");
+        int version = ++_operationVersion; SetNotice(InterfaceText.Get("Deleting model…"));
         try
         {
             bool deleted = await _context.Host.LearningModels.DeleteAsync(filename, path => Dispatcher.InvokeAsync(() =>
@@ -222,10 +222,10 @@ internal sealed class ModelManagementWindow : Window
                 _context.Host.AcknowledgeModelMetadata(settings => settings.ClearLocalModelSource(filename));
                 return true;
             }).Task, _lifetime.Token);
-            if (!_lifetime.IsCancellationRequested) { ReportCurrent(version, deleted ? "Model deleted." : "This model is unavailable or in use."); Refresh(); _parentRefresh(); }
+            if (!_lifetime.IsCancellationRequested) { ReportCurrent(version, InterfaceText.Get(deleted ? "Model deleted." : "This model is unavailable or in use.")); Refresh(); _parentRefresh(); }
         }
         catch (OperationCanceledException) { }
-        catch (Exception) { ReportCurrent(version, "The model could not be deleted."); }
+        catch (Exception) { ReportCurrent(version, InterfaceText.Get("The model could not be deleted.")); }
     }
     private async void OpenFolder()
     {

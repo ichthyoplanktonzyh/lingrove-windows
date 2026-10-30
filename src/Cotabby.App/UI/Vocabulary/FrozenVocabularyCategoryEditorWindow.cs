@@ -103,7 +103,7 @@ internal sealed class FrozenVocabularyCategoryEditorWindow : FrozenVocabularyCla
         var presentation = R.VocabularyCategoryLocalizationPolicy.Resolve(effective, [_locale]); _name.Text = currentRules ? presentation.Name : _label.Text; _definition.Text = currentRules ? presentation.Definition : effective.Definition; _visible.IsChecked = !baseline.Overrides.Any(o => o.CategoryId == _original.Id && o.IsHidden);
         _parents = category is null ? parentId is { } id ? [id] : [] : baseline.Parents.Where(p => p.CategoryId == _original.Id).Select(p => p.ParentId).ToHashSet();
         if (_currentRules) _parentExpanded.UnionWith(VocabularyClassificationProjection.ExpansionPaths(_parents, baseline, true));
-        _axis.ItemsSource = new[] { new AxisChoice("Content meanings", R.VocabularyCategoryAxis.Content), new AxisChoice("Communicative functions", R.VocabularyCategoryAxis.Function) }; _axis.DisplayMemberPath = "Label"; _axis.SelectedValuePath = "Value"; _axis.SelectedValue = _original.Axis;
+        _axis.ItemsSource = new[] { new AxisChoice(InterfaceText.Get("Content meanings", "Vocabulary"), R.VocabularyCategoryAxis.Content), new AxisChoice(InterfaceText.Get("Communicative functions", "Vocabulary"), R.VocabularyCategoryAxis.Function) }; _axis.DisplayMemberPath = "Label"; _axis.SelectedValuePath = "Value"; _axis.SelectedValue = _original.Axis;
         Fields.Children.Add(VocabularyInputControls.Group(("Category name", _name), ("Description (optional)", _definition)));
         if (!_currentRules) Fields.Children.Add(VocabularyInputControls.Caption("Label language: " + (_label.Language?.Name() ?? "Unspecified")));
         if (_isNew) Fields.Children.Add(VocabularyInputControls.Group(("Category type", _axis)));

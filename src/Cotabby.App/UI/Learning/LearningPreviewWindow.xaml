@@ -48,7 +48,7 @@
                 <TextBlock x:Name="DirectionText" FontSize="11" Foreground="{DynamicResource TextSecondary}"
                            Margin="0,0,0,9" Visibility="Collapsed" />
                 <ScrollViewer x:Name="TranslationDestinationSection" MaxHeight="48" VerticalScrollBarVisibility="Auto" Visibility="Collapsed" Margin="0,0,0,8">
-                    <TextBlock x:Name="TranslationDestination" TextWrapping="Wrap" FontSize="11" Foreground="{DynamicResource TextSecondary}" />
+                    <TextBlock x:Name="TranslationDestination" FlowDirection="LeftToRight" TextWrapping="Wrap" FontSize="11" Foreground="{DynamicResource TextSecondary}" />
                 </ScrollViewer>
                 <ProgressBar x:Name="Progress" Height="3" IsIndeterminate="True" Margin="0,0,0,12" />
                 <TextBlock x:Name="ReplacementReason" FontSize="11" TextWrapping="Wrap" Foreground="{DynamicResource TextSecondary}" Visibility="Collapsed" Margin="0,0,0,8" />
@@ -83,7 +83,7 @@
 
                 <!-- Embedded Mac explanation: a complete older answer stays visible during refresh. -->
                 <ScrollViewer x:Name="ExplanationDestinationSection" MaxHeight="72" VerticalScrollBarVisibility="Auto" Visibility="Collapsed" Margin="0,0,0,9">
-                    <TextBlock x:Name="ExplanationDestination" TextWrapping="Wrap" FontSize="11" Foreground="{DynamicResource TextSecondary}" />
+                    <TextBlock x:Name="ExplanationDestination" FlowDirection="LeftToRight" TextWrapping="Wrap" FontSize="11" Foreground="{DynamicResource TextSecondary}" />
                 </ScrollViewer>
                 <StackPanel x:Name="ExplanationSection" Margin="0,0,0,12" Visibility="Collapsed">
                     <Border BorderBrush="{DynamicResource CardBorder}" BorderThickness="0,1,0,0" Margin="0,0,0,10" />

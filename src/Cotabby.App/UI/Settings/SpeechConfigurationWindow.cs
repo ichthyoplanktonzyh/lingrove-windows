@@ -22,7 +22,7 @@ internal sealed class SpeechConfigurationWindow : Window
     private readonly Guid _owner = Guid.NewGuid();
     private readonly StackPanel _body = new();
     private readonly TextBlock _status = new() { TextWrapping = TextWrapping.Wrap };
-    private readonly TextBlock _destination = new() { TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, 8) };
+    private readonly TextBlock _destination = new() { FlowDirection = FlowDirection.LeftToRight, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, 8) };
     private Button? _test;
     private PasswordBox? _key;
     private string _keyDraft = "";
@@ -47,7 +47,8 @@ internal sealed class SpeechConfigurationWindow : Window
         try
         {
             _renderedProvider = _speech.Settings.SelectedProvider; _body.Children.Clear(); Heading("Current configuration");
-            var provider = new ComboBox { ItemsSource = Enum.GetValues<LearningSpeechProviderKind>(), SelectedItem = _speech.Settings.SelectedProvider, MinWidth = 200 };
+            var provider = new ComboBox { ItemsSource = Enum.GetValues<LearningSpeechProviderKind>(), SelectedItem = _speech.Settings.SelectedProvider, MinWidth = 200,
+                ItemTemplate = InterfaceEnumLabels.Create<LearningSpeechProviderKind>(kind => kind switch { LearningSpeechProviderKind.System => "System speech", LearningSpeechProviderKind.Local => "Local speech model", _ => "TTS endpoint" }) };
             VocabularyNotebookTheme.Combo(provider); provider.SelectionChanged += (_, _) => { if (provider.SelectedItem is LearningSpeechProviderKind kind) { _speech.Settings.SelectProvider(kind); if (kind == LearningSpeechProviderKind.System) _speech.RefreshVoices(); Render(); } };
             Row("Run using", provider);
             _body.Children.Add(_destination);
@@ -59,7 +60,8 @@ internal sealed class SpeechConfigurationWindow : Window
             }
             Heading("Test voice");
             var rate = new Slider { Minimum = .5, Maximum = 1.5, Value = _speech.Settings.RateMultiplier, Width = 200, TickFrequency = .1, HorizontalAlignment = HorizontalAlignment.Left }; rate.ValueChanged += (_, _) => _speech.Settings.SetRateMultiplier(rate.Value); Row("Playback rate", rate);
-            var language = new ComboBox { ItemsSource = LearningLanguages.All, SelectedItem = _language, MinWidth = 200 }; VocabularyNotebookTheme.Combo(language);
+            var language = new ComboBox { ItemsSource = LearningLanguages.All, SelectedItem = _language, MinWidth = 200,
+                ItemTemplate = InterfaceEnumLabels.Create<LearningLanguage>(value => value.Label()) }; VocabularyNotebookTheme.Combo(language);
             language.SelectionChanged += (_, _) => { if (language.SelectedItem is LearningLanguage value) { _speech.Stop(_owner); _language = value; Render(); } }; Row("Audition language", language);
             _body.Children.Add(new TextBlock { Text = Phrase(_language), TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 6, 0, 8) });
             _test = Button("Test voice", TestVoice); _test.Name = "speechTestVoice"; _body.Children.Add(_test);
@@ -79,9 +81,9 @@ internal sealed class SpeechConfigurationWindow : Window
     private void LocalControls()
     {
         Heading("Local speech model");
-        Asset("Model", _speech.Settings.LocalModelPath, path => { _speech.SelectLocalModel(path); Render(); }, "GGUF model|*.gguf");
-        Asset("Decoder", _speech.Settings.LocalProjectionPath, path => { _speech.Settings.SetLocalProjectionPath(path); Render(); }, "GGUF decoder|*.gguf");
-        Asset("Reference voice (optional)", _speech.Settings.ReferenceAudioPath, path => { _speech.Settings.SetReferenceAudioPath(path); Render(); }, "Audio|*.wav;*.mp3");
+        Asset("Model", _speech.Settings.LocalModelPath, path => { _speech.SelectLocalModel(path); Render(); }, InterfaceText.Get("GGUF model") + "|*.gguf");
+        Asset("Decoder", _speech.Settings.LocalProjectionPath, path => { _speech.Settings.SetLocalProjectionPath(path); Render(); }, InterfaceText.Get("GGUF decoder") + "|*.gguf");
+        Asset("Reference voice (optional)", _speech.Settings.ReferenceAudioPath, path => { _speech.Settings.SetReferenceAudioPath(path); Render(); }, InterfaceText.Get("Audio") + "|*.wav;*.mp3");
         _body.Children.Add(new TextBlock { Text = InterfaceText.Get("Local speech loads its own model only when requested.", "Localizable"), TextWrapping = TextWrapping.Wrap });
         if (!System.IO.File.Exists(System.IO.Path.Combine(AppContext.BaseDirectory, "Helpers", "lingrove-tts-helper.exe")))
             _body.Children.Add(new TextBlock { Text = InterfaceText.Get("The local speech helper is not available in this build.", "Localizable"), TextWrapping = TextWrapping.Wrap });
@@ -106,27 +108,28 @@ internal sealed class SpeechConfigurationWindow : Window
         {
             var box = new TextBox { Text = value, MinWidth = 140, HorizontalAlignment = HorizontalAlignment.Left, ToolTip = InterfaceText.Get("Leave empty for the recommended value.", "Localizable") }; VocabularyNotebookTheme.Input(box);
             box.LostKeyboardFocus += (_, _) => { var updated = parse(box.Text, _speech.Settings.GenerationProfile.Sampling); if (updated is not null) _speech.Settings.SetSamplingOverrides(updated, identity); else _status.Text = InterfaceText.Get("Enter a valid number or leave the value empty.", "Localizable"); };
-            content.Children.Add(new TextBlock { Text = label, Margin = new Thickness(0, 8, 0, 4) }); content.Children.Add(box);
+            content.Children.Add(new TextBlock { Text = InterfaceText.Get(label), Margin = new Thickness(0, 8, 0, 4) }); content.Children.Add(box);
         }
         static double? ParseDouble(string value) => double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out double n) && double.IsFinite(n) ? n : null;
         Number("Temperature", sampling.Temperature?.ToString(CultureInfo.InvariantCulture) ?? "", (v, s) => v.Trim().Length == 0 ? s with { Temperature = null } : ParseDouble(v) is { } n ? s with { Temperature = n } : null);
         Number("Top P", sampling.TopP?.ToString(CultureInfo.InvariantCulture) ?? "", (v, s) => v.Trim().Length == 0 ? s with { TopP = null } : ParseDouble(v) is { } n ? s with { TopP = n } : null);
         Number("Top K", sampling.TopK?.ToString(CultureInfo.InvariantCulture) ?? "", (v, s) => v.Trim().Length == 0 ? s with { TopK = null } : long.TryParse(v, NumberStyles.Integer, CultureInfo.InvariantCulture, out long n) ? s with { TopK = n } : null);
         Number("Repetition penalty", sampling.RepetitionPenalty?.ToString(CultureInfo.InvariantCulture) ?? "", (v, s) => v.Trim().Length == 0 ? s with { RepetitionPenalty = null } : ParseDouble(v) is { } n ? s with { RepetitionPenalty = n } : null);
-        var seed = new ComboBox { ItemsSource = Enum.GetValues<LearningModelSeedMode>(), SelectedItem = sampling.SeedMode, MinWidth = 140, HorizontalAlignment = HorizontalAlignment.Left }; VocabularyNotebookTheme.Combo(seed);
+        var seed = new ComboBox { ItemsSource = Enum.GetValues<LearningModelSeedMode>(), SelectedItem = sampling.SeedMode, MinWidth = 140, HorizontalAlignment = HorizontalAlignment.Left,
+            ItemTemplate = InterfaceEnumLabels.Create<LearningModelSeedMode>(value => value.ToString(), "Learning") }; VocabularyNotebookTheme.Combo(seed);
         seed.SelectionChanged += (_, _) => { if (seed.SelectedItem is LearningModelSeedMode mode) _speech.Settings.SetSamplingOverrides(_speech.Settings.GenerationProfile.Sampling with { SeedMode = mode }, identity); };
         content.Children.Add(new TextBlock { Text = InterfaceText.Get("Seed mode", "Localizable"), Margin = new Thickness(0, 8, 0, 4) }); content.Children.Add(seed);
-        Number("Fixed seed", sampling.FixedSeed.ToString(CultureInfo.InvariantCulture), (v, s) => uint.TryParse(v, NumberStyles.Integer, CultureInfo.InvariantCulture, out uint n) ? s with { FixedSeed = n } : null);
+        Number("Seed value", sampling.FixedSeed.ToString(CultureInfo.InvariantCulture), (v, s) => uint.TryParse(v, NumberStyles.Integer, CultureInfo.InvariantCulture, out uint n) ? s with { FixedSeed = n } : null);
     }
     private void ImportModels()
     {
-        var dialog = new OpenFileDialog { Filter = "GGUF models|*.gguf", Multiselect = true }; if (dialog.ShowDialog(this) != true) return;
-        Track(Import()); async Task Import() { try { var result = await _models!().ImportAsync(dialog.FileNames, _lifetime.Token); if (!_closed) { Render(); _status.Text = $"Imported {result.Imported}; skipped {result.Skipped}; failed {result.Failed}."; } }
+        var dialog = new OpenFileDialog { Filter = InterfaceText.Get("GGUF models") + "|*.gguf", Multiselect = true }; if (dialog.ShowDialog(this) != true) return;
+        Track(Import()); async Task Import() { try { var result = await _models!().ImportAsync(dialog.FileNames, _lifetime.Token); if (!_closed) { Render(); _status.Text = InterfaceText.Format("Imported {0}; skipped {1}; failed {2}.", result.Imported, result.Skipped, result.Failed); } }
         catch (OperationCanceledException) { } catch { if (!_closed) _status.Text = InterfaceText.Get("Could not import the selected models.", "Localizable"); } }
     }
     private void DeleteModel(string name)
     {
-        if (MessageBox.Show(this, "Delete " + name + " from the speech model folder?", "Delete model?", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes) return;
+        if (MessageBox.Show(this, InterfaceText.Format("Remove %@ from Lingrove's local models folder?", name), InterfaceText.Get("Delete model?"), MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes) return;
         Track(Delete()); async Task Delete() { try { bool deleted = await _models!().DeleteAsync(name, _lifetime.Token); if (!_closed) { Render(); if (!deleted) _status.Text = InterfaceText.Get("This model is in use.", "Localizable"); } }
         catch (OperationCanceledException) { } catch { if (!_closed) _status.Text = InterfaceText.Get("Could not delete this model.", "Localizable"); } }
     }
@@ -152,7 +155,7 @@ internal sealed class SpeechConfigurationWindow : Window
     }
     private void RenderStatus() { _destination.Text = _speech.DestinationDescription; if (_test is not null) _test.Content = InterfaceText.Get(_speech.IsPlaying(Target) ? "Stop" : "Test voice"); _status.Text = _speech.Error(Target) ?? (_speech.IsPreparing(Target) ? InterfaceText.Get("Generating speech…") : _speech.IsPlaying(Target) ? InterfaceText.Get("Playing") : _speech.ConfigurationError ?? ""); }
     private void Input(string label, string value, Action<string> save)
-    { var box = new TextBox { Text = value, MinWidth = 240 }; VocabularyNotebookTheme.Input(box); box.LostKeyboardFocus += (_, _) => save(box.Text); Row(label, box); }
+    { var box = new TextBox { Text = value, MinWidth = 240, FlowDirection = FlowDirection.LeftToRight }; VocabularyNotebookTheme.Input(box); box.LostKeyboardFocus += (_, _) => save(box.Text); Row(label, box); }
     private void Asset(string label, string path, Action<string> save, string filter)
     {
         var panel = new StackPanel { Orientation = Orientation.Horizontal }; panel.Children.Add(new TextBlock { Text = path.Length == 0 ? InterfaceText.Get("Not selected", "Localizable") : System.IO.Path.GetFileName(path), Width = 220, TextTrimming = TextTrimming.CharacterEllipsis });

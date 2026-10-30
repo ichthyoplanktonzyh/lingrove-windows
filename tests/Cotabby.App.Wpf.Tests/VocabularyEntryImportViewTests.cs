@@ -74,6 +74,32 @@ public sealed class VocabularyEntryImportViewTests(WpfDispatcher dispatcher)
         var result = NewResult(); gate.SetResult(result); await window.LastOperation!; Assert.Equal(result, window.Result);
     });
     [Fact]
+    public Task LocalizedImportCountsAndColumnsRetainLiteralInputValues() => dispatcher.RunAsync(async () =>
+    {
+        VocabularyWordListImportWindow? window = null;
+        try
+        {
+            InterfaceText.Initialize("zh-Hans"); var reader = new DeferredReader();
+            window = new(new Owner(), reader, "owned-example.txt"); window.Show();
+            reader.Gate.SetResult(new VocabularyWordList(VocabularyWordListFormat.Text, [new(1, ["General {0} Cotabby"])]));
+            await window.LastOperation!; window.UpdateLayout();
+            Assert.Contains(Texts(window), text => text.Contains("新增词条：1", StringComparison.Ordinal) && text.Contains("新增义项：1", StringComparison.Ordinal) && text.Contains("跳过重复内容：0", StringComparison.Ordinal));
+            var grid = Find<DataGrid>(window, "vocabularyImportPreview");
+            Assert.Equal("General {0} Cotabby", Assert.Single(window.Session.Preview!.Inputs).Expression);
+            Assert.DoesNotContain(grid.Columns, column => Equals(column.Header, "Expression"));
+            Render(window, "entry-import-localized-zh", 900, 760);
+        }
+        finally { if (window is not null) await window.RetireAsync(); InterfaceText.Initialize("en"); }
+    });
+
+    private static IEnumerable<string> Texts(DependencyObject root)
+    {
+        if (root is TextBlock text) yield return text.Text;
+        for (int i = 0; i < VisualTreeHelper.GetChildrenCount(root); i++)
+            foreach (string value in Texts(VisualTreeHelper.GetChild(root, i))) yield return value;
+    }
+
+    [Fact]
     public Task ChangedConfigurationRejectsLatePreviewAndCommitUsesCurrentInputs() => dispatcher.RunAsync(async () =>
     {
         string path = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".csv"); await File.WriteAllTextAsync(path, "expression,meaning,example,translation\nbank,shore,river bank,河岸\n");

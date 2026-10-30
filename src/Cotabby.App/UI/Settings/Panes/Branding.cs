@@ -20,7 +20,7 @@ internal static class Branding
         var name = Ui.Text(AppBrand.Name);
         name.FontSize = 20;
         name.FontWeight = FontWeights.SemiBold;
-        var version = Ui.Text(InterfaceText.Format("Version {0}", Version), "Caption");
+        var version = Ui.Text(InterfaceText.Format("Version %@", Version), "Caption");
         version.Margin = new Thickness(10, 3, 0, 0);
         version.VerticalAlignment = VerticalAlignment.Center;
 

@@ -5,6 +5,7 @@ using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Threading;
 using Cotabby.App.Localization;
+using Cotabby.Core.Settings;
 
 namespace Cotabby.App.UI;
 
@@ -35,8 +36,8 @@ internal sealed class WelcomeCompletionDemo : Border
     private void Reset()
     {
         string example = InterfaceText.Get(Examples[_example % Examples.Length]);
-        var parts = example.Split('¦', 2); _ghost = parts.Length == 2 ? parts[1] : "";
-        var enumerator = StringInfo.GetTextElementEnumerator(parts[0]); var items = new List<string>();
+        var sentence = new CompletionPreviewText(example); _ghost = sentence.GhostText;
+        var enumerator = StringInfo.GetTextElementEnumerator(sentence.TypedText); var items = new List<string>();
         while (enumerator.MoveNext()) items.Add(enumerator.GetTextElement());
         _characters = items.ToArray(); _typed = 0; _phase = 0; Draw();
     }

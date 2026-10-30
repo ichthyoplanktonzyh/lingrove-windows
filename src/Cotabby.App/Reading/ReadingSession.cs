@@ -257,7 +257,7 @@ internal sealed class ReadingSession : IAsyncDisposable
                 bool current = false;
                 try { current = capture is not null && await capture.IsCurrentAsync(token); } catch { }
                 if (current && displayed is not null && Current(revision, token))
-                    _presentation.Update(displayed with { Status = ReadingStatus.Error, Message = "Reading translation could not complete. Retry or adjust the model settings." });
+                    _presentation.Update(displayed with { Status = ReadingStatus.Error, Message = InterfaceText.Get("Reading translation could not complete. Retry or adjust the model settings.") });
                 else if (capture is null)
                 {
                     Dismiss(); _presentation.ShowCaptureError(settings.Source switch

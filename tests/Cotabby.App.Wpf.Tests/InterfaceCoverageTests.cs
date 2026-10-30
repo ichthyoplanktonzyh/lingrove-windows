@@ -39,11 +39,56 @@ public sealed class InterfaceCoverageTests(WpfDispatcher dispatcher)
             Assert.Equal(state.Source, LearningViewProbe.Find<TextBlock>(window, "SourceText").Text);
             Assert.Equal("正在翻译…", LearningViewProbe.Find<TextBlock>(window, "StatusText").Text);
             Assert.Equal("取消", LearningViewProbe.Find<Button>(window, "CancelButton").Content);
+            Assert.Equal(InterfaceText.Get("Sentence translation"), LearningViewProbe.Find<TextBlock>(window, "TitleText").Text);
+            Assert.Equal(InterfaceText.Get("Collapse"), LearningViewProbe.Find<Button>(window, "ExpandButton").ToolTip);
             Assert.DoesNotContain("TRANSLATION", LearningViewProbe.Find<TextBlock>(window, "ResultLabel").Text);
+            var ready = state with { Status = LearningPreviewStatus.Ready, Result = "Literal {0} Cotabby" };
+            window.ShowState(ready, LearningViewProbe.Anchor, false);
+            window.ShowReplacementState(true, false, null);
+            Assert.Equal(InterfaceText.Get("Replace"), System.Windows.Automation.AutomationProperties.GetName(LearningViewProbe.Find<Button>(window, "ReplaceButton")));
+            window.ShowExplanationState(ready.RequestId, LearningViewProbe.Explanation("General {0}") with { IsGenerating = true }, true, LearningViewProbe.Anchor);
+            Assert.Equal(InterfaceText.Get("Explaining…"), LearningViewProbe.Find<TextBlock>(window, "ExplanationStatus").Text);
+            Assert.Equal(InterfaceText.Get("Stop generating explanation"), LearningViewProbe.Find<Button>(window, "ExplanationButton").ToolTip);
+            var copy = new LearningPreviewCopyRequest(ready, LearningPreviewCopyKind.Translation);
+            window.ShowCopyOutcome(copy, false);
+            Assert.Equal(InterfaceText.Get("Could not copy. The clipboard may be busy; try again."), LearningViewProbe.Find<TextBlock>(window, "CopyStatus").Text);
+            window.ShowCopyOutcome(copy, true);
+            Assert.Equal(InterfaceText.Get("Copied"), LearningViewProbe.Find<TextBlock>(window, "CopyStatus").Text);
+            window.ShowExpanded(false); window.ShowExpanded(true);
+            Assert.Equal(InterfaceText.Get("Sentence translation"), LearningViewProbe.Find<TextBlock>(window, "TitleText").Text);
             window.ShowCaptureFailure("General {0} · provider detail", LearningViewProbe.Anchor);
             Assert.Equal("未发送任何文本。", LearningViewProbe.Find<TextBlock>(window, "StatusText").Text);
             Assert.Equal("General {0} · provider detail", LearningViewProbe.Find<TextBlock>(window, "ErrorText").Text);
             VocabularyThemeRender.Capture(window, "learning-localized-failure-zh", 520, 350);
+        }
+        finally { window?.Close(); InterfaceText.Initialize("en"); }
+        return Task.CompletedTask;
+    });
+
+    [Fact]
+    public Task ArabicCardChromeKeepsEndpointValuesAndStudyTextDirectionsIndependent() => dispatcher.RunAsync(() =>
+    {
+        LearningPreviewWindow? window = null;
+        try
+        {
+            InterfaceText.Initialize("ar"); window = new LearningPreviewWindow();
+            var state = LearningViewProbe.Preview with { Source = "Original {0} Cotabby", Result = "نص عربي",
+                Options = new() { SourceLanguage = LearningLanguage.English, TargetLanguage = LearningLanguage.Arabic } };
+            window.ShowState(state, LearningViewProbe.Anchor, false);
+            const string destination = "https://owned.invalid/v1 · Model {0} Cotabby";
+            window.ShowTranslationDestination(destination);
+            Assert.Equal(FlowDirection.RightToLeft, window.FlowDirection);
+            Assert.Equal(FlowDirection.LeftToRight, LearningViewProbe.Find<TextBlock>(window, "SourceText").FlowDirection);
+            Assert.Equal(FlowDirection.RightToLeft, LearningViewProbe.Find<TextBlock>(window, "ResultText").FlowDirection);
+            var translatedDestination = LearningViewProbe.Find<TextBlock>(window, "TranslationDestination");
+            Assert.Equal(destination, translatedDestination.Text); Assert.Equal(FlowDirection.LeftToRight, translatedDestination.FlowDirection);
+            Assert.Equal(FlowDirection.LeftToRight, LearningViewProbe.Find<TextBlock>(window, "ExplanationDestination").FlowDirection);
+            window.UpdateLayout();
+            var card = LearningViewProbe.Find<Border>(window, "Card");
+            var bounds = card.TransformToAncestor(window).TransformBounds(new Rect(card.RenderSize));
+            Assert.InRange(bounds.Left, -1, window.ActualWidth);
+            Assert.InRange(bounds.Right, 0, window.ActualWidth + 1);
+            VocabularyThemeRender.Capture(window, "learning-localized-ar", (int)Math.Ceiling(window.ActualWidth), (int)Math.Ceiling(window.ActualHeight));
         }
         finally { window?.Close(); InterfaceText.Initialize("en"); }
         return Task.CompletedTask;
@@ -122,16 +167,43 @@ public sealed class InterfaceCoverageTests(WpfDispatcher dispatcher)
         using var json = JsonDocument.Parse(stream);
         foreach (var item in json.RootElement.GetProperty("strings").EnumerateObject())
         {
-            var expected = Regex.Matches(item.Name, @"\{\d+(?::[^}]+)?\}").Select(match => match.Value).Order(StringComparer.Ordinal).ToArray();
+            var expected = TemplateSlots(item.Name);
             foreach (var locale in InterfaceLanguagePolicy.Supported)
             {
                 Assert.True(item.Value.GetProperty("localizations").TryGetProperty(locale.Code, out var translation), item.Name + " / " + locale.Code);
                 string value = translation.GetProperty("stringUnit").GetProperty("value").GetString()!;
                 Assert.False(string.IsNullOrWhiteSpace(value), item.Name + " / " + locale.Code);
-                Assert.Equal(expected, Regex.Matches(value, @"\{\d+(?::[^}]+)?\}").Select(match => match.Value).Order(StringComparer.Ordinal).ToArray());
+                Assert.Equal(expected, TemplateSlots(value));
                 if (item.Name.Contains("{query}", StringComparison.Ordinal)) Assert.Single(Regex.Matches(value, Regex.Escape("{query}")).Cast<Match>());
             }
         }
+        return Task.CompletedTask;
+    });
+
+    [Fact]
+    public Task EverySupplementTemplateFormatsInEveryLocaleAndPreviewMarkersKeepTheirBoundary() => dispatcher.RunAsync(() =>
+    {
+        try
+        {
+            using var stream = typeof(InterfaceText).Assembly.GetManifestResourceStream("Cotabby.InterfaceLanguage.Windows.xcstrings")!;
+            using var catalog = JsonDocument.Parse(stream);
+            foreach (var locale in InterfaceLanguagePolicy.Supported)
+            {
+                InterfaceText.Initialize(locale.Code);
+                foreach (var item in catalog.RootElement.GetProperty("strings").EnumerateObject())
+                {
+                    if (item.Name.Contains("{query}", StringComparison.Ordinal)) continue;
+                    string rendered = InterfaceText.Format(item.Name, Enumerable.Repeat<object?>(17, 8).ToArray());
+                    Assert.DoesNotContain("%@", rendered); Assert.DoesNotContain("%lld", rendered);
+                    Assert.DoesNotMatch(@"\{\d+(?::[^}]+)?\}", rendered);
+                }
+                var sentence = InterfaceText.Get("This is how your¦ suggestions will look", "Localizable");
+                var split = new CompletionPreviewText(sentence);
+                Assert.Equal(1, sentence.Count(c => c == '¦'));
+                Assert.Equal(sentence.Replace("¦", "", StringComparison.Ordinal), split.TypedText + split.GhostText);
+            }
+        }
+        finally { InterfaceText.Initialize("en"); }
         return Task.CompletedTask;
     });
 
@@ -218,6 +290,19 @@ public sealed class InterfaceCoverageTests(WpfDispatcher dispatcher)
         }
         finally { if (window is not null) await window.RetireAsync(); InterfaceText.Initialize("en"); }
     });
+    private static string[] TemplateSlots(string template)
+    {
+        var slots = Regex.Matches(template, @"\{\d+(?::[^}]+)?\}").Select(match => match.Value).ToList();
+        int next = 0;
+        foreach (Match match in Regex.Matches(template, @"%(?:(\d+)\$)?(?:ll|l)?([@diu]|\.\d+f|f|%)"))
+        {
+            if (match.Groups[2].Value == "%") continue;
+            int index = match.Groups[1].Success ? int.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture) - 1 : next++;
+            slots.Add(index.ToString(CultureInfo.InvariantCulture) + ":" + match.Groups[2].Value);
+        }
+        return slots.Order(StringComparer.Ordinal).ToArray();
+    }
+
     private static IEnumerable<DependencyObject> Descendants(DependencyObject root)
     {
         foreach (var child in LogicalTreeHelper.GetChildren(root).OfType<DependencyObject>())

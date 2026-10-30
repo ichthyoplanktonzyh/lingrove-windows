@@ -47,14 +47,21 @@ internal sealed class RecommendedSetupController : IAsyncDisposable
     private Task _work = Task.CompletedTask;
     private bool _finishing, _disposed;
     private readonly Dictionary<LocalModelTask, string> _status = [];
+    private readonly Dictionary<LocalModelTask, int> _downloadPercent = [];
     private readonly Dictionary<LocalModelTask, string> _statusModel = [];
     internal event Action? Changed;
     internal RecommendedSetupPolicy.Plan Plan { get; }
     internal bool Busy => _run is not null;
     internal Task CurrentWork => _work;
-    internal string Status(LocalModelTask task, string identity) =>
-        _statusModel.TryGetValue(task, out var model) && string.Equals(model, identity, StringComparison.OrdinalIgnoreCase)
+    // Only authored stage keys enter the formatter; identity stays an exact model key.
+    internal string Status(LocalModelTask task, string identity, Func<string, object?[], string>? format = null)
+    {
+        format ??= (key, args) => string.Format(System.Globalization.CultureInfo.InvariantCulture, key, args);
+        string stage = _statusModel.TryGetValue(task, out var model) && string.Equals(model, identity, StringComparison.OrdinalIgnoreCase)
             ? _status.GetValueOrDefault(task) ?? "Not started" : "Not checked";
+        return stage == "Downloading…" && _downloadPercent.TryGetValue(task, out int percent)
+            ? format("Downloading · {0}%", [percent]) : format(stage, []);
+    }
     internal bool Applied => _host.Settings.RecommendedSetupApplied;
     internal bool NeedsApplication
     {
@@ -130,11 +137,11 @@ internal sealed class RecommendedSetupController : IAsyncDisposable
         Task LearningTransfer(LocalModelTask role, LearningDownloadableModel model) => Transfer(role, model.Filename, (progress, token) => _host.DownloadLearning(model, role, progress, token));
         async Task Transfer(LocalModelTask role, string filename, Func<IProgress<(long Bytes, long? Total)>, CancellationToken, Task> action)
         {
-            _statusModel[role] = filename; _status[role] = "Downloading…"; Changed?.Invoke();
+            _statusModel[role] = filename; _downloadPercent.Remove(role); _status[role] = "Downloading…"; Changed?.Invoke();
             var progress = new Progress<(long Bytes, long? Total)>(value =>
             {
                 if (!ReferenceEquals(_run, run) || run.IsCancellationRequested || _status.GetValueOrDefault(role) is not { } current || !current.StartsWith("Downloading", StringComparison.Ordinal)) return;
-                _status[role] = value.Total is > 0 ? $"Downloading · {Math.Clamp((int)(100d * value.Bytes / value.Total.Value), 0, 100)}%" : "Downloading…";
+                if (value.Total is > 0) _downloadPercent[role] = Math.Clamp((int)(100d * value.Bytes / value.Total.Value), 0, 100); else _downloadPercent.Remove(role);
                 Changed?.Invoke();
             });
             try { await action(progress, run.Token); _status[role] = "Installed"; if (role == LocalModelTask.Completion) FinishPending(); }

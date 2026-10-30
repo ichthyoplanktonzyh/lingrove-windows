@@ -29,7 +29,7 @@ internal sealed class RecommendedSetupView : UserControl
         body.Children.Add(new TextBlock { Text = InterfaceText.Get("Recommended setup"), FontSize = 20, FontWeight = FontWeights.SemiBold });
         body.Children.Add(new TextBlock { Text = InterfaceText.Get("Set up local autocomplete, sentence translation and explanations together. Existing models, languages and shortcuts are kept.", "Localizable"), TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 12), Foreground = SystemColors.GrayTextBrush });
         AddRow(body, "Autocomplete", _completion); AddRow(body, "Translation", _translation); AddRow(body, "AI explanation", _explanation);
-        AddRow(body, "Read aloud", new TextBlock { Text = InterfaceText.Get("Not available in this Windows preview", "Localizable"), Foreground = SystemColors.GrayTextBrush });
+        AddRow(body, "Read aloud", new TextBlock { Text = InterfaceText.Get("Open TTS settings to configure and test speech.", "Learning"), Foreground = SystemColors.GrayTextBrush });
         body.Children.Add(new TextBlock { Text = InterfaceText.Get("Models download only when you choose setup. Translation and expression assistance use their own task settings.", "Localizable"), TextWrapping = TextWrapping.Wrap, FontSize = 12, Foreground = SystemColors.GrayTextBrush, Margin = new Thickness(0, 8, 0, 4) });
         _endpoint.TextWrapping = TextWrapping.Wrap; _endpoint.Foreground = SystemColors.GrayTextBrush; _endpoint.Margin = new Thickness(0, 4, 0, 8); body.Children.Add(_endpoint);
         _size.TextWrapping = TextWrapping.Wrap; _size.Margin = new Thickness(0, 2, 0, 4); body.Children.Add(_size);
@@ -47,7 +47,7 @@ internal sealed class RecommendedSetupView : UserControl
     private static void AddRow(Panel body, string title, TextBlock detail)
     {
         var row = new StackPanel { Margin = new Thickness(0, 4, 0, 5) };
-        row.Children.Add(new TextBlock { Text = title, FontWeight = FontWeights.SemiBold });
+        row.Children.Add(new TextBlock { Text = InterfaceText.Get(title), FontWeight = FontWeights.SemiBold });
         detail.TextWrapping = TextWrapping.Wrap; detail.Margin = new Thickness(0, 2, 0, 0); row.Children.Add(detail); body.Children.Add(row);
     }
     private void Refresh()
@@ -55,27 +55,27 @@ internal sealed class RecommendedSetupView : UserControl
         var owner = _owner; var s = _settings();
         string? completionId = s.RecommendedCompletionTarget ?? s.ActiveModelId;
         string completionFile = AppSettings.CompletionFilenameForId(completionId) ?? (string.IsNullOrEmpty(completionId) ? owner.Plan.Completion.FileName : "");
-        string completion = s.Engine == EngineKind.Endpoint ? "Existing endpoint: " + ModelDisplayText.Safe(s.EndpointModel) : s.PowerModelSwitching ? "Existing power profiles" :
-            completionFile.Length == 0 ? "Existing model: " + ModelDisplayText.Safe(completionId) : ModelDisplayText.Name(completionFile);
+        string completion = s.Engine == EngineKind.Endpoint ? InterfaceText.Format("Existing endpoint: %@", ModelDisplayText.Safe(s.EndpointModel)) : s.PowerModelSwitching ? InterfaceText.Get("Existing power profiles") :
+            completionFile.Length == 0 ? InterfaceText.Format("Existing model: %@", ModelDisplayText.Safe(completionId)) : ModelDisplayText.Name(completionFile);
         string translationFile = string.IsNullOrEmpty(s.LearningLocalModel) ? owner.Plan.Translation.Filename : s.LearningLocalModel;
-        string translation = s.EffectiveLearningBackend == LearningTranslationBackend.Endpoint ? "Existing endpoint: " + ModelDisplayText.Safe(s.LearningEndpointModel) :
+        string translation = s.EffectiveLearningBackend == LearningTranslationBackend.Endpoint ? InterfaceText.Format("Existing endpoint: %@", ModelDisplayText.Safe(s.LearningEndpointModel)) :
             ModelDisplayText.Name(translationFile);
         string explanationFile = string.IsNullOrEmpty(s.LearningExplanationLocalModel) ? owner.Plan.Explanation.Filename : s.LearningExplanationLocalModel;
         string explanation = ModelDisplayText.Name(explanationFile);
-        _completion.Text = completion + (s.Engine == EngineKind.Local && !s.PowerModelSwitching ? " · " + owner.Status(LocalModelTask.Completion, completionFile) : "");
-        _translation.Text = translation + (s.EffectiveLearningBackend == LearningTranslationBackend.Local ? " · " + owner.Status(LocalModelTask.Translation, translationFile) : "");
-        _explanation.Text = explanation + " · " + owner.Status(LocalModelTask.Explanation, explanationFile);
+        _completion.Text = completion + (s.Engine == EngineKind.Local && !s.PowerModelSwitching ? " · " + owner.Status(LocalModelTask.Completion, completionFile, InterfaceText.Format) : "");
+        _translation.Text = translation + (s.EffectiveLearningBackend == LearningTranslationBackend.Local ? " · " + owner.Status(LocalModelTask.Translation, translationFile, InterfaceText.Format) : "");
+        _explanation.Text = explanation + " · " + owner.Status(LocalModelTask.Explanation, explanationFile, InterfaceText.Format);
         var destinations = new List<string>();
-        if (s.Engine == EngineKind.Endpoint) destinations.Add("Autocomplete: " + ModelDisplayText.Safe(s.EndpointBaseUrl));
-        if (s.EffectiveLearningBackend == LearningTranslationBackend.Endpoint) destinations.Add("Translation: " + ModelDisplayText.Safe(s.LearningEndpointBaseUrl));
-        _endpoint.Text = destinations.Count > 0 ? "Enabled tasks send requests to: " + string.Join("; ", destinations) : InterfaceText.Get("Local models are stored on this PC.", "Localizable");
+        if (s.Engine == EngineKind.Endpoint) destinations.Add(InterfaceText.Format("Autocomplete: %@", ModelDisplayText.Safe(s.EndpointBaseUrl)));
+        if (s.EffectiveLearningBackend == LearningTranslationBackend.Endpoint) destinations.Add(InterfaceText.Format("Translation: %@", ModelDisplayText.Safe(s.LearningEndpointBaseUrl)));
+        _endpoint.Text = destinations.Count > 0 ? InterfaceText.Format("Enabled tasks send requests to: %@", string.Join("; ", destinations)) : InterfaceText.Get("Local models are stored on this PC.", "Localizable");
         var completionModel = ModelCatalog.All.FirstOrDefault(model => string.Equals(model.FileName, completionFile, StringComparison.OrdinalIgnoreCase));
         var translationModel = LearningRuntimeCatalog.TranslationModels.FirstOrDefault(model => string.Equals(model.Filename, translationFile, StringComparison.OrdinalIgnoreCase));
         var explanationModel = LearningRuntimeCatalog.ExplanationModels.FirstOrDefault(model => string.Equals(model.Filename, explanationFile, StringComparison.OrdinalIgnoreCase));
         double maximum = (s.Engine == EngineKind.Local && !s.PowerModelSwitching ? completionModel?.ApproxSizeBytes ?? 0 : 0)
             + (s.EffectiveLearningBackend == LearningTranslationBackend.Local ? translationModel?.ExpectedSizeBytes ?? 0 : 0)
             + (explanationModel?.ExpectedSizeBytes ?? 0);
-        _size.Text = maximum > 0 ? $"Recommended downloads: up to {maximum / 1_000_000_000:0.0} GB (less if already installed)." : "";
+        _size.Text = maximum > 0 ? InterfaceText.Format("Recommended downloads: up to {0:F1} GB (less if already installed).", maximum / 1_000_000_000) : "";
         _apply.Content = owner.NeedsApplication ? InterfaceText.Get("Use recommended setup", "Localizable") : InterfaceText.Get("Retry downloads", "Localizable"); _apply.IsEnabled = !owner.Busy; _cancel.IsEnabled = owner.Busy;
     }
 }

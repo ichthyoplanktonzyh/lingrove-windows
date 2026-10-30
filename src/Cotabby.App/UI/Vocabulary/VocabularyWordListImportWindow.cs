@@ -79,9 +79,9 @@ internal sealed class VocabularyWordListImportWindow : Window
         _results.Children.Clear();
         if (_session.Preview is not { } preview) return;
         var count = preview.Plan.Result;
-        _results.Children.Add(new TextBlock { Text = $"New entries: {count.AddedEntries}     New senses: {count.AddedSenses}     Duplicates skipped: {count.SkippedRows}", Margin = new Thickness(0, 10, 0, 4) });
+        _results.Children.Add(new TextBlock { Text = string.Join("     ", InterfaceText.Quantity("New entries: %lld", count.AddedEntries, "Vocabulary"), InterfaceText.Quantity("New senses: %lld", count.AddedSenses, "Vocabulary"), InterfaceText.Quantity("Duplicates skipped: %lld", count.SkippedRows, "Vocabulary")), Margin = new Thickness(0, 10, 0, 4) });
         bool examples = _session.Configuration!.Columns.ContainsKey(VocabularyImportField.Example) || _session.Configuration.Columns.ContainsKey(VocabularyImportField.ExampleTranslation);
-        if (examples) _results.Children.Add(new TextBlock { Text = $"New examples: {count.AddedExamples}     New translations: {count.AddedTranslations}", Margin = new Thickness(0, 0, 0, 5) });
+        if (examples) _results.Children.Add(new TextBlock { Text = string.Join("     ", InterfaceText.Quantity("New examples: %lld", count.AddedExamples, "Vocabulary"), InterfaceText.Quantity("New translations: %lld", count.AddedTranslations, "Vocabulary")), Margin = new Thickness(0, 0, 0, 5) });
         var grid = new DataGrid { Name = "vocabularyImportPreview", AutoGenerateColumns = false, IsReadOnly = true, CanUserAddRows = false, HeadersVisibility = DataGridHeadersVisibility.Column,
             Height = Math.Min(9, Math.Max(3, preview.Inputs.Count + 1)) * (examples ? 40 : 24) + 4, ItemsSource = preview.Inputs.Take(50).ToArray() };
         VocabularyNotebookTheme.Grid(grid); AddColumn(grid, "Expression", "Expression"); AddColumn(grid, "Core meaning", "Meaning");
@@ -90,7 +90,7 @@ internal sealed class VocabularyWordListImportWindow : Window
         if (preview.Inputs.Count > 50) _results.Children.Add(VocabularyInputControls.Caption(InterfaceText.Get("Showing the first 50 rows.")));
         if (!count.HasChanges) _results.Children.Add(VocabularyInputControls.Caption(InterfaceText.Get("All rows are already in the notebook.")));
     }
-    private static void AddColumn(DataGrid grid, string title, string path) => grid.Columns.Add(new DataGridTextColumn { Header = title, Binding = new System.Windows.Data.Binding(path), Width = new DataGridLength(160), MinWidth = 90 });
+    private static void AddColumn(DataGrid grid, string title, string path) => grid.Columns.Add(new DataGridTextColumn { Header = InterfaceText.Get(title, "Vocabulary"), Binding = new System.Windows.Data.Binding(path), Width = new DataGridLength(160), MinWidth = 90 });
     private void BuildSettings(VocabularyWordList table)
     {
         _settings.Children.Clear(); var config = _session.Configuration!;
@@ -106,7 +106,7 @@ internal sealed class VocabularyWordListImportWindow : Window
         var primary = new List<(string Label, FrameworkElement Control)>(); var more = new List<(string Label, FrameworkElement Control)>();
         foreach (var field in Enum.GetValues<VocabularyImportField>())
         {
-            var box = new ComboBox { MinWidth = 200 }; box.Items.Add("No column");
+            var box = new ComboBox { MinWidth = 200 }; box.Items.Add(InterfaceText.Get("No column", "Vocabulary"));
             for (int i = 0; i < table.ColumnCount; i++) box.Items.Add(ColumnName(i, table, config.HasHeader));
             box.SelectedIndex = config.Columns.TryGetValue(field, out int index) ? index + 1 : 0;
             VocabularyNotebookTheme.Combo(box); box.SelectionChanged += (_, _) => Change(c => { var columns = c.Columns.ToDictionary(); if (box.SelectedIndex <= 0) columns.Remove(field); else columns[field] = box.SelectedIndex - 1; return c with { Columns = columns }; });
@@ -118,7 +118,7 @@ internal sealed class VocabularyWordListImportWindow : Window
     }
     private static string ColumnName(int index, VocabularyWordList table, bool header)
     {
-        string name = $"Column {index + 1}"; var cells = table.Rows[0].Cells;
+        string name = InterfaceText.Format("Column %lld", index + 1); var cells = table.Rows[0].Cells;
         return header && index < cells.Count && cells[index].Length > 0 ? name + " · " + string.Concat(cells[index].Take(70)) : name;
     }
     private static string FieldName(VocabularyImportField field) => field switch

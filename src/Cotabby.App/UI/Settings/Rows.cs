@@ -163,7 +163,7 @@ internal sealed class Rows(SettingsContext context)
         string title, string subtitle, string placeholder,
         Func<AppSettings, string> get, Action<AppSettings, string> set)
     {
-        var box = new TextBox { Tag = placeholder, Width = 240 }.Styled("Input");
+        var box = new TextBox { Tag = InterfaceText.Get(placeholder), Width = 240 }.Styled("Input");
         Bind(box, get, set);
         return Labeled(title, subtitle, box);
     }

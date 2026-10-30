@@ -96,7 +96,12 @@ internal sealed partial class LearningPreviewController
                     || !CanExplainDocumentLocked(presentation, capture, intent)) return;
                 var action = LearningExplanationCardPolicy.Action(state, _explanationSession.IsConfigured);
                 if (action is LearningExplanationCardAction.Explain or LearningExplanationCardAction.Refresh)
+                {
+                    // The Mac compact header keeps learning actions. Expand this validated
+                    // document and its destination disclosure before admitting generation.
+                    _expanded = true; _window?.ShowExpanded(true);
                     _ = _explanationSession.ExplainAsync(refresh: action == LearningExplanationCardAction.Refresh, expectedState: state);
+                }
                 else configure = action == LearningExplanationCardAction.Configure;
             }
             if (configure)

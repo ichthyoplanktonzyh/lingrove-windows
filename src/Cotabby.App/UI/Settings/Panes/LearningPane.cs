@@ -92,9 +92,12 @@ internal static class LearningPane
                 Rows.Note("Uses the independent AI explanation provider below. The configured destination is shown before a request; the translation endpoint is not used.")),
             new SettingsCard("Manual sentence preview",
                 rows.Toggle("Enable Sentence Translation",
-                    "The configured shortcut reads the complete current sentence from a supported field and opens a read-only preview.",
+                    "The configured shortcut reads the complete current sentence from a supported field and opens a preview.",
                     s => s.LearningTranslationEnabled, (s, v) => s.LearningTranslationEnabled = v)
                     .Tagged("language learning translation sentence preview manual writing current field"),
+                rows.Toggle("Show Preview After Typing", "Show a compact translation after a committed edit settles in a supported field.",
+                    s => s.LearningSentencePreviewEnabled, (s, v) => s.LearningSentencePreviewEnabled = v)
+                    .Tagged("automatic writing sentence preview"),
                 rows.Combo("Translation Provider",
                     "Local uses a separate learning model runtime. Endpoint sends only after the learning endpoint is explicitly enabled.",
                     Backends, s => ActiveTranslationBackend(s), (s, v) => { if (!s.LearningTranslationPowerSwitching) s.LearningBackend = v; })

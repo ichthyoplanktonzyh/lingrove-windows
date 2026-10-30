@@ -20,8 +20,8 @@ public sealed class LearningPreviewEmbeddedExampleTests(WpfDispatcher dispatcher
         Assert.Equal(Visibility.Collapsed, ((FrameworkElement)window.FindName("SourceSection")).Visibility);
         Assert.Equal("English", ((TextBlock)window.FindName("TitleText")).Text);
         Assert.Equal(Visibility.Collapsed, ((FrameworkElement)window.FindName("ResultLabel")).Visibility);
-        Assert.Equal(Visibility.Collapsed, ((FrameworkElement)window.FindName("ExplanationContainer")).Visibility);
-        Assert.Equal(Visibility.Collapsed, ((FrameworkElement)window.FindName("FavoriteContainer")).Visibility);
+        Assert.Equal(Visibility.Visible, ((FrameworkElement)window.FindName("ExplanationContainer")).Visibility);
+        Assert.Equal(Visibility.Visible, ((FrameworkElement)window.FindName("FavoriteContainer")).Visibility);
         int explanationRequests = 0; window.ExplanationRequested += (_, _) => explanationRequests++;
         window.ShowExplanationState("one", new LearningExplanationState(), true, ScreenRect.Empty);
         ((Button)window.FindName("ExplanationButton")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));

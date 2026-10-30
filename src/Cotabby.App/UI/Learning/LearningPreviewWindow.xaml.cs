@@ -105,7 +105,7 @@ public partial class LearningPreviewWindow : Window
         ReplaceButton.IsEnabled = ready && _canReplace && !_isCommitting;
         // Compact presentation hides destination disclosure, so it must not offer an action
         // that could send text to that undisclosed destination. The bound controls retain state.
-        ExplanationContainer.Visibility = FavoriteContainer.Visibility = !error && _expanded ? Visibility.Visible : Visibility.Collapsed;
+        ExplanationContainer.Visibility = FavoriteContainer.Visibility = !error ? Visibility.Visible : Visibility.Collapsed;
         System.Windows.Automation.AutomationProperties.SetName(ReplaceButton, _isCommitting ? "Replacing" : "Replace");
         ReplacementReason.Visibility = !error && ReplacementReason.Text.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
         CopyActions.Visibility = !_embeddedExample && _expanded && CopyActions.Children.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
@@ -316,7 +316,7 @@ public partial class LearningPreviewWindow : Window
 
     private void OnExplanationClick(object sender, RoutedEventArgs e)
     {
-        if (_expanded && _displayedPreview is { } preview && _displayedExplanation is { } state)
+        if (_displayedPreview is { } preview && _displayedExplanation is { Input: not null } state)
             ExplanationRequested?.Invoke(preview.RequestId, state);
     }
 

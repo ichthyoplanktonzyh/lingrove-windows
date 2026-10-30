@@ -59,7 +59,9 @@ were available; hierarchy/state comparisons use committed views. Full independen
 same-head CI results belong to the PR record. Tests do not activate real models, endpoints, audio,
 clipboard copying, a user notebook/editor or screenshot acquisition.
 
-This closes the listed active auxiliary-copy misses, not every possible local diagnostic. Further
-coordinator/domain-message coverage and physical RTL/mixed-DPI/host/provider acceptance remain
-separate work. Unknown OS/provider/remote diagnostics remain literal. The maintainer's consolidated
-Word → Chrome → Codex acceptance and recorded native language/media/dictionary limitations remain.
+This closes the listed active auxiliary-copy misses, not every possible local diagnostic. The later
+[workflow failure](WORKFLOW_FAILURE_INTERFACE_3B.md) and [review failure](REVIEW_FAILURE_INTERFACE_3B.md)
+passes connect the subsequently inventoried coordinator/domain messages. Further copy work needs
+a concrete active caller/key. Unknown OS/provider/remote diagnostics remain literal. The
+[acceptance handoff](WINDOWS_ACCEPTANCE_CANDIDATE_3B.md) records physical RTL/mixed-DPI/host/provider
+checks and the remaining language/media/dictionary limits for Word → Chrome → Codex.

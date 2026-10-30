@@ -4,7 +4,7 @@ Read-only development diagnostics. This script installs nothing, changes no mach
 starts no app/model and reads no user notebook. Run from a cloned Windows checkout.
 #>
 [CmdletBinding()]
-param([switch]$RequireNative, [switch]$Json)
+param([switch]$RequireNative, [switch]$Json, [string]$PythonExecutable)
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
@@ -83,10 +83,22 @@ try {
     } else { $null }
     Add-Check 'CMake' ([bool]$cmakePath -and (Test-Path $cmakePath -PathType Leaf)) $(if ($cmakePath) { $cmakePath } else { 'Add C++ CMake tools for Windows.' }) ([bool]$RequireNative)
 
-    $pythonTool = Get-Command py -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
-    # Presence only: invoking newer Python install managers can acquire a missing interpreter.
-    # Native preparation explicitly requires an already installed Python 3.11+ in the guide.
-    Add-Check 'Python launcher (presence)' ($null -ne $pythonTool) $(if ($pythonTool) { $pythonTool.Source } else { 'Install Python 3.11+ with its py launcher for native-helper checks.' }) ([bool]$RequireNative)
+    if ($PythonExecutable) {
+        $pythonReady = $false; $pythonDetail = 'Specify an installed Python 3.11+ executable; WindowsApps aliases are not invoked.'
+        try {
+            $pythonFile = Get-Item -LiteralPath $PythonExecutable
+            if (-not $pythonFile.PSIsContainer -and $pythonFile.Extension -eq '.exe' -and $pythonFile.FullName -notmatch '\\WindowsApps\\') {
+                $pythonVersion = & $pythonFile.FullName -c 'import sys; print(sys.version.split()[0]); raise SystemExit(0 if sys.version_info >= (3, 11) else 1)' 2>$null
+                $pythonReady = $LASTEXITCODE -eq 0
+                $pythonDetail = $pythonFile.FullName + '; Python ' + ($pythonVersion -join ' ')
+            }
+        } catch { $pythonDetail = 'The specified installed Python executable could not be checked.' }
+        Add-Check 'Python interpreter (explicit)' $pythonReady $pythonDetail ([bool]$RequireNative)
+    } else {
+        $pythonTool = Get-Command py -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
+        # Presence only: invoking newer Python install managers can acquire a missing interpreter.
+        Add-Check 'Python launcher (presence)' ($null -ne $pythonTool) $(if ($pythonTool) { $pythonTool.Source } else { 'Install Python 3.11+ with its py launcher, or pass -PythonExecutable with an installed interpreter.' }) ([bool]$RequireNative)
+    }
 
     if ($Json) { [pscustomobject]@{ Ready = ($failures.Count -eq 0); Checks = $checks.ToArray() } | ConvertTo-Json -Depth 4 }
     else {

@@ -50,6 +50,7 @@ if (-not $dotnet) { throw 'Install the SDK selected by global.json before buildi
 if ($IncludeLocalSpeech) {
     $python = Resolve-Tool $PythonExecutable 'python'
     if (-not $python) { throw 'Pass -PythonExecutable with an installed Python 3.11+ executable.' }
+    if ($python -match '\\WindowsApps\\') { throw 'WindowsApps aliases are not invoked. Pass an installed Python executable.' }
     Invoke-Checked $python @('-c', 'import sys; assert sys.version_info >= (3, 11), "Python 3.11+ is required"')
     $cmake = Resolve-Tool $CMakeExecutable 'cmake'
     if (-not $cmake) {

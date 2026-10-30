@@ -1,5 +1,8 @@
 namespace Cotabby.Core.LanguageLearning.Reading;
 
+/// <summary>Frozen pointer geometry. Pixels, native handles and live cursor state stay outside this value.</summary>
+public sealed record ReadingVisualFrame(double X, double Y, Cotabby.Core.Focus.ScreenRect Display, Cotabby.Core.Focus.ScreenRect Bounds, double Scale);
+
 /// <summary>One explicit bounded BGRA screenshot; pixel bytes remain request-owned and in memory.</summary>
 public sealed record ReadingBitmap(int Width, int Height, byte[] Bgra);
 public readonly record struct ReadingOcrRect(double X, double Y, double Width, double Height);

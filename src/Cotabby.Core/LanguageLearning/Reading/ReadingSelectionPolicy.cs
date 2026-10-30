@@ -24,7 +24,7 @@ public static class ReadingSelectionPolicy
         bool absolute = selection.SelectionStart is int start && start >= 0
             && selection.SelectionLength > 0 && start <= int.MaxValue - selection.SelectionLength;
         bool opaque = selection.SelectionAnchorId is Guid id && id != Guid.Empty;
-        bool screen = selection.Source == ReadingSourceKind.Screenshot && selection.ScreenReceipt is { } receipt
+        bool screen = selection.Source is ReadingSourceKind.Screenshot or ReadingSourceKind.Pointer && selection.ScreenReceipt is { } receipt
             && receipt.EvidenceId != Guid.Empty && !selection.SelectionStart.HasValue && !selection.SelectionAnchorId.HasValue
             && ReadingRegionPolicy.Contains(receipt.FieldBounds, receipt.DisplayBounds, receipt.Region);
         bool range = selection.Source is ReadingSourceKind.Selection or ReadingSourceKind.Pointer && absolute != opaque
@@ -32,6 +32,9 @@ public static class ReadingSelectionPolicy
             && (selection.Source != ReadingSourceKind.Pointer || opaque) && selection.ScreenReceipt is null;
         bool windowScreen = screen && selection.ScreenReceipt!.WindowOrigin is { Id: var originId } origin
             && originId != Guid.Empty && ReadingRegionPolicy.IsValidBounds(origin.WindowBounds);
+        if (screen && selection.Source == ReadingSourceKind.Pointer)
+            screen = windowScreen && ReadingVisualPolicy.Contains(selection.ScreenReceipt!.WindowOrigin!.WindowBounds, selection.ScreenReceipt.Region)
+                && ReadingVisualPolicy.Contains(selection.ScreenReceipt.Region, selection.Anchor);
         bool sourceEvidence = windowScreen
             ? selection.FieldId == "" && selection.Composition == Cotabby.Core.Focus.InputCompositionState.Unknown && selection.CompositionSequence == 0
             : !string.IsNullOrWhiteSpace(selection.FieldId) && selection.Composition == Cotabby.Core.Focus.InputCompositionState.Clear && selection.CompositionSequence > 0

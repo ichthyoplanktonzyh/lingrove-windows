@@ -16,7 +16,7 @@ public sealed record ReadingSelection(Guid Id, string Text, int ProcessId, strin
     /// <summary>Capture time is stable across retries and durable contextual saves.</summary>
     public DateTimeOffset CapturedAt { get; init; } = DateTimeOffset.UtcNow;
     public ReadingSourceKind Source { get; init; } = ReadingSourceKind.Selection;
-    /// <summary>Present only for a separately verified explicit screen-region capture.</summary>
+    /// <summary>Present only for a separately verified visual pointer or explicit region capture.</summary>
     public ReadingScreenReceipt? ScreenReceipt { get; init; }
 }
 

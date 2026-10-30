@@ -16,6 +16,12 @@ public static partial class IcuWritingScriptEvidence
     {
         int status = 0; int result = uscript_getScript(scalar, &status); return status <= 0 && result >= 0 ? result : null;
     }
+    /// <summary>Borrowed script-property evidence for OCR row direction and CJK separators.</summary>
+    public static int? ReadScript(int scalar)
+    {
+        try { return Script(scalar); }
+        catch (Exception error) when (error is DllNotFoundException or EntryPointNotFoundException or BadImageFormatException) { return null; }
+    }
     [LibraryImport("icu.dll", EntryPoint = "uscript_getScript")]
     private static unsafe partial int uscript_getScript(int scalar, int* status);
 }

@@ -87,12 +87,45 @@ public sealed class ReadingWindowSourceTests
         var notified = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously); lease.Invalidated += notified.SetResult;
         await notified.Task.WaitAsync(TimeSpan.FromSeconds(5));
     }
+    [Fact]
+    public async Task PointerAcquisitionRetiredByInputCannotBecomeAnOrdinaryMissingEvidenceReply()
+    {
+        var effects = new Effects(); effects.BeforeSecurity = () => effects.Keyboard.Raise(0x41, true);
+        await using var source = effects.Source();
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => source.CapturePointerAsync(100, 100, default));
+        Assert.Equal(0, effects.Captures); Assert.Equal(0, effects.Keyboard.Subscribers); Assert.Null(effects.Focus);
+    }
+    [Theory]
+    [InlineData("point")] [InlineData("scale")]
+    public async Task PointerFramesRequireCurrentPointSecurityAndFrozenDisplayScale(string changed)
+    {
+        var effects = new Effects(); await using var source = effects.Source();
+        await using var lease = await source.CapturePointerAsync(100, 100, default); Assert.NotNull(lease);
+        Assert.NotNull(lease.PointerFrame); Assert.Equal(0, effects.Captures);
+        Assert.Null(await lease.CaptureRegionAsync(new(500, 30, 16, 16), default)); Assert.Equal(0, effects.Captures);
+        effects.AfterPixels = () => { if (changed == "point") effects.PointIdentity = "other"; else effects.Scale = 2; };
+        Assert.Null(await lease.CaptureRegionAsync(lease.PointerFrame.Bounds, default));
+        Assert.All(effects.Pixels!, value => Assert.Equal(0, value)); Assert.False(lease.IsLive);
+    }
+    [Fact]
+    public async Task PointedWindowHasItsOwnFrameAndAnIdenticallySizedReplacementCannotReuseItsReceipt()
+    {
+        var effects = new Effects { PointWindow = 22, PointBounds = new(10, 10, 150, 150) };
+        await using var source = effects.Source(); await using var lease = await source.CapturePointerAsync(100, 100, default);
+        Assert.NotNull(lease); Assert.Equal(effects.PointBounds, lease.Evidence!.WindowOrigin!.WindowBounds);
+        Assert.True(await lease.IsCurrentAsync(default));
+        effects.AfterPixels = () => effects.PointWindow = 33;
+        Assert.Null(await lease.CaptureRegionAsync(lease.PointerFrame!.Bounds, default));
+        Assert.False(lease.IsLive); Assert.All(effects.Pixels!, value => Assert.Equal(0, value));
+    }
     private sealed class Effects
     {
         internal ReadingForeground Current = new(11, Environment.ProcessId + 1000, 1, "owned-fake");
         internal ScreenRect Window = new(0, 0, 200, 200);
         internal readonly Hook Keyboard = new(); internal Action<nint>? Focus;
         internal bool SecureOrUnknown, RetireDuringSubscribe; internal int Captures; internal byte[]? Pixels;
+        internal string PointIdentity = "point"; internal double Scale = 1;
+        internal nint PointWindow = 11; internal ScreenRect? PointBounds;
         internal Action? BeforeSecurity, BeforePixels, AfterPixels;
         internal Win32ReadingWindowSource Source() => new(() => Current, Keyboard,
             handler => { Focus += handler; if (RetireDuringSubscribe) handler(11); }, handler => Focus -= handler,
@@ -101,7 +134,9 @@ public sealed class ReadingWindowSourceTests
             {
                 BeforePixels?.Invoke(); Captures++; Pixels = Enumerable.Repeat((byte)73, checked((int)region.Width * (int)region.Height * 4)).ToArray();
                 AfterPixels?.Invoke(); return new(new((int)region.Width, (int)region.Height, Pixels), new(0, 0, 2000, 1000));
-            });
+            }, (origin, _, allowed) => { BeforeSecurity?.Invoke(); return !SecureOrUnknown && allowed() ? new(origin.ProcessId, PointIdentity) : null; },
+            (_, point) => ReadingVisualPolicy.Snapshot(point.X, point.Y, new(0, 0, 2000, 1000), PointBounds ?? Window, Scale) is { } frame
+                ? new(PointWindow, PointBounds ?? Window, new(point.X, point.Y, new(0, 0, 2000, 1000), frame, Scale)) : null);
     }
     private sealed class Hook : IKeyboardHook
     {

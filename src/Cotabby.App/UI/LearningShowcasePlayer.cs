@@ -48,8 +48,8 @@ internal sealed class LearningShowcasePlayer : StackPanel, IAsyncDisposable
         _steps.MaxWidth = 250;
         _trigger = trigger ?? (() => "??");
         _scenes.ItemsSource = LearningShowcaseCatalog.Scenes.Select(s => Cotabby.App.Localization.InterfaceText.Get(s.Title)).ToArray();
-        System.Windows.Automation.AutomationProperties.SetName(_scenes, "Language learning scene");
-        System.Windows.Automation.AutomationProperties.SetName(_steps, "Demo steps");
+        System.Windows.Automation.AutomationProperties.SetName(_scenes, InterfaceText.Get("Language learning scene", "Learning"));
+        System.Windows.Automation.AutomationProperties.SetName(_steps, InterfaceText.Get("Demo steps", "Learning"));
         Children.Add(_scenes);
         var shell = new StackPanel { Margin = new Thickness(0, 10, 0, 0) };
         shell.Children.Add(new TextBlock { Text = InterfaceText.Get("Interactive demo · sample content", "Localizable"), FontSize = 11, Margin = new Thickness(0, 0, 0, 8) });

@@ -9,8 +9,10 @@ The helper keeps speech's evolving libmtmd ABI out of the application's independ
 LLamaSharp autocomplete/learning libraries. One process owns one model pair/context and sequential
 utterances; the runtime from [SPEECH_LOCAL_RUNTIME.md](SPEECH_LOCAL_RUNTIME.md) owns its pipes,
 cancellation and idle release. The helper performs no model download or endpoint request. This
-phase builds static CPU code; GPU acceleration, application copy/activation and model-backed/audio
-acceptance remain work. There is no installer, upload or downloadable package target.
+phase builds static CPU code. The later [Windows development workflow](WINDOWS_DEV_BUILD_3B.md)
+adds explicit checked app-local embedding; [production composition](SPEECH_PRODUCTION_3B.md)
+owns lazy activation. GPU acceleration and model-backed/audio acceptance remain work.
+There is no installer, upload or downloadable package target.
 
 ## Original generation and explicit platform seam
 

@@ -127,7 +127,7 @@ internal sealed class ExpressionAssistView : Border
             int index = i; var candidate = _candidates[i];
             string baseForm = Cotabby.Core.Text.FoundationText.TrimWhitespaceAndNewlines(candidate.DictionaryForm ?? "");
             bool showsBaseForm = baseForm.Length > 0 && !string.Equals(baseForm, candidate.Text.Trim(), StringComparison.OrdinalIgnoreCase);
-            string baseFormLabel = showsBaseForm ? "Base form: " + baseForm : "";
+            string baseFormLabel = showsBaseForm ? InterfaceText.Format("Base form: %@", baseForm) : "";
             var content = new StackPanel();
             content.Children.Add(new TextBlock { Text = $"{(i == _selected ? "↵" : (i + 1).ToString())}  {candidate.Text}",
                 FontWeight = FontWeights.SemiBold, TextWrapping = TextWrapping.Wrap });
@@ -203,11 +203,11 @@ internal sealed class ExpressionAssistView : Border
                 var speech = _tools?.Speech; bool active = speech?.IsPlaying(_tools!.Target(row.Index)) == true;
                 speak.Content = active ? "■" : "🔊";
                 speak.SetResourceReference(Control.ForegroundProperty, active ? "AccentBrush" : "TextSecondary");
-                string label = active ? "Stop speaking expression" : "Play expression aloud";
+                string label = InterfaceText.Get(active ? "Stop speaking expression" : "Play expression aloud", "Learning");
                 speak.ToolTip = speech?.Error(_tools!.Target(row.Index)) ?? label;
                 speak.IsEnabled = !_composing && _tools?.Current(row.Index, row.Candidate) == true;
                 AutomationProperties.SetName(speak, label); AutomationProperties.SetItemStatus(speak,
-                    speech?.IsPreparing(_tools!.Target(row.Index)) == true ? "Preparing…" : active ? "Playing" : "");
+                    speech?.IsPreparing(_tools!.Target(row.Index)) == true ? InterfaceText.Get("Preparing…") : active ? InterfaceText.Get("Playing") : "");
             }
             if (row.Favorite is { } favorite)
             {

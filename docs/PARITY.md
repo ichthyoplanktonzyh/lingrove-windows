@@ -1,5 +1,13 @@
 # Feature Parity and Evidence
 
+The [Windows development build](WINDOWS_DEV_BUILD_3B.md) adds explicit source preparation,
+model-free checking and app-local embedding for the independent CPU speech helper. It prepares
+an unpackaged development directory without changing native/model/physical acceptance gates.
+
+The [auxiliary interface pass](AUXILIARY_INTERFACE_COPY_3B.md) connects further onboarding,
+expression, review, semantic and export chrome and coherent model-window theming. Its resource,
+component/render evidence and remaining diagnostic/native scope stay explicit.
+
 The [settings metadata copy batch](SETTINGS_INTERFACE_COPY_3B.md) completes the finite active
 title/subtitle/card-header inventory in 15 locales through the existing WPF/search adapters.
 Broader auxiliary/domain-message and native acceptance scope remains separately recorded.

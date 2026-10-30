@@ -18,9 +18,10 @@ an explicit WASAPI player. Voice metadata has no equivalent quality ranking in t
 available voices use the standard rank rather than invented quality information. A separate
 speech folder uses the existing GGUF staged importer and protected no-follow deletion, without
 creating or using the completion/translation model runtime.
-The native helper is built separately and is not included by the existing application build;
-local playback therefore reports helper unavailability until an independently built helper is
-placed at the runtime's configured path. No model or helper is downloaded by this work.
+The native helper is built separately from the ordinary .NET application build. The explicit
+[Windows development build](WINDOWS_DEV_BUILD_3B.md) can now compile, check and embed it at the
+existing runtime path with `-IncludeLocalSpeech`; managed-only builds still report unavailability
+when no helper has been prepared. No model or prebuilt helper is downloaded by this work.
 
 Windows Extended Linguistic Services returns a relevance-ordered language list, not the
 confidence values required by the source resolver. The current integration passes no guessed

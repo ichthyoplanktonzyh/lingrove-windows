@@ -169,6 +169,12 @@ the initial gap audit; its initial Windows gap descriptions are historical. Curr
 - The [settings metadata batch](SETTINGS_INTERFACE_COPY_3B.md) supplies all 70 remaining keys in
   the finite row/subtitle/card-header inventory, extending the supplement to 452 keys in 15 locales.
   Broader auxiliary/domain copy remains scoped separately.
+- #161 merged settings metadata copy after all four checks passed at
+  `8ff982eae33400e33c6c8fcd9aae5dd16466df5c`, as `d068062`, with independent WPF 1234/1234
+  on the code/resource-identical preceding head and final provenance-only diff review.
+- The [Windows development build](WINDOWS_DEV_BUILD_3B.md) explicitly builds, checks and embeds
+  the independent CPU speech helper into the existing app-relative runtime path. It creates no
+  installer, release or uploaded artifact, and downloads no model weights.
 - Remaining work includes native host/provider acceptance,
   full interface-language coverage, native automatic language
   confidence, Apple's unavailable system dictionary and the explicitly documented media/native gaps.

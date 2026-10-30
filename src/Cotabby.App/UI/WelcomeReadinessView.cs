@@ -144,7 +144,7 @@ internal sealed class WelcomeReadinessView : StackPanel
         return [new(ReadinessTask.Completion, completionName, OnboardingSetupPolicy.ModelStatus(completionName.Length > 0, completionValid, completionDownloading)),
             new(ReadinessTask.Translation, translation, OnboardingSetupPolicy.ModelStatus(translation.Length > 0, translationValid, host.LearningModels.Activity.IsDownloading(translation))),
             new(ReadinessTask.Explanation, explanation, OnboardingSetupPolicy.ModelStatus(explanation.Length > 0, explanationValid, host.LearningModels.Activity.IsDownloading(explanation))),
-            new(ReadinessTask.Speech, speechError ?? s.SpeechProvider.ToString(), speechError is null ? OnboardingModelStatus.Configured : OnboardingModelStatus.NeedsConfiguration)];
+            new(ReadinessTask.Speech, speechError ?? InterfaceText.Get(s.SpeechProvider switch { LearningSpeechProviderKind.System => "System speech", LearningSpeechProviderKind.Local => "Local speech model", LearningSpeechProviderKind.Endpoint => "TTS endpoint", _ => "Unavailable" }, "Learning"), speechError is null ? OnboardingModelStatus.Configured : OnboardingModelStatus.NeedsConfiguration)];
     }
     private bool SupportsExplanation(LearningModelSnapshot snapshot, CancellationToken ct)
     {
@@ -168,11 +168,11 @@ internal sealed class WelcomeReadinessView : StackPanel
         try
         {
             if (s.SpeechProvider == LearningSpeechProviderKind.Local) _ = LearningSpeechSettings.ValidateLocalConfiguration(s.SpeechModel, s.SpeechProjection, s.SpeechReference, new SpeechAssetFiles());
-            if (s.SpeechProvider == LearningSpeechProviderKind.Endpoint && (!EndpointValid(s.SpeechUrl, s.SpeechEndpointModel) || string.IsNullOrWhiteSpace(s.SpeechVoice) || Encoding.UTF8.GetByteCount(s.SpeechVoice) > 256 || Encoding.UTF8.GetByteCount(s.SpeechEndpointModel) > 256)) return "Choose a speech endpoint, model and voice.";
+            if (s.SpeechProvider == LearningSpeechProviderKind.Endpoint && (!EndpointValid(s.SpeechUrl, s.SpeechEndpointModel) || string.IsNullOrWhiteSpace(s.SpeechVoice) || Encoding.UTF8.GetByteCount(s.SpeechVoice) > 256 || Encoding.UTF8.GetByteCount(s.SpeechEndpointModel) > 256)) return InterfaceText.Get("Choose a speech endpoint, model and voice.");
             return null;
         }
         catch (SpeechException error) { return error.Message; }
-        catch { return "Speech configuration is unavailable."; }
+        catch { return InterfaceText.Get("Speech configuration is unavailable."); }
     }
     internal Task RetireAsync()
     {

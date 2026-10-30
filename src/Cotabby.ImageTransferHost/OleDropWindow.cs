@@ -11,6 +11,7 @@ namespace Cotabby.ImageTransferHost;
 public static class OleDropWindow
 {
     private const string WindowClass = "CotabbyImageDropSurface";
+    private const uint DropCompleteMessage = 0x8000 + 0x71; // Private WM_APP message, no payload.
     private static readonly WindowProcedure Procedure = PaintWindow;
     internal static int Run(string parentText, bool test = false, string label = "Drop image here")
     {
@@ -33,7 +34,18 @@ public static class OleDropWindow
             if (RegisterDragDrop(hwnd, targetPointer) < 0) return 2; registered = true;
             byte[] ready = Encoding.ASCII.GetBytes("READY " + hwnd.ToInt64().ToString(CultureInfo.InvariantCulture) + "\n"); output.Write(ready); output.Flush();
             if (test) { byte[] wire = Encoding.ASCII.GetBytes("TARGET " + MarshalTarget(targetPointer) + "\n"); output.Write(wire); output.Flush(); }
-            while (GetMessageW(out var message, IntPtr.Zero, 0, 0) > 0) { TranslateMessage(ref message); DispatchMessageW(ref message); }
+            while (GetMessageW(out var message, IntPtr.Zero, 0, 0) > 0)
+            {
+                if (message.Hwnd == IntPtr.Zero && message.Id == DropCompleteMessage)
+                {
+                    // The STA callback has unwound before its loop publishes completion. The
+                    // parent may retire this process immediately after reading the frame.
+                    try { if (target.PublishResult()) break; }
+                    catch { return 2; }
+                    continue;
+                }
+                TranslateMessage(ref message); DispatchMessageW(ref message);
+            }
             GC.KeepAlive(target); return 0;
         }
         finally
@@ -94,32 +106,48 @@ public static class OleDropWindow
         [PreserveSig] int Drop([MarshalAs(UnmanagedType.Interface)] IDataObject data, uint keys, Point point, ref uint effect);
     }
     [ComVisible(true), ClassInterface(ClassInterfaceType.None)]
-    public sealed class Target(Stream output, uint ownerThread, bool diagnostic = false) : IDropTarget
+    // A plain managed CCW is free-threaded even when constructed on the OLE STA. Use the
+    // standard STA marshaler so foreign callbacks and result publication share that one owner.
+    public sealed class Target(Stream output, uint ownerThread, bool diagnostic = false) : StandardOleMarshalObject, IDropTarget
     {
+        private const int WrongThread = unchecked((int)0x8001010E);
         private int _admitted;
         private int _accepted;
+        private byte[]? _result;
+        private bool _completed, _failed;
         public int DragEnter(IDataObject data, uint keys, Point point, ref uint effect)
-        { try { _accepted = VocabularyOleImageReader.CanRead(data) ? 1 : 0; } catch { _accepted = 0; } effect &= (uint)_accepted; return 0; }
-        public int DragOver(uint keys, Point point, ref uint effect) { effect &= (uint)Volatile.Read(ref _accepted); return 0; }
-        public int DragLeave() { _accepted = 0; return 0; }
+        { if (GetCurrentThreadId() != ownerThread) { effect = 0; return WrongThread; } try { _accepted = VocabularyOleImageReader.CanRead(data) ? 1 : 0; } catch { _accepted = 0; } effect &= (uint)_accepted; return 0; }
+        public int DragOver(uint keys, Point point, ref uint effect) { if (GetCurrentThreadId() != ownerThread) { effect = 0; return WrongThread; } effect &= (uint)Volatile.Read(ref _accepted); return 0; }
+        public int DragLeave() { if (GetCurrentThreadId() != ownerThread) return WrongThread; _accepted = 0; return 0; }
         public int Drop(IDataObject data, uint keys, Point point, ref uint effect)
         {
+            // An impossible dispatch must also close the parent's pipe; do not leave its
+            // pre-DROP read waiting. This is the isolated helper, never the editor process.
+            if (GetCurrentThreadId() != ownerThread) { effect = 0; Environment.Exit(2); return WrongThread; }
             if (Interlocked.Exchange(ref _admitted, 1) != 0) { effect = 0; return 0; }
             effect &= 1;
             try
             {
                 output.Write("DROP\n"u8); output.Flush();
-                byte[]? bytes = VocabularyOleImageReader.Read(data);
-                VocabularyImageTransferProtocol.Write(output, bytes); if (bytes is null) effect = 0;
+                _result = VocabularyOleImageReader.Read(data); if (_result is null) effect = 0;
             }
             catch (Exception error)
             {
                 effect = 0;
+                _result = null; _failed = true;
                 if (diagnostic) Console.Error.WriteLine(error.GetType().Name + " " + error.HResult.ToString("X8", CultureInfo.InvariantCulture));
-                try { VocabularyImageTransferProtocol.Write(output, null, failed: true); } catch { }
             }
-            finally { _ = PostThreadMessageW(ownerThread, 0x0012, UIntPtr.Zero, IntPtr.Zero); }
+            finally
+            {
+                _completed = true;
+                if (!PostThreadMessageW(ownerThread, DropCompleteMessage, UIntPtr.Zero, IntPtr.Zero)) Environment.Exit(2);
+            }
             return 0;
+        }
+        internal bool PublishResult()
+        {
+            if (GetCurrentThreadId() != ownerThread || !_completed) return false;
+            VocabularyImageTransferProtocol.Write(output, _result, failed: _failed); return true;
         }
     }
     [StructLayout(LayoutKind.Sequential)] public struct Point { public int X, Y; }

@@ -32,11 +32,13 @@ internal sealed class ModelManagementView : DockPanel
 
     internal ModelManagementView(string taskLabel, FrameworkElement recommendations, Action refresh, Action openFolder, Action? import, Action? cancelTransfer = null)
     {
-        Background = SystemColors.WindowBrush;
+        SetResourceReference(BackgroundProperty, "WindowBg");
+        SetResourceReference(System.Windows.Documents.TextElement.ForegroundProperty, "TextPrimary");
+        Done.SetResourceReference(StyleProperty, "Btn");
         var header = new DockPanel { Margin = new Thickness(20) };
         DockPanel.SetDock(Done, Dock.Right); header.Children.Add(Done);
         header.Children.Add(new StackPanel { Children = { new TextBlock { Text = InterfaceText.Get("Manage models"), FontSize = 16, FontWeight = FontWeights.SemiBold },
-            new TextBlock { Text = InterfaceText.Get(taskLabel), FontSize = 12, Foreground = SystemColors.GrayTextBrush, Margin = new Thickness(0, 4, 0, 0) } } });
+            new TextBlock { Text = InterfaceText.Get(taskLabel), FontSize = 12, Margin = new Thickness(0, 4, 0, 0) }.Themed(TextBlock.ForegroundProperty, "TextSecondary") } });
         DockPanel.SetDock(header, Dock.Top); Children.Add(header);
         var divider = new Separator { Margin = new Thickness(0) }; DockPanel.SetDock(divider, Dock.Top); Children.Add(divider);
         var body = new StackPanel { Margin = new Thickness(20) };
@@ -44,7 +46,7 @@ internal sealed class ModelManagementView : DockPanel
         body.Children.Add(Status); body.Children.Add(_installed);
         _customDisclosure = new Expander { Header = InterfaceText.Get("Custom models"), Content = _custom, Margin = new Thickness(0, 12, 0, 12) };
         body.Children.Add(_customDisclosure);
-        body.Children.Add(new TextBlock { Text = InterfaceText.Get("Recommended models", "Localizable"), FontSize = 12, Foreground = SystemColors.GrayTextBrush, Margin = new Thickness(0, 10, 0, 8) });
+        body.Children.Add(new TextBlock { Text = InterfaceText.Get("Recommended models", "Localizable"), FontSize = 12, Margin = new Thickness(0, 10, 0, 8) }.Themed(TextBlock.ForegroundProperty, "TextSecondary"));
         body.Children.Add(recommendations);
         var actions = new WrapPanel { Margin = new Thickness(0, 12, 0, 0) };
         if (import is not null) actions.Children.Add(ActionButton("Add Your Own", import));
@@ -52,7 +54,7 @@ internal sealed class ModelManagementView : DockPanel
         actions.Children.Add(ActionButton("Refresh", refresh));
         actions.Children.Add(ActionButton("Open Folder", openFolder));
         body.Children.Add(actions);
-        if (import is not null) body.Children.Add(new TextBlock { Text = InterfaceText.Get("Imported models are used only for this task."), FontSize = 11, Foreground = SystemColors.GrayTextBrush, Margin = new Thickness(0, 6, 0, 0), TextWrapping = TextWrapping.Wrap });
+        if (import is not null) body.Children.Add(new TextBlock { Text = InterfaceText.Get("Imported models are used only for this task."), FontSize = 11, Margin = new Thickness(0, 6, 0, 0), TextWrapping = TextWrapping.Wrap }.Themed(TextBlock.ForegroundProperty, "TextSecondary"));
         Children.Add(new ScrollViewer { Content = body, VerticalScrollBarVisibility = ScrollBarVisibility.Auto, HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled });
     }
 
@@ -75,9 +77,9 @@ internal sealed class ModelManagementView : DockPanel
         if (!string.IsNullOrEmpty(selected) && !models.Any(model => string.Equals(model.Filename, selected, StringComparison.OrdinalIgnoreCase)
             && settings.IsLocalModelCandidate(model.Filename, task)))
             _installed.Children.Insert(0, new TextBlock { Text = ModelDisplayText.Unavailable(selected, task),
-                Foreground = SystemColors.GrayTextBrush, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 6, 0, 6) });
+                TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 6, 0, 6) }.Themed(TextBlock.ForegroundProperty, "TextSecondary"));
         _customDisclosure.Visibility = _custom.Children.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
-        if (_installed.Children.Count == 0) _installed.Children.Add(new TextBlock { Text = InterfaceText.Get("No models available for this task.", "Localizable"), Foreground = SystemColors.GrayTextBrush, Margin = new Thickness(0, 6, 0, 6) });
+        if (_installed.Children.Count == 0) _installed.Children.Add(new TextBlock { Text = InterfaceText.Get("No models available for this task.", "Localizable"), Margin = new Thickness(0, 6, 0, 6) }.Themed(TextBlock.ForegroundProperty, "TextSecondary"));
     }
 
     private static FrameworkElement ModelRow(LearningInstalledModel model, bool selected, bool inUse, Action action, string actionLabel = "Select", string? directory = null, string? source = null, Action? delete = null)
@@ -85,7 +87,7 @@ internal sealed class ModelManagementView : DockPanel
         var title = ModelDisplayText.Name(model.Filename);
         var details = new StackPanel();
         details.Children.Add(new TextBlock { Text = title, FontSize = 13, TextWrapping = TextWrapping.Wrap });
-        var detail = new Expander { Header = InterfaceText.Get("Model details"), FontSize = 11, Foreground = SystemColors.GrayTextBrush };
+        var detail = new Expander { Header = InterfaceText.Get("Model details"), FontSize = 11 }.Themed(Control.ForegroundProperty, "TextSecondary");
         var descriptor = LocalModelCatalog.Descriptor(model.Filename);
         var lines = new List<string> { ModelDisplayText.Safe(model.Filename) };
         if (descriptor is not null) lines.Add(InterfaceText.Get("Quantization") + ": " + descriptor.Quantization);
@@ -94,8 +96,8 @@ internal sealed class ModelManagementView : DockPanel
         detail.Content = new TextBlock { Text = string.Join("\n", lines), TextWrapping = TextWrapping.Wrap, FontFamily = new FontFamily("Consolas") };
         details.Children.Add(detail);
         var row = new DockPanel { Margin = new Thickness(0, 6, 0, 6) };
-        FrameworkElement trailing = selected ? new TextBlock { Text = "✓", FontSize = 16, Foreground = SystemColors.HighlightBrush, VerticalAlignment = VerticalAlignment.Center }
-            : inUse ? new TextBlock { Text = InterfaceText.Get("In Use"), Foreground = SystemColors.GrayTextBrush, VerticalAlignment = VerticalAlignment.Center }
+        FrameworkElement trailing = selected ? new TextBlock { Text = "✓", FontSize = 16, VerticalAlignment = VerticalAlignment.Center }.Themed(TextBlock.ForegroundProperty, "AccentBrush")
+            : inUse ? new TextBlock { Text = InterfaceText.Get("In Use"), VerticalAlignment = VerticalAlignment.Center }.Themed(TextBlock.ForegroundProperty, "TextSecondary")
             : ActionButton(actionLabel, action);
         if (!selected && inUse && actionLabel == "Select") trailing = new StackPanel { Orientation = Orientation.Horizontal, Children = { trailing, ActionButton(actionLabel, action) } };
         if (!selected && !inUse && delete is not null)
@@ -110,7 +112,7 @@ internal sealed class ModelManagementView : DockPanel
     }
     private static Button ActionButton(string text, Action action)
     {
-        var button = new Button { Content = InterfaceText.Get(text), Margin = new Thickness(0, 0, 8, 0), Padding = new Thickness(10, 4, 10, 4) };
+        var button = new Button { Content = InterfaceText.Get(text, "Learning"), Margin = new Thickness(0, 0, 8, 0), Padding = new Thickness(10, 4, 10, 4) }.Styled("Btn");
         button.Click += (_, _) => action(); return button;
     }
 }
@@ -133,6 +135,9 @@ internal sealed class ModelManagementWindow : Window
     {
         _context = context; _task = task; _parentRefresh = parentRefresh;
         Title = InterfaceText.Get("Manage models"); MinWidth = 620; Width = 720; MinHeight = 480; Height = 640;
+        Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("/Cotabby;component/UI/Theme.xaml", UriKind.Relative) });
+        SetResourceReference(BackgroundProperty, "WindowBg"); SetResourceReference(ForegroundProperty, "TextPrimary");
+        WindowTheme.Follow(this);
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
         _view = new ModelManagementView(task switch { LocalModelTask.Completion => "Autocomplete", LocalModelTask.Translation => "Translation", LocalModelTask.Explanation => "AI explanation", _ => "Speech" },
             recommendations, Refresh, OpenFolder, import ?? (task == LocalModelTask.Completion ? ImportCompletion : null),

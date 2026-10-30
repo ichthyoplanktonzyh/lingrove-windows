@@ -32,7 +32,7 @@ internal sealed class AnkiReviewSettingsSection : StackPanel
     private string _observedAddress;
     internal TextBox AddressBox { get; } = new TextBox().Styled("Input");
     internal PasswordBox KeyBox { get; } = new PasswordBox().Styled("PasswordInput");
-    internal Button TestButton { get; } = new Button { Content = InterfaceText.Get("Test connection") }.Styled("Btn");
+    internal Button TestButton { get; } = new Button { Content = InterfaceText.Get("Test connection", "Vocabulary") }.Styled("Btn");
     internal TextBox StatusBox { get; } = new() { IsReadOnly = true, TextWrapping = TextWrapping.Wrap, BorderThickness = new(0), Background = System.Windows.Media.Brushes.Transparent };
     internal TextBox DeckBox { get; } = new TextBox().Styled("Input");
     internal ComboBox DeckPicker { get; } = new ComboBox().Styled("Combo");
@@ -46,12 +46,12 @@ internal sealed class AnkiReviewSettingsSection : StackPanel
         Children.Add(Row("AnkiConnect address", AddressBox));
         Children.Add(Row("API key (optional)", KeyBox));
         Children.Add(Ui.Across(TestButton, _progress));
-        StatusBox.Margin = new(0, 6, 0, 6); AutomationProperties.SetName(StatusBox, "Anki connection status"); Children.Add(StatusBox);
+        StatusBox.Margin = new(0, 6, 0, 6); AutomationProperties.SetName(StatusBox, InterfaceText.Get("Anki connection status", "Vocabulary")); Children.Add(StatusBox);
         _profileRow = Row("Anki profile", _profile); Children.Add(_profileRow);
-        var defaults = Ui.Text(InterfaceText.Get("Default cards"), "CardHeader"); defaults.Margin = new(0, 14, 0, 2); Children.Add(defaults);
+        var defaults = Ui.Text(InterfaceText.Get("Default cards", "Vocabulary"), "CardHeader"); defaults.Margin = new(0, 14, 0, 2); Children.Add(defaults);
         var deck = new Grid { Children = { DeckBox, DeckPicker } }; Children.Add(Row("Deck", deck));
         Children.Add(Row("Note type", Ui.Text(ReviewLayoutPolicy.Model)));
-        var templates = Ui.Text(InterfaceText.Get("Card templates"), "CardHeader"); templates.Margin = new(0, 14, 0, 2); Children.Add(templates); Children.Add(_templates);
+        var templates = Ui.Text(InterfaceText.Get("Card templates", "Vocabulary"), "CardHeader"); templates.Margin = new(0, 14, 0, 2); Children.Add(templates); Children.Add(_templates);
         AddressBox.TextChanged += (_, _) => { if (!_refreshing && _appeared) feature.Settings.Address = AddressBox.Text; };
         KeyBox.PasswordChanged += (_, _) => { if (!_refreshing && _appeared) _interaction.Key = KeyBox.Password; };
         KeyBox.LostKeyboardFocus += (_, _) => { if (_appeared) _interaction.SaveKey(); };
@@ -76,6 +76,7 @@ internal sealed class AnkiReviewSettingsSection : StackPanel
     }
     private static FrameworkElement Row(string label, FrameworkElement control)
     {
+        label = InterfaceText.Get(label, "Vocabulary");
         AutomationProperties.SetName(control, label); control.Margin = new(0, 3, 0, 5);
         return new StackPanel { Children = { Ui.Text(label, "Caption"), control } };
     }
@@ -175,7 +176,7 @@ internal sealed class AnkiReviewSettingsSection : StackPanel
                     Foreground = System.Windows.SystemColors.GrayTextBrush, Margin = new Thickness(0, 4, 0, 4) });
             void AddTemplate(string title, Func<Task> remove)
             {
-                var delete = new Button { Content = InterfaceText.Get("Delete") }.Styled("Btn"); AutomationProperties.SetName(delete, "Delete template " + title);
+                var delete = new Button { Content = InterfaceText.Get("Delete", "Vocabulary") }.Styled("Btn"); AutomationProperties.SetName(delete, InterfaceText.Format("Delete template {0}", title));
                 delete.Click += async (_, _) => { delete.IsEnabled = false; try { await remove(); } finally { delete.IsEnabled = true; } };
                 var name = Ui.Text(title); name.VerticalAlignment = VerticalAlignment.Center;
                 var row = new DockPanel { Margin = new(0, 3, 0, 3), LastChildFill = true };

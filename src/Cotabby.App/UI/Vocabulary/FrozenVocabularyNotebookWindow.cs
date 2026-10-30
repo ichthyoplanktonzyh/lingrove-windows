@@ -385,7 +385,7 @@ internal sealed partial class FrozenVocabularyNotebookWindow : Window
     }
     private void MeaningDetail(StackPanel panel, F.VocabularyMeaningNode node)
     {
-        var doc = _session.Snapshot!.Document; Heading(panel, VocabularyMeaningLabelPolicy.Title(node, _session.PreferredLanguages)); panel.Children.Add(Caption(node.Kind.ToString()));
+        var doc = _session.Snapshot!.Document; Heading(panel, VocabularyMeaningLabelPolicy.Title(node, _session.PreferredLanguages)); panel.Children.Add(Caption(InterfaceText.Get(node.Kind == R.VocabularyMeaningNodeKind.Concept ? "Content concept" : "Communicative function", "Vocabulary")));
         if (node.Definition.Length > 0) panel.Children.Add(Paragraph(node.Definition, 18)); if (node.ScopeNote.Length > 0) panel.Children.Add(Caption(node.ScopeNote));
         var labels = node.Labels.Select(l => l.Text).Where(x => x != VocabularyMeaningLabelPolicy.Title(node, _session.PreferredLanguages)).Distinct().Take(4).ToArray(); if (labels.Length > 0) panel.Children.Add(Caption(string.Join("  ·  ", labels)));
         AddMeaningCategoryLinks(panel, node);

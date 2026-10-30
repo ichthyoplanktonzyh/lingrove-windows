@@ -404,6 +404,22 @@ public sealed class ReadingSelectionLeaseTests
         Assert.False(await lease.IsCurrentAsync(CancellationToken.None));
     }
 
+    [Fact]
+    public async Task SelectionCarriesRealRangeAndOriginGeometryAndAWindowMovePermanentlyRevokesIt()
+    {
+        using var focus = new UiaFocusTracker(NullLogger<UiaFocusTracker>.Instance); var keyboard = new FakeKeyboard();
+        var evidence = new FakeEvidence { Block = false, SelectionBounds = new(30, 40, 80, 20) };
+        var frame = new Win32ReadingSelectionLease.HostFrame(10, 20, 410, 320);
+        await using var lease = new Win32ReadingSelectionLease(focus, keyboard, evidence, 10, 42, 3, 0x54,
+            () => 3, () => 10, _ => 42, currentFrame: _ => frame);
+        Assert.True(lease.Capture(default)); Assert.Equal(evidence.SelectionBounds, lease.Selection.SelectionBounds);
+        Assert.Equal(new ScreenRect(10, 20, 400, 300), lease.Selection.OriginWindowBounds); Assert.Equal(0x54, lease.PendingActivationKey);
+        keyboard.Emit(0x54, false); Assert.Null(lease.PendingActivationKey); Assert.True(lease.IsLive);
+        lease.ArmActivationKey(0x54); Assert.Equal(0x54, lease.PendingActivationKey);
+        frame = frame with { Left = 11, Right = 411 };
+        Assert.False(lease.IsLive); Assert.False(await lease.IsCurrentAsync(default));
+        frame = new(10, 20, 410, 320); Assert.False(lease.IsLive);
+    }
     private sealed class FakeKeyboard : IKeyboardHook
     {
         public event EventHandler<KeyEventArgs>? KeyEvent;
@@ -430,8 +446,9 @@ public sealed class ReadingSelectionLeaseTests
         public System.Drawing.Point? Pointer;
         public bool GuardCaptured;
         public UiaTextEditEvidence.ReadingLease? Last;
+        public ScreenRect? SelectionBounds;
         public UiaTextEditEvidence.ReadingLease? CaptureReading(nint host, int pid, Func<bool> allowed, Action invalidated, bool ownedTest = false) =>
-            allowed() ? Last = new(invalidated) { Text = "selected", FieldId = "owned-fake", Ready = true, ProcessId = pid, Host = host } : null;
+            allowed() ? Last = new(invalidated) { Text = "selected", FieldId = "owned-fake", Ready = true, ProcessId = pid, Host = host, SelectionBounds = SelectionBounds } : null;
         public UiaTextEditEvidence.ReadingLease? CapturePointer(nint host, int pid, System.Drawing.Point point, Func<bool> allowed, Action invalidated)
         { Pointer = point; return CaptureReading(host, pid, allowed, invalidated); }
         public UiaTextEditEvidence.ReadingLease? CaptureScreenGuard(nint host, int pid, Func<bool> allowed, Action invalidated)

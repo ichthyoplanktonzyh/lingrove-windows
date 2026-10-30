@@ -34,6 +34,7 @@ internal sealed unsafe partial class UiaTextEditEvidence : IReadingSelectionEvid
         internal string FieldId = "";
         internal nint Host;
         internal string Text = "";
+        internal ScreenRect? SelectionBounds;
         internal bool Ready;
         internal bool OwnedTest;
         internal System.Drawing.Point? Pointer;
@@ -146,6 +147,8 @@ internal sealed unsafe partial class UiaTextEditEvidence : IReadingSelectionEvid
                     if (cloneResult.Failed || range is null || !Allowed()) return;
                     lease.Text = ReadingText(selected, Allowed) ?? "";
                     if (lease.Text.Length == 0 || !Allowed() || !ReadingCurrentCore(lease, Allowed)) return;
+                    if (pointer is null) lease.SelectionBounds = ReadingRangeBounds(selected, Allowed);
+                    if (!Allowed() || !ReadingCurrentCore(lease, Allowed)) return;
                     lease.Ready = true;
                 }
                 finally { if (selected is not null) selected->Release(); }

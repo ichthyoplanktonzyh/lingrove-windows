@@ -115,6 +115,7 @@ public sealed class Win32ReadingWindowLease : IAsyncDisposable
     private readonly Func<ReadingForeground, System.Drawing.Point, ReadingPointerWindow?>? _frame;
     private ReadingPointerWindow? _pointerWindow;
     private ScreenRect _originBounds;
+    public ScreenRect? ForegroundBounds => Evidence is null ? null : _originBounds;
     public ReadingVisualFrame? PointerFrame => _pointerWindow?.Frame;
     private readonly Func<nint, ScreenRect?> _bounds;
     private readonly Func<ScreenRect> _desktop;

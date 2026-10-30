@@ -2,7 +2,8 @@
 
 Reference: committed Mac `3b53402f2cbc196b0398d133177fd80006d165b2`.
 This connects the explicit pointer command to OCR first and the existing strict UIA route as
-fallback. Selection visual-context enrichment remains a separate, incomplete capability.
+fallback. The subsequent [selection module](READING_SELECTION_OCR_3B.md) connects optional
+visual-context enrichment over an exact native selection.
 
 ## Source and ownership mapping
 
@@ -83,9 +84,9 @@ owner participates in AppHost shutdown. Performance observations are content-fre
   retains the existing strict UIA fallback; no language pack is downloaded automatically.
   Windows resolves the pointed top-level identity with `WindowFromPoint` and `GetAncestor(GA_ROOT)`;
   disabled/hidden windows are not returned by that API. Inconsistent UIA/native ancestry is refused.
-- Selection enrichment still lacks the complete native selection/gesture geometry and exact
-  OCR alignment port. This module does not fabricate a selection box or move its target to a
-  pointer hit. `LearningReadingSelectionOCRPolicy` remains a separate porting item.
+- Selection enrichment is connected by the subsequent [selection module](READING_SELECTION_OCR_3B.md).
+  It retains its original native selection, bounds/gesture and independent alignment rules;
+  it does not substitute a pointer hit for that selection. Provider coverage remains explicitly scoped.
 
 Synthetic automated checks cover pure geometry/UTF-16/column/source rules, one capture/two crops,
 same-occurrence preference, original pixels, cancellation, acquisition-time retirement, frozen

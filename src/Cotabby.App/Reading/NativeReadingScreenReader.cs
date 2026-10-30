@@ -133,6 +133,7 @@ internal sealed class NativeReadingScreenReader : IReadingScreenReader
     internal sealed class WindowGuard(Win32ReadingWindowLease native) : IReadingVisualGuard
     {
         public ReadingVisualFrame? Frame => native.PointerFrame;
+        public ScreenRect? ForegroundBounds => native.ForegroundBounds;
         public ReadingScreenGuardEvidence? Evidence => native.Evidence;
         public bool IsLive => native.IsLive;
         public event Action? Invalidated { add => native.Invalidated += value; remove => native.Invalidated -= value; }

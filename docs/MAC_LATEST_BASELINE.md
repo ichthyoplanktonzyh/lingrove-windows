@@ -119,7 +119,10 @@ the initial gap audit; its initial Windows gap descriptions are historical. Curr
 - The [pointer OCR upgrade](READING_POINTER_OCR_3B.md) connects explicit visual-first reading,
   one-frame spatial/UTF-16 context and origin-guarded UIA fallback. Its final local/CI evidence is
   tracked in the implementation PR; native desktop acceptance remains separate.
-- Remaining work includes selection visual enrichment, canonical custom review layouts,
+- The [selection OCR upgrade](READING_SELECTION_OCR_3B.md) connects optional original-range visual
+  context, native/gesture geometry, compound lifetime and preparation state; final-head CI remains
+  its separate gate. TextPattern-only selection providers remain an explicit Windows gap.
+- Remaining work includes native selection-provider coverage, canonical custom review layouts,
   full interface-language coverage, native automatic language
   confidence, Apple's unavailable system dictionary and the explicitly documented media/native gaps.
   Internal components are not evidence that those flows are complete. Existing older libraries

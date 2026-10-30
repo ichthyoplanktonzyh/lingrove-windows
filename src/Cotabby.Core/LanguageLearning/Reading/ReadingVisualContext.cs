@@ -10,7 +10,8 @@ namespace Cotabby.Core.LanguageLearning.Reading;
 public sealed class ReadingVisualContext(ReadingVisualLayout layout, Func<string, IReadOnlyList<LearningTextRange>> tokenize)
 {
     public sealed record Source(int Line, int OriginalStart, int Length, int WindowStart);
-    public sealed record Block(ReadingContext? Context, ScreenRect Bounds, IReadOnlyList<Source> Sources, ReadingAcquisitionWindow Window);
+    public sealed record Block(ReadingContext? Context, ScreenRect Bounds, IReadOnlyList<Source> Sources, ReadingAcquisitionWindow Window)
+    { public double? Confidence { get; init; } }
     public Block? Resolve(ReadingVisualWord word, ReadingVisualText extraction, int width, int height, IReadOnlyList<Row>? prepared = null)
     {
         if (width <= 0 || height <= 0 || extraction.Lines.Count > 2048 || !extraction.ValidWord(word)) return null;
@@ -35,7 +36,7 @@ public sealed class ReadingVisualContext(ReadingVisualLayout layout, Func<string
             if (lower > start || upper < start + word.Length) return null;
             var window = new ReadingAcquisitionWindow(text[lower..upper], start - lower, word.Length, ReadingBoundary.Crop, ReadingBoundary.Crop, ReadingContextMethod.Ocr);
             return new(ReadingContextPolicy.Resolve(window, word.Text, tokenize), extraction.Lines[word.Line].Bounds!.Value,
-                Sources(rows[index], 0, lower, upper - lower), window);
+                Sources(rows[index], 0, lower, upper - lower), window) { Confidence = lines[index].Confidence };
         }
         var included = Connected(lines, index, budget); string joined = ""; int target = 0; var sources = new List<Source>(); ScreenRect bounds = default;
         foreach (int current in included)
@@ -50,7 +51,8 @@ public sealed class ReadingVisualContext(ReadingVisualLayout layout, Func<string
         var left = boxes.Length == 0 || !horizontal && boxes[0].Y > 3 ? ReadingBoundary.Unknown : ReadingBoundary.Crop;
         var right = boxes.Length == 0 || !horizontal && boxes[^1].Bottom < height - 3 ? ReadingBoundary.Unknown : ReadingBoundary.Crop;
         var acquisition = new ReadingAcquisitionWindow(joined, target, word.Length, left, right, ReadingContextMethod.Ocr);
-        return new(ReadingContextPolicy.Resolve(acquisition, word.Text, tokenize), bounds, sources, acquisition);
+        return new(ReadingContextPolicy.Resolve(acquisition, word.Text, tokenize), bounds, sources, acquisition)
+            { Confidence = MinimumConfidence(included.Select(i => lines[i].Confidence)) };
     }
     private static IReadOnlyList<Source> Sources(Row row, int offset, int start, int length)
     {

@@ -4,7 +4,8 @@ Reference: committed Mac `3b53402f2cbc196b0398d133177fd80006d165b2`.
 This module upgrades the explicit screenshot command beyond the historical verified-field-only
 implementation in [reading sources](READING_SOURCES_3B.md). The subsequent
 [pointer OCR module](READING_POINTER_OCR_3B.md) connects explicit OCR-first pointer acquisition;
-selection visual enrichment remains incomplete. Native desktop acceptance remains outstanding.
+the [selection module](READING_SELECTION_OCR_3B.md) adds optional native-range enrichment.
+Native desktop acceptance remains outstanding.
 
 ## Source and responsibility mapping
 
@@ -77,8 +78,9 @@ shutdown; a canceled operation does not trigger a second capture or another acqu
   honestly for a visual receipt; uncertain editable composition, composing input or keyboard changes
   revoke acquisition. This representation does not waive native composition admission.
 - Pointer OCR and spatial word alignment are connected by the subsequent
-  [pointer module](READING_POINTER_OCR_3B.md), including its one-frame/two-crop policy. Selection
-  visual context enrichment remains incomplete. The strict UIA pointer adapter remains a fallback.
+  [pointer module](READING_POINTER_OCR_3B.md), including its one-frame/two-crop policy. The subsequent
+  [selection module](READING_SELECTION_OCR_3B.md) adds its own exact-range visual context.
+  The strict UIA pointer adapter remains a fallback.
 
 ## Evidence and remaining acceptance
 

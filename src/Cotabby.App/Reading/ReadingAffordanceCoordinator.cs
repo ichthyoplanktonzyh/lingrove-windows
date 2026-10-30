@@ -64,8 +64,10 @@ internal sealed class ReadingAffordanceCoordinator : IAsyncDisposable
             var origin = _downOrigin; _downOrigin = null;
             double dx = (double)e.X - _downX, dy = (double)e.Y - _downY;
             if (origin is null || (dx * dx + dy * dy <= 9 && e.ClickCount < 2)) return;
+            var gesture = dx * dx + dy * dy > 9 ? ReadingGestureKind.Drag : e.ClickCount == 2 ? ReadingGestureKind.DoubleClick : (ReadingGestureKind?)null;
+            int startX = _downX, startY = _downY; var completedAt = DateTimeOffset.UtcNow;
             long epoch = Interlocked.Read(ref _epoch);
-            Post(() => Start(epoch, origin, e.X, e.Y));
+            Post(() => Start(epoch, origin, e.X, e.Y, gesture, startX, startY, completedAt));
         }
     }
 
@@ -78,13 +80,14 @@ internal sealed class ReadingAffordanceCoordinator : IAsyncDisposable
         Post(() => { if (epoch == Interlocked.Read(ref _epoch)) Clear(); });
     }
 
-    private void Start(long epoch, ReadingForeground origin, int x, int y)
+    private void Start(long epoch, ReadingForeground origin, int x, int y, ReadingGestureKind? gesture, int startX, int startY, DateTimeOffset completedAt)
     {
         if (_disposed || epoch != Interlocked.Read(ref _epoch) || _origin() != origin || !_canCapture(origin)) return;
         Clear(); var cancellation = new CancellationOwner(); Volatile.Write(ref _cancel, cancellation);
-        Volatile.Write(ref _captureOrigin, origin); _capture = CaptureAsync(epoch, origin, x, y, cancellation); Track(_capture);
+        Volatile.Write(ref _captureOrigin, origin); _capture = CaptureAsync(epoch, origin, x, y, gesture, startX, startY, completedAt, cancellation); Track(_capture);
     }
-    private async Task CaptureAsync(long epoch, ReadingForeground origin, int x, int y, CancellationOwner owner)
+    private async Task CaptureAsync(long epoch, ReadingForeground origin, int x, int y, ReadingGestureKind? gesture, int startX, int startY,
+        DateTimeOffset completedAt, CancellationOwner owner)
     {
         IReadingSelectionLease? lease = null; bool transferred = false;
         var token = owner.Token;
@@ -95,6 +98,7 @@ internal sealed class ReadingAffordanceCoordinator : IAsyncDisposable
             lease = await _reader.CaptureAsync(token);
             if (lease is null || !Current(epoch, origin, owner) || !lease.IsLive || !await lease.IsCurrentAsync(token)
                 || !Current(epoch, origin, owner) || lease.Selection.ProcessId != origin.ProcessId || lease.Selection.FocusEpoch != origin.FocusEpoch) return;
+            if (gesture is { } kind) lease.BindGesture(new(lease.Selection.Id, startX, startY, x, y, kind, completedAt));
             Volatile.Write(ref _pending, lease); transferred = true;
             var held = lease;
             held.Invalidated += () => { held.Retire(); Post(() => { if (ReferenceEquals(_pending, held)) Clear(); }); };

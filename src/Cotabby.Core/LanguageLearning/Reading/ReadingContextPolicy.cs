@@ -76,7 +76,7 @@ public static class ReadingContextPolicy
         var left = HasTerminator(prefix) ? ReadingBoundary.Sentence : FoundationText.TrimWhitespaceAndNewlines(prefix).Length == 0 ? window.Left : ReadingBoundary.Unknown;
         var right = HasTerminator(scoped) && (FoundationText.TrimWhitespaceAndNewlines(suffix).Length != 0 || Complete(window.Right)) ? ReadingBoundary.Sentence
             : FoundationText.TrimWhitespaceAndNewlines(suffix).Length == 0 ? window.Right : ReadingBoundary.Unknown;
-        return new(scoped, targetStart - begin, trimmed.Length, left, right, window.Method);
+        return new(scoped, targetStart - begin, trimmed.Length, left, right, window.Method) { Window = window };
     }
     internal static bool HasTerminator(string text) => Terminator.IsMatch(text);
     private static bool Complete(ReadingBoundary boundary) => boundary is ReadingBoundary.Container or ReadingBoundary.Sentence;

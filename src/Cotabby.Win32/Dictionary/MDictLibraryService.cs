@@ -13,58 +13,72 @@ namespace Cotabby.Win32.Dictionary;
 [SupportedOSPlatform("windows8.1")]
 public sealed class MDictLibraryService(Func<string, string> lowercase) : IAsyncDisposable
 {
-    private const long MaximumCombinedBytes = 16L * 1024 * 1024 * 1024;
     private readonly Func<string, string> _lowercase = lowercase ?? throw new ArgumentNullException(nameof(lowercase));
     private readonly SemaphoreSlim _gate = new(1, 1); private readonly CancellationTokenSource _stopping = new();
     private readonly List<Book> _books = []; private readonly object _lifetime = new(); private Task? _dispose; private bool _closed;
-    private sealed record Stamp(long Size, DateTime Modified);
-    private sealed record Book(MDictLibraryDescriptor Descriptor, IReadOnlyList<Stamp> Stamps, FileStream MainStream,
+    private sealed record Book(MDictLibraryDescriptor Descriptor, WindowsDictionaryDirectory.FileIdentity FolderIdentity,
+        IReadOnlyList<WindowsDictionaryDirectory.FileStamp> Stamps, FileStream MainStream,
         MDictFileReader Main, IReadOnlyList<FileStream> ResourceStreams, IReadOnlyList<MDictFileReader> Resources) : IDisposable
     {
         public void Dispose() { MainStream.Dispose(); foreach (var stream in ResourceStreams) stream.Dispose(); }
     }
+    private sealed record BookAccess(Book Book, MDictFileLease Files) : IDisposable
+    { public void Dispose() => Files.Dispose(); }
 
     public Task<MDictLibraryDescriptor> ImportAsync(string path, CancellationToken token = default) => RunAsync(ct =>
     {
-        string full = Path.GetFullPath(path); if (!string.Equals(Path.GetExtension(full), ".mdx", StringComparison.OrdinalIgnoreCase)) throw Invalid();
+        string full = WindowsDictionaryDirectory.Normalize(path); if (!string.Equals(Path.GetExtension(full), ".mdx", StringComparison.OrdinalIgnoreCase)) throw Invalid();
         string folder = Path.GetDirectoryName(full) ?? throw Invalid(); string stem = Path.GetFileNameWithoutExtension(full);
+        using var root = WindowsDictionaryDirectory.Open(folder);
         var found = new List<string>();
-        foreach (string candidate in Directory.EnumerateFiles(folder))
+        foreach (var candidate in root.Entries(ct))
         {
             ct.ThrowIfCancellationRequested();
-            if (!string.Equals(Path.GetExtension(candidate), ".mdd", StringComparison.OrdinalIgnoreCase)
-                || !(string.Equals(Path.GetFileNameWithoutExtension(candidate), stem, StringComparison.Ordinal)
-                    || Path.GetFileName(candidate).StartsWith(stem + ".", StringComparison.Ordinal))) continue;
-            found.Add(candidate); if (found.Count > 16) throw Invalid();
+            if (candidate.Directory || !string.Equals(Path.GetExtension(candidate.Name), ".mdd", StringComparison.OrdinalIgnoreCase)
+                || !(string.Equals(Path.GetFileNameWithoutExtension(candidate.Name), stem, StringComparison.Ordinal)
+                    || candidate.Name.StartsWith(stem + ".", StringComparison.Ordinal))) continue;
+            found.Add(Path.Combine(folder, candidate.Name)); if (found.Count > 16) throw Invalid();
         }
-        var companions = found.OrderBy(p => Path.GetFileName(p), StringComparer.CurrentCulture).ToArray();
-        var stamps = CheckFiles([full, .. companions], ct); using var stream = Open(full); var main = new MDictFileReader(stream, _lowercase, ct);
-        foreach (var companion in companions) { ct.ThrowIfCancellationRequested(); using var part = Open(companion); _ = new MDictFileReader(part, _lowercase, ct); }
-        if (!CheckFiles([full, .. companions], ct).SequenceEqual(stamps)) throw Invalid();
-        string name = DictionaryContentPolicy.ImportTitle(main.Title, stem);
-        return new MDictLibraryDescriptor(Guid.NewGuid(), name, full, Array.AsReadOnly(companions), folder, main.EntryCount, Guid.NewGuid());
+        var companions = found.OrderBy(p => Path.GetFileName(p)!, WindowsDictionaryFileOrder.Instance).ToArray();
+        using var lease = new MDictFileLease([full, .. companions], folder, ct, root);
+        var streams = lease.OpenCacheStreams(ct);
+        try
+        {
+            var main = new MDictFileReader(streams[0], _lowercase, ct);
+            foreach (var part in streams.Skip(1)) { ct.ThrowIfCancellationRequested(); _ = new MDictFileReader(part, _lowercase, ct); }
+            lease.Verify(ct); string name = DictionaryContentPolicy.ImportTitle(main.Title, stem);
+            return new MDictLibraryDescriptor(Guid.NewGuid(), name, full, Array.AsReadOnly(companions), folder, main.EntryCount, Guid.NewGuid());
+        }
+        finally { foreach (var stream in streams) stream.Dispose(); }
     }, token);
 
-    public Task<MDictLibraryDescriptor> AttachAsync(MDictLibraryDescriptor library, IReadOnlyList<string> paths, CancellationToken token = default) => RunAsync(ct =>
+    public Task<MDictLibraryDescriptor> AttachAsync(MDictLibraryDescriptor library, IReadOnlyList<string> paths, CancellationToken token = default)
     {
-        if (paths.Count > 16) throw Invalid(); var full = paths.Select(Path.GetFullPath).ToArray();
+        if (paths.Count > 16) return Task.FromException<MDictLibraryDescriptor>(Invalid());
+        var selected = paths.ToArray();
+        return RunAsync(library, (current, ct) =>
+    {
+        var full = selected.Select(WindowsDictionaryDirectory.Normalize).ToArray();
         if (full.Any(p => !string.Equals(Path.GetExtension(p), ".mdd", StringComparison.OrdinalIgnoreCase))) throw Invalid();
-        var stamps = CheckFiles([library.MdxPath, .. full], ct);
-        foreach (var path in new[] { library.MdxPath }.Concat(full)) { ct.ThrowIfCancellationRequested(); using var stream = Open(path); _ = new MDictFileReader(stream, _lowercase, ct); }
-        if (!CheckFiles([library.MdxPath, .. full], ct).SequenceEqual(stamps)) throw Invalid();
-        return library with { ResourcePaths = Array.AsReadOnly(full), Revision = Guid.NewGuid() };
+        using var lease = new MDictFileLease([current.MdxPath, .. full], current.FolderPath, ct); var streams = lease.OpenCacheStreams(ct);
+        try { foreach (var stream in streams) { ct.ThrowIfCancellationRequested(); _ = new MDictFileReader(stream, _lowercase, ct); } lease.Verify(ct); }
+        finally { foreach (var stream in streams) stream.Dispose(); }
+        return current with { ResourcePaths = Array.AsReadOnly(full), Revision = Guid.NewGuid() };
     }, token);
+    }
 
-    public Task<LearningDictionaryResult> LookupAsync(string query, MDictLibraryDescriptor library, CancellationToken token = default) => RunAsync<LearningDictionaryResult>(ct =>
+    public Task<LearningDictionaryResult> LookupAsync(string query, MDictLibraryDescriptor library, CancellationToken token = default) => RunAsync<LearningDictionaryResult>(library, (current, ct) =>
     {
         if (!DictionaryContentPolicy.ValidQuery(query)) return LearningDictionaryResult.NotFound;
-        var book = OpenBook(library, ct); int remaining = 8_000_000; var visited = new HashSet<string>(CanonicalStringComparer.Instance);
+        using var access = OpenBook(current, ct); var book = access.Book; int remaining = 8_000_000; var visited = new HashSet<string>(CanonicalStringComparer.Instance);
         var records = Definitions(query, 0); if (records.Count == 0) return LearningDictionaryResult.NotFound;
         string html = string.Join("<hr>", records); if (!book.Main.IsHtml) html = "<pre>" + DictionaryContentPolicy.Escaped(html) + "</pre>";
+        string stylesheet = Path.GetFileNameWithoutExtension(current.MdxPath) + ".css";
+        if (access.Files.HasStylesheet(stylesheet)) html = "<link rel=\"stylesheet\" href=\"" + DictionaryContentPolicy.Escaped(stylesheet) + "\">" + html;
         string text;
         try { text = DictionaryContentPolicy.PlainText(html, ct); }
         catch (System.Text.RegularExpressions.RegexMatchTimeoutException) { throw Invalid(); }
-        return new LearningDictionaryResult.Article(html, text, library.Name, library.Id, library.Languages);
+        access.Files.Verify(ct); return new LearningDictionaryResult.Article(html, text, current.Name, current.Id, current.Languages);
         List<string> Definitions(string value, int depth)
         {
             ct.ThrowIfCancellationRequested(); if (depth >= 8 || !visited.Add(value)) return [];
@@ -83,18 +97,19 @@ public sealed class MDictLibraryService(Func<string, string> lowercase) : IAsync
         }
     }, token);
 
-    public Task<DictionaryResource?> ResourceAsync(string path, MDictLibraryDescriptor library, CancellationToken token = default) => RunAsync<DictionaryResource?>(ct =>
+    public Task<DictionaryResource?> ResourceAsync(string path, MDictLibraryDescriptor library, CancellationToken token = default) => RunAsync<DictionaryResource?>(library, (current, ct) =>
     {
         string? relative = DictionaryContentPolicy.ResourcePath(path); string? mime = Mime(relative);
         if (relative is null || mime is null) return null;
-        var book = OpenBook(library, ct); byte[]? data = null; string key = "\\" + relative.Replace('/', '\\');
+        using var access = OpenBook(current, ct); var book = access.Book; byte[]? data = null; string key = "\\" + relative.Replace('/', '\\');
         foreach (var resource in book.Resources)
         {
             ct.ThrowIfCancellationRequested(); var values = resource.Records(key, ct); if (values.Count != 0) { data = values[0]; break; }
         }
+        data ??= access.Files.ReadResource(relative, ct);
         if (data is null || data.Length > 8_000_000) return null;
         if (mime.StartsWith("image/", StringComparison.Ordinal) && !ImageWithinLimits(data)) return null;
-        return new(data, mime);
+        access.Files.Verify(ct); return new(data, mime);
     }, token);
 
     private static string? Mime(string? path) => Path.GetExtension(path)?.ToLowerInvariant() switch
@@ -113,40 +128,37 @@ public sealed class MDictLibraryService(Func<string, string> lowercase) : IAsync
         }
         catch { return false; }
     }
-    private Book OpenBook(MDictLibraryDescriptor descriptor, CancellationToken token)
+    private BookAccess OpenBook(MDictLibraryDescriptor descriptor, CancellationToken token)
     {
         if (descriptor.ResourcePaths.Count > 16) throw Invalid(); var paths = new[] { descriptor.MdxPath }.Concat(descriptor.ResourcePaths).ToArray();
-        var stamps = CheckFiles(paths, token); var existing = _books.FirstOrDefault(x => SameDescriptor(x.Descriptor, descriptor) && x.Stamps.SequenceEqual(stamps));
-        if (existing is not null) { _books.Remove(existing); _books.Add(existing); return existing; }
+        MDictFileLease lease;
+        try { lease = new(paths, descriptor.FolderPath, token); }
+        catch { var stale = _books.FirstOrDefault(book => book.Descriptor.Id == descriptor.Id); if (stale is not null) { _books.Remove(stale); stale.Dispose(); } throw; }
+        var existing = _books.FirstOrDefault(x => SameDescriptor(x.Descriptor, descriptor) && x.FolderIdentity == lease.Folder.Identity && x.Stamps.SequenceEqual(lease.Stamps));
+        if (existing is not null) { _books.Remove(existing); _books.Add(existing); return new(existing, lease); }
         var previous = _books.FirstOrDefault(x => x.Descriptor.Id == descriptor.Id); if (previous is not null) { _books.Remove(previous); previous.Dispose(); }
         var streams = new List<FileStream>();
         try
         {
-            foreach (string path in paths) { token.ThrowIfCancellationRequested(); streams.Add(Open(path)); }
+            streams = lease.OpenCacheStreams(token);
             var main = new MDictFileReader(streams[0], _lowercase, token);
             var resources = streams.Skip(1).Select(stream => new MDictFileReader(stream, _lowercase, token)).ToArray();
-            if (!CheckFiles(paths, token).SequenceEqual(stamps)) throw Invalid();
-            var result = new Book(descriptor, stamps, streams[0], main, streams.Skip(1).ToArray(), resources); streams.Clear();
-            while (_books.Count >= 2) { _books[0].Dispose(); _books.RemoveAt(0); } _books.Add(result); return result;
+            lease.Verify(token);
+            var result = new Book(descriptor, lease.Folder.Identity, lease.Stamps, streams[0], main, streams.Skip(1).ToArray(), resources); streams.Clear();
+            while (_books.Count >= 2) { _books[0].Dispose(); _books.RemoveAt(0); } _books.Add(result); return new(result, lease);
         }
+        catch { lease.Dispose(); throw; }
         finally { foreach (var stream in streams) stream.Dispose(); }
     }
     private static bool SameDescriptor(MDictLibraryDescriptor a, MDictLibraryDescriptor b) => a.Id == b.Id && a.Name == b.Name
         && a.MdxPath == b.MdxPath && a.FolderPath == b.FolderPath && a.EntryCount == b.EntryCount && a.Revision == b.Revision
         && a.Languages == b.Languages && a.ResourcePaths.SequenceEqual(b.ResourcePaths, StringComparer.Ordinal);
-    private static IReadOnlyList<Stamp> CheckFiles(IReadOnlyList<string> paths, CancellationToken token)
+    private Task<T> RunAsync<T>(MDictLibraryDescriptor library, Func<MDictLibraryDescriptor, CancellationToken, T> action, CancellationToken token)
     {
-        long total = 0; var stamps = new List<Stamp>(paths.Count);
-        foreach (var path in paths)
-        {
-            token.ThrowIfCancellationRequested(); var info = new FileInfo(path); info.Refresh();
-            if (!info.Exists || (info.Attributes & FileAttributes.Directory) != 0 || info.Length <= 0 || info.Length > 8L * 1024 * 1024 * 1024
-                || info.Length > MaximumCombinedBytes - total) throw Invalid();
-            total += info.Length; stamps.Add(new(info.Length, info.LastWriteTimeUtc));
-        }
-        return stamps;
+        if (library.ResourcePaths.Count > 16) return Task.FromException<T>(Invalid());
+        var captured = library with { ResourcePaths = Array.AsReadOnly(library.ResourcePaths.ToArray()) };
+        return RunAsync(ct => action(captured, ct), token);
     }
-    private static FileStream Open(string path) => new(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, 4096, FileOptions.RandomAccess);
     private async Task<T> RunAsync<T>(Func<CancellationToken, T> action, CancellationToken token)
     {
         CancellationTokenSource linked;
@@ -154,7 +166,12 @@ public sealed class MDictLibraryService(Func<string, string> lowercase) : IAsync
         using (linked)
         {
             await _gate.WaitAsync(linked.Token).ConfigureAwait(false);
-            try { linked.Token.ThrowIfCancellationRequested(); return await Task.Run(() => action(linked.Token), CancellationToken.None).ConfigureAwait(false); }
+            try
+            {
+                linked.Token.ThrowIfCancellationRequested(); var result = await Task.Run(() => action(linked.Token), CancellationToken.None).ConfigureAwait(false);
+                linked.Token.ThrowIfCancellationRequested(); return result;
+            }
+            catch (Exception error) when (error is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException) { throw new InvalidDataException("The dictionary file is invalid or unavailable.", error); }
             finally { _gate.Release(); }
         }
     }

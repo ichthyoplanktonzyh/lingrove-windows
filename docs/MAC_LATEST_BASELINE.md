@@ -152,6 +152,12 @@ the initial gap audit; its initial Windows gap descriptions are historical. Curr
 - The [native bitmap input](VOCABULARY_BITMAP_INPUT_3B.md) adapts bounded CF_BITMAP/TYMED_GDI
   through the existing transfer helper, WIC and canonical Store. Corrupt-existing-media repair
   and physical producer/color acceptance remain explicit gaps.
+- #158 merged native bitmap input after all four checks passed at
+  `21bf55314656acf9a84099991b0a77e3bdbd47c7`, as `35e392f`, with independent Inference 758/758
+  and WPF 1218/1218. Physical producer acceptance remains separate.
+- The [MDict local-file/resource module](MDICT_LOCAL_RESOURCES_3B.md) connects adjacent CSS/images/
+  fonts and handle-based source/root admission, correcting the earlier path-open reparse overclaim.
+  In-root symlinks, unsupported volume mappings and native collation remain explicit limitations.
 - Remaining work includes native host/provider acceptance,
   full interface-language coverage, native automatic language
   confidence, Apple's unavailable system dictionary and the explicitly documented media/native gaps.

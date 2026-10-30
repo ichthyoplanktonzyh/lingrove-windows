@@ -287,4 +287,39 @@ public sealed class DictionaryArticleNativeTests(WpfDispatcher dispatcher)
         }
         finally { window.Close(); await view.DisposeAsync(); await view.ProfileCleanup.WaitAsync(TimeSpan.FromSeconds(15)); }
     });
+
+    [Fact]
+    public Task ImportedCompanionStylesheetLoadsThroughTheRestrictedResourceRoute() => dispatcher.RunAsync(async () =>
+    {
+        string root = Path.Combine(Path.GetTempPath(), "lingrove-mdict-view-" + Guid.NewGuid().ToString("N"));
+        string books = Path.Combine(root, "books"), profiles = Path.Combine(root, "profiles"); Directory.CreateDirectory(books);
+        VocabularyWindowsFile.CreateParentDirectory(profiles);
+        await using var service = new Cotabby.Win32.Dictionary.MDictLibraryService(s => s.ToLowerInvariant());
+        var view = new DictionaryArticleView(profileParent: profiles);
+        var window = new Window { Width = 360, Height = 240, Content = view, ShowInTaskbar = false };
+        var received = new TaskCompletionSource<DictionaryResource>(TaskCreationOptions.RunContinuationsAsynchronously);
+        try
+        {
+            string mdx = Path.Combine(books, "Book.mdx"); File.WriteAllBytes(mdx, MDictFixture3b.v2);
+            File.WriteAllText(Path.Combine(books, "Book.css"), ".word{color:blue}");
+            var book = await service.ImportAsync(mdx);
+            var article = Assert.IsType<LearningDictionaryResult.Article>(await service.LookupAsync("hello", book));
+            window.Show();
+            await view.ShowAsync(article, async (path, token) =>
+            {
+                var resource = await service.ResourceAsync(path, book, token);
+                if (path == "Book.css" && resource is not null) received.TrySetResult(resource);
+                return resource;
+            }, () => true, CancellationToken.None);
+            var css = await received.Task.WaitAsync(TimeSpan.FromSeconds(20));
+            Assert.Equal("text/css", css.MimeType); Assert.Equal(".word{color:blue}", System.Text.Encoding.UTF8.GetString(css.Data));
+            var browser = Assert.Single(view.Children.OfType<WebView2CompositionControl>());
+            Assert.False(browser.CoreWebView2.Settings.IsScriptEnabled); Assert.False(browser.CoreWebView2.Settings.IsWebMessageEnabled);
+        }
+        finally
+        {
+            window.Close(); await view.DisposeAsync(); await view.ProfileCleanup.WaitAsync(TimeSpan.FromSeconds(15));
+            await service.DisposeAsync(); Directory.Delete(root, true);
+        }
+    });
 }

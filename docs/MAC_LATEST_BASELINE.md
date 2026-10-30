@@ -125,7 +125,11 @@ the initial gap audit; its initial Windows gap descriptions are historical. Curr
   context, native/gesture geometry, compound lifetime and preparation state; final-head CI remains
   its separate gate. The [read-only provider upgrade](READING_READONLY_PROVIDERS_3B.md) adds
   positive TextPattern-only documents and bounded ancestor roots, with editable IME refusal intact.
-- Remaining work includes native host/provider acceptance, canonical custom review layouts,
+- The [current review preparation](ANKI_REVIEW_PREPARATION_3B.md) admits default/preserved layouts
+  through the existing session/Store, shares typed side previews and reuses Mac review labels with
+  sixteen supplement keys in all fifteen interface locales. Independent-card media, review audio
+  and settings template removal were already connected; earlier broader gap wording is superseded.
+- Remaining work includes native host/provider acceptance,
   full interface-language coverage, native automatic language
   confidence, Apple's unavailable system dictionary and the explicitly documented media/native gaps.
   Internal components are not evidence that those flows are complete. Existing older libraries

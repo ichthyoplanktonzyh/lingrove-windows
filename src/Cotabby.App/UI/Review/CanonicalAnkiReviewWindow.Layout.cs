@@ -2,6 +2,7 @@ using Cotabby.App.Localization;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
@@ -26,6 +27,12 @@ internal sealed partial class CanonicalAnkiReviewWindow
     private readonly Button _saveTemplate = new() { Content = InterfaceText.Get("Save as template") }, _addPartButton = new() { Content = InterfaceText.Get("Add content") };
     private sealed record SourceChoice(string Label, ReviewContentSource Source) { public override string ToString() => Label; }
     private sealed record LayoutChoice(string Label, ReviewLayout Layout) { public override string ToString() => Label; }
+    private sealed class TextStyleLabel : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) =>
+            value is VocabularyTextStyle style ? ReviewText(style.ToString()) : "";
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) => Binding.DoNothing;
+    }
     internal StackPanel LayoutParts => _parts;
     internal ComboBox LayoutPreset => _applyLayout;
     internal TextBox CardNameBox => _cardName;
@@ -37,10 +44,10 @@ internal sealed partial class CanonicalAnkiReviewWindow
     private void BuildLayoutControls()
     {
         VocabularyNotebookTheme.Input(_cardName); VocabularyNotebookTheme.Input(_templateName);
-        _layoutPanel.Children.Add(VocabularyInputControls.Heading("Card layout"));
-        _layoutPanel.Children.Add(VocabularyInputControls.Group(("Card name", _cardName), ("Apply template", _applyLayout), ("Review example", _layoutExample), ("Template name", _templateName), ("", _saveTemplate), ("Side", _side)));
+        _layoutPanel.Children.Add(VocabularyInputControls.Heading(ReviewText("Card layout")));
+        _layoutPanel.Children.Add(VocabularyInputControls.Group(("Card name", _cardName), ("Apply template", _applyLayout), ("Review example", _layoutExample), ("Template name", _templateName), ("", _saveTemplate), ("Card side", _side)));
         _layoutPanel.Children.Add(_parts);
-        _addPart.ItemsSource = Enum.GetValues<ReviewContentSource>().Select(source => new SourceChoice(source.Label(), source)).ToArray(); _addPart.DisplayMemberPath = nameof(SourceChoice.Label); _addPart.SelectedValuePath = nameof(SourceChoice.Source); _addPart.SelectedIndex = 0; VocabularyNotebookTheme.Combo(_addPart);
+        _addPart.ItemsSource = Enum.GetValues<ReviewContentSource>().Select(source => new SourceChoice(ReviewText(source.Label()), source)).ToArray(); _addPart.DisplayMemberPath = nameof(SourceChoice.Label); _addPart.SelectedValuePath = nameof(SourceChoice.Source); _addPart.SelectedIndex = 0; VocabularyNotebookTheme.Combo(_addPart);
         VocabularyNotebookTheme.Button(_addPartButton); VocabularyNotebookTheme.Button(_saveTemplate);
         _layoutPanel.Children.Add(VocabularyInputControls.Group(("Content source", _addPart), ("", _addPartButton)));
         _cardName.TextChanged += (_, _) => { if (!_updating) { _session.Plan = _session.Plan with { Name = _cardName.Text }; RefreshDraft(); } };
@@ -61,7 +68,7 @@ internal sealed partial class CanonicalAnkiReviewWindow
         {
             string name = _templateName.Text.Trim(); if (name.Length == 0) return;
             var template = new ReviewLayoutTemplate(Guid.NewGuid(), name, ReviewLayoutPolicy.Portable(Layout));
-            var images = _session.ImportedImages; Start(async token => { await _session.Store.SaveTemplateAsync(template, images, token); _templateName.Text = ""; _windowNotice = "Template saved."; });
+            var images = _session.ImportedImages; Start(async token => { await _session.Store.SaveTemplateAsync(template, images, token); _templateName.Text = ""; _windowNotice = ReviewText("Template saved."); });
         };
     }
     private ReviewLayout Layout => _session.Plan.Layout ?? new ReviewLayout();
@@ -78,7 +85,7 @@ internal sealed partial class CanonicalAnkiReviewWindow
     private void ChangeBlock(Guid partId, Guid blockId, Func<VocabularyContentBlock, VocabularyContentBlock> update)
     { ChangePart(partId, p => p with { Content = p.Content.Select(b => b.Id == blockId ? update(b) : b).ToArray() }); RefreshDraft(); }
     private Button LayoutAction(string title, Action action)
-    { var button = new Button { Content = title, Margin = new Thickness(0, 0, 6, 4) }; VocabularyNotebookTheme.Button(button); button.Click += (_, _) => action(); return button; }
+    { var button = new Button { Content = ReviewText(title), Margin = new Thickness(0, 0, 6, 4) }; VocabularyNotebookTheme.Button(button); button.Click += (_, _) => action(); return button; }
     private void RenderLayout()
     {
         if (_session.CardId is null) return;
@@ -86,24 +93,24 @@ internal sealed partial class CanonicalAnkiReviewWindow
         try
         {
             var (_, sense) = Current(); _cardName.Text = _session.Plan.Name ?? "";
-            _layoutExample.Items.Clear(); _layoutExample.Items.Add(new Option("No context", null)); foreach (var example in sense.Examples) _layoutExample.Items.Add(new Option(example.Text, example.Id));
+            _layoutExample.Items.Clear(); _layoutExample.Items.Add(new Option(ReviewText("No context"), null)); foreach (var example in sense.Examples) _layoutExample.Items.Add(new Option(example.Text, example.Id));
             _layoutExample.SelectedItem = _layoutExample.Items.Cast<Option>().FirstOrDefault(o => o.Id == _session.Plan.ExampleId);
-            _applyLayout.Items.Clear(); for (int i = 0; i < 4; i++) _applyLayout.Items.Add(new LayoutChoice(new[] { "Expression → meaning", "Gap → expression", "Image → expression", "Blank card" }[i], ReviewLayoutPolicy.Preset(i)));
+            _applyLayout.Items.Clear(); for (int i = 0; i < 4; i++) _applyLayout.Items.Add(new LayoutChoice(ReviewText(new[] { "Expression → meaning", "Gap → expression", "Image → expression", "Blank card" }[i]), ReviewLayoutPolicy.Preset(i)));
             foreach (var template in _session.Snapshot.Document.ReviewTemplates ?? []) _applyLayout.Items.Add(new LayoutChoice(template.Name, template.Layout));
             _applyLayout.SelectedIndex = -1;
             _parts.Children.Clear(); _layoutDropTargets.Clear(); var values = SideParts;
             for (int i = 0; i < values.Count; i++)
             {
                 int index = i; var part = values[i]; var panel = new StackPanel { Margin = new Thickness(0, 0, 0, 12) }; var header = new WrapPanel();
-                header.Children.Add(new TextBlock { Text = part.Source.Label(), FontWeight = FontWeights.SemiBold, Margin = new Thickness(0, 4, 12, 0) });
+                header.Children.Add(new TextBlock { Text = ReviewText(part.Source.Label()), FontWeight = FontWeights.SemiBold, Margin = new Thickness(0, 4, 12, 0) });
                 var up = LayoutAction("Move up", () => MovePart(index, -1)); up.IsEnabled = index > 0; header.Children.Add(up);
                 var down = LayoutAction("Move down", () => MovePart(index, 1)); down.IsEnabled = index + 1 < SideParts.Count; header.Children.Add(down);
                 header.Children.Add(LayoutAction("Delete", () => { SetParts(SideParts.Where(p => p.Id != part.Id).ToArray()); RenderLayout(); RefreshDraft(); })); panel.Children.Add(header);
                 if (part.Source is ReviewContentSource.SenseText or ReviewContentSource.SenseImage)
                 {
-                    var select = new ComboBox(); VocabularyNotebookTheme.Combo(select); select.Items.Add(new Option("Choose…", null));
+                    var select = new ComboBox(); VocabularyNotebookTheme.Combo(select); select.Items.Add(new Option(ReviewText("Choose…"), null));
                     foreach (var block in sense.Content?.Where(b => ReviewLayoutPolicy.Matches(b, part.Source)) ?? [])
-                        select.Items.Add(new Option(block.Content is VocabularyBlockContent.Text t ? t.Value.Text : block.Content is VocabularyBlockContent.Image image && image.Caption.Length > 0 ? image.Caption : "Image", block.Id));
+                        select.Items.Add(new Option(block.Content is VocabularyBlockContent.Text t ? t.Value.Text : block.Content is VocabularyBlockContent.Image image && image.Caption.Length > 0 ? image.Caption : ReviewText("Image"), block.Id));
                     select.SelectedItem = select.Items.Cast<Option>().FirstOrDefault(o => o.Id == part.BlockId); select.SelectionChanged += (_, _) => { if (!_updating) { ChangePart(part.Id, p => p with { BlockId = (select.SelectedItem as Option)?.Id }); RefreshDraft(); } }; panel.Children.Add(select);
                 }
                 if (part.Source is ReviewContentSource.SenseImage or ReviewContentSource.Custom)
@@ -115,7 +122,7 @@ internal sealed partial class CanonicalAnkiReviewWindow
                     var kind = part.Source == ReviewContentSource.ExpressionAudio ? ReviewAudioKind.Expression : ReviewAudioKind.Sentence;
                     panel.Children.Add(LayoutAction("Preview audio", () => Start(token => _session.PrepareAudioAsync(kind, true, token: token))));
                     panel.Children.Add(LayoutAction("Regenerate audio", () => Start(token => _session.PrepareAudioAsync(kind, false, true, token))));
-                    if (_session.Audio.Speech is null) panel.Children.Add(VocabularyInputControls.Caption("Speech is unavailable. Remove this audio slot before sending."));
+                    if (_session.Audio.Speech is null) panel.Children.Add(VocabularyInputControls.Caption(ReviewText("Speech is unavailable. Remove this audio slot before sending.")));
                 }
                 if (part.Source == ReviewContentSource.Custom) BuildCustomContent(panel, part);
                 _parts.Children.Add(VocabularyInputControls.Group(("", panel)));
@@ -133,25 +140,29 @@ internal sealed partial class CanonicalAnkiReviewWindow
         foreach (var block in part.Content)
         {
             var tools = new WrapPanel(); int index = part.Content.ToList().FindIndex(b => b.Id == block.Id);
-            var up = LayoutAction("Move block up", () => MoveBlock(part.Id, block.Id, -1)); up.IsEnabled = index > 0; tools.Children.Add(up);
-            var down = LayoutAction("Move block down", () => MoveBlock(part.Id, block.Id, 1)); down.IsEnabled = index + 1 < part.Content.Count; tools.Children.Add(down);
-            tools.Children.Add(LayoutAction("Delete block", () => { ChangePart(part.Id, p => p with { Content = p.Content.Where(b => b.Id != block.Id).ToArray() }); RenderLayout(); RefreshDraft(); })); panel.Children.Add(tools);
+            var up = LayoutAction("Move up", () => MoveBlock(part.Id, block.Id, -1)); up.IsEnabled = index > 0; tools.Children.Add(up);
+            var down = LayoutAction("Move down", () => MoveBlock(part.Id, block.Id, 1)); down.IsEnabled = index + 1 < part.Content.Count; tools.Children.Add(down);
+            tools.Children.Add(LayoutAction("Delete", () => { ChangePart(part.Id, p => p with { Content = p.Content.Where(b => b.Id != block.Id).ToArray() }); RenderLayout(); RefreshDraft(); })); panel.Children.Add(tools);
             if (block.Content is VocabularyBlockContent.Text text)
             {
-                var style = new ComboBox { ItemsSource = Enum.GetValues<VocabularyTextStyle>(), SelectedItem = text.Value.Style }; VocabularyNotebookTheme.Combo(style); style.SelectionChanged += (_, _) => { if (!_updating && style.SelectedItem is VocabularyTextStyle v) ChangeBlock(part.Id, block.Id, b => b with { Content = new VocabularyBlockContent.Text(((VocabularyBlockContent.Text)b.Content).Value with { Style = v }) }); }; panel.Children.Add(style);
+                var style = new ComboBox { ItemsSource = Enum.GetValues<VocabularyTextStyle>(), SelectedItem = text.Value.Style };
+                var styleLabel = new FrameworkElementFactory(typeof(TextBlock));
+                styleLabel.SetBinding(TextBlock.TextProperty, new Binding { Converter = new TextStyleLabel() });
+                style.ItemTemplate = new DataTemplate { VisualTree = styleLabel };
+                VocabularyNotebookTheme.Combo(style); style.SelectionChanged += (_, _) => { if (!_updating && style.SelectedItem is VocabularyTextStyle v) ChangeBlock(part.Id, block.Id, b => b with { Content = new VocabularyBlockContent.Text(((VocabularyBlockContent.Text)b.Content).Value with { Style = v }) }); }; panel.Children.Add(style);
                 var format = new WrapPanel(); foreach (bool bold in new[] { true, false }) { var toggle = new CheckBox { Content = bold ? InterfaceText.Get("Bold", "Vocabulary") : InterfaceText.Get("Italic", "Vocabulary"), IsChecked = bold ? text.Value.Bold : text.Value.Italic, Margin = new Thickness(0, 4, 12, 4) }; toggle.Click += (_, _) => ChangeBlock(part.Id, block.Id, b => { var value = ((VocabularyBlockContent.Text)b.Content).Value; return b with { Content = new VocabularyBlockContent.Text(bold ? value with { Bold = toggle.IsChecked == true } : value with { Italic = toggle.IsChecked == true }) }; }); format.Children.Add(toggle); } panel.Children.Add(format);
                 var field = new TextBox { Text = text.Value.Text, AcceptsReturn = true, MinHeight = 65, TextWrapping = TextWrapping.Wrap }; VocabularyNotebookTheme.Input(field); field.TextChanged += (_, _) => { if (!_updating) ChangeBlock(part.Id, block.Id, b => b with { Content = new VocabularyBlockContent.Text(((VocabularyBlockContent.Text)b.Content).Value with { Text = field.Text }) }); }; panel.Children.Add(field);
             }
             else if (block.Content is VocabularyBlockContent.Image image)
             {
-                panel.Children.Add(VocabularyInputControls.Caption("Image: " + image.Reference.Filename));
+                panel.Children.Add(VocabularyInputControls.Caption(ReviewText("Image") + ": " + image.Reference.Filename));
                 var caption = new TextBox { Text = image.Caption }; VocabularyNotebookTheme.Input(caption); caption.TextChanged += (_, _) => { if (!_updating) ChangeBlock(part.Id, block.Id, b => b with { Content = ((VocabularyBlockContent.Image)b.Content) with { Caption = caption.Text } }); }; panel.Children.Add(caption);
             }
         }
         var add = new WrapPanel();
         var textButton = LayoutAction("Add text", () => { ChangePart(part.Id, p => p with { Content = p.Content.Append(VocabularyContentBlock.Create(new VocabularyBlockContent.Text(new()))).ToArray() }); RenderLayout(); RefreshDraft(); }); textButton.IsEnabled = part.Content.Count < VocabularyContentPolicy.MaximumBlocks; add.Children.Add(textButton);
         var paste = LayoutAction("Paste image", () => PasteLayoutImage(part.Id)); paste.IsEnabled = _allowExternalMedia && _clipboard is not null && part.Content.Count < VocabularyContentPolicy.MaximumBlocks; add.Children.Add(paste);
-        var imageButton = LayoutAction("Add image", () => { if (!_allowExternalMedia) return; var dialog = new OpenFileDialog { Title = "Add image", Filter = "Images|*.png;*.jpg;*.jpeg;*.tif;*.tiff;*.bmp;*.gif;*.ico;*.webp;*.heic;*.heif", Multiselect = false }; if (dialog.ShowDialog(this) == true) ImportLayoutImage(part.Id, dialog.FileName); }); imageButton.IsEnabled = _allowExternalMedia && part.Content.Count < VocabularyContentPolicy.MaximumBlocks; add.Children.Add(imageButton); panel.Children.Add(add);
+        var imageButton = LayoutAction("Add image", () => { if (!_allowExternalMedia) return; var dialog = new OpenFileDialog { Title = ReviewText("Add image"), Filter = ReviewText("Image") + "|*.png;*.jpg;*.jpeg;*.tif;*.tiff;*.bmp;*.gif;*.ico;*.webp;*.heic;*.heif", Multiselect = false }; if (dialog.ShowDialog(this) == true) ImportLayoutImage(part.Id, dialog.FileName); }); imageButton.IsEnabled = _allowExternalMedia && part.Content.Count < VocabularyContentPolicy.MaximumBlocks; add.Children.Add(imageButton); panel.Children.Add(add);
     }
     private void MoveBlock(Guid partId, Guid blockId, int delta)
     {
@@ -192,20 +203,26 @@ internal sealed partial class CanonicalAnkiReviewWindow
         catch (AnkiReviewException error) { validation ??= error.Message; }
         if (version != _previewVersion || _closing) return;
         _validation.Text = validation ?? (_loadedAddress == _session.Controller.Settings.Address ? "" : InterfaceText.Get("Refresh the Anki connection before sending.", "Vocabulary")); _preview.Children.Clear();
-        foreach (var part in (_side.SelectedIndex == 1 ? content?.Back : content?.Front) ?? [])
+        if (content is not null) await AppendResolvedPreviewAsync(content, version, token);
+        UpdateEnabled();
+    }
+    // The same resolved source values drive independent cards and preserved/default layouts.
+    // Rendering has no authority to change the plan identity, model, mapping or Store draft.
+    private async Task AppendResolvedPreviewAsync(ReviewCardContent content, long version, CancellationToken token)
+    {
+        foreach (var part in (_side.SelectedIndex == 1 ? content.Back : content.Front) ?? [])
         {
             if (part is ReviewResolvedPart.Text text) _preview.Children.Add(new TextBlock { Text = text.Value, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 4) });
-            else if (part is ReviewResolvedPart.Audio audio) _preview.Children.Add(VocabularyInputControls.Caption("🔊 " + audio.Kind.Label()));
+            else if (part is ReviewResolvedPart.Audio audio) _preview.Children.Add(VocabularyInputControls.Caption("🔊 " + ReviewText(audio.Kind.Label())));
             else if (part is ReviewResolvedPart.Blocks blocks) foreach (var block in blocks.Values)
             {
                 if (block.Content is VocabularyBlockContent.Text textBlock) _preview.Children.Add(new TextBlock { Text = (textBlock.Value.Style == VocabularyTextStyle.Bullet ? "• " : "") + textBlock.Value.Text, TextWrapping = TextWrapping.Wrap, FontSize = textBlock.Value.Style == VocabularyTextStyle.Heading ? 17 : 13, FontWeight = textBlock.Value.Bold ? FontWeights.Bold : FontWeights.Normal, FontStyle = textBlock.Value.Italic ? FontStyles.Italic : FontStyles.Normal });
                 else if (block.Content is VocabularyBlockContent.Image image)
                 {
                     try { byte[] bytes = _session.ImportedImages.TryGetValue(image.Reference.Filename, out var draft) ? draft.CopyBytes() : await _session.Store.ReadImageAsync(image.Reference, token); if (version != _previewVersion || _closing) return; using var stream = new MemoryStream(bytes); var bitmap = new BitmapImage(); bitmap.BeginInit(); bitmap.CacheOption = BitmapCacheOption.OnLoad; bitmap.StreamSource = stream; bitmap.EndInit(); bitmap.Freeze(); _preview.Children.Add(new Image { Source = bitmap, MaxWidth = 360, MaxHeight = 180, HorizontalAlignment = HorizontalAlignment.Left }); if (image.Caption.Length > 0) _preview.Children.Add(VocabularyInputControls.Caption(image.Caption)); }
-                    catch (OperationCanceledException) { throw; } catch { _preview.Children.Add(VocabularyInputControls.Caption("Image unavailable.")); }
+                    catch (OperationCanceledException) { throw; } catch { _preview.Children.Add(VocabularyInputControls.Caption(ReviewText("Image unavailable"))); }
                 }
             }
         }
-        UpdateEnabled();
     }
 }

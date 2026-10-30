@@ -43,7 +43,7 @@ claim that every editor, IME, speech provider or hardware configuration has pass
 See [feature evidence](docs/PARITY.md) and [Windows host acceptance](docs/WINDOWS_HOST_ACCEPTANCE.md).
 
 Remaining work includes native provider acceptance, language/platform recognition limits,
-some bitmap/drop/dictionary-resource variants, custom review layouts and full interface-language
+some bitmap/drop/dictionary-resource variants and full interface-language
 coverage. Unsupported states stay explicit. Word, Chrome and Codex are the maintainer's final unified
 host acceptance order; physical DPI, focus, keyboard, clipboard, OCR, models and audio remain distinct
 from compilation and isolated tests.

@@ -57,10 +57,11 @@ Component renders use only the app's own visual tree at 96-DPI output, including
 They are not screenshots of user content and do not establish native mixed-DPI/assistive-technology
 acceptance. No real model, endpoint, editor, clipboard or taskbar installation is used by these checks.
 
-The Windows supplement currently translates its platform-specific keys in English, Simplified
-Chinese and Traditional Chinese. The other supported interface locales still need those additional
-translations. All-window fixed-state/format/plural coverage, further resource-key reuse, RTL/native
-accessibility and physical UI acceptance remain in the active alignment goal. The standalone
-canonical review window still refuses custom saved layouts: that is a real remaining module,
-not merely an outdated English string. Reading visual fallback and other platform/media gaps retain
-their own module records. Do not label this checkpoint as complete Mac parity or full localization.
+The Windows supplement initially translated its platform-specific keys in English, Simplified
+Chinese and Traditional Chinese. The [review preparation upgrade](ANKI_REVIEW_PREPARATION_3B.md)
+now supplies sixteen review keys in all fifteen interface locales and removes the default/preserved
+layout refusal; the other 118 supplement keys still need the remaining language translations.
+All-window fixed-state/format/plural coverage, further resource-key reuse, RTL/native accessibility
+and physical UI acceptance remain in the active alignment goal. Reading visual fallback and other
+platform/media gaps retain their own module records. Do not label this checkpoint as complete Mac
+parity or full localization.

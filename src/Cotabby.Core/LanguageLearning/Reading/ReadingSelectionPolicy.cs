@@ -30,12 +30,17 @@ public static class ReadingSelectionPolicy
         bool range = selection.Source is ReadingSourceKind.Selection or ReadingSourceKind.Pointer && absolute != opaque
             && (!selection.SelectionStart.HasValue || absolute) && (!selection.SelectionAnchorId.HasValue || opaque)
             && (selection.Source != ReadingSourceKind.Pointer || opaque) && selection.ScreenReceipt is null;
+        bool windowScreen = screen && selection.ScreenReceipt!.WindowOrigin is { Id: var originId } origin
+            && originId != Guid.Empty && ReadingRegionPolicy.IsValidBounds(origin.WindowBounds);
+        bool sourceEvidence = windowScreen
+            ? selection.FieldId == "" && selection.Composition == Cotabby.Core.Focus.InputCompositionState.Unknown && selection.CompositionSequence == 0
+            : !string.IsNullOrWhiteSpace(selection.FieldId) && selection.Composition == Cotabby.Core.Focus.InputCompositionState.Clear && selection.CompositionSequence > 0
+                && selection.ScreenReceipt?.WindowOrigin is null;
         if (!(range || screen)
-            || selection.Id == Guid.Empty || selection.ProcessId <= 0 || string.IsNullOrWhiteSpace(selection.FieldId)
+            || selection.Id == Guid.Empty || selection.ProcessId <= 0 || !sourceEvidence
             || selection.FocusEpoch <= 0 || selection.Text is null
             || selection.SelectionLength <= 0 || selection.SelectionLength != selection.Text.Length
-            || selection.IsSecure || !selection.IsComplete || selection.Composition != Cotabby.Core.Focus.InputCompositionState.Clear
-            || selection.CompositionSequence <= 0) throw new ArgumentException("The selected occurrence could not be verified.");
+            || selection.IsSecure || !selection.IsComplete) throw new ArgumentException("The selected occurrence could not be verified.");
         Validate(selection.Text);
     }
 

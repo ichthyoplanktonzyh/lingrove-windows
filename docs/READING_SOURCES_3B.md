@@ -1,5 +1,10 @@
 # Reading sources and context
 
+The explicit screenshot command has since been upgraded to origin-window acquisition across a
+user-selected display region; see [the explicit-region module](READING_EXPLICIT_REGION_3B.md).
+The field-only screen admission below records the earlier implementation, whose adapter and
+regressions remain available. It is no longer the production screenshot command's constraint.
+
 Reference: Mac `3b53402f2cbc196b0398d133177fd80006d165b2`, `LearningReadingCoordinator.swift`, `LearningReadingSourceReader.swift`, `LearningReadingSelectionReader.swift`, `LearningVocabularyContextReader.swift`, `LearningReadingVisualReader.swift`, `LearningRegionSelectionPanel.swift`, `WindowScreenshotService.swift`, `LearningReadingTargetPolicy.swift`, `LearningReadingContextPolicy.swift`, `LearningReadingLookupPolicy.swift`, `LanguageLearningSettings.swift`, `SuggestionSettingsModel.swift`, and their reading/coordinator/OCR tests. C# regressions are source-derived; they are not Swift executions.
 
 The candidate keeps one existing read-only UIA owner, translation owner, explanation owner and application hook. Selection, pointer and screen-region shortcuts default off and have independent per-app grants; the selection icon defaults off and supports an inherited per-app override. Shortcuts and grants are discoverable in Settings. The observation-only mouse owner has no UIA or synchronous UI work in its hook. A drag or double-click settles for 150 ms, captures one selection receipt without surrounding context, and does not invoke a model. Clicking the nonactivating icon or using the selection shortcut consumes that same receipt. If its capture is already in progress the shortcut waits for it rather than starting another capture. Context is read only after explicit activation; [the bounded context contract](READING_CONTEXT_3B.md) describes its 180 ms deadline and exact occurrence checks.

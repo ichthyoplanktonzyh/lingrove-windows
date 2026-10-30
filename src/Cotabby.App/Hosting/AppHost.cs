@@ -106,6 +106,7 @@ public sealed class AppHost : IAsyncDisposable
     private readonly IWritingSentenceReplacement _writingReplacement;
     private readonly Win32ReadingSelectionReader? _nativeReading;
     private readonly Win32ReadingOriginTracker? _readingOrigin;
+    private readonly Win32ReadingWindowSource? _readingWindowSource;
     private readonly ReadingApplication? _reading;
     private readonly CanonicalVocabularyFeature _notebook;
     internal CanonicalWritingViewStore Vocabulary => _notebook.Writing;
@@ -353,7 +354,8 @@ public sealed class AppHost : IAsyncDisposable
             _reading.AttachPerformance(_performance.Observe);
             _readingPointer = new ReadingPointerMonitor();
             _reading.AttachPointer(_readingPointer);
-            _reading.AttachScreen(new NativeReadingScreenReader(_nativeReading, new WindowsReadingOcr(), _performance.Observe));
+            _readingWindowSource = new Win32ReadingWindowSource(nativeFocus, _hook, _readingOrigin);
+            _reading.AttachScreen(new NativeReadingScreenReader(_readingWindowSource, new WindowsReadingOcr(), _performance.Observe));
         }
 
         SystemEvents.PowerModeChanged += OnPowerModeChanged;
@@ -799,8 +801,12 @@ public sealed class AppHost : IAsyncDisposable
             {
                 if (OperatingSystem.IsWindowsVersionAtLeast(8, 1))
                 {
-                    try { if (_nativeReading is not null) await _nativeReading.DisposeAsync().ConfigureAwait(false); }
-                    finally { if (_readingOrigin is not null) await _readingOrigin.DisposeAsync().ConfigureAwait(false); }
+                    try { if (_readingWindowSource is not null) await _readingWindowSource.DisposeAsync().ConfigureAwait(false); }
+                    finally
+                    {
+                        try { if (_nativeReading is not null) await _nativeReading.DisposeAsync().ConfigureAwait(false); }
+                        finally { if (_readingOrigin is not null) await _readingOrigin.DisposeAsync().ConfigureAwait(false); }
+                    }
                 }
             }
         }

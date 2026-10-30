@@ -32,13 +32,20 @@ internal static class WindowsReadingPixels
     [DllImport("gdi32.dll")] private static extern bool GdiFlush();
     [DllImport("dwmapi.dll")] private static extern int DwmFlush();
 
-    internal static unsafe (ReadingBitmap Bitmap, ScreenRect Display)? Capture(nint host, nint fieldWindow, ScreenRect field, ScreenRect region, Func<bool> permit)
+    internal static (ReadingBitmap Bitmap, ScreenRect Display)? Capture(nint host, nint fieldWindow, ScreenRect field, ScreenRect region, Func<bool> permit) =>
+        CaptureCore(host, fieldWindow, field, region, permit, explicitRegion: false);
+    // Called only by an explicit visual-window lease. Other visible content is what the user
+    // selected, not an occluder to a claimed editable-field read. Existing field admission is unchanged.
+    internal static (ReadingBitmap Bitmap, ScreenRect Display)? CaptureExplicitRegion(ScreenRect bounds, ScreenRect region, Func<bool> permit) =>
+        CaptureCore(0, 0, bounds, region, permit, explicitRegion: true);
+    private static unsafe (ReadingBitmap Bitmap, ScreenRect Display)? CaptureCore(nint host, nint fieldWindow, ScreenRect field, ScreenRect region, Func<bool> permit, bool explicitRegion)
     {
         if (!permit() || !IntegralRect(region, out var crop) || DwmFlush() < 0 || !permit()) return null;
         var monitor = MonitorFromRect(in crop, 2); var info = new MonitorInfo { Size = (uint)Marshal.SizeOf<MonitorInfo>() };
         if (monitor == 0 || !GetMonitorInfo(monitor, ref info) || !permit()) return null;
         var display = new ScreenRect(info.Monitor.Left, info.Monitor.Top, (double)info.Monitor.Right - info.Monitor.Left, (double)info.Monitor.Bottom - info.Monitor.Top);
-        if (!ReadingRegionPolicy.Contains(field, display, region) || !Unobscured(host, fieldWindow, crop, permit)) return null;
+        if (!ReadingRegionPolicy.Contains(field, display, region)
+            || (explicitRegion ? !NoOwnWindows(crop, permit) : !Unobscured(host, fieldWindow, crop, permit))) return null;
         int width = crop.Right - crop.Left, height = crop.Bottom - crop.Top;
         var bitmapInfo = new BitmapInfo { Header = new BitmapInfoHeader { Size = (uint)Marshal.SizeOf<BitmapInfoHeader>(), Width = width, Height = -height, Planes = 1, BitCount = 32 } };
         nint screen = 0, memory = 0, bitmap = 0, previous = 0, bits = 0; byte[]? pixels = null;
@@ -49,7 +56,7 @@ internal static class WindowsReadingPixels
             if (bitmap == 0 || bits == 0 || !permit() || (previous = SelectObject(memory, bitmap)) == 0 || previous == -1 || !permit()) return null;
             if (!BitBlt(memory, 0, 0, width, height, screen, crop.Left, crop.Top, 0x40CC0020) || !GdiFlush() || !permit()) return null;
             pixels = new byte[checked(width * height * 4)]; Marshal.Copy(bits, pixels, 0, pixels.Length);
-            if (!permit() || !Unobscured(host, fieldWindow, crop, permit)) return null;
+            if (!permit() || (explicitRegion ? !NoOwnWindows(crop, permit) : !Unobscured(host, fieldWindow, crop, permit))) return null;
             var result = new ReadingBitmap(width, height, pixels); pixels = null; return (result, display);
         }
         finally
@@ -76,6 +83,26 @@ internal static class WindowsReadingPixels
     }
     private static bool Overlap(Rect a, Rect b) => a.Left < b.Right && b.Left < a.Right && a.Top < b.Bottom && b.Top < a.Bottom;
     private static bool Valid(Rect value) => value.Right > value.Left && value.Bottom > value.Top;
+    private static bool NoOwnWindows(Rect crop, Func<bool> permit)
+    {
+        bool safe = true;
+        EnumProc inspect = (window, _) =>
+        {
+            try
+            {
+                if (!permit()) { safe = false; return false; }
+                if (!IsWindowVisible(window)) return true;
+                if (Cotabby.Win32.Interop.NativeMethods.GetWindowThreadProcessId(window, out uint pid) == 0)
+                { safe = false; return false; }
+                if (pid != (uint)Environment.ProcessId) return true;
+                if (!GetWindowRect(window, out var bounds) || !Valid(bounds) || Overlap(bounds, crop))
+                { safe = false; return false; }
+                return true;
+            }
+            catch { safe = false; return false; }
+        };
+        return EnumWindows(inspect, 0) && safe && permit();
+    }
     private static bool Unobscured(nint host, nint field, Rect crop, Func<bool> permit)
     {
         if (host == 0 || field == 0 || (field != host && !IsChild(host, field)) || !IsWindowVisible(host) || !IsWindowVisible(field) || !permit()) return false;

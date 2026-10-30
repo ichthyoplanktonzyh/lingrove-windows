@@ -19,6 +19,7 @@ IUIAutomation3
 VariantClear
 IUIAutomationElement
 IUIAutomationTextEditPattern
+IUIAutomationValuePattern
 IUIAutomationTextEditTextChangedEventHandler
 CoCreateInstance
 CoInitializeEx

@@ -47,7 +47,9 @@ The [current export flow](VOCABULARY_CANONICAL_EXPORT.md),
 The [reading/CLI/interface checkpoint](WINDOWS_READING_CLI_INTERFACE_CHECKPOINT_20261030.md)
 now composes selection affordances, bounded context, pointer reading and restricted field-region OCR,
 local automation through the same Store, launch-time interface language and shared opt-in request history.
-Remaining media variants, arbitrary-region reading and physical acceptance stay incomplete.
+The [explicit-region reading upgrade](READING_EXPLICIT_REGION_3B.md) removes the editable-field
+requirement for the screenshot command and retains origin-window/privacy evidence through local OCR.
+Remaining media variants, pointer/selection visual fallback and physical acceptance stay incomplete.
 This is an implementation
 checkpoint with scoped automated/render evidence, not full native desktop parity.
 

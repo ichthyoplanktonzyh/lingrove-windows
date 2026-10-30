@@ -172,6 +172,10 @@ internal sealed class ReadingApplication : IAsyncDisposable
 
     private void OnKey(object? sender, KeyEventArgs args)
     {
+        if (!args.Suppress && args.Event.IsKeyDown && args.Event.Kind == KeyKind.Escape && Volatile.Read(ref _screenReader)?.IsSelectingRegion == true)
+        {
+            args.Suppress = true; _dispatcher.BeginInvoke(Withdraw); return;
+        }
         var preferences = Volatile.Read(ref _preferences); var origin = _origin(); var key = args.Event;
         if (preferences is null || args.Suppress || !key.IsKeyDown || _otherInlineActive() || origin is null
             || SuggestionAvailability.DisabledReason(preferences.Availability, DateTimeOffset.UtcNow, preferences.BatterySaver) is not null

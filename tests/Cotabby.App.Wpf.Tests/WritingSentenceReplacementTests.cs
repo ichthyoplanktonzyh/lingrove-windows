@@ -68,6 +68,18 @@ public sealed class WritingSentenceReplacementTests
         Assert.Equal(1, inserter.Calls);
     }
     [Fact]
+    public async Task RetirementInsideCallerPermitCannotAdmitADispatch()
+    {
+        var inserter = new Inserter();
+        var owner = new WritingSentenceReplacement(inserter, _ => throw new InvalidOperationException("No read after retirement"));
+        Task? disposal = null;
+        var result = await owner.ReplaceAsync(Field("hello", 5), new(0, 5), "hello", "bonjour",
+            () => { disposal = owner.DisposeAsync().AsTask(); return true; }, CancellationToken.None);
+        Assert.Equal(WritingReplacementOutcome.Rejected, result);
+        Assert.Equal(0, inserter.Calls);
+        Assert.NotNull(disposal); await disposal;
+    }
+    [Fact]
     public async Task ShutdownWaitsForAnAlreadyAcceptedNoncooperativeDispatch()
     {
         var before = Field("hello", 5); var inserter = new Inserter { Held = new(TaskCreationOptions.RunContinuationsAsynchronously) };

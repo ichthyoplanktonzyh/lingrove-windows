@@ -106,7 +106,7 @@ internal sealed unsafe partial class UiaTextEditEvidence
             // immediately before the first selection effect, then positively observe that effect.
             if (!focused() || !allowed()) return RangeEditDispatch.Rejected;
             before = NativeTextRangeReader.Read(element, allowed);
-            if (before is not { } fresh || fresh != original || !allowed()) return RangeEditDispatch.Rejected;
+            if (before is not { } fresh || fresh != original || !allowed() || !focused() || !allowed()) return RangeEditDispatch.Rejected;
             if (!alreadySelected)
             {
                 selectionAttempted = true;
@@ -124,7 +124,8 @@ internal sealed unsafe partial class UiaTextEditEvidence
                     nint selectedElement = (nint)element, selectedRange = (nint)target;
                     bool FinalPermit() => allowed() && focused()
                         && NativeTextRangeReader.Read((IUIAutomationElement*)selectedElement, allowed) is { } last && last == selectedValue
-                        && NativeTextRangeReader.IsWritable((IUIAutomationTextRange*)selectedRange, allowed) && allowed();
+                        && NativeTextRangeReader.IsWritable((IUIAutomationTextRange*)selectedRange, allowed)
+                        && allowed() && focused() && allowed();
                     // The callback's KeySender checks the same live permit again at SendInput.
                     if (!FinalPermit()) return selectionAttempted ? RangeEditDispatch.Uncertain : RangeEditDispatch.Rejected;
                     selectionAttempted = true; // The content callback can partially dispatch before throwing.

@@ -92,3 +92,12 @@ follow-up, rebuilding through `./scripts/test-wpf-dev.ps1 -NoRestore` passed the
 unavailable-state cards for Unicode/emoji rendering, legibility, action hierarchy and wrapped
 recovery guidance. These are actual component renders with synthetic data, not desktop capture;
 there is no corresponding Mac screenshot comparison. Final-head CI remains a separate merge gate.
+
+An independent `gpt-6-luna`/max review of `d2202a915890431ceabee73cfdd9832a4185115a`
+passed the 17 range Core and six keyboard-dispatch checks, then identified a same-process focus
+race across reentrant provider reads. The native transaction now rechecks the focused RuntimeId
+after the fresh preselection read and at the end of its dispatch receipt. Two controlled native
+component regressions keep process permission true while retiring field identity during those
+reads; neither selection nor content is dispatched through the retired receipt. The combined
+writing/native and existing expression view/session check passed 49/49 after rebuilding. This does
+not replace final-head CI or physical editor acceptance.

@@ -15,6 +15,34 @@ namespace Cotabby.App.Wpf.Tests;
 public sealed class UiaWritingRangeTests(WpfDispatcher dispatcher)
 {
     [Theory]
+    [InlineData(false)] [InlineData(true)]
+    public Task ProviderReentryCanRetireFocusedIdentityWhileProcessPermitStaysTrue(bool duringFinalDispatch) => dispatcher.RunAsync(async () =>
+    {
+        using var fixture = new OwnedEditor("same. same.", 8, 0);
+        using var owner = new UiaTextEditEvidence(() => { }); string id = await fixture.RuntimeIdAsync();
+        var saved = await Capture(owner, fixture, id); int writes = 0;
+        bool focusCurrent = true, armed = !duringFinalDispatch, observedFocus = false;
+        // Simulate a provider call reentering another control in the same process before the
+        // asynchronous global focus epoch catches up. Process/caller permission stays true.
+        bool Allowed()
+        {
+            if (armed && observedFocus) { focusCurrent = false; armed = false; }
+            return true;
+        }
+        bool Focused() { if (armed) observedFocus = true; return focusCurrent; }
+        var outcome = RangeEditDispatch.Rejected;
+        await owner.ReadOwnedDescendantForTest(fixture.Handle, id, () => true, inspectOwnedElement: element =>
+            outcome = UiaTextEditEvidence.SelectOwnedWritingRangeForTest(element, saved, new(6, 5), "same.", Allowed, permit =>
+            {
+                if (duringFinalDispatch) { armed = true; observedFocus = false; }
+                if (!permit()) return false;
+                writes++; return true;
+            }, Focused));
+        Assert.False(focusCurrent); Assert.Equal(0, writes); Assert.Equal("same. same.", fixture.Box.Text);
+        if (duringFinalDispatch) Assert.Equal(RangeEditDispatch.Uncertain, outcome);
+        else { Assert.Equal(RangeEditDispatch.Rejected, outcome); Assert.Equal(8, fixture.Box.SelectionStart); Assert.Equal(0, fixture.Box.SelectionLength); }
+    });
+    [Theory]
     [InlineData("same. same.", 6, 5, 8, 0)]
     [InlineData("前。你好😀。后。", 2, 5, 3, 0)]
     [InlineData("a café é. tail", 2, 8, 5, 0)]

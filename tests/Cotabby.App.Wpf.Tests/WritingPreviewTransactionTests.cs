@@ -27,6 +27,35 @@ namespace Cotabby.App.Wpf.Tests;
 public sealed class WritingPreviewTransactionTests(WpfDispatcher dispatcher)
 {
     [Fact]
+    public Task UnsupportedNativeRangeShowsCopyRecoveryInsteadOfSilentlyReenablingReplace() => dispatcher.RunAsync(async () =>
+    {
+        await using var fixture = new Fixture(draft: "hello", range: new(0, 5), rangeEdits: true, rejectRange: true);
+        var window = await fixture.ReadyAsync(); var replace = (Button)window.FindName("ReplaceButton");
+        replace.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        await Until(() => ((TextBlock)window.FindName("ReplacementReason")).Text.Contains("No text was replaced", StringComparison.Ordinal));
+        Capture(window, "writing-range-unavailable");
+        Assert.False(replace.IsEnabled); Assert.Equal("hello", fixture.Focus.Current!.Text);
+        CopyButton(window).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        await Until(() => fixture.Clipboard.Values.Count == 1);
+        Assert.Equal("bonjour", Assert.Single(fixture.Clipboard.Values)); Assert.Equal(0, fixture.Inserter.Calls);
+    });
+    [Theory]
+    [InlineData(false)] [InlineData(true)]
+    public Task UnicodeSentenceAndExplicitSelectionUseTheRealCardRangeTransaction(bool selected) => dispatcher.RunAsync(async () =>
+    {
+        await using var fixture = new Fixture(draft: "前面。你好😀世界。后面。", range: new(3, 7), rangeEdits: true,
+            caret: selected ? 3 : 5, selectedLength: selected ? 7 : 0);
+        var window = await fixture.ReadyAsync("你好😀世界。");
+        Capture(window, selected ? "writing-range-selected" : "writing-range-middle-caret");
+        using (var body = System.Text.Json.JsonDocument.Parse(fixture.Transport.Body))
+            Assert.Contains(body.RootElement.GetProperty("messages").EnumerateArray(),
+                message => message.GetProperty("content").GetString()!.Contains("你好", StringComparison.Ordinal));
+        ((Button)window.FindName("ReplaceButton")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        await Until(() => !window.IsVisible);
+        Assert.Equal("前面。bonjour后面。", fixture.Focus.Current!.Text);
+        Assert.Equal(0, fixture.Inserter.Calls); Assert.Empty(fixture.Clipboard.Values);
+    });
+    [Fact]
     public Task CompletedGenerationStillAllowsExplicitTranslationCopy() => dispatcher.RunAsync(async () =>
     {
         await using var fixture = new Fixture(); var window = await fixture.ReadyAsync();
@@ -151,12 +180,14 @@ public sealed class WritingPreviewTransactionTests(WpfDispatcher dispatcher)
         private readonly HttpClient _http;
 
         internal Fixture(bool uncertain = false, bool holdInsert = false, bool holdCopy = false, string? draft = null,
-            LearningTextRange? range = null, LearningReferenceMode referenceMode = LearningReferenceMode.CurrentSentence)
+            LearningTextRange? range = null, LearningReferenceMode referenceMode = LearningReferenceMode.CurrentSentence,
+            bool rangeEdits = false, int? caret = null, int selectedLength = 0, bool rejectRange = false)
         {
             _http = new(Transport);
-            if (draft is not null) Focus.Publish(Focus.Current! with { Text = draft, CaretOffset = range!.Value.Location + range.Value.Length });
+            if (draft is not null) Focus.Publish(Focus.Current! with { Text = draft, CaretOffset = caret ?? range!.Value.Location + range.Value.Length,
+                HasSelection = selectedLength > 0, SelectionLength = selectedLength, SupportsRangeReplacement = rangeEdits });
             Clipboard = new(holdCopy); Inserter = new(Focus, uncertain, holdInsert);
-            Owner = new(Inserter, _ => Focus.Refresh(), (_, _) => Task.CompletedTask);
+            Owner = new(Inserter, _ => Focus.Refresh(), (_, _) => Task.CompletedTask, ranges: rangeEdits ? new RangeInserter(Focus, rejectRange) : null);
             Controller = new(Hook, Focus, Dispatcher.CurrentDispatcher, new Tokenizer(range), new Runtime(), _http,
                 new Keys(), NullLogger<LearningPreviewController>.Instance, clipboardWriter: Clipboard);
             Controller.AttachReplacement(Owner);
@@ -199,6 +230,17 @@ public sealed class WritingPreviewTransactionTests(WpfDispatcher dispatcher)
         public event EventHandler<KeyEventArgs>? KeyEvent;
         internal void Type() => KeyEvent?.Invoke(this, new(new KeyboardEvent { Kind = KeyKind.Character, Character = '!', IsKeyDown = true }));
         public void Start() { } public void Stop() { } public void Dispose() { }
+    }
+    private sealed class RangeInserter(Focus focus, bool reject) : IRangeTextInserter
+    {
+        public Task<RangeEditDispatch> ReplaceRangeAsync(FocusedField target, LearningTextRange range, string source, string replacement,
+            Func<bool> permit, CancellationToken ct)
+        {
+            if (reject || !permit() || ct.IsCancellationRequested || !WritingRangeReplacementPolicy.IsCurrent(target, focus.Current)) return Task.FromResult(RangeEditDispatch.Rejected);
+            focus.Publish(target with { Text = target.Text[..range.Location] + replacement + target.Text[(range.Location + range.Length)..],
+                CaretOffset = range.Location + replacement.Length, HasSelection = false, SelectionLength = 0 });
+            return Task.FromResult(RangeEditDispatch.Dispatched);
+        }
     }
     private sealed class Inserter(Focus focus, bool uncertain, bool held) : IConditionalTextInserter
     {

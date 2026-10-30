@@ -391,8 +391,8 @@ public sealed class UiaFocusTracker : IFocusTracker
         var initialComposition = !isSecure && _composition is not null
             ? _composition.Observe(pid, fieldId, sequence, allowed) : default;
         if (!allowed()) return null;
-        var (text, caretOffset, hasSelection, reliableSelection, truncatedWindow) = isSecure
-            ? (string.Empty, 0, false, false, true)
+        var (text, caretOffset, hasSelection, reliableSelection, truncatedWindow, selectionLength, supportsRangeReplacement) = isSecure
+            ? (string.Empty, 0, false, false, true, 0, false)
             : ReadTextAndCaret(pid, fieldId, allowed);
         if (!allowed()) return null;
         var caretRect = isSecure ? ScreenRect.Empty : ReadCaretRect(element, allowed);
@@ -426,6 +426,8 @@ public sealed class UiaFocusTracker : IFocusTracker
             IsSingleLine = FieldShape.IsSingleLine(controlType == ControlType.Edit, fieldRect, caretRect),
             IsSecure = isSecure,
             HasSelection = hasSelection,
+            SelectionLength = selectionLength,
+            SupportsRangeReplacement = supportsRangeReplacement,
             HasReliableSelection = reliableSelection,
             Composition = finalComposition.State,
             CompositionSequence = finalComposition.Version,
@@ -440,18 +442,18 @@ public sealed class UiaFocusTracker : IFocusTracker
         };
     }
 
-    private (string text, int caretOffset, bool hasSelection, bool reliableSelection, bool truncatedWindow) ReadTextAndCaret(int pid, string fieldId, Func<bool> allowed)
+    private (string text, int caretOffset, bool hasSelection, bool reliableSelection, bool truncatedWindow, int selectionLength, bool supportsRangeReplacement) ReadTextAndCaret(int pid, string fieldId, Func<bool> allowed)
     {
-        if (!allowed()) return (string.Empty, 0, false, false, true);
+        if (!allowed()) return (string.Empty, 0, false, false, true, 0, false);
         // Range text is read by the shared MTA native client, after rechecking identity there.
         var selection = _composition?.ReadFocused(pid, fieldId, allowed);
         if (selection is { } value && allowed())
         {
-            return (value.Text, value.Caret, value.HasSelection, value.ReliableSelection, value.Truncated);
+            return (value.Text, value.Caret, value.HasSelection, value.ReliableSelection, value.Truncated, value.SelectionLength, value.SupportsRangeReplacement);
         }
 
         // ValuePattern has neither a bounded getter nor reliable caret evidence.
-        return (string.Empty, 0, false, false, true);
+        return (string.Empty, 0, false, false, true, 0, false);
     }
 
     internal static string ReadFieldId(AutomationElement element)

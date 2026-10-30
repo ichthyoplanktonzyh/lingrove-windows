@@ -52,8 +52,10 @@ This is an implementation
 checkpoint with scoped automated/render evidence, not full native desktop parity.
 
 The [writing sentence flow](WRITING_TRANSLATION_3B.md) now connects automatic previews, explicit
-draft context and previous-sentence evidence; acknowledged replacement retains its explicit
-caret-ending ASCII-source subset. The [online/website dictionary flow](DICTIONARY_WEBSITE_ONLINE_3B.md)
+draft context and previous-sentence evidence. The [writing range transaction](WRITING_RANGE_REPLACEMENT_3B.md)
+adds exact selected text and Unicode sentence scopes, with native selection/value acknowledgement
+and Copy recovery; unsupported providers and physical host acceptance remain explicit.
+The [online/website dictionary flow](DICTIONARY_WEBSITE_ONLINE_3B.md)
 adds explicit online offers and browser destinations to the shared dictionary sessions, with
 bounded transport ownership and native WPF source settings. Their local/CI and physical acceptance
 records remain distinct; the historical matrix below retains its own references.

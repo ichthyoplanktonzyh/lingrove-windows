@@ -25,6 +25,7 @@ public static class InsertionTargetPolicy
             || field.IsSecure
             || !CompositionEvidencePolicy.IsClear(field)
             || field.HasSelection
+            || field.SelectionLength != 0
             || !field.HasReliableSelection
             || field.IsTextWindowTruncated
             || field.Text is null

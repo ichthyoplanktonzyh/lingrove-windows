@@ -53,6 +53,14 @@ public sealed record FocusedField
     /// <summary>True when a non-empty range of text is selected.</summary>
     public bool HasSelection { get; init; }
 
+    /// <summary>Exact selected UTF-16 length starting at CaretOffset. Zero for a collapsed caret;
+    /// producers omitting selected text must leave the snapshot incomplete.</summary>
+    public int SelectionLength { get; init; }
+
+    /// <summary>Positive native evidence that a text range is writable and selectable. This is
+    /// a capability hint; every range transaction must verify it again before dispatch.</summary>
+    public bool SupportsRangeReplacement { get; init; }
+
     /// <summary>
     /// True only when the snapshot producer actually read the selection/caret, rather than
     /// assuming the end of a ValuePattern string. Unknown is the default: a producer must opt

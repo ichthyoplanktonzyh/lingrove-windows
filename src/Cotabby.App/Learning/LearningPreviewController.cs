@@ -42,7 +42,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
     private const string OwnFieldMessage = "Cotabby does not translate text from its own windows.";
     private const string BlockedAppMessage = "Sentence translation is disabled in this app.";
     private const string TerminalFieldMessage = "Sentence translation is unavailable in terminal apps.";
-    private const string SelectedTextMessage = "Collapse the text selection and leave the caret in the sentence you want to translate.";
+    private const string SelectedTextMessage = "The selected text cannot be verified. Select the committed source text again.";
     private const string IncompleteTextMessage = "The editor did not expose the complete field text, so the current sentence cannot be verified.";
     private const string UnreliableSelectionMessage = "The editor did not expose a reliable caret position for this sentence.";
     private const string CompositionMessage = "Finish composing text in a supported editor before translating this sentence.";
@@ -348,7 +348,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
             if (_disposed) return -1;
             generation = ++_intentGeneration;
             Interlocked.Increment(ref _replacementEpoch);
-            _replacementBlocked = false; _recoveryField = null; _expanded = true;
+            _replacementBlocked = false; _replacementRejected = false; _recoveryField = null; _expanded = true;
             Volatile.Write(ref _presentedRequestId, null); Volatile.Write(ref _readyReplacementRequestId, null);
             Interlocked.Increment(ref _stateValidationGeneration);
             _pendingLoadingState = null;
@@ -488,9 +488,9 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
 
         try
         {
-            var collapsedCaret = new LearningTextRange(field.CaretOffset, 0);
+            var editorSelection = new LearningTextRange(field.CaretOffset, field.SelectionLength);
             var range = LearningTextScopePolicy.ConversionRange(
-                field.Text, collapsedCaret, _sentenceTokenizer, settings.SentenceSegmentationLanguage);
+                field.Text, editorSelection, _sentenceTokenizer, settings.SentenceSegmentationLanguage);
             var source = LearningTextScopePolicy.Text(field.Text, range);
 
             // The sentence boundary locale and the translation direction are separate decisions.
@@ -551,10 +551,11 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         if (field.IsSecure) return SecureFieldMessage;
         if (!CompositionEvidencePolicy.IsClear(field))
             return CompositionMessage;
-        if (field.HasSelection) return SelectedTextMessage;
+        if (field.HasSelection && !WritingRangeReplacementPolicy.IsCapture(field)) return SelectedTextMessage;
         if (!field.HasReliableSelection || field.CaretOffset < 0 || field.CaretOffset > field.Text.Length)
             return UnreliableSelectionMessage;
         if (field.IsTextWindowTruncated) return IncompleteTextMessage;
+        if (!WritingRangeReplacementPolicy.IsCapture(field)) return UnreliableSelectionMessage;
         if (field.ProcessId <= 0 || string.IsNullOrWhiteSpace(field.FieldId) || field.FocusChangeSequence <= 0)
             return UnsupportedFieldMessage;
         return null;
@@ -710,7 +711,9 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         && CompositionEvidencePolicy.IsSameReceipt(captured, current)
         && string.Equals(current.Text, captured.Text, StringComparison.Ordinal)
         && current.CaretOffset == captured.CaretOffset
-        && !current.HasSelection
+        && current.HasSelection == captured.HasSelection
+        && current.SelectionLength == captured.SelectionLength
+        && current.SupportsRangeReplacement == captured.SupportsRangeReplacement
         && current.HasReliableSelection
         && !current.IsTextWindowTruncated
         && !current.IsSecure;
@@ -1159,7 +1162,7 @@ internal sealed partial class LearningPreviewController : IAsyncDisposable
         if (capture?.Lifetime is { } lifetime) _ = lifetime.Retire();
         _activeCapture = null;
         _activeRequestId = null;
-        _recoveryField = null; _replacementBlocked = false;
+        _recoveryField = null; _replacementBlocked = false; _replacementRejected = false;
         RetireDictionaryLocked();
         RetireExplanationLocked();
         return new RetiredIntent(generation, capture);

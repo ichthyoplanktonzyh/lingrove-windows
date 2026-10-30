@@ -153,9 +153,10 @@ expression while allowing attractive Windows/WPF visual design; Mac pixel identi
    known gaps stay recorded until their full user flows are connected and reviewed.
 
 This order follows frozen Mac ownership and dependencies. It does not authorize a replacement
-product design, new hosted transmission or automatic classification. The primary agent coordinates
-module implementation delegates using GPT-6.1 Terra high, shared contracts and independent review.
-Merge reviewed final-head green checkpoints to `main`.
+product design, new hosted transmission or automatic classification. The maintainer subsequently
+ended delegation: the primary now implements and reviews whole functional blocks alone. Earlier
+team records are historical evidence, not a requirement to start another agent. Merge reviewed
+final-head green checkpoints to `main`.
 Ordinary rounds create no installer, downloadable package, release, model download or VM. Windows
 UIA/IME/insertion, ghost pixels, actual Anki, installed voices/audio and hardware/model quality still
 require native acceptance beyond compiled components and automated tests.

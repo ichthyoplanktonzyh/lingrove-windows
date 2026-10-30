@@ -16,6 +16,7 @@ MF_SOURCE_READER_CONSTANTS
 MF_VERSION
 SHCreateMemStream
 IUIAutomation3
+VariantClear
 IUIAutomationElement
 IUIAutomationTextEditPattern
 IUIAutomationTextEditTextChangedEventHandler

@@ -81,10 +81,10 @@ differences. Selection uses those same boundaries. A missing stable origin-windo
 optional visual enrichment; a moved frame retires a native receipt. Missing/late/invalid range
 rectangles remain absent rather than being replaced with a whole field or presentation position.
 
-The inherited native selected-text adapter still requires the focused provider's positive TextEdit
-composition evidence and exact TextPattern range. TextPattern-only read-only browser surfaces do
-not yet have an admission path; this is a separate, visible provider-coverage gap rather than proof
-that all Word/Chrome/Codex surfaces work. No uncertain editable composition is treated as clear.
+The subsequent [read-only provider adapter](READING_READONLY_PROVIDERS_3B.md) adds positive
+TextPattern-only read-only documents and bounded ancestor roots. Editable targets still require
+real TextEdit composition evidence. This does not prove all Word/Chrome/Codex surfaces work;
+unavailable ranges or uncertain editable composition remain refused.
 Native UIA geometry, WinOCR/highlight quality, IME, language packs, scroll/window changes, overlays,
 mixed DPI/negative origins and visible accessibility remain consolidated host acceptance.
 

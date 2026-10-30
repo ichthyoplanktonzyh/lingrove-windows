@@ -42,8 +42,10 @@ and drains content-free history after task owners. The
 without an editable-field requirement. The [pointer OCR upgrade](docs/READING_POINTER_OCR_3B.md)
 adds an explicit OCR-first pointer route with strict UIA fallback. The
 [selection OCR upgrade](docs/READING_SELECTION_OCR_3B.md) adds exact native-target enrichment,
-bound gesture/geometry, optional visual guard and preparation state. TextPattern-only selection
-providers and native acceptance remain open.
+bound gesture/geometry, optional visual guard and preparation state. The
+[read-only provider adapter](docs/READING_READONLY_PROVIDERS_3B.md) adds positively read-only
+TextPattern/ancestor acquisition without weakening editable IME admission. Host/provider coverage
+and native acceptance remain separately verified gates.
 
 ## Migration principle: adapt the frozen macOS product
 

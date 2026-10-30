@@ -39,7 +39,7 @@ public sealed class Win32ReadingSelectionReader : IAsyncDisposable
         CaptureCoreAsync(null, true, cancellationToken, initiatingVirtualKey);
     private async Task<Win32ReadingSelectionLease?> CaptureCoreAsync(System.Drawing.Point? pointer, bool screenGuard, CancellationToken cancellationToken, int? initiatingVirtualKey)
     {
-        if (_focus.ExpressionCompositionOwner is not { } owner) return null;
+        if (_focus.ExpressionCompositionOwner is not { } owner || _focus.Current is { IsSecure: true } or { Composition: InputCompositionState.Composing }) return null;
         long epoch = _focus.ActiveFocusEpoch;
         nint host = Native.GetForegroundWindow();
         if (epoch <= 0 || host == 0 || Native.GetWindowThreadProcessId(host, out uint pid) == 0
@@ -150,6 +150,7 @@ public sealed class Win32ReadingSelectionLease : IAsyncDisposable
     internal static bool InNotificationFor(object group) => ReferenceEquals(_notifying?.NotificationGroup, group);
     /// <summary>Nonblocking receipt eligibility, independent of notification delivery.</summary>
     public bool IsLive => Volatile.Read(ref _retired) == 0 && _currentEpoch() == _epoch
+        && _focus.Current is not ({ IsSecure: true } or { Composition: InputCompositionState.Composing })
         && _foreground() == _host && _windowProcess(_host) == _pid
         && (_initialFrame is { } frame ? _currentFrame(_host) == frame : _pointer is null && !_screenGuard)
         && (Volatile.Read(ref _capturing) != 0 || (Volatile.Read(ref _native) is { } native && Volatile.Read(ref native.Active) != 0

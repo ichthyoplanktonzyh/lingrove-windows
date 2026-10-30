@@ -52,8 +52,10 @@ requirement for the screenshot command and retains origin-window/privacy evidenc
 The [pointer OCR upgrade](READING_POINTER_OCR_3B.md) connects explicit visual-first acquisition,
 one-frame spatial context and the strict UIA fallback. The
 [selection OCR upgrade](READING_SELECTION_OCR_3B.md) connects optional exact-range visual enrichment,
-gesture/geometry admission and preparation state. TextPattern-only native selection providers,
-remaining media variants and physical acceptance stay incomplete.
+gesture/geometry admission and preparation state. The
+[read-only provider upgrade](READING_READONLY_PROVIDERS_3B.md) adds positive TextPattern-only
+selection/ancestor support; actual host coverage, remaining media variants and physical acceptance
+stay separately scoped.
 This is an implementation
 checkpoint with scoped automated/render evidence, not full native desktop parity.
 

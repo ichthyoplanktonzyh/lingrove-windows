@@ -42,7 +42,7 @@ These are implementation checkpoints, with automated and component-render eviden
 claim that every editor, IME, speech provider or hardware configuration has passed native acceptance.
 See [feature evidence](docs/PARITY.md) and [Windows host acceptance](docs/WINDOWS_HOST_ACCEPTANCE.md).
 
-Remaining work includes TextPattern-only selection providers, language/platform recognition limits,
+Remaining work includes native provider acceptance, language/platform recognition limits,
 some bitmap/drop/dictionary-resource variants, custom review layouts and full interface-language
 coverage. Unsupported states stay explicit. Word, Chrome and Codex are the maintainer's final unified
 host acceptance order; physical DPI, focus, keyboard, clipboard, OCR, models and audio remain distinct

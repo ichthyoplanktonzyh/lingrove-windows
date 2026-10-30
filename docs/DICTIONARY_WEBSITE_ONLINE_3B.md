@@ -72,3 +72,17 @@ dotnet test tests/Cotabby.Inference.Tests/Cotabby.Inference.Tests.csproj --confi
 All passed without skips: Core 5,079; App 1,278; Inference 750; WPF 1,047 (3m40s). The WPF helper
 held the named desktop lease. No model, live API, browser launch, user notebook/editor, clipboard
 or audio-device acceptance was executed. Remote required checks are evaluated on the PR's final head.
+
+The first remote Windows run passed compilation and the other three local test assemblies but
+failed the existing `CliLargeGraphTests.LargeBatchCanBeCancelledBeforePublication`: its 50ms
+cancellation timer could run after the plan finished. The primary reviewed all three tests in that
+file using the installed .NET test anti-pattern guidance: one High reliability finding, no Critical,
+Medium or Low findings. The two successful-plan tests retain exact graph-count/evidence assertions;
+their timing/allocation output is diagnostic, not a pass/fail threshold. The cancellation case now
+uses the existing prepared-media enumeration boundary after a first operation to cancel before the
+large capture. It verifies the caller's exact cancellation token and the unchanged baseline. No
+production cancellation rules, historical fixtures, timeout budgets or CI gates were changed.
+After the repair, the focused CLI group passed 17/17, full Core passed 5,079/5,079, and the exact
+cancellation regression passed five further independent runs. The other production assemblies
+are unchanged from the earlier complete local validation. Required remote checks must pass again
+for the repaired head before merging.

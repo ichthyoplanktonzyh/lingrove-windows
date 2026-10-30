@@ -70,6 +70,14 @@ previous translation. Settings, field changes and explicit dismissal retire the 
 Core reference/budget/prompt checks passed 42/42, local native-plan fake checks 16/16, the explicit
 reference settings check 1/1, history policy 2/2 and the real controller/card transaction group 8/8.
 
+The integrated source head `4d407856e22e4205eb6c59bf47a1158f3e111408` then compiled with zero
+warnings/errors and passed all local suites sequentially: Core 5,062, App 1,278, Inference 745 and
+mutex-serialized WPF 1,042, without skips. WPF took 3m38s. Expanded/current-sentence, expanded/draft
+and compact/previous-sentence images use the actual controller/window and synthetic HTTP/focus;
+the primary inspected them for destination disclosure, hierarchy and legibility. The compact card
+keeps its header actions and removes the redundant lower Close action. No corresponding Mac image
+was available; these renders do not establish physical desktop or DPI acceptance.
+
 Wider selected/middle/Unicode source replacement remains work. Multiple-source language confidence remains
 unavailable. This does not establish real Word/Chrome/Codex behavior, rich-editor acknowledgement,
 IME compatibility, mixed DPI or accessibility; those remain the final unified native acceptance.

@@ -3,6 +3,7 @@ using Cotabby.App.Settings;
 using Cotabby.App.UI.Settings;
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Win32.Dictionary;
+using Cotabby.Inference.LanguageLearning;
 
 namespace Cotabby.App.Dictionaries;
 
@@ -10,12 +11,12 @@ namespace Cotabby.App.Dictionaries;
 /// dictionary sessions. Its window and accepted file work drain before the service is released.</summary>
 internal sealed class DictionaryFeature : IAsyncDisposable
 {
-    private readonly DictionarySettings _settings; private readonly MDictLibraryService _books;
+    private readonly DictionarySettings _settings; private readonly MDictLibraryService _books; private readonly OnlineDictionaryClient _online;
     private readonly DictionaryRouter _router; private readonly List<Task> _retired = [];
     private DictionarySettingsWindow? _window; private bool _closed; private Task? _dispose;
     internal DictionaryFeature(Func<AppSettings> current, Action persist, ILearningDictionaryProviding bundled, Func<string, string> lowercase,
         Func<string, LearningLanguage?, IReadOnlyList<LearningDictionaryWord>> words)
-    { _settings = new(current, persist); _books = new(lowercase); _router = new(_settings, bundled, _books, words); }
+    { _settings = new(current, persist); _books = new(lowercase); _online = new(); _router = new(_settings, bundled, _books, words, _online); }
     internal ILearningDictionaryProviding Router => _router;
     internal void ApplySettings() { if (!_closed) _settings.Reload(); }
     internal void ShowSettings(Window? owner = null)
@@ -29,7 +30,17 @@ internal sealed class DictionaryFeature : IAsyncDisposable
     public ValueTask DisposeAsync() => new(_dispose ??= DisposeCoreAsync());
     private async Task DisposeCoreAsync()
     {
-        _closed = true; var window = _window; if (window is not null) { window.Close(); await window.DisposeAsync(); }
-        await Task.WhenAll(_retired); await _books.DisposeAsync();
+        _closed = true;
+        try
+        {
+            var window = _window;
+            if (window is not null) { window.Close(); await window.DisposeAsync(); }
+            await Task.WhenAll(_retired);
+        }
+        finally
+        {
+            try { await _books.DisposeAsync(); }
+            finally { await _online.DisposeAsync(); }
+        }
     }
 }

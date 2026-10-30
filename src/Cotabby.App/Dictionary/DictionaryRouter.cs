@@ -1,12 +1,13 @@
 using Cotabby.Core.LanguageLearning;
 using Cotabby.Win32.Dictionary;
+using Cotabby.Inference.LanguageLearning;
 
 namespace Cotabby.App.Dictionaries;
 
 /// <summary>Borrowed by all dictionary sessions. Each lookup is authorized by its captured
 /// settings snapshot; this router owns neither a language model nor an implicit network provider.</summary>
 internal sealed class DictionaryRouter(DictionarySettings settings, ILearningDictionaryProviding bundled, MDictLibraryService books,
-    Func<string, LearningLanguage?, IReadOnlyList<LearningDictionaryWord>> words)
+    Func<string, LearningLanguage?, IReadOnlyList<LearningDictionaryWord>> words, OnlineDictionaryClient? online = null)
     : ILearningDictionaryRouter, ILearningUnknownDictionaryProviding
 {
     public DictionaryConfiguration Configuration => settings.Configuration;
@@ -26,6 +27,9 @@ internal sealed class DictionaryRouter(DictionarySettings settings, ILearningDic
         {
             "bundled" => language is { } known ? LookupAsync(query, known, expression, cancellationToken) : LookupUnknownAsync(query, expression, cancellationToken),
             "mdict" when configuration.Libraries.FirstOrDefault(x => x.Source == source) is { } book => books.LookupAsync(query, book, cancellationToken),
+            "online" when (language is null or LearningLanguage.English) && online is not null => online.LookupAsync(query, cancellationToken),
+            "website" when configuration.Websites.FirstOrDefault(x => x.Source == source) is { } website
+                && DictionaryWebsitePolicy.Url(website.Template, query) is { } url => Task.FromResult<LearningDictionaryResult>(new LearningDictionaryResult.Website(url)),
             _ => Task.FromException<LearningDictionaryResult>(new InvalidOperationException("This dictionary source is unavailable on Windows.")),
         };
     }

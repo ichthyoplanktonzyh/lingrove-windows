@@ -55,9 +55,17 @@ internal sealed class DictionarySettings(Func<AppSettings> current, Action persi
     }
     internal bool Remove(DictionarySource source)
     {
-        if (source.Kind != "mdict") return false;
+        if (source.Kind is not ("mdict" or "website")) return false;
         return Save(new(_configuration.Order.Where(x => x != source), _configuration.Enabled.Where(x => x != source),
-            _configuration.Libraries.Where(x => x.Source != source), _configuration.Websites, _configuration.DefinitionLanguage));
+            _configuration.Libraries.Where(x => x.Source != source), _configuration.Websites.Where(x => x.Source != source), _configuration.DefinitionLanguage));
+    }
+    internal bool SaveWebsite(DictionaryWebsite website)
+    {
+        if (!Valid(website)) return false;
+        var websites = _configuration.Websites.ToList(); int index = websites.FindIndex(x => x.Id == website.Id);
+        if (index < 0) { if (websites.Count >= 32) return false; websites.Add(website); }
+        else websites[index] = website;
+        return Save(new(_configuration.Order, _configuration.Enabled, _configuration.Libraries, websites, _configuration.DefinitionLanguage));
     }
     internal bool SetDefinitionLanguage(LearningLanguage? language) => Save(new(_configuration.Order, _configuration.Enabled,
         _configuration.Libraries, _configuration.Websites, language));
@@ -79,7 +87,7 @@ internal sealed class DictionarySettings(Func<AppSettings> current, Action persi
             if (settings.LearningDictionaryCatalogValue is not { ValueKind: JsonValueKind.Object } value || System.Text.Encoding.UTF8.GetByteCount(value.GetRawText()) > 2_000_000) return new();
             var catalog = value.Deserialize<Catalog>(); if (catalog is null) return new();
             var libraries = (catalog.Libraries ?? []).Where(Valid).Take(32).ToArray();
-            var websites = (catalog.Websites ?? []).Where(x => x is not null && x.Id != Guid.Empty).Take(32).ToArray();
+            var websites = (catalog.Websites ?? []).Where(Valid).DistinctBy(x => x.Id).Take(32).ToArray();
             return new(catalog.Order?.Select(DictionarySource.Parse).OfType<DictionarySource>(),
                 catalog.Enabled?.Select(DictionarySource.Parse).OfType<DictionarySource>(), libraries, websites, catalog.DefinitionLanguage);
         }
@@ -90,4 +98,7 @@ internal sealed class DictionarySettings(Func<AppSettings> current, Action persi
         && value.ResourcePaths is not null && value.ResourcePaths.Count <= 16 && !string.IsNullOrWhiteSpace(value.MdxPath) && Path.IsPathFullyQualified(value.MdxPath)
         && !string.IsNullOrWhiteSpace(value.FolderPath) && Path.IsPathFullyQualified(value.FolderPath)
         && value.ResourcePaths.All(path => !string.IsNullOrWhiteSpace(path) && Path.IsPathFullyQualified(path));
+    private static bool Valid(DictionaryWebsite? value) => value is not null && value.Id != Guid.Empty
+        && !string.IsNullOrWhiteSpace(value.Name) && System.Text.Encoding.UTF8.GetByteCount(value.Name) <= 200
+        && DictionaryWebsitePolicy.Url(value.Template, "example") is not null;
 }

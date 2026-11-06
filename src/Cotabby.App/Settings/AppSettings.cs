@@ -150,6 +150,7 @@ public sealed partial class AppSettings
             reservations.Add((ShortcutResolver.AcceptAll(process, overrides, AcceptAll), "Accept Entire Suggestion"));
         }
         if (LearningTranslationEnabled) reservations.Add((LearningTranslationShortcut, "Translation"));
+        if (LearningTranslationEnabled) reservations.Add((LearningReplacementShortcut, "Replace Translation"));
         if (LearningReadingEnabled) reservations.Add((LearningReadingShortcut, "Selected Text Reading"));
         if (LearningReadingPointerEnabled) reservations.Add((LearningReadingPointerShortcut, "Text Under Pointer"));
         if (LearningReadingScreenshotEnabled) reservations.Add((LearningReadingScreenshotShortcut, "Screen Region Reading"));

@@ -35,7 +35,7 @@ internal sealed partial class LearningPreviewController
             if (_disposed || !_intentActive || _activeCapture is null || _activeRequestId != request.Document.RequestId
                 || !LearningSelectedCopyPolicy.IsCurrent(request, _coordinator.State, _dictionarySession?.State)) return;
             capture = _activeCapture;
-            if (!MatchesCapture(request.Document, capture) || !CachedCaptureCurrent(capture)) return;
+            if (!MatchesCapture(request.Document, capture) || !CanCopyCapture(capture)) return;
             intent = _intentGeneration; revision = ++_copyRevision;
             navigation = _dictionaryOpeningRevision;
         }
@@ -47,7 +47,7 @@ internal sealed partial class LearningPreviewController
         lock (_gate)
             return !_disposed && _intentActive && _intentGeneration == intent && _copyRevision == revision
                 && ReferenceEquals(_activeCapture, capture) && _activeRequestId == request.Document.RequestId
-                && capture.Lifetime is { Token.IsCancellationRequested: false } && CachedCaptureCurrent(capture)
+                && CanCopyCapture(capture)
                 // Clicking Back/word/page immediately advances navigation, before UIA validation
                 // commits the new Core target. A pending old copy must not cross that intent gap.
                 && (request.DictionaryTarget is null || _dictionaryIntent == intent && _dictionaryOpeningRevision == navigation)

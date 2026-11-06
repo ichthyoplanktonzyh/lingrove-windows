@@ -1,6 +1,7 @@
 using Cotabby.Core.Focus;
 using Cotabby.Core.Insertion;
 using Cotabby.Win32.Clipboard;
+using Cotabby.Win32.Focus;
 
 namespace Cotabby.Win32.Insertion;
 
@@ -9,7 +10,7 @@ namespace Cotabby.Win32.Insertion;
 /// SendInput batch, and the conditional clipboard lease. It owns no long-lived focus snapshot: each
 /// read asks the shared tracker again so Core can compare the result with the caller's target.
 /// </summary>
-public sealed class Win32InsertionBackend : ITextInsertionBackend
+public sealed class Win32InsertionBackend : ITextInsertionBackend, IConditionalTextInsertionBackend
 {
     private static readonly TimeSpan PasteConsumeDelay = TimeSpan.FromMilliseconds(80);
 
@@ -43,6 +44,8 @@ public sealed class Win32InsertionBackend : ITextInsertionBackend
     /// <inheritdoc />
     public FocusedField? ReadFocusedField() => _focus.Refresh();
 
+    public FocusedField? ReadFocusedField(Func<bool> permit) => _focus is UiaFocusTracker tracker ? tracker.RefreshGuarded(permit) : null;
+
     /// <inheritdoc />
     public bool CanType(string text) => SyntheticKeys.CanType(text);
 
@@ -50,12 +53,18 @@ public sealed class Win32InsertionBackend : ITextInsertionBackend
     public bool SendUnicodeEdit(FocusedField target, int deleteUtf16Count, string text) =>
         _keyboard.SendUnicodeEdit(target, deleteUtf16Count, text);
 
+    public bool SendUnicodeEdit(FocusedField target, int deleteUtf16Count, string text, Func<bool> permit) =>
+        _keyboard is IConditionalKeyboardEditDispatcher conditional && conditional.SendUnicodeEdit(target, deleteUtf16Count, text, permit);
+
     /// <inheritdoc />
     public bool SendPasteEdit(FocusedField target, int deleteUtf16Count, IClipboardPasteLease lease)
     {
         ArgumentNullException.ThrowIfNull(lease);
         return _keyboard.SendPasteEdit(target, deleteUtf16Count, () => lease.IsCurrent);
     }
+
+    public bool SendPasteEdit(FocusedField target, int deleteUtf16Count, IClipboardPasteLease lease, Func<bool> permit) =>
+        _keyboard.SendPasteEdit(target, deleteUtf16Count, () => lease.IsCurrent && permit());
 
     /// <inheritdoc />
     public Task<IClipboardPasteLease?> PreparePasteAsync(string text, CancellationToken ct) =>
@@ -69,4 +78,9 @@ internal interface IKeyboardEditDispatcher
 {
     bool SendUnicodeEdit(FocusedField target, int deleteUtf16Count, string text);
     bool SendPasteEdit(FocusedField target, int deleteUtf16Count, Func<bool> clipboardIsCurrent);
+}
+
+internal interface IConditionalKeyboardEditDispatcher
+{
+    bool SendUnicodeEdit(FocusedField target, int deleteUtf16Count, string text, Func<bool> permit);
 }

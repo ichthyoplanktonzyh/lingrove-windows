@@ -10,7 +10,7 @@ namespace Cotabby.Win32.Insertion;
 /// fresh process check narrows the race after Core's field snapshot revalidation; SendInput is
 /// reported as successful only when Windows accepted every event in the batch.
 /// </summary>
-internal sealed class KeySender : IKeyboardEditDispatcher
+internal sealed class KeySender : IKeyboardEditDispatcher, IConditionalKeyboardEditDispatcher
 {
     private readonly IKeyboardNativeApi _native;
 
@@ -25,7 +25,7 @@ internal sealed class KeySender : IKeyboardEditDispatcher
         return Send(target, batch, beforeSend: null);
     }
 
-    internal bool SendUnicodeEdit(FocusedField target, int deleteCount, string text, Func<bool> beforeSend)
+    public bool SendUnicodeEdit(FocusedField target, int deleteCount, string text, Func<bool> beforeSend)
     {
         ArgumentNullException.ThrowIfNull(beforeSend);
         SyntheticKey[] batch = SyntheticKeys.Edit(HeldModifiers(), deleteCount, text).ToArray();

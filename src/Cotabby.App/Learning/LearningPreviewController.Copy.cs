@@ -22,7 +22,7 @@ internal sealed partial class LearningPreviewController
         {
             if (_disposed || !_intentActive || _activeCapture is null || _activeRequestId != request.Document.RequestId) return;
             capture = _activeCapture;
-            if (!MatchesCapture(request.Document, capture) || !CachedCaptureCurrent(capture)
+            if (!MatchesCapture(request.Document, capture) || !CanCopyCapture(capture)
                 || LearningPreviewCopyPolicy.Text(request, _coordinator.State) is not { } payload) return;
             text = payload;
             intent = _intentGeneration;
@@ -36,8 +36,7 @@ internal sealed partial class LearningPreviewController
         lock (_gate)
             return !_disposed && _intentActive && _intentGeneration == intent && _copyRevision == revision
                 && ReferenceEquals(_activeCapture, capture) && _activeRequestId == request.Document.RequestId
-                && capture.Lifetime is { Token.IsCancellationRequested: false }
-                && CachedCaptureCurrent(capture) && LearningPreviewCopyPolicy.Text(request, _coordinator.State) is not null;
+                && CanCopyCapture(capture) && LearningPreviewCopyPolicy.Text(request, _coordinator.State) is not null;
     }
 
     private async Task CopyAsync(LearningPreviewCopyRequest request, CapturedSentence capture, long intent, long revision, string text)

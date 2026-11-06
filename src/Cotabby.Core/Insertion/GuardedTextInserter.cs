@@ -11,7 +11,7 @@ namespace Cotabby.Core.Insertion;
 /// Register one instance per app. A single gate prevents two accepts from interleaving their
 /// validation, clipboard lifetime, and native edit batches. This type contains no OS calls itself.
 /// </remarks>
-public sealed class GuardedTextInserter : ITextInserter
+public sealed class GuardedTextInserter : ITextInserter, IConditionalTextInserter
 {
     private readonly ITextInsertionBackend _backend;
     private readonly InsertionTransactionGate _transactionGate;
@@ -30,23 +30,30 @@ public sealed class GuardedTextInserter : ITextInserter
     public Task<bool> ReplaceAsync(FocusedField target, int deleteCount, string text, CancellationToken ct) =>
         ExecuteAsync(target, deleteCount, text, isReplacement: true, ct);
 
+    public Task<bool> ReplaceWithPermitAsync(FocusedField target, int deleteCount, string text, Func<bool> permit, CancellationToken ct)
+    {
+        ArgumentNullException.ThrowIfNull(permit);
+        if (_backend is not IConditionalTextInsertionBackend) return Task.FromResult(false);
+        return ExecuteAsync(target, deleteCount, text, isReplacement: true, ct, permit);
+    }
+
     private async Task<bool> ExecuteAsync(
         FocusedField target,
         int deleteUtf16Count,
         string text,
         bool isReplacement,
-        CancellationToken ct)
+        CancellationToken ct, Func<bool>? permit = null)
     {
         try
         {
             return await _transactionGate.RunAsync(
-                token => ExecuteUnderGateAsync(target, deleteUtf16Count, text, isReplacement, token), ct).ConfigureAwait(false);
+                token => ExecuteUnderGateAsync(target, deleteUtf16Count, text, isReplacement, token, permit), ct).ConfigureAwait(false);
         }
         catch (OperationCanceledException) { return false; }
     }
 
     private async Task<bool> ExecuteUnderGateAsync(
-        FocusedField target, int deleteUtf16Count, string text, bool isReplacement, CancellationToken ct)
+        FocusedField target, int deleteUtf16Count, string text, bool isReplacement, CancellationToken ct, Func<bool>? permit)
     {
         bool succeeded = false;
         bool pasteMayHaveBeenDispatched = false;
@@ -54,6 +61,8 @@ public sealed class GuardedTextInserter : ITextInserter
 
         try
         {
+            bool Allowed() => !ct.IsCancellationRequested && (permit?.Invoke() ?? true);
+            var conditional = _backend as IConditionalTextInsertionBackend;
             bool validEdit = isReplacement
                 ? InsertionTargetPolicy.IsValidReplacement(target, deleteUtf16Count, text)
                 : InsertionTargetPolicy.IsEligibleField(target) && InsertionTargetPolicy.IsValidInsertionText(text);
@@ -61,40 +70,42 @@ public sealed class GuardedTextInserter : ITextInserter
 
             // The caller's snapshot may have gone stale while this operation waited behind another
             // accept, so always query the OS again after entering the serialized transaction.
-            if (ct.IsCancellationRequested) return false;
-            if (!InsertionTargetPolicy.IsCurrentTarget(target, _backend.ReadFocusedField())) return false;
+            if (!Allowed()) return false;
+            if (!InsertionTargetPolicy.IsCurrentTarget(target, permit is null ? _backend.ReadFocusedField() : conditional!.ReadFocusedField(Allowed))) return false;
 
             // No native call is needed for a zero-length insert or replacement.
             if (text.Length == 0 && deleteUtf16Count == 0)
             {
                 succeeded = true;
             }
-            else if (!ct.IsCancellationRequested && _backend.CanType(text))
+            else if (Allowed() && _backend.CanType(text))
             {
                 // Native input is synchronous and indivisible from the caller's cancellation point.
                 // Replacement is passed as one combined batch so a failed insertion cannot leave a
                 // separately dispatched deletion behind.
-                if (!ct.IsCancellationRequested)
+                if (Allowed())
                 {
-                    succeeded = _backend.SendUnicodeEdit(target, deleteUtf16Count, text);
+                    succeeded = permit is null ? _backend.SendUnicodeEdit(target, deleteUtf16Count, text)
+                        : conditional!.SendUnicodeEdit(target, deleteUtf16Count, text, Allowed);
                 }
             }
-            else if (!ct.IsCancellationRequested)
+            else if (Allowed())
             {
                 // The clipboard is prepared before any destructive key input. It remains leased
                 // through the paste wait and is conditionally restored on every exit path.
                 lease = await _backend.PreparePasteAsync(text, ct).ConfigureAwait(false);
-                if (lease is null || ct.IsCancellationRequested) return false;
+                if (lease is null || !Allowed()) return false;
 
-                if (!InsertionTargetPolicy.IsCurrentTarget(target, _backend.ReadFocusedField())) return false;
-                if (ct.IsCancellationRequested) return false;
+                if (!InsertionTargetPolicy.IsCurrentTarget(target, permit is null ? _backend.ReadFocusedField() : conditional!.ReadFocusedField(Allowed))) return false;
+                if (!Allowed()) return false;
 
                 // Keep the ownership check adjacent to the one native paste batch. If it no longer
                 // owns the clipboard, another application has copied data and this edit is refused.
                 if (!lease.IsCurrent) return false;
-                if (ct.IsCancellationRequested) return false;
+                if (!Allowed()) return false;
                 pasteMayHaveBeenDispatched = true;
-                succeeded = _backend.SendPasteEdit(target, deleteUtf16Count, lease);
+                succeeded = permit is null ? _backend.SendPasteEdit(target, deleteUtf16Count, lease)
+                    : conditional!.SendPasteEdit(target, deleteUtf16Count, lease, Allowed);
             }
         }
         catch (OperationCanceledException)

@@ -22,6 +22,10 @@ internal sealed class GlobalShortcut
         new("Translate Current Sentence", new KeyBinding(0x54, KeyModifiers.Alt, "Alt+T"),
             s => s.LearningTranslationShortcut, (s, key) => s.LearningTranslationShortcut = key);
 
+    public static GlobalShortcut LearningReplacement { get; } =
+        new("Replace With Translation", new KeyBinding(0x54, KeyModifiers.Control | KeyModifiers.Alt, "Ctrl+Alt+T"),
+            s => s.LearningReplacementShortcut, (s, key) => s.LearningReplacementShortcut = key);
+
     public static GlobalShortcut ExpressionAssist { get; } =
         new("Open Expression Assistance", KeyBinding.Unbound,
             s => s.ExpressionAssistShortcut, (s, key) => s.ExpressionAssistShortcut = key);
@@ -34,7 +38,7 @@ internal sealed class GlobalShortcut
         s => s.LearningReadingPointerShortcut, (s, key) => s.LearningReadingPointerShortcut = key);
     public static GlobalShortcut ReadingScreenshot { get; } = new("Read Screen Region", new KeyBinding(0x54, KeyModifiers.Control | KeyModifiers.Alt | KeyModifiers.Shift, "Ctrl+Alt+Shift+T"),
         s => s.LearningReadingScreenshotShortcut, (s, key) => s.LearningReadingScreenshotShortcut = key);
-    private static readonly GlobalShortcut[] All = [AcceptWord, AcceptAll, Toggle, LearningTranslation, ExpressionAssist, LearningReading, ReadingPointer, ReadingScreenshot];
+    private static readonly GlobalShortcut[] All = [AcceptWord, AcceptAll, Toggle, LearningTranslation, LearningReplacement, ExpressionAssist, LearningReading, ReadingPointer, ReadingScreenshot];
 
     private readonly Func<AppSettings, KeyBinding> _get;
 
@@ -74,6 +78,7 @@ internal sealed class GlobalShortcut
 
         var global = All.FirstOrDefault(other => other != this
             && (other != ExpressionAssist || settings.ExpressionAssistEnabled)
+            && (other != LearningReplacement || settings.LearningTranslationEnabled)
             && (other != LearningReading || settings.LearningReadingEnabled)
             && (other != ReadingPointer || settings.LearningReadingPointerEnabled)
             && (other != ReadingScreenshot || settings.LearningReadingScreenshotEnabled)
@@ -85,7 +90,7 @@ internal sealed class GlobalShortcut
         // The learning chord is global, so it must also yield to an accept shortcut a user
         // assigned only in one app. This keeps the existing per-app recorder a visible conflict
         // boundary instead of letting the translation hook consume that app's established key.
-        if (this == LearningTranslation || this == LearningReading || this == ReadingPointer || this == ReadingScreenshot)
+        if (this == LearningTranslation || this == LearningReplacement || this == LearningReading || this == ReadingPointer || this == ReadingScreenshot)
         {
             foreach (var app in settings.ShortcutOverrides)
             {

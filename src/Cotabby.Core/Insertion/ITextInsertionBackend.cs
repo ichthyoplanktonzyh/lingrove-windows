@@ -41,3 +41,12 @@ public interface ITextInsertionBackend
     /// </summary>
     Task WaitForPasteAsync();
 }
+
+/// <summary>Opt-in final-admission boundary. The predicate must be atomic and nonblocking;
+/// implementations carry it through native reads and the final dispatch.</summary>
+public interface IConditionalTextInsertionBackend
+{
+    FocusedField? ReadFocusedField(Func<bool> permit);
+    bool SendUnicodeEdit(FocusedField target, int deleteUtf16Count, string text, Func<bool> permit);
+    bool SendPasteEdit(FocusedField target, int deleteUtf16Count, IClipboardPasteLease lease, Func<bool> permit);
+}

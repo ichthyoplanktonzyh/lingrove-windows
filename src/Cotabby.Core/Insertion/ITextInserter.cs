@@ -28,3 +28,9 @@ public interface ITextInserter
     /// </summary>
     Task<bool> ReplaceAsync(FocusedField target, int deleteCount, string text, CancellationToken ct);
 }
+
+/// <summary>One guarded replacement with a nonblocking caller-owned final admission predicate.</summary>
+public interface IConditionalTextInserter
+{
+    Task<bool> ReplaceWithPermitAsync(FocusedField target, int deleteCount, string text, Func<bool> permit, CancellationToken ct);
+}

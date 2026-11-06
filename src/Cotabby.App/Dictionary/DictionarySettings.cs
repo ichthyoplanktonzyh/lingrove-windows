@@ -55,9 +55,18 @@ internal sealed class DictionarySettings(Func<AppSettings> current, Action persi
     }
     internal bool Remove(DictionarySource source)
     {
-        if (source.Kind != "mdict") return false;
+        if (source.Kind is not ("mdict" or "website")) return false;
         return Save(new(_configuration.Order.Where(x => x != source), _configuration.Enabled.Where(x => x != source),
-            _configuration.Libraries.Where(x => x.Source != source), _configuration.Websites, _configuration.DefinitionLanguage));
+            _configuration.Libraries.Where(x => x.Source != source), _configuration.Websites.Where(x => x.Source != source), _configuration.DefinitionLanguage));
+    }
+    internal bool SaveWebsite(DictionaryWebsite website)
+    {
+        if (website.Id == Guid.Empty || string.IsNullOrWhiteSpace(website.Name)
+            || System.Text.Encoding.UTF8.GetByteCount(website.Name) > 200 || DictionaryWebsitePolicy.Url(website.Template, "example") is null) return false;
+        var websites = _configuration.Websites.ToList(); int index = websites.FindIndex(x => x.Id == website.Id);
+        if (index < 0) { if (websites.Count >= 32) return false; websites.Add(website); }
+        else websites[index] = website;
+        return Save(new(_configuration.Order, _configuration.Enabled, _configuration.Libraries, websites, _configuration.DefinitionLanguage));
     }
     internal bool SetDefinitionLanguage(LearningLanguage? language) => Save(new(_configuration.Order, _configuration.Enabled,
         _configuration.Libraries, _configuration.Websites, language));

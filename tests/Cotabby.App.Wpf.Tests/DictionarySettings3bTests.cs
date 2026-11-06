@@ -7,6 +7,20 @@ namespace Cotabby.App.Wpf.Tests;
 public sealed class DictionarySettings3bTests
 {
     [Fact]
+    public void WebsiteDraftIsDisabledUntilEnabledAndRetainsIdentityOnEdit()
+    {
+        var settings = new AppSettings(); var owner = new DictionarySettings(() => settings, () => { });
+        var site = DictionaryWebsiteCatalog.Websites[0]; Assert.True(owner.SaveWebsite(site));
+        Assert.DoesNotContain(site.Source, owner.Configuration.Enabled);
+        Assert.True(owner.SetEnabled(site.Source, true));
+        Assert.True(owner.SaveWebsite(site with { Name = "Edited" }));
+        Assert.Equal("Edited", Assert.Single(owner.Configuration.Websites).Name);
+        Assert.Contains(site.Source, owner.Configuration.Enabled);
+        Assert.False(owner.SaveWebsite(site with { Template = "https://{query}.invalid/" }));
+        Assert.True(owner.Remove(site.Source)); Assert.Empty(owner.Configuration.Websites);
+        Assert.DoesNotContain(site.Source, owner.Configuration.Enabled);
+    }
+    [Fact]
     public void ReimportPreservesIdentityAndLanguagesAndRemovingNeverDeletesFiles()
     {
         var settings = new AppSettings(); int saves = 0;

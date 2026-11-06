@@ -61,6 +61,8 @@ public abstract record LearningDictionaryResult
     private LearningDictionaryResult() { }
     public static LearningDictionaryResult NotFound { get; } = new Missing();
     private sealed record Missing : LearningDictionaryResult;
+    /// <summary>An explicit external browser offer; constructing it does not navigate.</summary>
+    public sealed record Website(Uri Url) : LearningDictionaryResult;
     /// <summary>Third-party HTML remains untrusted; a renderer must establish its own isolation.</summary>
     public sealed record Article(string Html, string Text, string SourceName, Guid? ResourceLibrary = null,
         DictionaryLanguagePair? Languages = null) : LearningDictionaryResult;

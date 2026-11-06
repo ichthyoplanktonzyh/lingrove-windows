@@ -29,7 +29,17 @@ internal sealed class DictionarySettingsWindow : Window, IAsyncDisposable
         _definition.ItemsSource = new[] { "System language" }.Concat(LearningLanguages.All.Select(x => x.Label())).ToArray();
         _definition.SelectionChanged += (_, _) => { if (!_updatingDefinition && _definition.SelectedIndex >= 0) Try(() => _settings.SetDefinitionLanguage(_definition.SelectedIndex == 0 ? null : LearningLanguages.All[_definition.SelectedIndex - 1])); };
         body.Children.Add(_definition); body.Children.Add(_list); body.Children.Add(_status); body.Children.Add(_import);
-        body.Children.Add(new TextBlock { Text = "System Dictionary is macOS-only. Online sources require a separately enabled provider and are not available here.", TextWrapping = TextWrapping.Wrap, Margin = new(0, 12, 0, 0), FontSize = 11 });
+        body.Children.Add(Button("Add lookup website…", () => EditWebsite(new(Guid.NewGuid(), "", "https://"))));
+        var recommended = new ComboBox { Margin = new(0, 8, 0, 0), DisplayMemberPath = "Name", ItemsSource = DictionaryWebsiteCatalog.Websites };
+        recommended.ToolTip = "Add a recommended website (it remains disabled until enabled).";
+        recommended.SelectionChanged += (_, _) =>
+        {
+            if (recommended.SelectedItem is not DictionaryWebsite site) return;
+            recommended.SelectedItem = null;
+            if (!_settings.Configuration.Websites.Any(x => x.Id == site.Id)) Try(() => _settings.SaveWebsite(site));
+        };
+        body.Children.Add(new TextBlock { Text = "Recommended websites", Margin = new(0, 8, 0, 0) }); body.Children.Add(recommended);
+        body.Children.Add(new TextBlock { Text = "System Dictionary is macOS-only. Online lookup sends only the selected term after you choose Look up online. Websites open in your browser only when clicked.", TextWrapping = TextWrapping.Wrap, Margin = new(0, 12, 0, 0), FontSize = 11 });
         Content = new ScrollViewer { Content = body, VerticalScrollBarVisibility = ScrollBarVisibility.Auto };
         _import.Click += Import; _settings.Changed += Changed; Closed += (_, _) => Retire(); Render();
     }
@@ -47,15 +57,21 @@ internal sealed class DictionarySettingsWindow : Window, IAsyncDisposable
             DockPanel.SetDock(enabled, Dock.Left); row.Children.Add(enabled);
             var controls = new StackPanel { Orientation = Orientation.Horizontal }; DockPanel.SetDock(controls, Dock.Right);
             var book = config.Libraries.FirstOrDefault(x => x.Source == source);
+            var site = config.Websites.FirstOrDefault(x => x.Source == source);
             if (book is not null)
             {
                 controls.Children.Add(Button("Languages…", () => EditLanguages(book)));
                 var resources = Button("Resources…", () => Attach(book)); resources.IsEnabled = !_busy; controls.Children.Add(resources);
                 controls.Children.Add(Button("Remove", () => Try(() => _settings.Remove(source))));
             }
+            if (site is not null)
+            {
+                controls.Children.Add(Button("Edit…", () => EditWebsite(site)));
+                controls.Children.Add(Button("Remove", () => Try(() => _settings.Remove(source))));
+            }
             controls.Children.Add(Button("↑", () => Try(() => _settings.Move(source, -1))));
             controls.Children.Add(Button("↓", () => Try(() => _settings.Move(source, 1)))); row.Children.Add(controls);
-            string description = book is null ? source.Kind switch { "system" => "Unavailable on Windows", "online" => "Not enabled in this Windows module", _ => "Local bundled expressions" }
+            string description = book is null ? source.Kind switch { "system" => "Unavailable on Windows", "online" => "api.dictionaryapi.dev · Sends only the lookup term after explicit action", "website" => "Opens in your browser when clicked", _ => "Local bundled expressions" }
                 : Path.GetFileName(book.MdxPath) + " · " + book.EntryCount + " entries · " + (book.Languages?.Entry?.Label() ?? "Unspecified language");
             var labels = new StackPanel(); labels.Children.Add(new TextBlock { Text = config.Name(source), FontWeight = FontWeights.SemiBold, TextTrimming = TextTrimming.CharacterEllipsis });
             labels.Children.Add(new TextBlock { Text = description, FontSize = 11, TextWrapping = TextWrapping.Wrap }); row.Children.Add(labels); _list.Children.Add(row);
@@ -64,6 +80,35 @@ internal sealed class DictionarySettingsWindow : Window, IAsyncDisposable
     private static Button Button(string text, Action action)
     { var button = new Button { Content = text, Padding = new(7, 3, 7, 3), Margin = new(3, 0, 0, 0) }; button.Click += (_, _) => action(); return button; }
     private void Try(Func<bool> action) { try { if (!action()) _status.Text = "This dictionary setting could not be saved."; else _status.Text = ""; } catch { _status.Text = "This dictionary setting could not be saved."; } }
+    private void EditWebsite(DictionaryWebsite site)
+    {
+        var window = new Window { Title = "Lookup website", Owner = this, Width = 480, Height = 420, WindowStartupLocation = WindowStartupLocation.CenterOwner };
+        var panel = new StackPanel { Margin = new(18) };
+        var name = new TextBox { Text = site.Name, Margin = new(0, 3, 0, 8) };
+        var template = new TextBox { Text = site.Template, Margin = new(0, 3, 0, 8) };
+        var options = new[] { "Unspecified" }.Concat(LearningLanguages.All.Select(x => x.Label())).ToArray();
+        ComboBox Pick(LearningLanguage? value) => new() { ItemsSource = options, SelectedIndex = value is null ? 0 : LearningLanguages.All.ToList().IndexOf(value.Value) + 1, Margin = new(0, 3, 0, 8) };
+        var entry = Pick(site.Languages?.Entry); var definition = Pick(site.Languages?.Definition);
+        var multi = new CheckBox { Content = "Multilingual entries", IsChecked = site.Languages?.Multilingual == true, Margin = new(0, 0, 0, 8) };
+        var error = new TextBlock { TextWrapping = TextWrapping.Wrap };
+        panel.Children.Add(new TextBlock { Text = "Name" }); panel.Children.Add(name);
+        panel.Children.Add(new TextBlock { Text = "HTTPS URL with {query}" }); panel.Children.Add(template);
+        panel.Children.Add(new TextBlock { Text = "Entry language" }); panel.Children.Add(entry);
+        panel.Children.Add(new TextBlock { Text = "Definition language" }); panel.Children.Add(definition); panel.Children.Add(multi); panel.Children.Add(error);
+        var actions = new StackPanel { Orientation = Orientation.Horizontal };
+        actions.Children.Add(Button("Cancel", window.Close));
+        actions.Children.Add(Button("Save", () =>
+        {
+            LearningLanguage? Get(ComboBox c) => c.SelectedIndex <= 0 ? null : LearningLanguages.All[c.SelectedIndex - 1];
+            try
+            {
+                if (_settings.SaveWebsite(site with { Name = name.Text.Trim(), Template = template.Text, Languages = new(Get(entry), Get(definition), multi.IsChecked == true) })) window.Close();
+                else error.Text = "Enter a name and valid HTTPS URL containing one {query}.";
+            }
+            catch { error.Text = "This dictionary setting could not be saved."; }
+        }));
+        panel.Children.Add(actions); window.Content = new ScrollViewer { Content = panel, VerticalScrollBarVisibility = ScrollBarVisibility.Auto }; window.ShowDialog();
+    }
     private void Import(object sender, RoutedEventArgs e)
     {
         if (_busy || _closed) return;

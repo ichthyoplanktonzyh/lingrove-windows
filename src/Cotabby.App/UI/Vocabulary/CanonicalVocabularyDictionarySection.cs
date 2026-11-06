@@ -131,7 +131,9 @@ internal sealed class CanonicalVocabularyDictionarySection : Expander, IDisposab
                         () => Current() && IsExpanded && _owner.Dictionary.State.RequestIdentity == request, _token);
                 }
             }
-            else { _article?.Retire(); _articleRequest = Guid.Empty; LearningDictionaryDefinitions.Populate(_definitions, _attribution, state); }
+            else { _article?.Retire(); _articleRequest = Guid.Empty; LearningDictionaryDefinitions.Populate(_definitions, _attribution, state,
+                () => LastNavigation = _owner.Dictionary.ConfirmOnlineAsync(state.RequestIdentity),
+                () => Current() && IsExpanded && ReferenceEquals(state, _owner.Dictionary.State)); }
         }
         double width = Math.Max(1, ActualWidth > 0 ? ActualWidth - SystemParameters.VerticalScrollBarWidth : 400);
         _definitions.Measure(new Size(width, double.PositiveInfinity));

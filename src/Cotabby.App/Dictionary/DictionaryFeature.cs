@@ -10,12 +10,12 @@ namespace Cotabby.App.Dictionaries;
 /// dictionary sessions. Its window and accepted file work drain before the service is released.</summary>
 internal sealed class DictionaryFeature : IAsyncDisposable
 {
-    private readonly DictionarySettings _settings; private readonly MDictLibraryService _books;
+    private readonly DictionarySettings _settings; private readonly MDictLibraryService _books; private readonly OnlineDictionaryClient _online;
     private readonly DictionaryRouter _router; private readonly List<Task> _retired = [];
     private DictionarySettingsWindow? _window; private bool _closed; private Task? _dispose;
     internal DictionaryFeature(Func<AppSettings> current, Action persist, ILearningDictionaryProviding bundled, Func<string, string> lowercase,
         Func<string, LearningLanguage?, IReadOnlyList<LearningDictionaryWord>> words)
-    { _settings = new(current, persist); _books = new(lowercase); _router = new(_settings, bundled, _books, words); }
+    { _settings = new(current, persist); _books = new(lowercase); _online = new(); _router = new(_settings, bundled, _books, words, _online); }
     internal ILearningDictionaryProviding Router => _router;
     internal void ApplySettings() { if (!_closed) _settings.Reload(); }
     internal void ShowSettings(Window? owner = null)
@@ -30,6 +30,6 @@ internal sealed class DictionaryFeature : IAsyncDisposable
     private async Task DisposeCoreAsync()
     {
         _closed = true; var window = _window; if (window is not null) { window.Close(); await window.DisposeAsync(); }
-        await Task.WhenAll(_retired); await _books.DisposeAsync();
+        try { await Task.WhenAll(_retired); await _books.DisposeAsync(); } finally { _online.Dispose(); }
     }
 }

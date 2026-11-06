@@ -115,6 +115,21 @@ public sealed partial class LearningDictionarySession : IAsyncDisposable
         }
         if (drain) Drain(); return task;
     }
+    /// <summary>Admit only the online offer currently presented to the user. Each target,
+    /// source or configuration transition requires a fresh explicit confirmation.</summary>
+    public Task ConfirmOnlineAsync(Guid requestIdentity)
+    {
+        Task task; bool drain;
+        lock (_gate)
+        {
+            if (_disposed || _state.Status is not (LearningDictionaryContentStatus.AwaitingOnlineConfirmation or LearningDictionaryContentStatus.Failed)
+                || _state.RequestIdentity != requestIdentity || _sourceOverride != DictionarySource.Online
+                || _configuration is null || !_configuration.Sources(_state.Language).Contains(DictionarySource.Online)) return Task.CompletedTask;
+            // A failed request can restore the offer, but a second click is required to send.
+            (task, drain) = RequestDictionaryLocked(_state.Status == LearningDictionaryContentStatus.AwaitingOnlineConfirmation);
+        }
+        if (drain) Drain(); return task;
+    }
     public Task FollowReferenceAsync(string query, Guid? targetIdentity = null)
     {
         long revision; LearningLanguage? language; bool drain; Task task;
@@ -200,7 +215,7 @@ public sealed partial class LearningDictionarySession : IAsyncDisposable
             try { await all.ConfigureAwait(false); } catch { }
     }
 
-    private (Task Task, bool Drain) RequestDictionaryLocked()
+    private (Task Task, bool Drain) RequestDictionaryLocked(bool onlineConfirmed = false)
     {
         RetireLocked();
         long revision = _revision;
@@ -209,13 +224,15 @@ public sealed partial class LearningDictionarySession : IAsyncDisposable
         var configuration = _configuration;
         var available = configuration?.Sources(_state.Language) ?? [];
         var candidates = configuration is null ? [] : _sourceOverride is { } selected ? [selected]
-            : configuration.AutomaticSources(_state.Language, configuration.PreferredDefinitionLanguage(System.Globalization.CultureInfo.CurrentUICulture.Name)).ToArray();
+            : configuration.AutomaticSources(_state.Language, configuration.PreferredDefinitionLanguage(System.Globalization.CultureInfo.CurrentUICulture.Name))
+                .Where(source => source.Kind != "online").ToArray();
         _state = _state with { RequestIdentity = Guid.NewGuid(),
-            Status = LearningDictionaryContentStatus.Loading, Result = null, ErrorMessage = null,
+            Status = !onlineConfirmed && _sourceOverride == DictionarySource.Online ? LearningDictionaryContentStatus.AwaitingOnlineConfirmation : LearningDictionaryContentStatus.Loading, Result = null, ErrorMessage = null,
             AvailableSources = available, SourceLabels = available.ToFrozenDictionary(x => x, x => configuration!.Name(x)),
             SelectedSource = candidates.FirstOrDefault() is { RawValue: not null } first ? first : null };
         var snapshot = _state;
         bool drain = EnqueueLocked();
+        if (snapshot.Status == LearningDictionaryContentStatus.AwaitingOnlineConfirmation) return (Task.CompletedTask, drain);
         var task = Task.Run(() => RunAsync(revision, snapshot, lifetime, configuration, candidates), CancellationToken.None);
         _tasks.Add(revision, task);
         return (task, drain);

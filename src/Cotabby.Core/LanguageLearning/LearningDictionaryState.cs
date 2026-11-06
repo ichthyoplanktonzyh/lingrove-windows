@@ -1,6 +1,6 @@
 namespace Cotabby.Core.LanguageLearning;
 
-public enum LearningDictionaryContentStatus { Loading, Result, Failed }
+public enum LearningDictionaryContentStatus { Loading, Result, Failed, AwaitingOnlineConfirmation }
 public enum LearningDictionaryPage { Contextual, Dictionary }
 
 /// <summary>

@@ -13,7 +13,7 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
-    <Border Width="410" Padding="16" CornerRadius="10" BorderThickness="1"
+    <Border x:Name="Card" Width="410" Padding="16" CornerRadius="10" BorderThickness="1"
             Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource CardBorder}">
         <StackPanel>
             <DockPanel Margin="0,0,0,10">
